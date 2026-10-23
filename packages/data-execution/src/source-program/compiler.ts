@@ -21,7 +21,7 @@ export function visibleSourceIds(page: Page): Set<string> {
   const ids = new Set<string>();
   for (const component of flattenPageComponents({ sections: page.sections, detailViews: page.detailViews?.filter(v => v.mode === 'snapshot') })) {
     Object.values(component.data ?? {}).forEach(id => ids.add(id));
-    if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props)).forEach(value => ids.add(value.source));
+    if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props, {}, component.id)).forEach(value => ids.add(value.source));
   }
   return executionSourceIds(page, ids);
 }
@@ -30,7 +30,7 @@ export function activeSourceIds(page: Page, selections: TabSelections = {}): Set
   const ids = new Set<string>();
   for (const component of activePageComponents(page, selections)) {
     Object.values(component.data ?? {}).forEach(id => ids.add(id));
-    if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props, selections)).forEach(value => ids.add(value.source));
+    if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props, selections, component.id)).forEach(value => ids.add(value.source));
   }
   return executionSourceIds(page, ids);
 }

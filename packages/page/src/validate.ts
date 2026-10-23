@@ -1,4 +1,5 @@
-import { aiSummaryErrors, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
+import { aiSummaryErrors, aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
+import { aiSummaryPositionErrors } from './ai-summary-region';
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './validate-row-expansion';
@@ -139,6 +140,7 @@ export function parsePage(
     ...(emptyHeader ? [schemaError('/iocHeader','IOC 页头需要身份、筛选或返回意图')] : []),
     ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
     ...capabilityFloorErrors(compatibleDocument).map(error => error.path.endsWith('/props/echartsOption') ? { ...error, type: 'CHART_OPTION_ERROR' as const } : error),
+    ...aiSummaryPositionErrors(compatibleDocument as Page),
     ...layoutCompatibilityErrors(compatibleDocument),
     ...paramBindingErrors(compatibleDocument),
     ...queryParamReferenceErrors(compatibleDocument),
@@ -194,7 +196,10 @@ export function normalizePageDocument(document: unknown):
   if (!parsed.ok) return parsed;
   // JSON 文档也可能是 Svelte Proxy，使用 JSON 树复制，不使用 structuredClone。
   const cloned = JSON.parse(JSON.stringify(compatibleDocument)) as PageDocument;
-  return { ok: true, document: canonicalLayoutDocument(cloned), errors: [] };
+  const normalized = canonicalLayoutDocument(cloned);
+  const positionErrors = aiSummaryPositionErrors(normalized as Page);
+  if (positionErrors.length) return { ok: false, errors: positionErrors };
+  return { ok: true, document: normalized, errors: [] };
 }
 
 
@@ -1997,7 +2002,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
       addReference(sourceId, `${componentPath}/data/${escapePointer(slot)}`);
     }
     if (component.type === 'aiSummary') {
-      addSummaryReferences(component.props, componentPath);
+      addSummaryReferences(component, componentPath);
     }
     if (component.type !== 'table') return;
     const pagination = component.props.pagination;
@@ -2040,8 +2045,13 @@ function queryPaginationErrors(page: Page): TypedError[] {
     }
   }
   return errors;
-  function addSummaryReferences(props: Extract<Component, { type: 'aiSummary' }>['props'], componentPath: string): void {
+  function addSummaryReferences(component: Extract<Component, { type: 'aiSummary' }>, componentPath: string): void {
+    const props = component.props;
     if (hasAiSummaryBody(props)) return;
+    if (props.scope) {
+      Object.values(aiSummaryRelatedData(page, props, {}, component.id)).forEach(related => addReference(related.source, `${componentPath}/props/scope`));
+      return;
+    }
     const sources = aiSummarySourceReferences(props);
     if (sources) {
       for (const [index, sourceId] of sources.ids.entries()) {

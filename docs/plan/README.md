@@ -40,6 +40,7 @@
 
 | 工作 | 完成范围 | 查看结论或证据 |
 |---|---|---|
+| AI Summary 容器组合与顶部位置 | Schema 6.56，本仓实现与本地验收完成；未提交/推送 | [设计](../evidence/ai-summary-regions/design.md)、[验收](../evidence/ai-summary-regions/result.md)：组合卡准入、显式所在区域、顶部约束及独立 local-authoring |
 | 显式数字颜色与图表标签 | 6.16声明、商务SDT迁移及本地验收完成；真实集成/发布未执行 | [批次结论](../archive/2026-10-12-explicit-presentation/README.md)、[验收](../evidence/2026-10-12-explicit-presentation/result.md) |
 | 早期创作架构/模块收敛 | 本仓实现及各批次本地检查；外部待办已转当前接入入口 | [批次结论](../archive/authoring-foundation-2026-09/README.md)、[部署就绪证据](../evidence/2026-09-23-authoring-deployment-readiness-report.md) |
 | 9235/9236执行整改 M0–M7 | 本地回归、真实模型分批复验及本地浏览器；内部采用/生产未执行 | [执行报告](../evidence/2026-09-29-authoring-mc-execution-report.md) |

@@ -192,6 +192,42 @@
         "id": "main",
         "components": [
           {
+            "id": "summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "promptTemplate": "总结 GMV 表现",
+              "relatedData": {
+                "kpi": {
+                  "source": "current",
+                  "description": "当期指标",
+                  "fields": [
+                    {
+                      "field": "gmv",
+                      "term": "成交额"
+                    },
+                    {
+                      "field": "yoy",
+                      "term": "同比"
+                    }
+                  ]
+                },
+                "other": {
+                  "source": "current",
+                  "description": "再引一次",
+                  "fields": [
+                    {
+                      "field": "gmv",
+                      "term": "销售额"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
             "id": "trend",
             "type": "barChart",
             "layout": {
@@ -295,42 +331,6 @@
               "field": "body",
               "variant": "quote"
             }
-          },
-          {
-            "id": "summary",
-            "type": "aiSummary",
-            "layout": {
-              "span": 12
-            },
-            "props": {
-              "promptTemplate": "总结 GMV 表现",
-              "relatedData": {
-                "kpi": {
-                  "source": "current",
-                  "description": "当期指标",
-                  "fields": [
-                    {
-                      "field": "gmv",
-                      "term": "成交额"
-                    },
-                    {
-                      "field": "yoy",
-                      "term": "同比"
-                    }
-                  ]
-                },
-                "other": {
-                  "source": "current",
-                  "description": "再引一次",
-                  "fields": [
-                    {
-                      "field": "gmv",
-                      "term": "销售额"
-                    }
-                  ]
-                }
-              }
-            }
           }
         ]
       }
@@ -339,7 +339,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/4/props/relatedData/other/fields/0/term",
+      "path": "/sections/0/components/0/props/relatedData/other/fields/0/term",
       "message": "关联字段 gmv 的术语映射冲突:成交额/销售额"
     }
   ]

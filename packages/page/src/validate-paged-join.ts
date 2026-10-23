@@ -136,7 +136,7 @@ function orderingErrors(data: PagedJoinDataSource, path: string, error: ErrorRep
 }
 
 function consumesSource(page: Page, component: Component, id: string): boolean {
-  return Object.values(component.data ?? {}).includes(id) || (component.type === 'aiSummary' && Object.values(aiSummaryRelatedData(page, component.props)).some(v => v.source === id));
+  return Object.values(component.data ?? {}).includes(id) || (component.type === 'aiSummary' && Object.values(aiSummaryRelatedData(page, component.props, {}, component.id)).some(v => v.source === id));
 }
 
 function consumerErrors(page: Page, id: string, source: PagedJoinSource, path: string, error: ErrorReporter): void {

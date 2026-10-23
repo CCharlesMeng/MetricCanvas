@@ -14,7 +14,7 @@
       "type": "SCHEMA_ERROR",
       "message": "AI 总结数据源数组采用复数 relatedDataSources 由 6.53 引入，文档声明的是 6.52",
       "paths": [
-        "/sections/3/components/1"
+        "/sections/3/components/0"
       ]
     }
   ],
@@ -50,7 +50,6 @@
       "…",
       {
         "components": [
-          "…",
           {
             "id": "comparison-summary",
             "type": "aiSummary",

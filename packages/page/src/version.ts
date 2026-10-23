@@ -20,7 +20,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 57;
+const CURRENT_MINOR = 58;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -49,6 +49,15 @@ export const pageCapabilities = {
     usedAt: document => dataSourcePaths(document, hasNumericDimensionMeasure)
   },
   'query-mode-field-mappings': {minor:57,legacyReadable:false,description:'查询分支原始响应字段到稳定页面字段的显式映射',usedAt:document=>dataSourcePaths(document,source=>Object.values(record(record(record(record(source.source)?.query)?.queryModes)?.cases)??{}).some(leaf=>has(record(leaf),'fieldMappings')))},
+  'ai-summary-container-scope': {
+    minor: 58, legacyReadable: false, description: 'AI 总结组合卡准入、显式所在区域与顶部结构约束',
+    usedAt: document => componentPaths(document, component => {
+      if (component.type === 'aiSummary') return has(props(component), 'scope');
+      const children = props(component)?.components;
+      return component.type === 'compositeCard' && Array.isArray(children) &&
+        children.some(child => record(child)?.type === 'aiSummary');
+    })
+  },
   'ai-summary-body-routing': {
     minor: 54, legacyReadable: false, description: 'AI 总结由非空 body 直接决定展示，无正文时动态生成',
     usedAt: document => componentPaths(document, component => {

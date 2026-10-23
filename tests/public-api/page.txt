@@ -84,6 +84,7 @@ DqeFilterBinding
 DqeNumberRangeFilterBinding
 DqeQueryCase
 DqeQueryDefinition
+DqeQueryModeCase
 DqeRequestBody
 DqeTimePointFilterBinding
 ERROR_TYPES
@@ -290,6 +291,7 @@ ZeroDenominatorSemantics
 activePageComponents
 affectedSourceIds
 aiSummaryErrors
+aiSummaryRegion
 aiSummaryRelatedData
 aiSummarySourceReferences
 appliedAmountRange
@@ -457,6 +459,7 @@ rowKinds
 runPageParameterProgram
 sectionBackdrop
 selectQuery
+selectQuerySource
 selectTimeQuery
 selectedCase
 selectedTab

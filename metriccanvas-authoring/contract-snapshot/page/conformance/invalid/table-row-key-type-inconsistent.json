@@ -192,6 +192,32 @@
         "id": "main",
         "components": [
           {
+            "id": "summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "promptTemplate": "总结 GMV 表现",
+              "relatedData": {
+                "kpi": {
+                  "source": "current",
+                  "description": "当期指标",
+                  "fields": [
+                    {
+                      "field": "gmv",
+                      "term": "成交额"
+                    },
+                    {
+                      "field": "yoy",
+                      "term": "同比"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
             "id": "trend",
             "type": "barChart",
             "layout": {
@@ -295,32 +321,6 @@
               "field": "body",
               "variant": "quote"
             }
-          },
-          {
-            "id": "summary",
-            "type": "aiSummary",
-            "layout": {
-              "span": 12
-            },
-            "props": {
-              "promptTemplate": "总结 GMV 表现",
-              "relatedData": {
-                "kpi": {
-                  "source": "current",
-                  "description": "当期指标",
-                  "fields": [
-                    {
-                      "field": "gmv",
-                      "term": "成交额"
-                    },
-                    {
-                      "field": "yoy",
-                      "term": "同比"
-                    }
-                  ]
-                }
-              }
-            }
           }
         ]
       }
@@ -329,7 +329,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/2/data/compare",
+      "path": "/sections/0/components/3/data/compare",
       "message": "rowKey 字段 key 的类型必须一致:string/number"
     }
   ]

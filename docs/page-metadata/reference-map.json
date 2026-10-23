@@ -894,14 +894,16 @@
         "组合卡 compositeCard"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "report-ai-summary-regions"
       ],
       "sources": [
         "packages/page/src/schema/components/composite-card.ts",
         "packages/embed/tests/browser/embed.spec.ts"
       ],
       "rules": [
-        "composite-card-pure-container"
+        "composite-card-pure-container",
+        "ai-summary-regions"
       ]
     },
     "components/rankingCard.md": {
@@ -1065,7 +1067,8 @@
       ],
       "examples": [
         "forecast-page",
-        "report-ai-summary"
+        "report-ai-summary",
+        "report-ai-summary-regions"
       ],
       "sources": [
         "packages/page/src/schema/components/ai-summary.ts",
@@ -1073,11 +1076,15 @@
         "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
         "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
         "packages/engine/widgets/src/shared/ReportSummary.svelte",
-        "packages/embed/tests/browser/report-ai-summary.spec.ts"
+        "packages/embed/tests/browser/report-ai-summary.spec.ts",
+        "packages/page/src/ai-summary-region.ts",
+        "packages/page/tests/ai-summary-regions.test.ts",
+        "packages/embed/tests/browser/ai-summary-regions.spec.ts"
       ],
       "rules": [
         "ai-summary-related-data",
-        "report-ai-summary"
+        "report-ai-summary",
+        "ai-summary-regions"
       ]
     },
     "chart-option.md": {
@@ -1860,7 +1867,8 @@
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"provided\"": "历史值；当前按非空 body 直接展示，无需 mode。",
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "历史值；当前无正文时根据提示词和范围生成，无需 mode。",
     "6.56": "DQE output_dims 中的现成数值显式声明为页面度量，保留查询与结果行粒度。",
-    "6.57": "查询分支页面响应映射，普通指标保留原名。"
+    "6.57": "查询分支页面响应映射，普通指标保留原名。",
+    "6.58": "AI Summary 组合卡准入、显式所在区域和顶部结构约束。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2409,6 +2417,7 @@
     ],
     "components/aiSummary.md": [
       "正文与范围",
+      "容器组合与顶部位置（6.58）",
       "查询与生成",
       "会话与缓存",
       "呈现与导出",

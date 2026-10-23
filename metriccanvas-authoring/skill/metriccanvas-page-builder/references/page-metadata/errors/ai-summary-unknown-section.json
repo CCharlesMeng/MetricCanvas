@@ -6,7 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "未知内容分区:missing",
       "paths": [
-        "/sections/2/components/1/props/relatedSections/0"
+        "/sections/2/components/0/props/relatedSections/0"
       ]
     }
   ],
@@ -16,7 +16,6 @@
       "…",
       {
         "components": [
-          "…",
           {
             "props": {
               "relatedSections": [

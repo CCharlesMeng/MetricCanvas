@@ -15,3 +15,5 @@ Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px�
 6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
 组合卡允许独立 filterGroup 及柱、线、饼、地图四类图表作为叶子组件，用于筛选与内容的显式组合；仍禁止组合卡递归和任意子组件。筛选作用范围由查询绑定决定，卡内位置不自动限定数据范围。
+
+6.58 增加 aiSummary 子组件（Report 限制仍适用）；摘要必须在卡内内容最前并占满 12 列，可显式 scope: "container" 总结本卡关联数据。正文、生成、缓存和导出复用同一 aiSummary；文字不进入分析输入。其他准入及嵌套规则不变。示例：[`report-ai-summary-regions`](../examples/report-ai-summary-regions.json)。

@@ -12,7 +12,7 @@
 }
 ```
 
-未声明 body、body 为空字符串或纯空白时，使用非空 `promptTemplate` 与 `relatedDataSources` 或 `relatedSections` 生成摘要；缺少这些配置时报告配置错误。
+未声明 body、body 为空字符串或纯空白时，使用非空 `promptTemplate` 与 `relatedDataSources`、`relatedSections` 或 `scope: "container"` 生成摘要；缺少这些配置时报告配置错误。
 
 ```json
 {
@@ -26,6 +26,29 @@
 未声明显式数据源时，`relatedSections` 按内容分区 ID 收集当前可见组件的数据槽，包含活动 Tab 与组合卡子组件；去重后选择全部非明细结果字段，不跟随其他 AI 总结、其他分区或查询上游。显隐沿用统一 visibleWhen 投影。
 
 旧 mode、initial 声明仅保留历史读取兼容，当前用法不需要首屏输入绑定参数；运行分支以 body 是否非空为准。6.52 单数 relatedDataSource 和旧 relatedData 字段白名单保留读取兼容；生成时新旧数据源声明不能同时配置。当前创作统一使用 relatedDataSources。
+
+## 容器组合与顶部位置（6.58）
+
+同一个 aiSummary 可独立摆放，也可作为组合卡的子组件，与原有准入的指标、图表等内容组合。内容分区支持整行区域，组合卡支持横向并排区域，Tab 沿用现有内容及嵌套规则；本能力不扩展其他组件准入或递归布局。
+
+`scope: "container"` 显式总结直接拥有当前摘要的内容集合：内容分区的组件、组合卡的子组件，或当前摘要所属 Tab 页签的内容。动态生成时与 relatedDataSources、relatedSections 及旧范围声明互斥。未选择此选项时，摆放位置不会隐式改变显式范围。非空 body 仍优先直显并跳过生成配置。
+
+```json
+{
+  "title": "本区域总结",
+  "variant": "reportInline",
+  "promptTemplate": "仅根据本区域的数据概括变化。",
+  "scope": "container"
+}
+```
+
+仅收集区域内可见组件引用的页面数据源，去重并采用全部非明细字段；嵌套 Tab 只收集活动页签。文字、标题及其他摘要正文不进入 datasource 请求或分析输入，不跟随查询上游，不额外查询。表格搜索、分页及行显隐仍沿用既有数据快照语义，不改成屏幕可见行总结。contextInfo 在此模式增加可选 region（kind、id、sectionId），准确绑定所在区域与缓存输入。
+
+6.58 起，摘要必须连续排在所属区域的正文组件序列最前，Report 页头与区域标题仍在其之前；摘要的 layout.span 必须占满所在区域列轨（组合卡/Tab 为 12，内容分区按 columnTracks 数量或默认 12），且不能作为铺底层。独立摘要所在的纯摘要分区必须位于页面其他正文之前。校验失败报告摘要的精确路径，不在运行时偷偷重排。
+
+旧版本继续按原声明顺序读取；normalizePageDocument 升级为当前写出版本时会检查顶部约束，位置不合规时返回错误，需作者先显式调整原文档。组合卡内摘要与 scope 字段的最低版本均为 6.58。连续多份顶部摘要允许，正文直显也须遵守位置规则。
+
+场景 `/pages/report-ai-summary-regions` 使用合成 inline 数据与本地 Mock，覆盖页面摘要、内容分区、并排组合卡与 Tab 页签；卡内摘要复用既有 reportInline，页面摘要复用 ReportSummary。
 
 ## 查询与生成
 
@@ -41,7 +64,7 @@ Report 页头时间筛选由 filterBindings 控制既有查询。无正文时，
 
 ## 呈现与导出
 
-默认复用 SDT“报告摘要”的 ReportSummary 呈现；默认标题为“报告摘要”，可用 title 修改。显式 variant: reportInline 使用既有紧凑 TextBlock。
+默认完整复用 SDT“报告摘要”的 ReportSummary：渐变背景、白色内框、浅紫描边内容区三层结构；默认标题为“报告摘要”，可用 title 修改。显式 variant: reportInline 使用既有紧凑 TextBlock。
 
 合规 HTML 按语义渲染；结构不合规时提取安全可读文字并保留换行，不执行脚本或加载资源。纯文本回退也可缓存和导出。无正文生成时，空响应或失败显示局部错误并支持重试。
 
@@ -58,7 +81,7 @@ Playground：`/pages/report-ai-summary`。直接正文、结构回退与双区�
 字段与联合分支以生成结构表为准。完整页面用于结构/语义校验，渲染行为结合浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.57。结构真源为本册[schema.json](../schema.json)，SHA256 `7c423995f3d706ad39a1400e73ff0e88aadbb9b02cb77a041946923a1f3f64e5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.58。结构真源为本册[schema.json](../schema.json)，SHA256 `ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -234,6 +257,20 @@ Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/pro
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 动态总结业务提示词；数据范围由 relatedDataSources 或 relatedSections 确定。 |
+
+<a id="schema-232f646566696e6974696f6e732f616953756d6d617279436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f73636f7065"></a>
+
+### `@aiSummaryComponent.props.scope`
+
+Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/scope`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="container" | Schema未设默认；装配/运行时默认见语义说明 | 显式总结直接拥有当前摘要的内容分区、组合卡或 Tab 页签；与其他范围声明互斥，文字不进入分析输入 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "container" | 当前容器作为交互/呈现作用域。 |
 
 <a id="schema-232f646566696e6974696f6e732f616953756d6d617279436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f72656c6174656444617461536f7572636573"></a>
 
@@ -419,6 +456,7 @@ Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/rel
 
 - `ai-summary-related-data`：AI 总结关联数据引用已声明数据源中的非明细字段，不重复且术语一致。反例：[ai-summary-unknown-source](../errors/ai-summary-unknown-source.json)、[ai-summary-unknown-field](../errors/ai-summary-unknown-field.json)、[ai-summary-detail-field](../errors/ai-summary-detail-field.json)、[ai-summary-duplicate-field](../errors/ai-summary-duplicate-field.json)、[ai-summary-term-conflict](../errors/ai-summary-term-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `report-ai-summary`：AI 总结仅用于 Report，非空 body 直接展示，否则需要生成提示词与范围。反例：[ai-summary-dashboard](../errors/ai-summary-dashboard.json)、[ai-summary-unknown-section](../errors/ai-summary-unknown-section.json)、[ai-summary-blank-body-without-input](../errors/ai-summary-blank-body-without-input.json)、[ai-summary-body-routing-version](../errors/ai-summary-body-routing-version.json)、[ai-summary-scope-required](../errors/ai-summary-scope-required.json)、[ai-summary-version-floor](../errors/ai-summary-version-floor.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `ai-summary-regions`：AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部。反例：[ai-summary-region-version](../errors/ai-summary-region-version.json)、[ai-summary-region-mixed-scope](../errors/ai-summary-region-mixed-scope.json)、[ai-summary-region-not-top](../errors/ai-summary-region-not-top.json)、[ai-summary-page-not-top](../errors/ai-summary-page-not-top.json)、[ai-summary-region-not-full-width](../errors/ai-summary-region-not-full-width.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -426,6 +464,7 @@ Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/rel
 - [reportInline](../examples/component-aiSummary-reportInline.json)：独立完整页面，保留必要语义依赖。
 - [forecast-page](../examples/forecast-page.json)：完整合法页面；查询仅为静态契约证据。
 - [report-ai-summary](../examples/report-ai-summary.json)：完整合法页面；查询仅为静态契约证据。
+- [report-ai-summary-regions](../examples/report-ai-summary-regions.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-aiSummary.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

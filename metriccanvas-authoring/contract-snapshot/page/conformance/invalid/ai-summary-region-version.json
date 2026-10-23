@@ -1,0 +1,486 @@
+{
+  "case": "ai-summary-region-version",
+  "invariant": "ai-summary-regions",
+  "input": {
+    "schemaVersion": "6.55",
+    "id": "report-ai-summary-regions",
+    "layout": "report",
+    "meta": {
+      "title": "AI Summary 区域组合（合成数据 / 本地 Mock）",
+      "description": "页面摘要、整行区域、并排组合卡及 Tab 页签顶部摘要；文字不进入分析请求。"
+    },
+    "dataSources": {
+      "usage": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension",
+            "label": "月份"
+          },
+          "tokens": {
+            "type": "number",
+            "role": "measure",
+            "label": "用量"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "month": "2026-08",
+              "tokens": 30
+            },
+            {
+              "month": "2026-09",
+              "tokens": 42
+            }
+          ]
+        }
+      },
+      "comparison": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension",
+            "label": "月份"
+          },
+          "tokens": {
+            "type": "number",
+            "role": "measure",
+            "label": "用量"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "month": "2026-08",
+              "tokens": 80
+            },
+            {
+              "month": "2026-09",
+              "tokens": 60
+            }
+          ]
+        }
+      },
+      "unreferenced": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension",
+            "label": "月份"
+          },
+          "tokens": {
+            "type": "number",
+            "role": "measure",
+            "label": "用量"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "month": "2026-08",
+              "tokens": 999
+            },
+            {
+              "month": "2026-09",
+              "tokens": 999
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "header",
+        "container": "plain",
+        "components": [
+          {
+            "id": "header-title",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "AI Summary 区域组合（本地 Mock）",
+              "exportButtons": [
+                {
+                  "format": "png"
+                },
+                {
+                  "format": "pdf"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "page-summary",
+        "container": "plain",
+        "components": [
+          {
+            "id": "page-ai",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "页面摘要",
+              "promptTemplate": "概括两个数据源的变化。",
+              "relatedDataSources": [
+                "usage",
+                "comparison"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "full-region",
+        "container": "card",
+        "title": "整行区域：用量明细",
+        "components": [
+          {
+            "id": "section-ai",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "区域总结",
+              "variant": "reportInline",
+              "promptTemplate": "仅根据本区域数据概括变化。",
+              "scope": "container"
+            }
+          },
+          {
+            "id": "note",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "区域说明文字仅供阅读，不进入分析请求。"
+            }
+          },
+          {
+            "id": "full-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "usage"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "month",
+                  "title": "月份"
+                },
+                {
+                  "field": "tokens",
+                  "title": "用量"
+                }
+              ],
+              "pagination": {
+                "mode": "none"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "parallel",
+        "container": "plain",
+        "components": [
+          {
+            "id": "left-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "经营区域 A",
+              "components": [
+                {
+                  "id": "left-card-summary",
+                  "type": "aiSummary",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": "区域总结",
+                    "variant": "reportInline",
+                    "promptTemplate": "仅根据本区域数据概括变化。",
+                    "scope": "container"
+                  }
+                },
+                {
+                  "id": "left-card-metric",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "usage"
+                  },
+                  "props": {
+                    "rows": [
+                      {
+                        "label": "本期用量",
+                        "valueField": {
+                          "field": "tokens",
+                          "match": {
+                            "field": "month",
+                            "equals": "2026-09"
+                          },
+                          "data": "main"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "left-card-chart",
+                  "type": "barChart",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "usage"
+                  },
+                  "props": {
+                    "categoryField": "month",
+                    "series": [
+                      {
+                        "field": "tokens",
+                        "label": "用量"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "right-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "经营区域 B",
+              "components": [
+                {
+                  "id": "right-card-summary",
+                  "type": "aiSummary",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": "区域总结",
+                    "variant": "reportInline",
+                    "promptTemplate": "仅根据本区域数据概括变化。",
+                    "scope": "container"
+                  }
+                },
+                {
+                  "id": "right-card-metric",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "comparison"
+                  },
+                  "props": {
+                    "rows": [
+                      {
+                        "label": "本期用量",
+                        "valueField": {
+                          "field": "tokens",
+                          "match": {
+                            "field": "month",
+                            "equals": "2026-09"
+                          },
+                          "data": "main"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "right-card-chart",
+                  "type": "barChart",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "comparison"
+                  },
+                  "props": {
+                    "categoryField": "month",
+                    "series": [
+                      {
+                        "field": "tokens",
+                        "label": "用量"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "tabs-region",
+        "container": "card",
+        "title": "Tab 内区域总结",
+        "components": [
+          {
+            "id": "analysis-tabs",
+            "type": "tabContainer",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "contentLayout": "grid",
+              "tabs": [
+                {
+                  "id": "usage",
+                  "label": "用量视角",
+                  "components": [
+                    {
+                      "id": "tab-usage-ai",
+                      "type": "aiSummary",
+                      "layout": {
+                        "span": 12
+                      },
+                      "props": {
+                        "title": "区域总结",
+                        "variant": "reportInline",
+                        "promptTemplate": "仅根据本区域数据概括变化。",
+                        "scope": "container"
+                      }
+                    },
+                    {
+                      "id": "tab-usage-table",
+                      "type": "table",
+                      "layout": {
+                        "span": 12
+                      },
+                      "data": {
+                        "main": "usage"
+                      },
+                      "props": {
+                        "columns": [
+                          {
+                            "field": "month",
+                            "title": "月份"
+                          },
+                          {
+                            "field": "tokens",
+                            "title": "用量"
+                          }
+                        ],
+                        "pagination": {
+                          "mode": "none"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "comparison",
+                  "label": "对照视角",
+                  "components": [
+                    {
+                      "id": "tab-comparison-ai",
+                      "type": "aiSummary",
+                      "layout": {
+                        "span": 12
+                      },
+                      "props": {
+                        "title": "区域总结",
+                        "variant": "reportInline",
+                        "promptTemplate": "仅根据本区域数据概括变化。",
+                        "scope": "container"
+                      }
+                    },
+                    {
+                      "id": "tab-comparison-table",
+                      "type": "table",
+                      "layout": {
+                        "span": 12
+                      },
+                      "data": {
+                        "main": "comparison"
+                      },
+                      "props": {
+                        "columns": [
+                          {
+                            "field": "month",
+                            "title": "月份"
+                          },
+                          {
+                            "field": "tokens",
+                            "title": "用量"
+                          }
+                        ],
+                        "pagination": {
+                          "mode": "none"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/2/components/0",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/3/components/0",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/3/components/0/props/components/0",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/3/components/1",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/3/components/1/props/components/0",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/4/components/0/props/tabs/0/components/0",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/4/components/0/props/tabs/1/components/0",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55"
+    }
+  ]
+}

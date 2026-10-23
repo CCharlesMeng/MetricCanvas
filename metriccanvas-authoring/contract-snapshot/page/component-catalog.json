@@ -438,7 +438,7 @@
       "Report 已有非空 body 直接展示；否则根据提示词和区域范围生成，集成应用注入异步 generate",
       "明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配"
     ],
-    "dataShape": "不声明数据槽；relatedDataSources 直接引用页面数据源 ID，或 relatedSections 收集可见区域的数据源；采用非明细结果字段",
+    "dataShape": "不声明数据槽；relatedDataSources 显式引用、relatedSections 收集可见分区、或 scope: container 收集直接所属区域；采用非明细字段，文字不参与",
     "authoringShape": {
       "bindsData": false
     },

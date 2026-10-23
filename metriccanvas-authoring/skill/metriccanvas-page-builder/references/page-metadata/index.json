@@ -1,7 +1,11 @@
 {
-  "schemaVersion": "6.57",
-  "schemaSha256": "7c423995f3d706ad39a1400e73ff0e88aadbb9b02cb77a041946923a1f3f64e5",
+  "schemaVersion": "6.58",
+  "schemaSha256": "ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35",
   "semanticSources": [
+    {
+      "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
+      "sha256": "27579112a4412fa09a660c5cf1d75304a7e442787707fc6c321ed94eee3f1ff3"
+    },
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
       "sha256": "454697ae7f7e251db6ae588e1f9250c83d0f1cd463a26a53ec64a58f2cdf2481"
@@ -12,7 +16,7 @@
     },
     {
       "file": "packages/embed/tests/browser/report-ai-summary.spec.ts",
-      "sha256": "6e65f3fdf2e4f88158ad205308b80a229799d2b365686eff3219e5133398818c"
+      "sha256": "28de178c62d8b3d9afe1535af92d39e3e61a96712fbbda2e0a0c14ae4b70caec"
     },
     {
       "file": "packages/embed/tests/browser/report-image.spec.ts",
@@ -32,7 +36,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
-      "sha256": "e7465eeece5518fa5e5e529d50c71c7c7bab7e95bda1c69170124959f3957e5c"
+      "sha256": "7ca3a0994369df529d1fa5207006b482ebf8eaef921fc324a80a6302e729aae4"
     },
     {
       "file": "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
@@ -69,6 +73,10 @@
     {
       "file": "packages/engine/widgets/src/shared/semantic-html.ts",
       "sha256": "ae844642c42a5718f1f0db15b595f9ce661d50e2c45435785918fd9d86203fe8"
+    },
+    {
+      "file": "packages/page/src/ai-summary-region.ts",
+      "sha256": "9ef23e5b16ca8cd3796162819a485f99e32f2a1525cfa1ddcc1ef1bb472000e6"
     },
     {
       "file": "packages/page/src/amount-filter.ts",
@@ -168,7 +176,7 @@
     },
     {
       "file": "packages/page/src/schema/components/ai-summary.ts",
-      "sha256": "d8094ff2b820a7c676a87bd0106cc4c00313a0c8abe3fe112f27146d40876c99"
+      "sha256": "4bae097e45262b5b2b73fc6fcc3067f9bbb0a72eee9b7ceffc7aab6ef0567639"
     },
     {
       "file": "packages/page/src/schema/components/button.ts",
@@ -184,7 +192,7 @@
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
-      "sha256": "43f4ac2b2c01512c25d610192d7aebae3460260ec3d10d2c1a2337ad83a49a2a"
+      "sha256": "4fffd0d22620de22c36b4e77693708741624e3307c68710893e5d944a6959390"
     },
     {
       "file": "packages/page/src/schema/components/field-text.ts",
@@ -308,7 +316,7 @@
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
-      "sha256": "2d37cb0bea2f3ef81b7e6159e7f086b04001546557a0411fbdfbb1887c2696c4"
+      "sha256": "22620d0d77dbc157b22476a6c1ddc94af2e2565e3816ab0ccb6228d61ea82dcb"
     },
     {
       "file": "packages/page/src/validate-query-results.ts",
@@ -320,11 +328,15 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "427a19895fd7ddd3a2719e99283f097478824ef5240c9b1af14643a6438a73c1"
+      "sha256": "3f2c6a014d01bd8f6e6fbb5d78a7b25eb48d7f6577beae5e96eeda800383d65d"
+    },
+    {
+      "file": "packages/page/tests/ai-summary-regions.test.ts",
+      "sha256": "e2a447e13ae9f9cdee1ac5c82d3b25c003efd7edd0926de0b102901872e922c8"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "3be63073725098d93f19cbceb11153da500e143dbeb7d98ce62c906423c047ad"
+      "sha256": "5bfc58663a14fa7991bd4f8f0a4ad526c3a90a8720ef353d8d432f321eb6c6ec"
     }
   ],
   "modules": {
@@ -1222,14 +1234,16 @@
         "组合卡 compositeCard"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "report-ai-summary-regions"
       ],
       "sources": [
         "packages/page/src/schema/components/composite-card.ts",
         "packages/embed/tests/browser/embed.spec.ts"
       ],
       "rules": [
-        "composite-card-pure-container"
+        "composite-card-pure-container",
+        "ai-summary-regions"
       ]
     },
     "components/rankingCard.md": {
@@ -1393,7 +1407,8 @@
       ],
       "examples": [
         "forecast-page",
-        "report-ai-summary"
+        "report-ai-summary",
+        "report-ai-summary-regions"
       ],
       "sources": [
         "packages/page/src/schema/components/ai-summary.ts",
@@ -1401,11 +1416,15 @@
         "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
         "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
         "packages/engine/widgets/src/shared/ReportSummary.svelte",
-        "packages/embed/tests/browser/report-ai-summary.spec.ts"
+        "packages/embed/tests/browser/report-ai-summary.spec.ts",
+        "packages/page/src/ai-summary-region.ts",
+        "packages/page/tests/ai-summary-regions.test.ts",
+        "packages/embed/tests/browser/ai-summary-regions.spec.ts"
       ],
       "rules": [
         "ai-summary-related-data",
-        "report-ai-summary"
+        "report-ai-summary",
+        "ai-summary-regions"
       ]
     },
     "chart-option.md": {
@@ -1644,7 +1663,8 @@
         "6.54",
         "6.55",
         "6.56",
-        "6.57"
+        "6.57",
+        "6.58"
       ]
     },
     {
@@ -13548,53 +13568,285 @@
       "path": "@compositeCardChild · oneOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/filterGroupComponent"
+      "ref": "#/definitions/aiSummaryComponent"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent",
+      "path": "@aiSummaryComponent",
+      "required": "类型/分支",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/id",
+      "path": "@aiSummaryComponent.id",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen",
+      "path": "@aiSummaryComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen/allOf/0",
+      "path": "@aiSummaryComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/type",
+      "path": "@aiSummaryComponent.type",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md",
+      "const": "aiSummary"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/layout",
+      "path": "@aiSummaryComponent.layout",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/componentLayout"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props",
+      "path": "@aiSummaryComponent.props",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/title",
+      "path": "@aiSummaryComponent.props.title",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/title/allOf/0",
+      "path": "@aiSummaryComponent.props.title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/variant",
+      "path": "@aiSummaryComponent.props.variant",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md",
+      "const": "reportInline"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/mode",
+      "path": "@aiSummaryComponent.props.mode",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md",
+      "enum": [
+        "provided",
+        "generated"
+      ]
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/body",
+      "path": "@aiSummaryComponent.props.body",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial",
+      "path": "@aiSummaryComponent.props.initial",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/body",
+      "path": "@aiSummaryComponent.props.initial.body",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/inputKey",
+      "path": "@aiSummaryComponent.props.initial.inputKey",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/promptTemplate",
+      "path": "@aiSummaryComponent.props.promptTemplate",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/scope",
+      "path": "@aiSummaryComponent.props.scope",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md",
+      "const": "container"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSources",
+      "path": "@aiSummaryComponent.props.relatedDataSources",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSources/items",
+      "path": "@aiSummaryComponent.props.relatedDataSources[]",
+      "required": "每个数组项",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/aiSummaryDataSourceReference"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryDataSourceReference",
+      "path": "@aiSummaryDataSourceReference",
+      "required": "类型/分支",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource",
+      "path": "@aiSummaryComponent.props.relatedDataSource",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource/items",
+      "path": "@aiSummaryComponent.props.relatedDataSource[]",
+      "required": "每个数组项",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/aiSummaryDataSourceReference"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections",
+      "path": "@aiSummaryComponent.props.relatedSections",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections/items",
+      "path": "@aiSummaryComponent.props.relatedSections[]",
+      "required": "每个数组项",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData",
+      "path": "@aiSummaryComponent.props.relatedData",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData/additionalProperties",
+      "path": "@aiSummaryComponent.props.relatedData{key}",
+      "required": "动态键的值",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/aiSummaryRelatedDataDefinition"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedDataDefinition",
+      "path": "@aiSummaryRelatedDataDefinition",
+      "required": "类型/分支",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/source",
+      "path": "@aiSummaryRelatedDataDefinition.source",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/description",
+      "path": "@aiSummaryRelatedDataDefinition.description",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/fields",
+      "path": "@aiSummaryRelatedDataDefinition.fields",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/fields/items",
+      "path": "@aiSummaryRelatedDataDefinition.fields[]",
+      "required": "每个数组项",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/aiSummaryRelatedField"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedField",
+      "path": "@aiSummaryRelatedField",
+      "required": "类型/分支",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedField/properties/field",
+      "path": "@aiSummaryRelatedField.field",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryRelatedField/properties/term",
+      "path": "@aiSummaryRelatedField.term",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData/propertyNames",
+      "path": "@aiSummaryComponent.props.relatedData · propertyNames",
+      "required": "条件结构",
+      "module": "components/aiSummary.md"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/1",
       "path": "@compositeCardChild · oneOf[1]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/barChartComponent"
+      "ref": "#/definitions/filterGroupComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/2",
       "path": "@compositeCardChild · oneOf[2]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/lineChartComponent"
+      "ref": "#/definitions/barChartComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/3",
       "path": "@compositeCardChild · oneOf[3]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/mapChartComponent"
+      "ref": "#/definitions/lineChartComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/4",
       "path": "@compositeCardChild · oneOf[4]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/metricCardComponent"
+      "ref": "#/definitions/mapChartComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/5",
       "path": "@compositeCardChild · oneOf[5]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/pieChartComponent"
+      "ref": "#/definitions/metricCardComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/6",
       "path": "@compositeCardChild · oneOf[6]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/gaugeComponent"
+      "ref": "#/definitions/pieChartComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/7",
       "path": "@compositeCardChild · oneOf[7]",
+      "required": "独立分支（不合并required）",
+      "module": "components/compositeCard.md",
+      "ref": "#/definitions/gaugeComponent"
+    },
+    {
+      "pointer": "#/definitions/compositeCardChild/oneOf/8",
+      "path": "@compositeCardChild · oneOf[8]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
       "ref": "#/definitions/keyValuePanelComponent"
@@ -13783,8 +14035,8 @@
       ]
     },
     {
-      "pointer": "#/definitions/compositeCardChild/oneOf/8",
-      "path": "@compositeCardChild · oneOf[8]",
+      "pointer": "#/definitions/compositeCardChild/oneOf/9",
+      "path": "@compositeCardChild · oneOf[9]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
       "ref": "#/definitions/categoryBreakdownComponent"
@@ -14691,224 +14943,6 @@
       "ref": "#/definitions/aiSummaryComponent"
     },
     {
-      "pointer": "#/definitions/aiSummaryComponent",
-      "path": "@aiSummaryComponent",
-      "required": "类型/分支",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/id",
-      "path": "@aiSummaryComponent.id",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/componentId"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen",
-      "path": "@aiSummaryComponent.visibleWhen",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen/allOf/0",
-      "path": "@aiSummaryComponent.visibleWhen · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/condition"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/type",
-      "path": "@aiSummaryComponent.type",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md",
-      "const": "aiSummary"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/layout",
-      "path": "@aiSummaryComponent.layout",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/componentLayout"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props",
-      "path": "@aiSummaryComponent.props",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/title",
-      "path": "@aiSummaryComponent.props.title",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/title/allOf/0",
-      "path": "@aiSummaryComponent.props.title · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/textValue"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/variant",
-      "path": "@aiSummaryComponent.props.variant",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md",
-      "const": "reportInline"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/mode",
-      "path": "@aiSummaryComponent.props.mode",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md",
-      "enum": [
-        "provided",
-        "generated"
-      ]
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/body",
-      "path": "@aiSummaryComponent.props.body",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial",
-      "path": "@aiSummaryComponent.props.initial",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/body",
-      "path": "@aiSummaryComponent.props.initial.body",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/inputKey",
-      "path": "@aiSummaryComponent.props.initial.inputKey",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/promptTemplate",
-      "path": "@aiSummaryComponent.props.promptTemplate",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSources",
-      "path": "@aiSummaryComponent.props.relatedDataSources",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSources/items",
-      "path": "@aiSummaryComponent.props.relatedDataSources[]",
-      "required": "每个数组项",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/aiSummaryDataSourceReference"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryDataSourceReference",
-      "path": "@aiSummaryDataSourceReference",
-      "required": "类型/分支",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource",
-      "path": "@aiSummaryComponent.props.relatedDataSource",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource/items",
-      "path": "@aiSummaryComponent.props.relatedDataSource[]",
-      "required": "每个数组项",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/aiSummaryDataSourceReference"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections",
-      "path": "@aiSummaryComponent.props.relatedSections",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections/items",
-      "path": "@aiSummaryComponent.props.relatedSections[]",
-      "required": "每个数组项",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData",
-      "path": "@aiSummaryComponent.props.relatedData",
-      "required": "本分支可选",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData/additionalProperties",
-      "path": "@aiSummaryComponent.props.relatedData{key}",
-      "required": "动态键的值",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/aiSummaryRelatedDataDefinition"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedDataDefinition",
-      "path": "@aiSummaryRelatedDataDefinition",
-      "required": "类型/分支",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/source",
-      "path": "@aiSummaryRelatedDataDefinition.source",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/description",
-      "path": "@aiSummaryRelatedDataDefinition.description",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/fields",
-      "path": "@aiSummaryRelatedDataDefinition.fields",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedDataDefinition/properties/fields/items",
-      "path": "@aiSummaryRelatedDataDefinition.fields[]",
-      "required": "每个数组项",
-      "module": "components/aiSummary.md",
-      "ref": "#/definitions/aiSummaryRelatedField"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedField",
-      "path": "@aiSummaryRelatedField",
-      "required": "类型/分支",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedField/properties/field",
-      "path": "@aiSummaryRelatedField.field",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryRelatedField/properties/term",
-      "path": "@aiSummaryRelatedField.term",
-      "required": "本分支必填",
-      "module": "components/aiSummary.md"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData/propertyNames",
-      "path": "@aiSummaryComponent.props.relatedData · propertyNames",
-      "required": "条件结构",
-      "module": "components/aiSummary.md"
-    },
-    {
       "pointer": "#/definitions/tabItem/anyOf/1",
       "path": "@tabItem · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -15420,14 +15454,14 @@
       "type": "barChart",
       "file": "examples/component-barChart.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/tab-content-barchart.json"
+      "source": "page/conformance/valid/report-ai-summary-regions.json"
     },
     {
       "type": "barChart",
       "variant": "reportForecast",
       "file": "examples/component-barChart-reportForecast.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/tab-content-barchart.json"
+      "source": "page/conformance/valid/report-ai-summary-regions.json"
     },
     {
       "type": "lineChart",
@@ -16026,8 +16060,8 @@
     {
       "schemaPointer": "#/definitions/scalar/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-pieChart.json",
-      "pointer": "#/dataSources/summary/source/rows/0/channel"
+      "file": "examples/component-barChart.json",
+      "pointer": "#/dataSources/usage/source/rows/0/month"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/1",
@@ -16056,26 +16090,26 @@
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/1",
       "module": "data-sources.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/control-data"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales"
     },
     {
       "schemaPointer": "#/definitions/queryDataSource/properties/fields/anyOf/0",
       "module": "data-sources.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/control-data/fields"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/fields"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/control-data/fields/category"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/fields/stat-date"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/0",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/control-data/fields/category"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/fields/stat-date"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
@@ -16134,8 +16168,8 @@
     {
       "schemaPointer": "#/definitions/pageQuery/oneOf/0",
       "module": "queries-and-bindings.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/control-data/source/query"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/source/query"
     },
     {
       "schemaPointer": "#/definitions/queryResultWhere/anyOf/0",
@@ -17220,47 +17254,53 @@
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/0",
       "module": "components/compositeCard.md",
+      "file": "examples/report-ai-summary-regions.json",
+      "pointer": "#/sections/3/components/0/props/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/1",
+      "module": "components/compositeCard.md",
       "file": "examples/query-modes-page.json",
       "pointer": "#/sections/1/components/0/props/components/0"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/1",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/2",
       "module": "components/compositeCard.md",
       "file": "examples/chart-local-filter-page.json",
       "pointer": "#/sections/0/components/0/props/components/1"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/2",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/3",
       "module": "components/compositeCard.md",
       "file": "examples/query-modes-page.json",
       "pointer": "#/sections/1/components/0/props/components/2"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/3",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/4",
       "module": "components/compositeCard.md",
       "file": "examples/chart-local-filter-page.json",
       "pointer": "#/sections/0/components/3/props/components/1"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/4",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/5",
       "module": "components/compositeCard.md",
       "file": "examples/component-compositeCard.json",
       "pointer": "#/sections/0/components/0/props/components/0"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/5",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/6",
       "module": "components/compositeCard.md",
       "file": "examples/chart-local-filter-page.json",
       "pointer": "#/sections/0/components/2/props/components/1"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/6",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/7",
       "module": "components/compositeCard.md",
       "file": "examples/composite-page.json",
       "pointer": "#/sections/0/components/1/props/components/2"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/7",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/8",
       "module": "components/compositeCard.md",
       "file": "examples/composite-page.json",
       "pointer": "#/sections/0/components/1/props/components/3"
@@ -17296,7 +17336,7 @@
       "pointer": "#/sections/0/components/1/props/components/3/props/columns"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/8",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/9",
       "module": "components/compositeCard.md",
       "file": "examples/composite-page.json",
       "pointer": "#/sections/0/components/1/props/components/4"

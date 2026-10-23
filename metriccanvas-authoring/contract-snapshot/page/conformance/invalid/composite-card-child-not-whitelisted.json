@@ -373,7 +373,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/1/props/components/5",
-      "message": "组合卡子组件不在白名单内:table；当前只准入 filterGroup / barChart / lineChart / mapChart / metricCard / pieChart / gauge / keyValuePanel / categoryBreakdown"
+      "message": "组合卡子组件不在白名单内:table；当前只准入 aiSummary / filterGroup / barChart / lineChart / mapChart / metricCard / pieChart / gauge / keyValuePanel / categoryBreakdown"
     },
     {
       "type": "SCHEMA_ERROR",

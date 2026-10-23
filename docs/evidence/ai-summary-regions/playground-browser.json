@@ -1,0 +1,118 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/Users/moon/.codex/worktrees/ai-summary-regions/DataDashboard/apps/playground/node_modules/@playwright/test/cli.js",
+      "test",
+      "tests/ai-summary-regions.browser.ts",
+      "--reporter=json"
+    ],
+    "configFile": "/Users/moon/.codex/worktrees/ai-summary-regions/DataDashboard/apps/playground/playwright.config.ts",
+    "rootDir": "/Users/moon/.codex/worktrees/ai-summary-regions/DataDashboard/apps/playground/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/moon/.codex/worktrees/ai-summary-regions/DataDashboard/apps/playground/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/Users/moon/.codex/worktrees/ai-summary-regions/DataDashboard/apps/playground/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.browser.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.0",
+    "workers": 7,
+    "webServer": {
+      "command": "pnpm dev --host 127.0.0.1 --port 5183 --strictPort",
+      "url": "http://127.0.0.1:5183/ioc-header-review",
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [
+    {
+      "title": "ai-summary-regions.browser.ts",
+      "file": "ai-summary-regions.browser.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Report region summaries stay above their own content and isolate card/Tab data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6279,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T07:28:42.975Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5db29be9dabd07d1cff2-26d0424c0ca107d8b1df",
+          "file": "ai-summary-regions.browser.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-23T07:28:42.591Z",
+    "duration": 7413.581,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

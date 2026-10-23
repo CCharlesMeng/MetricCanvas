@@ -14,7 +14,7 @@ export function automaticQueryTableSources(page: Page): Set<string> {
   for (const component of components) {
     Object.values(component.data ?? {}).forEach(reference);
     if (component.type === 'aiSummary') {
-      Object.values(aiSummaryRelatedData(page, component.props)).forEach(value => reference(value.source));
+      Object.values(aiSummaryRelatedData(page, component.props, {}, component.id)).forEach(value => reference(value.source));
     }
   }
   for (const source of Object.values(page.dataSources)) {

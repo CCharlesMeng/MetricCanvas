@@ -182,6 +182,20 @@
         "title": "用量分析区域",
         "components": [
           {
+            "id": "usage-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "用量区域分析",
+              "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。",
+              "relatedSections": [
+                "usage-region"
+              ]
+            }
+          },
+          {
             "id": "usage-table",
             "type": "table",
             "layout": {
@@ -206,20 +220,6 @@
               },
               "title": "用量分析区域"
             }
-          },
-          {
-            "id": "usage-summary",
-            "type": "aiSummary",
-            "layout": {
-              "span": 12
-            },
-            "props": {
-              "title": "用量区域分析",
-              "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。",
-              "relatedSections": [
-                "usage-region"
-              ]
-            }
           }
         ]
       },
@@ -228,6 +228,20 @@
         "container": "plain",
         "title": "独立对照区域",
         "components": [
+          {
+            "id": "comparison-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "独立数据源分析",
+              "promptTemplate": "概括对照数据，不使用其他区域的数据。",
+              "relatedDataSources": [
+                "comparison"
+              ]
+            }
+          },
           {
             "id": "comparison-table",
             "type": "table",
@@ -252,20 +266,6 @@
                 "mode": "none"
               },
               "title": "独立对照区域"
-            }
-          },
-          {
-            "id": "comparison-summary",
-            "type": "aiSummary",
-            "layout": {
-              "span": 12
-            },
-            "props": {
-              "title": "独立数据源分析",
-              "promptTemplate": "概括对照数据，不使用其他区域的数据。",
-              "relatedDataSources": [
-                "comparison"
-              ]
             }
           }
         ]

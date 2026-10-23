@@ -1231,6 +1231,20 @@
       ]
     },
     {
+      "id": "ai-summary-regions",
+      "description": "AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部",
+      "valid": [
+        "report-ai-summary-regions"
+      ],
+      "invalid": [
+        "ai-summary-region-version",
+        "ai-summary-region-mixed-scope",
+        "ai-summary-region-not-top",
+        "ai-summary-page-not-top",
+        "ai-summary-region-not-full-width"
+      ]
+    },
+    {
       "id": "report-ai-summary",
       "description": "AI 总结仅用于 Report，非空 body 直接展示，否则需要生成提示词与范围",
       "valid": [

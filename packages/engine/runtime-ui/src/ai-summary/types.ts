@@ -15,6 +15,7 @@ export interface AiSummaryContextInfo {
   pageRevision: string;
   componentId: string;
   sectionIds: string[];
+  region?: { kind: 'section' | 'compositeCard' | 'tab'; id: string; sectionId: string };
   timeFilters: Record<string, FilterValue>;
   dataSources: AiSummaryDataSource[];
 }

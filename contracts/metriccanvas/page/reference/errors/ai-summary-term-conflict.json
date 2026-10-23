@@ -6,7 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "关联字段 gmv 的术语映射冲突:成交额/销售额",
       "paths": [
-        "/sections/0/components/4/props/relatedData/other/fields/0/term"
+        "/sections/0/components/0/props/relatedData/other/fields/0/term"
       ]
     }
   ],
@@ -14,10 +14,6 @@
     "sections": [
       {
         "components": [
-          "…",
-          "…",
-          "…",
-          "…",
           {
             "props": {
               "relatedData": {

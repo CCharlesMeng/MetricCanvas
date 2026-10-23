@@ -192,6 +192,28 @@
         "id": "main",
         "components": [
           {
+            "id": "summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "promptTemplate": "总结 GMV 表现",
+              "relatedData": {
+                "kpi": {
+                  "source": "notes",
+                  "description": "说明",
+                  "fields": [
+                    {
+                      "field": "items",
+                      "term": "明细"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
             "id": "trend",
             "type": "barChart",
             "layout": {
@@ -295,28 +317,6 @@
               "field": "body",
               "variant": "quote"
             }
-          },
-          {
-            "id": "summary",
-            "type": "aiSummary",
-            "layout": {
-              "span": 12
-            },
-            "props": {
-              "promptTemplate": "总结 GMV 表现",
-              "relatedData": {
-                "kpi": {
-                  "source": "notes",
-                  "description": "说明",
-                  "fields": [
-                    {
-                      "field": "items",
-                      "term": "明细"
-                    }
-                  ]
-                }
-              }
-            }
           }
         ]
       }
@@ -325,7 +325,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/4/props/relatedData/kpi/fields/0/field",
+      "path": "/sections/0/components/0/props/relatedData/kpi/fields/0/field",
       "message": "AI 总结暂不支持嵌套明细字段:items"
     }
   ]

@@ -1,0 +1,40 @@
+{
+  "case": "ai-summary-page-not-top",
+  "invariant": "ai-summary-regions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "独立 AI 总结必须位于页面正文顶部（Report 页头之后）",
+      "paths": [
+        "/sections/4/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "id": "page-ai",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "页面摘要",
+              "promptTemplate": "概括两个数据源的变化。",
+              "relatedDataSources": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ai-summary-page-not-top.json"
+}

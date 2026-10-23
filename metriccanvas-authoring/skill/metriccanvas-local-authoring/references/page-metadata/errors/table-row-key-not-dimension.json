@@ -6,8 +6,8 @@
       "type": "SCHEMA_ERROR",
       "message": "rowKey 字段 gmv 的 role 必须为 dimension",
       "paths": [
-        "/sections/0/components/2/data/main",
-        "/sections/0/components/2/data/compare"
+        "/sections/0/components/3/data/main",
+        "/sections/0/components/3/data/compare"
       ]
     }
   ],
@@ -15,6 +15,7 @@
     "sections": [
       {
         "components": [
+          "…",
           "…",
           "…",
           {

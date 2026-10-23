@@ -12,7 +12,7 @@ function setup() {
   const parsed = parsePage(fixture);
   if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
   const page = parsed.page;
-  const component = page.sections[2]!.components[1]!;
+  const component = page.sections[2]!.components[0]!;
   if (component.type !== 'aiSummary') throw Error('fixture');
   const filters = new Map<string, FilterValue>([['month', { type: 'timeRange', from: '2026-09', to: '2026-09' }]]);
   const context: AiSummaryRuntimeContext = { page, pageRevision: 'r1', documentKey: 'declared-document',
@@ -29,7 +29,7 @@ describe('summary input scopes and identity', () => {
     expect(hasAiSummaryBody(props)).toBe(true);
     expect(aiSummaryRelatedData(page, props)).toEqual({});
     expect(assembleGenerationInput(props, 'summary', snapshots, context)).toBeUndefined();
-    const summary = page.sections[2]!.components[1]!;
+    const summary = page.sections[2]!.components[0]!;
     if (summary.type !== 'aiSummary') throw Error('fixture summary');
     summary.props = props;
     expect([...activeSourceIds({ ...page, sections: [{ id: 'body-only', components: [summary] }] })]).toEqual([]);
@@ -77,7 +77,7 @@ describe('summary input scopes and identity', () => {
     const input = assembleGenerationInput(direct, 'summary', snapshots, context)!;
     expect(input.contextInfo.dataSources.map(source => source.id)).toEqual(['comparison', 'usage']);
     expect(assembleGenerationInput({ ...direct, relatedDataSources: ['comparison', 'usage'] }, 'summary', snapshots, context)!.key).toBe(input.key);
-    const summary = page.sections[2]!.components[1]!;
+    const summary = page.sections[2]!.components[0]!;
     if (summary.type !== 'aiSummary') throw Error('fixture summary');
     summary.props = direct;
     const summaryOnly: Page = { ...page, sections: [{ id: 'summary-only', components: [summary] }] };
@@ -120,7 +120,7 @@ describe('summary input scopes and identity', () => {
 
   it('takes only the active nested Tab from an already visibility-projected section', () => {
     const { page, props } = setup();
-    const [usage, comparison] = [page.sections[2]!.components[0]!, page.sections[3]!.components[0]!];
+    const [usage, comparison] = [page.sections[2]!.components[1]!, page.sections[3]!.components[1]!];
     if (usage.type !== 'table' || comparison.type !== 'table') throw Error('fixture tables');
     const projected: Page = { ...page, sections: [{ id: 'usage-region', components: [{ id: 'tabs', type: 'tabContainer',
       layout: { span: 12 }, props: { tabs: [{ id: 'usage', label: '用量', component: usage },

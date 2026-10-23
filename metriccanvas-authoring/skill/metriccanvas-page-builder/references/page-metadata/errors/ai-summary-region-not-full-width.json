@@ -1,0 +1,36 @@
+{
+  "case": "ai-summary-region-not-full-width",
+  "invariant": "ai-summary-regions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "顶部 AI 总结必须占满所属区域 12 列，且不能声明铺底层",
+      "paths": [
+        "/sections/3/components/0/props/components/0/layout"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                {
+                  "layout": {
+                    "span": 6
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ai-summary-region-not-full-width.json"
+}

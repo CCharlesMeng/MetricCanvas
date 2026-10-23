@@ -40,6 +40,7 @@ export const aiSummaryComponentZ = z
           inputKey: nonBlankZ(1).describe('与生成输入精确匹配的 aiSummaryInputKey(question, contextInfo) 标识')
         }).strict().describe('历史动态首屏缓存声明，仅保留读取兼容；当前用法无需 initial 或 inputKey').optional(),
         promptTemplate: nonBlankZ(1).optional(),
+        scope: z.literal('container').describe('显式总结直接拥有当前摘要的内容分区、组合卡或 Tab 页签；与其他范围声明互斥，文字不进入分析输入').optional(),
         relatedDataSources: aiSummarySourceIdsZ.describe('页面数据源 ID 数组，采用其全部非明细结果字段；优先于 relatedSections').optional(),
         relatedDataSource: aiSummarySourceIdsZ.describe('6.52 旧拼写，仅保留读取兼容；新页面使用 relatedDataSources').optional(),
         relatedSections: z.array(idZ).min(1).describe('未显式声明数据源时，收集指定内容分区的可见组件所引用的非明细数据').optional(),
@@ -59,7 +60,7 @@ componentCatalogRegistry.add(aiSummaryComponentZ, {
     'Report 已有非空 body 直接展示；否则根据提示词和区域范围生成，集成应用注入异步 generate',
     '明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配'
   ],
-  dataShape: '不声明数据槽；relatedDataSources 直接引用页面数据源 ID，或 relatedSections 收集可见区域的数据源；采用非明细结果字段',
+  dataShape: '不声明数据槽；relatedDataSources 显式引用、relatedSections 收集可见分区、或 scope: container 收集直接所属区域；采用非明细字段，文字不参与',
   authoringShape: { bindsData: false },
   title: 'optional',
   defaultSpan: 12

@@ -1,43 +1,33 @@
 {
-  "schemaVersion": "6.49",
-  "id": "tab-content-barchart",
-  "layout": "dashboard",
+  "schemaVersion": "6.58",
+  "id": "report-ai-summary-regions",
+  "layout": "report",
   "dataSources": {
-    "control-data": {
+    "usage": {
       "fields": {
-        "category": {
+        "month": {
           "type": "string",
           "role": "dimension",
-          "queryField": "chart_demo_category"
+          "label": "月份"
         },
-        "value": {
+        "tokens": {
           "type": "number",
           "role": "measure",
-          "queryField": "chart_demo_orders"
+          "label": "用量"
         }
       },
       "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "chart_demo_category"
-                ],
-                "output_metrics": [
-                  "chart_demo_orders"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {}
-              }
-            ]
+        "type": "inline",
+        "rows": [
+          {
+            "month": "2026-08",
+            "tokens": 30
+          },
+          {
+            "month": "2026-09",
+            "tokens": 42
           }
-        }
+        ]
       }
     }
   },
@@ -46,21 +36,20 @@
       "id": "main",
       "components": [
         {
-          "id": "control",
+          "id": "left-card-chart",
           "type": "barChart",
           "layout": {
-            "span": 6
+            "span": 12
           },
           "data": {
-            "main": "control-data"
+            "main": "usage"
           },
           "props": {
-            "title": "全区域对照（保持不变）",
-            "categoryField": "category",
+            "categoryField": "month",
             "series": [
               {
-                "field": "value",
-                "label": "订单对比"
+                "field": "tokens",
+                "label": "用量"
               }
             ],
             "variant": "reportForecast"

@@ -493,6 +493,33 @@
                 "label": "明细",
                 "components": [
                   {
+                    "id": "summary",
+                    "type": "aiSummary",
+                    "layout": {
+                      "span": 12
+                    },
+                    "props": {
+                      "title": "AI 总结（合成数据）",
+                      "promptTemplate": "根据合成数据给出一段简短说明。",
+                      "relatedData": {
+                        "orders": {
+                          "source": "summary-data",
+                          "description": "合成订单",
+                          "fields": [
+                            {
+                              "field": "category",
+                              "term": "类别"
+                            },
+                            {
+                              "field": "value",
+                              "term": "订单量"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
                     "id": "revenue",
                     "type": "lineChart",
                     "layout": {
@@ -540,33 +567,6 @@
                           "placeholder": "搜索客户",
                           "fields": [
                             "name"
-                          ]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "id": "summary",
-                    "type": "aiSummary",
-                    "layout": {
-                      "span": 12
-                    },
-                    "props": {
-                      "title": "AI 总结（合成数据）",
-                      "promptTemplate": "根据合成数据给出一段简短说明。",
-                      "relatedData": {
-                        "orders": {
-                          "source": "summary-data",
-                          "description": "合成订单",
-                          "fields": [
-                            {
-                              "field": "category",
-                              "term": "类别"
-                            },
-                            {
-                              "field": "value",
-                              "term": "订单量"
-                            }
                           ]
                         }
                       }

@@ -6,7 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "关联字段 nope 不在数据源 current 中",
       "paths": [
-        "/sections/0/components/4/props/relatedData/kpi/fields/0/field"
+        "/sections/0/components/0/props/relatedData/kpi/fields/0/field"
       ]
     }
   ],
@@ -14,10 +14,6 @@
     "sections": [
       {
         "components": [
-          "…",
-          "…",
-          "…",
-          "…",
           {
             "props": {
               "relatedData": {

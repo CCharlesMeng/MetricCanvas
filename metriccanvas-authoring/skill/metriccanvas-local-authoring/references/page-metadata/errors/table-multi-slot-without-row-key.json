@@ -6,7 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "多数据槽表格必须声明 rowKey",
       "paths": [
-        "/sections/0/components/2/props/rowKey"
+        "/sections/0/components/3/props/rowKey"
       ]
     }
   ],
@@ -14,6 +14,7 @@
     "sections": [
       {
         "components": [
+          "…",
           "…",
           "…",
           {

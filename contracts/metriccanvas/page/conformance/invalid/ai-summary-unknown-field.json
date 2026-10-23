@@ -192,6 +192,32 @@
         "id": "main",
         "components": [
           {
+            "id": "summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "promptTemplate": "总结 GMV 表现",
+              "relatedData": {
+                "kpi": {
+                  "source": "current",
+                  "description": "当期指标",
+                  "fields": [
+                    {
+                      "field": "nope",
+                      "term": "成交额"
+                    },
+                    {
+                      "field": "yoy",
+                      "term": "同比"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
             "id": "trend",
             "type": "barChart",
             "layout": {
@@ -295,32 +321,6 @@
               "field": "body",
               "variant": "quote"
             }
-          },
-          {
-            "id": "summary",
-            "type": "aiSummary",
-            "layout": {
-              "span": 12
-            },
-            "props": {
-              "promptTemplate": "总结 GMV 表现",
-              "relatedData": {
-                "kpi": {
-                  "source": "current",
-                  "description": "当期指标",
-                  "fields": [
-                    {
-                      "field": "nope",
-                      "term": "成交额"
-                    },
-                    {
-                      "field": "yoy",
-                      "term": "同比"
-                    }
-                  ]
-                }
-              }
-            }
           }
         ]
       }
@@ -329,7 +329,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/4/props/relatedData/kpi/fields/0/field",
+      "path": "/sections/0/components/0/props/relatedData/kpi/fields/0/field",
       "message": "关联字段 nope 不在数据源 current 中"
     }
   ]

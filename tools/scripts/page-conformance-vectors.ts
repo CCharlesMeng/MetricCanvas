@@ -1780,15 +1780,32 @@ export const invariants: InvariantDefinition[] = [
     valid: ['report-ai-summary'],
     cases: [
       { case: 'ai-summary-source-id-unknown', base: 'report-ai-summary', expect: /未知数据源:missing/,
-        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSources = ['missing']; } },
+        mutate: document => { firstComponent(document, 3, 0).props.relatedDataSources = ['missing']; } },
       { case: 'ai-summary-source-id-duplicate', base: 'report-ai-summary', expect: /数据源引用不能重复/,
-        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSources = ['comparison', 'comparison']; } },
+        mutate: document => { firstComponent(document, 3, 0).props.relatedDataSources = ['comparison', 'comparison']; } },
       { case: 'ai-summary-source-spellings-mixed', base: 'report-ai-summary', expect: /relatedDataSources 不能与旧 relatedDataSource/,
-        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = ['comparison']; } },
+        mutate: document => { firstComponent(document, 3, 0).props.relatedDataSource = ['comparison']; } },
       { case: 'ai-summary-source-id-empty', base: 'report-ai-summary', expect: /fewer than 1 items/,
-        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSources = []; } },
+        mutate: document => { firstComponent(document, 3, 0).props.relatedDataSources = []; } },
       { case: 'ai-summary-source-id-version', base: 'report-ai-summary', expect: /6.53/,
         mutate: document => { document.schemaVersion = '6.52'; } }
+    ]
+  },
+  {
+    id: 'ai-summary-regions',
+    description: 'AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部',
+    valid: ['report-ai-summary-regions'],
+    cases: [
+      { case: 'ai-summary-region-version', base: 'report-ai-summary-regions', expect: /6.58/,
+        mutate: document => { document.schemaVersion = '6.55'; } },
+      { case: 'ai-summary-region-mixed-scope', base: 'report-ai-summary-regions', expect: /不能与其他分析范围/,
+        mutate: document => { firstComponent(document, 2, 0).props.relatedDataSources = ['usage']; } },
+      { case: 'ai-summary-region-not-top', base: 'report-ai-summary-regions', expect: /区域内容顶部/,
+        mutate: document => { firstComponent(document, 3, 0).props.components.reverse(); } },
+      { case: 'ai-summary-page-not-top', base: 'report-ai-summary-regions', expect: /页面正文顶部/,
+        mutate: document => { document.sections.push(document.sections.splice(1, 1)[0]); } },
+      { case: 'ai-summary-region-not-full-width', base: 'report-ai-summary-regions', expect: /占满所属区域/,
+        mutate: document => { firstComponent(document, 3, 0).props.components[0].layout.span = 6; } }
     ]
   },
   {
@@ -1799,13 +1816,13 @@ export const invariants: InvariantDefinition[] = [
       { case: 'ai-summary-dashboard', base: 'report-ai-summary', expect: /仅支持 Report/,
         mutate: document => { document.layout = 'dashboard'; } },
       { case: 'ai-summary-unknown-section', base: 'report-ai-summary', expect: /未知内容分区/,
-        mutate: document => { firstComponent(document, 2, 1).props.relatedSections = ['missing']; } },
+        mutate: document => { firstComponent(document, 2, 0).props.relatedSections = ['missing']; } },
       { case: 'ai-summary-blank-body-without-input', base: 'report-ai-summary', expect: /非空业务提示词/,
         mutate: document => { firstComponent(document, 1, 0).props.body = '  '; } },
       { case: 'ai-summary-body-routing-version', base: 'report-ai-summary', expect: /6.54/,
         mutate: document => { document.schemaVersion = '6.53'; } },
       { case: 'ai-summary-scope-required', base: 'report-ai-summary', expect: /需要 relatedData/,
-        mutate: document => { delete firstComponent(document, 2, 1).props.relatedSections; } },
+        mutate: document => { delete firstComponent(document, 2, 0).props.relatedSections; } },
       { case: 'ai-summary-version-floor', base: 'report-ai-summary', expect: /6.51/,
         mutate: document => { document.schemaVersion = '6.50'; } }
     ]
@@ -1820,7 +1837,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /关联数据引用了未知数据源:nope/,
         mutate: (document) => {
-          firstComponent(document, 0, 4).props.relatedData.kpi.source = 'nope';
+          firstComponent(document, 0, 0).props.relatedData.kpi.source = 'nope';
         }
       },
       {
@@ -1828,7 +1845,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /关联字段 nope 不在数据源 current 中/,
         mutate: (document) => {
-          firstComponent(document, 0, 4).props.relatedData.kpi.fields[0].field = 'nope';
+          firstComponent(document, 0, 0).props.relatedData.kpi.fields[0].field = 'nope';
         }
       },
       {
@@ -1836,7 +1853,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /AI 总结暂不支持嵌套明细字段:items/,
         mutate: (document) => {
-          firstComponent(document, 0, 4).props.relatedData.kpi = {
+          firstComponent(document, 0, 0).props.relatedData.kpi = {
             source: 'notes',
             description: '说明',
             fields: [{ field: 'items', term: '明细' }]
@@ -1848,7 +1865,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /关联字段重复:gmv/,
         mutate: (document) => {
-          firstComponent(document, 0, 4).props.relatedData.kpi.fields.push({ field: 'gmv', term: '成交额' });
+          firstComponent(document, 0, 0).props.relatedData.kpi.fields.push({ field: 'gmv', term: '成交额' });
         }
       },
       {
@@ -1856,7 +1873,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /关联字段 gmv 的术语映射冲突:成交额\/销售额/,
         mutate: (document) => {
-          firstComponent(document, 0, 4).props.relatedData.other = {
+          firstComponent(document, 0, 0).props.relatedData.other = {
             source: 'current',
             description: '再引一次',
             fields: [{ field: 'gmv', term: '销售额' }]
@@ -1913,7 +1930,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /多数据槽表格必须声明 rowKey/,
         mutate: (document) => {
-          delete firstComponent(document, 0, 2).props.rowKey;
+          delete firstComponent(document, 0, 3).props.rowKey;
         }
       },
       {
@@ -1921,7 +1938,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /数据槽 compare 的数据源 previous 缺少 rowKey 字段:yoy/,
         mutate: (document) => {
-          firstComponent(document, 0, 2).props.rowKey = 'yoy';
+          firstComponent(document, 0, 3).props.rowKey = 'yoy';
         }
       },
       {
@@ -1929,7 +1946,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'forecast-page',
         expect: /rowKey 字段 gmv 的 role 必须为 dimension/,
         mutate: (document) => {
-          firstComponent(document, 0, 2).props.rowKey = 'gmv';
+          firstComponent(document, 0, 3).props.rowKey = 'gmv';
         }
       },
       {

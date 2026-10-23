@@ -22,6 +22,8 @@ const componentsDir = path.join(here, '../src/components');
 
 /** 白名单成员 → 它的纯渲染组件文件。新准入一种就必须在这里给出文件。 */
 const WIDGET_FILES: Record<string, string> = {
+  // 摘要复用现有 SDT / reportInline 呈现，运行时视图自己不增加卡面。
+  aiSummary: '../../../runtime-ui/src/ai-summary/view/AiSummaryView.svelte',
   filterGroup: '../../../runtime-ui/src/dashboard/FilterGroup.svelte',
   barChart: 'bar-chart/BarChart.svelte',
   lineChart: 'line-chart/LineChart.svelte',

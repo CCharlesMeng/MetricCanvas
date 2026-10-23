@@ -33,7 +33,7 @@ describe('独立本地创作 Skill', () => {
     const target = path.join(await mkdtemp(path.join(isolated, 'summary-')), `${page.id}.json`);
     await writeFile(target, JSON.stringify(page));
     expect(run([target]).status).toBe(0);
-    const props = page.sections[3].components[1].props;
+    const props = page.sections[3].components[0].props;
     expect(props.relatedDataSources).toEqual(['comparison']);
     delete props.relatedDataSources;
     props.relatedDataSource = ['comparison'];
@@ -48,6 +48,20 @@ describe('独立本地创作 Skill', () => {
     const old = run([target]);
     expect(old.status).toBe(1);
     expect(JSON.parse(old.stdout).errors).toContainEqual(expect.objectContaining({ message: expect.stringContaining('6.52') }));
+  });
+  it('仓外安装能校验区域摘要与顶部位置，不依赖仓库源码', async () => {
+    const page = JSON.parse(files.get('references/page-metadata/examples/report-ai-summary-regions.json')!);
+    const target = path.join(await mkdtemp(path.join(isolated, 'regions-')), `${page.id}.json`);
+    await writeFile(target, JSON.stringify(page));
+    expect(run(['--expected-layout', 'report', target]).status).toBe(0);
+    const children = page.sections[3].components[0].props.components;
+    children.reverse();
+    await writeFile(target, JSON.stringify(page));
+    const invalid = run([target]);
+    expect(invalid.status).toBe(1);
+    expect(JSON.parse(invalid.stdout).errors).toContainEqual(expect.objectContaining({
+      path: '/sections/3/components/0/props/components/2', message: expect.stringContaining('区域内容顶部')
+    }));
   });
   it.each([
     ['report', 'report', 0],

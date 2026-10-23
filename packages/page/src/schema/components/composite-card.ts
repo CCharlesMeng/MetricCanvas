@@ -9,6 +9,7 @@ import { mapChartComponentZ } from './map-chart';
 import { gaugeComponentZ } from './gauge';
 import { keyValuePanelComponentZ } from './key-value-panel';
 import { categoryBreakdownComponentZ } from './category-breakdown';
+import { aiSummaryComponentZ } from './ai-summary';
 
 /**
  * 组合卡准入的子组件白名单(ADR-0053)。独立筛选迁移补充 filterGroup 与
@@ -18,6 +19,7 @@ import { categoryBreakdownComponentZ } from './category-breakdown';
  * 这个数组是白名单的唯一真源:判别联合与校验器的可读报错都从它派生。
  */
 const compositeCardChildSchemas = [
+  aiSummaryComponentZ,
   filterGroupComponentZ,
   barChartComponentZ,
   lineChartComponentZ,

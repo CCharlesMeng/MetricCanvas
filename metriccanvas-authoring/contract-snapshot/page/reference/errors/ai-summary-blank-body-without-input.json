@@ -11,7 +11,7 @@
     },
     {
       "type": "SCHEMA_ERROR",
-      "message": "动态生成需要 relatedDataSources 或 relatedSections（旧声明仍可读取）",
+      "message": "动态生成需要 relatedDataSources 或 relatedSections 或 scope（旧声明仍可读取）",
       "paths": [
         "/sections/1/components/0/props"
       ]

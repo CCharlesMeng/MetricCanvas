@@ -6,7 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "rowKey 字段 key 的类型必须一致:string/number",
       "paths": [
-        "/sections/0/components/2/data/compare"
+        "/sections/0/components/3/data/compare"
       ]
     }
   ],
@@ -14,6 +14,7 @@
     "sections": [
       {
         "components": [
+          "…",
           "…",
           "…",
           {

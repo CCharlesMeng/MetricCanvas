@@ -1,4 +1,4 @@
-import { aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody, canonicalizeJson, resolveDataSourceFields,
+import { aiSummaryRegion, aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody, canonicalizeJson, resolveDataSourceFields,
   type AiSummaryProps, type DataSnapshot, type Page, type EffectiveQuery, type TabSelections } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValue, FilterValues } from '../../../../runtime/src';
 import type { AiSummaryContextInfo, AiSummaryDataSource } from '../types';
@@ -36,12 +36,15 @@ export function assembleGenerationInput(
   snapshots: PageDataSnapshots, runtime: AiSummaryRuntimeContext
 ): AiSummaryGenerationInput | undefined {
   if (hasAiSummaryBody(props)) return;
-  const related = aiSummaryRelatedData(runtime.page, props, runtime.tabs);
+  const region = props.scope ? regionIdentity(runtime.page, componentId) : undefined;
+  if (props.scope && !region) return;
+  const related = aiSummaryRelatedData(runtime.page, props, runtime.tabs, componentId);
   if (Object.values(related).some(value => !snapshots.get(value.source) || snapshots.get(value.source)?.status === 'loading')) return;
   const question = `${props.promptTemplate ?? ''}\n\n${OUTPUT_INSTRUCTION}`;
   const contextInfo: AiSummaryContextInfo = {
     pageId: runtime.page.id, pageRevision: runtime.pageRevision ?? '', componentId,
     sectionIds: aiSummarySourceReferences(props) || props.relatedData ? [] : [...(props.relatedSections ?? [])].sort(),
+    ...(region ? { region } : {}),
     timeFilters: headerTimeFilters(runtime),
     dataSources: Object.entries(related).sort(([a], [b]) => a.localeCompare(b))
       .map(([id, definition]) => summaryDataSource(id, definition, snapshots, runtime))
@@ -50,6 +53,11 @@ export function assembleGenerationInput(
   const key = canonicalizeJson({ document: runtime.documentKey, input: inputKey });
   return { key, owner: `${runtime.page.id}/${componentId}`, question, contextInfo,
     ...(props.initial?.inputKey === inputKey ? { initialBody: props.initial.body } : {}) };
+}
+
+function regionIdentity(page: Page, componentId: string) {
+  const region = aiSummaryRegion(page, componentId);
+  return region ? { kind: region.kind, id: region.id, sectionId: region.sectionId } : undefined;
 }
 
 type RelatedDefinition = NonNullable<AiSummaryProps['relatedData']>[string];

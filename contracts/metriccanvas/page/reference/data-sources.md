@@ -45,7 +45,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 6.44查询子表格引用的专属query源从首屏取数中排除；展开后在父行独立作用域中执行。分页、搜索和排序仅改变该实例的生效查询，不改变页面数据源定义、主页面快照或全页筛选。详见[行内子表格](components/table.md#row-expansion)。
 
 
-页面协议 6.57。结构真源为本册[schema.json](schema.json)，SHA256 `7c423995f3d706ad39a1400e73ff0e88aadbb9b02cb77a041946923a1f3f64e5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.58。结构真源为本册[schema.json](schema.json)，SHA256 `ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1181,8 +1181,8 @@ Schema位置：`#/definitions/pagedJoinSource/properties/initial/properties/view
 ## 联合分支见证（生成）
 
 - `#/definitions/dataSource/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/metrics`。
-- `#/definitions/dataSource/anyOf/1`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data`。
-- `#/definitions/queryDataSource/properties/fields/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data/fields`。
+- `#/definitions/dataSource/anyOf/1`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales`。
+- `#/definitions/queryDataSource/properties/fields/anyOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields`。
 - `#/definitions/queryDataSource/properties/fields/anyOf/1`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields`。
 - `#/definitions/dataSource/anyOf/2`：[合法完整页面](examples/paged-join-page.json)，JSON Pointer `#/dataSources/office-overview`。
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0`：[语义拒绝反例](errors/paged-join-initial-predicate-in.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。

@@ -6,7 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "数据源引用不能重复",
       "paths": [
-        "/sections/3/components/1/props/relatedDataSources"
+        "/sections/3/components/0/props/relatedDataSources"
       ]
     }
   ],
@@ -17,7 +17,6 @@
       "…",
       {
         "components": [
-          "…",
           {
             "props": {
               "relatedDataSources": [

@@ -1,0 +1,141 @@
+{
+  "case": "ai-summary-region-version",
+  "invariant": "ai-summary-regions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "AI 总结组合卡准入、显式所在区域与顶部结构约束 由 6.58 引入，文档声明的是 6.55",
+      "paths": [
+        "/sections/2/components/0",
+        "/sections/3/components/0",
+        "/sections/3/components/0/props/components/0",
+        "/sections/3/components/1",
+        "/sections/3/components/1/props/components/0",
+        "/sections/4/components/0/props/tabs/0/components/0",
+        "/sections/4/components/0/props/tabs/1/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "id": "section-ai",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "区域总结",
+              "variant": "reportInline",
+              "promptTemplate": "仅根据本区域数据概括变化。",
+              "scope": "container"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "left-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "经营区域 A",
+              "components": [
+                {
+                  "id": "left-card-summary",
+                  "type": "aiSummary",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": "区域总结",
+                    "variant": "reportInline",
+                    "promptTemplate": "仅根据本区域数据概括变化。",
+                    "scope": "container"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "right-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "经营区域 B",
+              "components": [
+                {
+                  "id": "right-card-summary",
+                  "type": "aiSummary",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": "区域总结",
+                    "variant": "reportInline",
+                    "promptTemplate": "仅根据本区域数据概括变化。",
+                    "scope": "container"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "props": {
+              "tabs": [
+                {
+                  "components": [
+                    {
+                      "id": "tab-usage-ai",
+                      "type": "aiSummary",
+                      "layout": {
+                        "span": 12
+                      },
+                      "props": {
+                        "title": "区域总结",
+                        "variant": "reportInline",
+                        "promptTemplate": "仅根据本区域数据概括变化。",
+                        "scope": "container"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "components": [
+                    {
+                      "id": "tab-comparison-ai",
+                      "type": "aiSummary",
+                      "layout": {
+                        "span": 12
+                      },
+                      "props": {
+                        "title": "区域总结",
+                        "variant": "reportInline",
+                        "promptTemplate": "仅根据本区域数据概括变化。",
+                        "scope": "container"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ai-summary-region-version.json"
+}
