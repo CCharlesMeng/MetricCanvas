@@ -1,6 +1,6 @@
 ---
 name: scoped-main-delivery
-description: 在 MetricCanvas 中按已确认文件范围提交并推送代码，保留并行工作，核对远端提交与 CI；也用于跨分支交付盘点。
+description: 在 MetricCanvas 中按已确认文件范围提交并推送代码，保留并行工作，核对远端提交与 CI；也用于跨分支交付盘点及已合并分支、工作树清理。
 ---
 
 # 范围交付
@@ -34,4 +34,6 @@ node tools/scripts/wait-ci.mjs <完整提交SHA>
 
 ## 收口
 
-保留用户需要的构建产物后，收起本任务创建且已完成使命的 worktree。原工作区和历史 worktree 的其他修改保持原状。最终答复给出提交、远端验证和 CI 链接；真实服务或部署只报告实际运行过的结论。
+每次交付按 [分支与工作树清理标准](../../../docs/agents/git-cleanup.md) 清理本任务已合入 `origin/main` 的 GitHub 分支、本地分支和 worktree；全仓清理仅在用户要求时展开。未满足条件的项保留并说明原因。
+
+最终答复给出提交、远端验证、CI 链接及清理结果；真实服务或部署只报告实际运行过的结论。

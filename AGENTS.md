@@ -34,7 +34,7 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 ### Git 交付
 
-提交、push 或跨分支交付使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。
+提交、push、跨分支交付或分支/工作树清理使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。每次交付收口执行其中的已合并分支与工作树清理，并报告保留项及原因。
 
 ### 功能与协议能力验收（必选）
 
