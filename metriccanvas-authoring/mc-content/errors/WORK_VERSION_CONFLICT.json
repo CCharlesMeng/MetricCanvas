@@ -1,0 +1,15 @@
+{
+  "code": "WORK_VERSION_CONFLICT",
+  "guidance": {
+    "message": "读取工作稿状态；并发或迟到结果不能覆盖新工作。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

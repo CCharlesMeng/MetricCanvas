@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "templateVersion": "1",
+  "defaults": {
+    "page": {
+      "layout": "report"
+    },
+    "section": {
+      "pattern": "custom",
+      "container": "panel"
+    },
+    "block": {
+      "width": "full"
+    }
+  },
+  "hardPins": {
+    "productMandatory": [
+      {
+        "id": "page-header",
+        "mustBe": "reportHeader"
+      }
+    ]
+  },
+  "scene": "usage-report",
+  "variant": "standard",
+  "sections": [
+    {
+      "id": "summary",
+      "pattern": "overview-with-trend",
+      "container": "panel",
+      "suggested": true,
+      "blocks": [
+        {
+          "id": "primary",
+          "width": "third",
+          "purpose": "primary-value",
+          "dataRole": "primaryValue"
+        },
+        {
+          "id": "trend",
+          "width": "two-thirds",
+          "purpose": "trend",
+          "dataRole": "timeSeries"
+        }
+      ]
+    },
+    {
+      "id": "detail",
+      "pattern": "detail",
+      "container": "panel",
+      "suggested": true,
+      "blocks": [
+        {
+          "id": "detail-table",
+          "width": "full",
+          "purpose": "reconciliation",
+          "dataRole": "detailRows"
+        }
+      ]
+    }
+  ]
+}

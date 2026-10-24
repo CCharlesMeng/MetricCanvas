@@ -1,0 +1,15 @@
+{
+  "code": "INSPECTION_UNAVAILABLE",
+  "guidance": {
+    "message": "输入或执行环境不足以完成该项；核对 Node、依赖和具体 issues，保留未验证状态，不把未运行当作通过。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

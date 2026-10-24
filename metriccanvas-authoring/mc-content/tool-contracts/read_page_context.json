@@ -1,0 +1,14 @@
+{
+  "name": "read_page_context",
+  "signature": "context_ref: str, target_component_id: str | None=None, use_selection: bool=False, offset: Annotated[int, Field(ge=0)]=0, limit: Annotated[int, Field(ge=1, le=50)]=20, cursor: str | None=None",
+  "description": "Read current work configuration and workVersion. No business query or save.",
+  "parameters": [
+    "context_ref",
+    "target_component_id",
+    "use_selection",
+    "offset",
+    "limit",
+    "cursor"
+  ],
+  "source": "active platform_mcp.py"
+}

@@ -1,0 +1,15 @@
+{
+  "code": "CONTENT_KEY_UNKNOWN",
+  "guidance": {
+    "message": "从本包 index 查询有效主题与 key；动态服务错误仍以真实结构化回执为准，不能猜测未知码的专门修复策略。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

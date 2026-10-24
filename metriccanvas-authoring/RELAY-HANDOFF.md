@@ -2,6 +2,8 @@
 
 目标：在本目录内完成 Relay、Java、DQE 和状态存储接线。内部只维护 `tool/metriccanvas_authoring/adapters/`；公共源码由固定 Git 提交更新。当前工厂故意返回 `ADAPTERS_NOT_CONFIGURED`，参考代码不代表真实服务已接通。
 
+本次 MC 内容与布局能力的新增接线另见 [交付说明](MC-CONTENT-OVERVIEW.md) 和 [专用 handoff](MC-CONTENT-RELAY-HANDOFF.md)。请先回复其中 R01–R12 确认项；新增脚本调用和完整产物检查沿既有平台边界集成，不能将当前 compose 描述为“检查通过后才保存”。
+
 从 2026-09-23 的 `fd98a71e` 或旧接入形态升级时，先读 [2026-09-28 同步 changelog](CHANGELOG-2026-09-28.md)，其中覆盖目录迁移、内部定向合并、预算变化和验收。
 
 本批执行改进、内部采用与回退约束见 [2026-09-29 MC 改进说明](EXECUTION-IMPROVEMENTS-2026-09-29.md)。

@@ -1,0 +1,15 @@
+{
+  "code": "CURRENT_TURN_PAGE_MISMATCH",
+  "guidance": {
+    "message": "page_id 与可信轮次不符，停止；不得修改 context_ref 来扩大范围。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

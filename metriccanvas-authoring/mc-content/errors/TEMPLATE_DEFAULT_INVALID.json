@@ -1,0 +1,15 @@
+{
+  "code": "TEMPLATE_DEFAULT_INVALID",
+  "guidance": {
+    "message": "MC 模板自身不符合当前结构或契约，需要 MC 修正作者源并重新导出完整包。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

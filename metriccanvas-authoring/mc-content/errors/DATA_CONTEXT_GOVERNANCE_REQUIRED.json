@@ -1,0 +1,15 @@
+{
+  "code": "DATA_CONTEXT_GOVERNANCE_REQUIRED",
+  "guidance": {
+    "message": "当前元数据不足以执行查询；补齐访问或治理配置，不猜单位与执行属性。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

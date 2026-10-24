@@ -1,5 +1,23 @@
 # 错误处理
 
+MC 内容与布局能力的诊断说明；下面的修复方向供调用方决策，不代表保存、发布或整包采用已经完成。
+
+- DECLARED_REQUIREMENT_GAP / MANDATORY_COMPONENT_DEGRADED：声明的必须组件未满足或被替换；对照 expected/actual 与 origin 修正计划或报告能力缺口，由 Skill 决定后续流程。
+- DATA_ROLE_BINDING_GAP：已声明的数据源、字段或容器关系未保留；依据受控字段证据核对绑定，不能用模板示例值补缺。
+- SCENE_MISMATCH_GAP：计划与模板的 pattern 显著不匹配；这是建议，可调整模板引用或保留已经确认的自由布局。
+- LAYOUT_DEFAULT_NOT_APPLICABLE：模板缺省不适用当前显式节点分支，已略过该缺省并保留显式选择；这是调整说明。
+- LAYOUT_DEFAULT_FILLED / OPTIONAL_NULL_OMITTED：分别表示补入展示缺省或省略可选 null；核对 adjustments 即可，不代表数据口径发生变化。
+- INPUT_SCHEMA_INVALID / COMPILER_INPUT_INVALID / QUERY_ARGUMENTS_INVALID / QUERY_OPTIONS_INVALID / TARGET_VERSIONS_INVALID：按 path 与 Interface 说明修正输入；参数类型和可选项固定，不接受任意表达式或路径。
+- PLAN_SECTIONS_REQUIRED / PLAN_SECTIONS_EMPTY / PLAN_SECTION_BLOCKS_REQUIRED / PLAN_SECTION_ID_REQUIRED / PLAN_BLOCK_ID_REQUIRED / PLAN_BLOCK_TYPE_INVALID / PLAN_ID_CONFLICT：提交完整计划、稳定且唯一的节点 id 和明确块类型；缺省填充不自动补回节点。
+- CATALOG_ENTRY_NOT_FOUND / TEMPLATE_REFERENCE_INVALID / TEMPLATE_VERSION_MISMATCH：查询当前 catalog 与模板标识，按 scene、variant、templateVersion 精确引用。
+- TEMPLATE_NOT_EXECUTABLE：该场景只有计划或设计资源；当前不能编译，可选择已实现模板或报告目录中声明的能力缺口。
+- TEMPLATE_INVALID / TEMPLATE_ID_CONFLICT / TEMPLATE_PIN_UNRESOLVED / TEMPLATE_DEFAULT_INVALID / TEMPLATE_PATTERN_INVALID：MC 模板自身不符合当前结构或契约，需要 MC 修正作者源并重新导出完整包。
+- CONTENT_VERSION_MISMATCH / INSPECTION_CONTENT_MISMATCH / CONTENT_ALIGNMENT_MISMATCH：内容、工具版本或检查声明不匹配；核对完整清单和真实目标版本，由调用方选取一致的包与检查上下文。
+- CONTENT_INTERFACE_UNSUPPORTED / CONTENT_MANIFEST_INVALID / CONTENT_RESOURCE_UNAVAILABLE / CONTENT_RESOURCE_MISMATCH / CONTENT_RESOURCE_SET_MISMATCH / CONTENT_SNAPSHOT_MISMATCH / RESOURCE_PATH_INVALID：安装资源不可用、不完整或不一致；整体替换并重新载入脚本，需要时由 MC 修正导出，不拼装零散文件。
+- CONTENT_KEY_UNKNOWN / CONTENT_TOPIC_UNKNOWN：从本包 index 查询有效主题与 key；动态服务错误仍以真实结构化回执为准，不能猜测未知码的专门修复策略。
+- PAGE_INSPECTION_UNAVAILABLE / PAGE_UPGRADE_UNAVAILABLE / INSPECTION_UNAVAILABLE：输入或执行环境不足以完成该项；核对 Node、依赖和具体 issues，保留未验证状态，不把未运行当作通过。
+- ASSEMBLY_INPUT_INVALID / INSPECTION_SPEC_INVALID / UPGRADE_INPUT_REQUIRED：程序通道提供完整产物和同次编译的检查声明，文件升级明确指定输入；完整页面不经模型回传。
+
 - ANALYSIS_PLAN_NOT_CONFIRMED：回到计划审核，由程序取得用户确认；不重复查询。
 - MODEL_EVIDENCE_UNAVAILABLE：模型证据通道未授权，不退回读取完整产物。
 - METRIC_DEFINITION_CONFLICT：说明具体口径矛盾，仅停止受影响项；不偷偷修公式。

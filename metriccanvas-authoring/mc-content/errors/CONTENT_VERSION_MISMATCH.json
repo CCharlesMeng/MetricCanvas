@@ -1,0 +1,15 @@
+{
+  "code": "CONTENT_VERSION_MISMATCH",
+  "guidance": {
+    "message": "内容、工具版本或检查声明不匹配；核对完整清单和真实目标版本，由调用方选取一致的包与检查上下文。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

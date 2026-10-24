@@ -1,0 +1,15 @@
+{
+  "code": "CURRENT_PAGE_UNAVAILABLE",
+  "guidance": {
+    "message": "Java 当前读取未接通或不可达，停止编辑，不沿用缓存基线。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

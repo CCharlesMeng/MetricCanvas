@@ -1,0 +1,10 @@
+{
+  "name": "extract_page_parameters",
+  "signature": "context_ref: str, artifact_ref: str | None=None",
+  "description": "Extract verified parameter choices from current work or a scoped artifact.",
+  "parameters": [
+    "context_ref",
+    "artifact_ref"
+  ],
+  "source": "active platform_mcp.py"
+}

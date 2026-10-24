@@ -1,5 +1,10 @@
 {
   "bundleVersion": "0.3.1",
+  "mcContent": {
+    "directory": "mc-content",
+    "manifest": "mc-content.version.json",
+    "interfaceVersion": "1.0"
+  },
   "status": "local-deployment-readiness-verified-internal-not-run",
   "skill": {
     "entrypoint": "skill/metriccanvas-page-builder/SKILL.md"

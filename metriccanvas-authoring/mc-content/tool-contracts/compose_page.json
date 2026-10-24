@@ -1,0 +1,1249 @@
+{
+  "name": "compose_page",
+  "signature": "context_ref: str, request: ComposeRequest, expected_version: Annotated[int, Field(ge=0)]=0",
+  "description": "Create sections; sources maps source IDs directly to query_data resultRef strings. Optional display deviations use defaults, invalid blocks are isolated. Saves a valid draft internally.",
+  "parameters": [
+    "context_ref",
+    "request",
+    "expected_version"
+  ],
+  "source": "active platform_mcp.py",
+  "requestSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 8000
+      },
+      "layout": {
+        "enum": [
+          "report",
+          "dashboard"
+        ]
+      },
+      "sources": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "maxProperties": 6,
+        "additionalProperties": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "sections": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 12,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8000
+            },
+            "pattern": {
+              "enum": [
+                "overview-with-trend",
+                "comparison",
+                "distribution",
+                "focus-objects",
+                "detail",
+                "explanation",
+                "custom"
+              ]
+            },
+            "container": {
+              "enum": [
+                "plain",
+                "panel",
+                "card"
+              ]
+            },
+            "blocks": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 24,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 8000
+                      },
+                      "type": {
+                        "const": "text"
+                      },
+                      "body": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 8000
+                      },
+                      "purpose": {
+                        "enum": [
+                          "primary-value",
+                          "change",
+                          "trend",
+                          "distribution",
+                          "reconciliation",
+                          "explanation"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "body"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 8000
+                      },
+                      "width": {
+                        "enum": [
+                          "full",
+                          "half",
+                          "third",
+                          "two-thirds"
+                        ]
+                      },
+                      "type": {
+                        "const": "data"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "component": {
+                        "enum": [
+                          "barChart",
+                          "categoryBreakdown",
+                          "gauge",
+                          "keyValuePanel",
+                          "lineChart",
+                          "metricCard",
+                          "pieChart",
+                          "rankingCard",
+                          "rankingDetailCard",
+                          "table"
+                        ]
+                      },
+                      "fields": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 30,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        }
+                      },
+                      "match": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "equals": {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "equals"
+                        ]
+                      },
+                      "purpose": {
+                        "enum": [
+                          "primary-value",
+                          "change",
+                          "trend",
+                          "comparison",
+                          "distribution",
+                          "ranking",
+                          "reconciliation"
+                        ]
+                      },
+                      "presentation": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "metric-summary"
+                              },
+                              "metrics": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 3,
+                                "items": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "field": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 128
+                                    },
+                                    "label": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 500
+                                    },
+                                    "changes": {
+                                      "type": "array",
+                                      "maxItems": 3,
+                                      "items": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "field": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 128
+                                          },
+                                          "label": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 500
+                                          },
+                                          "evidenceRef": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 128
+                                          }
+                                        },
+                                        "required": [
+                                          "field",
+                                          "label",
+                                          "evidenceRef"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "field"
+                                  ]
+                                }
+                              },
+                              "variant": {
+                                "enum": [
+                                  "compactSummary",
+                                  "compactStrip"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "metrics"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "bar-comparison"
+                              },
+                              "horizontal": {
+                                "type": "boolean"
+                              },
+                              "stacked": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "kind"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "record-list"
+                              },
+                              "density": {
+                                "enum": [
+                                  "standard",
+                                  "compact"
+                                ]
+                              },
+                              "subtitle": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              "columns": {
+                                "type": "array",
+                                "maxItems": 30,
+                                "items": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "field": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 500
+                                    },
+                                    "align": {
+                                      "enum": [
+                                        "left",
+                                        "right"
+                                      ]
+                                    },
+                                    "visual": {
+                                      "enum": [
+                                        "plain",
+                                        "signed"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "field"
+                                  ]
+                                }
+                              },
+                              "toolbar": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "search": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "fields"
+                                    ],
+                                    "properties": {
+                                      "fields": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 500
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 64,
+                                        "uniqueItems": true
+                                      },
+                                      "placeholder": {
+                                        "type": "string",
+                                        "maxLength": 4000
+                                      }
+                                    }
+                                  },
+                                  "export": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "format"
+                                    ],
+                                    "properties": {
+                                      "format": {
+                                        "const": "xlsx"
+                                      },
+                                      "filename": {
+                                        "type": "string",
+                                        "maxLength": 4000
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "required": [
+                              "kind"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "source",
+                      "component",
+                      "fields",
+                      "title"
+                    ]
+                  }
+                ]
+              }
+            },
+            "businessQuestion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "businessObject": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "distinctFrom": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "id",
+            "pattern",
+            "blocks"
+          ]
+        }
+      },
+      "dateFilters": {
+        "type": "array",
+        "maxItems": 8,
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "dependsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "uniqueItems": true,
+                  "maxItems": 50
+                },
+                "type": {
+                  "const": "add_date_filter"
+                },
+                "filterId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "declaration": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "timePoint"
+                        },
+                        "granularity": {
+                          "enum": [
+                            "month",
+                            "date"
+                          ]
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "default": {
+                          "type": "string"
+                        },
+                        "initialParam": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "hint": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object"
+                            }
+                          ]
+                        },
+                        "clearOnChangeOf": {
+                          "type": "array",
+                          "minItems": 1,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "uniqueItems": true
+                        },
+                        "min": {
+                          "type": "string"
+                        },
+                        "max": {
+                          "type": "string"
+                        },
+                        "disableFuture": {
+                          "type": "boolean"
+                        },
+                        "availability": {
+                          "type": "object"
+                        },
+                        "blockedRanges": {
+                          "type": "array"
+                        },
+                        "presets": {
+                          "type": "array"
+                        },
+                        "modes": {
+                          "type": "array"
+                        },
+                        "defaultMode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "granularity"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "timeRange"
+                        },
+                        "precision": {
+                          "enum": [
+                            "month",
+                            "date",
+                            "datetime"
+                          ]
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "default": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "from": {
+                                  "type": "string"
+                                },
+                                "to": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "from",
+                                "to"
+                              ]
+                            },
+                            {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "mode": {
+                                      "enum": [
+                                        "year",
+                                        "quarter",
+                                        "month"
+                                      ]
+                                    },
+                                    "value": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "mode"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "mode": {
+                                      "const": "last12Months"
+                                    }
+                                  },
+                                  "required": [
+                                    "mode"
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        "initialParam": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "display": {
+                          "const": "period",
+                          "enum": [
+                            "period",
+                            "modes"
+                          ]
+                        },
+                        "initialMode": {
+                          "enum": [
+                            "year",
+                            "quarter",
+                            "month"
+                          ]
+                        },
+                        "hint": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object"
+                            }
+                          ]
+                        },
+                        "clearOnChangeOf": {
+                          "type": "array",
+                          "minItems": 1,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "uniqueItems": true
+                        },
+                        "min": {
+                          "type": "string"
+                        },
+                        "max": {
+                          "type": "string"
+                        },
+                        "disableFuture": {
+                          "type": "boolean"
+                        },
+                        "availability": {
+                          "type": "object"
+                        },
+                        "blockedRanges": {
+                          "type": "array"
+                        },
+                        "presets": {
+                          "type": "array"
+                        },
+                        "modes": {
+                          "type": "array"
+                        },
+                        "defaultMode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "bindings": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "dataSourceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "target": {
+                        "enum": [
+                          "time",
+                          "timePoint"
+                        ]
+                      },
+                      "queryField": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "valueFormat": {
+                        "enum": [
+                          "iso",
+                          "compact"
+                        ]
+                      },
+                      "window": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "period"
+                              },
+                              "unit": {
+                                "enum": [
+                                  "day",
+                                  "month",
+                                  "year"
+                                ]
+                              },
+                              "offset": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "unit"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "lastN"
+                              },
+                              "unit": {
+                                "enum": [
+                                  "day",
+                                  "month"
+                                ]
+                              },
+                              "n": {
+                                "type": "integer",
+                                "minimum": 1
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "unit",
+                              "n"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "enum": [
+                                  "yearToDate",
+                                  "monthToDate"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "kind"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "dataSourceId",
+                      "target"
+                    ]
+                  }
+                },
+                "headerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "filterId",
+                "declaration",
+                "bindings"
+              ]
+            }
+          ]
+        }
+      },
+      "pagedJoins": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "pagedJoin"
+            },
+            "rowKey": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "domainMember": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "members": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "key": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      },
+                      "queryField": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "field",
+                      "queryField"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "canSelectPage": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "source",
+                  "key",
+                  "canSelectPage"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "projection": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "member": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "field": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  }
+                },
+                "required": [
+                  "member",
+                  "field"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "ordering": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "asc",
+                          "desc"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "field",
+                      "direction"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "sortableFields": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  }
+                },
+                "nulls": {
+                  "type": "string",
+                  "const": "last"
+                }
+              },
+              "required": [
+                "default",
+                "sortableFields",
+                "nulls"
+              ],
+              "additionalProperties": false
+            },
+            "pagination": {
+              "type": "object",
+              "properties": {
+                "pageSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              },
+              "required": [
+                "pageSize"
+              ],
+              "additionalProperties": false
+            },
+            "fallback": {
+              "type": "object",
+              "properties": {
+                "maxRows": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              },
+              "required": [
+                "maxRows"
+              ],
+              "additionalProperties": false
+            },
+            "onMissing": {
+              "type": "string",
+              "const": "null"
+            },
+            "ordinalField": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "initial": {
+              "type": "object",
+              "properties": {
+                "capturedAt": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        {
+                          "maxItems": 100,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "totalCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "view": {
+                  "type": "object",
+                  "properties": {
+                    "pageIndex": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "sort": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                          },
+                          "direction": {
+                            "type": "string",
+                            "enum": [
+                              "asc",
+                              "desc"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "direction"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "predicates": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              },
+                              "op": {
+                                "type": "string",
+                                "const": "in"
+                              },
+                              "values": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "op",
+                              "values"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              },
+                              "op": {
+                                "type": "string",
+                                "enum": [
+                                  "gte",
+                                  "lte"
+                                ]
+                              },
+                              "value": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "op",
+                              "value"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              },
+                              "op": {
+                                "type": "string",
+                                "const": "dateRange"
+                              },
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "op"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "search": {
+                      "type": "object",
+                      "properties": {
+                        "fields": {
+                          "minItems": 1,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                          }
+                        },
+                        "query": {
+                          "type": "string"
+                        },
+                        "match": {
+                          "type": "string",
+                          "const": "equals"
+                        }
+                      },
+                      "required": [
+                        "fields",
+                        "query"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "pageIndex",
+                    "pageSize",
+                    "sort",
+                    "predicates"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "capturedAt",
+                "rows",
+                "totalCount",
+                "view"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type",
+            "rowKey",
+            "domainMember",
+            "members",
+            "projection",
+            "ordering",
+            "pagination",
+            "fallback",
+            "onMissing"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "title",
+      "sources",
+      "sections"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "code": "CURRENT_PAGE_STALE",
+  "guidance": {
+    "message": "当前修订或定义已改变，由集成程序重新读取并建立新轮次；不自动重放旧 operations。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

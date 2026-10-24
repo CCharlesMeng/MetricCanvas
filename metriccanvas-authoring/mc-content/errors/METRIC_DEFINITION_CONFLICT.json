@@ -1,0 +1,15 @@
+{
+  "code": "METRIC_DEFINITION_CONFLICT",
+  "guidance": {
+    "message": "说明具体口径矛盾，仅停止受影响项；不偷偷修公式。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

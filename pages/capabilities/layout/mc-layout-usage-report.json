@@ -1,0 +1,145 @@
+{
+  "id": "mc-layout-usage-report",
+  "schemaVersion": "6.58",
+  "layout": "report",
+  "dataSources": {
+    "summary": {
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "合成用量",
+          "unit": "次"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "amount": 50
+          }
+        ]
+      }
+    },
+    "trend": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "合成用量",
+          "unit": "次"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "2026-01",
+            "amount": 20
+          },
+          {
+            "month": "2026-02",
+            "amount": 30
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "usage-report｜合成布局验收"
+          }
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "container": "panel",
+      "components": [
+        {
+          "id": "primary",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "title": "合成用量",
+            "rows": [
+              {
+                "label": "合成用量",
+                "valueField": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "trend",
+          "type": "lineChart",
+          "layout": {
+            "span": 8
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "合成趋势",
+            "xField": "month",
+            "series": [
+              {
+                "field": "amount",
+                "label": "合成用量"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail",
+      "container": "panel",
+      "components": [
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "合成明细",
+            "columns": [
+              {
+                "field": "month",
+                "title": "月份"
+              },
+              {
+                "field": "amount",
+                "title": "合成用量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

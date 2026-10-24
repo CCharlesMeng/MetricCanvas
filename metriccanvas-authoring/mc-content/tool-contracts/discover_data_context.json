@@ -1,0 +1,12 @@
+{
+  "name": "discover_data_context",
+  "signature": "context_ref: str, query: str='', limit: Annotated[int, Field(ge=1, le=50)]=10, detail_refs: list[str] | None=None",
+  "description": "Find canonical business domains, metrics and dimension queryBinding values. Reuse known definitions and version within this turn; discover again only for missing definitions.",
+  "parameters": [
+    "context_ref",
+    "query",
+    "limit",
+    "detail_refs"
+  ],
+  "source": "active platform_mcp.py"
+}

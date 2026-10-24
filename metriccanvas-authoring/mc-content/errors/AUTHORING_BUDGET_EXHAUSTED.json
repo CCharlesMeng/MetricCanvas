@@ -1,0 +1,15 @@
+{
+  "code": "AUTHORING_BUDGET_EXHAUSTED",
+  "guidance": {
+    "message": "终止对应分支，说明未完成部分。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

@@ -1,0 +1,15 @@
+{
+  "code": "UPGRADE_INPUT_REQUIRED",
+  "guidance": {
+    "message": "程序通道提供完整产物和同次编译的检查声明，文件升级明确指定输入；完整页面不经模型回传。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

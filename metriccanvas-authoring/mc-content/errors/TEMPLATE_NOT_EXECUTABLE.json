@@ -1,0 +1,15 @@
+{
+  "code": "TEMPLATE_NOT_EXECUTABLE",
+  "guidance": {
+    "message": "该场景只有计划或设计资源；当前不能编译，可选择已实现模板或报告目录中声明的能力缺口。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

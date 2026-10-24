@@ -1,0 +1,15 @@
+{
+  "code": "PREVIEW_ARTIFACT_MISMATCH",
+  "guidance": {
+    "message": "保存与预览分别报告，只修复匹配产物交付。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

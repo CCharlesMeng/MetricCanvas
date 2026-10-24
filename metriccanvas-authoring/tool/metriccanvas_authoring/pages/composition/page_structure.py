@@ -12,24 +12,11 @@ from metriccanvas_authoring.pages.composition.page_building import (
 )
 from metriccanvas_authoring.data.execution import DqeExecutionResult
 
-ROOT = bundle_root()
-PATTERNS = json.loads((ROOT / 'contracts/authored/section-patterns.json').read_text())
-PLAN_SCHEMA = json.loads((ROOT / 'contracts/authored/page-structure-plan.schema.json').read_text())
-CURRENT_PLAN_SCHEMA, = PLAN_SCHEMA['oneOf']
-for version_schema in PLAN_SCHEMA['oneOf']:
-    version_schema['properties']['scene']['enum'] = list(PATTERNS['scenes'])
-    section_schema = version_schema['properties']['sections']['items']
-    section_schema['properties']['pattern']['enum'] = list(PATTERNS['patterns'])
-SECTION = CURRENT_PLAN_SCHEMA['properties']['sections']['items']
-BLOCK = SECTION['properties']['blocks']['items']
-TEXT_BLOCK, DATA_BLOCK = BLOCK['oneOf']
-ID = DATA_BLOCK['properties']['id']
-TEXT = TEXT_BLOCK['properties']['body']
-NAME = CURRENT_PLAN_SCHEMA['properties']['dataContextVersion']
-
-
-def obj(properties, required):
-    return {'type': 'object', 'additionalProperties': False, 'properties': properties, 'required': required}
+# Re-export existing names for callers; the build exporter shares this active contract.
+from metriccanvas_authoring.pages.compose_contract import (
+    ROOT, PATTERNS, PLAN_SCHEMA, CURRENT_PLAN_SCHEMA, SECTION, BLOCK,
+    TEXT_BLOCK, DATA_BLOCK, ID, TEXT, NAME, obj,
+)
 
 
 class StructureError(Exception):

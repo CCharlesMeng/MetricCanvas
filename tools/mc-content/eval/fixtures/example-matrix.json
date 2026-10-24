@@ -1,0 +1,38 @@
+{
+  "note": "Sample inputs only; caller owns the capability matrix and adoption criteria.",
+  "checks": [
+    {
+      "id": "text-plan",
+      "operation": "compile",
+      "input": {
+        "templateRef": {
+          "scene": "business-report",
+          "variant": "standard",
+          "templateVersion": "1"
+        },
+        "plan": {
+          "title": "合成验收",
+          "sources": {},
+          "sections": [
+            {
+              "id": "summary",
+              "blocks": [
+                {
+                  "id": "note",
+                  "type": "text",
+                  "body": "结构验收"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expectedStatus": "ok"
+    },
+    {
+      "id": "deployment-save",
+      "operation": "deployment",
+      "expectedStatus": "ok"
+    }
+  ]
+}

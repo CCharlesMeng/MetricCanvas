@@ -1,0 +1,15 @@
+{
+  "code": "QUERY_VALIDATION_CONFIG_ERROR",
+  "guidance": {
+    "message": "交部署方修复可信配置；模型不能切换校验策略或伪造参数。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

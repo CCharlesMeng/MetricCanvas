@@ -1,0 +1,15 @@
+{
+  "code": "STRUCTURE_BLOCK_INVALID",
+  "guidance": {
+    "message": "按路径修正失败项，复用成功结果；页面已保存时用 edit_page 修复。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

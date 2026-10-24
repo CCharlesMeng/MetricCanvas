@@ -1,0 +1,553 @@
+{
+  "analyzer": "radon/6.0.1",
+  "baseline": [
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "sha256",
+      "line": 16,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "read_json",
+      "line": 20,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "verify_manifest",
+      "line": 24,
+      "complexity": 4
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "markdown_anchors",
+      "line": 41,
+      "complexity": 6
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "validate_skills",
+      "line": 52,
+      "complexity": 59
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "main",
+      "line": 141,
+      "complexity": 12
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "function": "incomplete_initial",
+      "line": 39,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "function": "pack_default_widths",
+      "line": 44,
+      "complexity": 5
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "function": "pack_default_widths.flush",
+      "line": 49,
+      "complexity": 6
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "function": "compose",
+      "line": 61,
+      "complexity": 42
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "function": "edit",
+      "line": 127,
+      "complexity": 34
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "obj",
+      "line": 31,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "validate_plan",
+      "line": 44,
+      "complexity": 24
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "field_id",
+      "line": 72,
+      "complexity": 5
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "block_component",
+      "line": 80,
+      "complexity": 33
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "scope_note",
+      "line": 152,
+      "complexity": 5
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "scope_notes",
+      "line": 160,
+      "complexity": 5
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "StructureError.__init__",
+      "line": 36,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "function": "StructureError.issue",
+      "line": 40,
+      "complexity": 1
+    }
+  ],
+  "functions": [
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "digest",
+      "line": 14,
+      "complexity": 1
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "package_root",
+      "line": 18,
+      "complexity": 2
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "resource",
+      "line": 22,
+      "complexity": 4
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "read_json",
+      "line": 31,
+      "complexity": 2
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "manifest_files",
+      "line": 38,
+      "complexity": 10
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "verify_package",
+      "line": 55,
+      "complexity": 13
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "index_page",
+      "line": 77,
+      "complexity": 7
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "atom_content",
+      "line": 89,
+      "complexity": 11
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "query_content",
+      "line": 104,
+      "complexity": 11
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "function": "ContentError.__init__",
+      "line": 9,
+      "complexity": 3
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_inspection.py",
+      "function": "inspect_schema",
+      "line": 9,
+      "complexity": 3
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_inspection.py",
+      "function": "component_nodes",
+      "line": 21,
+      "complexity": 3
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_inspection.py",
+      "function": "bound_field_gap",
+      "line": 26,
+      "complexity": 8
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_inspection.py",
+      "function": "binding_gap",
+      "line": 34,
+      "complexity": 10
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_inspection.py",
+      "function": "inspect_assembly",
+      "line": 47,
+      "complexity": 15
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "issue",
+      "line": 8,
+      "complexity": 1
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "schema_issues",
+      "line": 12,
+      "complexity": 2
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "resolve_template",
+      "line": 17,
+      "complexity": 13
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "validate_template",
+      "line": 37,
+      "complexity": 11
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "validate_common_defaults",
+      "line": 56,
+      "complexity": 6
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "validate_block_defaults",
+      "line": 68,
+      "complexity": 9
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "fill_fields",
+      "line": 78,
+      "complexity": 9
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "fill_section",
+      "line": 94,
+      "complexity": 13
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "fill_plan",
+      "line": 113,
+      "complexity": 11
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "inspection_spec",
+      "line": 131,
+      "complexity": 7
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "declared_gaps",
+      "line": 141,
+      "complexity": 10
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "function": "compile_layout",
+      "line": 156,
+      "complexity": 11
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_content.py",
+      "function": "upgrade_page",
+      "line": 12,
+      "complexity": 4
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_content.py",
+      "function": "evaluate",
+      "line": 27,
+      "complexity": 9
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_content.py",
+      "function": "main",
+      "line": 47,
+      "complexity": 10
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "function": "tool_contracts",
+      "line": 10,
+      "complexity": 6
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "function": "error_guidance",
+      "line": 19,
+      "complexity": 11
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "function": "call_error_codes",
+      "line": 35,
+      "complexity": 8
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "function": "dictionary_error_codes",
+      "line": 43,
+      "complexity": 7
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "function": "literal_errors",
+      "line": 49,
+      "complexity": 6
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "function": "export",
+      "line": 63,
+      "complexity": 2
+    },
+    {
+      "file": "tools/scripts/mc-content-fixtures.py",
+      "function": "report_example",
+      "line": 14,
+      "complexity": 6
+    },
+    {
+      "file": "tools/scripts/mc-content-fixtures.py",
+      "function": "results",
+      "line": 39,
+      "complexity": 6
+    },
+    {
+      "file": "tools/scripts/mc-content-fixtures.py",
+      "function": "demo",
+      "line": 71,
+      "complexity": 2
+    },
+    {
+      "file": "tools/scripts/mc-content-fixtures.py",
+      "function": "main",
+      "line": 87,
+      "complexity": 6
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/compose_contract.py",
+      "function": "obj",
+      "line": 26,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "sha256",
+      "line": 16,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "read_json",
+      "line": 20,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "verify_manifest",
+      "line": 24,
+      "complexity": 4
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "markdown_anchors",
+      "line": 41,
+      "complexity": 6
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "validate_skills",
+      "line": 52,
+      "complexity": 59
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "validate_mc_content",
+      "line": 141,
+      "complexity": 8
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "function": "main",
+      "line": 162,
+      "complexity": 12
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "envelope",
+      "line": 19,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "page",
+      "line": 25,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_snapshot_matches_actual_compose_contract",
+      "line": 34,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_query_atom_and_paginated_index",
+      "line": 41,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_product_error_sets_are_exported_without_becoming_a_deployment_claim",
+      "line": 52,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_oversized_contract_is_not_silently_truncated",
+      "line": 60,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_compiler_preserves_explicit_fields_and_never_restores_deleted_nodes",
+      "line": 69,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_null_omission_does_not_inherit_template_width",
+      "line": 80,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_explicit_text_choice_does_not_inherit_an_illegal_data_purpose",
+      "line": 88,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_no_hidden_repair_of_bad_fields_or_missing_blocks",
+      "line": 100,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_template_reference_and_target_versions_are_explicit",
+      "line": 108,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_planned_ioc_does_not_compile",
+      "line": 116,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_all_executable_variants_and_unknown_alignment_fields",
+      "line": 121,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_user_requirement_is_reported_without_changing_plan",
+      "line": 129,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_artifact_checks_do_not_save_or_change_document",
+      "line": 137,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_mixed_inspection_context_reports_unavailable",
+      "line": 148,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_field_selection_cannot_pass_just_because_source_still_contains_field",
+      "line": 155,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_evaluation_reports_scope_without_adoption_or_exemptions",
+      "line": 174,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_complete_copy_runs_outside_repository_and_detects_tampering",
+      "line": 180,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_schema_compatibility_is_not_version_string_replacement",
+      "line": 192,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_future_schema_releases_use_product_policy_without_an_mc_version_copy",
+      "line": 205,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_known_old_header_semantics_require_explicit_migration",
+      "line": 215,
+      "complexity": 2
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_manifest_alignment_cannot_be_changed_without_replacing_the_package",
+      "line": 223,
+      "complexity": 1
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+      "function": "McContentTest.test_schema_upgrade_preserves_original_and_refuses_existing_destination",
+      "line": 234,
+      "complexity": 1
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "catalogVersion": "1",
+  "schemaVersion": 1,
+  "scenes": [
+    {
+      "scene": "business-report",
+      "executable": true,
+      "variants": [
+        {
+          "variant": "compact",
+          "templateFile": "standards/business-report-compact.json"
+        },
+        {
+          "variant": "standard",
+          "templateFile": "standards/business-report-standard.json"
+        },
+        {
+          "variant": "rich",
+          "templateFile": "standards/business-report-rich.json"
+        }
+      ]
+    },
+    {
+      "scene": "usage-report",
+      "executable": true,
+      "variants": [
+        {
+          "variant": "standard",
+          "templateFile": "standards/usage-report-standard.json"
+        }
+      ]
+    },
+    {
+      "scene": "ioc-overview",
+      "executable": false,
+      "executableReason": "columnTracks creation is unavailable; mapChart/tabContainer/compositeCard automatic assembly is unavailable; source reference capacity is limited by the active contract.",
+      "variants": [
+        {
+          "variant": "standard",
+          "templateFile": "standards/ioc-overview-standard.json"
+        }
+      ]
+    }
+  ]
+}

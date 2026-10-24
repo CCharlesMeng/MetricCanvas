@@ -1,0 +1,92 @@
+................................/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/tempfile.py:940: ResourceWarning: Implicitly cleaning up <TemporaryDirectory '/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/tmph6_gbtct'>
+  _warnings.warn(warn_message, ResourceWarning)
+.../Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/tempfile.py:940: ResourceWarning: Implicitly cleaning up <TemporaryDirectory '/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/tmpqjv8kezt'>
+  _warnings.warn(warn_message, ResourceWarning)
+..../Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/tempfile.py:940: ResourceWarning: Implicitly cleaning up <TemporaryDirectory '/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/tmpv_wkoulj'>
+  _warnings.warn(warn_message, ResourceWarning)
+.......
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.7                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                 🖥  Server:      metriccanvas-content, 3.4.7                  │
+│                 🚀 Deploy free: https://horizon.prefect.io                   │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                          🎉 Update available: 4.1.3                          │
+│                      Run: pip install --upgrade fastmcp                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[10/24/26 12:16:23] INFO     Starting MCP server                transport.py:241
+                             'metriccanvas-content' with
+                             transport 'stdio'
+.Close running child process: kill <_UnixSubprocessTransport closed pid=58294 running stdin=<_UnixWritePipeTransport closed fd=7 closed> stdout=<_UnixReadPipeTransport closed fd=8 closed>>
+..
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.7                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                 🖥  Server:      metriccanvas-content, 3.4.7                  │
+│                 🚀 Deploy free: https://horizon.prefect.io                   │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                          🎉 Update available: 4.1.3                          │
+│                      Run: pip install --upgrade fastmcp                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[10/24/26 12:16:23] INFO     Starting MCP server                transport.py:241
+                             'metriccanvas-content' with
+                             transport 'stdio'
+.Close running child process: kill <_UnixSubprocessTransport closed pid=58295 running stdin=<_UnixWritePipeTransport closed fd=7 closed> stdout=<_UnixReadPipeTransport closed fd=8 closed>>
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.7                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                 🖥  Server:      metriccanvas-content, 3.4.7                  │
+│                 🚀 Deploy free: https://horizon.prefect.io                   │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                          🎉 Update available: 4.1.3                          │
+│                      Run: pip install --upgrade fastmcp                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[10/24/26 12:16:23] INFO     Starting MCP server                transport.py:241
+                             'metriccanvas-content' with
+                             transport 'stdio'
+.Close running child process: kill <_UnixSubprocessTransport closed pid=58296 running stdin=<_UnixWritePipeTransport closed fd=7 closed> stdout=<_UnixReadPipeTransport closed fd=8 closed>>
+
+----------------------------------------------------------------------
+Ran 51 tests in 5.818s
+
+OK

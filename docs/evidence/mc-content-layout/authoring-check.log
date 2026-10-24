@@ -1,0 +1,10 @@
+$ pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/mc-content-layout/DataDashboard
+
+
+ Test Files  5 passed (5)
+      Tests  171 passed (171)
+   Start at  11:49:03
+   Duration  420.33s (transform 1.15s, setup 0ms, import 6.16s, tests 436.98s, environment 0ms)

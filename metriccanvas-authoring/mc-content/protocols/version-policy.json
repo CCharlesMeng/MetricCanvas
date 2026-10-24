@@ -1,0 +1,658 @@
+{
+  "major": 6,
+  "minor": 58,
+  "current": "6.58",
+  "capabilities": {
+    "query-dimension-measures": {
+      "minor": 56,
+      "description": "DQE output_dims 数值输出显式声明页面度量",
+      "legacyReadable": false
+    },
+    "query-mode-field-mappings": {
+      "minor": 57,
+      "description": "查询分支原始响应字段到稳定页面字段的显式映射",
+      "legacyReadable": false
+    },
+    "ai-summary-container-scope": {
+      "minor": 58,
+      "description": "AI 总结组合卡准入、显式所在区域与顶部结构约束",
+      "legacyReadable": false
+    },
+    "ai-summary-body-routing": {
+      "minor": 54,
+      "description": "AI 总结由非空 body 直接决定展示，无正文时动态生成",
+      "legacyReadable": false
+    },
+    "ai-summary-plural-source-references": {
+      "minor": 53,
+      "description": "AI 总结数据源数组采用复数 relatedDataSources",
+      "legacyReadable": false
+    },
+    "ai-summary-source-references": {
+      "minor": 52,
+      "description": "AI 总结直接引用页面数据源 ID",
+      "legacyReadable": false
+    },
+    "dqe-object-query": {
+      "minor": 55,
+      "description": "DQE 对象查询、字段条件与显式时间绑定",
+      "legacyReadable": false
+    },
+    "ai-summary-report-modes": {
+      "minor": 51,
+      "description": "Report 双模式区域 AI 总结与会话缓存",
+      "legacyReadable": false
+    },
+    "tab-content-layout": {
+      "minor": 49,
+      "description": "Tab 混合内容、显式栅格与按需呈现",
+      "legacyReadable": false
+    },
+    "table-row-ordinal-column": {
+      "minor": 48,
+      "description": "表格独立序号列，排序筛选后重编号且跨页连续",
+      "legacyReadable": false
+    },
+    "filter-group-presentation": {
+      "minor": 47,
+      "description": "独立固定单选筛选的下拉呈现与左右对齐",
+      "legacyReadable": false
+    },
+    "currency-range-presets": {
+      "minor": 46,
+      "description": "复用金额单位case的封闭币种预设",
+      "legacyReadable": false
+    },
+    "independent-filter-candidates": {
+      "minor": 46,
+      "description": "显式无依赖候选复用FilterCandidatesGateway",
+      "legacyReadable": false
+    },
+    "required-multiple-selection": {
+      "minor": 46,
+      "description": "必选多选保留非空离散集合",
+      "legacyReadable": false
+    },
+    "filter-group": {
+      "minor": 45,
+      "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐",
+      "legacyReadable": false
+    },
+    "table-row-expansion": {
+      "minor": 44,
+      "description": "单层行内子表格与按父行隔离的查询分页",
+      "legacyReadable": false
+    },
+    "dimension-search-tree-policy": {
+      "minor": 43,
+      "description": "维度下拉可选搜索与普通树父子策略",
+      "legacyReadable": true
+    },
+    "table-search-options": {
+      "minor": 42,
+      "description": "表格静态搜索选项与单文本字段等值匹配",
+      "legacyReadable": false
+    },
+    "period-filter-modes": {
+      "minor": 41,
+      "description": "自然期间筛选可选模式与单年份选择",
+      "legacyReadable": true
+    },
+    "unified-page-header": {
+      "minor": 41,
+      "description": "唯一页头实现及行内布局、更多筛选和只读说明",
+      "legacyReadable": true
+    },
+    "metric-card-before": {
+      "minor": 34,
+      "description": "Dashboard 指标卡前置连接文字与双侧受控间距",
+      "legacyReadable": false
+    },
+    "tab-url-initial-state": {
+      "minor": 33,
+      "description": "Tab 容器通过显式 URL 参数初始化活动页签",
+      "legacyReadable": false
+    },
+    "chart-echarts-option": {
+      "minor": 32,
+      "description": "柱状图、折线图、饼图高级 ECharts 呈现扩展",
+      "legacyReadable": true
+    },
+    "navigation-inputs": {
+      "minor": 40,
+      "description": "显式跨页传值与目标输入契约验证",
+      "legacyReadable": true
+    },
+    "query-modes": {
+      "minor": 50,
+      "description": "固定单选选择不同静态DQE查询分支，共享结果字段契约",
+      "legacyReadable": false
+    },
+    "time-modes": {
+      "minor": 39,
+      "description": "日月ISO周模式及完整静态查询case",
+      "legacyReadable": true
+    },
+    "time-availability": {
+      "minor": 39,
+      "description": "可信期间事实与显式日期边界",
+      "legacyReadable": true
+    },
+    "time-presets": {
+      "minor": 39,
+      "description": "时间快捷范围与候选月份窗口",
+      "legacyReadable": true
+    },
+    "business-filter-selection": {
+      "minor": 37,
+      "description": "页级单多选、封闭枚举及显式结构树",
+      "legacyReadable": true
+    },
+    "business-filter-context": {
+      "minor": 37,
+      "description": "页级候选依赖与明确清理",
+      "legacyReadable": true
+    },
+    "money-usd": {
+      "minor": 38,
+      "description": "显式美元金额及格式",
+      "legacyReadable": true
+    },
+    "amount-range": {
+      "minor": 38,
+      "description": "金额范围约束单位预设和metric选择",
+      "legacyReadable": true
+    },
+    "field-selection": {
+      "minor": 38,
+      "description": "静态货币字段选择",
+      "legacyReadable": true
+    },
+    "filter-hint": {
+      "minor": 37,
+      "description": "筛选说明文本",
+      "legacyReadable": true
+    },
+    "ioc-header": {
+      "minor": 36,
+      "description": "页级 IOC 身份、筛选归属与实际首行折叠",
+      "legacyReadable": true
+    },
+    "period-filter": {
+      "minor": 27,
+      "description": "Dashboard 年季月与近一年期间筛选",
+      "legacyReadable": true
+    },
+    "chart-local-filter": {
+      "minor": 29,
+      "description": "Dashboard 图表左上角独立筛选与自定义选项",
+      "legacyReadable": true
+    },
+    "report-header-export-buttons": {
+      "minor": 31,
+      "description": "Report 统一导出按钮，按格式配置名称、文件名和渲染倍率",
+      "legacyReadable": true
+    },
+    "report-header-png-export": {
+      "minor": 30,
+      "description": "Report 单张高清PNG导出",
+      "legacyReadable": true
+    },
+    "report-header-pdf-export": {
+      "minor": 28,
+      "description": "Report 页头内置 PDF 下载及可配置按钮文字和文件名",
+      "legacyReadable": true
+    },
+    "time-point-disable-future": {
+      "minor": 25,
+      "description": "时间点筛选禁止选择未来月份或日期",
+      "legacyReadable": true
+    },
+    "time-point-min": {
+      "minor": 24,
+      "description": "时间点筛选的包含式最早日期或月份下限",
+      "legacyReadable": true
+    },
+    "text-value-composition": {
+      "minor": 23,
+      "description": "字面量、参数与已应用筛选值的显式文本片段组合",
+      "legacyReadable": true
+    },
+    "paged-join": {
+      "minor": 22,
+      "description": "多查询组合表格与数值表头范围",
+      "legacyReadable": true
+    },
+    "table-toolbar": {
+      "minor": 21,
+      "description": "表格独立搜索与完整 Excel 导出工具区",
+      "legacyReadable": true
+    },
+    "query-result-page-window": {
+      "minor": 20,
+      "description": "查询分页窗口作为结果绑定输入，支持任意列查询排序驱动依赖更新",
+      "legacyReadable": true
+    },
+    "query-result-row-filter": {
+      "minor": 19,
+      "description": "下游查询结果绑定按原始字段条件筛选输入行",
+      "legacyReadable": true
+    },
+    "signed-number-format-family": {
+      "minor": 18,
+      "description": "补齐两位小数及千分位的带符号普通数值格式",
+      "legacyReadable": true
+    },
+    "signed-number-formats": {
+      "minor": 17,
+      "description": "带符号普通数值格式，按展示精度统一零值方向",
+      "legacyReadable": true
+    },
+    "explicit-value-colors": {
+      "minor": 16,
+      "description": "数字展示位置显式声明固定颜色或正负颜色映射",
+      "legacyReadable": true
+    },
+    "chart-label-presentation": {
+      "minor": 16,
+      "description": "类别标签全量展示与旋转、常驻节点数值标签",
+      "legacyReadable": true
+    },
+    "filter-text-values": {
+      "minor": 15,
+      "description": "显式筛选文本引用及统一 period 日期格式",
+      "legacyReadable": true
+    },
+    "query-result-bindings": {
+      "minor": 14,
+      "description": "上游原始查询维度集合作为下游查询输入",
+      "legacyReadable": true
+    },
+    "multi-value-pivot": {
+      "minor": 14,
+      "description": "透视列独立声明度量字段",
+      "legacyReadable": true
+    },
+    "report-header-date-filters": {
+      "minor": 13,
+      "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口",
+      "legacyReadable": true
+    },
+    "folding-all-missing": {
+      "minor": 12,
+      "description": "小计与总计显式声明全空结果，缺省仍为null",
+      "legacyReadable": true
+    },
+    "table-column-actions": {
+      "minor": 12,
+      "description": "表格列独立的导航或详情动作",
+      "legacyReadable": true
+    },
+    "binding-missing-text": {
+      "minor": 12,
+      "description": "字段绑定的缺失值展示文案",
+      "legacyReadable": true
+    },
+    "detail-views": {
+      "minor": 12,
+      "description": "复用图表和表格的单层受控详情视图",
+      "legacyReadable": true
+    },
+    "section-navigation": {
+      "minor": 12,
+      "description": "内容分区组切换与章节锚点",
+      "legacyReadable": true
+    },
+    "mixed-chart-series": {
+      "minor": 12,
+      "description": "柱线混合系列与显式坐标轴",
+      "legacyReadable": true
+    },
+    "cross-source-computation": {
+      "minor": 12,
+      "description": "跨源关联、字段合计和复合增长率具名算子",
+      "legacyReadable": true
+    },
+    "initial-param-beyond-flat-dimensions": {
+      "minor": 11,
+      "description": "时间点筛选器与层级维度筛选器的参数初值",
+      "legacyReadable": true
+    },
+    "open-detail-action": {
+      "minor": 10,
+      "description": "组件点击在页内打开详情浮层",
+      "legacyReadable": true
+    },
+    "filter-binding-non-dimension-targets": {
+      "minor": 9,
+      "description": "timePoint / boolean / numberRange 筛选器的查询绑定目标",
+      "legacyReadable": true
+    },
+    "filter-binding-level-query-fields": {
+      "minor": 7,
+      "description": "层级维度筛选绑定逐级声明谓词字段",
+      "legacyReadable": true
+    },
+    "grouped-params": {
+      "minor": 6,
+      "description": "分组参数、多个独立时间区间与查询原位引用",
+      "legacyReadable": true
+    },
+    "million-formats": {
+      "minor": 5,
+      "description": "按百万呈现数值，支持0/1/2位小数",
+      "legacyReadable": true
+    },
+    "inline-page-params": {
+      "minor": 5,
+      "description": "页面参数 value、timeRange 与 DQE 取值位置的受控原位引用",
+      "legacyReadable": true
+    },
+    "named-to-date-windows": {
+      "minor": 4,
+      "description": "具名年初/月初至报告基准期窗口",
+      "legacyReadable": true
+    },
+    "time-params": {
+      "minor": 3,
+      "description": "确定性日期/月参数与查询时间窗口绑定",
+      "legacyReadable": true
+    },
+    "dimension-params": {
+      "minor": 2,
+      "description": "维度参数、查询目标与筛选初值绑定",
+      "legacyReadable": true
+    },
+    "page-layout": {
+      "minor": 1,
+      "description": "顶层 layout:页面布局形态的规范字段",
+      "legacyReadable": true
+    },
+    "page-params": {
+      "minor": 0,
+      "description": "顶层 params:页面参数声明(ADR-0047)",
+      "legacyReadable": true
+    },
+    "page-layout-form": {
+      "minor": 0,
+      "description": "顶层 layoutForm:页面布局形态(看板满宽 / 报表定宽)",
+      "legacyReadable": true
+    },
+    "dashboard-toolbar-visibility": {
+      "minor": 0,
+      "description": "顶层 dashboardToolbar:显式关闭 dashboard 统一工具栏",
+      "legacyReadable": true
+    },
+    "project-detail-restoration-variants": {
+      "minor": 0,
+      "description": "项目详情页还原专用的组件呈现档",
+      "legacyReadable": true
+    },
+    "key-value-panel-six-columns": {
+      "minor": 0,
+      "description": "key-value 信息面板的六列排布",
+      "legacyReadable": true
+    },
+    "component-backdrop-layer": {
+      "minor": 0,
+      "description": "组件 layout.layer:分区内叠放层,组件铺满分区置于其余组件之下",
+      "legacyReadable": true
+    },
+    "text-value-reference": {
+      "minor": 0,
+      "description": "文本取值引用页面参数而不是写字面量(ADR-0047)",
+      "legacyReadable": true
+    },
+    "data-source-computation": {
+      "minor": 0,
+      "description": "页面数据源的受控计算阶段与具名算子(ADR-0046)",
+      "legacyReadable": true
+    },
+    "collapsible-measure": {
+      "minor": 0,
+      "description": "结果字段契约上的可折叠度量声明(ADR-0046)",
+      "legacyReadable": true
+    },
+    "table-row-kind-field": {
+      "minor": 0,
+      "description": "表格按行类别字段套用明细/小计/合计呈现档位(ADR-0049)",
+      "legacyReadable": true
+    },
+    "table-merge-by": {
+      "minor": 0,
+      "description": "表格按字段合并相邻同值单元格(ADR-0049)",
+      "legacyReadable": true
+    },
+    "key-value-panel-component": {
+      "minor": 0,
+      "description": "key-value 信息面板组件",
+      "legacyReadable": true
+    },
+    "field-text-component": {
+      "minor": 0,
+      "description": "字段绑定长文本组件",
+      "legacyReadable": true
+    },
+    "filter-boolean": {
+      "minor": 0,
+      "description": "boolean 筛选器(ADR-0050)",
+      "legacyReadable": true
+    },
+    "filter-time-point": {
+      "minor": 0,
+      "description": "timePoint 筛选器(ADR-0050)",
+      "legacyReadable": true
+    },
+    "filter-number-range": {
+      "minor": 0,
+      "description": "numberRange 筛选器(ADR-0050)",
+      "legacyReadable": true
+    },
+    "filter-search": {
+      "minor": 0,
+      "description": "search 筛选器(ADR-0050)",
+      "legacyReadable": true
+    },
+    "filter-hierarchy": {
+      "minor": 0,
+      "description": "层级维度筛选器(ADR-0050)",
+      "legacyReadable": true
+    },
+    "filter-depends-on": {
+      "minor": 0,
+      "description": "筛选器级联 dependsOn(ADR-0050)",
+      "legacyReadable": true
+    },
+    "filter-relative-time": {
+      "minor": 0,
+      "description": "结构化相对时间表达(ADR-0035 / ADR-0050)",
+      "legacyReadable": true
+    },
+    "table-column-link": {
+      "minor": 0,
+      "description": "表格列声明为行点击导航入口(ADR-0049)",
+      "legacyReadable": true
+    },
+    "tab-container-component": {
+      "minor": 0,
+      "description": "Tab 容器组件",
+      "legacyReadable": true
+    },
+    "gauge-component": {
+      "minor": 0,
+      "description": "gauge 仪表组件",
+      "legacyReadable": true
+    },
+    "map-hierarchy-filter": {
+      "minor": 0,
+      "description": "地图按层级维度筛选器下钻",
+      "legacyReadable": true
+    },
+    "composite-card-component": {
+      "minor": 0,
+      "description": "组合卡:组件级分组容器(ADR-0053)",
+      "legacyReadable": true
+    },
+    "category-breakdown-component": {
+      "minor": 0,
+      "description": "分类明细组件(ADR-0053)",
+      "legacyReadable": true
+    },
+    "map-legend-bands": {
+      "minor": 0,
+      "description": "地图分档图例",
+      "legacyReadable": true
+    },
+    "map-tooltip-fields": {
+      "minor": 0,
+      "description": "地图 tooltip 扩展字段",
+      "legacyReadable": true
+    },
+    "key-value-panel-single-column": {
+      "minor": 0,
+      "description": "key-value 信息面板的单列排布",
+      "legacyReadable": true
+    },
+    "ratio-scale": {
+      "minor": 0,
+      "description": "ratio 算子的输出刻度 scale(ADR-0046)",
+      "legacyReadable": true
+    },
+    "section-column-tracks": {
+      "minor": 0,
+      "description": "内容分区的受控列轨权重(ADR-0054)",
+      "legacyReadable": true
+    },
+    "filter-empty-label": {
+      "minor": 0,
+      "description": "维度筛选器的空选展示文案",
+      "legacyReadable": true
+    },
+    "filter-hierarchy-picker": {
+      "minor": 0,
+      "description": "层级维度筛选器的显式级别切换器形态",
+      "legacyReadable": true
+    },
+    "metric-row-context": {
+      "minor": 0,
+      "description": "指标行与主值同排的短上下文",
+      "legacyReadable": true
+    },
+    "composite-card-compact": {
+      "minor": 0,
+      "description": "组合卡紧凑呈现档",
+      "legacyReadable": true
+    },
+    "tab-container-compact": {
+      "minor": 0,
+      "description": "Tab 容器紧凑呈现档",
+      "legacyReadable": true
+    },
+    "table-embedded": {
+      "minor": 0,
+      "description": "表格嵌入式密度与底部渐隐",
+      "legacyReadable": true
+    },
+    "key-value-item-unit": {
+      "minor": 0,
+      "description": "信息面板条目的展示单位",
+      "legacyReadable": true
+    },
+    "widget-symbol-icons": {
+      "minor": 0,
+      "description": "组合卡和信息面板的受控语义图标",
+      "legacyReadable": true
+    },
+    "map-regional-overview": {
+      "minor": 0,
+      "description": "地域概览地图与稳定字段匹配的固定摘要",
+      "legacyReadable": true
+    },
+    "metric-row-link": {
+      "minor": 0,
+      "description": "指标行的显式非空值导航入口",
+      "legacyReadable": true
+    },
+    "tab-container-multi-table": {
+      "minor": 0,
+      "description": "Tab item 按顺序承载非空表格列表",
+      "legacyReadable": true
+    },
+    "tab-container-analysis-stack": {
+      "minor": 0,
+      "description": "Tab 容器的分析表格堆叠呈现档",
+      "legacyReadable": true
+    },
+    "dashboard-toolbar-compact-read-only": {
+      "minor": 0,
+      "description": "dashboard 紧凑页头与只读筛选说明",
+      "legacyReadable": true
+    },
+    "composite-card-metric-grid": {
+      "minor": 0,
+      "description": "组合卡的紧凑指标网格呈现档",
+      "legacyReadable": true
+    },
+    "conditional-presentation": {
+      "minor": 35,
+      "description": "统一条件显隐、按钮与正文片段",
+      "legacyReadable": false
+    }
+  },
+  "readableVersions": [
+    "5.0",
+    "5.1",
+    "5.2",
+    "5.3",
+    "5.4",
+    "6.5",
+    "6.11",
+    "6.12",
+    "6.13",
+    "6.14",
+    "6.15",
+    "6.16",
+    "6.17",
+    "6.18",
+    "6.19",
+    "6.20",
+    "6.21",
+    "6.22",
+    "6.23",
+    "6.24",
+    "6.25",
+    "6.26",
+    "6.27",
+    "6.28",
+    "6.29",
+    "6.30",
+    "6.31",
+    "6.32",
+    "6.33",
+    "6.34",
+    "6.35",
+    "6.36",
+    "6.37",
+    "6.38",
+    "6.39",
+    "6.40",
+    "6.41",
+    "6.42",
+    "6.43",
+    "6.44",
+    "6.45",
+    "6.46",
+    "6.47",
+    "6.48",
+    "6.49",
+    "6.50",
+    "6.51",
+    "6.52",
+    "6.53",
+    "6.54",
+    "6.55",
+    "6.56",
+    "6.57",
+    "6.58"
+  ]
+}

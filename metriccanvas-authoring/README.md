@@ -2,6 +2,8 @@
 
 这是交付到公司内部的完整源码目录。内部接入从 [RELAY-HANDOFF.md](RELAY-HANDOFF.md) 开始，按安装、实现、注册、验收、更新五步完成。
 
+MC 内容与布局能力接入先读 [交付说明](MC-CONTENT-OVERVIEW.md) 和 [Relay 对接 handoff](MC-CONTENT-RELAY-HANDOFF.md)：包含完整内容包、执行接线、Schema 兼容与旧文件处理，以及需 Relay 确认的关键事项。MC 本地验收完成，真实接入尚待验证。
+
 ## 谁改哪里
 
 | 范围 | 维护方 | 更新规则 |

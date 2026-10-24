@@ -1,0 +1,15 @@
+{
+  "code": "DATA_CONTEXT_NAME_NOT_FOUND",
+  "guidance": {
+    "message": "读取 candidates 和失败阶段，按发现的规范名与粒度修正；同请求重复调用不解决问题。不得删除地域/时间条件换取成功。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": false,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

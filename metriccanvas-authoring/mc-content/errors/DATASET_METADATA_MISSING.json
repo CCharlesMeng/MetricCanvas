@@ -1,0 +1,15 @@
+{
+  "code": "DATASET_METADATA_MISSING",
+  "guidance": {
+    "message": "对应数据集未成功读取，说明 partial 覆盖缺口；不将其解释为零指标。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

@@ -1,0 +1,301 @@
+{
+  "compile": {
+    "status": "ok",
+    "plan": {
+      "title": "usage-report｜合成布局验收",
+      "sources": {
+        "summary": "synthetic-summary",
+        "trend": "synthetic-trend"
+      },
+      "sections": [
+        {
+          "id": "summary",
+          "blocks": [
+            {
+              "id": "primary",
+              "type": "data",
+              "component": "metricCard",
+              "title": "合成用量",
+              "source": "summary",
+              "fields": [
+                "amount"
+              ],
+              "width": "third",
+              "purpose": "primary-value"
+            },
+            {
+              "id": "trend",
+              "type": "data",
+              "component": "lineChart",
+              "title": "合成趋势",
+              "source": "trend",
+              "fields": [
+                "month",
+                "amount"
+              ],
+              "width": "two-thirds",
+              "purpose": "trend"
+            }
+          ],
+          "pattern": "overview-with-trend",
+          "container": "panel"
+        },
+        {
+          "id": "detail",
+          "blocks": [
+            {
+              "id": "detail-table",
+              "type": "data",
+              "component": "table",
+              "title": "合成明细",
+              "source": "trend",
+              "fields": [
+                "month",
+                "amount"
+              ],
+              "width": "full",
+              "purpose": "reconciliation"
+            }
+          ],
+          "pattern": "detail",
+          "container": "panel"
+        }
+      ],
+      "layout": "report"
+    },
+    "adjustments": [
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/layout"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/pattern"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/container"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/blocks/0/width"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/blocks/0/purpose"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/blocks/1/width"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/blocks/1/purpose"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/1/pattern"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/1/container"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/1/blocks/0/width"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/1/blocks/0/purpose"
+      }
+    ],
+    "gaps": [],
+    "inspectionSpec": {
+      "formatVersion": 1,
+      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "templateRef": {
+        "scene": "usage-report",
+        "variant": "standard",
+        "templateVersion": "1"
+      },
+      "requirements": [
+        {
+          "id": "page-header",
+          "mustBe": "reportHeader",
+          "origin": "productMandatory"
+        }
+      ],
+      "bindings": [
+        {
+          "id": "primary",
+          "sectionId": "summary",
+          "source": "summary",
+          "fields": [
+            "amount"
+          ]
+        },
+        {
+          "id": "trend",
+          "sectionId": "summary",
+          "source": "trend",
+          "fields": [
+            "month",
+            "amount"
+          ]
+        },
+        {
+          "id": "detail-table",
+          "sectionId": "detail",
+          "source": "trend",
+          "fields": [
+            "month",
+            "amount"
+          ]
+        }
+      ]
+    },
+    "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+    "deploymentAlignment": "not_run",
+    "checkedVersionFields": []
+  },
+  "assembly": [
+    {
+      "id": "primary",
+      "status": "applied",
+      "issues": [],
+      "adjustments": []
+    },
+    {
+      "id": "trend",
+      "status": "applied",
+      "issues": [],
+      "adjustments": []
+    },
+    {
+      "id": "detail-table",
+      "status": "applied",
+      "issues": [],
+      "adjustments": []
+    }
+  ],
+  "inspection": {
+    "status": "ok",
+    "gaps": [],
+    "schema": {
+      "declaredVersion": "6.58",
+      "targetVersion": "6.58",
+      "readableVersions": [
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3",
+        "5.4",
+        "6.5",
+        "6.11",
+        "6.12",
+        "6.13",
+        "6.14",
+        "6.15",
+        "6.16",
+        "6.17",
+        "6.18",
+        "6.19",
+        "6.20",
+        "6.21",
+        "6.22",
+        "6.23",
+        "6.24",
+        "6.25",
+        "6.26",
+        "6.27",
+        "6.28",
+        "6.29",
+        "6.30",
+        "6.31",
+        "6.32",
+        "6.33",
+        "6.34",
+        "6.35",
+        "6.36",
+        "6.37",
+        "6.38",
+        "6.39",
+        "6.40",
+        "6.41",
+        "6.42",
+        "6.43",
+        "6.44",
+        "6.45",
+        "6.46",
+        "6.47",
+        "6.48",
+        "6.49",
+        "6.50",
+        "6.51",
+        "6.52",
+        "6.53",
+        "6.54",
+        "6.55",
+        "6.56",
+        "6.57",
+        "6.58"
+      ],
+      "readable": true,
+      "requiredVersion": "6.1",
+      "capabilityErrors": [],
+      "validationErrors": [],
+      "fieldUses": [
+        {
+          "componentId": "primary",
+          "source": "summary",
+          "field": "amount",
+          "path": "/sections/1/components/0/props/rows/0/valueField"
+        },
+        {
+          "componentId": "trend",
+          "source": "trend",
+          "field": "month",
+          "path": "/sections/1/components/1/props/xField"
+        },
+        {
+          "componentId": "trend",
+          "source": "trend",
+          "field": "amount",
+          "path": "/sections/1/components/1/props/series/0/field"
+        },
+        {
+          "componentId": "detail-table",
+          "source": "trend",
+          "field": "month",
+          "path": "/sections/2/components/0/props/columns/0/field"
+        },
+        {
+          "componentId": "detail-table",
+          "source": "trend",
+          "field": "amount",
+          "path": "/sections/2/components/0/props/columns/1/field"
+        }
+      ],
+      "upgrade": {
+        "possible": true,
+        "changes": [],
+        "warnings": [],
+        "errors": []
+      },
+      "status": "current",
+      "note": "Read-only diagnosis. Upgrade writes only to an explicitly chosen new directory; never edit schemaVersion alone."
+    },
+    "coverage": [
+      "top-level-component-type",
+      "container",
+      "source-and-field-selection",
+      "product-page-validation"
+    ],
+    "notVerified": [
+      "visual-quality",
+      "DQE-execution",
+      "save-status",
+      "user-intent-authenticity"
+    ]
+  }
+}

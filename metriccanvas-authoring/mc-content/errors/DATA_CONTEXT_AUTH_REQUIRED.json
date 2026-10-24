@@ -1,0 +1,15 @@
+{
+  "code": "DATA_CONTEXT_AUTH_REQUIRED",
+  "guidance": {
+    "message": "停止发现，交集成程序检查本轮身份与工作区，不切换服务账号。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

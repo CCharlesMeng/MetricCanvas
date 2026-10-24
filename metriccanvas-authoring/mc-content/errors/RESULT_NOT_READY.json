@@ -1,0 +1,15 @@
+{
+  "code": "RESULT_NOT_READY",
+  "guidance": {
+    "message": "该结果尚未就绪；读取同一 resultRef 的状态，其他独立内容可继续。",
+    "action": "read_result_status",
+    "owner": "model"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

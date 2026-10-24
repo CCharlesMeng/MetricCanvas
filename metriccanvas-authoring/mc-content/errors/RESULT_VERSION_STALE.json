@@ -1,0 +1,15 @@
+{
+  "code": "RESULT_VERSION_STALE",
+  "guidance": {
+    "message": "结果对应的数据上下文已变化；保留已有页面，核对所需数据版本后仅重查受影响项。",
+    "action": "refresh_affected_request",
+    "owner": "model"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

@@ -1,0 +1,15 @@
+{
+  "code": "OPTIONAL_NULL_OMITTED",
+  "guidance": {
+    "message": "分别表示补入展示缺省或省略可选 null；核对 adjustments 即可，不代表数据口径发生变化。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

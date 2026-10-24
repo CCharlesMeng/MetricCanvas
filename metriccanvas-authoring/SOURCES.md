@@ -15,6 +15,8 @@
 | 概览布局样例与地图地名 | `tools/scripts/local-authoring-overview-example.ts`；产品 `page/map-regions.json` | 本地 Skill `assets/layouts/overview-map-led.json`、`references/map-regions.json` | 导出时验证布局样例，地名保留底图哈希而移除仓库路径；均纳入知识清单 |
 | Bundle 版本、入口与分发规则 | `bundle.json` | `bundle.lock.json`、运行时 bundle-info、安装包 | 修改声明后导出；不手改 hash |
 | 产品快照来源锁 | 根仓产品契约 manifest | `contract-lock.json` 与 `contract-snapshot/manifest.json` | 同一导出器生成 |
+| MC 内容与布局能力 | `tools/mc-content/`、活动 `pages/compose_contract.py`、MCP 定义及产品版本/校验/升级实现 | `mc-content/` 完整目录 | `pnpm authoring:contracts` 自动导出契约、签名、能力与原子索引，打包产品旧页检查/升级；整包摘要、仓外运行和行为回归分别验收 |
+| Platform 的 MC 事实参考 | `tools/mc-content/runtime/` 和 `layouts/` | platform Skill 的 tools/errors/execution/scenarios/layouts 兼容参考 | `mcPlatformFacts` 单向生成；只更新 MC 作者源，不手改兼容副本，其他作者参考与工作流保留 |
 | 测试分类 | `test-harness/test-layers.json` | 全量及按层 runner | 必须覆盖每个测试文件且恰好一次 |
 
 本 Bundle 的 `contract-snapshot/` 是安装时需要的离线副本，不是第二份可编辑协议。wheel/sdist 的 `_bundle` 和独立 Skill 参考也必须在没有根仓源码时可用。删除这些副本会破坏离线交付；压缩重复内容应在投影生成器完成。

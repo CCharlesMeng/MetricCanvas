@@ -1,0 +1,15 @@
+{
+  "code": "COMPOSE_REQUEST_INVALID",
+  "guidance": {
+    "message": "页面组装请求的外层结构不合法；修正请求结构并复用已有 resultRef。",
+    "action": "correct_request",
+    "owner": "model"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

@@ -1,0 +1,15 @@
+{
+  "code": "ANALYSIS_PLAN_NOT_CONFIRMED",
+  "guidance": {
+    "message": "回到计划审核，由程序取得用户确认；不重复查询。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

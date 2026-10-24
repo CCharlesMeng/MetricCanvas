@@ -1,0 +1,15 @@
+{
+  "code": "CONTENT_RESOURCE_MISMATCH",
+  "guidance": {
+    "message": "安装资源不可用、不完整或不一致；整体替换并重新载入脚本，需要时由 MC 修正导出，不拼装零散文件。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

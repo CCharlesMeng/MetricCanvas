@@ -1,0 +1,11 @@
+{
+  "name": "query_data",
+  "signature": "context_ref: str, request: QueryRequest | None=None, result_ref: str | None=None",
+  "description": "Execute an approved batch or read existing bounded evidence. Exactly one input; no page creation.",
+  "parameters": [
+    "context_ref",
+    "request",
+    "result_ref"
+  ],
+  "source": "active platform_mcp.py"
+}

@@ -1,0 +1,15 @@
+{
+  "code": "LAYOUT_DEFAULT_NOT_APPLICABLE",
+  "guidance": {
+    "message": "模板缺省不适用当前显式节点分支，已略过该缺省并保留显式选择；这是调整说明。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

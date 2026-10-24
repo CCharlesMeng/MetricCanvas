@@ -17,6 +17,7 @@ import { localPageReference, localValidatorOutputs, localKnowledgeManifest } fro
 import { localAuthoringKnowledge } from './local-authoring-knowledge.ts';
 import { overviewMapLedExample } from './local-authoring-overview-example.ts';
 import { localPagePatternOutputs } from './local-authoring-patterns.ts';
+import { mcContentOutputs, mcPlatformFacts } from './mc-content.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 import { queryResultCases } from './query-result-conformance-vectors.ts';
 import {extractPageParams,applyPageParamSelection,resolvePageParams} from '../../packages/page/src/index.ts';
@@ -553,6 +554,7 @@ async function writeOutputs(
     const target=path.join(bundleRoot, relative==='scripts/THIRD-PARTY-LICENSES.md'?'scripts/PAGE-VALIDATOR-LICENSES.md':relative);
     await mkdir(path.dirname(target),{recursive:true});await writeFile(target,content,'utf8');
   }
+  await writeMcContent();
   await writeFile(path.join(bundleRoot, 'bundle.lock.json'), await buildBundleLock(), 'utf8');
 }
 
@@ -597,8 +599,8 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     const directory = path.posix.dirname(entry.entrypoint);
     if (await realpath(path.join(bundleRoot,directory)) !== path.join(actualBundleRoot,directory) ||
         await realpath(path.join(bundleRoot,entry.entrypoint)) !== path.join(actualBundleRoot,entry.entrypoint)) throw new Error('Skill entrypoint must be an independent file');
-    // The registry declares the only generated subtree. Everything else belongs
-    // to the Skill author and must survive regeneration, including references.
+    // Registry projections and explicit MC fact projections are generated.
+    // Other author-maintained references must survive regeneration.
     const mode = entry.referenceProjection ?? (entry.id === 'metriccanvas-page-builder' ? 'page-metadata' : 'none');
     if (!['none', 'page-metadata', 'local-page-metadata'].includes(mode)) throw new Error('Unknown Skill reference projection');
     if (mode === 'local-page-metadata' && entry.id !== 'metriccanvas-local-authoring') throw new Error('Local reference projection requires the local authoring entrypoint');
@@ -642,12 +644,26 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
       ]), versionPolicy.current, productContractVersion));
       for (const [file, content] of generated) documents.set(file, content);
     }
-    for (const [file, content] of projected) documents.set(`references/page-metadata/${file}`, content);
+    await addSkillReferences(documents, projected, entry.id);
     validateReferenceLinks(documents);
     if (mode !== 'none') projections.push({directory, outputs: projected, generated});
   }
   if (!seen.has('metriccanvas-page-builder')) throw new Error('Skill registry missing legacy entrypoint');
   return projections;
+}
+
+async function addSkillReferences(documents: OutputMap, projected: OutputMap, id: string): Promise<void> {
+  for (const [file, content] of projected) documents.set(`references/page-metadata/${file}`, content);
+  if (id === 'metriccanvas-platform-authoring') for (const [file, content] of await mcPlatformFacts(repoRoot)) documents.set(file, content);
+}
+
+async function writeMcContent(): Promise<void> {
+  await writeTree(path.join(bundleRoot, 'mc-content'), await mcContentOutputs(repoRoot));
+  for (const [file, content] of await mcPlatformFacts(repoRoot)) {
+    const target = path.join(bundleRoot, 'skill/metriccanvas-platform-authoring', file);
+    await mkdir(path.dirname(target), {recursive: true});
+    await writeFile(target, content, 'utf8');
+  }
 }
 
 async function writeTree(root: string, outputs: OutputMap): Promise<void> {
@@ -762,6 +778,7 @@ async function assertCurrent(
     await collectFileDrift(path.join(bundleRoot,file),content,`metriccanvas-authoring/${file}`,drift);
   }
   const expectedBundleLock = await buildBundleLock();
+  await collectMcContentDrift(drift);
   await collectFileDrift(
     path.join(bundleRoot, 'bundle.lock.json'),
     expectedBundleLock,
@@ -771,6 +788,17 @@ async function assertCurrent(
 
   if (drift.length > 0) {
     throw new Error(`authoring contract export drifted:\n${drift.join('\n')}`);
+  }
+}
+
+async function collectMcContentDrift(drift: string[]): Promise<void> {
+  try {
+    await collectTreeDrift(path.join(bundleRoot, 'mc-content'), await mcContentOutputs(repoRoot), 'mc-content', drift);
+    for (const [file, text] of await mcPlatformFacts(repoRoot)) {
+      await collectFileDrift(path.join(bundleRoot, 'skill/metriccanvas-platform-authoring', file), text, `skill/metriccanvas-platform-authoring/${file}`, drift);
+    }
+  } catch (error) {
+    drift.push(`mc-content: ${String(error)}`);
   }
 }
 

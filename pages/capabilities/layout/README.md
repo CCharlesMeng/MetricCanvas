@@ -2,6 +2,19 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## MC 内容包：布局与版本检查
+
+入口：`/pages/mc-content-layout-demo`；[实际页面](mc-content-layout-demo.json)。运行 `pnpm dev:playground`；无 URL 参数和 DQE 依赖。页面由 `tools/scripts/mc-content-fixtures.py` 调用真实本地 MC 接口生成，数据为合成诊断。
+
+1. 检查表格六项：正常编译 ok、用户要求地图 gap、IOC 计划场景 invalid、旧版 6.0 页面 upgrade_required、未来版本 needs_review、真实保存与 Relay not_run。
+2. 点击“检查项”列排序，确认已有表格交互可用；390px 下检查页面可阅读，宽表在自己的滚动区域展示。
+3. 通过 `mc-content/scripts/mc_content.py schema --input <旧文件>` 检查兼容性；upgrade 不带输出目录只检查，带全新目录才输出 original、page 和 migration.json，原文件不变。
+4. 内容包更新后运行 `pnpm authoring:contracts` 和 `pnpm mc:content:fixtures`；`pnpm mc:content:fixtures --check` 校验页面与实际诊断一致，不能手改静态表格伪造通过。
+
+本页证明本地诊断和已有运行时呈现；不证明 Relay 执行注册、完整产物通道、真实查询、保存或发布。布局编译只检查结构与声明，视觉质量仍需实际预览。
+
+Report 专属布局验收：[经营报告](mc-layout-business-report.json)与[用量报告](mc-layout-usage-report.json)，入口分别为 `/pages/mc-layout-business-report`、`/pages/mc-layout-usage-report`。两页由编译计划经现有 compose 函数在内存装配，再通过 MC 产物检查生成；无保存调用，使用两条月份合成记录。检查总量 50、折线 20→30、明细两行和章节排布。此处为验收 Report 模板而显式采用 report；诊断页采用 dashboard。
+
 ## 旧页面升级后继续开发
 
 入口：`/pages/schema-upgrade-demo`；[实际页面](schema-upgrade-demo.json)。启动 `pnpm dev:playground`。数据为3条内联合成记录，无需DQE服务。

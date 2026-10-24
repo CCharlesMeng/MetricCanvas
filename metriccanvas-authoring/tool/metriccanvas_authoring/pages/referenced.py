@@ -1,8 +1,5 @@
 from __future__ import annotations
-from metriccanvas_authoring.schema_projection import inline_local_refs
 from metriccanvas_authoring.pages.composition.paged_join import build_paged_join, referenced_definitions
-from metriccanvas_authoring.runtime_assets import bundle_root
-import json
 """Page expression from verified results; this module never executes DQE."""
 from copy import deepcopy
 from metriccanvas_authoring.pages.scope_annotations import refresh, source_contract, data_locations
@@ -17,21 +14,12 @@ from metriccanvas_authoring.pages.composition.section_layout import pack_section
 from metriccanvas_authoring.pages.composition.table_pagination import add_query_table_pagination, _components
 from metriccanvas_authoring.pages.input_tolerance import normalize_compose, compose_envelope
 
-SOURCE_REFS = {'type': 'object', 'propertyNames': ID, 'maxProperties': 6, 'additionalProperties': NAME}
-# Result-reference composition does not repeat the analysis plan's narrative fields.
-RESULT_SECTION = deepcopy(SECTION)
-RESULT_SECTION['required'] = ['id', 'pattern', 'blocks']
-for block_schema in RESULT_SECTION['properties']['blocks']['items']['oneOf']:
-    block_schema['required'] = [key for key in block_schema['required'] if key != 'purpose']
-DATE_FILTER_OPERATIONS = [o for o in EDIT_SCHEMA['properties']['operations']['items']['oneOf'] if o['properties']['type']['const'] == 'add_date_filter']
-COMPOSE_SCHEMA = obj({'title': TEXT, 'layout': {'enum': ['report', 'dashboard']}, 'sources': SOURCE_REFS,
-                      'sections': {'type': 'array', 'minItems': 1, 'maxItems': 12, 'items': RESULT_SECTION},
-                      'dateFilters': {'type': 'array', 'maxItems': 8, 'items': {'oneOf': DATE_FILTER_OPERATIONS}}}, ['title', 'sources', 'sections'])
+from metriccanvas_authoring.pages.compose_contract import (
+    SOURCE_REFS, RESULT_SECTION, DATE_FILTER_OPERATIONS, COMPOSE_SCHEMA,
+)
 RESULT_OPERATION = obj({'id': ID, 'type': {'const': 'add_result_component'}, 'sectionId': ID,
     'resultRef': NAME, 'block': DATA_BLOCK,
     'dependsOn': {'type': 'array', 'items': ID}}, ['id', 'type', 'sectionId', 'resultRef', 'block'])
-_page_schema = json.loads((bundle_root()/'contract-snapshot/page/schema.json').read_text())
-COMPOSE_SCHEMA['properties']['pagedJoins']={'type':'object','propertyNames':ID,'additionalProperties':inline_local_refs(_page_schema['definitions']['pagedJoinSource'],_page_schema)}
 EDIT_RESULT_SCHEMA = deepcopy(EDIT_SCHEMA)
 EDIT_RESULT_SCHEMA['properties']['operations']['items']['oneOf'].extend([*SECTION_OPERATIONS, RESULT_OPERATION])
 

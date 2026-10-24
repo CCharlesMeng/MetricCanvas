@@ -1,0 +1,15 @@
+{
+  "code": "QUERY_ARGUMENTS_INVALID",
+  "guidance": {
+    "message": "按 path 与 Interface 说明修正输入；参数类型和可选项固定，不接受任意表达式或路径。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

@@ -1,0 +1,15 @@
+{
+  "code": "DECLARED_REQUIREMENT_GAP",
+  "guidance": {
+    "message": "声明的必须组件未满足或被替换；对照 expected/actual 与 origin 修正计划或报告能力缺口，由 Skill 决定后续流程。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

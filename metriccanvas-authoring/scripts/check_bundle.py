@@ -138,6 +138,27 @@ def validate_skills(root: Path, bundle: dict[str, Any], locked: set[str]) -> lis
     return errors
 
 
+def validate_mc_content(root, bundle, contract_lock):
+    expected = {'directory': 'mc-content', 'manifest': 'mc-content.version.json', 'interfaceVersion': '1.0'}
+    if bundle.get('mcContent') != expected:
+        return ['mcContent: missing or invalid complete-package registration']
+    file = root / 'mc-content/mc-content.version.json'
+    if not file.is_file():
+        return ['mcContent: missing manifest']
+    manifest = read_json(file)
+    aligned = {**contract_lock, 'platformProtocolVersion': bundle['toolServices']['metriccanvas-platform-content']['platformProtocolVersion']}
+    errors = []
+    if manifest.get('alignedWith') != aligned:
+        errors.append('mcContent: active contract alignment mismatch')
+    if manifest.get('interfaceVersion') != expected['interfaceVersion']:
+        errors.append('mcContent: interface version mismatch')
+    for item in manifest['files']:
+        resource = root / 'mc-content' / item['file']
+        if not resource.is_file() or sha256(resource) != item['sha256']:
+            errors.append('mcContent: resource mismatch ' + item['file'])
+    return errors
+
+
 def main() -> None:
     bundle = read_json(BUNDLE_ROOT / "bundle.json")
     bundle_lock = read_json(BUNDLE_ROOT / "bundle.lock.json")
@@ -152,6 +173,7 @@ def main() -> None:
     if any(a['file'].startswith(internal) for a in bundle_lock['artifacts']):
         raise SystemExit('Internal adapters must not be in the public bundle lock')
     drift = validate_skills(BUNDLE_ROOT, bundle, {entry["file"] for entry in bundle_lock["artifacts"]})
+    drift.extend(validate_mc_content(BUNDLE_ROOT, bundle, contract_lock))
     for artifact in bundle_lock["artifacts"]:
         path = BUNDLE_ROOT / artifact["file"]
         if not path.is_file():

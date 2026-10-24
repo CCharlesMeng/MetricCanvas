@@ -1,0 +1,1886 @@
+{
+  "composeSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 8000
+      },
+      "layout": {
+        "enum": [
+          "report",
+          "dashboard"
+        ]
+      },
+      "sources": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "maxProperties": 6,
+        "additionalProperties": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "sections": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 12,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8000
+            },
+            "pattern": {
+              "enum": [
+                "overview-with-trend",
+                "comparison",
+                "distribution",
+                "focus-objects",
+                "detail",
+                "explanation",
+                "custom"
+              ]
+            },
+            "container": {
+              "enum": [
+                "plain",
+                "panel",
+                "card"
+              ]
+            },
+            "blocks": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 24,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 8000
+                      },
+                      "type": {
+                        "const": "text"
+                      },
+                      "body": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 8000
+                      },
+                      "purpose": {
+                        "enum": [
+                          "primary-value",
+                          "change",
+                          "trend",
+                          "distribution",
+                          "reconciliation",
+                          "explanation"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "body"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 8000
+                      },
+                      "width": {
+                        "enum": [
+                          "full",
+                          "half",
+                          "third",
+                          "two-thirds"
+                        ]
+                      },
+                      "type": {
+                        "const": "data"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "component": {
+                        "enum": [
+                          "barChart",
+                          "categoryBreakdown",
+                          "gauge",
+                          "keyValuePanel",
+                          "lineChart",
+                          "metricCard",
+                          "pieChart",
+                          "rankingCard",
+                          "rankingDetailCard",
+                          "table"
+                        ]
+                      },
+                      "fields": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 30,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        }
+                      },
+                      "match": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "equals": {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "equals"
+                        ]
+                      },
+                      "purpose": {
+                        "enum": [
+                          "primary-value",
+                          "change",
+                          "trend",
+                          "comparison",
+                          "distribution",
+                          "ranking",
+                          "reconciliation"
+                        ]
+                      },
+                      "presentation": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "metric-summary"
+                              },
+                              "metrics": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 3,
+                                "items": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "field": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 128
+                                    },
+                                    "label": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 500
+                                    },
+                                    "changes": {
+                                      "type": "array",
+                                      "maxItems": 3,
+                                      "items": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "field": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 128
+                                          },
+                                          "label": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 500
+                                          },
+                                          "evidenceRef": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 128
+                                          }
+                                        },
+                                        "required": [
+                                          "field",
+                                          "label",
+                                          "evidenceRef"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "field"
+                                  ]
+                                }
+                              },
+                              "variant": {
+                                "enum": [
+                                  "compactSummary",
+                                  "compactStrip"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "metrics"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "bar-comparison"
+                              },
+                              "horizontal": {
+                                "type": "boolean"
+                              },
+                              "stacked": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "kind"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "record-list"
+                              },
+                              "density": {
+                                "enum": [
+                                  "standard",
+                                  "compact"
+                                ]
+                              },
+                              "subtitle": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              "columns": {
+                                "type": "array",
+                                "maxItems": 30,
+                                "items": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "field": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 500
+                                    },
+                                    "align": {
+                                      "enum": [
+                                        "left",
+                                        "right"
+                                      ]
+                                    },
+                                    "visual": {
+                                      "enum": [
+                                        "plain",
+                                        "signed"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "field"
+                                  ]
+                                }
+                              },
+                              "toolbar": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "search": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "fields"
+                                    ],
+                                    "properties": {
+                                      "fields": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 500
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 64,
+                                        "uniqueItems": true
+                                      },
+                                      "placeholder": {
+                                        "type": "string",
+                                        "maxLength": 4000
+                                      }
+                                    }
+                                  },
+                                  "export": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "format"
+                                    ],
+                                    "properties": {
+                                      "format": {
+                                        "const": "xlsx"
+                                      },
+                                      "filename": {
+                                        "type": "string",
+                                        "maxLength": 4000
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "required": [
+                              "kind"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "source",
+                      "component",
+                      "fields",
+                      "title"
+                    ]
+                  }
+                ]
+              }
+            },
+            "businessQuestion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "businessObject": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "distinctFrom": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "id",
+            "pattern",
+            "blocks"
+          ]
+        }
+      },
+      "dateFilters": {
+        "type": "array",
+        "maxItems": 8,
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "dependsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "uniqueItems": true,
+                  "maxItems": 50
+                },
+                "type": {
+                  "const": "add_date_filter"
+                },
+                "filterId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "declaration": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "timePoint"
+                        },
+                        "granularity": {
+                          "enum": [
+                            "month",
+                            "date"
+                          ]
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "default": {
+                          "type": "string"
+                        },
+                        "initialParam": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "hint": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object"
+                            }
+                          ]
+                        },
+                        "clearOnChangeOf": {
+                          "type": "array",
+                          "minItems": 1,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "uniqueItems": true
+                        },
+                        "min": {
+                          "type": "string"
+                        },
+                        "max": {
+                          "type": "string"
+                        },
+                        "disableFuture": {
+                          "type": "boolean"
+                        },
+                        "availability": {
+                          "type": "object"
+                        },
+                        "blockedRanges": {
+                          "type": "array"
+                        },
+                        "presets": {
+                          "type": "array"
+                        },
+                        "modes": {
+                          "type": "array"
+                        },
+                        "defaultMode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "granularity"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "timeRange"
+                        },
+                        "precision": {
+                          "enum": [
+                            "month",
+                            "date",
+                            "datetime"
+                          ]
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "default": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "from": {
+                                  "type": "string"
+                                },
+                                "to": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "from",
+                                "to"
+                              ]
+                            },
+                            {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "mode": {
+                                      "enum": [
+                                        "year",
+                                        "quarter",
+                                        "month"
+                                      ]
+                                    },
+                                    "value": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "mode"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "mode": {
+                                      "const": "last12Months"
+                                    }
+                                  },
+                                  "required": [
+                                    "mode"
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        "initialParam": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "display": {
+                          "const": "period",
+                          "enum": [
+                            "period",
+                            "modes"
+                          ]
+                        },
+                        "initialMode": {
+                          "enum": [
+                            "year",
+                            "quarter",
+                            "month"
+                          ]
+                        },
+                        "hint": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object"
+                            }
+                          ]
+                        },
+                        "clearOnChangeOf": {
+                          "type": "array",
+                          "minItems": 1,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "uniqueItems": true
+                        },
+                        "min": {
+                          "type": "string"
+                        },
+                        "max": {
+                          "type": "string"
+                        },
+                        "disableFuture": {
+                          "type": "boolean"
+                        },
+                        "availability": {
+                          "type": "object"
+                        },
+                        "blockedRanges": {
+                          "type": "array"
+                        },
+                        "presets": {
+                          "type": "array"
+                        },
+                        "modes": {
+                          "type": "array"
+                        },
+                        "defaultMode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "bindings": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "dataSourceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "target": {
+                        "enum": [
+                          "time",
+                          "timePoint"
+                        ]
+                      },
+                      "queryField": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "valueFormat": {
+                        "enum": [
+                          "iso",
+                          "compact"
+                        ]
+                      },
+                      "window": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "period"
+                              },
+                              "unit": {
+                                "enum": [
+                                  "day",
+                                  "month",
+                                  "year"
+                                ]
+                              },
+                              "offset": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "unit"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "const": "lastN"
+                              },
+                              "unit": {
+                                "enum": [
+                                  "day",
+                                  "month"
+                                ]
+                              },
+                              "n": {
+                                "type": "integer",
+                                "minimum": 1
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "unit",
+                              "n"
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "kind": {
+                                "enum": [
+                                  "yearToDate",
+                                  "monthToDate"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "kind"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "dataSourceId",
+                      "target"
+                    ]
+                  }
+                },
+                "headerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "filterId",
+                "declaration",
+                "bindings"
+              ]
+            }
+          ]
+        }
+      },
+      "pagedJoins": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "pagedJoin"
+            },
+            "rowKey": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "domainMember": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "members": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "key": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      },
+                      "queryField": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "field",
+                      "queryField"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "canSelectPage": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "source",
+                  "key",
+                  "canSelectPage"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "projection": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "member": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "field": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  }
+                },
+                "required": [
+                  "member",
+                  "field"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "ordering": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "asc",
+                          "desc"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "field",
+                      "direction"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "sortableFields": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  }
+                },
+                "nulls": {
+                  "type": "string",
+                  "const": "last"
+                }
+              },
+              "required": [
+                "default",
+                "sortableFields",
+                "nulls"
+              ],
+              "additionalProperties": false
+            },
+            "pagination": {
+              "type": "object",
+              "properties": {
+                "pageSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              },
+              "required": [
+                "pageSize"
+              ],
+              "additionalProperties": false
+            },
+            "fallback": {
+              "type": "object",
+              "properties": {
+                "maxRows": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              },
+              "required": [
+                "maxRows"
+              ],
+              "additionalProperties": false
+            },
+            "onMissing": {
+              "type": "string",
+              "const": "null"
+            },
+            "ordinalField": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "initial": {
+              "type": "object",
+              "properties": {
+                "capturedAt": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        {
+                          "maxItems": 100,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "totalCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "view": {
+                  "type": "object",
+                  "properties": {
+                    "pageIndex": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "sort": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                          },
+                          "direction": {
+                            "type": "string",
+                            "enum": [
+                              "asc",
+                              "desc"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "direction"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "predicates": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              },
+                              "op": {
+                                "type": "string",
+                                "const": "in"
+                              },
+                              "values": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "op",
+                              "values"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              },
+                              "op": {
+                                "type": "string",
+                                "enum": [
+                                  "gte",
+                                  "lte"
+                                ]
+                              },
+                              "value": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "op",
+                              "value"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              },
+                              "op": {
+                                "type": "string",
+                                "const": "dateRange"
+                              },
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "op"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "search": {
+                      "type": "object",
+                      "properties": {
+                        "fields": {
+                          "minItems": 1,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                          }
+                        },
+                        "query": {
+                          "type": "string"
+                        },
+                        "match": {
+                          "type": "string",
+                          "const": "equals"
+                        }
+                      },
+                      "required": [
+                        "fields",
+                        "query"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "pageIndex",
+                    "pageSize",
+                    "sort",
+                    "predicates"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "capturedAt",
+                "rows",
+                "totalCount",
+                "view"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type",
+            "rowKey",
+            "domainMember",
+            "members",
+            "projection",
+            "ordering",
+            "pagination",
+            "fallback",
+            "onMissing"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "title",
+      "sources",
+      "sections"
+    ]
+  },
+  "patterns": {
+    "version": "2",
+    "presentations": {
+      "metric-summary": {
+        "component": "metricCard",
+        "variant": "compactSummary",
+        "roles": [
+          "primary-value"
+        ],
+        "metricSpan": 4,
+        "description": "按业务对象组织主值行及有证据的变化值，各字段独立格式；同卡共用唯一对象选择"
+      }
+    },
+    "scenes": [
+      "business-report",
+      "usage-report",
+      "custom"
+    ],
+    "patterns": {
+      "overview-with-trend": {
+        "description": "概况卡后接趋势；按实际内容裁剪",
+        "metricSpan": 4,
+        "defaultSpan": 12
+      },
+      "comparison": {
+        "description": "两个或多个独立对照内容，非隐式合并计算",
+        "metricSpan": 6,
+        "defaultSpan": 6
+      },
+      "distribution": {
+        "description": "结构、排名及相邻说明",
+        "metricSpan": 6,
+        "defaultSpan": 6
+      },
+      "focus-objects": {
+        "description": "重点对象说明、排名和明细",
+        "metricSpan": 6,
+        "defaultSpan": 6
+      },
+      "detail": {
+        "description": "通栏明细核对",
+        "metricSpan": 12,
+        "defaultSpan": 12
+      },
+      "explanation": {
+        "description": "口径、范围、已有受信结论",
+        "metricSpan": 12,
+        "defaultSpan": 12
+      },
+      "custom": {
+        "description": "受控组件自由组合，显式宽度优先",
+        "metricSpan": 4,
+        "defaultSpan": 12
+      }
+    }
+  },
+  "componentCatalog": [
+    {
+      "type": "reportHeader",
+      "label": "报告页头",
+      "aliases": [],
+      "purpose": "表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML",
+      "chooseWhen": [
+        "任何完整页面的开头"
+      ],
+      "dataShape": "不绑定页面数据源",
+      "authoringShape": {
+        "bindsData": false
+      },
+      "requiredProps": [
+        "title"
+      ],
+      "title": "required",
+      "defaultSpan": 12
+    },
+    {
+      "type": "metricCard",
+      "label": "指标卡",
+      "aliases": [
+        "KPI卡",
+        "数字卡"
+      ],
+      "purpose": "突出一个或少量核心指标的当前值、变化值与可选完成率",
+      "chooseWhen": [
+        "总额、数量、完成率、KPI、核心指标、年度活动进展"
+      ],
+      "dataShape": "单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 0,
+          "max": 0
+        },
+        "measures": {
+          "min": 1
+        },
+        "maxRows": 3
+      },
+      "requiredProps": [
+        "rows[].label",
+        "rows[].valueField"
+      ],
+      "title": "optional",
+      "defaultSpan": 3
+    },
+    {
+      "type": "barChart",
+      "label": "柱状图",
+      "aliases": [
+        "条形图",
+        "柱图",
+        "柱线混合图"
+      ],
+      "purpose": "比较离散类别之间的大小或展示分类分布",
+      "chooseWhen": [
+        "区域/渠道/产品对比",
+        "分类分布",
+        "多指标类别比较"
+      ],
+      "dataShape": "一个 dimension 类别字段 + 一个或多个 metric 字段",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1,
+          "max": 1
+        },
+        "measures": {
+          "min": 1
+        }
+      },
+      "requiredProps": [
+        "categoryField",
+        "series[].field"
+      ],
+      "title": "optional",
+      "defaultSpan": 6
+    },
+    {
+      "type": "lineChart",
+      "label": "折线图",
+      "aliases": [
+        "线图",
+        "趋势图"
+      ],
+      "purpose": "展示指标随时间或有序维度的变化趋势",
+      "chooseWhen": [
+        "趋势、走势、按日/月变化、时间序列"
+      ],
+      "dataShape": "一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1,
+          "max": 1
+        },
+        "measures": {
+          "min": 1
+        }
+      },
+      "requiredProps": [
+        "xField",
+        "series[].field"
+      ],
+      "title": "optional",
+      "defaultSpan": 8
+    },
+    {
+      "type": "pieChart",
+      "label": "饼图",
+      "aliases": [
+        "圆饼图",
+        "环形图"
+      ],
+      "purpose": "展示少量类别对整体的占比或构成",
+      "chooseWhen": [
+        "占比、构成、份额，且类别数量较少"
+      ],
+      "dataShape": "一个 dimension 类别字段 + 一个 metric 数值字段",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1,
+          "max": 1
+        },
+        "measures": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "requiredProps": [
+        "categoryField",
+        "valueField"
+      ],
+      "title": "optional",
+      "defaultSpan": 4
+    },
+    {
+      "type": "table",
+      "label": "明细表",
+      "aliases": [
+        "表格",
+        "列表"
+      ],
+      "purpose": "展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录",
+      "chooseWhen": [
+        "明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细"
+      ],
+      "dataShape": "一个或多个 dimension/metric 字段组成的多行记录",
+      "authoringShape": {
+        "bindsData": true,
+        "minScalarFields": 1
+      },
+      "requiredProps": [
+        "columns[].field"
+      ],
+      "title": "optional",
+      "defaultSpan": 12
+    },
+    {
+      "type": "mapChart",
+      "label": "地图",
+      "aliases": [],
+      "purpose": "展示国家或省级地域分布，可按层级维度筛选器做三级下钻",
+      "chooseWhen": [
+        "明确要求中国/世界地图，且地域名称能映射到地图"
+      ],
+      "dataShape": "地域名称 dimension 字段 + 一个 metric 数值字段",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1,
+          "max": 1
+        },
+        "measures": {
+          "min": 1,
+          "max": 1
+        },
+        "requiresFieldSemantics": [
+          "地域名称"
+        ]
+      },
+      "requiredProps": [
+        "nameField",
+        "valueField",
+        "map"
+      ],
+      "title": "optional",
+      "defaultSpan": 8
+    },
+    {
+      "type": "gauge",
+      "label": "仪表",
+      "aliases": [
+        "gauge",
+        "仪表盘",
+        "完成率环"
+      ],
+      "purpose": "用环形刻度突出一个比率或完成度类 KPI",
+      "chooseWhen": [
+        "管道支撑率、完成率、达标率这类单值百分比 KPI"
+      ],
+      "dataShape": "单行记录；一个 measure 数值字段",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 0,
+          "max": 0
+        },
+        "measures": {
+          "min": 1,
+          "max": 1
+        },
+        "maxRows": 1
+      },
+      "requiredProps": [
+        "valueField"
+      ],
+      "title": "optional",
+      "defaultSpan": 2
+    },
+    {
+      "type": "tabContainer",
+      "label": "Tab 容器",
+      "aliases": [
+        "页签",
+        "选项卡"
+      ],
+      "purpose": "在同一区域切换普通内容与组合卡",
+      "chooseWhen": [
+        "多个分析视角需要共用同一区域，可混合指标卡、图表、文本、表格、组合卡和AI总结"
+      ],
+      "dataShape": "不绑定页面数据源；每个子组件自己声明数据槽",
+      "authoringShape": {
+        "bindsData": false
+      },
+      "requiredProps": [
+        "tabs[].id",
+        "tabs[].label",
+        "tabs[].component"
+      ],
+      "title": "optional",
+      "defaultSpan": 4
+    },
+    {
+      "type": "compositeCard",
+      "label": "组合卡",
+      "aliases": [
+        "复合卡",
+        "组合卡片"
+      ],
+      "purpose": "把若干组件框进一张卡,并让这张卡作为一个组件进 12 列栅格横向并排",
+      "chooseWhen": [
+        "需要若干张白卡横向并排,每张卡自带卡壳、可选标题与卡内分隔",
+        "要装的这组组件本身就是一个内容分区时改用 section.container: \"card\"",
+        "卡内是多张表格互斥切换时改用 Tab 容器"
+      ],
+      "dataShape": "不绑定页面数据源；每个子组件自己声明数据槽与字段绑定",
+      "authoringShape": {
+        "bindsData": false
+      },
+      "requiredProps": [
+        "components[].id",
+        "components[].type",
+        "components[].layout",
+        "components[].props"
+      ],
+      "title": "optional",
+      "defaultSpan": 4
+    },
+    {
+      "type": "rankingCard",
+      "label": "排行卡",
+      "aliases": [],
+      "purpose": "突出 Top N 或按指标排序的类别",
+      "chooseWhen": [
+        "排行、排名、Top N、领先/落后对象"
+      ],
+      "dataShape": "名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1,
+          "max": 1
+        },
+        "measures": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "requiredProps": [
+        "nameField",
+        "valueField"
+      ],
+      "title": "optional",
+      "defaultSpan": 4
+    },
+    {
+      "type": "rankingDetailCard",
+      "label": "详细排行卡",
+      "aliases": [],
+      "purpose": "按查询结果顺序展示对象、指标、变化、徽标与原因说明",
+      "chooseWhen": [
+        "需要保留查询排序的增长/下降排行",
+        "排行项需要展示标签与原因说明"
+      ],
+      "dataShape": "名称 dimension + 数值 measure，可选变化 measure、最多两个徽标 dimension、普通说明 dimension、语义 HTML 说明 semanticHtml/detail，以及可展开 recordList/detail",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1,
+          "max": 1
+        },
+        "measures": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "requiredProps": [
+        "nameField",
+        "valueField"
+      ],
+      "title": "optional",
+      "defaultSpan": 6
+    },
+    {
+      "type": "keyValuePanel",
+      "label": "信息面板",
+      "aliases": [
+        "键值面板",
+        "基本信息"
+      ],
+      "purpose": "把一条记录的若干字段按「标签：取值」逐项列出",
+      "chooseWhen": [
+        "详情页的基本信息区：字段各不相同、每个字段只有一个取值、不需要逐行核对",
+        "需要逐行核对或排序时改用明细表"
+      ],
+      "dataShape": "单行记录；每项绑定一个 dimension 或 measure 字段",
+      "authoringShape": {
+        "bindsData": true,
+        "minScalarFields": 1,
+        "maxRows": 1
+      },
+      "requiredProps": [
+        "items[].label",
+        "items[].field"
+      ],
+      "title": "optional",
+      "defaultSpan": 12
+    },
+    {
+      "type": "categoryBreakdown",
+      "label": "分类明细",
+      "aliases": [
+        "类别明细",
+        "分类清单"
+      ],
+      "purpose": "按类别逐行、按度量逐列列出少数几行带列头的紧凑明细",
+      "chooseWhen": [
+        "环形图旁边那份「类别 + 两三个度量」的小表,或卡内的分档明细",
+        "行数与列数都很少、不需要分页排序表头筛选时;需要那些能力改用明细表",
+        "每个类别只有一个取值、结构是键值对时改用信息面板"
+      ],
+      "dataShape": "每行一个类别;一个 dimension 类别字段 + 一到多个 measure 字段",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1,
+          "max": 1
+        },
+        "measures": {
+          "min": 1
+        },
+        "maxRows": 3
+      },
+      "requiredProps": [
+        "categoryField",
+        "columns[].label",
+        "columns[].field"
+      ],
+      "title": "optional",
+      "defaultSpan": 6
+    },
+    {
+      "type": "fieldText",
+      "label": "字段长文本",
+      "aliases": [],
+      "purpose": "把数据源里的一段长文本按段落呈现，标题写在组件上",
+      "chooseWhen": [
+        "项目背景、项目风险、会议结论这类整段来自数据字段的文本",
+        "正文是页面文档里写死的静态说明时改用 text 组件"
+      ],
+      "dataShape": "单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段",
+      "authoringShape": {
+        "bindsData": true,
+        "dimensions": {
+          "min": 1
+        },
+        "maxRows": 1,
+        "requiresFieldSemantics": [
+          "整段长文本"
+        ]
+      },
+      "requiredProps": [
+        "field"
+      ],
+      "title": "optional",
+      "defaultSpan": 12
+    },
+    {
+      "type": "text",
+      "label": "文本",
+      "aliases": [],
+      "purpose": "承载说明、口径提示或由后端返回的人工/AI 已确认分析结论；可显式使用受控语义 HTML 正文",
+      "chooseWhen": [
+        "摘要默认使用 text；说明、提示、后端返回或已确认结论均选择本组件",
+        "页面内分隔章节的大标题使用 variant: heading，标题写在 props.title，通常放在 container: plain 的分区里",
+        "摘要需要分色富文本时声明 bodyFormat: semanticHtml，并在 body 中只使用受控标签和语义类",
+        "分析报告摘要使用 variant: reportInline；它会默认显示图标和“AI 总结：”，metadata 只需声明正文"
+      ],
+      "dataShape": "不绑定页面数据源",
+      "authoringShape": {
+        "bindsData": false
+      },
+      "requiredProps": [],
+      "title": "optional",
+      "defaultSpan": 12
+    },
+    {
+      "type": "aiSummary",
+      "label": "AI 总结",
+      "aliases": [],
+      "purpose": "Report 区域分析摘要：展示已有正文，或基于限定范围和时间条件异步生成",
+      "chooseWhen": [
+        "Report 已有非空 body 直接展示；否则根据提示词和区域范围生成，集成应用注入异步 generate",
+        "明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配"
+      ],
+      "dataShape": "不声明数据槽；relatedDataSources 显式引用、relatedSections 收集可见分区、或 scope: container 收集直接所属区域；采用非明细字段，文字不参与",
+      "authoringShape": {
+        "bindsData": false
+      },
+      "requiredProps": [],
+      "title": "optional",
+      "defaultSpan": 12
+    },
+    {
+      "type": "button",
+      "label": "按钮",
+      "aliases": [],
+      "purpose": "执行受控导航、详情或筛选动作",
+      "chooseWhen": [
+        "独立操作入口"
+      ],
+      "dataShape": "不绑定数据源",
+      "authoringShape": {
+        "bindsData": false
+      },
+      "requiredProps": [
+        "label",
+        "action"
+      ],
+      "title": "unsupported",
+      "defaultSpan": 3
+    },
+    {
+      "type": "filterGroup",
+      "label": "独立筛选",
+      "aliases": [],
+      "purpose": "用固定单选按钮或下拉控制一个或多个查询消费者",
+      "chooseWhen": [
+        "Dashboard 正文独立筛选，或组合卡内多个指标共用筛选"
+      ],
+      "dataShape": "不绑定数据源；通过 filterId 写入筛选状态，查询通过 filterBindings 消费",
+      "authoringShape": {
+        "bindsData": false
+      },
+      "requiredProps": [
+        "filterId",
+        "options[].label",
+        "options[].value"
+      ],
+      "title": "unsupported",
+      "defaultSpan": 12
+    }
+  ],
+  "authoringCapabilities": {
+    "button": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "filterGroup": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "reportHeader": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "metricCard": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "barChart": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "lineChart": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "pieChart": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "table": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "mapChart": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "gauge": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "tabContainer": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "compositeCard": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "rankingCard": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "rankingDetailCard": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "keyValuePanel": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "categoryBreakdown": {
+      "assembled": true,
+      "data_editable": true
+    },
+    "fieldText": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "text": {
+      "assembled": false,
+      "data_editable": false
+    },
+    "aiSummary": {
+      "assembled": false,
+      "data_editable": false
+    }
+  },
+  "queryErrorCodes": [
+    "DQE_CONFIG_ERROR",
+    "DQE_FILTER_BINDING_ERROR",
+    "DQE_CANCELLED",
+    "DQE_AUTH_REQUIRED",
+    "DQE_FORBIDDEN",
+    "DQE_TIMEOUT",
+    "DQE_QUERY_REJECTED",
+    "DQE_TRANSPORT_ERROR",
+    "DQE_ENVELOPE_ERROR",
+    "DQE_ITEM_ERROR",
+    "DQE_FIELD_MAPPING_ERROR",
+    "DQE_ROW_CONTRACT_ERROR"
+  ],
+  "pageErrorTypes": [
+    "SCHEMA_ERROR",
+    "CHART_OPTION_ERROR",
+    "FIELD_CONTRACT_ERROR",
+    "QUERY_MAPPING_ERROR",
+    "FILTER_BINDING_ERROR",
+    "DQE_PROTOCOL_ERROR",
+    "DQE_EXECUTION_ERROR",
+    "DATA_CONTEXT_ERROR"
+  ]
+}

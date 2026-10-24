@@ -129,6 +129,8 @@ Report顶层页头统一声明`exportButtons`（6.31），每项配置`format`�
 
 使用 local-authoring 继续开发旧页面时，先运行独立 `upgrade-page.mjs` 检查；可迁移时保留原始字节与报告，再升级工作文件并继续原任务。升级规则、版本范围和语义缺口见[旧页面继续开发](docs/page-metadata/page.md#旧页面继续开发与显式升级)，可观察场景见[升级示例](pages/capabilities/layout/README.md#旧页面升级后继续开发)。此创作期能力不扩大运行时的旧版本读取范围。
 
+MC 内容包提供相同产品实现的版本检查和显式升级能力，输出读取兼容性、能力下限、升级结果及未验项；内容包、页面协议和模板分别记录版本。整体替换后先检查旧文件，迁移写入新目录，保留原始字节与报告，由 Skill 决定采用。该流程不改变既有保存、发布或旧修订读取策略。
+
 无值参数模板可以结构合法，必需输入完整性在执行前验证。执行时的查询副本与可变筛选状态不作为模板原文保存；提取、填值及旧绑定迁移见[参数专题](PAGE-PARAMETERS.md#程序化提取与填值)。
 
 Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。

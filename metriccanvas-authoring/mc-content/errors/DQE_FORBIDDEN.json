@@ -1,0 +1,11 @@
+{
+  "code": "DQE_FORBIDDEN",
+  "guidance": null,
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": true,
+    "pageErrorType": false,
+    "authoredGuidance": false
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

@@ -1,0 +1,409 @@
+{
+  "compile": {
+    "status": "ok",
+    "plan": {
+      "title": "合成验收",
+      "sources": {},
+      "sections": [
+        {
+          "id": "summary",
+          "blocks": [
+            {
+              "id": "note",
+              "type": "text",
+              "body": "结构验收"
+            }
+          ],
+          "pattern": "overview-with-trend",
+          "container": "panel"
+        }
+      ],
+      "layout": "report"
+    },
+    "adjustments": [
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/layout"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/pattern"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/container"
+      }
+    ],
+    "gaps": [],
+    "inspectionSpec": {
+      "formatVersion": 1,
+      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "templateRef": {
+        "scene": "business-report",
+        "variant": "standard",
+        "templateVersion": "1"
+      },
+      "requirements": [
+        {
+          "id": "page-header",
+          "mustBe": "reportHeader",
+          "origin": "productMandatory"
+        }
+      ],
+      "bindings": []
+    },
+    "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+    "deploymentAlignment": "not_run",
+    "checkedVersionFields": []
+  },
+  "required": {
+    "status": "gap",
+    "plan": {
+      "title": "合成验收",
+      "sources": {},
+      "sections": [
+        {
+          "id": "summary",
+          "blocks": [
+            {
+              "id": "note",
+              "type": "text",
+              "body": "结构验收"
+            }
+          ],
+          "pattern": "overview-with-trend",
+          "container": "panel"
+        }
+      ],
+      "layout": "report"
+    },
+    "adjustments": [
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/layout"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/pattern"
+      },
+      {
+        "code": "LAYOUT_DEFAULT_FILLED",
+        "path": "/sections/0/container"
+      }
+    ],
+    "gaps": [
+      {
+        "code": "DECLARED_REQUIREMENT_GAP",
+        "path": "note",
+        "origin": "userRequired",
+        "expected": "mapChart",
+        "actual": null
+      }
+    ],
+    "inspectionSpec": {
+      "formatVersion": 1,
+      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "templateRef": {
+        "scene": "business-report",
+        "variant": "standard",
+        "templateVersion": "1"
+      },
+      "requirements": [
+        {
+          "id": "page-header",
+          "mustBe": "reportHeader",
+          "origin": "productMandatory"
+        },
+        {
+          "id": "note",
+          "mustBe": "mapChart",
+          "origin": "userRequired"
+        }
+      ],
+      "bindings": []
+    },
+    "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+    "deploymentAlignment": "not_run",
+    "checkedVersionFields": []
+  },
+  "planned": {
+    "status": "invalid",
+    "plan": null,
+    "adjustments": [],
+    "gaps": [
+      {
+        "code": "TEMPLATE_NOT_EXECUTABLE",
+        "path": "",
+        "message": "columnTracks creation is unavailable; mapChart/tabContainer/compositeCard automatic assembly is unavailable; source reference capacity is limited by the active contract."
+      }
+    ]
+  },
+  "oldSchema": {
+    "declaredVersion": "6.0",
+    "targetVersion": "6.58",
+    "readableVersions": [
+      "5.0",
+      "5.1",
+      "5.2",
+      "5.3",
+      "5.4",
+      "6.5",
+      "6.11",
+      "6.12",
+      "6.13",
+      "6.14",
+      "6.15",
+      "6.16",
+      "6.17",
+      "6.18",
+      "6.19",
+      "6.20",
+      "6.21",
+      "6.22",
+      "6.23",
+      "6.24",
+      "6.25",
+      "6.26",
+      "6.27",
+      "6.28",
+      "6.29",
+      "6.30",
+      "6.31",
+      "6.32",
+      "6.33",
+      "6.34",
+      "6.35",
+      "6.36",
+      "6.37",
+      "6.38",
+      "6.39",
+      "6.40",
+      "6.41",
+      "6.42",
+      "6.43",
+      "6.44",
+      "6.45",
+      "6.46",
+      "6.47",
+      "6.48",
+      "6.49",
+      "6.50",
+      "6.51",
+      "6.52",
+      "6.53",
+      "6.54",
+      "6.55",
+      "6.56",
+      "6.57",
+      "6.58"
+    ],
+    "readable": false,
+    "requiredVersion": "6.0",
+    "capabilityErrors": [],
+    "validationErrors": [
+      {
+        "type": "SCHEMA_ERROR",
+        "path": "/schemaVersion",
+        "message": "不支持的文档格式版本 6.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+      }
+    ],
+    "fieldUses": [],
+    "upgrade": {
+      "possible": true,
+      "changes": [
+        {
+          "rule": "layout",
+          "path": "/layoutForm",
+          "message": "旧布局声明转为 layout，保留原形态"
+        },
+        {
+          "rule": "version",
+          "path": "/schemaVersion",
+          "message": "6.0 → 6.58；已检查能力下限、已知语义断点及完整目标协议"
+        }
+      ],
+      "warnings": [
+        "迁移通过是目标协议静态校验结果；继续开发前预览受影响交互，查询及真实服务需单独验证。"
+      ],
+      "errors": []
+    },
+    "status": "upgrade_required",
+    "note": "Read-only diagnosis. Upgrade writes only to an explicitly chosen new directory; never edit schemaVersion alone."
+  },
+  "futureSchema": {
+    "declaredVersion": "999.0",
+    "targetVersion": "6.58",
+    "readableVersions": [
+      "5.0",
+      "5.1",
+      "5.2",
+      "5.3",
+      "5.4",
+      "6.5",
+      "6.11",
+      "6.12",
+      "6.13",
+      "6.14",
+      "6.15",
+      "6.16",
+      "6.17",
+      "6.18",
+      "6.19",
+      "6.20",
+      "6.21",
+      "6.22",
+      "6.23",
+      "6.24",
+      "6.25",
+      "6.26",
+      "6.27",
+      "6.28",
+      "6.29",
+      "6.30",
+      "6.31",
+      "6.32",
+      "6.33",
+      "6.34",
+      "6.35",
+      "6.36",
+      "6.37",
+      "6.38",
+      "6.39",
+      "6.40",
+      "6.41",
+      "6.42",
+      "6.43",
+      "6.44",
+      "6.45",
+      "6.46",
+      "6.47",
+      "6.48",
+      "6.49",
+      "6.50",
+      "6.51",
+      "6.52",
+      "6.53",
+      "6.54",
+      "6.55",
+      "6.56",
+      "6.57",
+      "6.58"
+    ],
+    "readable": false,
+    "requiredVersion": "6.0",
+    "capabilityErrors": [],
+    "validationErrors": [
+      {
+        "type": "SCHEMA_ERROR",
+        "path": "/schemaVersion",
+        "message": "不支持的文档格式版本 999.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+      }
+    ],
+    "fieldUses": [],
+    "upgrade": {
+      "possible": false,
+      "changes": [],
+      "warnings": [],
+      "errors": [
+        {
+          "type": "SCHEMA_ERROR",
+          "path": "/schemaVersion",
+          "message": "没有 999.0 到 6.58 的迁移规则；支持 5.0—5.4 和 6.0—6.58"
+        }
+      ]
+    },
+    "status": "needs_review",
+    "note": "Read-only diagnosis. Upgrade writes only to an explicitly chosen new directory; never edit schemaVersion alone."
+  },
+  "evaluation": {
+    "testedContent": {
+      "contentVersion": "1-e9aba00bba96353d",
+      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "alignedWith": {
+        "productContractVersion": "1.0.0-rc.4",
+        "productManifest": "contract-snapshot/manifest.json",
+        "productManifestSha256": "f45ff5a3c0ae4b39af538b8f9380c290c35892eddddffe0545a92260a66806a1",
+        "authoringContractVersion": "0.3.1",
+        "authoringManifest": "contracts/manifest.json",
+        "authoringManifestSha256": "932ae05e5829992b2170bdda195fcee2d2c3c24fb5bf1234a320032e5c092cd3",
+        "pageSchemaVersion": "6.58",
+        "platformProtocolVersion": "2.0"
+      }
+    },
+    "environment": "local-deterministic",
+    "checks": [
+      {
+        "id": "text-plan",
+        "status": "passed",
+        "result": {
+          "status": "ok",
+          "plan": {
+            "title": "合成验收",
+            "sources": {},
+            "sections": [
+              {
+                "id": "summary",
+                "blocks": [
+                  {
+                    "id": "note",
+                    "type": "text",
+                    "body": "结构验收"
+                  }
+                ],
+                "pattern": "overview-with-trend",
+                "container": "panel"
+              }
+            ],
+            "layout": "report"
+          },
+          "adjustments": [
+            {
+              "code": "LAYOUT_DEFAULT_FILLED",
+              "path": "/layout"
+            },
+            {
+              "code": "LAYOUT_DEFAULT_FILLED",
+              "path": "/sections/0/pattern"
+            },
+            {
+              "code": "LAYOUT_DEFAULT_FILLED",
+              "path": "/sections/0/container"
+            }
+          ],
+          "gaps": [],
+          "inspectionSpec": {
+            "formatVersion": 1,
+            "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+            "templateRef": {
+              "scene": "business-report",
+              "variant": "standard",
+              "templateVersion": "1"
+            },
+            "requirements": [
+              {
+                "id": "page-header",
+                "mustBe": "reportHeader",
+                "origin": "productMandatory"
+              }
+            ],
+            "bindings": []
+          },
+          "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+          "deploymentAlignment": "not_run",
+          "checkedVersionFields": []
+        }
+      },
+      {
+        "id": "deployment-save",
+        "status": "not_run",
+        "reason": "No deployment receipt or supported local operation provided"
+      }
+    ],
+    "conclusion": {
+      "passed": 1,
+      "failed": 0,
+      "not_run": 1
+    },
+    "adoptionPolicy": "caller-owned; no approval, exemption or activation is performed"
+  }
+}

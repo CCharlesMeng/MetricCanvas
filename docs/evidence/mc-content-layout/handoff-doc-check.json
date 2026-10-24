@@ -1,0 +1,19 @@
+{
+  "contentVersion": "1-e9aba00bba96353d",
+  "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+  "scope": "documentation examples executed from a temporary standalone content installation; no Relay/DQE/save calls",
+  "verify": "passed",
+  "versionQuery": "passed",
+  "toolIndex": "passed",
+  "fullToolSchema": "passed",
+  "documentedCompile": {
+    "status": "ok",
+    "deploymentAlignment": "not_run"
+  },
+  "pairedArtifactInspection": "ok",
+  "exampleEvaluation": {
+    "passed": 1,
+    "failed": 0,
+    "not_run": 1
+  }
+}

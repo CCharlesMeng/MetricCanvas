@@ -1,0 +1,12 @@
+{
+  "name": "apply_page_parameter_selection",
+  "signature": "context_ref: str, extraction_ref: str, selected_ids: Annotated[list[str], Field(max_length=100)], text_choices: Annotated[list[ParameterTextChoice], Field(max_length=200)]=Field(default_factory=list)",
+  "description": "Prepare an immutable template artifact; does not save or publish.",
+  "parameters": [
+    "context_ref",
+    "extraction_ref",
+    "selected_ids",
+    "text_choices"
+  ],
+  "source": "active platform_mcp.py"
+}

@@ -35,7 +35,7 @@ function withChangedFile(relative: string, content: string, verify: () => void, 
 
 describe.sequential('当前契约检查无需旧服务源码', () => {
   beforeAll(() => {
-    for (const relative of ['tools/scripts', 'docs/page-metadata', 'pages', 'service', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
+    for (const relative of ['tools/scripts', 'tools/mc-content', 'docs/page-metadata', 'pages', 'service', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
       mkdirSync(path.dirname(path.join(isolated, relative)), { recursive: true });
       cpSync(path.join(root, relative), path.join(isolated, relative), {
         recursive: true,
@@ -194,6 +194,56 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       expect(checked.stdout).toContain('authoring contract export current');
       expect(readFileSync(entrypoint,'utf8')).toBe(original);
     } finally { rmSync(legacyRoot,{recursive:true,force:true}); }
+  }, scenarioTimeout);
+
+  it('Schema 升级后整包重新生成，旧页面保留且可另目录迁移', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-schema-release-'));
+    try {
+      cpSync(isolated, folder, { recursive: true, verbatimSymlinks: true });
+      const policyFile = path.join(folder, 'packages/page/src/version.ts');
+      const policy = readFileSync(policyFile, 'utf8');
+      const match = /const CURRENT_MINOR = (\d+);/.exec(policy)!;
+      const manifestFile = path.join(folder, 'metriccanvas-authoring/mc-content/mc-content.version.json');
+      const previous = JSON.parse(readFileSync(manifestFile, 'utf8'));
+      const expected = previous.alignedWith.pageSchemaVersion.split('.')[0] + '.' + (Number(match[1]) + 1);
+      const oldFile = path.join(folder, 'pages/capabilities/layout/mc-layout-business-report.json');
+      const bytes = readFileSync(oldFile);
+      writeFileSync(policyFile, policy.replace(match[0], `const CURRENT_MINOR = ${Number(match[1]) + 1};`));
+      // A real schema release also supplies the new version's product semantics.
+      const referenceFile = path.join(folder, 'docs/page-metadata/reference-map.json');
+      const reference = JSON.parse(readFileSync(referenceFile, 'utf8'));
+      reference.enumNotes[expected] = '仅用于隔离回归的增量版本，不修改主工作树。';
+      writeFileSync(referenceFile, JSON.stringify(reference));
+      const generated = runExport([], folder);
+      expect(generated.status, generated.stderr).toBe(0);
+      const current = JSON.parse(readFileSync(manifestFile, 'utf8'));
+      expect(current.alignedWith.pageSchemaVersion).toBe(expected);
+      expect(current.contentSha256).not.toBe(previous.contentSha256);
+      const scripts = path.join(folder, 'metriccanvas-authoring/mc-content/scripts');
+      const inspected = spawnSync(process.execPath, [path.join(scripts, 'inspect-page.mjs'), oldFile], { cwd: tmpdir(), encoding: 'utf8' });
+      expect(inspected.status, inspected.stderr).toBe(0);
+      expect(JSON.parse(inspected.stdout)).toMatchObject({ readable: true, targetVersion: expected, upgrade: { possible: true } });
+      const destination = path.join(folder, 'new-migration');
+      const migrated = spawnSync(process.execPath, [path.join(scripts, 'upgrade-page.mjs'), oldFile, '--out-dir', destination], { cwd: tmpdir(), encoding: 'utf8' });
+      expect(migrated.status, migrated.stdout).toBe(0);
+      expect(readFileSync(oldFile)).toEqual(bytes);
+      expect(readFileSync(path.join(destination, 'original/mc-layout-business-report.json'))).toEqual(bytes);
+      expect(JSON.parse(readFileSync(path.join(destination, 'page/mc-layout-business-report.json'), 'utf8')).schemaVersion).toBe(expected);
+    } finally { rmSync(folder, { recursive: true, force: true }); }
+  }, scenarioTimeout * 2);
+
+  it('MC 事实只维护一处，同时生成内容包和兼容参考', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-content-source-'));
+    try {
+      cpSync(isolated, folder, { recursive: true, verbatimSymlinks: true });
+      const source = path.join(folder, 'tools/mc-content/runtime/tool-behavior.md');
+      const marker = '\nMC single-source projection acceptance.\n';
+      writeFileSync(source, readFileSync(source, 'utf8') + marker);
+      const generated = runExport([], folder);
+      expect(generated.status, generated.stderr).toBe(0);
+      expect(readFileSync(path.join(folder, 'metriccanvas-authoring/mc-content/runtime/tool-behavior.md'), 'utf8')).toContain(marker);
+      expect(readFileSync(path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md'), 'utf8')).toContain(marker);
+    } finally { rmSync(folder, { recursive: true, force: true }); }
   }, scenarioTimeout);
 
   it('包版本变更后拒绝旧导出并可重新生成', () => {

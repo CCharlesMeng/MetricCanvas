@@ -1,0 +1,15 @@
+{
+  "code": "SCENE_MISMATCH_GAP",
+  "guidance": {
+    "message": "计划与模板的 pattern 显著不匹配；这是建议，可调整模板引用或保留已经确认的自由布局。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

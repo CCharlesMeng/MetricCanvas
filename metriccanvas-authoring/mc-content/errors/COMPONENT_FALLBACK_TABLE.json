@@ -1,0 +1,15 @@
+{
+  "code": "COMPONENT_FALLBACK_TABLE",
+  "guidance": {
+    "message": "工具已采用默认展示或同字段表格，检查实际结果后继续交付。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

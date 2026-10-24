@@ -52,6 +52,11 @@ jobs:
       - name: 验证 local-authoring Skill
         run: pnpm authoring:check
 
+      - name: 验证 MC 内容包、布局能力与旧页升级
+        run: |
+          python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_mc_content.py'
+          python tools/scripts/mc-content-fixtures.py --check
+
       - name: 验证创作接入与单向同步契约
         run: python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_deployment*.py'
 

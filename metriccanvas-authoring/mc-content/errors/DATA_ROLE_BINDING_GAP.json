@@ -1,0 +1,15 @@
+{
+  "code": "DATA_ROLE_BINDING_GAP",
+  "guidance": {
+    "message": "已声明的数据源、字段或容器关系未保留；依据受控字段证据核对绑定，不能用模板示例值补缺。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

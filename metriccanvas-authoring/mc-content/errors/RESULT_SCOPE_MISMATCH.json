@@ -1,0 +1,15 @@
+{
+  "code": "RESULT_SCOPE_MISMATCH",
+  "guidance": {
+    "message": "引用无法在当前创作轮次读取。sources 的值直接使用本轮 query_data 返回的原始 resultRef；由集成程序核对轮次和共享存储。",
+    "action": "check_current_turn_and_store",
+    "owner": "integration"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

@@ -1,0 +1,11 @@
+{
+  "name": "resolve_page_parameters",
+  "signature": "context_ref: str, values: dict[str, Any], artifact_ref: str | None=None",
+  "description": "Fill a temporary instance from work or a template artifact; no query or save.",
+  "parameters": [
+    "context_ref",
+    "values",
+    "artifact_ref"
+  ],
+  "source": "active platform_mcp.py"
+}

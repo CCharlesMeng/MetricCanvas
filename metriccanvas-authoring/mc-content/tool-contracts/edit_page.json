@@ -1,0 +1,12 @@
+{
+  "name": "edit_page",
+  "signature": "context_ref: str, page_id: Annotated[str, Field(min_length=1)], request: EditRequest, expected_version: Annotated[int, Field(ge=0)]",
+  "description": "Edit page_id after checking its trusted binding and Java current baseline; save valid changes.",
+  "parameters": [
+    "context_ref",
+    "page_id",
+    "request",
+    "expected_version"
+  ],
+  "source": "active platform_mcp.py"
+}

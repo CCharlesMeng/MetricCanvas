@@ -1,0 +1,15 @@
+{
+  "code": "SAVE_RECONCILIATION_REQUIRED",
+  "guidance": {
+    "message": "原写入可能已生效，停止提交；程序核对原冻结记录。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

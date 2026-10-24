@@ -1,0 +1,15 @@
+{
+  "code": "PLAN_ID_CONFLICT",
+  "guidance": {
+    "message": "提交完整计划、稳定且唯一的节点 id 和明确块类型；缺省填充不自动补回节点。",
+    "action": null,
+    "owner": "caller"
+  },
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}
