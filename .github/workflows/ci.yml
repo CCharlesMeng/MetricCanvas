@@ -77,6 +77,18 @@ jobs:
         with:
           name: metriccanvas-authoring-${{ github.sha }}
           path: metriccanvas-authoring
+          include-hidden-files: true
+
+      - name: 下载创作 Bundle 验证实际分发文件
+        if: github.event_name == 'push'
+        uses: actions/download-artifact@v4
+        with:
+          name: metriccanvas-authoring-${{ github.sha }}
+          path: ${{ runner.temp }}/metriccanvas-authoring-installed
+
+      - name: 校验下载后的创作 Bundle
+        if: github.event_name == 'push'
+        run: python "$RUNNER_TEMP/metriccanvas-authoring-installed/scripts/check_bundle.py"
 
   tests:
     runs-on: ubuntu-latest

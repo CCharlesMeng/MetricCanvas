@@ -6,7 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
-| MC 内容包完整性与 Schema 同步构建 | 本仓补全与本地验收完成；Relay 真实接入待验 | [完整性审查及实施方案](2026-10-24-layout-standards/mc-content-completeness-plan.md)、[新窗口交接](2026-10-24-layout-standards/implementation-handoff.md)：已补齐协议语义、精确检索、完整工具参数、独立覆盖与 CI；逐项收口见主计划第 11 节，Relay 接线另验 |
+| MC 内容包完整性与 Schema 同步构建 | MC 补全已交付；Relay 实施待验 | [接续交接](2026-10-24-layout-standards/relay-delivery-handoff.md) → [接入实施任务书](2026-10-24-layout-standards/relay-integration-execution.md)；[完整性主计划](2026-10-24-layout-standards/mc-content-completeness-plan.md)：当前包与配套公共源码已复验，完整 authoring 分发回读修复随本轮交付，Git/CI 以交付回执为准；Relay 通道、权限及部署另验 |
 | 表格默认排序与决策意见明细合并分页 | 业务规则已确认，Playground 归并预览可运行；通用协议待实施 | [实施主计划](2026-10-23-paged-union-table.md)、[页面入口](../../pages/capabilities/table/README.md#决策意见明细)、[合成样例](paged-union-table/example-input.json)：预览复用 query、查询 order 与分页，defaultSort/pagedUnion、检查点及真实接入另行承接 |
 | DQE object 查询 | 本仓实现及本地验收完成，真实接入待验 | [实施计划](2026-10-23-dqe-object-query.md)：对象字段、页面交互、完整结果、关联及 local-authoring 已完成；[本地验收](../evidence/dqe-object-query/result.md)，真实 DQE 分页/排序/候选另验 |
 | Report AI 总结重启 | 本仓实现与本地验收完成，真实云宝接入待验 | [主计划](2026-10-22-report-ai-summary.md)：双模式、区域范围、应用会话缓存、单文件云宝 mock；真实内网接入另验 |

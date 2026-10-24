@@ -84,3 +84,9 @@ Q1–Q6 的已确认结论集中在主计划第 1.1 节。实施时保留以下�
 ## 7. 实施后的交接更新
 
 本文件前 6 节保留交接起点与已确认边界；“尚未实施”等描述属于当时基线。当前结果见 [实施与验收](../../evidence/mc-content-layout/implementation-results.md) 和主计划第 11 节。MC 包自带 `HANDOFF.md`、完整契约与独立运行样例。下次接续先核实本工作树 Git 状态；用户现已授权提交并推送 main；不把基线 SHA 视作本次交付 SHA，交付后另核实远端与完整 CI。实际 Relay 注册、双通道、并发关联、重载、真实服务及标记注入仍需部署方验收。Q7 只完成测量，候选预算未变为 SLA。
+
+## 8. Relay 探查后的实施入口
+
+MC 补全已交付 main，最终提交 `edab0baa9521ad3c6f6ab5b21c00e084c05a1f38` 的完整 CI 通过。Relay 返回报告仍基于 387 文件旧包；当前交付版本为 `1-ebf417635014c58b`。用户已同意继续实施；下次先读[接续交接](relay-delivery-handoff.md)，再按 [Relay 实施任务书](relay-integration-execution.md)推进。
+
+本机未发现报告中的 Windows 源码或远程连接，MC 侧已重做独立安装、公共工具对账和配套公有归档准备，见 [交付复验](../../evidence/mc-content-layout/relay-readiness.md)。另发现完整 authoring CI 目录下载漏隐藏清单文件，上传保留及下载回读检查的修复随本轮交付；用户已授权提交并推送 main，对应完整 CI 与实际下载检查以本轮交付回执为准。真实 Relay 程序修改及部署验收继续单列。
