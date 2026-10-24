@@ -1,0 +1,123 @@
+{
+  "type": "button",
+  "label": "按钮",
+  "aliases": [],
+  "purpose": "执行受控导航、详情或筛选动作",
+  "chooseWhen": [
+    "独立操作入口"
+  ],
+  "dataShape": "不绑定数据源",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [
+    "label",
+    "action"
+  ],
+  "title": "unsupported",
+  "defaultSpan": 3,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "button.overview",
+  "reference": "references/page-metadata/components/button.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/page-visibility-region-linkage.json",
+      "requiredVersion": "6.35",
+      "capabilities": [
+        {
+          "id": "tab-url-initial-state",
+          "minor": 33,
+          "description": "Tab 容器通过显式 URL 参数初始化活动页签"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "table-column-actions",
+          "minor": 12,
+          "description": "表格列独立的导航或详情动作"
+        },
+        {
+          "id": "detail-views",
+          "minor": 12,
+          "description": "复用图表和表格的单层受控详情视图"
+        },
+        {
+          "id": "section-navigation",
+          "minor": 12,
+          "description": "内容分区组切换与章节锚点"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-hierarchy",
+          "minor": 0,
+          "description": "层级维度筛选器(ADR-0050)"
+        },
+        {
+          "id": "table-column-link",
+          "minor": 0,
+          "description": "表格列声明为行点击导航入口(ADR-0049)"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/reference-conditions-page.json",
+      "requiredVersion": "6.35",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
+        },
+        {
+          "id": "filter-time-point",
+          "minor": 0,
+          "description": "timePoint 筛选器(ADR-0050)"
+        },
+        {
+          "id": "filter-number-range",
+          "minor": 0,
+          "description": "numberRange 筛选器(ADR-0050)"
+        },
+        {
+          "id": "filter-search",
+          "minor": 0,
+          "description": "search 筛选器(ADR-0050)"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

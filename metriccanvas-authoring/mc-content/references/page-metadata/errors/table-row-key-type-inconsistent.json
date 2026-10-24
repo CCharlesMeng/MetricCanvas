@@ -1,0 +1,30 @@
+{
+  "case": "table-row-key-type-inconsistent",
+  "invariant": "table-row-key",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "rowKey 字段 key 的类型必须一致:string/number",
+      "paths": [
+        "/sections/0/components/3/data/compare"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          "…",
+          {
+            "data": {
+              "compare": "previous"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

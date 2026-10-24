@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/authoring-turn/1.0",
+  "title": "Trusted prepared authoring turn (program channel only)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contextRef",
+    "actorId",
+    "workspaceId",
+    "requestId",
+    "runId",
+    "turnId",
+    "pageId",
+    "capabilityVersion",
+    "version",
+    "status",
+    "mode",
+    "access",
+    "baseRef",
+    "documentSha256",
+    "selectedComponentId"
+  ],
+  "properties": {
+    "contextRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "workspaceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "turnId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "pageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "capabilityVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "version": {
+      "const": "1.0"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "cancelled",
+        "closed"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "new",
+        "existing"
+      ]
+    },
+    "access": {
+      "enum": [
+        "read",
+        "write"
+      ]
+    },
+    "baseRef": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pageId",
+            "revisionId",
+            "resourceId"
+          ],
+          "properties": {
+            "pageId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "revisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "resourceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "documentSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "selectedComponentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "new"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "baseRef": {
+            "type": "null"
+          },
+          "documentSha256": {
+            "type": "null"
+          },
+          "selectedComponentId": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "baseRef": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pageId",
+              "revisionId",
+              "resourceId"
+            ],
+            "properties": {
+              "pageId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "resourceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            }
+          },
+          "documentSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    }
+  ]
+}

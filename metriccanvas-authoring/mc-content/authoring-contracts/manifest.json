@@ -1,0 +1,113 @@
+{
+  "authoringContractVersion": "0.3.1",
+  "files": [
+    {
+      "file": "authored/platform-v2-protocol.md",
+      "sha256": "32b9fd6b7bfb7858a88f250f613b583c6c0689146661e96aa612bd07ef6fc84c"
+    },
+    {
+      "file": "authored/publication-contract.ts",
+      "sha256": "e0db19861d36ed584f438ff5061ab53a7efe2c23d713b0be6c0154f89a53157a"
+    },
+    {
+      "file": "authored/publication-conformance.json",
+      "sha256": "e2383775351e953c4d58744459ea785f6be615507e3bf95e2c25a78236a5bef0"
+    },
+    {
+      "file": "authored/authoring-turn.schema.json",
+      "sha256": "9955748188755beb90cceba2f6dcc56061919fb0ee62a1128519844f2324a9d2"
+    },
+    {
+      "file": "authored/authoring-turn.conformance.json",
+      "sha256": "4152c30ee7a853801f81b692232f4770967d678acd250f7953dce130fdba12b1"
+    },
+    {
+      "file": "authored/authoring-turn-contract.ts",
+      "sha256": "46968c58ce8388f402e74bc17994b85c2228c97196781ddfc9adfd1ff560c2c4"
+    },
+    {
+      "file": "authored/authoring-turn-protocol.md",
+      "sha256": "5e5fc9505e1cf76c646f5bcf232f532a127ce25c9d509607da278d5123188ea9"
+    },
+    {
+      "file": "authored/authoring-turn.bytes.json",
+      "sha256": "82ea48271f2b884d5193981ff79d66288db17375a20b6721e397b08d16c8e634"
+    },
+    {
+      "file": "authored/source-description.schema.json",
+      "sha256": "2e6d4357eda20788923828cd1850c768f979c041ce80ce7745d5d6172cec5aaf"
+    },
+    {
+      "file": "authored/authoring-data-mapping-protocol.md",
+      "sha256": "f4973d7a5d25b3b658e4ff9a8abd0b40993a520476266c78bf67b922fe2eb7ad"
+    },
+    {
+      "file": "authored/source-format.conformance.json",
+      "sha256": "dd5d67cb45237c5cb7b6ee9bebc5488b3d822586984703d598022a31b7ea2084"
+    },
+    {
+      "file": "authored/section-patterns.json",
+      "sha256": "ef06cf06df0a9f975d752c08b10c78d942df3fabc8f74183e80cf38b376d5752"
+    },
+    {
+      "file": "authored/page-structure-plan.schema.json",
+      "sha256": "3b6828d7857e47f3fed51ce16a3809f127deb4086bd7fe4d9f9d44c61554ebfc"
+    },
+    {
+      "file": "authored/analysis-intents.json",
+      "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
+    },
+    {
+      "file": "authored/page-edit-request.schema.json",
+      "sha256": "250d4f3e98e859d14b6b16c5eb5d5d322f81e8d4af2f04bf1186df2cec0cc355"
+    },
+    {
+      "file": "authored/lifecycle-request.schema.json",
+      "sha256": "25b2ff5d45756f2b7aa56aa6b3baee16e366e33ce909ea6a0740f2690250bb78"
+    },
+    {
+      "file": "authored/publish-request.schema.json",
+      "sha256": "ae0c4f5e656ad55d702bd0e10e106fab7faa693ddbcc40964b29ae0d3d1ee4e3"
+    },
+    {
+      "file": "authored/agent-conformance.schema.json",
+      "sha256": "840e44dd416cef561ac9283a226d770d810790fe60c5a485e88353960e630d7a"
+    },
+    {
+      "file": "authored/agent-model-decision.schema.json",
+      "sha256": "7dcabb713b958e151136c18fe96062eae8568f121082748489375e2f14a952b2"
+    },
+    {
+      "file": "authored/agent-step-event.schema.json",
+      "sha256": "260ceeea4d6cf185333e4b191a567caf8457dfa58c0d383c963ef67c2b34eeec"
+    },
+    {
+      "file": "authored/business-term-resolution.schema.json",
+      "sha256": "f8ecad1e32c668cf16b7bde3201a6503fef9b7d91783f0e16584428107120b45"
+    },
+    {
+      "file": "authored/page-build-artifact.schema.json",
+      "sha256": "5e0c4e05a0ed31c7639859ce7e941c7ed08970d912e60f6791e1c3b99408b9ec"
+    },
+    {
+      "file": "authored/relay-page-artifact-envelope.schema.json",
+      "sha256": "2226c6cf97cf5de5d196e08b48b05dc848f25a1d764f5e5fe9b2d164b7c99e72"
+    },
+    {
+      "file": "authored/page-build-spec.schema.json",
+      "sha256": "1412b40e20be56fb0aa68d43fe563da86e76a810b2a1eed78b28e3ef87cfb23c"
+    },
+    {
+      "file": "exported/analysis-intents.json",
+      "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
+    },
+    {
+      "file": "exported/agent-conformance.json",
+      "sha256": "0a421fdf3f0555676fbb80d27e3a046c4fbc6da10bea15a4a06ded7a68ad87e0"
+    },
+    {
+      "file": "exported/build-page-conformance.json",
+      "sha256": "3ad69797bacc3a2f7379995f41d546ada74fd6bdc1eec819d2dec51366fc008a"
+    }
+  ]
+}

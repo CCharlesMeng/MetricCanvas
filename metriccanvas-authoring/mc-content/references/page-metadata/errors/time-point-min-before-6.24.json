@@ -1,0 +1,37 @@
+{
+  "case": "time-point-min-before-6.24",
+  "invariant": "time-point-min",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点筛选的包含式最早日期或月份下限 由 6.24 引入，文档声明的是 6.23",
+      "paths": [
+        "/filters/0",
+        "/filters/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "report-month",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "报告月份",
+        "default": "2026-09",
+        "required": true,
+        "min": "2020-06"
+      },
+      {
+        "id": "report-date",
+        "type": "timePoint",
+        "granularity": "date",
+        "label": "报告日期",
+        "required": true,
+        "min": "2020-06-15",
+        "default": "2020-06-15"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

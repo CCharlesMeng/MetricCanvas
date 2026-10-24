@@ -31,7 +31,11 @@
     "report-pdf:build": "node tools/scripts/build-report-pdf.mjs",
     "report-pdf:check": "node tools/scripts/build-report-pdf.mjs --check",
     "mc:content:test": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s metriccanvas-authoring/test-harness/tests -p test_mc_content.py",
-    "mc:content:fixtures": "PYTHONDONTWRITEBYTECODE=1 python3 tools/scripts/mc-content-fixtures.py"
+    "mc:content:fixtures": "PYTHONDONTWRITEBYTECODE=1 python3 tools/scripts/mc-content-fixtures.py",
+    "mc:content:coverage": "tsx tools/scripts/export-authoring-contracts.ts --mc-coverage",
+    "mc:content:check": "pnpm authoring:contracts:check && pnpm mc:content:coverage && pnpm mc:content:test && python3 tools/scripts/mc-content-fixtures.py --check",
+    "mc:content:pack": "python3 tools/scripts/mc-content-pack.py",
+    "mc:content:benchmark": "python3 tools/scripts/mc-content-benchmark.py"
   },
   "devDependencies": {
     "@sveltejs/package": "2.5.8",

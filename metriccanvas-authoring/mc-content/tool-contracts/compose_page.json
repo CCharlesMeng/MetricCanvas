@@ -7,15 +7,1270 @@
     "request",
     "expected_version"
   ],
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "context_ref": {
+        "type": "string"
+      },
+      "request": {
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "maxLength": 8000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "layout": {
+            "enum": [
+              "report",
+              "dashboard"
+            ]
+          },
+          "sources": {
+            "additionalProperties": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxProperties": 6,
+            "propertyNames": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "sections": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[a-z0-9][a-z0-9-]*$",
+                  "type": "string"
+                },
+                "title": {
+                  "maxLength": 8000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "pattern": {
+                  "enum": [
+                    "overview-with-trend",
+                    "comparison",
+                    "distribution",
+                    "focus-objects",
+                    "detail",
+                    "explanation",
+                    "custom"
+                  ]
+                },
+                "container": {
+                  "enum": [
+                    "plain",
+                    "panel",
+                    "card"
+                  ]
+                },
+                "blocks": {
+                  "items": {
+                    "oneOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9][a-z0-9-]*$",
+                            "type": "string"
+                          },
+                          "title": {
+                            "maxLength": 8000,
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "type": {
+                            "const": "text"
+                          },
+                          "body": {
+                            "maxLength": 8000,
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "purpose": {
+                            "enum": [
+                              "primary-value",
+                              "change",
+                              "trend",
+                              "distribution",
+                              "reconciliation",
+                              "explanation"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "body"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9][a-z0-9-]*$",
+                            "type": "string"
+                          },
+                          "title": {
+                            "maxLength": 8000,
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "width": {
+                            "enum": [
+                              "full",
+                              "half",
+                              "third",
+                              "two-thirds"
+                            ]
+                          },
+                          "type": {
+                            "const": "data"
+                          },
+                          "source": {
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9][a-z0-9-]*$",
+                            "type": "string"
+                          },
+                          "component": {
+                            "enum": [
+                              "barChart",
+                              "categoryBreakdown",
+                              "gauge",
+                              "keyValuePanel",
+                              "lineChart",
+                              "metricCard",
+                              "pieChart",
+                              "rankingCard",
+                              "rankingDetailCard",
+                              "table"
+                            ]
+                          },
+                          "fields": {
+                            "items": {
+                              "maxLength": 128,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "maxItems": 30,
+                            "minItems": 1,
+                            "type": "array",
+                            "uniqueItems": true
+                          },
+                          "match": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "field": {
+                                "maxLength": 128,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "equals": {
+                                "type": [
+                                  "string",
+                                  "number",
+                                  "boolean"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "equals"
+                            ],
+                            "type": "object"
+                          },
+                          "purpose": {
+                            "enum": [
+                              "primary-value",
+                              "change",
+                              "trend",
+                              "comparison",
+                              "distribution",
+                              "ranking",
+                              "reconciliation"
+                            ]
+                          },
+                          "presentation": {
+                            "oneOf": [
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "kind": {
+                                    "const": "metric-summary"
+                                  },
+                                  "metrics": {
+                                    "items": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "field": {
+                                          "maxLength": 128,
+                                          "minLength": 1,
+                                          "type": "string"
+                                        },
+                                        "label": {
+                                          "maxLength": 500,
+                                          "minLength": 1,
+                                          "type": "string"
+                                        },
+                                        "changes": {
+                                          "items": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                              "field": {
+                                                "maxLength": 128,
+                                                "minLength": 1,
+                                                "type": "string"
+                                              },
+                                              "label": {
+                                                "maxLength": 500,
+                                                "minLength": 1,
+                                                "type": "string"
+                                              },
+                                              "evidenceRef": {
+                                                "maxLength": 128,
+                                                "minLength": 1,
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "field",
+                                              "label",
+                                              "evidenceRef"
+                                            ],
+                                            "type": "object"
+                                          },
+                                          "maxItems": 3,
+                                          "type": "array"
+                                        }
+                                      },
+                                      "required": [
+                                        "field"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "maxItems": 3,
+                                    "minItems": 1,
+                                    "type": "array"
+                                  },
+                                  "variant": {
+                                    "enum": [
+                                      "compactSummary",
+                                      "compactStrip"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "kind",
+                                  "metrics"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "kind": {
+                                    "const": "bar-comparison"
+                                  },
+                                  "horizontal": {
+                                    "type": "boolean"
+                                  },
+                                  "stacked": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "kind"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "kind": {
+                                    "const": "record-list"
+                                  },
+                                  "density": {
+                                    "enum": [
+                                      "standard",
+                                      "compact"
+                                    ]
+                                  },
+                                  "subtitle": {
+                                    "maxLength": 500,
+                                    "minLength": 1,
+                                    "type": "string"
+                                  },
+                                  "columns": {
+                                    "items": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "field": {
+                                          "maxLength": 500,
+                                          "minLength": 1,
+                                          "type": "string"
+                                        },
+                                        "align": {
+                                          "enum": [
+                                            "left",
+                                            "right"
+                                          ]
+                                        },
+                                        "visual": {
+                                          "enum": [
+                                            "plain",
+                                            "signed"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "field"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "maxItems": 30,
+                                    "type": "array"
+                                  },
+                                  "toolbar": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "search": {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "fields": {
+                                            "items": {
+                                              "maxLength": 500,
+                                              "minLength": 1,
+                                              "type": "string"
+                                            },
+                                            "maxItems": 64,
+                                            "minItems": 1,
+                                            "type": "array",
+                                            "uniqueItems": true
+                                          },
+                                          "placeholder": {
+                                            "maxLength": 4000,
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "fields"
+                                        ],
+                                        "type": "object"
+                                      },
+                                      "export": {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "format": {
+                                            "const": "xlsx"
+                                          },
+                                          "filename": {
+                                            "maxLength": 4000,
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "format"
+                                        ],
+                                        "type": "object"
+                                      }
+                                    },
+                                    "type": "object"
+                                  }
+                                },
+                                "required": [
+                                  "kind"
+                                ],
+                                "type": "object"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "source",
+                          "component",
+                          "fields",
+                          "title"
+                        ],
+                        "type": "object"
+                      }
+                    ]
+                  },
+                  "maxItems": 24,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "businessQuestion": {
+                  "maxLength": 500,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "businessObject": {
+                  "maxLength": 500,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "distinctFrom": {
+                  "maxLength": 500,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "pattern",
+                "blocks"
+              ],
+              "type": "object"
+            },
+            "maxItems": 12,
+            "minItems": 1,
+            "type": "array"
+          },
+          "dateFilters": {
+            "items": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "dependsOn": {
+                      "items": {
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "maxItems": 50,
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "type": {
+                      "const": "add_date_filter"
+                    },
+                    "filterId": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "declaration": {
+                      "oneOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "type": {
+                              "const": "timePoint"
+                            },
+                            "granularity": {
+                              "enum": [
+                                "month",
+                                "date"
+                              ]
+                            },
+                            "label": {
+                              "type": "string"
+                            },
+                            "default": {
+                              "type": "string"
+                            },
+                            "initialParam": {
+                              "maxLength": 128,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "required": {
+                              "type": "boolean"
+                            },
+                            "hint": {
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object"
+                                }
+                              ]
+                            },
+                            "clearOnChangeOf": {
+                              "items": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "type": "array",
+                              "uniqueItems": true
+                            },
+                            "min": {
+                              "type": "string"
+                            },
+                            "max": {
+                              "type": "string"
+                            },
+                            "disableFuture": {
+                              "type": "boolean"
+                            },
+                            "availability": {
+                              "type": "object"
+                            },
+                            "blockedRanges": {
+                              "type": "array"
+                            },
+                            "presets": {
+                              "type": "array"
+                            },
+                            "modes": {
+                              "type": "array"
+                            },
+                            "defaultMode": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "granularity"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "type": {
+                              "const": "timeRange"
+                            },
+                            "precision": {
+                              "enum": [
+                                "month",
+                                "date",
+                                "datetime"
+                              ]
+                            },
+                            "label": {
+                              "type": "string"
+                            },
+                            "default": {
+                              "oneOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "from": {
+                                      "type": "string"
+                                    },
+                                    "to": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "from",
+                                    "to"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "oneOf": [
+                                    {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "mode": {
+                                          "enum": [
+                                            "year",
+                                            "quarter",
+                                            "month"
+                                          ]
+                                        },
+                                        "value": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "mode"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "mode": {
+                                          "const": "last12Months"
+                                        }
+                                      },
+                                      "required": [
+                                        "mode"
+                                      ],
+                                      "type": "object"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            "initialParam": {
+                              "maxLength": 128,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "required": {
+                              "type": "boolean"
+                            },
+                            "display": {
+                              "const": "period",
+                              "enum": [
+                                "period",
+                                "modes"
+                              ]
+                            },
+                            "initialMode": {
+                              "enum": [
+                                "year",
+                                "quarter",
+                                "month"
+                              ]
+                            },
+                            "hint": {
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object"
+                                }
+                              ]
+                            },
+                            "clearOnChangeOf": {
+                              "items": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "type": "array",
+                              "uniqueItems": true
+                            },
+                            "min": {
+                              "type": "string"
+                            },
+                            "max": {
+                              "type": "string"
+                            },
+                            "disableFuture": {
+                              "type": "boolean"
+                            },
+                            "availability": {
+                              "type": "object"
+                            },
+                            "blockedRanges": {
+                              "type": "array"
+                            },
+                            "presets": {
+                              "type": "array"
+                            },
+                            "modes": {
+                              "type": "array"
+                            },
+                            "defaultMode": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ],
+                          "type": "object"
+                        }
+                      ]
+                    },
+                    "bindings": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "dataSourceId": {
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "target": {
+                            "enum": [
+                              "time",
+                              "timePoint"
+                            ]
+                          },
+                          "queryField": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "valueFormat": {
+                            "enum": [
+                              "iso",
+                              "compact"
+                            ]
+                          },
+                          "window": {
+                            "oneOf": [
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "kind": {
+                                    "const": "period"
+                                  },
+                                  "unit": {
+                                    "enum": [
+                                      "day",
+                                      "month",
+                                      "year"
+                                    ]
+                                  },
+                                  "offset": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "kind",
+                                  "unit"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "kind": {
+                                    "const": "lastN"
+                                  },
+                                  "unit": {
+                                    "enum": [
+                                      "day",
+                                      "month"
+                                    ]
+                                  },
+                                  "n": {
+                                    "minimum": 1,
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "kind",
+                                  "unit",
+                                  "n"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "kind": {
+                                    "enum": [
+                                      "yearToDate",
+                                      "monthToDate"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "kind"
+                                ],
+                                "type": "object"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "dataSourceId",
+                          "target"
+                        ],
+                        "type": "object"
+                      },
+                      "minItems": 1,
+                      "type": "array"
+                    },
+                    "headerId": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "filterId",
+                    "declaration",
+                    "bindings"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "maxItems": 8,
+            "type": "array"
+          },
+          "pagedJoins": {
+            "additionalProperties": {
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "const": "pagedJoin",
+                  "type": "string"
+                },
+                "rowKey": {
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                  "type": "string"
+                },
+                "domainMember": {
+                  "pattern": "^[a-z0-9][a-z0-9-]*$",
+                  "type": "string"
+                },
+                "members": {
+                  "additionalProperties": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "pattern": "^[a-z0-9][a-z0-9-]*$",
+                        "type": "string"
+                      },
+                      "key": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "field": {
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                            "type": "string"
+                          },
+                          "queryField": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "queryField"
+                        ],
+                        "type": "object"
+                      },
+                      "canSelectPage": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "key",
+                      "canSelectPage"
+                    ],
+                    "type": "object"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "projection": {
+                  "additionalProperties": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "member": {
+                        "pattern": "^[a-z0-9][a-z0-9-]*$",
+                        "type": "string"
+                      },
+                      "field": {
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "member",
+                      "field"
+                    ],
+                    "type": "object"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "ordering": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "default": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "field": {
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                            "type": "string"
+                          },
+                          "direction": {
+                            "enum": [
+                              "asc",
+                              "desc"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "direction"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "sortableFields": {
+                      "items": {
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array"
+                    },
+                    "nulls": {
+                      "const": "last",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "default",
+                    "sortableFields",
+                    "nulls"
+                  ],
+                  "type": "object"
+                },
+                "pagination": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "pageSize": {
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "pageSize"
+                  ],
+                  "type": "object"
+                },
+                "fallback": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "maxRows": {
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "maxRows"
+                  ],
+                  "type": "object"
+                },
+                "onMissing": {
+                  "const": "null",
+                  "type": "string"
+                },
+                "ordinalField": {
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                  "type": "string"
+                },
+                "initial": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "capturedAt": {
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$",
+                      "type": "string"
+                    },
+                    "rows": {
+                      "items": {
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            {
+                              "items": {
+                                "additionalProperties": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "boolean"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "propertyNames": {
+                                  "type": "string"
+                                },
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            }
+                          ]
+                        },
+                        "propertyNames": {
+                          "type": "string"
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "totalCount": {
+                      "maximum": 9007199254740991,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "view": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "pageIndex": {
+                          "maximum": 9007199254740991,
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "maximum": 9007199254740991,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "sort": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "field": {
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                "type": "string"
+                              },
+                              "direction": {
+                                "enum": [
+                                  "asc",
+                                  "desc"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "direction"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "predicates": {
+                          "items": {
+                            "anyOf": [
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "field": {
+                                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                    "type": "string"
+                                  },
+                                  "op": {
+                                    "const": "in",
+                                    "type": "string"
+                                  },
+                                  "values": {
+                                    "items": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ]
+                                    },
+                                    "minItems": 1,
+                                    "type": "array"
+                                  }
+                                },
+                                "required": [
+                                  "field",
+                                  "op",
+                                  "values"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "field": {
+                                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                    "type": "string"
+                                  },
+                                  "op": {
+                                    "enum": [
+                                      "gte",
+                                      "lte"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  "value": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "field",
+                                  "op",
+                                  "value"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "field": {
+                                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                    "type": "string"
+                                  },
+                                  "op": {
+                                    "const": "dateRange",
+                                    "type": "string"
+                                  },
+                                  "from": {
+                                    "type": "string"
+                                  },
+                                  "to": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "field",
+                                  "op"
+                                ],
+                                "type": "object"
+                              }
+                            ]
+                          },
+                          "type": "array"
+                        },
+                        "search": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "fields": {
+                              "items": {
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "type": "array"
+                            },
+                            "query": {
+                              "type": "string"
+                            },
+                            "match": {
+                              "const": "equals",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "fields",
+                            "query"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "pageIndex",
+                        "pageSize",
+                        "sort",
+                        "predicates"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "capturedAt",
+                    "rows",
+                    "totalCount",
+                    "view"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "type",
+                "rowKey",
+                "domainMember",
+                "members",
+                "projection",
+                "ordering",
+                "pagination",
+                "fallback",
+                "onMissing"
+              ],
+              "type": "object"
+            },
+            "propertyNames": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "title",
+          "sources",
+          "sections"
+        ],
+        "type": "object"
+      },
+      "expected_version": {
+        "default": 0,
+        "minimum": 0,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "context_ref",
+      "request"
+    ],
+    "type": "object"
+  },
   "source": "active platform_mcp.py",
   "requestSchema": {
-    "type": "object",
     "additionalProperties": false,
     "properties": {
       "title": {
-        "type": "string",
+        "maxLength": 8000,
         "minLength": 1,
-        "maxLength": 8000
+        "type": "string"
       },
       "layout": {
         "enum": [
@@ -24,38 +1279,34 @@
         ]
       },
       "sources": {
-        "type": "object",
-        "propertyNames": {
-          "type": "string",
-          "minLength": 1,
+        "additionalProperties": {
           "maxLength": 128,
-          "pattern": "^[a-z0-9][a-z0-9-]*$"
+          "minLength": 1,
+          "type": "string"
         },
         "maxProperties": 6,
-        "additionalProperties": {
-          "type": "string",
+        "propertyNames": {
+          "maxLength": 128,
           "minLength": 1,
-          "maxLength": 128
-        }
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "type": "string"
+        },
+        "type": "object"
       },
       "sections": {
-        "type": "array",
-        "minItems": 1,
-        "maxItems": 12,
         "items": {
-          "type": "object",
           "additionalProperties": false,
           "properties": {
             "id": {
-              "type": "string",
-              "minLength": 1,
               "maxLength": 128,
-              "pattern": "^[a-z0-9][a-z0-9-]*$"
+              "minLength": 1,
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "type": "string"
             },
             "title": {
-              "type": "string",
+              "maxLength": 8000,
               "minLength": 1,
-              "maxLength": 8000
+              "type": "string"
             },
             "pattern": {
               "enum": [
@@ -76,33 +1327,29 @@
               ]
             },
             "blocks": {
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 24,
               "items": {
                 "oneOf": [
                   {
-                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "type": "string",
-                        "minLength": 1,
                         "maxLength": 128,
-                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$",
+                        "type": "string"
                       },
                       "title": {
-                        "type": "string",
+                        "maxLength": 8000,
                         "minLength": 1,
-                        "maxLength": 8000
+                        "type": "string"
                       },
                       "type": {
                         "const": "text"
                       },
                       "body": {
-                        "type": "string",
+                        "maxLength": 8000,
                         "minLength": 1,
-                        "maxLength": 8000
+                        "type": "string"
                       },
                       "purpose": {
                         "enum": [
@@ -119,22 +1366,22 @@
                       "id",
                       "type",
                       "body"
-                    ]
+                    ],
+                    "type": "object"
                   },
                   {
-                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "type": "string",
-                        "minLength": 1,
                         "maxLength": 128,
-                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$",
+                        "type": "string"
                       },
                       "title": {
-                        "type": "string",
+                        "maxLength": 8000,
                         "minLength": 1,
-                        "maxLength": 8000
+                        "type": "string"
                       },
                       "width": {
                         "enum": [
@@ -148,10 +1395,10 @@
                         "const": "data"
                       },
                       "source": {
-                        "type": "string",
-                        "minLength": 1,
                         "maxLength": 128,
-                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9][a-z0-9-]*$",
+                        "type": "string"
                       },
                       "component": {
                         "enum": [
@@ -168,24 +1415,23 @@
                         ]
                       },
                       "fields": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 30,
-                        "uniqueItems": true,
                         "items": {
-                          "type": "string",
+                          "maxLength": 128,
                           "minLength": 1,
-                          "maxLength": 128
-                        }
+                          "type": "string"
+                        },
+                        "maxItems": 30,
+                        "minItems": 1,
+                        "type": "array",
+                        "uniqueItems": true
                       },
                       "match": {
-                        "type": "object",
                         "additionalProperties": false,
                         "properties": {
                           "field": {
-                            "type": "string",
+                            "maxLength": 128,
                             "minLength": 1,
-                            "maxLength": 128
+                            "type": "string"
                           },
                           "equals": {
                             "type": [
@@ -198,7 +1444,8 @@
                         "required": [
                           "field",
                           "equals"
-                        ]
+                        ],
+                        "type": "object"
                       },
                       "purpose": {
                         "enum": [
@@ -214,65 +1461,64 @@
                       "presentation": {
                         "oneOf": [
                           {
-                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                               "kind": {
                                 "const": "metric-summary"
                               },
                               "metrics": {
-                                "type": "array",
-                                "minItems": 1,
-                                "maxItems": 3,
                                 "items": {
-                                  "type": "object",
                                   "additionalProperties": false,
                                   "properties": {
                                     "field": {
-                                      "type": "string",
+                                      "maxLength": 128,
                                       "minLength": 1,
-                                      "maxLength": 128
+                                      "type": "string"
                                     },
                                     "label": {
-                                      "type": "string",
+                                      "maxLength": 500,
                                       "minLength": 1,
-                                      "maxLength": 500
+                                      "type": "string"
                                     },
                                     "changes": {
-                                      "type": "array",
-                                      "maxItems": 3,
                                       "items": {
-                                        "type": "object",
                                         "additionalProperties": false,
                                         "properties": {
                                           "field": {
-                                            "type": "string",
+                                            "maxLength": 128,
                                             "minLength": 1,
-                                            "maxLength": 128
+                                            "type": "string"
                                           },
                                           "label": {
-                                            "type": "string",
+                                            "maxLength": 500,
                                             "minLength": 1,
-                                            "maxLength": 500
+                                            "type": "string"
                                           },
                                           "evidenceRef": {
-                                            "type": "string",
+                                            "maxLength": 128,
                                             "minLength": 1,
-                                            "maxLength": 128
+                                            "type": "string"
                                           }
                                         },
                                         "required": [
                                           "field",
                                           "label",
                                           "evidenceRef"
-                                        ]
-                                      }
+                                        ],
+                                        "type": "object"
+                                      },
+                                      "maxItems": 3,
+                                      "type": "array"
                                     }
                                   },
                                   "required": [
                                     "field"
-                                  ]
-                                }
+                                  ],
+                                  "type": "object"
+                                },
+                                "maxItems": 3,
+                                "minItems": 1,
+                                "type": "array"
                               },
                               "variant": {
                                 "enum": [
@@ -284,10 +1530,10 @@
                             "required": [
                               "kind",
                               "metrics"
-                            ]
+                            ],
+                            "type": "object"
                           },
                           {
-                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                               "kind": {
@@ -302,10 +1548,10 @@
                             },
                             "required": [
                               "kind"
-                            ]
+                            ],
+                            "type": "object"
                           },
                           {
-                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                               "kind": {
@@ -318,21 +1564,18 @@
                                 ]
                               },
                               "subtitle": {
-                                "type": "string",
+                                "maxLength": 500,
                                 "minLength": 1,
-                                "maxLength": 500
+                                "type": "string"
                               },
                               "columns": {
-                                "type": "array",
-                                "maxItems": 30,
                                 "items": {
-                                  "type": "object",
                                   "additionalProperties": false,
                                   "properties": {
                                     "field": {
-                                      "type": "string",
+                                      "maxLength": 500,
                                       "minLength": 1,
-                                      "maxLength": 500
+                                      "type": "string"
                                     },
                                     "align": {
                                       "enum": [
@@ -349,59 +1592,63 @@
                                   },
                                   "required": [
                                     "field"
-                                  ]
-                                }
+                                  ],
+                                  "type": "object"
+                                },
+                                "maxItems": 30,
+                                "type": "array"
                               },
                               "toolbar": {
-                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                   "search": {
-                                    "type": "object",
                                     "additionalProperties": false,
-                                    "required": [
-                                      "fields"
-                                    ],
                                     "properties": {
                                       "fields": {
-                                        "type": "array",
                                         "items": {
-                                          "type": "string",
+                                          "maxLength": 500,
                                           "minLength": 1,
-                                          "maxLength": 500
+                                          "type": "string"
                                         },
-                                        "minItems": 1,
                                         "maxItems": 64,
+                                        "minItems": 1,
+                                        "type": "array",
                                         "uniqueItems": true
                                       },
                                       "placeholder": {
-                                        "type": "string",
-                                        "maxLength": 4000
+                                        "maxLength": 4000,
+                                        "type": "string"
                                       }
-                                    }
+                                    },
+                                    "required": [
+                                      "fields"
+                                    ],
+                                    "type": "object"
                                   },
                                   "export": {
-                                    "type": "object",
                                     "additionalProperties": false,
-                                    "required": [
-                                      "format"
-                                    ],
                                     "properties": {
                                       "format": {
                                         "const": "xlsx"
                                       },
                                       "filename": {
-                                        "type": "string",
-                                        "maxLength": 4000
+                                        "maxLength": 4000,
+                                        "type": "string"
                                       }
-                                    }
+                                    },
+                                    "required": [
+                                      "format"
+                                    ],
+                                    "type": "object"
                                   }
-                                }
+                                },
+                                "type": "object"
                               }
                             },
                             "required": [
                               "kind"
-                            ]
+                            ],
+                            "type": "object"
                           }
                         ]
                       }
@@ -413,70 +1660,74 @@
                       "component",
                       "fields",
                       "title"
-                    ]
+                    ],
+                    "type": "object"
                   }
                 ]
-              }
+              },
+              "maxItems": 24,
+              "minItems": 1,
+              "type": "array"
             },
             "businessQuestion": {
-              "type": "string",
+              "maxLength": 500,
               "minLength": 1,
-              "maxLength": 500
+              "type": "string"
             },
             "businessObject": {
-              "type": "string",
+              "maxLength": 500,
               "minLength": 1,
-              "maxLength": 500
+              "type": "string"
             },
             "distinctFrom": {
-              "type": "string",
+              "maxLength": 500,
               "minLength": 1,
-              "maxLength": 500
+              "type": "string"
             }
           },
           "required": [
             "id",
             "pattern",
             "blocks"
-          ]
-        }
+          ],
+          "type": "object"
+        },
+        "maxItems": 12,
+        "minItems": 1,
+        "type": "array"
       },
       "dateFilters": {
-        "type": "array",
-        "maxItems": 8,
         "items": {
           "oneOf": [
             {
-              "type": "object",
               "additionalProperties": false,
               "properties": {
                 "id": {
-                  "type": "string",
+                  "maxLength": 128,
                   "minLength": 1,
-                  "maxLength": 128
+                  "type": "string"
                 },
                 "dependsOn": {
-                  "type": "array",
                   "items": {
-                    "type": "string",
+                    "maxLength": 128,
                     "minLength": 1,
-                    "maxLength": 128
+                    "type": "string"
                   },
-                  "uniqueItems": true,
-                  "maxItems": 50
+                  "maxItems": 50,
+                  "type": "array",
+                  "uniqueItems": true
                 },
                 "type": {
                   "const": "add_date_filter"
                 },
                 "filterId": {
-                  "type": "string",
+                  "maxLength": 128,
                   "minLength": 1,
-                  "maxLength": 128
+                  "type": "string"
                 },
                 "declaration": {
                   "oneOf": [
                     {
-                      "type": "object",
                       "additionalProperties": false,
                       "properties": {
                         "type": {
@@ -495,9 +1746,9 @@
                           "type": "string"
                         },
                         "initialParam": {
-                          "type": "string",
+                          "maxLength": 128,
                           "minLength": 1,
-                          "maxLength": 128
+                          "type": "string"
                         },
                         "required": {
                           "type": "boolean"
@@ -513,12 +1764,12 @@
                           ]
                         },
                         "clearOnChangeOf": {
-                          "type": "array",
-                          "minItems": 1,
                           "items": {
-                            "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "type": "string"
                           },
+                          "minItems": 1,
+                          "type": "array",
                           "uniqueItems": true
                         },
                         "min": {
@@ -549,10 +1800,10 @@
                       "required": [
                         "type",
                         "granularity"
-                      ]
+                      ],
+                      "type": "object"
                     },
                     {
-                      "type": "object",
                       "additionalProperties": false,
                       "properties": {
                         "type": {
@@ -571,7 +1822,6 @@
                         "default": {
                           "oneOf": [
                             {
-                              "type": "object",
                               "additionalProperties": false,
                               "properties": {
                                 "from": {
@@ -584,12 +1834,12 @@
                               "required": [
                                 "from",
                                 "to"
-                              ]
+                              ],
+                              "type": "object"
                             },
                             {
                               "oneOf": [
                                 {
-                                  "type": "object",
                                   "additionalProperties": false,
                                   "properties": {
                                     "mode": {
@@ -605,10 +1855,10 @@
                                   },
                                   "required": [
                                     "mode"
-                                  ]
+                                  ],
+                                  "type": "object"
                                 },
                                 {
-                                  "type": "object",
                                   "additionalProperties": false,
                                   "properties": {
                                     "mode": {
@@ -617,16 +1867,17 @@
                                   },
                                   "required": [
                                     "mode"
-                                  ]
+                                  ],
+                                  "type": "object"
                                 }
                               ]
                             }
                           ]
                         },
                         "initialParam": {
-                          "type": "string",
+                          "maxLength": 128,
                           "minLength": 1,
-                          "maxLength": 128
+                          "type": "string"
                         },
                         "required": {
                           "type": "boolean"
@@ -656,12 +1907,12 @@
                           ]
                         },
                         "clearOnChangeOf": {
-                          "type": "array",
-                          "minItems": 1,
                           "items": {
-                            "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "type": "string"
                           },
+                          "minItems": 1,
+                          "type": "array",
                           "uniqueItems": true
                         },
                         "min": {
@@ -691,21 +1942,19 @@
                       },
                       "required": [
                         "type"
-                      ]
+                      ],
+                      "type": "object"
                     }
                   ]
                 },
                 "bindings": {
-                  "type": "array",
-                  "minItems": 1,
                   "items": {
-                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                       "dataSourceId": {
-                        "type": "string",
+                        "maxLength": 128,
                         "minLength": 1,
-                        "maxLength": 128
+                        "type": "string"
                       },
                       "target": {
                         "enum": [
@@ -714,8 +1963,8 @@
                         ]
                       },
                       "queryField": {
-                        "type": "string",
-                        "minLength": 1
+                        "minLength": 1,
+                        "type": "string"
                       },
                       "valueFormat": {
                         "enum": [
@@ -726,7 +1975,6 @@
                       "window": {
                         "oneOf": [
                           {
-                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                               "kind": {
@@ -746,10 +1994,10 @@
                             "required": [
                               "kind",
                               "unit"
-                            ]
+                            ],
+                            "type": "object"
                           },
                           {
-                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                               "kind": {
@@ -762,18 +2010,18 @@
                                 ]
                               },
                               "n": {
-                                "type": "integer",
-                                "minimum": 1
+                                "minimum": 1,
+                                "type": "integer"
                               }
                             },
                             "required": [
                               "kind",
                               "unit",
                               "n"
-                            ]
+                            ],
+                            "type": "object"
                           },
                           {
-                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                               "kind": {
@@ -785,7 +2033,8 @@
                             },
                             "required": [
                               "kind"
-                            ]
+                            ],
+                            "type": "object"
                           }
                         ]
                       }
@@ -793,13 +2042,16 @@
                     "required": [
                       "dataSourceId",
                       "target"
-                    ]
-                  }
+                    ],
+                    "type": "object"
+                  },
+                  "minItems": 1,
+                  "type": "array"
                 },
                 "headerId": {
-                  "type": "string",
+                  "maxLength": 128,
                   "minLength": 1,
-                  "maxLength": 128
+                  "type": "string"
                 }
               },
               "required": [
@@ -808,64 +2060,55 @@
                 "filterId",
                 "declaration",
                 "bindings"
-              ]
+              ],
+              "type": "object"
             }
           ]
-        }
+        },
+        "maxItems": 8,
+        "type": "array"
       },
       "pagedJoins": {
-        "type": "object",
-        "propertyNames": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128,
-          "pattern": "^[a-z0-9][a-z0-9-]*$"
-        },
         "additionalProperties": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "type": {
-              "type": "string",
-              "const": "pagedJoin"
+              "const": "pagedJoin",
+              "type": "string"
             },
             "rowKey": {
-              "type": "string",
-              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+              "type": "string"
             },
             "domainMember": {
-              "type": "string",
-              "pattern": "^[a-z0-9][a-z0-9-]*$"
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "type": "string"
             },
             "members": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string",
-                "pattern": "^[a-z0-9][a-z0-9-]*$"
-              },
               "additionalProperties": {
-                "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "source": {
-                    "type": "string",
-                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "type": "string"
                   },
                   "key": {
-                    "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                       "field": {
-                        "type": "string",
-                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                        "type": "string"
                       },
                       "queryField": {
-                        "type": "string",
-                        "minLength": 1
+                        "minLength": 1,
+                        "type": "string"
                       }
                     },
                     "required": [
                       "field",
                       "queryField"
                     ],
-                    "additionalProperties": false
+                    "type": "object"
                   },
                   "canSelectPage": {
                     "type": "boolean"
@@ -876,73 +2119,78 @@
                   "key",
                   "canSelectPage"
                 ],
-                "additionalProperties": false
-              }
+                "type": "object"
+              },
+              "propertyNames": {
+                "pattern": "^[a-z0-9][a-z0-9-]*$",
+                "type": "string"
+              },
+              "type": "object"
             },
             "projection": {
-              "type": "object",
-              "propertyNames": {
-                "type": "string",
-                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
-              },
               "additionalProperties": {
-                "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "member": {
-                    "type": "string",
-                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "type": "string"
                   },
                   "field": {
-                    "type": "string",
-                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                    "type": "string"
                   }
                 },
                 "required": [
                   "member",
                   "field"
                 ],
-                "additionalProperties": false
-              }
+                "type": "object"
+              },
+              "propertyNames": {
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "type": "object"
             },
             "ordering": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "default": {
                   "minItems": 1,
                   "type": "array",
                   "items": {
-                    "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                       "field": {
-                        "type": "string",
-                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                        "type": "string"
                       },
                       "direction": {
-                        "type": "string",
                         "enum": [
                           "asc",
                           "desc"
-                        ]
+                        ],
+                        "type": "string"
                       }
                     },
                     "required": [
                       "field",
                       "direction"
                     ],
-                    "additionalProperties": false
+                    "type": "object"
                   }
                 },
                 "sortableFields": {
-                  "minItems": 1,
-                  "type": "array",
                   "items": {
-                    "type": "string",
-                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
-                  }
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array"
                 },
                 "nulls": {
-                  "type": "string",
-                  "const": "last"
+                  "const": "last",
+                  "type": "string"
                 }
               },
               "required": [
@@ -950,58 +2198,53 @@
                 "sortableFields",
                 "nulls"
               ],
-              "additionalProperties": false
+              "type": "object"
             },
             "pagination": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "pageSize": {
-                  "type": "integer",
+                  "maximum": 1000,
                   "minimum": 1,
-                  "maximum": 1000
+                  "type": "integer"
                 }
               },
               "required": [
                 "pageSize"
               ],
-              "additionalProperties": false
+              "type": "object"
             },
             "fallback": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "maxRows": {
-                  "type": "integer",
+                  "maximum": 1000,
                   "minimum": 1,
-                  "maximum": 1000
+                  "type": "integer"
                 }
               },
               "required": [
                 "maxRows"
               ],
-              "additionalProperties": false
+              "type": "object"
             },
             "onMissing": {
-              "type": "string",
-              "const": "null"
+              "const": "null",
+              "type": "string"
             },
             "ordinalField": {
-              "type": "string",
-              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+              "type": "string"
             },
             "initial": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "capturedAt": {
-                  "type": "string",
-                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$",
+                  "type": "string"
                 },
                 "rows": {
-                  "type": "array",
                   "items": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
                     "additionalProperties": {
                       "anyOf": [
                         {
@@ -1021,13 +2264,7 @@
                           ]
                         },
                         {
-                          "maxItems": 100,
-                          "type": "array",
                           "items": {
-                            "type": "object",
-                            "propertyNames": {
-                              "type": "string"
-                            },
                             "additionalProperties": {
                               "anyOf": [
                                 {
@@ -1043,73 +2280,81 @@
                                   "type": "null"
                                 }
                               ]
-                            }
-                          }
+                            },
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "type": "object"
+                          },
+                          "maxItems": 100,
+                          "type": "array"
                         }
                       ]
-                    }
-                  }
+                    },
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
                 },
                 "totalCount": {
-                  "type": "integer",
+                  "maximum": 9007199254740991,
                   "minimum": 0,
-                  "maximum": 9007199254740991
+                  "type": "integer"
                 },
                 "view": {
-                  "type": "object",
+                  "additionalProperties": false,
                   "properties": {
                     "pageIndex": {
-                      "type": "integer",
+                      "maximum": 9007199254740991,
                       "minimum": 0,
-                      "maximum": 9007199254740991
+                      "type": "integer"
                     },
                     "pageSize": {
-                      "type": "integer",
+                      "maximum": 9007199254740991,
                       "minimum": 1,
-                      "maximum": 9007199254740991
+                      "type": "integer"
                     },
                     "sort": {
-                      "type": "array",
                       "items": {
-                        "type": "object",
+                        "additionalProperties": false,
                         "properties": {
                           "field": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                            "type": "string"
                           },
                           "direction": {
-                            "type": "string",
                             "enum": [
                               "asc",
                               "desc"
-                            ]
+                            ],
+                            "type": "string"
                           }
                         },
                         "required": [
                           "field",
                           "direction"
                         ],
-                        "additionalProperties": false
-                      }
+                        "type": "object"
+                      },
+                      "type": "array"
                     },
                     "predicates": {
-                      "type": "array",
                       "items": {
                         "anyOf": [
                           {
-                            "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                               "field": {
-                                "type": "string",
-                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                "type": "string"
                               },
                               "op": {
-                                "type": "string",
-                                "const": "in"
+                                "const": "in",
+                                "type": "string"
                               },
                               "values": {
-                                "minItems": 1,
-                                "type": "array",
                                 "items": {
                                   "anyOf": [
                                     {
@@ -1119,7 +2364,9 @@
                                       "type": "number"
                                     }
                                   ]
-                                }
+                                },
+                                "minItems": 1,
+                                "type": "array"
                               }
                             },
                             "required": [
@@ -1127,21 +2374,21 @@
                               "op",
                               "values"
                             ],
-                            "additionalProperties": false
+                            "type": "object"
                           },
                           {
-                            "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                               "field": {
-                                "type": "string",
-                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                "type": "string"
                               },
                               "op": {
-                                "type": "string",
                                 "enum": [
                                   "gte",
                                   "lte"
-                                ]
+                                ],
+                                "type": "string"
                               },
                               "value": {
                                 "type": "number"
@@ -1152,18 +2399,18 @@
                               "op",
                               "value"
                             ],
-                            "additionalProperties": false
+                            "type": "object"
                           },
                           {
-                            "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                               "field": {
-                                "type": "string",
-                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                "type": "string"
                               },
                               "op": {
-                                "type": "string",
-                                "const": "dateRange"
+                                "const": "dateRange",
+                                "type": "string"
                               },
                               "from": {
                                 "type": "string"
@@ -1176,35 +2423,36 @@
                               "field",
                               "op"
                             ],
-                            "additionalProperties": false
+                            "type": "object"
                           }
                         ]
-                      }
+                      },
+                      "type": "array"
                     },
                     "search": {
-                      "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "fields": {
-                          "minItems": 1,
-                          "type": "array",
                           "items": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
-                          }
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "type": "array"
                         },
                         "query": {
                           "type": "string"
                         },
                         "match": {
-                          "type": "string",
-                          "const": "equals"
+                          "const": "equals",
+                          "type": "string"
                         }
                       },
                       "required": [
                         "fields",
                         "query"
                       ],
-                      "additionalProperties": false
+                      "type": "object"
                     }
                   },
                   "required": [
@@ -1213,7 +2461,7 @@
                     "sort",
                     "predicates"
                   ],
-                  "additionalProperties": false
+                  "type": "object"
                 }
               },
               "required": [
@@ -1222,7 +2470,7 @@
                 "totalCount",
                 "view"
               ],
-              "additionalProperties": false
+              "type": "object"
             }
           },
           "required": [
@@ -1236,14 +2484,22 @@
             "fallback",
             "onMissing"
           ],
-          "additionalProperties": false
-        }
+          "type": "object"
+        },
+        "propertyNames": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "type": "string"
+        },
+        "type": "object"
       }
     },
     "required": [
       "title",
       "sources",
       "sections"
-    ]
+    ],
+    "type": "object"
   }
 }

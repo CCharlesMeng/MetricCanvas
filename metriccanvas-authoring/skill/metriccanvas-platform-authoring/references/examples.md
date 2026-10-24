@@ -25,5 +25,3 @@ context_ref、resultRef 和 artifactRef 均来自当前可信上下文/工具；
 ```json
 {"tool":"page_metadata_emit_preview","arguments":{"context_ref":"current-context","artifact_ref":"artifact-from-save-result"}}
 ```
-
-首批足够就 compose；需要补查时 query_data(request) 的 reason 说明缺口和改变的条件。若辅助查询失败，结构中保留缺失说明并报告 partial；核心证据不足不生成核心结论。保存未知停止，不能换参数重复 compose。

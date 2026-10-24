@@ -1,6 +1,40 @@
 {
   "code": "QUERY_MAPPING_ERROR",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1051
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 983
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 993
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 972
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1029
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1037
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1017
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

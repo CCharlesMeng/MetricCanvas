@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "rankingDetailCard.section-8044e7e5"
+  ],
+  "semantics": [
+    {
+      "module": "rankingDetailCard",
+      "reference": "references/page-metadata/components/rankingDetailCard.md",
+      "blocks": [
+        "# 详细排行卡 rankingDetailCard\n\n按查询结果顺序展示对象、指标、变化、徽标与原因说明。适用于需要保留查询排序的增长/下降排行、排行项需要展示标签与原因说明。数据形状：名称 dimension + 数值 measure，可选变化 measure、最多两个徽标 dimension、普通说明 dimension、语义 HTML 说明 semanticHtml/detail，以及可展开 recordList/detail。\n\n排行条目可通过显式recordList字段展开受控明细；内嵌语义HTML和行列表各走自己的字段契约，不能互换。",
+        "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。"
+      ],
+      "rules": [
+        {
+          "id": "ranking-detail-semantic-description",
+          "description": "语义 HTML 说明必须绑定 semanticHtml 类型的 detail 字段",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "ranking-semantic-description-not-detail",
+            "ranking-semantic-description-record-list"
+          ]
+        },
+        {
+          "id": "ranking-detail-records",
+          "description": "结构化明细必须绑定 recordList 字段，项字段存在且角色相容",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "ranking-details-not-record-list",
+            "ranking-details-item-field-unknown",
+            "ranking-details-item-role-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/compute-page.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

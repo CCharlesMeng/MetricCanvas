@@ -5,6 +5,28 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "tools/mc-content/scripts/mc_resources.py",
+      "line": 51
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_resources.py",
+      "line": 59
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_resources.py",
+      "line": 73
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_resources.py",
+      "line": 54
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_resources.py",
+      "line": 56
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

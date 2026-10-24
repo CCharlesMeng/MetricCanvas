@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "6.58",
+  "id": "report-ai-summary-regions",
+  "layout": "report",
+  "dataSources": {
+    "usage": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份"
+        },
+        "tokens": {
+          "type": "number",
+          "role": "measure",
+          "label": "用量"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "2026-08",
+            "tokens": 30
+          },
+          {
+            "month": "2026-09",
+            "tokens": 42
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "left-card-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "usage"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "tokens",
+                "label": "用量"
+              }
+            ],
+            "variant": "reportForecast"
+          }
+        }
+      ]
+    }
+  ]
+}

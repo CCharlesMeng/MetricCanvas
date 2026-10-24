@@ -1,0 +1,21 @@
+{
+  "code": "COMPILER_REQUEST_ID_INVALID",
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "line": 160
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": false
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

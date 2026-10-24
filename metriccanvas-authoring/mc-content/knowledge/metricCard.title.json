@@ -1,0 +1,242 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "metricCard.title"
+  ],
+  "semantics": [
+    {
+      "module": "metricCard",
+      "reference": "references/page-metadata/components/metricCard.md",
+      "blocks": [
+        "# 指标卡 metricCard\n\n突出一个或少量核心指标的当前值、变化值与可选完成率。适用于总额、数量、完成率、KPI、核心指标、年度活动进展。数据形状：单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric。\n\n数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。\n\nDashboard 白底内容容器（Tab、`container: \"card\"` / `\"panel\"` 分区）中的指标卡自动使用 1px、黑色10%透明度的实线边框和16px圆角，与连接指标卡同样保留独立卡面；无需新增页面字段。灰底画布保持既有呈现，Report保留原有边框。普通卡的外框包住完整内容，紧凑型卡的每个指标面板分别带框；组合卡只绘制外层边框，内部指标不重复套框。可观察场景：[`tab-mixed-content`](../examples/tab-mixed-content.json)。\n<a id=\"metric-card-before\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "metric-card-before",
+          "description": "6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度",
+          "valid": [
+            "metric-card-equation"
+          ],
+          "invalid": [
+            "metric-before-version",
+            "metric-before-report",
+            "metric-before-tracks",
+            "metric-before-span",
+            "metric-before-empty",
+            "metric-before-gap",
+            "metric-before-nested"
+          ]
+        },
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/inline-report.json",
+        "references/page-metadata/examples/metric-card-equation.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.58",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent",
+      "path": "@metricCardComponent",
+      "module": "metricCard",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "layout",
+          "data",
+          "props"
+        ],
+        "properties": {
+          "id": "#/definitions/metricCardComponent/properties/id",
+          "visibleWhen": "#/definitions/metricCardComponent/properties/visibleWhen",
+          "type": "#/definitions/metricCardComponent/properties/type",
+          "layout": "#/definitions/metricCardComponent/properties/layout",
+          "data": "#/definitions/metricCardComponent/properties/data",
+          "props": "#/definitions/metricCardComponent/properties/props"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props",
+      "path": "@metricCardComponent.props",
+      "module": "metricCard",
+      "required": "本分支必填",
+      "note": "组件的受控呈现配置。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "rows"
+        ],
+        "properties": {
+          "title": "#/definitions/metricCardComponent/properties/props/properties/title",
+          "variant": "#/definitions/metricCardComponent/properties/props/properties/variant",
+          "secondaryTitle": "#/definitions/metricCardComponent/properties/props/properties/secondaryTitle",
+          "rows": "#/definitions/metricCardComponent/properties/props/properties/rows",
+          "secondaryRows": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows",
+          "panelLayout": "#/definitions/metricCardComponent/properties/props/properties/panelLayout",
+          "showTrendArrows": "#/definitions/metricCardComponent/properties/props/properties/showTrendArrows",
+          "progress": "#/definitions/metricCardComponent/properties/props/properties/progress",
+          "actions": "#/definitions/metricCardComponent/properties/props/properties/actions"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/title",
+      "path": "@metricCardComponent.props.title",
+      "module": "metricCard",
+      "required": "本分支可选",
+      "note": "展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。",
+      "enums": {},
+      "facts": {
+        "allOf": [
+          "#/definitions/metricCardComponent/properties/props/properties/title/allOf/0"
+        ]
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

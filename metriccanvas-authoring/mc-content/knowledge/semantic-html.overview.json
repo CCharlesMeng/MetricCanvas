@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "semantic-html.overview"
+  ],
+  "semantics": [
+    {
+      "module": "semantic-html",
+      "reference": "references/page-metadata/semantic-html.md",
+      "blocks": [
+        "# 受控语义HTML\n\nsemanticHtml是声明白名单语义标签/类和内嵌值的字段类型，不是任意网页。呈现前按现有安全规则解析，未知标签/属性不获得执行能力；格式化内嵌数值遵循结果字段契约。\n\n普通text/fieldText与semanticHtml路径区分；不要把拼接HTML作为字段格式化的替代。允许结构标签为div/span/strong/p/br，允许class为detail-title/detail-value/detail-description/detail-meta/tone-positive/tone-negative/tone-neutral；未知标签、属性、类或未闭合结构整体失败关闭。data只包含单个有限规范数字，不接受属性或自闭合；signed按数值正负赋语义。最多1000节点、11层元素嵌套，字符长度按产品MAX_SEMANTIC_HTML_LENGTH限制。text的bodyFormat、页头subtitleFormat或semanticHtml字段显式接入此路径。"
+      ],
+      "rules": [
+        {
+          "id": "ranking-detail-semantic-description",
+          "description": "语义 HTML 说明必须绑定 semanticHtml 类型的 detail 字段",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "ranking-semantic-description-not-detail",
+            "ranking-semantic-description-record-list"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/compute-page.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -1,0 +1,35 @@
+{
+  "case": "ai-summary-detail-field",
+  "invariant": "ai-summary-related-data",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "AI 总结暂不支持嵌套明细字段:items",
+      "paths": [
+        "/sections/0/components/0/props/relatedData/kpi/fields/0/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "relatedData": {
+                "kpi": {
+                  "fields": [
+                    {
+                      "field": "items"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

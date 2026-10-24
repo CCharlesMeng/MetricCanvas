@@ -1,0 +1,17 @@
+{
+  "case": "layout-dual-conflict",
+  "invariant": "page-layout-compatibility",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "layout 与 layoutForm 不得同时声明；仅保留一个布局真源",
+      "paths": [
+        "/layoutForm"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "layoutForm": "report"
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,41 @@
+{
+  "case": "unified-header-version",
+  "invariant": "unified-page-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "自然期间筛选可选模式与单年份选择 由 6.41 引入，文档声明的是 6.40",
+      "paths": [
+        "/filters/0/periodModes"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "唯一页头实现及行内布局、更多筛选和只读说明 由 6.41 引入，文档声明的是 6.40",
+      "paths": [
+        "/iocHeader"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "periodModes": [
+          "year"
+        ]
+      }
+    ],
+    "iocHeader": {
+      "identity": {
+        "title": "Dashboard 期间选择与查询"
+      },
+      "filterIds": [
+        "period-filter"
+      ],
+      "presentation": {
+        "layout": "inline"
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

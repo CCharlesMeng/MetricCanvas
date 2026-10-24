@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "compositeCard.overview"
+  ],
+  "semantics": [
+    {
+      "module": "compositeCard",
+      "reference": "references/page-metadata/components/compositeCard.md",
+      "blocks": [
+        "# 组合卡 compositeCard\n\n把若干组件框进一张卡,并让这张卡作为一个组件进 12 列栅格横向并排。适用于需要若干张白卡横向并排,每张卡自带卡壳、可选标题与卡内分隔、要装的这组组件本身就是一个内容分区时改用 section.container: \"card\"、卡内是多张表格互斥切换时改用 Tab 容器。数据形状：不绑定页面数据源；每个子组件自己声明数据槽与字段绑定。\n\nmetricGrid、compactSummary、analysisStack等变体决定卡内结构；子组件仅使用各变体允许的类型与布局。组合卡拥有完整子树，删除时依赖清理由创作工具负责。\n\nDashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px黑色10%透明度实线外框，内部指标保持无框；无需新增页面字段。示例：[`tab-mixed-content`](../examples/tab-mixed-content.json)。\n\n纯指标内容使用现有 `variant: \"metricGrid\"`，按内容自适应高度；默认组合卡仍保留280px最小高度，`compact` / `projectNorms` 沿用各自高度约束。示例中的指标组合使用 `metricGrid`，避免撑高同一行的普通指标卡。"
+      ],
+      "rules": [
+        {
+          "id": "composite-card-pure-container",
+          "description": "组合卡是纯容器：不声明 data / actions、至少一个子组件、不嵌套容器、子组件在白名单内",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "composite-card-with-data",
+            "composite-card-with-actions",
+            "composite-card-empty",
+            "composite-card-nested-container",
+            "composite-card-child-not-whitelisted"
+          ]
+        },
+        {
+          "id": "ai-summary-regions",
+          "description": "AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部",
+          "valid": [
+            "report-ai-summary-regions"
+          ],
+          "invalid": [
+            "ai-summary-region-version",
+            "ai-summary-region-mixed-scope",
+            "ai-summary-region-not-top",
+            "ai-summary-page-not-top",
+            "ai-summary-region-not-full-width"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/composite-page.json",
+        "references/page-metadata/examples/report-ai-summary-regions.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "queries-and-bindings.overview"
+  ],
+  "semantics": [
+    {
+      "module": "queries-and-bindings",
+      "reference": "references/page-metadata/queries-and-bindings.md",
+      "blocks": [
+        "# 查询定义与显式绑定\n\n6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。\n\n当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。\n\n未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。\n\n6.13 的 filterBindings `{target:\"time\",window:...}` 引用 timePoint，窗口使用明确的 period/yearToDate/monthToDate/lastN 等声明，保留查询 period/is_aggregate。没有 window 的 time 目标仍引用 timeRange。查询时间只能有一个筛选来源；窗口精度不隐式转换，绑定不得与固定起止/参数引用并存。"
+      ],
+      "rules": [
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "filter-binding",
+          "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "map-page",
+            "hierarchy-binding-page"
+          ],
+          "invalid": [
+            "level-query-fields-on-flat-filter",
+            "level-query-fields-missing-level",
+            "level-query-fields-undeclared-level",
+            "hierarchy-filter-flat-query-field",
+            "time-point-target-not-time-point",
+            "boolean-target-not-boolean",
+            "number-range-target-not-number-range",
+            "time-point-initial-param-not-times",
+            "time-point-initial-param-precision",
+            "time-point-initial-param-range",
+            "time-point-initial-param-and-default",
+            "time-point-initial-param-without-query-target",
+            "unknown-filter-binding",
+            "filter-binding-time-target-not-time-range",
+            "filter-binding-dimension-target-not-dimension"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/dimension-params-page.json",
+        "references/page-metadata/examples/hierarchy-binding-page.json",
+        "references/page-metadata/examples/non-dimension-bindings-page.json",
+        "references/page-metadata/examples/query-cascade-page.json",
+        "references/page-metadata/examples/query-result-where-page.json",
+        "references/page-metadata/examples/query-result-where-branches.json",
+        "references/page-metadata/examples/query-result-page-window-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/time-binding-branches-page.json",
+        "references/page-metadata/examples/query-modes-page.json",
+        "references/page-metadata/examples/query-mode-binding-branches-page.json",
+        "references/page-metadata/examples/object-query-page.json",
+        "references/page-metadata/examples/stored-count-measures.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

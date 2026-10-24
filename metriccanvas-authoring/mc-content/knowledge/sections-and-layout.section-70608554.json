@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "sections-and-layout.section-70608554"
+  ],
+  "semantics": [
+    {
+      "module": "sections-and-layout",
+      "reference": "references/page-metadata/sections-and-layout.md",
+      "blocks": [
+        "# 内容分区与布局\n\nsections组织有序内容分区，每个分区至少一个组件。默认12列等权网格；columnTracks声明正整数比例，span占轨道数量而非像素。组件自身layout不保存页面派生宽度。\n\nplain去掉分区容器，由组件自带外观；panel为章节面板；card为小节卡片。容器样式只由section.container声明。layer区分content与backdrop；铺底层不占正常内容流，不能伪造一套绝对坐标画布。",
+        "## Report 与 Dashboard 标题\n\n标题按页面 `layout` 分别呈现，不存在 `plain` 沿用的共用标题。Dashboard 的默认、plain、panel、card 分区标题统一使用黑色16px、500字重、24px行高、左对齐且无装饰；容器只改变外壳。Report 保留自己的分区层级：默认/plain 为20px蓝色方块标题，panel为32px居中图标标题，card为20px小节标题。`text.props.variant: heading` 在Dashboard使用16px黑色左对齐标题，在Report使用32px居中图标标题。未声明layout仍按Report处理，导出视图保留来源页面的布局形态。\n\n对照入口：`/pages/dashboard-title-styles` 与 `/pages/report-title-styles`；指标卡示例`/pages/metric-card-equation`也使用Dashboard标题，无蓝色方块。\n\nTab和组合卡是受控容器组件，子项允许类型由各自Schema分支决定；不能据顶层组件目录推断任意嵌套都合法。"
+      ],
+      "rules": [
+        {
+          "id": "section-id-unique",
+          "description": "内容分区 id 唯一",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "duplicate-section-id"
+          ]
+        },
+        {
+          "id": "component-id-unique",
+          "description": "组件 id 在整页（含容器内）唯一",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "duplicate-component-id",
+            "duplicate-component-id-in-container"
+          ]
+        },
+        {
+          "id": "layer-top-level-only",
+          "description": "layout.layer 只能声明在内容分区的顶层组件上",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "layer-inside-composite-card"
+          ]
+        },
+        {
+          "id": "single-backdrop-per-section",
+          "description": "一个分区最多一个 backdrop",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "two-backdrops"
+          ]
+        },
+        {
+          "id": "backdrop-needs-siblings",
+          "description": "声明 backdrop 的分区必须还有别的组件叠在其上",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "backdrop-only-section"
+          ]
+        },
+        {
+          "id": "backdrop-container-plain",
+          "description": "声明 backdrop 的分区必须使用 container: plain",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "backdrop-in-card-container",
+            "backdrop-without-container"
+          ]
+        },
+        {
+          "id": "column-track-span",
+          "description": "声明列轨的分区里顶层组件 span 不得超过轨数",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "span-exceeds-column-tracks"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/composite-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/dashboard-title-styles.json",
+        "references/page-metadata/examples/report-title-styles.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

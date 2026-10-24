@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "6.58",
+  "id": "tab-content-mapchart",
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "map-region",
+      "type": "dimension",
+      "dimension": "chart_demo_region",
+      "label": "区域分布区域",
+      "default": [
+        "CN"
+      ]
+    }
+  ],
+  "dataSources": {
+    "map-data": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_country"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_map"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "map-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_country"
+                ],
+                "output_metrics": [
+                  "chart_demo_map"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "map-filter",
+          "type": "filterGroup",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterId": "map-region",
+            "options": [
+              {
+                "label": "中国区",
+                "value": "CN"
+              },
+              {
+                "label": "海外",
+                "value": "OVERSEAS"
+              }
+            ]
+          }
+        },
+        {
+          "id": "map",
+          "type": "mapChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "map-data"
+          },
+          "props": {
+            "title": "区域分布",
+            "nameField": "category",
+            "valueField": "value",
+            "map": "world",
+            "nameMap": {
+              "中国": "China",
+              "日本": "Japan",
+              "美国": "United States of America",
+              "德国": "Germany",
+              "澳大利亚": "Australia"
+            },
+            "variant": "regionalOverview"
+          }
+        }
+      ]
+    }
+  ]
+}

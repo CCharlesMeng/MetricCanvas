@@ -6,5 +6,28 @@
     "context_ref",
     "artifact_ref"
   ],
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "context_ref": {
+        "type": "string"
+      },
+      "artifact_ref": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "context_ref"
+    ],
+    "type": "object"
+  },
   "source": "active platform_mcp.py"
 }

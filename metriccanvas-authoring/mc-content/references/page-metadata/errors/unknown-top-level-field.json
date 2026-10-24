@@ -1,0 +1,17 @@
+{
+  "case": "unknown-top-level-field",
+  "invariant": "schema-structure",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 widgets(拼写错误?)",
+      "paths": [
+        "/widgets"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "widgets": []
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

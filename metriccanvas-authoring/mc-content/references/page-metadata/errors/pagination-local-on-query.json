@@ -1,0 +1,29 @@
+{
+  "case": "pagination-local-on-query",
+  "invariant": "pagination-local-inline",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源:sales",
+      "paths": [
+        "/sections/0/components/0/props/pagination/mode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pagination": {
+                "mode": "local"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,22 @@
+{
+  "case": "hierarchy-picker-without-hierarchy",
+  "invariant": "hierarchy-picker-requires-hierarchy",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "hierarchyPicker 只能用于声明了 hierarchy 的维度筛选器",
+      "paths": [
+        "/filters/1/hierarchyPicker"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "hierarchyPicker": "tabs"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

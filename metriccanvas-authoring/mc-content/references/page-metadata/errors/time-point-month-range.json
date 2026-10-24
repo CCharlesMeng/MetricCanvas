@@ -1,0 +1,25 @@
+{
+  "case": "time-point-month-range",
+  "invariant": "time-point-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点不是有效月份",
+      "paths": [
+        "/filters/4/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      "…",
+      "…",
+      {
+        "default": "2026-13"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

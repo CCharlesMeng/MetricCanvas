@@ -1,0 +1,29 @@
+{
+  "case": "ai-summary-region-mixed-scope",
+  "invariant": "ai-summary-regions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "所在区域 scope 不能与其他分析范围同时声明",
+      "paths": [
+        "/sections/2/components/0/props/scope"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "scope": "container"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

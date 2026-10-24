@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "6.58",
+  "id": "tab-content-button",
+  "layout": "dashboard",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "extra-button",
+          "type": "button",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "label": "打开演示",
+            "action": {
+              "on": "click",
+              "navigate": {
+                "href": "/pages/demo"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "case": "period-filter-before-6.27",
+  "invariant": "period-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Dashboard 年季月与近一年期间筛选 由 6.27 引入，文档声明的是 6.26",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period-filter",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "date",
+        "label": "统计期间",
+        "required": true,
+        "default": {
+          "mode": "month"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

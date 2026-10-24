@@ -1,0 +1,69 @@
+{
+  "type": "metricCard",
+  "label": "指标卡",
+  "aliases": [
+    "KPI卡",
+    "数字卡"
+  ],
+  "purpose": "突出一个或少量核心指标的当前值、变化值与可选完成率",
+  "chooseWhen": [
+    "总额、数量、完成率、KPI、核心指标、年度活动进展"
+  ],
+  "dataShape": "单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric",
+  "authoringShape": {
+    "bindsData": true,
+    "dimensions": {
+      "min": 0,
+      "max": 0
+    },
+    "measures": {
+      "min": 1
+    },
+    "maxRows": 3
+  },
+  "requiredProps": [
+    "rows[].label",
+    "rows[].valueField"
+  ],
+  "title": "optional",
+  "defaultSpan": 3,
+  "renderable": true,
+  "assembled": true,
+  "data_editable": true,
+  "knowledge": "metricCard.overview",
+  "reference": "references/page-metadata/components/metricCard.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/inline-report.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/metric-card-equation.json",
+      "requiredVersion": "6.34",
+      "capabilities": [
+        {
+          "id": "metric-card-before",
+          "minor": 34,
+          "description": "Dashboard 指标卡前置连接文字与双侧受控间距"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

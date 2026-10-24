@@ -1,0 +1,25 @@
+{
+  "case": "signed-number-default-before-6.17",
+  "invariant": "signed-number-format-capability",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "带符号普通数值格式，按展示精度统一零值方向 由 6.17 引入，文档声明的是 6.16",
+      "paths": [
+        "/dataSources/overview/fields/gmv/defaultFormat"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "defaultFormat": "number-signed"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

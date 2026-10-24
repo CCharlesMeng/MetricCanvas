@@ -1,0 +1,22 @@
+{
+  "scope": "URI references resolve to installed resources; source manifests describe product provenance",
+  "ids": {
+    "https://metriccanvas/page/v6.58": "protocols/page-schema.json",
+    "https://metriccanvas.dev/contracts/authoring/publication/1": "product-contracts/authoring/publication.schema.json",
+    "https://metriccanvas.local/schema/schema-metadata-1.1.json": "product-contracts/data-context/schema.json",
+    "https://metriccanvas.local/contracts/agent-conformance/0.1.0": "authoring-contracts/authored/agent-conformance.schema.json",
+    "https://metriccanvas.local/contracts/agent-model-decision/0.1.0": "authoring-contracts/authored/agent-model-decision.schema.json",
+    "https://metriccanvas.local/contracts/agent-step-event/0.1.0": "authoring-contracts/authored/agent-step-event.schema.json",
+    "https://metriccanvas.local/contracts/authoring-turn/1.0": "authoring-contracts/authored/authoring-turn.schema.json",
+    "https://metriccanvas.local/contracts/business-term-resolution/0.1.0": "authoring-contracts/authored/business-term-resolution.schema.json",
+    "https://metriccanvas.local/contracts/discovery/1.0": "authoring-contracts/authored/discovery.schema.json",
+    "https://metriccanvas.dev/authoring/lifecycle-request.schema.json": "authoring-contracts/authored/lifecycle-request.schema.json",
+    "https://metriccanvas.local/contracts/page-build-artifact/0.1.0": "authoring-contracts/authored/page-build-artifact.schema.json",
+    "https://metriccanvas.local/contracts/page-build-spec/0.1.0": "authoring-contracts/authored/page-build-spec.schema.json",
+    "https://metriccanvas.local/contracts/page-edit-request/1.0": "authoring-contracts/authored/page-edit-request.schema.json",
+    "https://metriccanvas.local/contracts/page-structure-plan/3.0.0": "authoring-contracts/authored/page-structure-plan.schema.json",
+    "https://metriccanvas.dev/authoring/publish-request.schema.json": "authoring-contracts/authored/publish-request.schema.json",
+    "https://metriccanvas.local/contracts/relay-page-artifact-envelope/0.1.0": "authoring-contracts/authored/relay-page-artifact-envelope.schema.json",
+    "https://metriccanvas.local/contracts/source-description/1.0": "authoring-contracts/authored/source-description.schema.json"
+  }
+}

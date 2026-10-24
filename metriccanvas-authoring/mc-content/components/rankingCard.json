@@ -1,0 +1,54 @@
+{
+  "type": "rankingCard",
+  "label": "排行卡",
+  "aliases": [],
+  "purpose": "突出 Top N 或按指标排序的类别",
+  "chooseWhen": [
+    "排行、排名、Top N、领先/落后对象"
+  ],
+  "dataShape": "名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制",
+  "authoringShape": {
+    "bindsData": true,
+    "dimensions": {
+      "min": 1,
+      "max": 1
+    },
+    "measures": {
+      "min": 1,
+      "max": 1
+    }
+  },
+  "requiredProps": [
+    "nameField",
+    "valueField"
+  ],
+  "title": "optional",
+  "defaultSpan": 4,
+  "renderable": true,
+  "assembled": true,
+  "data_editable": true,
+  "knowledge": "rankingCard.overview",
+  "reference": "references/page-metadata/components/rankingCard.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/reference-variants-page.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

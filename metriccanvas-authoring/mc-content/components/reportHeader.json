@@ -1,0 +1,240 @@
+{
+  "type": "reportHeader",
+  "label": "报告页头",
+  "aliases": [],
+  "purpose": "表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML",
+  "chooseWhen": [
+    "任何完整页面的开头"
+  ],
+  "dataShape": "不绑定页面数据源",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [
+    "title"
+  ],
+  "title": "required",
+  "defaultSpan": 12,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "reportHeader.overview",
+  "reference": "references/page-metadata/components/reportHeader.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/inline-report.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/text-composition-page.json",
+      "requiredVersion": "6.23",
+      "capabilities": [
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "grouped-params",
+          "minor": 6,
+          "description": "分组参数、多个独立时间区间与查询原位引用"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "text-value-reference",
+          "minor": 0,
+          "description": "文本取值引用页面参数而不是写字面量(ADR-0047)"
+        },
+        {
+          "id": "filter-time-point",
+          "minor": 0,
+          "description": "timePoint 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-pdf-export.json",
+      "requiredVersion": "6.28",
+      "capabilities": [
+        {
+          "id": "report-header-pdf-export",
+          "minor": 28,
+          "description": "Report 页头内置 PDF 下载及可配置按钮文字和文件名"
+        },
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-time-point",
+          "minor": 0,
+          "description": "timePoint 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-png-export.json",
+      "requiredVersion": "6.30",
+      "capabilities": [
+        {
+          "id": "report-header-png-export",
+          "minor": 30,
+          "description": "Report 单张高清PNG导出"
+        },
+        {
+          "id": "report-header-pdf-export",
+          "minor": 28,
+          "description": "Report 页头内置 PDF 下载及可配置按钮文字和文件名"
+        },
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-time-point",
+          "minor": 0,
+          "description": "timePoint 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-export-buttons.json",
+      "requiredVersion": "6.31",
+      "capabilities": [
+        {
+          "id": "report-header-export-buttons",
+          "minor": 31,
+          "description": "Report 统一导出按钮，按格式配置名称、文件名和渲染倍率"
+        },
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-time-point",
+          "minor": 0,
+          "description": "timePoint 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-export-scale-fallback.json",
+      "requiredVersion": "6.31",
+      "capabilities": [
+        {
+          "id": "report-header-export-buttons",
+          "minor": 31,
+          "description": "Report 统一导出按钮，按格式配置名称、文件名和渲染倍率"
+        },
+        {
+          "id": "report-header-png-export",
+          "minor": 30,
+          "description": "Report 单张高清PNG导出"
+        },
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-time-point",
+          "minor": 0,
+          "description": "timePoint 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

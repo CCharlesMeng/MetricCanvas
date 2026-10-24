@@ -1,10 +1,13 @@
-"""Export active MC contracts using only Python stdlib; no Agent or service startup."""
+"""Export actual MCP registration against the in-memory product graph; no services."""
+import asyncio
 import ast
 from dataclasses import asdict
 import json
 from pathlib import Path
 import re
 import sys
+import os
+import tempfile
 
 
 def tool_contracts(root):
@@ -14,6 +17,14 @@ def tool_contracts(root):
         'description': ast.get_docstring(node), 'parameters': [arg.arg for arg in node.args.args]}
         for node in functions if isinstance(node, ast.AsyncFunctionDef)
         and any(ast.unparse(decorator) == 'mcp.tool' for decorator in node.decorator_list)}
+
+
+async def registered_tools(root):
+    from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
+    signatures = tool_contracts(root)
+    tools = await create_platform_mcp_server(None).list_tools()
+    return {tool.name: {**signatures[tool.name], 'inputSchema': tool.parameters,
+        'source': 'FastMCP.list_tools; model input only'} for tool in tools}
 
 
 def error_guidance(root):
@@ -46,31 +57,51 @@ def dictionary_error_codes(node):
         and isinstance(value.value, str) and re.fullmatch('[A-Z][A-Z0-9_]{3,}', value.value)]
 
 
-def literal_errors(root):
-    codes = set()
-    files = [*(root / 'tool/metriccanvas_authoring').rglob('*.py'), *(root.parent / 'tools/mc-content/scripts').glob('*.py')]
-    for file in files:
-        if '_bundle' in file.parts:
-            continue
+def literal_error_sources(root):
+    codes = {}
+    for file in public_sources(root):
         for node in ast.walk(ast.parse(file.read_text())):
-            if isinstance(node, ast.Call):
-                codes.update(call_error_codes(node))
-            elif isinstance(node, ast.Dict):
-                codes.update(dictionary_error_codes(node))
-    return sorted(codes)
+            found = call_error_codes(node) if isinstance(node, ast.Call) else dictionary_error_codes(node) if isinstance(node, ast.Dict) else []
+            for code in found:
+                codes.setdefault(code, []).append({'source': file.relative_to(root.parent).as_posix(), 'line': node.lineno})
+    return {code: codes[code] for code in sorted(codes)}
 
 
-def export(root):
+def public_sources(root):
+    package = root / 'tool/metriccanvas_authoring'
+    # Deployment adapters and compatibility entrypoints are not public MC knowledge.
+    return sorted([file for folder in ('data', 'pages', 'work', 'assets', 'delivery', 'entrypoints/mcp')
+        for file in (package / folder).rglob('*.py') if '__pycache__' not in file.parts]
+        + [package / name for name in ('build_issues.py', 'canonical.py', 'diagnostics.py', 'bundle_info.py', 'runtime_assets.py', 'schema_projection.py')]
+        + list((root.parent / 'tools/mc-content/scripts').glob('*.py')))
+
+
+def export(root, product):
     sys.path.insert(0, str(root / 'tool'))
     from metriccanvas_authoring.pages.compose_contract import COMPOSE_SCHEMA, PATTERNS
     from metriccanvas_authoring.pages.components.capabilities import AUTHORING_CAPABILITIES, product_catalog
     return {'composeSchema': COMPOSE_SCHEMA, 'patterns': PATTERNS,
         'componentCatalog': product_catalog(),
         'authoringCapabilities': {key: asdict(value) for key, value in AUTHORING_CAPABILITIES.items()},
-        'queryErrorCodes': json.loads((root / 'contract-snapshot/query/error-codes.json').read_text())['codes'],
-        'pageErrorTypes': json.loads((root / 'contract-snapshot/page/error-types.json').read_text())['types'],
-        'tools': tool_contracts(root), 'literalErrorCodes': literal_errors(root), 'guidance': error_guidance(root)}
+        'queryErrorCodes': json.loads(product['query/error-codes.json'])['codes'],
+        'pageErrorTypes': json.loads(product['page/error-types.json'])['types'],
+        'tools': asyncio.run(registered_tools(root)), 'literalErrorCodes': list(literal_error_sources(root)),
+        'literalErrorSources': literal_error_sources(root), 'guidance': error_guidance(root),
+        'publicSources': [file.relative_to(root.parent).as_posix() for file in public_sources(root)]}
+
+
+def staged_export(root, graph):
+    with tempfile.TemporaryDirectory(prefix='mc-contract-graph-') as folder:
+        staging = Path(folder)
+        (staging / 'bundle.json').write_text((root / 'bundle.json').read_text())
+        for namespace, files in [('contract-snapshot', graph['product']), ('contracts', graph['authoring'])]:
+            for name, content in files.items():
+                target = staging / namespace / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(content)
+        os.environ['METRICCANVAS_BUNDLE_ROOT'] = str(staging)
+        return export(root, graph['product'])
 
 
 if __name__ == '__main__':
-    print(json.dumps(export(Path(sys.argv[1]).resolve()), ensure_ascii=False))
+    print(json.dumps(staged_export(Path(sys.argv[1]).resolve(), json.load(sys.stdin)), ensure_ascii=False))

@@ -5,6 +5,12 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "line": 157
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

@@ -42,3 +42,5 @@ pnpm authoring:test
 前两条需在根仓运行；安装后的 Bundle 只消费快照，不反向修改产品协议。`ownership.json` 声明内部自有 adapters 树；`bundle.lock.json` 排除它，并且不散发本地虚拟环境或 Python 缓存。公共参考模板位于 examples/adapter_template，内部复制后独立维护；只修改内部适配无需运行产品导出。历史归档的 hash 校验使用冻结来源，当前派生物变化不应改写历史证据。
 
 条件协议、纯求值及稳定目标修改的真源是packages/page/src/condition.ts、presentation-policy.ts、presentation-edit.ts和presentation-operation.ts；Node Bridge分发同一实现，Python只负责传输。两个page-visibility演示页面由导出器直接投影到契约见证，浏览器消费原页面。
+
+MC 完整内容由同一内存产品输出图构建：完整参考/知识核心和 local-authoring 同源；活动工具 inputSchema 从 FastMCP.list_tools 导出，公共错误来源排除内部 Adapter；作者参考在 tools/mc-content，兼容 Skill 参考单向生成。coverage 分母来自产品注册、reference-map、实际工具和 AUTHORING_CAPABILITIES。`authoring:contracts` 在写出前构建并检查派生图，`mc:content:coverage` 检查安装输出的覆盖；CI 持续运行，无路径免检。发布脚本先复制验证暂存目录再确定性归档，平台 wheel 不包含 MC 目录，二者不能替代。

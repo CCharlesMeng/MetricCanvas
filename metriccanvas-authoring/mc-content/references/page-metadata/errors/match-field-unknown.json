@@ -1,0 +1,42 @@
+{
+  "case": "match-field-unknown",
+  "invariant": "field-binding-match",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 missing 不在数据槽 main 的数据源 summary 中",
+      "paths": [
+        "/sections/0/components/1/props/components/0/props/rows/0/valueField/match/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "components": [
+                {
+                  "props": {
+                    "rows": [
+                      {
+                        "valueField": {
+                          "match": {
+                            "field": "missing"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

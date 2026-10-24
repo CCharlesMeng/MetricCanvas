@@ -1,0 +1,37 @@
+{
+  "case": "table-selection-writes-unknown-filter",
+  "invariant": "table-selection-writes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "写入了未声明的筛选器:country",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/selection/writes/country"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "selection": {
+                    "writes": {
+                      "country": {
+                        "value": "CN"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "aiSummary.section-5bacfc01"
+  ],
+  "semantics": [
+    {
+      "module": "aiSummary",
+      "reference": "references/page-metadata/components/aiSummary.md",
+      "blocks": [
+        "# AI 总结 aiSummary\n\n仅适用于 Report 布局。已有正文与按页头时间条件生成的区域分析使用同一个组件；普通说明继续使用 text。",
+        "## 正文与范围\n\n从 6.54 起无需声明 mode：`body` 为非空字符串（去除首尾空白后判断）时，直接展示原正文，支持受控 semantic HTML 或纯文本。摘要不调用 AI、不触发关联取数，不需要 generate 配置；同时存在的生成配置不参与此时的取数、字段校验与生成。Report 其他组件照常运行。时间切换不会自动清空正文或重新生成。\n\n```json\n{\n  \"body\": \"<p>本期分析结论……</p>\"\n}\n```\n\n未声明 body、body 为空字符串或纯空白时，使用非空 `promptTemplate` 与 `relatedDataSources`、`relatedSections` 或 `scope: \"container\"` 生成摘要；缺少这些配置时报告配置错误。\n\n```json\n{\n  \"promptTemplate\": \"分析当前期间的用量变化。\",\n  \"relatedDataSources\": [\"usage\"]\n}\n```\n\n`relatedDataSources: [\"sales-summary\", \"regional-comparison\"]`（6.53）直接引用页面数据源 ID，采用结果字段契约内全部非明细字段及原有标签、类型、单位等信息，不重复声明字段映射。生成时 ID 必须存在、列表非空且不能重复，顺序不影响生成输入与缓存；显式数据源优先于 relatedSections。\n\n未声明显式数据源时，`relatedSections` 按内容分区 ID 收集当前可见组件的数据槽，包含活动 Tab 与组合卡子组件；去重后选择全部非明细结果字段，不跟随其他 AI 总结、其他分区或查询上游。显隐沿用统一 visibleWhen 投影。\n\n旧 mode、initial 声明仅保留历史读取兼容，当前用法不需要首屏输入绑定参数；运行分支以 body 是否非空为准。6.52 单数 relatedDataSource 和旧 relatedData 字段白名单保留读取兼容；生成时新旧数据源声明不能同时配置。当前创作统一使用 relatedDataSources。"
+      ],
+      "rules": [
+        {
+          "id": "ai-summary-regions",
+          "description": "AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部",
+          "valid": [
+            "report-ai-summary-regions"
+          ],
+          "invalid": [
+            "ai-summary-region-version",
+            "ai-summary-region-mixed-scope",
+            "ai-summary-region-not-top",
+            "ai-summary-page-not-top",
+            "ai-summary-region-not-full-width"
+          ]
+        },
+        {
+          "id": "report-ai-summary",
+          "description": "AI 总结仅用于 Report，非空 body 直接展示，否则需要生成提示词与范围",
+          "valid": [
+            "report-ai-summary"
+          ],
+          "invalid": [
+            "ai-summary-dashboard",
+            "ai-summary-unknown-section",
+            "ai-summary-blank-body-without-input",
+            "ai-summary-body-routing-version",
+            "ai-summary-scope-required",
+            "ai-summary-version-floor"
+          ]
+        },
+        {
+          "id": "ai-summary-related-data",
+          "description": "AI 总结关联数据引用已声明数据源中的非明细字段，不重复且术语一致",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "ai-summary-unknown-source",
+            "ai-summary-unknown-field",
+            "ai-summary-detail-field",
+            "ai-summary-duplicate-field",
+            "ai-summary-term-conflict"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/forecast-page.json",
+        "references/page-metadata/examples/report-ai-summary.json",
+        "references/page-metadata/examples/report-ai-summary-regions.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

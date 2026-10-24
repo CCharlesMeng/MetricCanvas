@@ -5,8 +5,9 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [],
   "coverage": {
-    "literalCallSite": true,
+    "literalCallSite": false,
     "queryClosedSet": false,
     "pageErrorType": false,
     "authoredGuidance": true

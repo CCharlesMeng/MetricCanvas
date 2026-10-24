@@ -1,0 +1,105 @@
+{
+  "case": "detail-component-reject-rankingcard",
+  "invariant": "detail-view-component-types",
+  "input": {
+    "schemaVersion": "6.13",
+    "layout": "report",
+    "id": "reference-variants-page",
+    "meta": {
+      "description": "参考手册最小排行卡与mini仪表；仅静态契约示例"
+    },
+    "dataSources": {
+      "ranking": {
+        "fields": {
+          "name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "score": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "name": "示例对象",
+              "score": 80
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "ranking",
+            "type": "rankingCard",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "ranking"
+            },
+            "props": {
+              "title": "排行",
+              "nameField": "name",
+              "valueField": "score"
+            }
+          },
+          {
+            "id": "completion",
+            "type": "gauge",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "ranking"
+            },
+            "props": {
+              "title": "完成度",
+              "variant": "mini",
+              "valueField": "score",
+              "min": 0,
+              "max": 100,
+              "unit": "%"
+            }
+          }
+        ]
+      }
+    ],
+    "detailViews": [
+      {
+        "id": "negative-detail",
+        "mode": "snapshot",
+        "components": [
+          {
+            "id": "detail-negative-ranking",
+            "type": "rankingCard",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "ranking"
+            },
+            "props": {
+              "title": "排行",
+              "nameField": "name",
+              "valueField": "score"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/detailViews/0/components/0",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器"
+    }
+  ]
+}

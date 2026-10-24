@@ -1,0 +1,49 @@
+{
+  "case": "object-output-mixed",
+  "invariant": "dqe-object-query",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "object 不得混用 output_dims/output_metrics",
+      "paths": [
+        "/dataSources/approvals/source/query/body/dsl_list/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "approvals": {
+        "source": {
+          "query": {
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Business/Business Approval Details",
+                  "output_fields": [
+                    "商务编号"
+                  ],
+                  "filter": {
+                    "fields": [
+                      "…（共0项）"
+                    ]
+                  },
+                  "order": {
+                    "offset": 0,
+                    "limit": 1000,
+                    "order_by_field": "商务编号",
+                    "type": "asc"
+                  },
+                  "output_dims": [
+                    "商务编号"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

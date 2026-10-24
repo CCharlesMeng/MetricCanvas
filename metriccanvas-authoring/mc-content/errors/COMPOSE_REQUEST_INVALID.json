@@ -5,6 +5,20 @@
     "action": "correct_request",
     "owner": "model"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/platform_authoring.py",
+      "line": 118
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "line": 53
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "line": 65
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

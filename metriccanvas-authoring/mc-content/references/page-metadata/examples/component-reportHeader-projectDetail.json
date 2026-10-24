@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "6.58",
+  "id": "query-numeric-tolerance",
+  "layout": "report",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "查询数值容错 · 合成数据验收",
+            "variant": "projectDetail"
+          }
+        }
+      ]
+    }
+  ]
+}

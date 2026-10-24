@@ -1,0 +1,45 @@
+{
+  "case": "report-pdf-on-dashboard",
+  "invariant": "report-header-pdf-export",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "PDF 下载工具带只允许放在报表的顶层页头",
+      "paths": [
+        "/sections/0/components/0/props/pdfExport",
+        "/sections/2/components/0/props/pdfExport"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pdfExport": {
+                "label": "下载经营报告",
+                "filename": {
+                  "parts": [
+                    "…（共2项）"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "pdfExport": {}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

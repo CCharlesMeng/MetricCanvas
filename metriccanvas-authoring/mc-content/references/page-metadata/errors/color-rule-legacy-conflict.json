@@ -1,0 +1,36 @@
+{
+  "case": "color-rule-legacy-conflict",
+  "invariant": "explicit-color-local",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "colorRule 不得与旧染色声明同时使用",
+      "paths": [
+        "/sections/0/components/0/props/columns/1/colorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "red",
+                    "negative": "green"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

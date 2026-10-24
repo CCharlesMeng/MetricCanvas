@@ -6,7 +6,7 @@
 
 入口：`/pages/mc-content-layout-demo`；[实际页面](mc-content-layout-demo.json)。运行 `pnpm dev:playground`；无 URL 参数和 DQE 依赖。页面由 `tools/scripts/mc-content-fixtures.py` 调用真实本地 MC 接口生成，数据为合成诊断。
 
-1. 检查表格六项：正常编译 ok、用户要求地图 gap、IOC 计划场景 invalid、旧版 6.0 页面 upgrade_required、未来版本 needs_review、真实保存与 Relay not_run。
+1. 检查表格：同源知识有界读取、完整工具参数、来源覆盖对账，以及正常编译 ok、用户要求地图 gap、IOC 计划场景 invalid、旧版 6.0 页面 upgrade_required、未来版本 needs_review、真实保存与 Relay not_run。
 2. 点击“检查项”列排序，确认已有表格交互可用；390px 下检查页面可阅读，宽表在自己的滚动区域展示。
 3. 通过 `mc-content/scripts/mc_content.py schema --input <旧文件>` 检查兼容性；upgrade 不带输出目录只检查，带全新目录才输出 original、page 和 migration.json，原文件不变。
 4. 内容包更新后运行 `pnpm authoring:contracts` 和 `pnpm mc:content:fixtures`；`pnpm mc:content:fixtures --check` 校验页面与实际诊断一致，不能手改静态表格伪造通过。
@@ -201,3 +201,9 @@ Tab不允许页头或嵌套Tab；Report导出不补生成未访问的AI总结。
 关键声明：`sections[].components[].props.contentLayout`, `sections[].components[].props.tabs`。
 
 关联：[tab-mixed-content](tab-mixed-content.json)。
+
+### MC 补全回放
+
+`pnpm --filter playground exec playwright test mc-content.browser.ts --workers=1` 使用本目录的诊断页、经营/用量 Report 与 schema-upgrade-demo，验证 1440/390px、表头内排序按钮、合成数值 50 与 20→30，以及三地区原值/排序。当前诊断页新增知识、完整工具参数和独立覆盖分母三项，由实际 MC 查询生成。
+
+同一浏览器回归还直接读取 `tools/fixtures/local-authoring-upgrade/chart-filter.json`，调用产品升级实现，将迁移后的精确完整页放入 `/preview`；四类旧图表筛选转成组合卡 + filterGroup。网关调用现有本地 DQE Sim，点击“订单对比区域 → 海外”后验证新的订单请求确含 OVERSEAS，其他图表和对照图保留。该回放覆盖实际引擎查询/筛选链，数据为合成 Sim，不代表真实 DQE、权限、Relay 或保存验收。

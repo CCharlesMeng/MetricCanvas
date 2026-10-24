@@ -8,7 +8,7 @@ from types import SimpleNamespace
 ROOT = Path(__file__).resolve().parents[2]
 CONTENT = ROOT / 'metriccanvas-authoring/mc-content'
 sys.path.insert(0, str(CONTENT / 'scripts'))
-from mc_content import compile_layout, evaluate, inspect_schema, verify_package
+from mc_content import compile_layout, evaluate, inspect_schema, verify_package, query_content
 
 
 def report_example(scene):
@@ -52,12 +52,20 @@ def results():
     future['schemaVersion'] = '999.0'
     future_result = inspect_schema(future)
     report = evaluate(matrix)
+    knowledge = query_content('knowledge', 'table.width')
+    coverage = query_content('runtime', 'coverage', {'maxBytes': 1048576})['content']
+    tool = query_content('tool', 'query_data', {'includeSchema': True})['content']
+    assert not knowledge['truncated']
+    assert 'request' in tool['inputSchema']['properties']
     assert compiled['status'] == 'ok'
     assert required_result['status'] == 'gap'
     assert planned_result['status'] == 'invalid'
     assert old_result['status'] == 'upgrade_required'
     assert not future_result['upgrade']['possible']
     rows = [
+        {'case': '同源知识有界读取', 'result': 'ok', 'detail': 'table.width 保留语义与父约束；未展开引用可继续定位'},
+        {'case': '完整工具参数', 'result': 'ok', 'detail': 'query_data 外层与 request 来自实际 FastMCP 注册'},
+        {'case': '来源覆盖对账', 'result': 'ok', 'detail': f"{coverage['counts']['topics']} 主题 / {coverage['counts']['tools']} 工具 / {coverage['counts']['components']} 组件；独立分母检查"},
         {'case': '正常编译', 'result': compiled['status'], 'detail': 'summary 保留；未提交的 detail 章节不会补回'},
         {'case': '用户要求地图', 'result': required_result['status'], 'detail': required_result['gaps'][0]['code']},
         {'case': 'IOC 计划场景', 'result': planned_result['status'], 'detail': planned_result['gaps'][0]['code']},
@@ -65,7 +73,9 @@ def results():
         {'case': '未来 999.0 页面', 'result': future_result['status'], 'detail': '无升级规则，不改版本号放行'},
         {'case': '真实保存与 Relay', 'result': 'not_run', 'detail': 'MC 只给检查结论；此合成场景未连接真实部署'}]
     return rows, {'compile': compiled, 'required': required_result, 'planned': planned_result,
-        'oldSchema': old_result, 'futureSchema': future_result, 'evaluation': report}
+        'oldSchema': old_result, 'futureSchema': future_result, 'evaluation': report,
+        'knowledge': {'key': knowledge['key'], 'requiredBytes': knowledge['requiredBytes'], 'truncated': knowledge['truncated']},
+        'coverageCounts': coverage['counts']}
 
 
 def demo(rows):

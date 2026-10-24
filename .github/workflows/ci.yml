@@ -54,8 +54,19 @@ jobs:
 
       - name: 验证 MC 内容包、布局能力与旧页升级
         run: |
-          python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_mc_content.py'
+          pnpm mc:content:coverage
+          pnpm mc:content:test
+          pnpm test tests/mc-content-coverage.test.ts
           python tools/scripts/mc-content-fixtures.py --check
+          python tools/scripts/mc-content-pack.py --output /tmp/mc-content.tar.gz
+
+      - name: 上传已验证 MC 独立归档与来源记录
+        uses: actions/upload-artifact@v4
+        with:
+          name: mc-content-${{ github.sha }}
+          path: |
+            /tmp/mc-content.tar.gz
+            /tmp/mc-content.tar.gz.release.json
 
       - name: 验证创作接入与单向同步契约
         run: python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_deployment*.py'
@@ -95,6 +106,12 @@ jobs:
 
       - name: 安装调试包验收浏览器
         run: pnpm --filter @metriccanvas/embed exec playwright install --with-deps chromium
+
+      - name: 安装 MC 产品回放浏览器
+        run: pnpm --filter playground exec playwright install --with-deps chrome
+
+      - name: 回放 MC 内容诊断、Report 与旧页迁移场景
+        run: pnpm --filter playground exec playwright test mc-content.browser.ts --workers=1
 
       - name: 验证 qiankun 调试包源码映射
         run: node apps/platform/tests/microfrontend/debug-browser.mjs

@@ -1,0 +1,686 @@
+{
+  "schemaVersion": "6.58",
+  "id": "paged-join-fixed-rank-page",
+  "meta": {
+    "title": "固定预签金额排名的组合表",
+    "description": "普通查询返回完整月份行域内的预签金额排名，组合表切换排序、表格筛选及搜索后保留名次；仅为本地DQE Sim示例。"
+  },
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "label": "统计月份",
+      "precision": "month",
+      "required": true,
+      "default": {
+        "from": "2026-09",
+        "to": "2026-09"
+      }
+    }
+  ],
+  "dataSources": {
+    "office-directory": {
+      "fields": {
+        "rep-office-code": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_code",
+          "label": "代表处编码"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_name",
+          "label": "代表处"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "region_dept_name",
+          "label": "区域"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_code",
+                  "rep_office_name",
+                  "region_dept_name"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "office-bidding": {
+      "fields": {
+        "rep-office-code": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_code",
+          "label": "代表处编码"
+        },
+        "bidding-amount": {
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "bidding_amount",
+          "label": "预签金额",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "bidding-rank": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "bidding_rank",
+          "label": "预签金额排名",
+          "defaultFormat": "number"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_code"
+                ],
+                "output_metrics": [
+                  "bidding_amount",
+                  "bidding_rank"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "office-support": {
+      "fields": {
+        "rep-office-code": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_code",
+          "label": "代表处编码"
+        },
+        "support-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "support_rate",
+          "label": "管道支撑率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_code"
+                ],
+                "output_metrics": [
+                  "support_rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "office-meeting": {
+      "fields": {
+        "rep-office-code": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_code",
+          "label": "代表处编码"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_name",
+          "label": "代表处"
+        },
+        "analysis-meeting-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "analysis_meeting_rate",
+          "label": "项目分析会召开率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_code",
+                  "rep_office_name"
+                ],
+                "output_metrics": [
+                  "analysis_meeting_rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "office-signed": {
+      "fields": {
+        "rep-office-code": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_code",
+          "label": "代表处编码"
+        },
+        "current-month-new-signed-amount": {
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "current_month_new_signed_amount",
+          "label": "本月新签单",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_code"
+                ],
+                "output_metrics": [
+                  "current_month_new_signed_amount"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "office-initiation": {
+      "fields": {
+        "rep-office-code": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "rep_office_code",
+          "label": "代表处编码"
+        },
+        "project-initiation-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "project_initiation_rate",
+          "label": "立项率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_code"
+                ],
+                "output_metrics": [
+                  "project_initiation_rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "office-overview-fixed-rank": {
+      "fields": {
+        "rep-office-code": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "代表处编码"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "代表处"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "区域"
+        },
+        "bidding-amount": {
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "预签金额",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "support-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "管道支撑率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        },
+        "analysis-meeting-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "项目分析会召开率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        },
+        "current-month-new-signed-amount": {
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "本月新签单",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "project-initiation-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "立项率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        },
+        "bidding-rank": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "预签金额排名",
+          "defaultFormat": "number"
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "rep-office-code",
+        "domainMember": "directory",
+        "members": {
+          "directory": {
+            "source": "office-directory",
+            "key": {
+              "field": "rep-office-code",
+              "queryField": "rep_office_code"
+            },
+            "canSelectPage": false
+          },
+          "bidding": {
+            "source": "office-bidding",
+            "key": {
+              "field": "rep-office-code",
+              "queryField": "rep_office_code"
+            },
+            "canSelectPage": true
+          },
+          "support": {
+            "source": "office-support",
+            "key": {
+              "field": "rep-office-code",
+              "queryField": "rep_office_code"
+            },
+            "canSelectPage": true
+          },
+          "meeting": {
+            "source": "office-meeting",
+            "key": {
+              "field": "rep-office-code",
+              "queryField": "rep_office_code"
+            },
+            "canSelectPage": true
+          },
+          "signed": {
+            "source": "office-signed",
+            "key": {
+              "field": "rep-office-code",
+              "queryField": "rep_office_code"
+            },
+            "canSelectPage": true
+          },
+          "initiation": {
+            "source": "office-initiation",
+            "key": {
+              "field": "rep-office-code",
+              "queryField": "rep_office_code"
+            },
+            "canSelectPage": true
+          }
+        },
+        "projection": {
+          "rep-office-code": {
+            "member": "directory",
+            "field": "rep-office-code"
+          },
+          "rep-office-name": {
+            "member": "directory",
+            "field": "rep-office-name"
+          },
+          "region-dept-name": {
+            "member": "directory",
+            "field": "region-dept-name"
+          },
+          "bidding-amount": {
+            "member": "bidding",
+            "field": "bidding-amount"
+          },
+          "support-rate": {
+            "member": "support",
+            "field": "support-rate"
+          },
+          "analysis-meeting-rate": {
+            "member": "meeting",
+            "field": "analysis-meeting-rate"
+          },
+          "current-month-new-signed-amount": {
+            "member": "signed",
+            "field": "current-month-new-signed-amount"
+          },
+          "project-initiation-rate": {
+            "member": "initiation",
+            "field": "project-initiation-rate"
+          },
+          "bidding-rank": {
+            "member": "bidding",
+            "field": "bidding-rank"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "bidding-amount",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "bidding-amount",
+            "support-rate",
+            "analysis-meeting-rate",
+            "current-month-new-signed-amount",
+            "project-initiation-rate"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 3
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "onMissing": "null"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "多查询表格验收（仿真）",
+            "subtitle": "预签金额排名作为普通查询字段投影，排序、表格筛选和搜索保留名次；仅为本地DQE Sim示例。"
+          }
+        },
+        {
+          "id": "office-fixed-rank-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "office-overview-fixed-rank"
+          },
+          "props": {
+            "title": "场景二：预签金额排名（排序、筛选后保留名次）",
+            "fit": "container",
+            "pagination": {
+              "mode": "query"
+            },
+            "columns": [
+              {
+                "field": "bidding-rank",
+                "title": "预签金额排名",
+                "align": "right"
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处"
+              },
+              {
+                "field": "region-dept-name",
+                "title": "区域"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "bidding-amount",
+                  "format": "cny-adaptive"
+                },
+                "title": "预签金额",
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "support-rate",
+                  "format": "percent-1"
+                },
+                "title": "管道支撑率",
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "analysis-meeting-rate",
+                  "format": "percent-1"
+                },
+                "title": "项目分析会召开率",
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "current-month-new-signed-amount",
+                  "format": "cny-adaptive"
+                },
+                "title": "本月新签单",
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "project-initiation-rate",
+                  "format": "percent-1"
+                },
+                "title": "立项率",
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              }
+            ],
+            "rowKey": "rep-office-code",
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "rep-office-name"
+                ]
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "代表处概览-预签金额排名"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

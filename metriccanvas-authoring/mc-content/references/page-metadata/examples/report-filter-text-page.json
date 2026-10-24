@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "6.58",
+  "id": "report-filter-text-page",
+  "layout": "report",
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "period",
+          "granularity": "month",
+          "start": "2026-01",
+          "end": "2026-06"
+        }
+      ]
+    }
+  },
+  "filters": [
+    {
+      "id": "period-filter",
+      "type": "timeRange",
+      "precision": "month",
+      "label": "报告期间",
+      "required": true,
+      "initialParam": "period"
+    }
+  ],
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "entry": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "entry"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "entry"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period-filter": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "经营分析报告",
+            "subtitle": {
+              "param": "period",
+              "format": "period"
+            },
+            "decoration": "shortBar",
+            "filterIds": [
+              "period-filter"
+            ],
+            "asOf": {
+              "label": "报告期间",
+              "value": {
+                "filter": "period-filter",
+                "format": "period"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail",
+      "container": "plain",
+      "title": "经营明细",
+      "components": [
+        {
+          "id": "sales-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "经营明细",
+            "columns": [
+              {
+                "field": "entry",
+                "title": "项目",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "title": "金额",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "period-caption",
+      "container": "plain",
+      "components": [
+        {
+          "id": "period-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "filter": "period-filter",
+              "format": "period"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "case": "currency-presets-version",
+  "invariant": "currency-range-presets",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "复用金额单位case的封闭币种预设 由 6.46 引入，文档声明的是 6.45",
+      "paths": [
+        "/filters/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "id": "amount",
+        "type": "numberRange",
+        "label": "预签金额",
+        "constraints": {
+          "min": 0,
+          "bounds": "strict"
+        },
+        "units": {
+          "filterId": "currency",
+          "cases": {
+            "…": "共2个键"
+          }
+        },
+        "clearOnChangeOf": [
+          "currency"
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

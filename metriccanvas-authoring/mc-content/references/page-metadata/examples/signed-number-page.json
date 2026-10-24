@@ -1,0 +1,381 @@
+{
+  "schemaVersion": "6.58",
+  "id": "signed-number-page",
+  "layout": "report",
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "unit": "天",
+          "defaultFormat": "number-1",
+          "nullable": true
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "unit": "次",
+          "defaultFormat": "number-signed",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "增加",
+            "delta": 1.24,
+            "count": 3
+          },
+          {
+            "name": "减少",
+            "delta": -1.24,
+            "count": -3
+          },
+          {
+            "name": "零",
+            "delta": 0,
+            "count": 0
+          },
+          {
+            "name": "正零舍入",
+            "delta": 0.04,
+            "count": 0
+          },
+          {
+            "name": "负零舍入",
+            "delta": -0.04,
+            "count": 0
+          },
+          {
+            "name": "正临界",
+            "delta": 0.05,
+            "count": 1
+          },
+          {
+            "name": "负临界",
+            "delta": -0.05,
+            "count": -1
+          },
+          {
+            "name": "缺失",
+            "delta": null,
+            "count": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "sample",
+      "components": [
+        {
+          "id": "sample-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "name"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "delta",
+                  "format": "number-1-signed"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              },
+              {
+                "field": "count",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sample-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "增加",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "增加"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "增加"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "减少",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "减少"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "减少"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "零",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "零"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "零"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "正零舍入",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "正零舍入"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "正零舍入"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "负零舍入",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "负零舍入"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "负零舍入"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "正临界",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "正临界"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "正临界"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "负临界",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "负临界"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "负临界"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "缺失",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "缺失"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "时长变化",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "缺失"
+                      }
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

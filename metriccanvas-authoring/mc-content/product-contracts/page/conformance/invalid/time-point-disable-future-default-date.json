@@ -1,0 +1,78 @@
+{
+  "case": "time-point-disable-future-default-date",
+  "invariant": "time-point-disable-future",
+  "input": {
+    "schemaVersion": "6.25",
+    "id": "time-point-no-future",
+    "layout": "report",
+    "meta": {
+      "title": "时间点禁止未来验收",
+      "description": "纯文本交互，无业务查询；月份和日期均不能晚于设备本地当前期间。"
+    },
+    "filters": [
+      {
+        "id": "report-month",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "报告月份",
+        "required": true,
+        "default": "2026-10",
+        "disableFuture": true
+      },
+      {
+        "id": "report-date",
+        "type": "timePoint",
+        "granularity": "date",
+        "label": "报告日期",
+        "required": true,
+        "default": "9999-12-31",
+        "disableFuture": true
+      }
+    ],
+    "dataSources": {},
+    "sections": [
+      {
+        "id": "header",
+        "container": "plain",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "parts": [
+                  {
+                    "filter": "report-month",
+                    "format": "period"
+                  },
+                  " 禁止未来时间验收"
+                ]
+              },
+              "filterIds": [
+                "report-month",
+                "report-date"
+              ],
+              "asOf": {
+                "label": "报告日期",
+                "value": {
+                  "filter": "report-date",
+                  "format": "period"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1/default",
+      "message": "时间点不得晚于当前日期"
+    }
+  ]
+}

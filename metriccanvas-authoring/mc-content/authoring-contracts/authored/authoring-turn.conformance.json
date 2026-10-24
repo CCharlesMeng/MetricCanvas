@@ -1,0 +1,178 @@
+{
+  "version": "1.0",
+  "scope": "Structure only; authority, matching identity/ref/hash and freshness require execution tests",
+  "cases": [
+    {
+      "name": "existing",
+      "valid": true,
+      "input": {
+        "version": "1.0",
+        "contextRef": "turn-context-1",
+        "actorId": "alice",
+        "workspaceId": "work",
+        "requestId": "request-1",
+        "runId": "run-1",
+        "turnId": "turn-1",
+        "pageId": "page-1",
+        "capabilityVersion": "1.0",
+        "status": "active",
+        "mode": "existing",
+        "access": "write",
+        "baseRef": {
+          "pageId": "page-1",
+          "revisionId": "revision-1",
+          "resourceId": "resource-1"
+        },
+        "documentSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectedComponentId": "chart-1"
+      }
+    },
+    {
+      "name": "new-empty",
+      "valid": true,
+      "input": {
+        "version": "1.0",
+        "contextRef": "turn-context-1",
+        "actorId": "alice",
+        "workspaceId": "work",
+        "requestId": "request-1",
+        "runId": "run-1",
+        "turnId": "turn-1",
+        "pageId": "page-1",
+        "capabilityVersion": "1.0",
+        "status": "active",
+        "mode": "new",
+        "access": "write",
+        "baseRef": null,
+        "documentSha256": null,
+        "selectedComponentId": null
+      }
+    },
+    {
+      "name": "wrong-version",
+      "valid": false,
+      "input": {
+        "version": "2.0",
+        "contextRef": "turn-context-1",
+        "actorId": "alice",
+        "workspaceId": "work",
+        "requestId": "request-1",
+        "runId": "run-1",
+        "turnId": "turn-1",
+        "pageId": "page-1",
+        "capabilityVersion": "1.0",
+        "status": "active",
+        "mode": "existing",
+        "access": "write",
+        "baseRef": {
+          "pageId": "page-1",
+          "revisionId": "revision-1",
+          "resourceId": "resource-1"
+        },
+        "documentSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectedComponentId": "chart-1"
+      }
+    },
+    {
+      "name": "unknown-capability-not-schema-proof",
+      "valid": false,
+      "input": {
+        "version": "1.0",
+        "contextRef": "turn-context-1",
+        "actorId": "alice",
+        "workspaceId": "work",
+        "requestId": "request-1",
+        "runId": "run-1",
+        "turnId": "turn-1",
+        "pageId": "page-1",
+        "capabilityVersion": "",
+        "status": "active",
+        "mode": "existing",
+        "access": "write",
+        "baseRef": {
+          "pageId": "page-1",
+          "revisionId": "revision-1",
+          "resourceId": "resource-1"
+        },
+        "documentSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectedComponentId": "chart-1"
+      }
+    },
+    {
+      "name": "new-with-old-ref",
+      "valid": false,
+      "input": {
+        "version": "1.0",
+        "contextRef": "turn-context-1",
+        "actorId": "alice",
+        "workspaceId": "work",
+        "requestId": "request-1",
+        "runId": "run-1",
+        "turnId": "turn-1",
+        "pageId": "page-1",
+        "capabilityVersion": "1.0",
+        "status": "active",
+        "mode": "new",
+        "access": "write",
+        "baseRef": {
+          "pageId": "page-1",
+          "revisionId": "revision-1",
+          "resourceId": "resource-1"
+        },
+        "documentSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectedComponentId": "chart-1"
+      }
+    },
+    {
+      "name": "existing-missing-hash",
+      "valid": false,
+      "input": {
+        "version": "1.0",
+        "contextRef": "turn-context-1",
+        "actorId": "alice",
+        "workspaceId": "work",
+        "requestId": "request-1",
+        "runId": "run-1",
+        "turnId": "turn-1",
+        "pageId": "page-1",
+        "capabilityVersion": "1.0",
+        "status": "active",
+        "mode": "existing",
+        "access": "write",
+        "baseRef": {
+          "pageId": "page-1",
+          "revisionId": "revision-1",
+          "resourceId": "resource-1"
+        },
+        "documentSha256": null,
+        "selectedComponentId": "chart-1"
+      }
+    },
+    {
+      "name": "model-extra-document",
+      "valid": false,
+      "input": {
+        "version": "1.0",
+        "contextRef": "turn-context-1",
+        "actorId": "alice",
+        "workspaceId": "work",
+        "requestId": "request-1",
+        "runId": "run-1",
+        "turnId": "turn-1",
+        "pageId": "page-1",
+        "capabilityVersion": "1.0",
+        "status": "active",
+        "mode": "existing",
+        "access": "write",
+        "baseRef": {
+          "pageId": "page-1",
+          "revisionId": "revision-1",
+          "resourceId": "resource-1"
+        },
+        "documentSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectedComponentId": "chart-1",
+        "document": {}
+      }
+    }
+  ]
+}

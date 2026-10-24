@@ -1,0 +1,31 @@
+{
+  "case": "ranking-details-item-field-unknown",
+  "invariant": "ranking-detail-records",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "嵌套明细字段 events 不包含项字段:owner",
+      "paths": [
+        "/sections/0/components/2/props/details/titleField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "props": {
+              "details": {
+                "titleField": "owner"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

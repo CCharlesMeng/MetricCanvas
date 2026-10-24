@@ -10,5 +10,54 @@
     "limit",
     "cursor"
   ],
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "context_ref": {
+        "type": "string"
+      },
+      "target_component_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "use_selection": {
+        "default": false,
+        "type": "boolean"
+      },
+      "offset": {
+        "default": 0,
+        "minimum": 0,
+        "type": "integer"
+      },
+      "limit": {
+        "default": 20,
+        "maximum": 50,
+        "minimum": 1,
+        "type": "integer"
+      },
+      "cursor": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "context_ref"
+    ],
+    "type": "object"
+  },
   "source": "active platform_mcp.py"
 }

@@ -1,0 +1,27 @@
+{
+  "case": "pagination-shared-source",
+  "invariant": "pagination-exclusive-source",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询分页表格必须独占页面数据源 sales，当前引用 2 次",
+      "paths": [
+        "/sections/0/components/0/data/main"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "data": {
+              "main": "sales"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

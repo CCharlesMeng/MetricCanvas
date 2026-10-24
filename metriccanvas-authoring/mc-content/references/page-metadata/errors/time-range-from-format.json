@@ -1,0 +1,25 @@
+{
+  "case": "time-range-from-format",
+  "invariant": "time-range-default-calendar",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间范围 from 须为 YYYY-MM-DD 格式",
+      "paths": [
+        "/filters/2/default/from"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      {
+        "default": {
+          "from": "2026/07/01"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

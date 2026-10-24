@@ -5,6 +5,32 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 272
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 284
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 304
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 60
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 505
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 303
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

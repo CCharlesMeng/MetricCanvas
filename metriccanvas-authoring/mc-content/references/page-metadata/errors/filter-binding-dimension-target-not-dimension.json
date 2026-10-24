@@ -1,0 +1,30 @@
+{
+  "case": "filter-binding-dimension-target-not-dimension",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "dimension 目标必须绑定维度筛选器:period",
+      "paths": [
+        "/dataSources/orders/source/query/filterBindings/period"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "period": {
+                "target": "dimension",
+                "queryField": "region"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

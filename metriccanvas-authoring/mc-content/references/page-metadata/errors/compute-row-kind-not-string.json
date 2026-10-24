@@ -1,0 +1,35 @@
+{
+  "case": "compute-row-kind-not-string",
+  "invariant": "compute-row-kind-field",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行类别字段 row-kind 必须是 string 类型",
+      "paths": [
+        "/dataSources/targets/compute/2/rowKind/field",
+        "/dataSources/targets/compute/3/rowKind/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "targets": {
+        "compute": [
+          "…",
+          "…",
+          {
+            "rowKind": {
+              "field": "row-kind"
+            }
+          },
+          {
+            "rowKind": {
+              "field": "row-kind"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,46 @@
+{
+  "case": "ai-summary-body-routing-version",
+  "invariant": "report-ai-summary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "AI 总结由非空 body 直接决定展示，无正文时动态生成 由 6.54 引入，文档声明的是 6.53",
+      "paths": [
+        "/sections/1/components/0",
+        "/sections/1/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "id": "provided-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "后端已生成正文",
+              "body": "<p><strong>已有结论：</strong>本段由页面直接提供，无需调用 AI。</p>"
+            }
+          },
+          {
+            "id": "fallback-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "结构容错示例",
+              "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

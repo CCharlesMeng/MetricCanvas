@@ -1,0 +1,28 @@
+{
+  "case": "condition-depth-limit",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件超过4层或64个叶子",
+      "paths": [
+        "/sections/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "visibleWhen": {
+          "not": {
+            "not": {
+              "…": "共1个键"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

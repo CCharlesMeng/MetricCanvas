@@ -1,0 +1,372 @@
+# 服务接口定义文件
+swagger: '2.0'
+# 服务基本信息定义,包括服务名称，版本，服务描述（包括SLA），服务Owner
+info:
+  # 服务接口版本
+  version: v1
+  # 定义服务名称
+  title: CDINL2DataBuilderService
+  # 描述服务提供的功能、限制、注意事项、服务的SLA等
+  description: |
+    ** 服务SLA：**
+
+    |SLA项|定义|
+    |-----|-----|
+    |请求成功率| >=99.9%|
+    |可用性|Tair1|
+    |数据一致性|最终一致，不一致时长<1分钟|
+    |吞吐量|4000tps|
+    |TP50请求时延|2ms|
+    |TP99.9请求时延|5ms|
+
+  # 服务支持的访问协议http(s), 当前CloudSOP都是https的
+schemes:
+  - https
+# Base PATH, 完整的访问路径为 basePath + path
+basePath: /
+x-yamlfile: model/src/main/resources/rest-services-dataset-detail.yaml
+paths:
+  /rest/cdi/cdinl2databuilderservice/v1/dataset-detail/query:
+    get:
+      summary: '查询数据集信息'
+      description: '|场景描述：获取数据集详情|
+                    |功能描述：获取数据集的字段和字段值|'
+      tags:
+        - CDIDatasetDetailService
+      operationId: queryDatasetDetail
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: x-operator-id
+          in: header
+          type: string
+          required: false
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: datasetId
+          in: query
+          type: string
+          required: true
+          description: '数据集id'
+          maxLength: 64
+          x-maxLength: 64
+          minLength: 1
+          x-minLength: 1
+        - name: dimName
+          in: query
+          type: string
+          required: false
+          description: '维度'
+          maxLength: 64
+          x-maxLength: 64
+          minLength: 0
+          x-minLength: 0
+        - name: dimValueMatch
+          in: query
+          type: string
+          required: false
+          description: '待匹配的维度值'
+          maxLength: 64
+          x-maxLength: 64
+          minLength: 0
+          x-minLength: 0
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/DatasetDetailRsp'
+        401:
+          description: '|鉴权失败|'
+  /rest/cdi/cdinl2databuilderservice/v1/dataset-detail/query-dataset-from-lab:
+    post:
+      summary: '批量查询数据集元数据详情（DB优先+懒回源lab）'
+      description: '|场景描述：获取多个数据集Nl2sql2元数据详情|
+                    |功能描述：优先从本地DB读取，未命中则回源Lab并入库，完整透传Lab侧数据集元数据|'
+      tags:
+        - CDIDatasetDetailService
+      operationId: queryLabDatasetDetail
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: x-operator-id
+          in: header
+          type: string
+          required: false
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: queryLabDatasetDetailReq
+          in: body
+          required: true
+          description: '数据集详情查询请求体'
+          schema:
+            $ref: '#/definitions/LabDatasetDetailReq'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/LabDatasetDetailListRsp'
+        401:
+          description: '|鉴权失败|'
+  /rest/cdi/cdinl2databuilderservice/v1/dataset-detail/update-dataset-from-lab:
+    post:
+      summary: '更新数据集元数据详情（主动刷新lab）'
+      description: '|场景描述：主动触发从Lab刷新数据集元数据并入库|
+                    |功能描述：支持全量或指定datasetId列表刷新，回源Lab后整JSON写库|'
+      tags:
+        - CDIDatasetDetailService
+      operationId: updateLabDatasetDetail
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: x-operator-id
+          in: header
+          type: string
+          required: false
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: updateLabDatasetDetailReq
+          in: body
+          required: true
+          description: '数据集详情更新请求体'
+          schema:
+            $ref: '#/definitions/LabDatasetDetailReq'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/LabDatasetDetailListRsp'
+        401:
+          description: '|鉴权失败|'
+definitions:
+  CommonRsp:
+    type: object
+    properties:
+      retCode:
+        description: '返回码|处理结果,包括返回码和返回信息|CBC.0000: 成功|'
+        type: string
+      retDesc:
+        description: '错误信息'
+        type: string
+  DatasetDetailRsp:
+    allOf:
+      - $ref: '#/definitions/CommonRsp'
+      - type: object
+        properties:
+          dateset_detail:
+            description: '执行结果'
+            type: object
+            $ref: '#/definitions/DatasetDetailRes'
+  DatasetDetailRes:
+    description: '|参数名称：数据集详情|'
+    type: object
+    properties:
+      dim_list:
+        description: '数据集字段'
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/DatasetDimDetail'
+  DatasetDimDetail:
+    description: '|参数名称：数据集详情|'
+    type: object
+    properties:
+      dim_name:
+        description: '字段名'
+        type: string
+      dim_value_list:
+        description: '字段值'
+        type: array
+        items:
+          type: string
+  LabDatasetDetailReq:
+    type: object
+    description: '数据集详情查询/更新请求体'
+    properties:
+      workspaceId:
+        description: '空间ID（选填，不传使用默认空间）'
+        type: string
+        maxLength: 64
+      datasetIds:
+        description: '数据集id列表（选填，空或不传表示全量）'
+        type: array
+        maxItems: 100
+        items:
+          type: string
+          maxLength: 64
+  LabDatasetDetailListRsp:
+    allOf:
+      - $ref: '#/definitions/CommonRsp'
+      - type: object
+        properties:
+          dataset_details:
+            description: '数据集详情列表（每个元素带元素级状态，完整透传lab）'
+            type: array
+            items:
+              $ref: '#/definitions/LabDatasetDetail'
+  LabDatasetDetail:
+    type: object
+    description: '完整透传Lab响应。含元素级状态字段，骨架字段显式定义，深层嵌套以 object 原样透传'
+    properties:
+      dataset_id:
+        description: '数据集id（元素级状态标识，即使回源失败也会回填此字段）'
+        type: string
+      ret_code:
+        description: '元素级返回码（成功为CBC.0000，失败为具体错误码）'
+        type: string
+      ret_desc:
+        description: '元素级返回信息（失败时含失败原因）'
+        type: string
+      id:
+        description: '数据集id（Lab透传）'
+        type: string
+      caption:
+        description: '数据集名称'
+        type: string
+      description:
+        description: '数据集描述'
+        type: string
+      workspace_id:
+        description: '空间ID'
+        type: string
+      create_date:
+        description: '创建时间'
+        type: integer
+        format: int64
+      create_user:
+        type: string
+      create_user_name:
+        type: string
+      update_date:
+        description: '更新时间'
+        type: integer
+        format: int64
+      update_user:
+        type: string
+      update_user_name:
+        type: string
+      project_id:
+        type: string
+      catalog_id:
+        type: string
+      status:
+        type: integer
+      version:
+        type: string
+      ds_id:
+        type: string
+      ds_type:
+        type: string
+      domain_id:
+        type: string
+      table_type:
+        type: string
+      resource_code:
+        type: string
+        x-nullable: true
+      physical_schema:
+        $ref: '#/definitions/PhysicalSchema'
+      logical_schema:
+        $ref: '#/definitions/LogicalSchema'
+      advanced_config:
+        type: object
+        description: '高级配置（原样透传）'
+      filters:
+        type: object
+        x-nullable: true
+        description: '过滤器（原样透传）'
+  PhysicalSchema:
+    type: object
+    properties:
+      tables:
+        type: array
+        items:
+          $ref: '#/definitions/Table'
+  Table:
+    type: object
+    properties:
+      id:
+        type: string
+      database_name:
+        type: string
+      schema_name:
+        type: string
+      table_name:
+        type: string
+      ds_id:
+        type: string
+      ds_type:
+        type: string
+      table_type:
+        type: string
+      sql_text:
+        type: string
+      model_id:
+        type: string
+      is_fact_table:
+        type: boolean
+      pre_join_filters:
+        type: object
+        x-nullable: true
+      data_location:
+        type: object
+        x-nullable: true
+  LogicalSchema:
+    type: object
+    properties:
+      field_schema:
+        $ref: '#/definitions/FieldSchema'
+      field_tree:
+        type: array
+        description: '字段树（原样透传，节点为 object）'
+        items:
+          type: object
+      variables:
+        type: array
+        items:
+          type: object
+      relations:
+        type: array
+        items:
+          type: object
+  FieldSchema:
+    type: object
+    properties:
+      measures:
+        type: array
+        description: '度量（完整结构原样透传）'
+        items:
+          type: object
+      dimensions:
+        type: array
+        description: '维度（完整结构原样透传）'
+        items:
+          type: object
+      metrics:
+        type: array
+        description: '指标（完整结构原样透传）'
+        items:
+          type: object

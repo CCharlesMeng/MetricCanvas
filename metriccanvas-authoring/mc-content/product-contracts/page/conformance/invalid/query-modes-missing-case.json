@@ -1,0 +1,331 @@
+{
+  "case": "query-modes-missing-case",
+  "invariant": "query-modes",
+  "input": {
+    "schemaVersion": "6.57",
+    "id": "query-modes-page",
+    "layout": "dashboard",
+    "meta": {
+      "title": "签约与商机金额趋势",
+      "description": "跨表查询分支演示 · 本地 DQE 仿真合成数据，非生产业务数据"
+    },
+    "filters": [
+      {
+        "id": "business",
+        "type": "dimension",
+        "dimension": "business_mode",
+        "label": "业务口径",
+        "default": [
+          "contracts"
+        ]
+      },
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "business_region",
+        "label": "区域",
+        "default": [
+          "east"
+        ]
+      }
+    ],
+    "dataSources": {
+      "amount-trend": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "amount": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "queryModes": {
+              "filterId": "business",
+              "cases": {
+                "contracts": {
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "月份"
+                        ],
+                        "output_metrics": [
+                          "签约金额"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {}
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "region": {
+                      "target": "dimension",
+                      "queryField": "签约区域"
+                    }
+                  },
+                  "fieldMappings": {
+                    "month": "月份",
+                    "amount": "签约金额"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "amount-total": {
+        "fields": {
+          "amount": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "queryModes": {
+              "filterId": "business",
+              "cases": {
+                "contracts": {
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [],
+                        "output_metrics": [
+                          "签约金额"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {}
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "region": {
+                      "target": "dimension",
+                      "queryField": "签约区域"
+                    }
+                  },
+                  "fieldMappings": {
+                    "amount": "签约金额"
+                  }
+                },
+                "opportunities": {
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [],
+                        "output_metrics": [
+                          "商机金额"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {}
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "region": {
+                      "target": "dimension",
+                      "queryField": "商机区域"
+                    }
+                  },
+                  "fieldMappings": {
+                    "amount": "商机金额"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "intro",
+        "components": [
+          {
+            "id": "demo-note",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "本地仿真演示：签约金额与商机金额分别来自两张独立演示表。切换业务口径后，趋势、合计和明细同步更新；区域条件继续生效。",
+              "variant": "plain"
+            }
+          }
+        ]
+      },
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "amount-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "metricGrid",
+              "components": [
+                {
+                  "id": "business-switch",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "business",
+                    "options": [
+                      {
+                        "label": "签约金额",
+                        "value": "contracts"
+                      },
+                      {
+                        "label": "商机金额",
+                        "value": "opportunities"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "region-select",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "region",
+                    "display": "select",
+                    "align": "right",
+                    "options": [
+                      {
+                        "label": "华东",
+                        "value": "east"
+                      },
+                      {
+                        "label": "华南",
+                        "value": "south"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "amount-chart",
+                  "type": "lineChart",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "amount-trend"
+                  },
+                  "props": {
+                    "title": "2026 年上半年金额趋势（元）",
+                    "xField": "month",
+                    "series": [
+                      {
+                        "field": "amount",
+                        "label": "金额"
+                      }
+                    ],
+                    "smooth": true
+                  }
+                },
+                {
+                  "id": "amount-total-card",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "amount-total"
+                  },
+                  "props": {
+                    "variant": "compactStrip",
+                    "rows": [
+                      {
+                        "label": "上半年金额合计",
+                        "valueField": {
+                          "data": "main",
+                          "field": "amount",
+                          "format": "number-grouped"
+                        },
+                        "unit": "元"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "details",
+        "title": "月度金额明细",
+        "components": [
+          {
+            "id": "monthly-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "amount-trend"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "month",
+                  "title": "月份"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "amount",
+                    "format": "number-grouped"
+                  },
+                  "title": "金额（元）"
+                }
+              ],
+              "pagination": {
+                "mode": "none"
+              },
+              "rowKey": "month"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/amount-trend/source/query/queryModes",
+      "message": "查询case必须穷尽声明模式"
+    }
+  ]
+}

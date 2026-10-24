@@ -465,3 +465,5 @@ Dashboard白底容器中的指标卡自动补充统一边框，组合卡只保�
 指标卡与筛选的同框布局复用内容分区：card 提供白底无边框外观，section.title 在上，filterGroup 在其下左对齐，Before 四卡行自适应铺满所占列。连接排布盒在 card 内不重复绘制外框。见[指标连接排布](docs/page-metadata/sections-and-layout.md)与 `/pages/metric-card-equation`。
 
 6.57 查询分支响应映射：`queryModes.cases.*.fieldMappings` 在页面端连接不同原始字段与稳定结果字段；普通指标保留名称字符串，不支持 `{name,alias}`。见[查询定义与绑定](docs/page-metadata/queries-and-bindings.md#query-modes)。
+
+MC 内容包随本协议同步生成，包含同源字段语义、规则、例子、版本/迁移及工具契约；入口见 [MC 维护与验收](docs/agents/local-authoring-skill-maintenance.md#mc-同步完成条件)。本批未新增页面字段或改变页面语义，完整性与旧页诊断的可观察场景见 `/pages/mc-content-layout-demo`；静态成功、引擎回放与真实部署分别报告。

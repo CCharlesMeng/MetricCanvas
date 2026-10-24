@@ -13,7 +13,7 @@ import {
   versionPolicy
 } from '../../packages/page/src/internal.ts';
 import { buildPageReference, validateReferenceLinks } from './page-reference.ts';
-import { localPageReference, localValidatorOutputs, localKnowledgeManifest } from './local-authoring-projection.ts';
+import { localPageReference, localValidatorOutputs, localKnowledgeManifest, referenceProjection } from './local-authoring-projection.ts';
 import { localAuthoringKnowledge } from './local-authoring-knowledge.ts';
 import { overviewMapLedExample } from './local-authoring-overview-example.ts';
 import { localPagePatternOutputs } from './local-authoring-patterns.ts';
@@ -520,6 +520,9 @@ async function writeOutputs(
   interfaceOutputs: OutputMap
 ): Promise<void> {
   const skills = await buildSkillProjections(productOutputs);
+  const mcOutputs = await mcContentOutputs(repoRoot, {product: productOutputs, authoring: authoringOutputs, lock: buildContractLock(productOutputs, authoringOutputs)});
+  const platformFacts = await mcPlatformFacts(repoRoot);
+  const bridgeOutputs = await localValidatorOutputs(repoRoot, 'tools/scripts/page-validation-bridge.ts', 'scripts/page-validation-bridge.mjs');
   await writeTree(productContractRoot, productOutputs);
   for (const [relativePath, content] of interfaceOutputs) {
     const target = path.join(productContractRoot, relativePath);
@@ -550,30 +553,12 @@ async function writeOutputs(
     buildContractLock(productOutputs, authoringOutputs),
     'utf8'
   );
-  for (const [relative, content] of await localValidatorOutputs(repoRoot, 'tools/scripts/page-validation-bridge.ts', 'scripts/page-validation-bridge.mjs')) {
+  for (const [relative, content] of bridgeOutputs) {
     const target=path.join(bundleRoot, relative==='scripts/THIRD-PARTY-LICENSES.md'?'scripts/PAGE-VALIDATOR-LICENSES.md':relative);
     await mkdir(path.dirname(target),{recursive:true});await writeFile(target,content,'utf8');
   }
-  await writeMcContent();
+  await writeMcContent(mcOutputs, platformFacts);
   await writeFile(path.join(bundleRoot, 'bundle.lock.json'), await buildBundleLock(), 'utf8');
-}
-
-function referenceProjection(outputs: OutputMap): OutputMap {
-  return new Map([...outputs].filter(([file]) => file.startsWith('page/reference/')).map(([file, content]) => {
-    const relative = file.slice('page/reference/'.length);
-    // Published authoring examples always target the current writer. Historical
-    // conformance vectors remain in the product contracts, not example recipes.
-    if (relative.startsWith('examples/') && relative.endsWith('.json')) {
-      const parsed = JSON.parse(content);
-      const normalized = normalizePageDocument({...parsed, schemaVersion: versionPolicy.current});
-      if (!normalized.ok) throw new Error(`Invalid current Skill example: ${relative}`);
-      const document = {...normalized.document, schemaVersion: versionPolicy.current};
-      const errors = validate(document);
-      if (errors.length) throw new Error(`Invalid current Skill example ${relative}: ${JSON.stringify(errors)}`);
-      return [relative, json(document)];
-    }
-    return [relative, content];
-  }));
 }
 
 /** Registry is a distribution index, not a Relay router or tool allowlist. */
@@ -657,9 +642,9 @@ async function addSkillReferences(documents: OutputMap, projected: OutputMap, id
   if (id === 'metriccanvas-platform-authoring') for (const [file, content] of await mcPlatformFacts(repoRoot)) documents.set(file, content);
 }
 
-async function writeMcContent(): Promise<void> {
-  await writeTree(path.join(bundleRoot, 'mc-content'), await mcContentOutputs(repoRoot));
-  for (const [file, content] of await mcPlatformFacts(repoRoot)) {
+async function writeMcContent(outputs: OutputMap, platformFacts: OutputMap): Promise<void> {
+  await writeTree(path.join(bundleRoot, 'mc-content'), outputs);
+  for (const [file, content] of platformFacts) {
     const target = path.join(bundleRoot, 'skill/metriccanvas-platform-authoring', file);
     await mkdir(path.dirname(target), {recursive: true});
     await writeFile(target, content, 'utf8');
@@ -778,7 +763,7 @@ async function assertCurrent(
     await collectFileDrift(path.join(bundleRoot,file),content,`metriccanvas-authoring/${file}`,drift);
   }
   const expectedBundleLock = await buildBundleLock();
-  await collectMcContentDrift(drift);
+  await collectMcContentDrift(drift, productOutputs, authoringOutputs);
   await collectFileDrift(
     path.join(bundleRoot, 'bundle.lock.json'),
     expectedBundleLock,
@@ -791,9 +776,9 @@ async function assertCurrent(
   }
 }
 
-async function collectMcContentDrift(drift: string[]): Promise<void> {
+async function collectMcContentDrift(drift: string[], product: OutputMap, authoring: OutputMap): Promise<void> {
   try {
-    await collectTreeDrift(path.join(bundleRoot, 'mc-content'), await mcContentOutputs(repoRoot), 'mc-content', drift);
+    await collectTreeDrift(path.join(bundleRoot, 'mc-content'), await mcContentOutputs(repoRoot, {product, authoring, lock: buildContractLock(product, authoring)}), 'mc-content', drift);
     for (const [file, text] of await mcPlatformFacts(repoRoot)) {
       await collectFileDrift(path.join(bundleRoot, 'skill/metriccanvas-platform-authoring', file), text, `skill/metriccanvas-platform-authoring/${file}`, drift);
     }
@@ -818,6 +803,7 @@ async function collectTreeDrift(
   }
   const expectedFiles = new Set(outputs.keys());
   for (const file of await listFilesIfPresent(root)) {
+    if (label === 'mc-content' && file.split('/').includes('__pycache__')) continue;
     if (!expectedFiles.has(file)) drift.push(`${label}/${file}: unexpected`);
   }
 }
@@ -867,10 +853,13 @@ async function listFiles(root: string, prefix = ''): Promise<string[]> {
 const productOutputs = await buildProductOutputs();
 const authoringOutputs = await buildAuthoringOutputs();
 const interfaceOutputs = await buildInterfaceOutputs();
-if (checkOnly) await assertCurrent(productOutputs, authoringOutputs, interfaceOutputs);
+if (process.argv.includes('--mc-coverage')) {
+  await mcContentOutputs(repoRoot, {product: productOutputs, authoring: authoringOutputs, lock: buildContractLock(productOutputs, authoringOutputs)});
+  console.log('MC source coverage current');
+} else if (checkOnly) await assertCurrent(productOutputs, authoringOutputs, interfaceOutputs);
 else await writeOutputs(productOutputs, authoringOutputs, interfaceOutputs);
 
-console.log(
+if (!process.argv.includes('--mc-coverage')) console.log(
   checkOnly
     ? `authoring contract export current (${productOutputs.size} product, ` +
         `${authoringOutputs.size} authoring, ${interfaceOutputs.size} interface files)`

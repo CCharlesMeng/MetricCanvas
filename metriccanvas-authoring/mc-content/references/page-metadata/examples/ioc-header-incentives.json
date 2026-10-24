@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "6.58",
+  "id": "ioc-header-incentives",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头 · 激励策略与所选月份"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "激励策略与所选月份",
+      "tags": [
+        {
+          "text": "合成候选与查询",
+          "id": "tag-0"
+        }
+      ]
+    },
+    "back": true,
+    "filterIds": [
+      "month",
+      "strategy"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "统计月份",
+      "default": "2026-08",
+      "min": "2025-01",
+      "max": "2026-10",
+      "required": true
+    },
+    {
+      "id": "strategy",
+      "type": "dimension",
+      "dimension": "strategy",
+      "label": "激励策略",
+      "urlParams": {
+        "value": "strategy"
+      },
+      "default": [
+        "DEMO-202610-A"
+      ],
+      "selection": {
+        "mode": "multiple",
+        "required": true
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "激励策略"
+    }
+  ],
+  "dataSources": {
+    "request": {
+      "fields": {
+        "item": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "item"
+        },
+        "state": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "state"
+        },
+        "selection_count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "selection_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "item",
+                  "state"
+                ],
+                "output_metrics": [
+                  "selection_count"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "month": {
+              "target": "timePoint",
+              "queryField": "demo_month"
+            },
+            "strategy": {
+              "target": "dimension",
+              "queryField": "demo_strategy"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成验收：固定日历锚点2026-10预拉候选，正文初始统计月2026-08。切统计月份不重新获取策略；候选请求次数与候选日历月在下表回显。保留已知来源行为供整体确认；是否改为随所选月重取尚未裁决。真实服务与历史月份策略适用性未验。"
+          }
+        },
+        {
+          "id": "request-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "request"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "item",
+                "title": "筛选项 / 观察项"
+              },
+              {
+                "field": "state",
+                "title": "实际生效值（合成回显）"
+              },
+              {
+                "field": "selection_count",
+                "title": "数量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

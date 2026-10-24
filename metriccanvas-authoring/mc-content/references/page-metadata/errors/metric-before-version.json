@@ -1,0 +1,82 @@
+{
+  "case": "metric-before-version",
+  "invariant": "metric-card-before",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Dashboard 指标卡前置连接文字与双侧受控间距 由 6.34 引入，文档声明的是 6.33",
+      "paths": [
+        "/sections/1/components/1/layout/before",
+        "/sections/1/components/2/layout/before",
+        "/sections/1/components/3/layout/before",
+        "/sections/2/components/1/layout/before",
+        "/sections/2/components/2/layout/before",
+        "/sections/2/components/3/layout/before"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          "…",
+          {
+            "layout": {
+              "before": {
+                "text": "=",
+                "gap": 8
+              }
+            }
+          },
+          {
+            "layout": {
+              "before": {
+                "text": "+",
+                "gap": 8
+              }
+            }
+          },
+          {
+            "layout": {
+              "before": {
+                "text": "+",
+                "gap": 8
+              }
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          "…",
+          {
+            "layout": {
+              "before": {
+                "text": "其中",
+                "gap": 8
+              }
+            }
+          },
+          {
+            "layout": {
+              "before": {
+                "text": "+",
+                "gap": 8
+              }
+            }
+          },
+          {
+            "layout": {
+              "before": {
+                "text": "+",
+                "gap": 8
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,6 +1,40 @@
 {
   "code": "INVALID_PAGE",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle.py",
+      "line": 165
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle.py",
+      "line": 49
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle.py",
+      "line": 51
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle_publish.py",
+      "line": 254
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle_publish.py",
+      "line": 76
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle_publish.py",
+      "line": 82
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle_publish.py",
+      "line": 258
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

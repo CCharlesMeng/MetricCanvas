@@ -1,0 +1,31 @@
+{
+  "case": "field-binding-role-mismatch",
+  "invariant": "field-binding-role",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 gmv 的 role 为 measure，此处要求 dimension",
+      "paths": [
+        "/sections/0/components/1/props/xField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "xField": {
+                "data": "main",
+                "field": "gmv"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

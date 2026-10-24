@@ -1,0 +1,395 @@
+{
+  "schemaVersion": "6.58",
+  "id": "query-result-where-branches",
+  "layout": "report",
+  "meta": {
+    "title": "查询输入条件闭集示例",
+    "description": "完整主结果与两个独立过滤集合输入的契约样例"
+  },
+  "filters": [],
+  "dataSources": {
+    "projects": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "项目编号",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "状态",
+          "nullable": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "role": "dimension",
+          "queryField": "启用",
+          "nullable": true
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "queryField": "金额",
+          "currency": "CNY",
+          "nullable": true
+        },
+        "duration": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "时长",
+          "nullable": true
+        },
+        "day": {
+          "type": "date",
+          "role": "dimension",
+          "queryField": "日期",
+          "nullable": true
+        },
+        "at": {
+          "type": "datetime",
+          "role": "dimension",
+          "queryField": "采集时间",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号",
+                  "状态",
+                  "启用",
+                  "日期",
+                  "采集时间"
+                ],
+                "output_metrics": [
+                  "金额",
+                  "时长"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202610",
+                    "end": "202610"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "details-high": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "项目编号",
+          "nullable": true
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号"
+                ],
+                "output_metrics": [
+                  "得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202610",
+                    "end": "202610"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "resultBindings": [
+            {
+              "source": "projects",
+              "field": "project-id",
+              "target": "dimension",
+              "queryField": "项目编号",
+              "maxValues": 500,
+              "where": {
+                "all": [
+                  {
+                    "field": "status",
+                    "op": "eq",
+                    "value": "进行中"
+                  },
+                  {
+                    "field": "duration",
+                    "op": "eq",
+                    "value": 0
+                  },
+                  {
+                    "field": "enabled",
+                    "op": "ne",
+                    "value": true
+                  },
+                  {
+                    "field": "status",
+                    "op": "in",
+                    "values": [
+                      "进行中"
+                    ]
+                  },
+                  {
+                    "field": "amount",
+                    "op": "notIn",
+                    "values": [
+                      0,
+                      1
+                    ]
+                  },
+                  {
+                    "field": "enabled",
+                    "op": "in",
+                    "values": [
+                      false
+                    ]
+                  },
+                  {
+                    "field": "day",
+                    "op": "eq",
+                    "value": "2026-10-01"
+                  },
+                  {
+                    "field": "at",
+                    "op": "eq",
+                    "value": "2026-10-01T00:00:00Z"
+                  },
+                  {
+                    "any": [
+                      {
+                        "field": "amount",
+                        "op": "isNull"
+                      },
+                      {
+                        "field": "amount",
+                        "op": "isNotNull"
+                      }
+                    ]
+                  },
+                  {
+                    "field": "amount",
+                    "op": "gt",
+                    "value": 1000000
+                  },
+                  {
+                    "field": "amount",
+                    "op": "gte",
+                    "value": 1000000
+                  },
+                  {
+                    "field": "amount",
+                    "op": "lt",
+                    "value": 3000000
+                  },
+                  {
+                    "field": "amount",
+                    "op": "lte",
+                    "value": 3000000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "details-low": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "项目编号",
+          "nullable": true
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号"
+                ],
+                "output_metrics": [
+                  "得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202610",
+                    "end": "202610"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "resultBindings": [
+            {
+              "source": "projects",
+              "field": "project-id",
+              "target": "dimension",
+              "queryField": "项目编号",
+              "maxValues": 500,
+              "where": {
+                "all": [
+                  {
+                    "field": "status",
+                    "op": "eq",
+                    "value": "进行中"
+                  },
+                  {
+                    "field": "amount",
+                    "op": "lte",
+                    "value": 1000000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "results",
+      "container": "plain",
+      "components": [
+        {
+          "id": "projects-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "projects"
+          },
+          "props": {
+            "title": "projects",
+            "columns": [
+              {
+                "field": "project-id",
+                "title": "project-id"
+              },
+              {
+                "field": "status",
+                "title": "status"
+              },
+              {
+                "field": "amount",
+                "title": "amount"
+              },
+              {
+                "field": "duration",
+                "title": "duration"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            },
+            "fit": "content"
+          }
+        },
+        {
+          "id": "details-high-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "details-high"
+          },
+          "props": {
+            "title": "details-high",
+            "columns": [
+              {
+                "field": "project-id",
+                "title": "project-id"
+              },
+              {
+                "field": "score",
+                "title": "score"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            },
+            "fit": "content"
+          }
+        },
+        {
+          "id": "details-low-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "details-low"
+          },
+          "props": {
+            "title": "details-low",
+            "columns": [
+              {
+                "field": "project-id",
+                "title": "project-id"
+              },
+              {
+                "field": "score",
+                "title": "score"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            },
+            "fit": "content"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,515 @@
+{
+  "schemaVersion": "6.58",
+  "id": "signed-number-family-page",
+  "layout": "report",
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-2",
+          "nullable": true
+        },
+        "grouped": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-grouped-signed",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "增加",
+            "delta": 1.234,
+            "grouped": 1234.5678
+          },
+          {
+            "name": "减少",
+            "delta": -1.234,
+            "grouped": -1234.5678
+          },
+          {
+            "name": "零",
+            "delta": 0,
+            "grouped": 0
+          },
+          {
+            "name": "正零舍入",
+            "delta": 0.004,
+            "grouped": 0.0004
+          },
+          {
+            "name": "负零舍入",
+            "delta": -0.004,
+            "grouped": -0.0004
+          },
+          {
+            "name": "正临界",
+            "delta": 0.005,
+            "grouped": 0.0005
+          },
+          {
+            "name": "负临界",
+            "delta": -0.005,
+            "grouped": -0.0005
+          },
+          {
+            "name": "缺失",
+            "delta": null,
+            "grouped": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "sample",
+      "components": [
+        {
+          "id": "family-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "name"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "delta",
+                  "format": "number-2-signed"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              },
+              {
+                "field": "grouped",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "family-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "增加",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "增加"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "增加"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "增加"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "减少",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "减少"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "减少"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "减少"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "零",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "零"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "零"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "零"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "正零舍入",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "正零舍入"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "正零舍入"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "正零舍入"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "负零舍入",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "负零舍入"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "负零舍入"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "负零舍入"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "正临界",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "正临界"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "正临界"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "正临界"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "负临界",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "负临界"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "负临界"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "负临界"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "缺失",
+                "valueField": {
+                  "data": "main",
+                  "field": "delta",
+                  "match": {
+                    "field": "name",
+                    "equals": "缺失"
+                  },
+                  "format": "number-2-signed"
+                },
+                "changes": [
+                  {
+                    "label": "两位小数",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-2-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "缺失"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "千分位",
+                    "field": {
+                      "data": "main",
+                      "field": "grouped",
+                      "format": "number-grouped-signed",
+                      "match": {
+                        "field": "name",
+                        "equals": "缺失"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

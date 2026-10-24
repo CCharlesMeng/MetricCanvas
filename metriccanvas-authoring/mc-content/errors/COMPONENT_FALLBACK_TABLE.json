@@ -5,6 +5,12 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/input_tolerance.py",
+      "line": 48
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

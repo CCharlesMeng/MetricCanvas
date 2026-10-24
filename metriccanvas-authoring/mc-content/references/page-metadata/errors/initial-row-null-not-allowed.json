@@ -1,0 +1,29 @@
+{
+  "case": "initial-row-null-not-allowed",
+  "invariant": "query-initial-rows-normalize",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 字段 region 为 null，页面字段 region 声明 nullable=false",
+      "paths": [
+        "/dataSources/orders/source/initial/rows/0/region"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "region": null
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,23 @@
+{
+  "case": "period-modes-default",
+  "invariant": "unified-page-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认期间模式必须在 periodModes 中",
+      "paths": [
+        "/filters/0/default/mode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "default": {
+          "mode": "month"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

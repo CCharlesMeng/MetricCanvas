@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "6.58",
+  "id": "report-ai-summary",
+  "layout": "report",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "fallback-summary",
+          "type": "aiSummary",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "结构容错示例",
+            "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字",
+            "variant": "reportInline"
+          }
+        }
+      ]
+    }
+  ]
+}

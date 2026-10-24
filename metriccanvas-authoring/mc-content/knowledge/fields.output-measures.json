@@ -1,0 +1,361 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "fields.core",
+    "query.core",
+    "fields.output-measures"
+  ],
+  "semantics": [
+    {
+      "module": "fields",
+      "reference": "references/page-metadata/fields.md",
+      "blocks": [
+        "# 结果字段契约\n\n页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。\n\n<a id=\"dqe-output-measures\"></a>",
+        "## DQE 直接输出的数值作为度量（6.56）\n\nDQE 的输出位置与页面的结果字段角色分别声明。`output_dims` 中已经存储的计数、金额等数值，可以显式映射为 `type: number | money`、`role: measure`，供柱状图、折线图、指标卡及表格等现有消费者使用。按角色分组的写法将该字段放入 `fields.measures`；金额仍须声明 `currency`。能力下限为 6.56，旧版本及 5.x 只读兼容文档不得使用。\n\n```json\n{\n  \"fields\": {\n    \"region\": {\"queryField\":\"区域\",\"type\":\"string\",\"role\":\"dimension\"},\n    \"projects\": {\"queryField\":\"项目数量\",\"type\":\"number\",\"role\":\"measure\",\"unit\":\"个\"}\n  },\n  \"source\": {\n    \"type\":\"query\",\n    \"query\":{\"language\":\"dqe\",\"body\":{\"dsl_list\":[{\n      \"output_dims\":[\"区域\",\"项目数量\"],\"output_metrics\":[],\n      \"filter\":{\"dims\":[],\"metrics\":[]},\"order\":{}\n    }]}}\n  }\n}\n```\n\n字段角色只声明页面用途，不改写 DQE 查询，不增加 `SUM`、`COUNT`、去重或客户端分组。每根柱使用该结果行已返回的数值；同一区域若返回多行，仍保留多行，目标区域粒度须由原查询保证。`measure` 不隐含可加总，折叠仍要求 `collapsible: true`。\n\n未显式选择度量角色的数值编号仍是维度；字符串、布尔、日期和时间等 `output_dims` 标量不得借此声明为度量。`output_metrics` 的标量仍要求 `role: measure`。现有 `detail` 专用消费规则保持原义。数值度量沿用下文的归一化与缺失规则，包括来自 `output_dims` 的字段及其内嵌初始行。\n\n查询筛选目标继续由 `filterBindings` 显式决定；把页面字段声明为度量不会把维度条件改写为指标条件。`numberRange` 等既有绑定仍使用原来的 DQE 指标谓词，不因本能力获得新的上游筛选能力。完整示例 `stored-count-measures` 展示两个现成计数的柱图与明细、真实零和缺失值，并支持区域维度筛选；使用本地合成数据，不代表真实 DQE 取数验真。\n\n<a id=\"查询数值度量的容错\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "grouped-query-fields-unique",
+          "description": "按角色分组的查询字段在维度组与度量组之间不得重名",
+          "valid": [
+            "grouped-fields-page"
+          ],
+          "invalid": [
+            "grouped-field-duplicate"
+          ]
+        },
+        {
+          "id": "grouped-query-field-label-not-id",
+          "description": "分组查询字段的 label 与字段 id 相同时应省略",
+          "valid": [
+            "grouped-fields-page"
+          ],
+          "invalid": [
+            "grouped-field-label-equals-id"
+          ]
+        },
+        {
+          "id": "inline-rows-contract",
+          "description": "inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "compute-page",
+            "params-page",
+            "composite-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "inline-row-undeclared-field",
+            "inline-row-missing-field",
+            "inline-row-null-not-allowed",
+            "inline-row-type-mismatch",
+            "inline-row-date-invalid",
+            "inline-row-datetime-invalid",
+            "inline-row-semantic-html-type",
+            "inline-row-detail-undeclared-field",
+            "inline-row-detail-missing-field",
+            "inline-row-detail-null-not-allowed",
+            "inline-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "detail-item-object",
+          "description": "嵌套明细的每一项必须是对象；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
+          "valid": [
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "initial-row-detail-item-not-object",
+            "inline-row-detail-item-not-object"
+          ]
+        },
+        {
+          "id": "detail-list-max-items",
+          "description": "嵌套明细最多 100 项；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
+          "valid": [
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "initial-row-detail-list-too-large",
+            "inline-row-detail-list-too-large"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "detail-field-consumption",
+          "description": "嵌套明细字段只能由显式支持 detail 的组件属性消费",
+          "valid": [
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "detail-field-in-generic-binding",
+            "record-list-in-table-column"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/grouped-fields-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/query-numeric-tolerance.json",
+        "references/page-metadata/examples/stored-count-measures.json"
+      ]
+    },
+    {
+      "module": "queries-and-bindings",
+      "reference": "references/page-metadata/queries-and-bindings.md",
+      "blocks": [
+        "# 查询定义与显式绑定\n\n6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。\n\n当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。\n\n未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。\n\n6.13 的 filterBindings `{target:\"time\",window:...}` 引用 timePoint，窗口使用明确的 period/yearToDate/monthToDate/lastN 等声明，保留查询 period/is_aggregate。没有 window 的 time 目标仍引用 timeRange。查询时间只能有一个筛选来源；窗口精度不隐式转换，绑定不得与固定起止/参数引用并存。"
+      ],
+      "rules": [
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "filter-binding",
+          "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "map-page",
+            "hierarchy-binding-page"
+          ],
+          "invalid": [
+            "level-query-fields-on-flat-filter",
+            "level-query-fields-missing-level",
+            "level-query-fields-undeclared-level",
+            "hierarchy-filter-flat-query-field",
+            "time-point-target-not-time-point",
+            "boolean-target-not-boolean",
+            "number-range-target-not-number-range",
+            "time-point-initial-param-not-times",
+            "time-point-initial-param-precision",
+            "time-point-initial-param-range",
+            "time-point-initial-param-and-default",
+            "time-point-initial-param-without-query-target",
+            "unknown-filter-binding",
+            "filter-binding-time-target-not-time-range",
+            "filter-binding-dimension-target-not-dimension"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/dimension-params-page.json",
+        "references/page-metadata/examples/hierarchy-binding-page.json",
+        "references/page-metadata/examples/non-dimension-bindings-page.json",
+        "references/page-metadata/examples/query-cascade-page.json",
+        "references/page-metadata/examples/query-result-where-page.json",
+        "references/page-metadata/examples/query-result-where-branches.json",
+        "references/page-metadata/examples/query-result-page-window-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/time-binding-branches-page.json",
+        "references/page-metadata/examples/query-modes-page.json",
+        "references/page-metadata/examples/query-mode-binding-branches-page.json",
+        "references/page-metadata/examples/object-query-page.json",
+        "references/page-metadata/examples/stored-count-measures.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.58",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/scalarField",
+      "path": "@scalarField",
+      "module": "fields",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "oneOf": [
+          "#/definitions/scalarField/oneOf/0",
+          "#/definitions/scalarField/oneOf/1"
+        ]
+      }
+    },
+    {
+      "pointer": "#/definitions/queryScalarField",
+      "path": "@queryScalarField",
+      "module": "fields",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "oneOf": [
+          "#/definitions/queryScalarField/oneOf/0",
+          "#/definitions/queryScalarField/oneOf/1"
+        ]
+      }
+    },
+    {
+      "pointer": "#/definitions/pageQuery",
+      "path": "@pageQuery",
+      "module": "queries-and-bindings",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "oneOf": [
+          "#/definitions/pageQuery/oneOf/0"
+        ]
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery",
+      "path": "@dqeQuery",
+      "module": "queries-and-bindings",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "language"
+        ],
+        "properties": {
+          "language": "#/definitions/dqeQuery/properties/language",
+          "resultBindings": "#/definitions/dqeQuery/properties/resultBindings",
+          "body": "#/definitions/dqeQuery/properties/body",
+          "paramBindings": "#/definitions/dqeQuery/properties/paramBindings",
+          "filterBindings": "#/definitions/dqeQuery/properties/filterBindings",
+          "timeModes": "#/definitions/dqeQuery/properties/timeModes",
+          "queryModes": "#/definitions/dqeQuery/properties/queryModes"
+        },
+        "additionalProperties": false
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

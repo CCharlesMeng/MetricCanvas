@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "6.58",
+  "id": "page-visibility-inputs",
+  "layout": "report",
+  "meta": {
+    "title": "权限与业务事实显隐（Sim）"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "intro",
+      "title": "独立内容",
+      "components": [
+        {
+          "id": "facts-export-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "Sim事实与导出取消",
+            "exportButtons": [
+              {
+                "format": "pdf",
+                "label": "导出Sim权限PDF",
+                "filename": "sim-permission"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sim-description",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "本页为 Sim 输入验收页。生产页面由集成应用提供 displayInputs；事实缺失时依赖内容不展示。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "protected",
+      "title": "权限允许的内容",
+      "visibleWhen": {
+        "permission": "department.read"
+      },
+      "components": [
+        {
+          "id": "protected-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "已有权限允许展示。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fact",
+      "title": "业务事实就绪",
+      "visibleWhen": {
+        "fact": "ready",
+        "op": "eq",
+        "value": true
+      },
+      "components": [
+        {
+          "id": "fact-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "业务事实已就绪。"
+          }
+        }
+      ]
+    }
+  ]
+}

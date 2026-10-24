@@ -1,0 +1,37 @@
+{
+  "case": "duplicate-filter-id",
+  "invariant": "filter-id-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选器 id 重复:keyword",
+      "paths": [
+        "/filters/9/id"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "URL 参数名重复:keyword",
+      "paths": [
+        "/filters/9/urlParams/value"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      {
+        "id": "keyword"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

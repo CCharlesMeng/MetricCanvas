@@ -1,0 +1,38 @@
+{
+  "case": "navigation-inputs-unknown-filter",
+  "invariant": "navigation-target-inputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "未声明的筛选器:unknown",
+      "paths": [
+        "/sections/0/components/1/props/actions/0/navigate/query/month/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "actions": [
+                {
+                  "navigate": {
+                    "query": {
+                      "month": {
+                        "id": "unknown"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

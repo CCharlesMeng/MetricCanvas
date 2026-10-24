@@ -1,0 +1,351 @@
+{
+  "schemaVersion": "6.58",
+  "id": "reference-conditions-page",
+  "dataSources": {
+    "rows": {
+      "fields": {
+        "id": {
+          "role": "dimension",
+          "type": "string"
+        },
+        "label": {
+          "role": "dimension",
+          "type": "string"
+        },
+        "amount": {
+          "role": "measure",
+          "type": "number"
+        },
+        "flag": {
+          "role": "dimension",
+          "type": "boolean"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "1",
+            "label": "s",
+            "amount": 1,
+            "flag": true
+          }
+        ]
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "f-text",
+      "type": "search",
+      "visible": false,
+      "visibleWhen": {
+        "not": {
+          "permission": "hidden-filter"
+        }
+      }
+    },
+    {
+      "id": "f-number",
+      "type": "numberRange",
+      "visible": false,
+      "visibleWhen": {
+        "not": {
+          "permission": "hidden-filter"
+        }
+      }
+    },
+    {
+      "id": "f-bool",
+      "type": "boolean",
+      "visible": false,
+      "visibleWhen": {
+        "not": {
+          "permission": "hidden-filter"
+        }
+      }
+    },
+    {
+      "id": "f-time",
+      "type": "timePoint",
+      "granularity": "month",
+      "visible": false,
+      "visibleWhen": {
+        "not": {
+          "permission": "hidden-filter"
+        }
+      }
+    },
+    {
+      "id": "f-range",
+      "type": "timeRange",
+      "visible": false,
+      "visibleWhen": {
+        "not": {
+          "permission": "hidden-filter"
+        }
+      }
+    },
+    {
+      "id": "f-list",
+      "type": "dimension",
+      "dimension": "kind",
+      "visible": false,
+      "visibleWhen": {
+        "not": {
+          "permission": "hidden-filter"
+        }
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "reference-button",
+          "type": "button",
+          "layout": {
+            "span": 3
+          },
+          "visibleWhen": {
+            "any": [
+              {
+                "permission": "read"
+              },
+              {
+                "filter": "f-list",
+                "part": "values",
+                "op": "containsAny",
+                "values": [
+                  "s"
+                ]
+              }
+            ]
+          },
+          "enabledWhen": {
+            "fact": "flag",
+            "op": "eq",
+            "value": true
+          },
+          "props": {
+            "label": "静态契约按钮",
+            "action": {
+              "on": "click",
+              "writeFilter": "f-list",
+              "value": "s",
+              "visibleWhen": {
+                "permission": "read"
+              },
+              "enabledWhen": {
+                "not": {
+                  "permission": "deny"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "reference-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rows"
+          },
+          "props": {
+            "rowKey": "id",
+            "rowVisibleWhen": {
+              "all": [
+                {
+                  "not": {
+                    "permission": "deny"
+                  }
+                },
+                {
+                  "any": [
+                    {
+                      "permission": "read"
+                    },
+                    {
+                      "fact": "flag",
+                      "op": "eq",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "filter": "f-text",
+                  "part": "value",
+                  "op": "eq",
+                  "value": "s"
+                },
+                {
+                  "filter": "f-text",
+                  "part": "value",
+                  "op": "in",
+                  "values": [
+                    "s"
+                  ]
+                },
+                {
+                  "filter": "f-number",
+                  "part": "from",
+                  "op": "eq",
+                  "value": 1
+                },
+                {
+                  "filter": "f-number",
+                  "part": "from",
+                  "op": "in",
+                  "values": [
+                    1
+                  ]
+                },
+                {
+                  "filter": "f-bool",
+                  "part": "value",
+                  "op": "eq",
+                  "value": true
+                },
+                {
+                  "filter": "f-bool",
+                  "part": "value",
+                  "op": "in",
+                  "values": [
+                    true
+                  ]
+                },
+                {
+                  "filter": "f-number",
+                  "part": "from",
+                  "op": "gt",
+                  "value": 0
+                },
+                {
+                  "filter": "f-text",
+                  "part": "value",
+                  "op": "isNull"
+                },
+                {
+                  "filter": "f-list",
+                  "part": "values",
+                  "op": "containsAll",
+                  "values": [
+                    "s"
+                  ]
+                },
+                {
+                  "fact": "text",
+                  "op": "eq",
+                  "value": "s"
+                },
+                {
+                  "fact": "text",
+                  "op": "in",
+                  "values": [
+                    "s"
+                  ]
+                },
+                {
+                  "fact": "count",
+                  "op": "eq",
+                  "value": 1
+                },
+                {
+                  "fact": "count",
+                  "op": "in",
+                  "values": [
+                    1
+                  ]
+                },
+                {
+                  "fact": "flag",
+                  "op": "eq",
+                  "value": true
+                },
+                {
+                  "fact": "flag",
+                  "op": "in",
+                  "values": [
+                    true
+                  ]
+                },
+                {
+                  "fact": "count",
+                  "op": "gt",
+                  "value": 0
+                },
+                {
+                  "fact": "text",
+                  "op": "isNull"
+                },
+                {
+                  "fact": "text",
+                  "op": "isNotEmpty"
+                },
+                {
+                  "row": "label",
+                  "op": "eq",
+                  "value": "s"
+                },
+                {
+                  "row": "label",
+                  "op": "in",
+                  "values": [
+                    "s"
+                  ]
+                },
+                {
+                  "row": "amount",
+                  "op": "eq",
+                  "value": 1
+                },
+                {
+                  "row": "amount",
+                  "op": "in",
+                  "values": [
+                    1
+                  ]
+                },
+                {
+                  "row": "flag",
+                  "op": "eq",
+                  "value": true
+                },
+                {
+                  "row": "flag",
+                  "op": "in",
+                  "values": [
+                    true
+                  ]
+                },
+                {
+                  "row": "amount",
+                  "op": "gt",
+                  "value": 0
+                },
+                {
+                  "row": "label",
+                  "op": "isNull"
+                },
+                {
+                  "row": "label",
+                  "op": "isNotEmpty"
+                }
+              ]
+            },
+            "columns": [
+              {
+                "field": "label",
+                "title": "名称"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "layout": "report"
+}

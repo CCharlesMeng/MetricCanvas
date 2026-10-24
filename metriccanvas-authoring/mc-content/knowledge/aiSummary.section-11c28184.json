@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "aiSummary.section-11c28184"
+  ],
+  "semantics": [
+    {
+      "module": "aiSummary",
+      "reference": "references/page-metadata/components/aiSummary.md",
+      "blocks": [
+        "# AI 总结 aiSummary\n\n仅适用于 Report 布局。已有正文与按页头时间条件生成的区域分析使用同一个组件；普通说明继续使用 text。",
+        "## 呈现与导出\n\n默认完整复用 SDT“报告摘要”的 ReportSummary：渐变背景、白色内框、浅紫描边内容区三层结构；默认标题为“报告摘要”，可用 title 修改。显式 variant: reportInline 使用既有紧凑 TextBlock。\n\n合规 HTML 按语义渲染；结构不合规时提取安全可读文字并保留换行，不执行脚本或加载资源。纯文本回退也可缓存和导出。无正文生成时，空响应或失败显示局部错误并支持重试。\n\n非空 body 优先用于导出；动态结果冻结当前条件下的完整正文。未完成或失败显示状态占位，不额外调用 AI，不使用其他时间的结论。"
+      ],
+      "rules": [
+        {
+          "id": "ai-summary-regions",
+          "description": "AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部",
+          "valid": [
+            "report-ai-summary-regions"
+          ],
+          "invalid": [
+            "ai-summary-region-version",
+            "ai-summary-region-mixed-scope",
+            "ai-summary-region-not-top",
+            "ai-summary-page-not-top",
+            "ai-summary-region-not-full-width"
+          ]
+        },
+        {
+          "id": "report-ai-summary",
+          "description": "AI 总结仅用于 Report，非空 body 直接展示，否则需要生成提示词与范围",
+          "valid": [
+            "report-ai-summary"
+          ],
+          "invalid": [
+            "ai-summary-dashboard",
+            "ai-summary-unknown-section",
+            "ai-summary-blank-body-without-input",
+            "ai-summary-body-routing-version",
+            "ai-summary-scope-required",
+            "ai-summary-version-floor"
+          ]
+        },
+        {
+          "id": "ai-summary-related-data",
+          "description": "AI 总结关联数据引用已声明数据源中的非明细字段，不重复且术语一致",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "ai-summary-unknown-source",
+            "ai-summary-unknown-field",
+            "ai-summary-detail-field",
+            "ai-summary-duplicate-field",
+            "ai-summary-term-conflict"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/forecast-page.json",
+        "references/page-metadata/examples/report-ai-summary.json",
+        "references/page-metadata/examples/report-ai-summary-regions.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -2,11 +2,7 @@
 from copy import deepcopy
 from jsonschema import Draft202012Validator
 
-from mc_resources import ContentError, read_json, verify_package
-
-
-def issue(code, path='', **facts):
-    return {'code': code, 'path': path, **facts}
+from mc_resources import ContentError, read_json, verify_package, value_digest, issue
 
 
 def schema_issues(schema, value, prefix=''):
@@ -157,8 +153,11 @@ def compile_layout(envelope, *, root=None):
     adjustments = []
     try:
         root, manifest = verify_package(root)
-        if not isinstance(envelope, dict) or set(envelope) - {'templateRef', 'plan', 'userRequirements', 'targetVersions'}:
+        if not isinstance(envelope, dict) or set(envelope) - {'templateRef', 'plan', 'userRequirements', 'targetVersions', 'requestId'}:
             raise ContentError('COMPILER_INPUT_INVALID')
+        request_id = envelope.get('requestId')
+        if request_id is not None and (not isinstance(request_id, str) or not request_id):
+            raise ContentError('COMPILER_REQUEST_ID_INVALID')
         requested = envelope.get('targetVersions', {})
         if not isinstance(requested, dict) or set(requested) - set(manifest['alignedWith']):
             raise ContentError('TARGET_VERSIONS_INVALID')
@@ -175,9 +174,13 @@ def compile_layout(envelope, *, root=None):
         if errors:
             return {'status': 'invalid', 'plan': None, 'adjustments': adjustments, 'gaps': errors}
         specification = inspection_spec(plan, template, requirements, manifest)
+        specification['correlation'] = {'requestId': request_id, 'compileInputSha256': value_digest(envelope),
+            'planSha256': value_digest(plan)}
         gaps = declared_gaps(plan, specification, template)
         return {'status': 'gap' if gaps else 'ok', 'plan': plan, 'adjustments': adjustments, 'gaps': gaps,
             'inspectionSpec': specification, 'contentSha256': manifest['contentSha256'],
-            'deploymentAlignment': 'checked' if requested else 'not_run', 'checkedVersionFields': sorted(requested)}
+            'deploymentAlignment': 'checked' if requested else 'not_run', 'checkedVersionFields': sorted(requested),
+            'deploymentEvidence': {'status': 'not_run', 'comparedFields': sorted(requested),
+                'note': 'Only supplied version values were compared; no live service or deployed artifact identity was observed'}}
     except ContentError as error:
         return {'status': 'invalid', 'plan': None, 'adjustments': adjustments, 'gaps': [error.issue]}

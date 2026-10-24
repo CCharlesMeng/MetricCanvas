@@ -1,0 +1,26 @@
+{
+  "case": "compute-non-numeric-input",
+  "invariant": "compute-operator-inputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 flag 的类型 boolean 不能参与数值算子",
+      "paths": [
+        "/dataSources/targets/compute/1/minuend"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "targets": {
+        "compute": [
+          "…",
+          {
+            "minuend": "flag"
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

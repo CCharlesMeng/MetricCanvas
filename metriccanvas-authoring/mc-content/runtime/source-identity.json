@@ -1,0 +1,2387 @@
+{
+  "kind": "public-build-inputs",
+  "sha256": "34de35ae543ab49a336b0d6c9978f4fd0f6e138bcff53824a2de50c73cef49eb",
+  "files": [
+    {
+      "file": "docs/examples/schema-metadata.example.json",
+      "sha256": "2f9c718eb27c61ee4dcbf6873cd02ef3244f737fdfecfc6849e2777585553165"
+    },
+    {
+      "file": "docs/page-metadata/README.md",
+      "sha256": "f53f234f68cc52f6bc111e52a316825fbd9ed6f7927fb1aa2e5b26fa63a56bae"
+    },
+    {
+      "file": "docs/page-metadata/actions-and-navigation.md",
+      "sha256": "834d83ae252dc3fb1b747c350cf0fb57ed631434257413b77d3108698181cc15"
+    },
+    {
+      "file": "docs/page-metadata/chart-option.md",
+      "sha256": "801b36e5393a7bee41e03ea84040ac5ee069d9dcfcf4bd452694c176e9d47c6d"
+    },
+    {
+      "file": "docs/page-metadata/components/README.md",
+      "sha256": "6d538331a94c038089be2429e6b6189aa430470941498eb7ef4b65bae3e6a1f3"
+    },
+    {
+      "file": "docs/page-metadata/components/aiSummary.md",
+      "sha256": "067fbfc1849ec3851eb0e168154773e11a0661b4b8bee093f1156e84ce78559b"
+    },
+    {
+      "file": "docs/page-metadata/components/barChart.md",
+      "sha256": "692c64f8c23f9abf05de138061b45fc4f1f0d947b3ee7a9cefeb158296a678c4"
+    },
+    {
+      "file": "docs/page-metadata/components/button.md",
+      "sha256": "2bdcca9ab58f385ba94e37a1c5faaed6bba2fd9b2661c1604a5421f5627cb07d"
+    },
+    {
+      "file": "docs/page-metadata/components/categoryBreakdown.md",
+      "sha256": "3cd6a7b0367395c60619bbda4dd88739ef832c99842e604c930f71e1fd87237e"
+    },
+    {
+      "file": "docs/page-metadata/components/compositeCard.md",
+      "sha256": "24bf5f9b489c041bc821dd06ff36dc2b353a0b7b793a63e38bc70d9f071a6764"
+    },
+    {
+      "file": "docs/page-metadata/components/fieldText.md",
+      "sha256": "774af6fa9434edaea700d2bc00d64d0f8e832f969e9acc73b72bfb0942993bd1"
+    },
+    {
+      "file": "docs/page-metadata/components/filterGroup.md",
+      "sha256": "854ecee826a955580d625cc3411eff1d72fcc79816e6a1ac62e7fea334833543"
+    },
+    {
+      "file": "docs/page-metadata/components/gauge.md",
+      "sha256": "2220b113a8f1e29fe8af5f95d1083997424ec0388fd37f2c4f4bd1f6e7254791"
+    },
+    {
+      "file": "docs/page-metadata/components/keyValuePanel.md",
+      "sha256": "1e7e9c0a44d0b144194248f9759295a2a7f1976d24a2129c2cfd57c7564153c7"
+    },
+    {
+      "file": "docs/page-metadata/components/lineChart.md",
+      "sha256": "396d0bb7313d7c92d26b91fa02cf7ab4b68410e92c44bd6f3172d9ba418bc9e4"
+    },
+    {
+      "file": "docs/page-metadata/components/mapChart.md",
+      "sha256": "28796ad223103d4649d9eb1c5140ce6fd75e5ab5b932e6b78a034acff0689f9b"
+    },
+    {
+      "file": "docs/page-metadata/components/metricCard.md",
+      "sha256": "bdab530a15861766074a16fc073c90f28610c6b240b569eabbf05a0c85516a75"
+    },
+    {
+      "file": "docs/page-metadata/components/pieChart.md",
+      "sha256": "bb4782ef3b43cdff978c3b3b66f7d38c522de5312b43c6265be1bbd3b74d996f"
+    },
+    {
+      "file": "docs/page-metadata/components/rankingCard.md",
+      "sha256": "5c3d45d2d4d0fff967a949f0e378b4c5050b319b914c44182640d7c7d42c2833"
+    },
+    {
+      "file": "docs/page-metadata/components/rankingDetailCard.md",
+      "sha256": "86ef38932f19e2588f445d8f7d12f5455ce1ec93063cd0791980b0c43c890dfc"
+    },
+    {
+      "file": "docs/page-metadata/components/reportHeader.md",
+      "sha256": "69fab1f9a03c931d7ca1c3b2bd4562dcb24a04aa4575952184e1e4266250dc61"
+    },
+    {
+      "file": "docs/page-metadata/components/tabContainer.md",
+      "sha256": "65e8120100b8cb47c4b7b6d3443d52d54ea268de94ce596567f4fbb7576a11ca"
+    },
+    {
+      "file": "docs/page-metadata/components/table.md",
+      "sha256": "0113aa0303191b424922f0757d17013366ff6a60783e27716cda89c131da1551"
+    },
+    {
+      "file": "docs/page-metadata/components/text.md",
+      "sha256": "641693246723b06d1429fd8052b9bff09c6c2ed36c902513976a2d676663ad91"
+    },
+    {
+      "file": "docs/page-metadata/compute.md",
+      "sha256": "aa07f1c990ac712abf5e750bc4d8bf8078fc2b2b37cc0e49890542b28b3879f3"
+    },
+    {
+      "file": "docs/page-metadata/conditions.md",
+      "sha256": "903256ffff218840b745585abfe5dc35edca7f3f68f2cab39d706122b788c2da"
+    },
+    {
+      "file": "docs/page-metadata/data-sources.md",
+      "sha256": "6b13a538a4964c03eb094d15e2dfc90d38e483c713e4a3b9c4d310c5cb387c43"
+    },
+    {
+      "file": "docs/page-metadata/examples/README.md",
+      "sha256": "0ec0b5cf930cc577ae7f7cfd804e3c6918962d6b57aec8bb0be5ef31006b09ac"
+    },
+    {
+      "file": "docs/page-metadata/field-bindings-and-formats.md",
+      "sha256": "064e7d7989801c96a184096eb46df9fb7c62494415309f77a7f364c07219eba7"
+    },
+    {
+      "file": "docs/page-metadata/fields.md",
+      "sha256": "3f0f2139cb56975000111ce3478123ab7268af7e620ab6e55c9082a0d9e0ce47"
+    },
+    {
+      "file": "docs/page-metadata/filters.md",
+      "sha256": "e426d891593a89a90b065f826edf951f5c1e9f3b06959e8c54ae63e0b677af09"
+    },
+    {
+      "file": "docs/page-metadata/layout-migration.md",
+      "sha256": "860ea46e11e5db225f260173e82cd7d1ffd1193c32e3d051b4a2d1c11735c42d"
+    },
+    {
+      "file": "docs/page-metadata/page.md",
+      "sha256": "d3f5a8582cab87d423c32824da20e91e7d2b3db57a25bcc08cddafce0b613da2"
+    },
+    {
+      "file": "docs/page-metadata/parameters.md",
+      "sha256": "af7fb6dc337ce29ebf83de1ed4d09195b32518c6073d1f1a2a7f9f6f5aaa512a"
+    },
+    {
+      "file": "docs/page-metadata/params-and-text-values.md",
+      "sha256": "2cf6f26ea697e9f64990cb963078cba212a9e57d25cf51ac0e8625c8b7c16298"
+    },
+    {
+      "file": "docs/page-metadata/queries-and-bindings.md",
+      "sha256": "9ccec540e5fee8b622c31aa1f5951ac47a40bddef5589f390ebc917e5b6ac4f5"
+    },
+    {
+      "file": "docs/page-metadata/reference-map.json",
+      "sha256": "1a631ae1580f3c20014c3002901b8671f0f7f6a0c602d64134d53552cd73f75f"
+    },
+    {
+      "file": "docs/page-metadata/sections-and-layout.md",
+      "sha256": "2be3fd409952d7a26a0e5e29b67086caecf42fe9af006f2e55b9e9b2a0e58ddc"
+    },
+    {
+      "file": "docs/page-metadata/semantic-html.md",
+      "sha256": "1917249925806a8fc91561665c07a29187502ac8042b193a80bd98568e00d359"
+    },
+    {
+      "file": "docs/page-metadata/time-parameters.md",
+      "sha256": "dcd9e92eb30b74700ef4ee7f23fc388f2a490e8fde064aec83f256801366d94f"
+    },
+    {
+      "file": "docs/page-metadata/validation.md",
+      "sha256": "0294b5ff9e94ebf85bfd937e1d007012868bb4f78aa4c7b1f76d35b63f0960d9"
+    },
+    {
+      "file": "docs/schema-metadata.md",
+      "sha256": "ca2fcb6de6cb40e645c75eb069f31e520a8a74533515508639bdeefe246dc9c4"
+    },
+    {
+      "file": "docs/schema-metadata.schema.json",
+      "sha256": "3949e76393b8260fe109dfa4fed03a04523219653ceb2de82773467c1143e463"
+    },
+    {
+      "file": "metriccanvas-authoring/bundle.json",
+      "sha256": "b9b2fd34b90ddd0ef38d10578170895d4a133b1ba22ddfe0b3fed8794295e063"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/adapter-interface.md",
+      "sha256": "6c9da562b6d9e867cf3aa6d4a364396ecc11860751ed24143fa4547663192bfa"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/agent-conformance.schema.json",
+      "sha256": "840e44dd416cef561ac9283a226d770d810790fe60c5a485e88353960e630d7a"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/agent-model-decision.schema.json",
+      "sha256": "7dcabb713b958e151136c18fe96062eae8568f121082748489375e2f14a952b2"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/agent-step-event.schema.json",
+      "sha256": "260ceeea4d6cf185333e4b191a567caf8457dfa58c0d383c963ef67c2b34eeec"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/analysis-intents.json",
+      "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/authoring-data-mapping-protocol.md",
+      "sha256": "f4973d7a5d25b3b658e4ff9a8abd0b40993a520476266c78bf67b922fe2eb7ad"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/authoring-turn-contract.ts",
+      "sha256": "46968c58ce8388f402e74bc17994b85c2228c97196781ddfc9adfd1ff560c2c4"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/authoring-turn-protocol.md",
+      "sha256": "5e5fc9505e1cf76c646f5bcf232f532a127ce25c9d509607da278d5123188ea9"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/authoring-turn.bytes.json",
+      "sha256": "82ea48271f2b884d5193981ff79d66288db17375a20b6721e397b08d16c8e634"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/authoring-turn.conformance.json",
+      "sha256": "4152c30ee7a853801f81b692232f4770967d678acd250f7953dce130fdba12b1"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/authoring-turn.schema.json",
+      "sha256": "9955748188755beb90cceba2f6dcc56061919fb0ee62a1128519844f2324a9d2"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/business-term-resolution.schema.json",
+      "sha256": "f8ecad1e32c668cf16b7bde3201a6503fef9b7d91783f0e16584428107120b45"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/discovery.schema.json",
+      "sha256": "c9c2521c08ddfd84c45874c107eb117eda898be7344a6b142cdcecfbc67d7deb"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/lifecycle-request.schema.json",
+      "sha256": "25b2ff5d45756f2b7aa56aa6b3baee16e366e33ce909ea6a0740f2690250bb78"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/page-build-artifact.schema.json",
+      "sha256": "5e0c4e05a0ed31c7639859ce7e941c7ed08970d912e60f6791e1c3b99408b9ec"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/page-build-spec.schema.json",
+      "sha256": "1412b40e20be56fb0aa68d43fe563da86e76a810b2a1eed78b28e3ef87cfb23c"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/page-edit-request.schema.json",
+      "sha256": "250d4f3e98e859d14b6b16c5eb5d5d322f81e8d4af2f04bf1186df2cec0cc355"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/page-parameters-protocol.md",
+      "sha256": "bf4aae52a2f0a63ee57e75019e4af68f0de62be3dd1b2ce77fff9ff07b184038"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/page-structure-plan.schema.json",
+      "sha256": "3b6828d7857e47f3fed51ce16a3809f127deb4086bd7fe4d9f9d44c61554ebfc"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/platform-v2-protocol.md",
+      "sha256": "32b9fd6b7bfb7858a88f250f613b583c6c0689146661e96aa612bd07ef6fc84c"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/publication-conformance.json",
+      "sha256": "e2383775351e953c4d58744459ea785f6be615507e3bf95e2c25a78236a5bef0"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/publication-contract.ts",
+      "sha256": "e0db19861d36ed584f438ff5061ab53a7efe2c23d713b0be6c0154f89a53157a"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/publish-request.schema.json",
+      "sha256": "ae0c4f5e656ad55d702bd0e10e106fab7faa693ddbcc40964b29ae0d3d1ee4e3"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/relay-page-artifact-envelope.schema.json",
+      "sha256": "2226c6cf97cf5de5d196e08b48b05dc848f25a1d764f5e5fe9b2d164b7c99e72"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/section-patterns.json",
+      "sha256": "ef06cf06df0a9f975d752c08b10c78d942df3fabc8f74183e80cf38b376d5752"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/source-description.schema.json",
+      "sha256": "2e6d4357eda20788923828cd1850c768f979c041ce80ce7745d5d6172cec5aaf"
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/source-format.conformance.json",
+      "sha256": "dd5d67cb45237c5cb7b6ee9bebc5488b3d822586984703d598022a31b7ea2084"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/drafts.py",
+      "sha256": "779ea2b6d4a2078500cf315867b290298bdd373236a3ac36137286747fa5c696"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle.py",
+      "sha256": "9fbd2cfbf81e7ff9b61da64f02d9b8f7e598bf23310664375dc38d381b1d532e"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle_ports.py",
+      "sha256": "de93407f05ab8192e075aafc078378c84c2b81d502d580ef701b9dd574241808"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/lifecycle_publish.py",
+      "sha256": "f8c6aac1c2b01cc7fb04a86ed68181583c74c41ec6193e95e02fcff728106f4a"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/publish_ports.py",
+      "sha256": "3db35d143a9aa85a1c9fcb0fbeb1c689c618cb84f8ba15d18a65474660b814cf"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/build_issues.py",
+      "sha256": "f8cf978e1e54b0f47d839636136a1f9936d74acd35be1797c536c75bf6eb901d"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/bundle_info.py",
+      "sha256": "be57ff7e3efbc12a7007d929ba3000d4a47f956b026d351d3d4202499bda3bd5"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/canonical.py",
+      "sha256": "c984ce532df8dae465a9eeb9f9fea76172901a0502b9f517737510baac2db0a6"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/__init__.py",
+      "sha256": "9401a593415eaefb350c82fa820a71a8cdfb60c1634b6ffbfe4cf467d9732f2f"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/authorization.py",
+      "sha256": "31b352319d6fe24bf71d82134448cab6b8a142c9e3e2df6db1c4a428b18047ba"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/business_interpretation.py",
+      "sha256": "6cdcc0d92cac5fc23f64682be4e810d4b25a7cb109606e26b5001b9b4fb98549"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/business_terms.py",
+      "sha256": "aa684a6b1b858310ddddcee6cf6b84c0629dd88e7f8a92064d5e4b70ea102609"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/catalog_ports.py",
+      "sha256": "5f307334f06a586dd2b34002d3b241e5e527aa30dbc3af9f3877a2cb00b7f15f"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py",
+      "sha256": "1dda0e727d995fd4f90e51fb6e77885d1d71325a1a62e713cdd5d1a621a07333"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discover_data_context.py",
+      "sha256": "0391a5a103d09edd35069085916a990809647faf1e50406ada0f6cb5d8a08262"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/__init__.py",
+      "sha256": "ac5400bfa0d275212d955304ff3457a7043d1081f38f4515ef1e1c5a095b265a"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/contracts.py",
+      "sha256": "92060d0a408d211c17369c1754b24572b6d00fc9144ff88027a69d93c9848428"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/retrieval.py",
+      "sha256": "ca29b557ead4f3f2b3ffb25a5423eb1a798378cd8c5fa58fc99bf81ee0c79a34"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/service.py",
+      "sha256": "7bb58ac0aa598afc3878e5e1a93eeffc1565086d5c6aa91651fc603c0a50444b"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py",
+      "sha256": "5a7f3b54391fb835951a4e3023653e327709c89e36a27e1dbb3147610af4202e"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/execution.py",
+      "sha256": "c6e4a12f088396e2960846d769a9dbf5dc793d2fd1ed7e468f46510d57949abe"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py",
+      "sha256": "512b77a8a98b4815aadf5dee155358ef0b84197920f37cfc10330efbd0580243"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "sha256": "0e02d4031adefe00f07eda00fd74dd2d0ac244cab7a3229773a5a74fa4a21eb3"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/metadata_session.py",
+      "sha256": "3be3917d259d5b58e12022f28760ceacca2bd7b7094ca26454b1559b04232c88"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/metric_relations.py",
+      "sha256": "5e66eac825613f88aaa96680b68b68e022f21b1aa521f3f1d146d961c6e15632"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/page_build_spec.py",
+      "sha256": "107d74b1241bcfcb0dca791319214ab620f3504741eb15e4aebd20ab9c2518f6"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/ports.py",
+      "sha256": "3685c02182e76bde6358d6092dd8efb351e6167fd6c0738e9d087bc0d0b1136d"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/query.py",
+      "sha256": "1a5031a487853dba644ac979fb1d2a46aed89aedaf0c25d41fa0c75913a70b94"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/query_attempts.py",
+      "sha256": "576dcd999ef8d78c96976e85ae7a2683e90e1278ef45cae3ece55210cdf5f420"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/results.py",
+      "sha256": "338836308a4c07375b5ae04aa318c8e299188dfef2473c3b059a43eeebb65c61"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/semantic_catalog.py",
+      "sha256": "e92e26aaab785dc37e5519e1eb8490f129dee1dd1f9371e9410ba96d1cff4604"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/service_identity.py",
+      "sha256": "82163de1dd3149d2100cd31ba654f7ce2dd8137637d7afe110b5cdffc361b8e9"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/source_description_ports.py",
+      "sha256": "52c23f05c41b31b97ed3a7dd2df5f9963e13768b2da012095f7b0d56da025f79"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/source_mapping.py",
+      "sha256": "bd0c24589485bcf63f31882c1f14c74c3214dff9d28e26188049b09677ddec06"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/validation_policy.py",
+      "sha256": "b08a3a038234638d31b869e999c54d07eb3c46031a3d15e518bc7994b0f6da3d"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/delivery/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/delivery/ports.py",
+      "sha256": "016f877aa51b8ccd76e0bea132ca9f4a0a51af189c0eb4cfd31bf4cb562ad927"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/delivery/preview.py",
+      "sha256": "54305b1ce014ae62485b74e97495f2d04394401466be4919089f3a916fbbc017"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/delivery/summary_capability.py",
+      "sha256": "1e9ab242811bb59f20a7c94424b2de7345cad29fba5edbbe89a7e6a26e2912c0"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/diagnostics.py",
+      "sha256": "164ee7c5953c4d2c3d635ed2811361cccc7643a1b5d946525f58c39ee6639cc9"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/mcp/__init__.py",
+      "sha256": "4ab78fac41ce80b6a873cdf4c3219fc03a23349fda3d111045e45bea38563e55"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/mcp/platform_mcp.py",
+      "sha256": "97bcb93ff59229ae5aff897468557bf39a5fdb52778a61a5f80aa7febd64a826"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/mcp/platform_server.py",
+      "sha256": "0cba8199979deb01dcae5e8e577808c4b37d55b03146e907301a5e7824d38ede"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/__init__.py",
+      "sha256": "70241b008b8898cbea194d01a7938e9ca8cc7a2a703b39c30d09275a15062774"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/capabilities.py",
+      "sha256": "1d6eba9343fe8ab89c09fd8ec1db7f6478365bde438c9b80bcbbb6902a8b68e6"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py",
+      "sha256": "b59add47880b795b557b36c731da96eaeb5b0b9198f2e7363bef52632b59d0da"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_policy.py",
+      "sha256": "c0a3136e3444a489fbbbdfa2a531953ade136377fbbf1fe755bbb0fa6bc1b052"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_selection.py",
+      "sha256": "e6823ca5857293d2f74a0420c16ebd85c3f1feac5ef37292cba63a5ea7542ca4"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/container_building.py",
+      "sha256": "f8f708a83924bc5494c6416124fa1b4119b5fec365043084e4684eb6e9dd885c"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/field_bindings.py",
+      "sha256": "530c2ab4da9e62a455fc9d750707ffbf57994b016daa32e27a0de8e0579dc749"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py",
+      "sha256": "2eceb25b3db7e945f37a99632169628085a555144995dad3ea1294a290e8705e"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/structure_presentation.py",
+      "sha256": "c303024f575722e66bd467b0ab19124f2be9b7b07f5ce7d587577ccfed897b2d"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/text_map_building.py",
+      "sha256": "fed021a2229f4d8ef7652e325aee25e44222a3db45f5b48d32d712e604d499a6"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/compose_contract.py",
+      "sha256": "c1c846dfa9d8c3fcfbc5865f94d7cd6f61a7c43393f986cc83bb7b9c08c413f7"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/compose_content.py",
+      "sha256": "9e125932002c4b726437ce242c89fd694bafaa50832749dd4e3f6345aaf16e84"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/compose_page.py",
+      "sha256": "d1746a6ef86fd58147208535205035a038169258d62deeba93fde042ea19ad04"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/create_content_page.py",
+      "sha256": "e23963316d1f3313ef92f6b130e6e0e863ae2183df9dce60b363b954a54188be"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/layout_policy.py",
+      "sha256": "576a25b8671736f20f338ca46f54f38115bc8ec2398d742a16f5386148edd4d5"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_building.py",
+      "sha256": "8ebac28f89a16f384a3f7e1199116b97aad8c6b228ca478a77765c030087f676"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "sha256": "20e6a9dbdbd02aac0ba797947114b6aa2c4c885f9eb09f50d847d6365f5bdf58"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/paged_join.py",
+      "sha256": "b14c3e556162cefa09cda73321208d7f344a1db49bf47ecbd5266798b5aa92ea"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/section_layout.py",
+      "sha256": "6a0f384026f96fd361fce026e58001644777ff6719ff6583669164a9a2c72729"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/table_pagination.py",
+      "sha256": "11f8611b696ea1fa6f623f1f16f12dd3ba9ebab782bac642c2962de665ece449"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/edit_page.py",
+      "sha256": "dc92c09e2ce96605e8d5543ccf5ce122a79767f50b847b5e4c0c5a929175de88"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py",
+      "sha256": "ad560102a33a36f8777178fc576cdecc5695a235841c7b0cd59f5f6164a5261e"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/operation_batch.py",
+      "sha256": "5e004047e9a21669812f197c6c0800ed21d90e2fae8937eb9cf355cef0d2a801"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py",
+      "sha256": "32b2d9b10cbc8cc14cdb174c6b64e0c3bf538f797cedddf982def40af6aa8ae0"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/presentation_editing.py",
+      "sha256": "9ce788f3f5921857004d0a833e28c34b2b03fec6a8345092fd4f30657542e27a"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/range_editing.py",
+      "sha256": "480254f74d70030894138713e8e72308d41164dc3fa588b1a04e1c028418e25f"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/section_editing.py",
+      "sha256": "2a01a03d75b3c377614db9fadc2bf7c0a16c462e74aa51ce6c7f629d583fbe7e"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/input_tolerance.py",
+      "sha256": "8c4d1b33261ef03cf0c34acf5ac9453e65d31114640d119c8f0246aaf16a9e0c"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py",
+      "sha256": "ad2747445aadf09c0a465593bbff204a1237e021ae2ac1f681645ab2fbd4eee4"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/parameter_preparation.py",
+      "sha256": "d6f25cbaff4f815b61a3694017eba008224480eab2bf9074870a247a4ad546b0"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/platform_authoring.py",
+      "sha256": "895aee63557bc155d9dca751a327a0c1d50458b12cf0b7e3c87caa90f58dd041"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "sha256": "e17486a0d5efbbe0dd43f3675b2118867324eaa8126cde123b65a97abb4ff1b9"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/scope_annotations.py",
+      "sha256": "c60e62875b1b74435bb7a0cc4326376a8147940e288841fd291daacb2305f901"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/filter_text_values.py",
+      "sha256": "a009c959a9ea6b506aa6ef4cbae15accee9ce6fe5dc8cd0e53cd5f864892e2f5"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/grouped_params.py",
+      "sha256": "60bf40f8c6ab2db73b268518e16c11797998f7fd79caecb3e48df4c21b057cff"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/node_validator.py",
+      "sha256": "3a6b8f35b9695e02fdb237f0473493d784c853376793e4aa1e2368b4684285e4"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "sha256": "45cad7808fb1d20646115ef4fab81e05eafd29eff193838ef115a45e6e7b2517"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/presentation.py",
+      "sha256": "a887db16111c1db5c0e8d7827d5cca854748876373593a94553c03d68edae75f"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/query_results.py",
+      "sha256": "da20c6ea9326b059b2e697889915e0306841e34ddae493f699cb12fe1dc748a4"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/report_date_filters.py",
+      "sha256": "c47be5ac67f1bf9d6ffde6f8cb4a9159e270bbfd4dd531bd60967a032bc0ed78"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/runtime_assets.py",
+      "sha256": "76b75977f17461b6fd9aa33d7e5373cf163856cb61718b1f68292217ee935b6b"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/schema_projection.py",
+      "sha256": "8ab572bf6112ad189d6b1ef2c7118d8ec4a25eca039443c665febe97fba4b948"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/work/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/work/authoring_turns.py",
+      "sha256": "b17690b54414cf9beb15518f3613d4bf1ce5ad7e65e2f19366fa854a19293ad6"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/work/content_ports.py",
+      "sha256": "aa6c582e04ec2b53a0d93965c66a6255547ad11c05ab1a563b279248bfd830e3"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/work/diagnostics.py",
+      "sha256": "3ceada5513f14eaf4393bc0c0ccf3a72e61b121921d1266db0dd5a3125aee449"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/work/discovery_tasks.py",
+      "sha256": "e329494778ff010bd01f070005639f867ce6a8f43c6f98e685e5896fda432504"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/work/state.py",
+      "sha256": "1eae2fea21b9b4824cf073d7378c68c7952b9ae5e9f43262ad303569ddf0b588"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/requirements.lock",
+      "sha256": "4a9b20cb50b80477bffdd1c830fb29325e7c7e9f8379074168c4da561da79c26"
+    },
+    {
+      "file": "package.json",
+      "sha256": "1269106eaea4a37535e39900d7c05520c9b9108aba0ae821057a43a813339933"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/availability-page.json",
+      "sha256": "83bec5e851c19f91b520f3c94285c8d22fc68b89805db4ac86fe5de2dcccd777"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/business-filter-page.json",
+      "sha256": "897f56f4da4535f979c786ea9930c6fdf19eebdd23c93da8c5dbd560adf5554f"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/calendar-window-page.json",
+      "sha256": "1f7e83223615d3ac1b90dac3d806187c616c1d59f2f401507c1a98c24a06044d"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/chart-echarts-option-page.json",
+      "sha256": "d62bc3d296bae33138b2a3c09a6246b7d61a9ed0179e1710481ec680cf1182b5"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/chart-local-filter-page.json",
+      "sha256": "7d7b4a80dcf3a6c870d5a0fe158034a622b943ce60a899a526d11d08a8208f8c"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/composite-page.json",
+      "sha256": "e0e1f779ed969ba5c465177eeaf57ea3d7be34a70993e6bd92a67643033c2eda"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/compute-page.json",
+      "sha256": "0920aa51c65a7eb29a8bb0db835e6c7d1f6ed08c5bcd09919806250e4a5a7d9b"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/cross-source-page.json",
+      "sha256": "f58194aff9610d9776eba95a9f5b9b35bc70f93139d9446e85da35faa8393266"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/currency-selection-page.json",
+      "sha256": "26e7624a9e37122cabace3a958da14d95b49d164e6518a01a85ff8e2befc4d88"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/dashboard-period-filter-month.json",
+      "sha256": "7c3a7eff9e71432b933f5e75be9247f51c27578af27dc77f14481d246e04fc63"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/dashboard-period-filter-more.json",
+      "sha256": "f49263ca44a38cb025a7f5137692aa6b9ec7d02a3b568efe8fec23836ae6c023"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/dashboard-period-filter-readonly.json",
+      "sha256": "872d820a8f5188a4390b54e4e0a15644cdec3de30e661323e70ee783b78f734c"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/dashboard-period-filter.json",
+      "sha256": "b76642f1571d051ac5b3faa99247ee9565ca8f9a4cd529f39755c9c6b6bde312"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/detail-views.json",
+      "sha256": "7cdb3c9449b3bcb27db58cad64f12fb83175459eef3d40d123e966f98408016c"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/dimension-params-page.json",
+      "sha256": "eac7978796fa54145ef06c66853e7ab38c2740d5df5dd42e7b5c0cc7c612d687"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/explicit-presentation-page.json",
+      "sha256": "a5f6bd58a9e277b0e2f323d68b42f5b5ff4e81f5cb1e542cad259737a25da635"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/filter-group-page.json",
+      "sha256": "a81410d6997a196188416fd005598e25fecd2822be054031b005e5d7e3578550"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/filter-group-state-page.json",
+      "sha256": "d61b96b3986ce102cedc695a9111218277c17d6cff987c032ba619e795496ba2"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/filters-page.json",
+      "sha256": "2137c4cb6635f98c6bb88d14158756dfaa6c9777ddca1772bc84fedfc03e6135"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/forecast-page.json",
+      "sha256": "7841260951829786a2c7b93f27e50383d1c56aa0620901f745ec57607005260a"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/grouped-fields-page.json",
+      "sha256": "d274617250dde8b2bbcbbefc944f94e78e1379ada9412a74b682c7b3dbe05a9d"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/grouped-params-page.json",
+      "sha256": "c73bed27a4cf3c6ef100a61636e325cc5f96f8f303e125d7b7d898827337e78e"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/grouped-scalar-params-page.json",
+      "sha256": "c8bf21ca15ca79b043836a8f81faed5ff89c471536f4a5710a97c7a941f94044"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/hierarchy-binding-page.json",
+      "sha256": "d1de754183c59925682b5dc9d84fac3ef48239b605498c05298f0fc78497756d"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/inline-params-page.json",
+      "sha256": "26345595b2f835002fe7c94995ec1f4b970aee2ea6945f294a9799aa6a8e0aa5"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/inline-params-values-page.json",
+      "sha256": "2a7bc0a5f1bdbcb1d12c391d4ef9d23e4eb60847d0d04bc9a6c79f85a5676a5a"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/inline-report.json",
+      "sha256": "9040899e24e3036f51f60dbbd0d749d194ff4a73c31813e2db5f2f62f61d65fc"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-business.json",
+      "sha256": "b531856674b0a0f1d96b6cfb522e42b052c6c577dfe2804c96a05ad5a33c8ff4"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-currency.json",
+      "sha256": "22296de8ee4aceaaca990713392ba36d9e2c66e3e10c48b6065f87a1899c3760"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-dense.json",
+      "sha256": "824dc883f4c7d53942fb2d823165d49a93392264a4496996e2c4da21ad1f1ba5"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-detail.json",
+      "sha256": "048e0e08e1a771a573ee25dc1b50523b4aa7d144bc11599a4da8cb52aad2b183"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-groups.json",
+      "sha256": "572872f0c9137873f8b2c2e372da7bfc05d22ddeb617d21b6e5a6876f21dd70d"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-incentives.json",
+      "sha256": "a1d7e0a447f235c2fdc08b5c98d4ccd13633e4a644b1fc5b6f724a758f4ad362"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-inputs.json",
+      "sha256": "dddfc44c7b442fec71dd7c986be9dc70d8197da81d1812c6b8619f5551f1c9b3"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-models.json",
+      "sha256": "9c24fd11d40ddf33fc7a892a0edbc02af739c32e1bcc371516a37d8c884cc9fc"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-months.json",
+      "sha256": "119f46bda1349f81168e306e4da84d423498fe0a1475fb657a33b6ee0ec74005"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-page.json",
+      "sha256": "8b6bfe9101953135a6796be13ba160adef6f252884c7348baa248ccd83b82e17"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-standard.json",
+      "sha256": "4bad3cf194436281eb9ad11b6c3e5343da3c4a6406f80ed4ce5da3651808f9bb"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-time.json",
+      "sha256": "99e96fdfb7047e4bb79d57045cb8910e77528a047a8fa21ff22bed91d29391b2"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/ioc-header-unconfigured.json",
+      "sha256": "8f52b57cc36b6a0cac96f2547ce43c6fb6dee4fa72a711ecaaef8114cc6724dc"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/layout-6-1-dashboard.json",
+      "sha256": "4e9d4d2b534ba8e01365d93b347cbfebe8656fc395f609a618d174863fd8ba77"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/layout-6-1-report.json",
+      "sha256": "ee2b7dc45f12df14818a7352266ade4b79dacac9844d6d2dd09ab2f372b261a0"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/legacy-layout-dashboard.json",
+      "sha256": "893e99c35d71c176d29a218085729cae77fddd10c98b45ff3dbddd27acecd4f0"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/legacy-layout-report.json",
+      "sha256": "89b7d9c7d8dd5d011183020926b85322749887315a17a1f44c809f5168bbd7ae"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/map-page.json",
+      "sha256": "91dd1c08d6fd2734562aa01076ff8aaafcc4479df03f7f0aae89d6c4e8d7f3ae"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/metric-card-equation.json",
+      "sha256": "2fb87b6c09f86319eab80bf5eebf72d53f3eb3f71cb4e5bb256f26f5dc6b9785"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/million-formats-page.json",
+      "sha256": "1e69fb85cfe427079b0dd292e9051ee6dabb0148a59ffbb3e6adbc5a5f6de204"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/mixed-page.json",
+      "sha256": "040ff3507283beb5cba53a0558649c9c95beaa02f75a420ce37e5de7d91e330b"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/navigation-detail-page.json",
+      "sha256": "0ac21786b80fa51f81e519453a48874dcb026ff3200a9adc9fd1f9d7103d6564"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/navigation-list-page.json",
+      "sha256": "407c094232b003f189056a38e6c28042971c6d5cb06fdadd4a9128df15e68a7e"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/navigation-source-page.json",
+      "sha256": "e2403f1ab2736efdd01face8e6873c5cc803253286481bb88363f6e945acc578"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/non-dimension-bindings-page.json",
+      "sha256": "7fc6609d759dbf1ac68c9552484d4de5e38ff45eaf535ceba3a9e2d4c7036025"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/object-query-page.json",
+      "sha256": "c5030498432cf83c22ab7be2322da20b44e5cb97d6552eef0f1286fca6b99c7d"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/paged-join-fixed-rank-page.json",
+      "sha256": "c2de96d219115d84067412fc003f9fdd7e5a10a101dc7635790575533297c185"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/paged-join-page.json",
+      "sha256": "e27c4d03e2f11bbf237f2efce48b0cd8822fc906c227e09e56a226f0a82d2d5b"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/params-page.json",
+      "sha256": "5e171273f56326bae8960adf349467ed0373d39bd48037b4c2fbf989d6b05e5f"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/period-filter-last12-months-page.json",
+      "sha256": "f9d4f22c850a294db770832ec302448ec0cd06070437145885825587ad56a555"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/period-filter-parameter-page.json",
+      "sha256": "03b568815cb4cd5d06a1dedfd1260620ac01caf6d96cfa1d1d26743182710af4"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/period-filter-quarter-page.json",
+      "sha256": "8b809267ef74cd8c7782f365e1c99aa891f4b2955c49bdc5db636dd6d03b8bb0"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/period-filter-year-page.json",
+      "sha256": "21ccf4c0cff2ef22d431d1a7e3c0143144397935874994b1a23429b8eb09b74e"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-cascade-page.json",
+      "sha256": "1d87d3e40c7ad650feef18dcb87b70adf9701730034476a1e79e4390e1928e93"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-dashboard.json",
+      "sha256": "e9b276d0d6fd3014e64b11f0abf6bd416ff87f13d8b58d11c2311b46fdc040cb"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-mode-binding-branches-page.json",
+      "sha256": "5957389dd0c9a006bf6177b1ec848b26e4d3e5edbdde0003a63e0d126d108e2b"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-modes-page.json",
+      "sha256": "e22aac2b81a2eee7b6ff2e63a90df9d0845e9e89ce94171d4f7010eb18b30c1a"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-numeric-tolerance.json",
+      "sha256": "6d31b38ede40e1e0b3d3b20017118e769d980ce90d0014b6b733b47ed4dabee8"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-result-page-window-page.json",
+      "sha256": "6f4a513c24972c349d10fbb258508f1999e1ef6a5d886f5aa74a8f780a8843a1"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-result-where-branches.json",
+      "sha256": "0fa7fee0fc5c7494a3a2698c279e3ebed0808e7d286058caaa1c2b9f5d71f17c"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-result-where-page.json",
+      "sha256": "cf32c2f260f784563b96a296a2b8ab5f24512ad693d90a6e1d04cef69e2b8711"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-branches-page.json",
+      "sha256": "1a0135e3222560c323c4dab2ff777d396c5d59a995a7253c7cd97ac4306cf9df"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-conditions-page.json",
+      "sha256": "8ffe8a31405fba4c2a434b36d249256470c16ba855575da8c06c888e8b5cfe12"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-export-column-actions.json",
+      "sha256": "e6dc1e3946b3842f38b51040f50a74892eefcc21f7c65e80a88aa019d2183c0e"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-export-compute-branches.json",
+      "sha256": "e353a61a0517db39d7f775fd6143a59504c9435f0f80f0838187b3443a9d8b12"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-export-detail-bindings.json",
+      "sha256": "1b1dba816774db406509205e477f88f802c7a2bb78ad89f54cbe56b9edddae35"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-export-detail-branches.json",
+      "sha256": "30e3a2291df7981493ccab4c5910d3ed09e99cc5c1e490118078982a43aee0ad"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-text-page.json",
+      "sha256": "e8a0e9e7f8b93088269e4b9a5acb4bd1dab10118542358b7f9c588d59cdc12dd"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/reference-variants-page.json",
+      "sha256": "75ef847271fcd904bbba3ec7bb4e6a5ebb7e01292e34e14af4de1a7cbe5c5013"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/report-date-filters-page.json",
+      "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/report-export-buttons.json",
+      "sha256": "d42922a7da57aab42f6ff689b61747136ebde070cefe3922d355b424483a05d5"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/report-export-scale-fallback.json",
+      "sha256": "7844d9dd246e79b99dfa0b0e8eecd62e7067f2b79c124f7c2e1cf976232b9853"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/report-filter-text-page.json",
+      "sha256": "680fcd8cffd43cd911c9bdc97ed12ff423ccfec6217f4e73cd91d41e3a79b422"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/report-pdf-export.json",
+      "sha256": "fd3091ec36a03ff27481d79d9ad1b6dbe590037296adc5cdce41b1324c0daf01"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/report-png-export.json",
+      "sha256": "cae10f3a7a5ad570feeef76099298de9450e4db239043f2f54fdf04e90c66c9f"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/signed-number-family-page.json",
+      "sha256": "bec46a6db73cff50d8f1f0e2bb99cb31315a78e8ff7240d962d367f1382d9599"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/signed-number-page.json",
+      "sha256": "9449da8a072e3beb4a0909a5fe07eb73e1a64da588aac592cc81631fbc13e1d5"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/stored-count-measures.json",
+      "sha256": "bfca5f28c890fc22de1ad58430a066d0047a2332a41e94a54453cf4890402426"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-aisummary.json",
+      "sha256": "222f852126394e2c3f53d2cebe3c9e7e47ea2b899fb9888c7c4f341c3f70ab2a"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-barchart.json",
+      "sha256": "8fc0bc2dcbb65e295b8547b9aec29ec3b3e3df11ca6de30fc795fee60a799909"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-button.json",
+      "sha256": "930bb2d06df77a10ab54f8be8422ebb63d8b7d53725bcfdc6d3edaa79241faaa"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-categorybreakdown.json",
+      "sha256": "95c0b39bdeef3b5955e6187e8dd76e37528b19034e5039e5438f606faeb41f41"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-compositecard.json",
+      "sha256": "2c8445536e662e8441654b6b858cc0eba3b0c55c8b845f66bc3725e71131ad87"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-fieldtext.json",
+      "sha256": "fe452f56c390a2be861f9de8681795ac771e2e3e34e85c72e9d0ab289fb311c6"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-filtergroup.json",
+      "sha256": "123cce79f7ba56c8d2e1b96e61bad4510860ebbdc59c2381e4b9578945dec6df"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-gauge.json",
+      "sha256": "9ed1a0bac63cb94031e4084ab30770f467f97b92766e749b965559992e299ad6"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-keyvaluepanel.json",
+      "sha256": "e46846c5a410df702077223cfab276a6c0f05002063df00081ba506dfb6292d9"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-linechart.json",
+      "sha256": "ca29ee2ed9718efeba474b97af0bbe066cd2261b571847b7a96fa45b95f8531d"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-mapchart.json",
+      "sha256": "2999747b8a5d1e8822377e3c8da66a7ef80b17c864e5dd1f8250c94752779b68"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-metriccard.json",
+      "sha256": "218c3e7bd2885b8187f5566d2521a7a4d7c2d61d4f899d8eb82b1310345b5a2c"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-piechart.json",
+      "sha256": "5eee74a0c9d55b783bcadb48271ed242f7401e19760e31725fe890ceb486867e"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-rankingcard.json",
+      "sha256": "a7ccaae5dd018b0afce9309bb46c6f1c6850a7a4878f76792f4111936a44f2ad"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-rankingdetailcard.json",
+      "sha256": "cc95defc431ff7f47a26225d4654db397ea8f4353fbbfa7f611b62fd506790be"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-table.json",
+      "sha256": "8b74f71a4eedb46a7c3b72c75b44d7c85ce908f21c42e1bad830d2a73405cd27"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-content-text.json",
+      "sha256": "2e703b1dc0fe80512224ff5a8cdaecd53315f9ed234800701a972c2f94d5bea7"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-mixed-content.json",
+      "sha256": "d34fe51d0d3fb74ed045e6d371a457886713854aa22f1d1a7e305d44dfd640d7"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-url-initialization.json",
+      "sha256": "70eab3b892a1e61e0c15e196ac74777b0a32809ef02a674b92c4cb1a8f82fef3"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/tab-url-source.json",
+      "sha256": "d90a236cc1bc0a2affa64afd22a2fac2640381d0d5f852be43ca444c71da4406"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-number-range-page.json",
+      "sha256": "9c7300d989b50a27814119679c16c395e5c35cd68e6fb93fabbd19afeae6e4a0"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-row-expansion-inline.json",
+      "sha256": "9460be8da9a1c7cdd616f81214002b07623b8c71ce34fdfa572de94fa1f51720"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-row-expansion-inputs.json",
+      "sha256": "3026c3cb32aa7ff968e7d951e63f7f505d4ed6a104a73a2568a8b1bf09d2368d"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-row-expansion-none.json",
+      "sha256": "5b451e4aab6fb52edffd27efb180aff9a318321d422da36b860f10469dc38007"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-row-expansion-query.json",
+      "sha256": "2702b694ca175719c2f6b418183b52743dfc6376bb951b9c3116fc1133b06466"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-row-number-page.json",
+      "sha256": "ebd426ee054f6f116d06a60425c928ff9d048bd257cde9c661cc0786d38b10c9"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-search-options-page.json",
+      "sha256": "5534e20e72bf1cf1da8980e8ae4b660587eea40e6670fc1a9434c59617076eb0"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+      "sha256": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/text-composition-page.json",
+      "sha256": "a2fcacd594c9aab3263b66f9e5988fd6b48c92128840430f94ff4e3194176f88"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/time-binding-branches-page.json",
+      "sha256": "cbbb4ffa965fe44a7fa3de08befdd591d7cbc3fe3ec07d875cc350c15df4d303"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/time-modes-page.json",
+      "sha256": "b88d9419cbc00fe1de8f32e87a94673425f51e6d6c4158f3e33af8550dcc14b6"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/time-params-page.json",
+      "sha256": "0c3d7b0f773e6026885995c7afe10342f43c0344b097a37dc976798e4b4d9c67"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/time-point-min-page.json",
+      "sha256": "195407afb9bcfc22e971aac4ccc0a87841d6148d11a5799520709623ef17e0c5"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/time-point-no-future.json",
+      "sha256": "7e3370e0d7029c1161f8b0d81ad5558ac306a0696655846ef33481d757bd5ed8"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/time-presets-page.json",
+      "sha256": "45a0c841bf7b4987f3d8bc406171eaab71e1463a24e39542c90962c9228e08a2"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/unified-overflow-header.json",
+      "sha256": "d61f03cf0ca988a87e5484de123ac560bd9e35bdfbd8bd91261866ceef2d2cab"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/unified-year-header.json",
+      "sha256": "fa184576224cc1a9379b68401e704499e303eb7403eaacb7e9892a261ab83b74"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/url-navigation-page.json",
+      "sha256": "c29bd01ba40c9392ec58bd108b2f54e0833a88ac9b9da5648464f4a0959386a3"
+    },
+    {
+      "file": "packages/page/fixtures/parameter-extraction/tokens-parameter-source.json",
+      "sha256": "f6510d1b25c7a80e2351233c5a9299eaf7e902182641c6f0ac9a956768972abe"
+    },
+    {
+      "file": "packages/page/package.json",
+      "sha256": "80af71c8b927786af60a9d912c03127d497d43073ccadbf99e96db95e8b1e7f9"
+    },
+    {
+      "file": "packages/page/src/ai-summary-region.ts",
+      "sha256": "9ef23e5b16ca8cd3796162819a485f99e32f2a1525cfa1ddcc1ef1bb472000e6"
+    },
+    {
+      "file": "packages/page/src/ai-summary.ts",
+      "sha256": "5e30c258c0db1822b80325999204b256b65499f0061f5f8d4b2b200df1fa79e5"
+    },
+    {
+      "file": "packages/page/src/amount-filter.ts",
+      "sha256": "e6a88f252150f9109b787f85027cbfb00d73d3030d901ac5053cfe2b918ef634"
+    },
+    {
+      "file": "packages/page/src/amount-validation.ts",
+      "sha256": "e7a49a6f3e3f9ff5dd4addc3adadd41f7c32e21ed320b6b67ccd02607c73876f"
+    },
+    {
+      "file": "packages/page/src/apply-param-candidates.ts",
+      "sha256": "b5217026459f382c349f9e60dbd64494afb009f950afc7478df84ee17edb689a"
+    },
+    {
+      "file": "packages/page/src/bar-forecast-boundary.ts",
+      "sha256": "4ea4374f40c4f9d0fbc0bf8b822b6848acd0214fc3ec92d7ec5d833afcc714eb"
+    },
+    {
+      "file": "packages/page/src/canonical-json.ts",
+      "sha256": "7a7bcf671654fd46178a1945debb2192747cd48c8969242aa09cbc615f68d0b4"
+    },
+    {
+      "file": "packages/page/src/chart-option.ts",
+      "sha256": "a8886733d5fe8f4ab57c59506e55bb41ed8bd8f10b580725f2300a5702853c46"
+    },
+    {
+      "file": "packages/page/src/component-catalog.ts",
+      "sha256": "a32b071500736e8e5b71d1324448cc9726841dc8fe4eb36c701decd08d50223e"
+    },
+    {
+      "file": "packages/page/src/component-walk.ts",
+      "sha256": "1c94530081333872d965559c5be15fffba74ce7fdbefc52178460539be2d2f3c"
+    },
+    {
+      "file": "packages/page/src/compute.ts",
+      "sha256": "ced85e9dfe56372eb00eb67ef708e23b97f22f848f9ed5c6562b93f3fc29ec68"
+    },
+    {
+      "file": "packages/page/src/condition.ts",
+      "sha256": "f3776da3440021550d0c0bd519213db2c3cbdecefdaceb3407db1070759bb4af"
+    },
+    {
+      "file": "packages/page/src/data-source-references.ts",
+      "sha256": "7726a154d560b0f1d32ea5ff74871edfb775dea7f4c9175d7befe24a8284a8ee"
+    },
+    {
+      "file": "packages/page/src/data-source.ts",
+      "sha256": "88d3d790f50af40d16530ba19f48416a5ef15533870d72fddb65d31cbd88e786"
+    },
+    {
+      "file": "packages/page/src/dqe-object.ts",
+      "sha256": "a1166137dad1b75dbae1128523c3a686fef3e288cc414fdd96e3975bf3450866"
+    },
+    {
+      "file": "packages/page/src/errors.ts",
+      "sha256": "6f66e543e0f9e45d04354be4cacd35f5c897540ea04d2176306ab448d3b20f08"
+    },
+    {
+      "file": "packages/page/src/extract-page-params.ts",
+      "sha256": "d67afcffb6b305b6a3d9523757bc5caf52b1f3e91a9680ed5f922fa0094e4a6a"
+    },
+    {
+      "file": "packages/page/src/extract-param-candidates.ts",
+      "sha256": "7dd6725f6bfab2dd33893f8e24742798dac0a505d29d7499dcf1584aba3205a9"
+    },
+    {
+      "file": "packages/page/src/field-selection.ts",
+      "sha256": "5f7d954ec04dd0836512ba66e5b1529a0525458096c970aaa453dc9989b480e0"
+    },
+    {
+      "file": "packages/page/src/field.ts",
+      "sha256": "d5dc71a9c5d29ac0fde3d103ad1f1b60b51a9d22b658d2e8fcc6fb60f881cf62"
+    },
+    {
+      "file": "packages/page/src/file-name.ts",
+      "sha256": "faba875f7c2562268f388ccf8f934f1733c4cedb4e822ad8296ffc2e539638d6"
+    },
+    {
+      "file": "packages/page/src/filter-dependencies.ts",
+      "sha256": "dea324c4ab6e7d73632ed6b80109a9fb7a23692787f454cbbbabc91f431d2782"
+    },
+    {
+      "file": "packages/page/src/filter-group.ts",
+      "sha256": "84be5d8937e896970d0ff180b3e0eaadbc9874c9da7dfd41777504e84ecaf0d0"
+    },
+    {
+      "file": "packages/page/src/filter-text-value.ts",
+      "sha256": "0677ae512e8447a5dbc3a347bef5b970ed598d3e12ec855487bebbe4d822768a"
+    },
+    {
+      "file": "packages/page/src/filter.ts",
+      "sha256": "d7de0bd19e808fec50730b534f34dad2f53024f41f14f1032e31e42f4b3cfc47"
+    },
+    {
+      "file": "packages/page/src/index.ts",
+      "sha256": "1f3747422e1b08e6b95174647d227ee3ccccaae80ceea4453f2250bdd501414b"
+    },
+    {
+      "file": "packages/page/src/inline-query-params.ts",
+      "sha256": "45e62b9328bc320914ffd62e5a3d985b0b1cf93b3cdf3c6720cdef9c9b924ca1"
+    },
+    {
+      "file": "packages/page/src/internal.ts",
+      "sha256": "6ab21f4c7509a86dca6ebebcce59c390b655f2819ccd07f2e96333f5a93059f0"
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "sha256": "a969b84ca2c8c6f0e047603cd8e94829c3f3cb3ba093ff096d7b8091e5b2bbf6"
+    },
+    {
+      "file": "packages/page/src/layout-compatibility.ts",
+      "sha256": "b6b99146a4aefce66ef6059d9ce4c78285766bf1338ebe1bef7c83180b77e995"
+    },
+    {
+      "file": "packages/page/src/legacy-compatibility.ts",
+      "sha256": "345933da35c0b6a0444c96be4dd87b8626189211866dead708554c7813e42243"
+    },
+    {
+      "file": "packages/page/src/materialize.ts",
+      "sha256": "0607c34441698d4c7b0090e7cbcc18cf0bf620243d5f5e779ab9a6d263a8895b"
+    },
+    {
+      "file": "packages/page/src/metric-before.ts",
+      "sha256": "2559b3b6cb07deb89cd1385b91d981dd775b6ce9b95a3232c4c5b1eb44df7b31"
+    },
+    {
+      "file": "packages/page/src/migrate-param-bindings.ts",
+      "sha256": "8b7c64e89e771691d061b6df9040d21cd817acffaccd683d461e6a0a986f5490"
+    },
+    {
+      "file": "packages/page/src/navigate.ts",
+      "sha256": "05145718ac61d1ae70207b3afda4d5bd96220d02ce85ccfbf359343d1faa0767"
+    },
+    {
+      "file": "packages/page/src/object-query-params.ts",
+      "sha256": "442c6b7fbd05443b81e87ab83b6802e4f80d2021fd67c05212f3adfa29f66acc"
+    },
+    {
+      "file": "packages/page/src/page-document.ts",
+      "sha256": "8bcf3c25c23e813234b091e47fd61781c0f92b4b50b3e64fa21bc66cbac51e59"
+    },
+    {
+      "file": "packages/page/src/page-list-entry.ts",
+      "sha256": "a14662b9ab87aa331c0d22fe42741251237db4dac4d1e317102eb14db0946197"
+    },
+    {
+      "file": "packages/page/src/page-param.ts",
+      "sha256": "cd51a40e59eb090ea75fc29bec2d166964048d57a804d227df45b5d64485cb32"
+    },
+    {
+      "file": "packages/page/src/page.ts",
+      "sha256": "0f45611e734ae03d02eccf68af714424c2cb29521e3edb5d3c00f583cd288301"
+    },
+    {
+      "file": "packages/page/src/paged-join.ts",
+      "sha256": "d6e0d837f68421cd964e7d88c0b668a4103f14286bfc5f28b7a597e782144c61"
+    },
+    {
+      "file": "packages/page/src/param-bindings.ts",
+      "sha256": "38d7afd270e748144ce5bc3d604ced06c2a1a9cf49d5e68948fc520ed70a7304"
+    },
+    {
+      "file": "packages/page/src/parameter-program.ts",
+      "sha256": "b25d224411336148dc9e7d54683deec13332e3ebf58e33f6c99e799bb9dbeb60"
+    },
+    {
+      "file": "packages/page/src/period-facts.ts",
+      "sha256": "95f936d06ef02a5965503a4f41adb6ab3fead70b9900428983a0eb6e8d5f147b"
+    },
+    {
+      "file": "packages/page/src/period-filter.ts",
+      "sha256": "a15566b374aae4e536a3a2d9504195b098e0beb2f9e70ddde9663b388465de42"
+    },
+    {
+      "file": "packages/page/src/presentation-edit.ts",
+      "sha256": "957e4f82edf14b4681924bbf2819e6ad74bfd10924d1ee522c5362a9c7868eab"
+    },
+    {
+      "file": "packages/page/src/presentation-operation.ts",
+      "sha256": "2a458d9b46d3e3121c5bcbaae81d1ec3006371448a299aacaa9fd37b81f6677b"
+    },
+    {
+      "file": "packages/page/src/presentation-policy.ts",
+      "sha256": "fbd5ab6780fa0244d5f2c8386ae1bcc00a418d4289bd2f8ad9da044aca44511c"
+    },
+    {
+      "file": "packages/page/src/query-dependencies.ts",
+      "sha256": "b9a54c69a79e8be07018aa7b70780b37abf6610a5362b36c7e3e9c7fb3ac1dc8"
+    },
+    {
+      "file": "packages/page/src/query-error.ts",
+      "sha256": "43ffe4b32572a5f75375de2e27b1ad4d6bba74e766d82a737dde5292f2cabdb2"
+    },
+    {
+      "file": "packages/page/src/query-output-measures.ts",
+      "sha256": "5fe290579ba1d65de7c2ea42062a8ae8a28ea9c29308da9b8ec84ca68c0a388d"
+    },
+    {
+      "file": "packages/page/src/query-param-references.ts",
+      "sha256": "60733a3b4876946710479cdd981da1f77108af7f9f208a9b6d5b3998aa59a03b"
+    },
+    {
+      "file": "packages/page/src/query-result-limits.ts",
+      "sha256": "f1dd84a5ff4208a63fa7734cdf28278b4e3d52e1cfabaab6f3f5e033ba2105a5"
+    },
+    {
+      "file": "packages/page/src/query-result-where.ts",
+      "sha256": "b4d28971568ffefa3eb675fae637298ab8db238e8dc102acca41c7262b5a1ebb"
+    },
+    {
+      "file": "packages/page/src/query-rows.ts",
+      "sha256": "e19423853c44150b694b400216c9c883708978b550ffae0f37da35b0d00f35d5"
+    },
+    {
+      "file": "packages/page/src/query-selection-validation.ts",
+      "sha256": "a171f46650864b66cb17d208680db0d4c0b0c6d393ef16e00fb8938de6573989"
+    },
+    {
+      "file": "packages/page/src/query-selection.ts",
+      "sha256": "e82f97f97bc6518ff36a2b40477c3a689545bab3256eb9520a51a235484e2a93"
+    },
+    {
+      "file": "packages/page/src/query.ts",
+      "sha256": "847e710fa5a0195dd3a19f454c30aa793b0d4b1a279a3e49c8079c0cfb54dd7d"
+    },
+    {
+      "file": "packages/page/src/report-date-filters.ts",
+      "sha256": "3c605ca1598e261d87fa7306cd151e47d2f11bdb78120db18a84d2036a0b2506"
+    },
+    {
+      "file": "packages/page/src/report-export.ts",
+      "sha256": "f62cc3d424562ae3f74c2821b74400b47ad3052a03766e1fa3f4548d35e5eb84"
+    },
+    {
+      "file": "packages/page/src/resolve-page-params.ts",
+      "sha256": "54d0b30acb92fa99def26df033c57dbf402fa74fcc7e93b1cf427620ce41fdaf"
+    },
+    {
+      "file": "packages/page/src/result-field-contract.ts",
+      "sha256": "abf212daa691b4f17371d444aa33e95a56b9e17eb8b963b67897ad50b54bc994"
+    },
+    {
+      "file": "packages/page/src/row-expansion.ts",
+      "sha256": "c9a09bed1ac816a295ca905bc9740dee3d75ab06467657bcd063bac3086035b8"
+    },
+    {
+      "file": "packages/page/src/schema.ts",
+      "sha256": "e58e4550d9941252cc380b5c8816c887259459dee7cc179c85aff990ffabd399"
+    },
+    {
+      "file": "packages/page/src/schema/actions.ts",
+      "sha256": "f942fcb73f35c8a87f8581622112b5a43727a661af293ccf0e9df6eef833bf2a"
+    },
+    {
+      "file": "packages/page/src/schema/component.ts",
+      "sha256": "4706a6b0332346e28ce811176115425abd907bf0e40146dcedf0f9716d138160"
+    },
+    {
+      "file": "packages/page/src/schema/components/ai-summary.ts",
+      "sha256": "4bae097e45262b5b2b73fc6fcc3067f9bbb0a72eee9b7ceffc7aab6ef0567639"
+    },
+    {
+      "file": "packages/page/src/schema/components/button.ts",
+      "sha256": "ca6c947ef0f20f20cb5d03184dfa3b2dd22365305315706ff224a03d462d7556"
+    },
+    {
+      "file": "packages/page/src/schema/components/category-breakdown.ts",
+      "sha256": "3a7db60828b4029f55866c88fbd2f8e060e5a45a8dca1c757d028c96bc6fb16f"
+    },
+    {
+      "file": "packages/page/src/schema/components/charts.ts",
+      "sha256": "302b0433b1ec472d578747e7709b871f6ceefdcf340eb4a22d922a36653ec6eb"
+    },
+    {
+      "file": "packages/page/src/schema/components/composite-card.ts",
+      "sha256": "4fffd0d22620de22c36b4e77693708741624e3307c68710893e5d944a6959390"
+    },
+    {
+      "file": "packages/page/src/schema/components/field-text.ts",
+      "sha256": "a13b298db5274bcceb61a661e56f5079119af6e080558c86a3ee689c1b335766"
+    },
+    {
+      "file": "packages/page/src/schema/components/filter-group.ts",
+      "sha256": "94f40d04b0008a887c32f612f669af2cc8905255bd7d44625f46a909a5f98d2f"
+    },
+    {
+      "file": "packages/page/src/schema/components/gauge.ts",
+      "sha256": "1e9d0017d1e46382388e4a9b20f4e17d36d8a97f533cd38cef876395a0d013cf"
+    },
+    {
+      "file": "packages/page/src/schema/components/key-value-panel.ts",
+      "sha256": "5da923acff73525d08154101ca60600d3b9cd38d5890f3225cec378787547258"
+    },
+    {
+      "file": "packages/page/src/schema/components/map-chart.ts",
+      "sha256": "b6fe73ea24c70ccb32cfdf095483d760080cc624801c89fbac38fa54a972234b"
+    },
+    {
+      "file": "packages/page/src/schema/components/metric-card.ts",
+      "sha256": "4e889eaeb3f8f5a39eba88739927101e22ed6554891acf41b49f36d9aba6cc1a"
+    },
+    {
+      "file": "packages/page/src/schema/components/ranking-card.ts",
+      "sha256": "5637abeae9b0c71ea46395a0c436886dfa573b935164b8308378ffb8b166e1e5"
+    },
+    {
+      "file": "packages/page/src/schema/components/ranking-detail-card.ts",
+      "sha256": "2ea700b36ae2951fd21ee6236f52a9b69794b5b54061f4e904eb05cc44ce6fcc"
+    },
+    {
+      "file": "packages/page/src/schema/components/report-header.ts",
+      "sha256": "3ec9fe4f6b18d1d2829d3773d37e6c959b9ac0a8149cc06abd98a729adb65f7c"
+    },
+    {
+      "file": "packages/page/src/schema/components/tab-container.ts",
+      "sha256": "3e09a3972af778c1a1269101355c36fff45b5cfe7e7cce50e6cb5859bece09c3"
+    },
+    {
+      "file": "packages/page/src/schema/components/table.ts",
+      "sha256": "a89267ac4ef4d5fb8aac2421a341679e20b096deaac16709cb2a21c42a944015"
+    },
+    {
+      "file": "packages/page/src/schema/components/text.ts",
+      "sha256": "5f6286d0a966445b4ae1d464381a5eb2227b3989cbfb3147c5761c95e5d73c3a"
+    },
+    {
+      "file": "packages/page/src/schema/compute.ts",
+      "sha256": "c922e46f94e2ac5e751ede7ecacf4404dbca6d718c8cf5cfea4b7ff45604edd1"
+    },
+    {
+      "file": "packages/page/src/schema/condition.ts",
+      "sha256": "0258a11d34c8d3ce36c88d715b96270083643ad075745e27cdfbc12498a898e3"
+    },
+    {
+      "file": "packages/page/src/schema/data-source.ts",
+      "sha256": "9681cb5b29a1c030b83793f8cabca62ffe0d81d89324d9163c9449dca9614b0b"
+    },
+    {
+      "file": "packages/page/src/schema/filter.ts",
+      "sha256": "016ccfcfd901fa7d8d8f9c55f50905ba68e349fe6fb062dcec5057e125a90133"
+    },
+    {
+      "file": "packages/page/src/schema/index.ts",
+      "sha256": "1716375d3c0e51137edaa4a6d498f4f38c9af489b10d68c249954f39d054f568"
+    },
+    {
+      "file": "packages/page/src/schema/ioc-header.ts",
+      "sha256": "ef9d20c558423c60151f31453ea35e02acb379c5992651c81c2ae632be66e8a2"
+    },
+    {
+      "file": "packages/page/src/schema/navigation.ts",
+      "sha256": "2e1b4f4b67aec7cb6f0ec26bb006b57fd8739ae0331c9ef6b6ae0eea1662b2ec"
+    },
+    {
+      "file": "packages/page/src/schema/page.ts",
+      "sha256": "7544d806831e10f685bae2b36a132f9bd24015d01c84050892b7114b15c72e29"
+    },
+    {
+      "file": "packages/page/src/schema/paged-join.ts",
+      "sha256": "f163376e136d221df4797773e0beea5c7ccecb4871c050fb552a7dd444359b70"
+    },
+    {
+      "file": "packages/page/src/schema/presentation.ts",
+      "sha256": "8ccee681f800ea4d09da97d8cba8f7d9862ae74cc1537592d4e613ae97d8b5c9"
+    },
+    {
+      "file": "packages/page/src/schema/primitives.ts",
+      "sha256": "5301319ad655b5c87dd7ba15225cc9b16249ab38f5bd8c42037b2c41c6467514"
+    },
+    {
+      "file": "packages/page/src/schema/registry.ts",
+      "sha256": "c5b0535a77fe707fccbc63efcb7dd576733edfdabd592bb97b3bbed95dfbe195"
+    },
+    {
+      "file": "packages/page/src/selection-variants.ts",
+      "sha256": "65478eb7f1c702a771d398106475c4d9ddfa2fa0ce4970d5ae9f061ddfe2672c"
+    },
+    {
+      "file": "packages/page/src/snapshot.ts",
+      "sha256": "f840ffa78ac2dc9b33b5f9b2282c8fc788cdddb19647987b8b80d0890fdc7b9b"
+    },
+    {
+      "file": "packages/page/src/tab-state.ts",
+      "sha256": "ca1c478decc63ea4b3a63865a2287cdd925693b2f889953331f98d24812568f8"
+    },
+    {
+      "file": "packages/page/src/table-query-view.ts",
+      "sha256": "0515971d19d553e0ce1206bf83a388444762af17c5225186fb5842dc4ebd4dd2"
+    },
+    {
+      "file": "packages/page/src/table-search.ts",
+      "sha256": "c10f243a0e57abfdfb539f08c15ea3e938a16c5992834f17cb1592a58a0454be"
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "sha256": "2a8ea2df97b575376867df9e47eb45daf970e7382974af37d3f35d7ba8bd539e"
+    },
+    {
+      "file": "packages/page/src/time-extension-validation.ts",
+      "sha256": "929d6581f3b6bb5e3a4390164d54322a355d2a47d21ab4c9ef619b8e5df081e5"
+    },
+    {
+      "file": "packages/page/src/time-filter-boundary.ts",
+      "sha256": "9da5a32596a8b0ea6da3ab9c9e7d859f04086c45f9193ba69820abf0c5a13ef5"
+    },
+    {
+      "file": "packages/page/src/time-mode.ts",
+      "sha256": "c60382a21830738cefd2e591ea5854f60cae6511019553dc9faa314bb83b8e21"
+    },
+    {
+      "file": "packages/page/src/time-param.ts",
+      "sha256": "d567d0457111b52d8f854c26e7ba7434470ef9111436082ad85e1816b77dfacb"
+    },
+    {
+      "file": "packages/page/src/upgrade-chart-filters.ts",
+      "sha256": "9ba4a538e03b633c236da3675b7f4a46c51869891812df2eb0e6e69344f83fc4"
+    },
+    {
+      "file": "packages/page/src/upgrade-document.ts",
+      "sha256": "b2fcc9ec7291f1e0c747bdd48245ec4b7356b6de127c8336eee6b4490ced7d73"
+    },
+    {
+      "file": "packages/page/src/upgrade-types.ts",
+      "sha256": "4696a0fe72de845020e761a4f95e43c8308d0052ca53bad4da3a77499ed13448"
+    },
+    {
+      "file": "packages/page/src/validate-cli.ts",
+      "sha256": "a945c3abcb3bee2a173315bb83c1a28d12c4abf5ad076ca140a0d981a08003e7"
+    },
+    {
+      "file": "packages/page/src/validate-compute-dependencies.ts",
+      "sha256": "b48111414d804bef4f9b6cfd09e363bd2e443de09efa1051af3a2ab89c6226ae"
+    },
+    {
+      "file": "packages/page/src/validate-object-query.ts",
+      "sha256": "29bb4b69632c57ed82d4aee6ab144787530c1d1ad3230bad112a022db6f5a271"
+    },
+    {
+      "file": "packages/page/src/validate-paged-join.ts",
+      "sha256": "22620d0d77dbc157b22476a6c1ddc94af2e2565e3816ab0ccb6228d61ea82dcb"
+    },
+    {
+      "file": "packages/page/src/validate-query-results.ts",
+      "sha256": "370ae12f0981e2b6aef1c7e9220613450ed744a6f616d46d626a03d9f2b7bbb3"
+    },
+    {
+      "file": "packages/page/src/validate-row-expansion.ts",
+      "sha256": "84cdc391cd454bb9652259c30234b903ccc0c98dcdab285583824244cd88d1be"
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "sha256": "3f2c6a014d01bd8f6e6fbb5d78a7b25eb48d7f6577beae5e96eeda800383d65d"
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "sha256": "f5e3ae66556790904d9adf3ea64e7b27733f6d902769f66ed1158dda1ac50194"
+    },
+    {
+      "file": "pages/README.md",
+      "sha256": "b8b531d14a4f42eaff1811994e6fb6399c189c9125f04939c295ade8ac3ac6a0"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/opportunity/README.md",
+      "sha256": "3ecccf73a196e9f76be4b94155b9235b440a11853673afffc3c73987ca5fc997"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/opportunity/ioc-opportunity-analysis.json",
+      "sha256": "cf2bb971d64429da7118efae29802c512495f2cc6f54b38529e1c3d5f54279d3"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json",
+      "sha256": "464cc00d99a228d49a160013746f34d9332e4a2734989f1144d948883be5449d"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/project/README.md",
+      "sha256": "a3c1c31e8d193825124f135429222b2a06f5fdc26a54ef6a882714eba4138a89"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/project/ioc-project-detail.json",
+      "sha256": "d327818655a68d7690b73e6d4f1787ed517404da34e9b082703859ccef7e6b4d"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/project/ioc-project-overview.json",
+      "sha256": "02de54f0ffe424e2b4c9c35763998165750dd3d639db3dda972358b19865d3e9"
+    },
+    {
+      "file": "pages/business/report/customer/README.md",
+      "sha256": "6c9dae2cdd6cb32d225fde02fb888f512c0506dcddd7202b1cef7e263819a9b2"
+    },
+    {
+      "file": "pages/business/report/customer/customer-activity-risk-briefing.json",
+      "sha256": "0b377cfaaea09178d0719de52f28902e1a09d3f4a6690d84017536d630673258"
+    },
+    {
+      "file": "pages/business/report/flow/README.md",
+      "sha256": "ee53ec322a74b2b535b13bae444c1e2b7a810ade52c20918002a58e2e67127ee"
+    },
+    {
+      "file": "pages/business/report/flow/flow-analysis-report-params.json",
+      "sha256": "e9f91dcaf6c824aa2b8af64bc9ffcf8a85e643420e7828e528866de0d775c8d3"
+    },
+    {
+      "file": "pages/business/report/flow/flow-analysis-report.json",
+      "sha256": "7afe51d4083c9241fa14b52f282cb8eb8a451f266ca9206fe8b3954a9a7fca54"
+    },
+    {
+      "file": "pages/business/report/sdt/README.md",
+      "sha256": "e9ed6c5a1f2e84d74ef2320b004403e0a84fd17201222854d740f36bdeaeca1f"
+    },
+    {
+      "file": "pages/business/report/sdt/business-sdt-cascade-example.json",
+      "sha256": "2d7dfd8a3ceef936d0e243873270b71c9dbe46c5854af9d7e63be324841baa80"
+    },
+    {
+      "file": "pages/business/report/sdt/business-sdt-report-monthly.json",
+      "sha256": "9cd5e4b55408f6a452dcd436f3d964aa5f9ea6e37ce9e9a19a9f13bfc5ebcc0e"
+    },
+    {
+      "file": "pages/business/report/sdt/business-sdt-report.json",
+      "sha256": "33172d7e9d46683ac2398d0c5df6d4b441c8fb5e3a487de89cb1fb300f2ddc40"
+    },
+    {
+      "file": "pages/business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json",
+      "sha256": "596717eb6955b3b588490faf39494ab79ceb492eed9ee7c5225c3e10b112c1a3"
+    },
+    {
+      "file": "pages/business/report/tokens/README.md",
+      "sha256": "8b74e5a6a55e1beefdd69c7aeae81faf4fc6c86963ec834c5e51fbed525dca98"
+    },
+    {
+      "file": "pages/business/report/tokens/tokens-monthly-trend.json",
+      "sha256": "b27b197541ed41077b8acc07bb9574a29b0fd401bf3b49351b6c457cf5a35eb9"
+    },
+    {
+      "file": "pages/business/report/tokens/tokens-report.json",
+      "sha256": "fb265844ac24b2a372f1d8f9ac0e9ce093b50d3ea0204538117de90e1b5963a2"
+    },
+    {
+      "file": "pages/capabilities/ai-summary/README.md",
+      "sha256": "ee3cf3194a3f85aa319de366da2f21df7d6249c49bd386f04f4f545faf74d8ce"
+    },
+    {
+      "file": "pages/capabilities/ai-summary/report-ai-summary-regions.json",
+      "sha256": "7b3585028a6928b22cd9f5f013e26c3983d34edbe2562e7d9d88177982584084"
+    },
+    {
+      "file": "pages/capabilities/ai-summary/report-ai-summary.json",
+      "sha256": "0c010132187faa5baadf373fd3dbd8c4d7ff4287df2c6398388600a5383fc3a6"
+    },
+    {
+      "file": "pages/capabilities/chart/README.md",
+      "sha256": "b9233bc4e86045e0003059a8610c47963d15e6179120a66991117c2aa9883968"
+    },
+    {
+      "file": "pages/capabilities/chart/bar-width-defaults.json",
+      "sha256": "80662020cff7fdb3ee3e5f81ffdaf28b4a5a8a5fe787fc4b7df5f113dd057dd0"
+    },
+    {
+      "file": "pages/capabilities/chart/chart-echarts-option-page.json",
+      "sha256": "d62bc3d296bae33138b2a3c09a6246b7d61a9ed0179e1710481ec680cf1182b5"
+    },
+    {
+      "file": "pages/capabilities/chart/chart-local-filter-page.json",
+      "sha256": "7d7b4a80dcf3a6c870d5a0fe158034a622b943ce60a899a526d11d08a8208f8c"
+    },
+    {
+      "file": "pages/capabilities/chart/region-map.json",
+      "sha256": "c5821dbe6a094e1fdf61592d4cb4e3ec754abf6173092ff18fa96292c10dab65"
+    },
+    {
+      "file": "pages/capabilities/export/README.md",
+      "sha256": "698cf3a363e34f49848c09bce451de23f3a6a43cab640244fd5821712f5fc5f6"
+    },
+    {
+      "file": "pages/capabilities/export/report-export-scale-fallback.json",
+      "sha256": "916b23d5f7ba0594ad181415b3c0098d5701a8d072cfbcd25fd08c817fd84e1a"
+    },
+    {
+      "file": "pages/capabilities/export/report-pdf-export.json",
+      "sha256": "fd3091ec36a03ff27481d79d9ad1b6dbe590037296adc5cdce41b1324c0daf01"
+    },
+    {
+      "file": "pages/capabilities/export/report-png-export.json",
+      "sha256": "3eb17ecd197af9977c77fdc36d039c8e46bb48ce07333e7f761982a0b124c009"
+    },
+    {
+      "file": "pages/capabilities/export/report-png-long-export.json",
+      "sha256": "727d9c53f7a0b831883b63fdc0ebcad5c09fe73ad2a950a5190af6345f5b5ffb"
+    },
+    {
+      "file": "pages/capabilities/filters/README.md",
+      "sha256": "6c1d4bf333bcfd879df5fe39cdf834cd66247632a7041ffc3839dd1d202954e6"
+    },
+    {
+      "file": "pages/capabilities/filters/dashboard-period-filter.json",
+      "sha256": "b40299e882343444be52f4fed41241109e191d767ebb995ea5707aff9271080e"
+    },
+    {
+      "file": "pages/capabilities/filters/filter-group-page.json",
+      "sha256": "a81410d6997a196188416fd005598e25fecd2822be054031b005e5d7e3578550"
+    },
+    {
+      "file": "pages/capabilities/filters/filter-group-state-page.json",
+      "sha256": "d61b96b3986ce102cedc695a9111218277c17d6cff987c032ba619e795496ba2"
+    },
+    {
+      "file": "pages/capabilities/filters/page-visibility-inputs.json",
+      "sha256": "598a86bf3f67c3514a4e15e2038eb7019f283f574aff02df622de67977fecd14"
+    },
+    {
+      "file": "pages/capabilities/filters/page-visibility-region-linkage.json",
+      "sha256": "bc027ff9df53fcd52da272d28d0e243f41fe62986661ec769d4778e0053fea44"
+    },
+    {
+      "file": "pages/capabilities/filters/page-visibility-report.json",
+      "sha256": "37423239fa3f22b8ba1062a38b6b177339827ac9cb545d6779d8c1fbcfbec09b"
+    },
+    {
+      "file": "pages/capabilities/filters/query-mode-chart-demo.json",
+      "sha256": "eb4e516603bd949c6287fc6caebbaa7f639fe68d9aa212c9739532cb8e2147f0"
+    },
+    {
+      "file": "pages/capabilities/filters/report-date-filter-example.json",
+      "sha256": "c993c55dd6d5284896ae4030766478d0060b9da8310cac3e908b74698fb43674"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/README.md",
+      "sha256": "f9584ae8c87fcda07868dd0f4249b93ada71b63a9e6664763f96c3c32a4eae51"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-business.json",
+      "sha256": "b531856674b0a0f1d96b6cfb522e42b052c6c577dfe2804c96a05ad5a33c8ff4"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-currency.json",
+      "sha256": "22296de8ee4aceaaca990713392ba36d9e2c66e3e10c48b6065f87a1899c3760"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-demo.json",
+      "sha256": "670f742934e09017417bc408409308c7cd070c296a8035e9c87bb4270576c31d"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-dense.json",
+      "sha256": "824dc883f4c7d53942fb2d823165d49a93392264a4496996e2c4da21ad1f1ba5"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-detail.json",
+      "sha256": "048e0e08e1a771a573ee25dc1b50523b4aa7d144bc11599a4da8cb52aad2b183"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-groups.json",
+      "sha256": "572872f0c9137873f8b2c2e372da7bfc05d22ddeb617d21b6e5a6876f21dd70d"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-incentives.json",
+      "sha256": "a1d7e0a447f235c2fdc08b5c98d4ccd13633e4a644b1fc5b6f724a758f4ad362"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-inputs.json",
+      "sha256": "dddfc44c7b442fec71dd7c986be9dc70d8197da81d1812c6b8619f5551f1c9b3"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-models.json",
+      "sha256": "9c24fd11d40ddf33fc7a892a0edbc02af739c32e1bcc371516a37d8c884cc9fc"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-months.json",
+      "sha256": "119f46bda1349f81168e306e4da84d423498fe0a1475fb657a33b6ee0ec74005"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-standard.json",
+      "sha256": "4bad3cf194436281eb9ad11b6c3e5343da3c4a6406f80ed4ce5da3651808f9bb"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-time.json",
+      "sha256": "99e96fdfb7047e4bb79d57045cb8910e77528a047a8fa21ff22bed91d29391b2"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/business/ioc-header-unconfigured.json",
+      "sha256": "8f52b57cc36b6a0cac96f2547ce43c6fb6dee4fa72a711ecaaef8114cc6724dc"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/README.md",
+      "sha256": "0632b4a8264b806b29ce7b887e078038f0cae49ca26ccd79b4c538b4d89523ee"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-availability-demo.json",
+      "sha256": "49557e3b983110128855e07daabcd8aa553577c77739faa78db21cbc6ff7fcf4"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-business-detail-demo.json",
+      "sha256": "57c0265f55ad14249b3ebaf3db5506b832939f4149f3d38c7efc270bb6c86d18"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-business-options-demo.json",
+      "sha256": "16186a28aa991369586635a869b64639323d8410fc9e715c9fd93361aa10c44a"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-business-tree-demo.json",
+      "sha256": "50f59dc709fde3566d316a77f30d14b0fe9bbb546ea7929b494e355147ec140e"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-calendar-window-demo.json",
+      "sha256": "7c52e29ab2051f7ea2e15a19c13da793773b213193bebd236f6f5f74fc37efe5"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json",
+      "sha256": "32fb3004373061357239733f435f9f0f43f794981f08842cb03899972485019b"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-dense-filter-demo.json",
+      "sha256": "4fda37b44d7ee3c48e41c4e78da6384e2f19e255e5941e2cb9cf1df38680ff2c"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json",
+      "sha256": "3579f95137a040a4173ada7b68ef0f06de2a9b18b9109a09bbd1b10099693c8a"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-month-set-demo.json",
+      "sha256": "6d3dd682add281f5551b253708e1f8be9dfa43f1106e3882220fd42fb93063c1"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-navigation-detail-demo.json",
+      "sha256": "ea6055753653079f5cbbe749225806497f72ee13b1fc6e289e03081763728e67"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-navigation-list-demo.json",
+      "sha256": "d229296d7c5d6ee10f85d44f06d6802197a453b3a664e7d9902621e802ed2fc5"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-navigation-source-demo.json",
+      "sha256": "f7c66250ac59ccc1c448e223bea256c9f06d242380fa2fb975a061095b395182"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json",
+      "sha256": "130e9af6c24ff3eda57f45a9de92a82dadf15da01e9cb499ee7e00a77a3c9b4d"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-time-modes-demo.json",
+      "sha256": "47d453b1af57eb7947869a98cf3f3e4b1cfe8e9052013c2c226ed75296f6a8ca"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/scenarios/ioc-header-time-presets-demo.json",
+      "sha256": "db240f1d25b2dbad3fc1feee945ec9f5fb7746000384545f9f9a136f05f235d2"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/selection/README.md",
+      "sha256": "eb4885cfa4ecd76a198d6b44109c63fd2051e6e10265d09d772d4d282df82f5b"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/selection/ioc-header-selection.json",
+      "sha256": "33aca3a3a0b3adc350ef8bedb349622fb6a8dc0063829cd1f58dcd0e70c97d38"
+    },
+    {
+      "file": "pages/capabilities/layout/README.md",
+      "sha256": "7419cfc9fb1fd36fcf1222042baf7814fdb8558665286994bb04ece44d700fdb"
+    },
+    {
+      "file": "pages/capabilities/layout/dashboard-title-styles.json",
+      "sha256": "71b01ef4e363049d1769d50e96ca37a0333e1b33d0f99df280e6f920bb9d7f3a"
+    },
+    {
+      "file": "pages/capabilities/layout/demo.json",
+      "sha256": "3b3d05a2661ad23135342a4b6781a33ac3851fe714b26ab50846db950dc43ac2"
+    },
+    {
+      "file": "pages/capabilities/layout/empty-state-showcase.json",
+      "sha256": "a90580e7e04f8780ffe6f4cb21bc13dcf5ea02fccf15aea9598ed7a7a24b7e1e"
+    },
+    {
+      "file": "pages/capabilities/layout/local-authoring-knowledge-demo.json",
+      "sha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb"
+    },
+    {
+      "file": "pages/capabilities/layout/mc-content-layout-demo.json",
+      "sha256": "9bf1c48af154d40f8c73ba765da3ae9c6234369d4cd904da62828a49085482de"
+    },
+    {
+      "file": "pages/capabilities/layout/mc-layout-business-report.json",
+      "sha256": "49bde2f95a0ad78825c08b2c30c3cc7e610452bf44ef0c16f2e211015ccfa836"
+    },
+    {
+      "file": "pages/capabilities/layout/mc-layout-usage-report.json",
+      "sha256": "66a7abd5351188bbd56b515b9414bc862090243e758a767afce3d2b0ebf81a7d"
+    },
+    {
+      "file": "pages/capabilities/layout/metric-card-equation.json",
+      "sha256": "8bc3d7eb126ab301f8330f7b923a103557da6fcad245a0cfaa39541ed8696c0a"
+    },
+    {
+      "file": "pages/capabilities/layout/report-title-styles.json",
+      "sha256": "5a69e82dac55f11110b323b56c760eaa7ab2576adc0202410234eac3a3e01e36"
+    },
+    {
+      "file": "pages/capabilities/layout/schema-upgrade-demo.json",
+      "sha256": "222395d2ee4c76be35b28ab0a036dcfe90e7f31c5dc1f322c5e586b3b78d862e"
+    },
+    {
+      "file": "pages/capabilities/layout/tab-mixed-content-report.json",
+      "sha256": "56323145ea62da7a08b77ab54c355a02f0ec6ba5b496e8caa3d6e910dc1fade0"
+    },
+    {
+      "file": "pages/capabilities/layout/tab-mixed-content.json",
+      "sha256": "8cc8b7a61ddd6dc09de4597fc4b222f8750d288d491b9288e011bf1409832ec9"
+    },
+    {
+      "file": "pages/capabilities/navigation/README.md",
+      "sha256": "3ced0bdc90809f9b3d41430ce06f6b772720acb8e35cbe629fc838719c1cbc89"
+    },
+    {
+      "file": "pages/capabilities/navigation/ioc-content-navigation.json",
+      "sha256": "9bc179720e677fa851c192804f8fb4ecdd28814d9ee01554ff34376cda310212"
+    },
+    {
+      "file": "pages/capabilities/navigation/tab-url-initialization.json",
+      "sha256": "70eab3b892a1e61e0c15e196ac74777b0a32809ef02a674b92c4cb1a8f82fef3"
+    },
+    {
+      "file": "pages/capabilities/navigation/tab-url-source.json",
+      "sha256": "d90a236cc1bc0a2affa64afd22a2fac2640381d0d5f852be43ca444c71da4406"
+    },
+    {
+      "file": "pages/capabilities/query/README.md",
+      "sha256": "73ddadf0eb2943e0bffeb8397d8fdf6f538c3e1047210bd4ef71bd1919e544e3"
+    },
+    {
+      "file": "pages/capabilities/query/dqe-object-query-demo.json",
+      "sha256": "9aa1977e777595193bd33b1b1a7aae4d600b5c75965622dee81ad2bdbb92dacb"
+    },
+    {
+      "file": "pages/capabilities/query/query-numeric-tolerance.json",
+      "sha256": "d96ca6bf668a60ca778d3a289021cc48663d337833c316678f9c75462991d100"
+    },
+    {
+      "file": "pages/capabilities/query/query-result-where-page.json",
+      "sha256": "bd455e41c52cca7d91ff0a1068477e92717edcd059f0faaa7a050763b066c771"
+    },
+    {
+      "file": "pages/capabilities/query/stored-count-measures.json",
+      "sha256": "bfca5f28c890fc22de1ad58430a066d0047a2332a41e94a54453cf4890402426"
+    },
+    {
+      "file": "pages/capabilities/table/README.md",
+      "sha256": "b6c88f3e13b8ce15d0cfcfb12713f402a6dd6c99685b48d4f93b4104e89ec085"
+    },
+    {
+      "file": "pages/capabilities/table/decision-opinion-details.json",
+      "sha256": "d3566e90aa191d114700cbcca5384442407c08d93f8d6313eaf7a110dd041673"
+    },
+    {
+      "file": "pages/capabilities/table/multi-query-table.json",
+      "sha256": "f52148254cb4f443d68f8a3526fbbd676b99a0f0f47d61ebaa4594486332fd8e"
+    },
+    {
+      "file": "pages/capabilities/table/sales-detail.json",
+      "sha256": "29a8ab4fd2f6058ca38858380c7e8fd56e6770381cc9a70317ba4c45b0fd7390"
+    },
+    {
+      "file": "pages/capabilities/table/table-cell-selection.json",
+      "sha256": "d4f786576ec15bf8298cf62aa035736d740b916e50fd64b7594c1fa7fd4b91b5"
+    },
+    {
+      "file": "pages/capabilities/table/table-column-candidates.json",
+      "sha256": "fbb37f849cbb37c4eb654ef2d3288935fb8b9308ce484b540fd61b7e605c3637"
+    },
+    {
+      "file": "pages/capabilities/table/table-detail-overlay.json",
+      "sha256": "6603f9b0f84ec0e72d977ff929c91e51de9d85b4bb7caed58e0f29ac5a365834"
+    },
+    {
+      "file": "pages/capabilities/table/table-missing-cell-actions.json",
+      "sha256": "921d61ddd3d32107129ff04d61288eb2819ab02a3f588769bf1efc82497cdf73"
+    },
+    {
+      "file": "pages/capabilities/table/table-row-expansion-inline.json",
+      "sha256": "9460be8da9a1c7cdd616f81214002b07623b8c71ce34fdfa572de94fa1f51720"
+    },
+    {
+      "file": "pages/capabilities/table/table-row-expansion-query.json",
+      "sha256": "2702b694ca175719c2f6b418183b52743dfc6376bb951b9c3116fc1133b06466"
+    },
+    {
+      "file": "pages/capabilities/table/table-row-number.json",
+      "sha256": "922fc204f76966bb1d54415fc7e44d8ece2047a1cbfd21a04ca01846fb1397ee"
+    },
+    {
+      "file": "pages/capabilities/table/table-search-options-demo.json",
+      "sha256": "1704c9b95e4f415ffaa4c3f863afad7ed7350864ba50cd09fd3fd1b4643a6d5c"
+    },
+    {
+      "file": "pages/capabilities/table/table-tiny-os.json",
+      "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+    },
+    {
+      "file": "pages/capabilities/table/table-toolbar-demo.json",
+      "sha256": "c476277dbb7d15328d2b9d44807cb0d1856c04aefcbe98091a1b5921c4d36156"
+    },
+    {
+      "file": "pages/platform/README.md",
+      "sha256": "2e73f1ca78dc86a61fde5c49eb1ba46bc450c1f4d3491684f1fa1d9a18170ceb"
+    },
+    {
+      "file": "pages/platform/platform-canvas-experience.json",
+      "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+    },
+    {
+      "file": "pnpm-lock.yaml",
+      "sha256": "1a33c68c0755b6d9bf6d05bbf45438b9b5e2b9bc574a6f41908944dfe5fc2f4f"
+    },
+    {
+      "file": "tools/fixtures/legacy-contracts/README.md",
+      "sha256": "5d74650cc73f54f88eef7f66111e93d64a8fbfb39dd9098b67a38ce952439908"
+    },
+    {
+      "file": "tools/fixtures/legacy-contracts/agent-conformance.json",
+      "sha256": "0a421fdf3f0555676fbb80d27e3a046c4fbc6da10bea15a4a06ded7a68ad87e0"
+    },
+    {
+      "file": "tools/fixtures/legacy-contracts/build-page-conformance.json",
+      "sha256": "480bdf52395b3be486fe48c64a2e00ca070f051a69bbd5b60c6668da5a0160f2"
+    },
+    {
+      "file": "tools/fixtures/legacy-contracts/provenance.json",
+      "sha256": "744fdb3c8cd9e0842f1a92fdb791ba5ac635c45117ddcaf7d3d6f17d40d81238"
+    },
+    {
+      "file": "tools/fixtures/legacy-contracts/rest-services-page-assets.yaml",
+      "sha256": "e8c973e17665b785a636f4aabc94b1e391bcca1632bf5136704f0ffe04f67647"
+    },
+    {
+      "file": "tools/mc-content/HANDOFF.md",
+      "sha256": "1f135bdfe4776cff9c8ed21a6166d44eda266b32afe0dc050938ff3388759a1c"
+    },
+    {
+      "file": "tools/mc-content/LICENSE",
+      "sha256": "7d8d13d252c0bf876126c8624a62cace691fc3798390578c162064476a142c30"
+    },
+    {
+      "file": "tools/mc-content/README.md",
+      "sha256": "b661f8d52c2a47c6c422c897aefd368e6a76c2f52ea647c89f5ab9afc512ee08"
+    },
+    {
+      "file": "tools/mc-content/eval/fixtures/example-matrix.json",
+      "sha256": "5b45bb41eac4ff8386b025482d9658320d97db598905d7bbd274af11e0f03675"
+    },
+    {
+      "file": "tools/mc-content/examples/program-call.py",
+      "sha256": "e1e4c319fb05c1519d776face5cf14df0d3ae36ad41612b57923e218fede86ee"
+    },
+    {
+      "file": "tools/mc-content/layouts/catalog.json",
+      "sha256": "36d77d41d3eaaefd5a5e84fa7afb6f45d815ec2cc6e8ddc8b9d9f6ee60a2c173"
+    },
+    {
+      "file": "tools/mc-content/layouts/dashboard.md",
+      "sha256": "abf82fa9c069a3fc2999986754ef198f9fa327bbc473ebb88c04ee8220227df2"
+    },
+    {
+      "file": "tools/mc-content/layouts/reading.md",
+      "sha256": "2056c401c5c52ef6edf75638e1a93fb1635dcbc494c4d44a3b601bacb0d8edad"
+    },
+    {
+      "file": "tools/mc-content/layouts/report.md",
+      "sha256": "7f53185b6a1247136b665fccd577e0773772c573b424d8e0272b73a01adc0813"
+    },
+    {
+      "file": "tools/mc-content/layouts/standards/business-report-compact.json",
+      "sha256": "478ad9be5022ed73d77699dfee7dc2fc5f57fa6db659b41e5708cda918ed6e3a"
+    },
+    {
+      "file": "tools/mc-content/layouts/standards/business-report-rich.json",
+      "sha256": "322d93143d7250d8643924799420c665fd6614d80af287192b7ef6c5ff2dd3c6"
+    },
+    {
+      "file": "tools/mc-content/layouts/standards/business-report-standard.json",
+      "sha256": "880061942d6286e2daa9def4bce856f6ed8374d6866bf213ac44b8d6735fe153"
+    },
+    {
+      "file": "tools/mc-content/layouts/standards/ioc-overview-standard.json",
+      "sha256": "2ca36f926102b1957570a740fac7f945aa86763e893f105bee111d6f56f2aaf6"
+    },
+    {
+      "file": "tools/mc-content/layouts/standards/usage-report-standard.json",
+      "sha256": "641e01d37056c2efb0e5a4168a3fd14fdeda20e5e74c3fda8374b00bf7d6c511"
+    },
+    {
+      "file": "tools/mc-content/layouts/template.schema.json",
+      "sha256": "9be11114433e1f20ef837bec549c803000f9d3e15ce728ef2581f02e87d150b2"
+    },
+    {
+      "file": "tools/mc-content/protocols/compatibility.md",
+      "sha256": "f5e2bb01f08a903953a0a734f05482705fd2f8fd4f55f3354e0a20f4b2d46206"
+    },
+    {
+      "file": "tools/mc-content/protocols/data-analysis.md",
+      "sha256": "e2a70f7f6b39fc60e9454852ddc862c6bedf39d23b06e996d317b405453fa6d7"
+    },
+    {
+      "file": "tools/mc-content/protocols/discovery-query.md",
+      "sha256": "f4a569603fe72429966a00c7d0af3833bd3897c3779f51c8b7c738a5567a6372"
+    },
+    {
+      "file": "tools/mc-content/runtime/delivery.md",
+      "sha256": "0dedb5ff091fc44d4d8d66eaaaf14c43401ccf91b4b152732fe231da77c629c2"
+    },
+    {
+      "file": "tools/mc-content/runtime/editing.md",
+      "sha256": "9a0a673da4280d9cf63e7fc102e2b234e3b2d3b356d4df236cd8f5b6fc193703"
+    },
+    {
+      "file": "tools/mc-content/runtime/error-repair.md",
+      "sha256": "9d342f8c21d9b845d16d60819ca8b9261c3abc24d0c8eb06a29c07edf0060b8b"
+    },
+    {
+      "file": "tools/mc-content/runtime/execution.md",
+      "sha256": "da98ca62458e738fbea0ebc22b88b69b8f104c03a2e1a830690e2658f8dbbec7"
+    },
+    {
+      "file": "tools/mc-content/runtime/numeric-format.md",
+      "sha256": "d82b5ae1236f95c2eff16306588f640dfe8952d2529feb0cba267857f3677704"
+    },
+    {
+      "file": "tools/mc-content/runtime/page-data-execution.md",
+      "sha256": "a4c533a922fb1bb0cc1d0af465a7f4596109a9521446715a5e2e1103f8bb42a1"
+    },
+    {
+      "file": "tools/mc-content/runtime/parameters.md",
+      "sha256": "438e9411dc085ae569ed93469164a850874f22c93c8a098968bdd8a116929b47"
+    },
+    {
+      "file": "tools/mc-content/runtime/plan-expression.md",
+      "sha256": "6e7a99fc4e36f4b777eccdc16d3fb288465137878f4fd1a068545b9dc496bc02"
+    },
+    {
+      "file": "tools/mc-content/runtime/skill-migration.json",
+      "sha256": "23d71f03908b31240a15eefeacc258b0ab3821e3801d76d6988e14c9922ebeef"
+    },
+    {
+      "file": "tools/mc-content/runtime/tool-behavior.md",
+      "sha256": "b28df99a99fc0325e419d9552cef7e00273232178565425d2750c3c33198dad7"
+    },
+    {
+      "file": "tools/mc-content/runtime/tool-examples.md",
+      "sha256": "9e56963822e2c52a18979debe657237a0a6c38e8d7435a066720ff80ae15dfb0"
+    },
+    {
+      "file": "tools/mc-content/scenarios/business-report.md",
+      "sha256": "9bd27d7abfd873020ae683cc497794c6e02f05878c82c488a5ba4c7d9415d443"
+    },
+    {
+      "file": "tools/mc-content/scenarios/usage-report.md",
+      "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55"
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_content.py",
+      "sha256": "710ccb3aa902600d213bcefd95f3d818ccff523ea474336489efe8762d16455d"
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_inspection.py",
+      "sha256": "e40f1c8d8fb3a37c50eff5fbcbc09f554aee8e6465dc4237fde03596cfacfce1"
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_layout_compiler.py",
+      "sha256": "77c4a7dbd5e61de6a8db3119cca9357b41c534ffc55db45897959d6291cbdcd1"
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_resources.py",
+      "sha256": "bc7d8ca55995e06264661422c399969c86aeb600c15aa7e6056127b3d3741f20"
+    },
+    {
+      "file": "tools/mc-content/scripts/mc_schema_selection.py",
+      "sha256": "cdbc0bc6afdc6d8e4671e001f18215308209134aea3b3523278c9543559c5c7e"
+    },
+    {
+      "file": "tools/mc-content/scripts/requirements.txt",
+      "sha256": "756cc9e506ae4ee1a6f6c0507088b5cfc0dc8ba350fb2d2d46f1ffa72033adb6"
+    },
+    {
+      "file": "tools/scripts/export-authoring-contracts.ts",
+      "sha256": "1d7710a4e09cca49831dce2fa1111af7ea703e75aa194af8c69534556f067c6f"
+    },
+    {
+      "file": "tools/scripts/local-authoring-data-analysis.ts",
+      "sha256": "c17394d7a66a3d1d47e2cd3628770661bf86ba2e716671a29f0a34b5bb8e6d5b"
+    },
+    {
+      "file": "tools/scripts/local-authoring-data-cli.ts",
+      "sha256": "d9c1696a0aaffe217d4d2c1c0e4ebe37aa2c55dfda927b44b96cdd77477146f8"
+    },
+    {
+      "file": "tools/scripts/local-authoring-knowledge-core.ts",
+      "sha256": "33c721aba7c3e00d51d8f3b31a490088dd7b237a4a6f86f54838e0695de72fe1"
+    },
+    {
+      "file": "tools/scripts/local-authoring-knowledge-reader.ts",
+      "sha256": "4a3d6c2213d7b34a851b76ffd105c10710da6540d136d62671042dce9d509434"
+    },
+    {
+      "file": "tools/scripts/local-authoring-knowledge.ts",
+      "sha256": "2497ed695e063bc8e10e023b8e28dd869e2773fa0622b1d50ebf1ce4b2a2c35c"
+    },
+    {
+      "file": "tools/scripts/local-authoring-overview-example.ts",
+      "sha256": "11709e80073bf6a93fcc51526e04817df3690d6b4de706bd850932b5561e1241"
+    },
+    {
+      "file": "tools/scripts/local-authoring-patterns.ts",
+      "sha256": "b54ee7f914691b602696b4b905ebafa42b436f2a8d651013b30239e73843c7f1"
+    },
+    {
+      "file": "tools/scripts/local-authoring-projection.ts",
+      "sha256": "a0bbecba78fb7aa983b5adca97066e53c9cea0eccb10ce9b4aea5742e6832aaa"
+    },
+    {
+      "file": "tools/scripts/local-authoring-retrieval-benchmark.ts",
+      "sha256": "f98591955795aa812b3ee800da74044bf5bcc78cfb744146dc9b31a5cf2f1c95"
+    },
+    {
+      "file": "tools/scripts/local-authoring-upgrade.ts",
+      "sha256": "49138875da2dc617072a3674d378e336698086bc627cd4f753967e340c0f7035"
+    },
+    {
+      "file": "tools/scripts/local-authoring-validator.ts",
+      "sha256": "2f5a65bab5d20d0bf67cb2e34dcfbfdc9286fa8002f6ad04e313125cd481fd87"
+    },
+    {
+      "file": "tools/scripts/mc-content-benchmark.py",
+      "sha256": "aa718ca07ca2155da81265489617af0d0e0afc990bef46cae31e3d90d557b68e"
+    },
+    {
+      "file": "tools/scripts/mc-content-coverage.ts",
+      "sha256": "ef7af301bce5908f6553f72e549409bc3704ae9c65c1ee2f93f97d6dae64d2b3"
+    },
+    {
+      "file": "tools/scripts/mc-content-fixtures.py",
+      "sha256": "6c91cf3dd58298e8fe76cd5ecf8da24639b2ccabfd3cde788e18723becabb2bb"
+    },
+    {
+      "file": "tools/scripts/mc-content-knowledge-reader.ts",
+      "sha256": "7fda428797782dfe237d56453bb016c8813b1c98ba83ccef8aa4072fbb69dd3f"
+    },
+    {
+      "file": "tools/scripts/mc-content-knowledge.ts",
+      "sha256": "a49ae9f93fceb84f8e5315eb262a2e2215fc50843c1bebab6a05d3895409fe16"
+    },
+    {
+      "file": "tools/scripts/mc-content-pack.py",
+      "sha256": "eaeaaa82851f7d14d2fe5cb841a603141b802190d3fa90d4adb0409b6e58cfab"
+    },
+    {
+      "file": "tools/scripts/mc-content-page.ts",
+      "sha256": "561fdbfc38c8775587637149395a647794b2f7055f078e31f3b3cd56b3d57770"
+    },
+    {
+      "file": "tools/scripts/mc-content-schema-catalog.ts",
+      "sha256": "7a7e7f24faf20489e5af4fd03520e39eeb605b7940ea6c7705192fb4997764f6"
+    },
+    {
+      "file": "tools/scripts/mc-content.ts",
+      "sha256": "7b9da305f636516a77ff1c8195edaa0e78856332c3baf16e211f5013e09d665c"
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "sha256": "3c1a34b7ed31a03f983cc0292e7db9457d78332e08e0a13879d9f079e7101f2f"
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "sha256": "5bfc58663a14fa7991bd4f8f0a4ad526c3a90a8720ef353d8d432f321eb6c6ec"
+    },
+    {
+      "file": "tools/scripts/page-files.d.mts",
+      "sha256": "7e4a7e57282b08149eab93892b28a203c7f35a300fe7272b16b2e163d7bc6c96"
+    },
+    {
+      "file": "tools/scripts/page-files.mjs",
+      "sha256": "9f79724adf0c850f258441fea958e3bdde6631368922bf5a5ee621949d10de5f"
+    },
+    {
+      "file": "tools/scripts/page-reference.ts",
+      "sha256": "adffad647e7ff7b8fac857c8d12a1af4aa8d529afe10153e0d8387cb407f82d5"
+    },
+    {
+      "file": "tools/scripts/page-validation-bridge.ts",
+      "sha256": "a8732fcfce4ce0d7b661c20d39711dfa5486cc93f93fe84cab01ee6a906e1522"
+    },
+    {
+      "file": "tools/scripts/query-result-conformance-vectors.ts",
+      "sha256": "061f91aa96f5244605fcaedb37703cee43f81d11f96879621d2521818a9ab940"
+    }
+  ],
+  "deployment": "not_run; Relay must record actual engine/tool versions and artifact digests"
+}

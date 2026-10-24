@@ -1,0 +1,33 @@
+{
+  "case": "pagination-offset-not-zero",
+  "invariant": "pagination-query-order",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询分页要求 DQE order.offset 为 0",
+      "paths": [
+        "/dataSources/sales/source/query/body/dsl_list/0/order/offset"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "body": {
+              "dsl_list": [
+                {
+                  "order": {
+                    "offset": 20
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

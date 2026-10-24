@@ -15,6 +15,14 @@ def digest(content):
     return hashlib.sha256(content).hexdigest()
 
 
+def value_digest(value):
+    return digest(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode())
+
+
+def issue(code, path='', **facts):
+    return {'code': code, 'path': path, **facts}
+
+
 def package_root(root=None):
     return Path(root).resolve() if root is not None else Path(__file__).resolve().parents[1]
 
@@ -52,6 +60,10 @@ def manifest_files(manifest):
     return files
 
 
+# Process-local code identity is not workflow state. A live module must not consume replaced code.
+LOADED_CODE = {file.name: digest(file.read_bytes()) for file in Path(__file__).resolve().parent.glob('*.py')}
+
+
 def verify_package(root=None):
     root = package_root(root)
     manifest = read_json(root, 'mc-content.version.json')
@@ -63,6 +75,9 @@ def verify_package(root=None):
         if file.is_file() and '__pycache__' not in file.parts and file != root / 'mc-content.version.json'}
     if actual != set(names):
         raise ContentError('CONTENT_RESOURCE_SET_MISMATCH')
+    for name, expected in LOADED_CODE.items():
+        if digest(resource(root, 'scripts/' + name).read_bytes()) != expected:
+            raise ContentError('CONTENT_CODE_VERSION_MISMATCH', name, 'Reload all MC modules or start a new process')
     for item in files:
         file = resource(root, item['file'])
         if not file.is_file() or digest(file.read_bytes()) != item['sha256']:
@@ -96,9 +111,25 @@ def atom_content(root, manifest, topic, key, options):
     if file is None:
         raise ContentError('CONTENT_KEY_UNKNOWN', f'{topic}/{key}')
     content = read_json(root, file) if file.endswith('.json') else resource(root, file).read_text(encoding='utf-8')
-    if topic == 'tool' and not options.get('includeSchema', False):
-        content = {k: v for k, v in content.items() if k != 'requestSchema'}
+    if 'pointer' in options:
+        from mc_schema_selection import schema_selection
+        schema = content.get('inputSchema') if topic == 'tool' else content
+        content = schema_selection(schema, options['pointer'])
+    elif topic == 'tool' and not options.get('includeSchema', False):
+        content = {k: v for k, v in content.items() if k not in {'requestSchema', 'inputSchema'}}
     return content, file
+
+
+def node_content(root, key):
+    import subprocess
+    try:
+        result = subprocess.run(['node', str(resource(root, 'scripts/read-knowledge.mjs'))],
+            input=json.dumps({'pointers': [key]}), capture_output=True, text=True, timeout=30, check=False)
+        if result.returncode:
+            raise ContentError('CONTENT_NODE_UNKNOWN', key, result.stderr)
+        return json.loads(result.stdout), 'references/authoring-knowledge/model.json'
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise ContentError('CONTENT_READER_UNAVAILABLE', key, str(error)) from error
 
 
 def query_content(topic, key='', options=None, *, root=None):
@@ -106,11 +137,11 @@ def query_content(topic, key='', options=None, *, root=None):
     options = {} if options is None else options
     if not isinstance(topic, str) or not isinstance(key, str):
         raise ContentError('QUERY_ARGUMENTS_INVALID')
-    if not isinstance(options, dict) or set(options) - {'maxBytes', 'includeSchema', 'offset', 'limit'}:
+    if not isinstance(options, dict) or set(options) - {'maxBytes', 'includeSchema', 'offset', 'limit', 'pointer'}:
         raise ContentError('QUERY_OPTIONS_INVALID')
     if 'includeSchema' in options and type(options['includeSchema']) is not bool:
         raise ContentError('QUERY_OPTIONS_INVALID')
-    content, file = atom_content(root, manifest, topic, key, options)
+    content, file = node_content(root, key) if topic == 'node' else atom_content(root, manifest, topic, key, options)
     budget = options.get('maxBytes', 32768)
     if type(budget) is not int or not 128 <= budget <= 4 * 1024 * 1024:
         raise ContentError('QUERY_OPTIONS_INVALID')
@@ -118,4 +149,5 @@ def query_content(topic, key='', options=None, *, root=None):
     return {'topic': topic, 'key': key, 'content': content if size <= budget else None,
         'truncated': size > budget, 'requiredBytes': size, 'source': file,
         'contentSha256': manifest['contentSha256'], 'cached': False,
+        'continuation': {'topic': topic, 'key': key, 'options': {**options, 'maxBytes': min(4 * 1024 * 1024, max(size, budget))}},
         'note': 'Oversized atoms are withheld intact. Increase maxBytes or page the index; no partial contract is represented as complete.'}

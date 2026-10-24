@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "6.58",
+  "id": "tab-mixed-content",
+  "layout": "dashboard",
+  "dataSources": {
+    "metrics": {
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "amount": 1280
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "grouped",
+          "type": "compositeCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "组合卡",
+            "components": [
+              {
+                "id": "grouped-total",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "metrics"
+                },
+                "props": {
+                  "title": "合成总额",
+                  "rows": [
+                    {
+                      "label": "总额",
+                      "valueField": "amount"
+                    }
+                  ]
+                }
+              }
+            ],
+            "variant": "compact"
+          }
+        }
+      ]
+    }
+  ]
+}

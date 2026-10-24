@@ -1,0 +1,50 @@
+{
+  "case": "match-field-not-dimension",
+  "invariant": "field-binding-match",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行匹配字段 share 的 role 必须为 dimension",
+      "paths": [
+        "/sections/0/components/1/props/components/0/props/rows/0/valueField/match/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "匹配值不符合字段 share 的类型 number",
+      "paths": [
+        "/sections/0/components/1/props/components/0/props/rows/0/valueField/match/equals"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "components": [
+                {
+                  "props": {
+                    "rows": [
+                      {
+                        "valueField": {
+                          "match": {
+                            "field": "share",
+                            "equals": "线上"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

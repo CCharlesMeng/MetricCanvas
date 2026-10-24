@@ -1,0 +1,334 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "filters.section-e52ee450"
+  ],
+  "semantics": [
+    {
+      "module": "filters",
+      "reference": "references/page-metadata/filters.md",
+      "blocks": [
+        "# 筛选声明与运行状态\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。",
+        "## 6.39 复杂时间与候选\n\n`timeRange.display:\"modes\"` 声明 `required:true`、`defaultMode` 和 `modes:[{id:\"day\"|\"month\"|\"isoWeek\",default:TimeRangeValue|RelativeTimeExpression}]`。普通 default/precision、period、initialParam/initialMode 与 modes 互斥。日为 YYYY-MM-DD，月为 YYYY-MM，ISO周保存同周周一至周日并计算ISO所属年。模式、from、to原子提交，每个模式记忆最近合法范围；失效时尝试合法默认值，不能沿用旧查询。URL使用 `<id>.mode`、`<id>.from`、`<id>.to` 完整整组；未知/缺项/重复/错周拒绝。\n\n`timeRange.presets:[{id,label,range:RelativeTimeExpression}]` 点击才提交。近N天含锚点日、起点减N-1；月份按日历月计算，includeCurrent明确，显式anchor同时控制起止。旧period近一年仍是当前月之前12个完整月，不被预设替换。\n\n`timePoint/timeRange` 可声明 min/max、blockedRanges 和 `availability:{fact,initial?:\"latest\"|\"latestComplete\",max:\"latest\"|\"latestComplete\",blockMissing?:true}`。initial与普通default/initialParam互斥，合法URL优先；max始终独立校验。latest不是完成状态；缺complete不回退latest。完整年/季/周越界拒绝，不截短自然期。缺数默认可查询空，仅显式blockMissing才禁选。所有边界取交集，输入错误不提交。disableFuture默认沿旧行为，可显式false。\n\n动态平面 dimension 的 `candidateWindow:{unit:\"month\",n:12,includeCurrent:boolean,anchorFact?:string}` 通过V2候选接口传 `calendarWindow:{granularity:\"month\",from,to}`；anchorFact消费可信latest，省略按同次时钟。不能与options/hierarchy混用。V2缺失、事实未就绪或结果失败时阻断相关查询，不降级旧端口。真实年月值按维度集合绑定，选1/3月不补2月；仅dtime的多区间查询不在本批支持范围。candidateContext时间/模式/维度及窗口/事实上下文共同决定缓存键；intersection等待当前完整候选后才取交集。\n\n场景：time-modes-page、time-presets-page、availability-page、calendar-window-page；对应 `pages/ioc-header-*-demo.json` 可交互验收。\n6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。"
+      ],
+      "rules": [
+        {
+          "id": "currency-range-presets",
+          "description": "6.46单位case内的币种预设保持单一金额状态",
+          "valid": [
+            "ioc-header-currency"
+          ],
+          "invalid": [
+            "currency-presets-version",
+            "currency-presets-missing",
+            "currency-presets-shared",
+            "currency-presets-invalid"
+          ]
+        },
+        {
+          "id": "independent-filter-candidates",
+          "description": "6.46显式无依赖候选使用V2及局部门禁",
+          "valid": [
+            "ioc-header-business",
+            "ioc-header-unconfigured"
+          ],
+          "invalid": [
+            "independent-candidates-version"
+          ]
+        },
+        {
+          "id": "required-multiple-selection",
+          "description": "6.46必选多选保持非空离散集合",
+          "valid": [
+            "ioc-header-months"
+          ],
+          "invalid": [
+            "required-multiple-version",
+            "required-multiple-empty"
+          ]
+        },
+        {
+          "id": "unified-page-header",
+          "description": "6.41 唯一页头及自然年选择",
+          "valid": [
+            "unified-year-header",
+            "unified-overflow-header"
+          ],
+          "invalid": [
+            "unified-header-version",
+            "unified-header-conflict",
+            "period-modes-empty",
+            "period-modes-duplicate",
+            "period-modes-default",
+            "period-modes-plain-range"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "currency-selection",
+          "description": "6.38金额范围和静态货币字段选择",
+          "valid": [
+            "currency-selection-page"
+          ],
+          "invalid": [
+            "currency-before-6.38",
+            "currency-case-missing",
+            "currency-metric-mismatch",
+            "currency-negative-default",
+            "currency-equal-default",
+            "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "business-filters",
+          "description": "6.37 封闭枚举与业务选择语义",
+          "valid": [
+            "business-filter-page"
+          ],
+          "invalid": [
+            "business-filter-before-6.37",
+            "business-filter-single-many",
+            "business-filter-disabled-default",
+            "business-filter-options-dependent",
+            "business-filter-unrestricted-without-options",
+            "business-filter-cycle"
+          ]
+        },
+        {
+          "id": "period-filter",
+          "description": "6.27 Dashboard 年季月与近一年期间筛选",
+          "valid": [
+            "dashboard-period-filter",
+            "dashboard-period-filter-month",
+            "dashboard-period-filter-more",
+            "dashboard-period-filter-readonly",
+            "period-filter-year-page",
+            "period-filter-quarter-page",
+            "period-filter-last12-months-page",
+            "period-filter-parameter-page"
+          ],
+          "invalid": [
+            "period-filter-before-6.27",
+            "period-filter-quarter-invalid",
+            "period-filter-report",
+            "period-filter-datetime",
+            "period-filter-no-default",
+            "period-filter-static-time"
+          ]
+        },
+        {
+          "id": "filter-group",
+          "description": "6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐",
+          "valid": [
+            "chart-local-filter-page",
+            "filter-group-state-page"
+          ],
+          "invalid": [
+            "filter-group-version",
+            "filter-group-report",
+            "filter-group-detail",
+            "filter-group-invalid-default",
+            "filter-group-duplicate-options",
+            "filter-group-duplicate-control",
+            "filter-group-no-binding",
+            "filter-group-removed-chart-filter"
+          ]
+        },
+        {
+          "id": "time-point-disable-future",
+          "description": "6.25 时间点禁止未来月份与日期",
+          "valid": [
+            "time-point-no-future"
+          ],
+          "invalid": [
+            "time-point-disable-future-before-6.25",
+            "time-point-disable-future-default-month",
+            "time-point-disable-future-default-date"
+          ]
+        },
+        {
+          "id": "time-point-min",
+          "description": "6.24 时间点下限与默认值日历语义",
+          "valid": [
+            "time-point-min-page"
+          ],
+          "invalid": [
+            "time-point-min-before-6.24",
+            "time-point-min-invalid-month",
+            "time-point-min-wrong-precision",
+            "time-point-min-default-before",
+            "time-point-min-invalid-date"
+          ]
+        },
+        {
+          "id": "filter-id-unique",
+          "description": "筛选器 id 唯一",
+          "valid": [
+            "filters-page",
+            "map-page"
+          ],
+          "invalid": [
+            "duplicate-filter-id"
+          ]
+        },
+        {
+          "id": "time-range-default-calendar",
+          "description": "timeRange 绝对默认值须为合法公历值、精度一致且 from 不晚于 to",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "time-range-from-format",
+            "time-range-to-calendar",
+            "time-range-datetime-without-precision",
+            "time-range-from-after-to"
+          ]
+        },
+        {
+          "id": "relative-time-anchor",
+          "description": "结构化相对时间的 anchor 须为合法公历日期",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "relative-time-anchor-invalid"
+          ]
+        },
+        {
+          "id": "time-point-default",
+          "description": "timePoint 默认值符合其粒度的格式与日历",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "time-point-month-format",
+            "time-point-month-range",
+            "time-point-date-format",
+            "time-point-date-calendar"
+          ]
+        },
+        {
+          "id": "number-range-default",
+          "description": "numberRange 默认值至少有一端且 from 不大于 to",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "number-range-empty",
+            "number-range-inverted"
+          ]
+        },
+        {
+          "id": "hierarchy-level-id-unique",
+          "description": "层级 id 在同一筛选器内唯一",
+          "valid": [
+            "filters-page",
+            "map-page"
+          ],
+          "invalid": [
+            "duplicate-hierarchy-level-id"
+          ]
+        },
+        {
+          "id": "default-level-declared",
+          "description": "defaultLevel 只能用于声明了 hierarchy 的筛选器并引用已声明层级",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "default-level-without-hierarchy",
+            "default-level-unknown"
+          ]
+        },
+        {
+          "id": "hierarchy-picker-requires-hierarchy",
+          "description": "hierarchyPicker 只能用于声明了 hierarchy 的维度筛选器",
+          "valid": [
+            "filters-page",
+            "map-page"
+          ],
+          "invalid": [
+            "hierarchy-picker-without-hierarchy"
+          ]
+        },
+        {
+          "id": "filter-depends-on",
+          "description": "级联只能依赖另一个已声明的 dimension 筛选器且不成环",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "depends-on-self",
+            "depends-on-undeclared",
+            "depends-on-non-dimension",
+            "depends-on-cycle"
+          ]
+        },
+        {
+          "id": "hidden-hierarchy-picker-needs-map",
+          "description": "隐藏层级切换器时必须有地图通过 hierarchyFilter 承担下钻",
+          "valid": [
+            "map-page"
+          ],
+          "invalid": [
+            "hidden-hierarchy-picker-without-map"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/filters-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/time-point-min-page.json",
+        "references/page-metadata/examples/time-point-no-future.json",
+        "references/page-metadata/examples/dashboard-period-filter.json",
+        "references/page-metadata/examples/dashboard-period-filter-month.json",
+        "references/page-metadata/examples/period-filter-year-page.json",
+        "references/page-metadata/examples/period-filter-quarter-page.json",
+        "references/page-metadata/examples/period-filter-last12-months-page.json",
+        "references/page-metadata/examples/period-filter-parameter-page.json",
+        "references/page-metadata/examples/dashboard-period-filter-more.json",
+        "references/page-metadata/examples/dashboard-period-filter-readonly.json",
+        "references/page-metadata/examples/chart-local-filter-page.json",
+        "references/page-metadata/examples/business-filter-page.json",
+        "references/page-metadata/examples/currency-selection-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/unified-year-header.json",
+        "references/page-metadata/examples/dimension-selection-page.json",
+        "references/page-metadata/examples/ioc-header-business.json",
+        "references/page-metadata/examples/ioc-header-currency.json",
+        "references/page-metadata/examples/ioc-header-groups.json",
+        "references/page-metadata/examples/ioc-header-incentives.json",
+        "references/page-metadata/examples/ioc-header-models.json",
+        "references/page-metadata/examples/ioc-header-months.json",
+        "references/page-metadata/examples/ioc-header-unconfigured.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -5,6 +5,28 @@
     "action": "read_work_status",
     "owner": "model"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py",
+      "line": 75
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/platform_authoring.py",
+      "line": 76
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/platform_authoring.py",
+      "line": 192
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/work/state.py",
+      "line": 59
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/work/state.py",
+      "line": 84
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

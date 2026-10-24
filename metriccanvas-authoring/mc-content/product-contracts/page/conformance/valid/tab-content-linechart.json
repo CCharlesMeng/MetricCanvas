@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "6.49",
+  "layout": "report",
+  "id": "tab-content-linechart",
+  "dataSources": {
+    "live-sales": {
+      "fields": {
+        "stat-date": {
+          "queryField": "stat-date",
+          "type": "date",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "stat-date"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "content-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "contentLayout": "grid",
+            "tabs": [
+              {
+                "id": "one",
+                "label": "内容",
+                "component": {
+                  "id": "sales-trend",
+                  "type": "lineChart",
+                  "layout": {
+                    "span": 8
+                  },
+                  "data": {
+                    "main": "live-sales"
+                  },
+                  "props": {
+                    "xField": {
+                      "data": "main",
+                      "field": "stat-date",
+                      "format": "date-month-day"
+                    },
+                    "series": [
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "gmv",
+                          "format": "compact-yi-1"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

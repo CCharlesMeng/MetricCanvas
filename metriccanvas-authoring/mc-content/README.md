@@ -48,3 +48,29 @@ python /absolute/mc-content/scripts/mc_content.py upgrade --input /absolute/old-
 ```
 
 未来/未知版本、缺版本声明、能力下限错误，以及产品尚无明确规则的旧参数或页头语义不会被自动放行。原页仍合法且只做该版本支持的局部改动时，Skill 可选择保留原版本。迁移逻辑与静态校验直接打包产品实现；后续 Schema 升级必须重新生成、运行旧输入回归并替换整包。
+
+## 有界知识与完整契约
+
+`query --topic index --key knowledge` 分页列主题；`knowledge/table.width`、`fields.format`、`data.query` 返回同源语义原文、父约束、规则、例子和 unresolvedRefs。`node/#/definitions/tableComponent` 读取精确页面节点；子指针与未展开引用继续定位。所有模块、自动语义章节、显式主题、完整参考和例子都有 index 入口。常见主题默认预算内返回；超预算整体保留并给 requiredBytes 和 continuation，不把局部结果当成完整校验器。
+
+```sh
+python /absolute/mc-content/scripts/mc_content.py query --topic knowledge --key table.width
+python /absolute/mc-content/scripts/mc_content.py query --topic tool --key edit_page --options '{"pointer":"#/properties/expected_version"}'
+python /absolute/mc-content/scripts/mc_content.py query --topic tool --key query_data --options '{"includeSchema":true}'
+```
+
+tool 的完整 inputSchema 来自实际 FastMCP 注册，包含外层参数、嵌套请求和 $defs；默认摘要省略 inputSchema/requestSchema。pointer 在完整 inputSchema 上选择，返回父约束、局部事实和继续指针。protocol/product/authoring/reference 的 JSON 也支持 pointer。模型输入与可信程序输入、摘要与完整信封分别记录，见 protocol/discovery-query 与 authoring 平台协议。
+
+`component/<type>` 区分 renderable、assembled、data_editable，并定位形状前提、知识和例子；版本能力由 protocol/version-policy 与完整产品检查给出。`scenario/business-report`、`usage-report` 是可选阅读建议，非固定业务域；`example/<scene>` 是合成完整页。
+
+## 检查关联与分发
+
+compile 兼容原输入，可选 requestId。inspectionSpec formatVersion=1 增加 correlation.compileInputSha256/planSha256/requestId。摘要为 UTF-8 JSON（sort_keys=true、ensure_ascii=false、separators=(',',':')）SHA256。
+
+inspect 的可选 correlation（只在程序通道）包含 requestId、原始 compileInput、documentSha256、inspectionSpecSha256；匹配才报告 checked，否则明确 not_run。它是调用程序的输入/产物关联，不证明身份权限或保存回执。旧输入不带 correlation 仍检查原有要求，关联检查明确 not_run。产物必须是完整页面，不能由摘要重建。
+
+检查使用产品 normalize/parse、全部组件树遍历和 Schema 驱动用数扫描，含 Tab、组合卡、详情视图、多数据槽、筛选分支及计算/依赖源声明。它验证声明与协议，不证明未声明的用户意图、计算业务语义或真实 DQE。coverage/notVerified/dataCoverage 逐项体现范围。历史差异及人工迁移项见 protocol/compatibility。
+
+runtime/coverage 是按产品注册、reference-map、实际工具和能力声明对账的构建结论；runtime/source-identity 记录公共源码身份。覆盖缺口使仓库构建/发包失败，不改变运行时保存语义。发布归档从已校验暂存目录生成，文件集合/摘要/许可证随包；Python 平台 wheel、引擎和 Relay 是独立外部交付物。真实部署任务见 [HANDOFF](HANDOFF.md)。
+
+离线 URI 引用通过 runtime/schema-catalog 定位到已安装 Schema；原产品 manifest 仅保留来源身份，变换后的参考位置由 runtime/coverage 映射，不能把来源 manifest 当成本包安装清单。本包的安装清单是 mc-content.version.json。`examples/program-call.py` 可直接执行本地合成编译/关联检查；新进程执行不需要原仓或 Skill。Python 字节码缓存不参与分发身份；检查遇到已加载代码与被替换的脚本不匹配会要求完整重载。

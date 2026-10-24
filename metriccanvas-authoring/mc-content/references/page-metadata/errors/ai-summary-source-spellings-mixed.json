@@ -1,0 +1,37 @@
+{
+  "case": "ai-summary-source-spellings-mixed",
+  "invariant": "ai-summary-source-references",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "relatedDataSources 不能与旧 relatedDataSource 同时声明",
+      "paths": [
+        "/sections/3/components/0/props"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "title": "独立数据源分析",
+              "promptTemplate": "概括对照数据，不使用其他区域的数据。",
+              "relatedDataSources": [
+                "comparison"
+              ],
+              "relatedDataSource": [
+                "comparison"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

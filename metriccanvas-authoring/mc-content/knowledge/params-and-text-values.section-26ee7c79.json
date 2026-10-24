@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "params-and-text-values.section-26ee7c79"
+  ],
+  "semantics": [
+    {
+      "module": "params-and-text-values",
+      "reference": "references/page-metadata/params-and-text-values.md",
+      "blocks": [
+        "# 页面参数与文本取值\n\n当前创作使用分层参数：params.query 定义查询输入，params.display 定义呈现输入；无值模板与填值实例共用页面协议。作者版本与能力下限见[页面、版本与布局](page.md)，本模块维护参数和文本取值的字段语义；按参数类型、查询绑定和文本取值的生成结构表配置，完整示例见本节。\n\n旧数组参数：页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值会阻止呈现和查数。\n\n文本取值引用为{param:id}，由声明取值并按可选format格式化；必需文本不能引用可能缺失的参数。initialParam只把实际参数用于筛选初值，不能与filter.default双默认；6.11起timePoint筛选器与层级维度筛选器同样可用，前者引用单点times参数，后者的初值落在defaultLevel那一层；paramBindings显式指定查询目标，后续筛选清空不会复活原值。受筛选控制的目标不同时写静态参数条件。\n\n执行回执的appliedInputs/filterValues是初始化权威；浏览器不再次用URL或模板默认覆盖。服务权限优先级不由Schema证明。",
+        "## 文本片段组合（6.23）\n\n所有既有文本取值位置增加 `{parts: [...]}`，包括报告主标题、说明、期间、内容分区标题、普通文本与嵌套组件。parts 是 1—64 个片段的有序数组，每项仅允许字符串、`{param, format?}` 或 `{filter, format?}`；不允许嵌套组合、脚本、模板表达式或额外字段。各片段按原顺序连接，空格和标点由作者在字符串片段中明确写出；不增加隐式分隔符或时间格式。必需文本的最终字符串仍须非空。\n\n```json\n{\"title\":{\"parts\":[{\"filter\":\"report-month\",\"format\":\"period\"},\" 经营分析报告\"]}}\n```\n\n参数片段只读取打开时实际值；筛选片段读取当前已应用状态，输入草稿不参与投影。日期继续使用 period：单点显示规范月份/日期，区间显示“开始 至 结束”，同起止折叠为单点，清空为“全部期间”。任一可选参数片段缺值时整个文本属性（或该数组项）移除，不能留下半句；因此必需标题不能依赖可选参数片段。引用存在性与格式相容性在连接前逐项校验，dataSources 内的请求体与业务数据不参与文本解析。\n\n物化后组件只接收字符串；渲染期按整个文本位置重新投影组合，不重新初始化参数或查询。导出捕获已解析文字，准备期间的后续筛选不会改变本次导出标题。保存与规范化保留 parts 声明。存量字符串与整值引用继续按原语义读取，parts 能力下限为6.23。\n\n时间选择统一使用验收页面 `report-date-filter-example`：单月与范围文字联动分区覆盖月份主标题、独立范围、同起止、清空、多筛选组合和参数文字；范围明细分区保留 DQE 仿真查询联动，禁止未来时间分区覆盖月份／日期边界。文字和受限时间控件不驱动明细查询。日期型、非法输入、可选参数、版本和导出捕获另由行为测试覆盖；仿真不代表真实 DQE 集成。\n\n6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。"
+      ],
+      "rules": [
+        {
+          "id": "text-value-composition",
+          "description": "6.23 文本片段组合；引用先校验，物化后只传递字符串",
+          "valid": [
+            "text-composition-page"
+          ],
+          "invalid": [
+            "text-composition-before-6.23",
+            "text-composition-unknown-filter",
+            "text-composition-unknown-param",
+            "text-composition-incompatible-format",
+            "text-composition-empty-result",
+            "text-composition-optional-required-title",
+            "text-composition-empty",
+            "text-composition-nested"
+          ]
+        },
+        {
+          "id": "filter-text-declared",
+          "description": "筛选文本必须引用已声明筛选器",
+          "valid": [
+            "report-filter-text-page"
+          ],
+          "invalid": [
+            "filter-text-unknown"
+          ]
+        },
+        {
+          "id": "filter-text-format-compatible",
+          "description": "period 只接受时间输入，禁止数值日期格式混用",
+          "valid": [
+            "report-filter-text-page"
+          ],
+          "invalid": [
+            "filter-text-format-mismatch"
+          ]
+        },
+        {
+          "id": "filter-text-capability",
+          "description": "筛选文本引用与 period 格式需要 6.15",
+          "valid": [
+            "report-filter-text-page"
+          ],
+          "invalid": [
+            "filter-text-before-6.15"
+          ]
+        },
+        {
+          "id": "page-param-id-unique",
+          "description": "页面参数 id 唯一",
+          "valid": [
+            "params-page"
+          ],
+          "invalid": [
+            "duplicate-page-param-id"
+          ]
+        },
+        {
+          "id": "page-param-not-filter-name",
+          "description": "页面参数不得与筛选器同名",
+          "valid": [
+            "params-page",
+            "filters-page"
+          ],
+          "invalid": [
+            "page-param-named-like-filter"
+          ]
+        },
+        {
+          "id": "page-param-default-type",
+          "description": "页面参数默认值符合声明类型",
+          "valid": [
+            "params-page"
+          ],
+          "invalid": [
+            "page-param-default-type-mismatch"
+          ]
+        },
+        {
+          "id": "text-value-param-declared",
+          "description": "文本取值只能引用已声明的页面参数",
+          "valid": [
+            "params-page"
+          ],
+          "invalid": [
+            "text-value-unknown-param"
+          ]
+        },
+        {
+          "id": "text-value-format-compatible",
+          "description": "文本取值引用的展示格式与参数类型相容",
+          "valid": [
+            "params-page"
+          ],
+          "invalid": [
+            "text-value-format-mismatch"
+          ]
+        },
+        {
+          "id": "page-param-consumed",
+          "description": "每个页面参数至少被一处文本取值消费",
+          "valid": [
+            "params-page"
+          ],
+          "invalid": [
+            "page-param-unconsumed"
+          ]
+        },
+        {
+          "id": "optional-param-not-in-required-text",
+          "description": "必填文本属性只能引用必需参数",
+          "valid": [
+            "params-page"
+          ],
+          "invalid": [
+            "required-title-references-optional-param"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/dimension-params-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/time-params-page.json",
+        "references/page-metadata/examples/grouped-params-page.json",
+        "references/page-metadata/examples/grouped-scalar-params-page.json",
+        "references/page-metadata/examples/report-filter-text-page.json",
+        "references/page-metadata/examples/text-composition-page.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

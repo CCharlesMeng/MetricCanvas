@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "tabContainer.section-8044e7e5"
+  ],
+  "semantics": [
+    {
+      "module": "tabContainer",
+      "reference": "references/page-metadata/components/tabContainer.md",
+      "blocks": [
+        "# Tab 容器 tabContainer\n\n在同一区域切换普通内容与组合卡。容器不绑定数据，每个子组件独立声明数据槽。\n\n6.49 起支持全部普通内容组件及组合卡；不允许 reportHeader 和嵌套 tabContainer，组合卡内部继续遵守自身白名单，所有子组件禁止 layout.layer。`component` 与非空 `components` 二选一。\n\n`props.contentLayout: \"grid\"` 复用12列栅格，子组件 layout.span 相对当前面板生效；省略时保留旧纵向全宽，不修改已有页面布局。\n\n首次进入只读取当前内容所需数据与上游依赖；已访问面板保持挂载，切换保留图例、滚动、表格状态和AI总结会话。公共条件改变使相关隐藏数据失效，重新进入后补查，迟到响应不得覆盖新条件。AI输入失效立即中止旧流，重新取得数据后再生成；单纯切换不重新生成。\n\n页面公共筛选与组件局部筛选继续通过显式绑定消费，不新增Tab筛选栏；独立筛选控件使用各自 filterId 和独立查询源，沿用现有单图隔离校验。同字段公共/局部查询条件取交集，不相交按空结果处理。\n\n活动项由 `tab.<组件id>=<页签id>` 保存，复用 navigation.replaceSearch（替换历史、不刷新）；局部筛选沿用筛选URL。多个容器互不覆盖，未知页签回退 defaultTab 或第一项，无关参数保留。URL不保存结果、滚动、图例或AI文本。\n\nReport整页导出按声明顺序展开全部Tab，补齐普通数据，只捕获已有AI文本，未生成则空态；Dashboard不新增整页导出，表格Excel保留自身范围。可观察入口：[混合内容](../examples/tab-mixed-content.json)，Playground `/pages/tab-mixed-content`。Report验收入口 `/pages/tab-mixed-content-report`。使用本地DQE Sim，不证明真实DQE或Relay接入。",
+        "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。\n\n<a id=\"url-初始化页签633\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "tab-url-initialization",
+          "description": "6.33 Tab 显式 URL 初值与页面输入名称互斥",
+          "valid": [
+            "tab-url-initialization",
+            "tab-url-source"
+          ],
+          "invalid": [
+            "tab-url-before-6.33",
+            "tab-url-empty-key",
+            "tab-url-duplicate-key",
+            "tab-url-filter-conflict",
+            "tab-url-param-conflict"
+          ]
+        },
+        {
+          "id": "tab-content-boundary",
+          "description": "Tab混合内容禁止页头、嵌套Tab及子内容铺底，能力下限6.49",
+          "valid": [
+            "tab-mixed-content"
+          ],
+          "invalid": [
+            "tab-content-header",
+            "tab-content-nested-tab",
+            "tab-content-backdrop",
+            "tab-content-version-floor"
+          ]
+        },
+        {
+          "id": "tab-container",
+          "description": "Tab id 唯一且 defaultTab 已声明",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "tab-id-duplicate",
+            "tab-default-unknown"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/composite-page.json",
+        "references/page-metadata/examples/tab-url-initialization.json",
+        "references/page-metadata/examples/tab-mixed-content.json",
+        "references/page-metadata/examples/tab-content-aisummary.json",
+        "references/page-metadata/examples/tab-content-barchart.json",
+        "references/page-metadata/examples/tab-content-categorybreakdown.json",
+        "references/page-metadata/examples/tab-content-compositecard.json",
+        "references/page-metadata/examples/tab-content-fieldtext.json",
+        "references/page-metadata/examples/tab-content-gauge.json",
+        "references/page-metadata/examples/tab-content-keyvaluepanel.json",
+        "references/page-metadata/examples/tab-content-linechart.json",
+        "references/page-metadata/examples/tab-content-mapchart.json",
+        "references/page-metadata/examples/tab-content-metriccard.json",
+        "references/page-metadata/examples/tab-content-piechart.json",
+        "references/page-metadata/examples/tab-content-rankingcard.json",
+        "references/page-metadata/examples/tab-content-rankingdetailcard.json",
+        "references/page-metadata/examples/tab-content-table.json",
+        "references/page-metadata/examples/tab-content-text.json",
+        "references/page-metadata/examples/tab-content-filtergroup.json",
+        "references/page-metadata/examples/tab-content-button.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "6.11",
+  "id": "non-dimension-bindings-page",
+  "layout": "dashboard",
+  "meta": {
+    "description": "timePoint / boolean / numberRange 三类筛选器各自的查询绑定目标契约样例；时间点筛选器的初值取自单点 times 参数"
+  },
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "report-month",
+          "granularity": "month",
+          "start": "2026-07",
+          "end": "2026-07",
+          "label": "数据月份"
+        }
+      ]
+    }
+  },
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "region": {
+          "queryField": "region_name",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "level": {
+          "queryField": "region_level",
+          "type": "string",
+          "role": "dimension"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure"
+        },
+        "amount": {
+          "queryField": "amount",
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-01T00:00:00Z",
+          "rows": [
+            {
+              "region_name": "华东地区部",
+              "region_level": "region-dept",
+              "gmv": 1200,
+              "amount": 800
+            }
+          ]
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region_name",
+                  "region_level"
+                ],
+                "output_metrics": [
+                  "gmv",
+                  "amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "month": {
+              "target": "timePoint",
+              "queryField": "stat_month",
+              "valueFormat": "compact"
+            },
+            "only-key": {
+              "target": "boolean",
+              "queryField": "is_key",
+              "whenTrue": [
+                "true"
+              ],
+              "whenFalse": [
+                "false"
+              ]
+            },
+            "amount-range": {
+              "target": "numberRange",
+              "metric": "amount"
+            }
+          }
+        }
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "数据月份",
+      "initialParam": "report-month"
+    },
+    {
+      "id": "only-key",
+      "type": "boolean",
+      "label": "仅看重点"
+    },
+    {
+      "id": "amount-range",
+      "type": "numberRange",
+      "label": "金额区间"
+    }
+  ],
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "region-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "分区域 GMV",
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "gmv",
+                  "format": "number-grouped"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "case": "ai-summary-unknown-source",
+  "invariant": "ai-summary-related-data",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "关联数据引用了未知数据源:nope",
+      "paths": [
+        "/sections/0/components/0/props/relatedData/kpi/source"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "relatedData": {
+                "kpi": {
+                  "source": "nope"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

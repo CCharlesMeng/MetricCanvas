@@ -4,9 +4,24 @@ import json
 from pathlib import Path
 import sys
 
+sys.dont_write_bytecode = True
+
 from mc_resources import ContentError, query_content, verify_package
-from mc_layout_compiler import compile_layout
-from mc_inspection import inspect_assembly, inspect_schema
+
+
+def compile_layout(envelope, *, root=None):
+    from mc_layout_compiler import compile_layout as compile_program
+    return compile_program(envelope, root=root)
+
+
+def inspect_assembly(document, specification, *, root=None, correlation=None):
+    from mc_inspection import inspect_assembly as inspect_program
+    return inspect_program(document, specification, root=root, correlation=correlation)
+
+
+def inspect_schema(document, *, root=None):
+    from mc_inspection import inspect_schema as inspect_program
+    return inspect_program(document, root=root)
 
 
 def upgrade_page(input_file, output_directory=None, *, root=None, target=None):
@@ -68,7 +83,7 @@ def main():
         else:
             value = json.loads(Path(args.input).read_text() if args.input else sys.stdin.read())
             operations = {'compile': lambda: compile_layout(value, root=args.root),
-                'inspect': lambda: inspect_assembly(value['document'], value['inspectionSpec'], root=args.root),
+                'inspect': lambda: inspect_assembly(value['document'], value['inspectionSpec'], root=args.root, correlation=value.get('correlation')),
                 'schema': lambda: inspect_schema(value, root=args.root),
                 'evaluate': lambda: evaluate(value, root=args.root)}
             result = operations[args.operation]()

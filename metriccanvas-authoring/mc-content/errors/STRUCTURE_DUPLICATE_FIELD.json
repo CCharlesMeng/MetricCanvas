@@ -1,6 +1,16 @@
 {
   "code": "STRUCTURE_DUPLICATE_FIELD",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "line": 79
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

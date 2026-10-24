@@ -1,6 +1,24 @@
 {
   "code": "DISCOVERY_LIMIT_INVALID",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/contracts.py",
+      "line": 38
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/contracts.py",
+      "line": 40
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/contracts.py",
+      "line": 42
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

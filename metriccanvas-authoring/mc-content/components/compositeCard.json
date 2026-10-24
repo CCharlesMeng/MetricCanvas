@@ -1,0 +1,190 @@
+{
+  "type": "compositeCard",
+  "label": "组合卡",
+  "aliases": [
+    "复合卡",
+    "组合卡片"
+  ],
+  "purpose": "把若干组件框进一张卡,并让这张卡作为一个组件进 12 列栅格横向并排",
+  "chooseWhen": [
+    "需要若干张白卡横向并排,每张卡自带卡壳、可选标题与卡内分隔",
+    "要装的这组组件本身就是一个内容分区时改用 section.container: \"card\"",
+    "卡内是多张表格互斥切换时改用 Tab 容器"
+  ],
+  "dataShape": "不绑定页面数据源；每个子组件自己声明数据槽与字段绑定",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [
+    "components[].id",
+    "components[].type",
+    "components[].layout",
+    "components[].props"
+  ],
+  "title": "optional",
+  "defaultSpan": 4,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "compositeCard.overview",
+  "reference": "references/page-metadata/components/compositeCard.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/composite-page.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "key-value-panel-six-columns",
+          "minor": 0,
+          "description": "key-value 信息面板的六列排布"
+        },
+        {
+          "id": "component-backdrop-layer",
+          "minor": 0,
+          "description": "组件 layout.layer:分区内叠放层,组件铺满分区置于其余组件之下"
+        },
+        {
+          "id": "key-value-panel-component",
+          "minor": 0,
+          "description": "key-value 信息面板组件"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "category-breakdown-component",
+          "minor": 0,
+          "description": "分类明细组件(ADR-0053)"
+        },
+        {
+          "id": "key-value-panel-single-column",
+          "minor": 0,
+          "description": "key-value 信息面板的单列排布"
+        },
+        {
+          "id": "section-column-tracks",
+          "minor": 0,
+          "description": "内容分区的受控列轨权重(ADR-0054)"
+        },
+        {
+          "id": "metric-row-context",
+          "minor": 0,
+          "description": "指标行与主值同排的短上下文"
+        },
+        {
+          "id": "table-embedded",
+          "minor": 0,
+          "description": "表格嵌入式密度与底部渐隐"
+        },
+        {
+          "id": "key-value-item-unit",
+          "minor": 0,
+          "description": "信息面板条目的展示单位"
+        },
+        {
+          "id": "widget-symbol-icons",
+          "minor": 0,
+          "description": "组合卡和信息面板的受控语义图标"
+        },
+        {
+          "id": "metric-row-link",
+          "minor": 0,
+          "description": "指标行的显式非空值导航入口"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        },
+        {
+          "id": "tab-container-analysis-stack",
+          "minor": 0,
+          "description": "Tab 容器的分析表格堆叠呈现档"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-ai-summary-regions.json",
+      "requiredVersion": "6.58",
+      "capabilities": [
+        {
+          "id": "ai-summary-container-scope",
+          "minor": 58,
+          "description": "AI 总结组合卡准入、显式所在区域与顶部结构约束"
+        },
+        {
+          "id": "ai-summary-plural-source-references",
+          "minor": 53,
+          "description": "AI 总结数据源数组采用复数 relatedDataSources"
+        },
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "report-header-export-buttons",
+          "minor": 31,
+          "description": "Report 统一导出按钮，按格式配置名称、文件名和渲染倍率"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

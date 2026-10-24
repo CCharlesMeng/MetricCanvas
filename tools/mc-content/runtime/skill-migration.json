@@ -1,0 +1,2155 @@
+{
+  "formatVersion": 1,
+  "scope": "repository Platform Skill section inventory; MC facts now maintained in tools/mc-content and product sources",
+  "entries": [
+    {
+      "source": "SKILL.md",
+      "section": "# Platform 页面创作",
+      "mcKey": "runtime/delivery",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "SKILL.md",
+      "section": "## 完成与交付",
+      "mcKey": "runtime/delivery",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "SKILL.md",
+      "section": "## 数值与单位验收",
+      "mcKey": "runtime/delivery",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/errors.md",
+      "section": "# 错误处理",
+      "mcKey": "runtime/error-repair",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/examples.md",
+      "section": "# 工具调用示例",
+      "mcKey": "runtime/tool-examples",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/execution.md",
+      "section": "# 执行检查点",
+      "mcKey": "runtime/execution",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/execution.md",
+      "section": "## 工具强制执行的边界",
+      "mcKey": "runtime/execution",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/execution.md",
+      "section": "## 部署验收",
+      "mcKey": "runtime/execution",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "section": "# dashboard 创建与修改基线",
+      "mcKey": "layout/dashboard",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "section": "## 新建默认",
+      "mcKey": "layout/dashboard",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "section": "## 既有页转换",
+      "mcKey": "layout/dashboard",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "section": "## 年季月与近一年",
+      "mcKey": "layout/dashboard",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "section": "# report 创建与修改基线",
+      "mcKey": "layout/report",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "section": "## 新建默认",
+      "mcKey": "layout/report",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "section": "## 既有页转换",
+      "mcKey": "layout/report",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/page-data-execution.md",
+      "section": "# 已有页面召回与刷新",
+      "mcKey": "runtime/page-data-execution",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/reading-design.md",
+      "section": "# 阅读层级与表达",
+      "mcKey": "runtime/plan-expression",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/reading-design.md",
+      "section": "## 根据任务选表达",
+      "mcKey": "runtime/plan-expression",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/reading-design.md",
+      "section": "## 安排层级与空间",
+      "mcKey": "runtime/plan-expression",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/reading-design.md",
+      "section": "### 模块标题与组件标题",
+      "mcKey": "runtime/plan-expression",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/reading-design.md",
+      "section": "## 面向读者的文案",
+      "mcKey": "runtime/plan-expression",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/reading-design.md",
+      "section": "## 交接前检查",
+      "mcKey": "runtime/plan-expression",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/scenarios.md",
+      "section": "# 场景参考与结构计划",
+      "mcKey": "layout/reading",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/scenarios.md",
+      "section": "## 从阅读问题开始",
+      "mcKey": "layout/reading",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/scenarios.md",
+      "section": "## 结构与取数分开",
+      "mcKey": "layout/reading",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/scenarios/business-report.md",
+      "section": "# 经营场景",
+      "mcKey": "scenario/business-report",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/scenarios/usage-report.md",
+      "section": "# 用量场景",
+      "mcKey": "scenario/usage-report",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/tools.md",
+      "section": "# 工具与部署契约",
+      "mcKey": "runtime/tool-behavior",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/tools.md",
+      "section": "## 页面身份与新鲜度",
+      "mcKey": "runtime/tool-behavior",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/tools.md",
+      "section": "## 语义元数据发现",
+      "mcKey": "runtime/tool-behavior",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "references/tools.md",
+      "section": "## 组件与结果证据",
+      "mcKey": "runtime/tool-behavior",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/create.md",
+      "section": "# 新建页面",
+      "mcKey": "runtime/plan-expression",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/data-analysis.md",
+      "section": "# 数据分析",
+      "mcKey": "protocol/discovery-query",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/edit.md",
+      "section": "# 修改页面",
+      "mcKey": "runtime/editing",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/edit.md",
+      "section": "## 进入条件与读取",
+      "mcKey": "runtime/editing",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/edit.md",
+      "section": "## 形成操作",
+      "mcKey": "runtime/editing",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/edit.md",
+      "section": "## 执行与验收",
+      "mcKey": "runtime/editing",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/edit.md",
+      "section": "## IOC公共页头（6.32）",
+      "mcKey": "runtime/editing",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "section": "# 页面参数流程",
+      "mcKey": "runtime/parameters",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "section": "## 提取模板",
+      "mcKey": "runtime/parameters",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "section": "## 召回后赋值",
+      "mcKey": "runtime/parameters",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "section": "## 日期候选与报告页头",
+      "mcKey": "runtime/parameters",
+      "skillRetains": "task selection, explanation/confirmation, adoption and final delivery"
+    }
+  ],
+  "sourceCommit": "6f471f0230b276d5d217e74f8b278c79fc8f732d",
+  "paragraphs": [
+    {
+      "source": "SKILL.md",
+      "paragraph": 1,
+      "sha256": "8b46d3419cd397caaae648d7ec49318a5a2f5ccfaae695f1e03ead5ea5054a40",
+      "excerpt": "---\nname: metriccanvas-platform-authoring\ndescription: 在 MetricCanvas Platform 新建或修改资产页面，或回答当前组件配置问题",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 2,
+      "sha256": "7c573ac263ad3abb6da9c64fe111f7edac4ced817aebb32e74ab1c36474eb39a",
+      "excerpt": "# Platform 页面创作",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 3,
+      "sha256": "8b8ef5976c876d5a85b8ff9cb264b338c26c43a319b63ef16671a1a2d358a6da",
+      "excerpt": "页面协议、部署接口版本和能力事实以本轮 MC 内容包及实际工具提供的信息为准；内容包、页面 Schema 与模板分别记录版本。使用本轮可信 contextRef；身份、页、修订、计划确认及证据访问权限",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 4,
+      "sha256": "f255a14aee9b8296df1bdee36ebe8a8a7c1414478f14fc6c522943fc17fea23d",
+      "excerpt": "先读[工具契约](references/tools.md)，按任务加载流程：",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 5,
+      "sha256": "9620153fc4b8efead7907abd638156f639299843819cb19ac2b7c9393d77408a",
+      "excerpt": "- 明确新建页面：[创建](workflows/create.md)。\n- 修改当前页，包括新增图表：[修改](workflows/edit.md)。\n- 配置问答：read_page_context",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 6,
+      "sha256": "4ef835c58bda836979349d334479ea4c90fb27a60b47cf67bf563d1f68cb3901",
+      "excerpt": "新增取数或改变口径时加载[数据分析](workflows/data-analysis.md)。样式、标题、列宽和配置问答不调用发现或查询。筛选、排序、翻页由渲染期执行已有查询；明确要求修改默认配置或重",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 7,
+      "sha256": "d0cf2db52831ef55ad1767c99698933b613b1bd7908aa39d18c4657d5cfb038d",
+      "excerpt": "read_page_context 返回 pageId、当前 workVersion 与 Java 核对过的 ref；修改必须传入相同 page_id 与 expected_version。Java ",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 8,
+      "sha256": "70d33a15ec636033d94a8a25bc5e1f838acf4363112caa3434076ad5103524f5",
+      "excerpt": "执行前读[执行检查点](references/execution.md)：每一步必须有工具回执，流程文字本身不证明执行成功。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 9,
+      "sha256": "c0e90ba7bd03bbd2290237a414fab3707c6a0f396005cd4e672154430186d0a1",
+      "excerpt": "常规图表创作使用已有封闭属性。仅用户明确要求 ECharts 定制，或现有属性不足且用户已接受时，才使用隐含 `props.echartsOption`；普通修改保留已有高级配置，跨类型切换按协议清除",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 10,
+      "sha256": "4a672ff5f631b4d845bd7546c78186516f33ad8c86cf999d9370363f716b0862",
+      "excerpt": "## 完成与交付",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 11,
+      "sha256": "a57ca262e2cb801cf4defe63e4eb796e72d5741fbf1972748e453b045f2fdb75",
+      "excerpt": "compose_page/edit_page 内部保存合法变化，包括 partial。逐项说明 applied/failed/skipped；核心证据不足时保留未完成状态，不声称回答完整。全失败、无变",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 12,
+      "sha256": "273854d59056183599f4ab05847810fc7984ad8954bced53ff252842f1d396db",
+      "excerpt": "saveStatus=saved 且有可核验 ref/draftId 才说已保存。随后调用 page_metadata_emit_preview，传工具返回的 artifactRef；部署 Adapt",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 13,
+      "sha256": "ffa36b207afa92764070b7a248758737860f15515dc52aa3d74d178e0a127951",
+      "excerpt": "```text\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n```",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 14,
+      "sha256": "3241bb3421102df6f37f312fa16ef525cf67ab38fca1678b3d73d0207e4a4019",
+      "excerpt": "模型不把 JSON 填入标记。只有保存成功但预览失败时，输出响应标记及准确状态，暂不输出预览标记。计划审核的“确认/可以”仅确认分析计划；明确发布意图继续既有部署的维度实例选择与发布路径，本工具集不发",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 15,
+      "sha256": "c31b2e7d06e2a2b1909603b257cdfaae5550a334612f659be653d5eaf68716fe",
+      "excerpt": "完整页面创建或重新组织业务章节时先读[阅读层级与表达](references/reading-design.md)；按需读[例子](references/examples.md)、[错误](refer",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 16,
+      "sha256": "bbfa524481c1e4f490811ae866c1ea11e3cae8d07747a5e86d074aaf94d4387b",
+      "excerpt": "## 数值与单位验收",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 17,
+      "sha256": "e49a178c137f521a87a449b906084cd4cc1f679826019e9028c0a772c2babb02",
+      "excerpt": "取得查询证据后核对每个度量字段的业务单位与 `defaultFormat`。确定性工具根据完整执行结果选择统一的固定格式：同一字段及同一查询中相同业务单位的度量共用原单位、万或亿，图表数值轴、柱条标签",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 18,
+      "sha256": "4bd9f69467701823838b7ffcc911240d0b2b86b3d2262b5e025d4a8a8927cb77",
+      "excerpt": "创建后以工具返回的字段证据核对呈现策略；业务单位未知、或用户明确要求的缩放未兑现时说明具体字段和缺口，不能把结构校验通过说成数值呈现验收通过。保持查询与原始数值，由格式负责显示缩放。",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 19,
+      "sha256": "ab65bce83d4f9e8c86b6fbe0a8450d4cc06350ed6b019ff22a6849e41a7885a2",
+      "excerpt": "跨页传值采用显式row/param/filter映射；强类型链路声明validateTargetInputs:true并由集成应用提供目标输入投影。先读交互与导航协议，确认目标必需参数及粒度。不得把季",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "SKILL.md",
+      "paragraph": 20,
+      "sha256": "6d426c4c2b46e061d15f7488f83985cbfd0b523f5a89f31a4326f9f8dff1ad88",
+      "excerpt": "强类型跨页链路的来源及接收页面显式声明strictURLInputs:true；不能根据规范化后的schemaVersion推断是否开启。受控编辑用set_url_input_validation（e",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/delivery"
+      ],
+      "skillRetains": "SKILL.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 1,
+      "sha256": "fecbdc5616449fe463d118b0138c2b7984ec4f78cc466e184b4aa46991da80ee",
+      "excerpt": "# 错误处理",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 2,
+      "sha256": "12b04521e0275733ede4ec9582485fb68e56c1bd3ba14b6d3f6c36e09b053d56",
+      "excerpt": "MC 内容与布局能力的诊断说明；下面的修复方向供调用方决策，不代表保存、发布或整包采用已经完成。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 3,
+      "sha256": "6e5bf34d2f3a3de3b08b5caa52ea5ee2a8cc3908221fdf6f95e3acd530a52c33",
+      "excerpt": "- DECLARED_REQUIREMENT_GAP / MANDATORY_COMPONENT_DEGRADED：声明的必须组件未满足或被替换；对照 expected/actual 与 origin",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/error-repair"
+      ],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 4,
+      "sha256": "126d39280673b2f2a4654869e0ccf524f49a37fd0a4748f9848e83b8e95af818",
+      "excerpt": "- ANALYSIS_PLAN_NOT_CONFIRMED：回到计划审核，由程序取得用户确认；不重复查询。\n- MODEL_EVIDENCE_UNAVAILABLE：模型证据通道未授权，不退回读取完整",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/error-repair"
+      ],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 5,
+      "sha256": "282f8ef465b5fac091a8ed818dc05d509705b90f4b29c2559e27a64745654ee6",
+      "excerpt": "可依据具体反馈局部修正；相同无进展错误暂停该分支，其他合法成功部分继续保存。无变化不应报告生成了新修订。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 6,
+      "sha256": "d580f01759ee2e7b1c4838c7d20f378ef2ae4bee36f209745100be1e35ffba0c",
+      "excerpt": "- CURRENT_TURN_PAGE_MISMATCH：page_id 与可信轮次不符，停止；不得修改 context_ref 来扩大范围。\n- CURRENT_PAGE_UNAVAILABLE：J",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/error-repair"
+      ],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 7,
+      "sha256": "c140bb480aad4fdb52682486342d9e7bd9f483b133bdcebb95ec9e1fcf15c479",
+      "excerpt": "- DATA_CONTEXT_AUTH_REQUIRED / DATA_CONTEXT_FORBIDDEN / DATA_CONTEXT_SCOPE_MISMATCH：停止发现，交集成程序检查本轮身份",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/error-repair"
+      ],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/errors.md",
+      "paragraph": 8,
+      "sha256": "3440e580faa549670a8957bf13b2b09da596e9db4a418f1bdd8d6e8251ee16a3",
+      "excerpt": "- DATA_CONTEXT_NAME_NOT_FOUND / DIMENSION_NOT_IN_DATA_CONTEXT / METRIC_NOT_IN_DATA_CONTEXT / TIME_GR",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/errors.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 1,
+      "sha256": "7954119cfea06360bf1d4ea27b7f6a6ebb7a1fb620535f15e44b26f15f0ea8be",
+      "excerpt": "# 工具调用示例",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 2,
+      "sha256": "9d821675f92f5e1a3d6ad9fde2d3226e609b0383357ebb9d5b334bc415aaadd6",
+      "excerpt": "context_ref、resultRef 和 artifactRef 均来自当前可信上下文/工具；示例引用为占位值，不可直接复用。",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-examples"
+      ],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 3,
+      "sha256": "118094b0841021dec4c365f4bb8168b4718ec0c7d854a08aa27848842104e83e",
+      "excerpt": "纯文本创建不取数：",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 4,
+      "sha256": "602b72c657814d337cefd2ff2698c46c0fc3e650b09aec04807dda141a2df874",
+      "excerpt": "```json\n{\"tool\":\"compose_page\",\"arguments\":{\"context_ref\":\"current-context\",\"expected_version\":0,\"re",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-examples"
+      ],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 5,
+      "sha256": "d8ae2620b3935ec2a81f39b8122a9b620c6ee83d4f2eecfc81532872de086cd9",
+      "excerpt": "读取已取得的有界证据，不重复查询：",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 6,
+      "sha256": "403e84f604924be9198c857e9191fc9fe0c51b919dd69eba1d80837928ca5d48",
+      "excerpt": "```json\n{\"tool\":\"query_data\",\"arguments\":{\"context_ref\":\"current-context\",\"result_ref\":\"result-from-",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-examples"
+      ],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 7,
+      "sha256": "ce7e940efc0d21d7d39587363bd9f76dd52ba6bbb3ae3d7d0d6677b26144b73d",
+      "excerpt": "纯标题修改不发现、不取数；版本先从 read_page_context 读取：",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 8,
+      "sha256": "cadc3d5d468b2917a6f200256fb077b61ff99c4765d420ca37e007364d3e55db",
+      "excerpt": "```json\n{\"tool\":\"edit_page\",\"arguments\":{\"context_ref\":\"current-context\",\"page_id\":\"current-page\",\"e",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-examples"
+      ],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 9,
+      "sha256": "e2399a83982f5d3078b1046401d8418b570a23388113a9cb7c41f1a9ca6cb26b",
+      "excerpt": "保存成功后只准备匹配产物的预览：",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 10,
+      "sha256": "a4e9d86b2689885f4d628fdaccca737fb1ad8d6a1a2c6de0629e8a8a55a722bf",
+      "excerpt": "```json\n{\"tool\":\"page_metadata_emit_preview\",\"arguments\":{\"context_ref\":\"current-context\",\"artifact_",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-examples"
+      ],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/examples.md",
+      "paragraph": 11,
+      "sha256": "15d89b5e485ae056cc3958255e77adc7ec6c080b8210524b28282ad5709b7675",
+      "excerpt": "首批足够就 compose；需要补查时 query_data(request) 的 reason 说明缺口和改变的条件。若辅助查询失败，结构中保留缺失说明并报告 partial；核心证据不足不生成核心",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/examples.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 1,
+      "sha256": "04806c6c2a87fa9c2df5174914f1cc99bce169acf4d720d1d7c5b73d9967c11d",
+      "excerpt": "# 执行检查点",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 2,
+      "sha256": "03a5b8937bbabbdcb048f9a2ae366d31113c71c8e15c2e166db58a5a1c4071e3",
+      "excerpt": "Workflow 指导模型选择与组织任务；权限、引用、版本、页面校验和保存必须由程序执行。步骤没有成功回执就不能推导下一步已完成。以下表格同时是部署验收清单。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 3,
+      "sha256": "d3732a787fde633be52c7acd902710792a5a6b7c996a63c4407829bcb323047e",
+      "excerpt": "| 检查点 | 必要输入 | 可继续的证据 | 失败处理 |\n|---|---|---|---|\n| 本轮上下文 | 集成程序提供 context_ref、当前身份和完整创作基线；新建为空基线 | r",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/execution"
+      ],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 4,
+      "sha256": "1484050c91688d002b0f86f0211eea90bfa1cb5c3708123c119564e5efbe8128",
+      "excerpt": "## 工具强制执行的边界",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 5,
+      "sha256": "e52b3daaa20f765011b728f55f0df671456b3d36600f88c87873be14aaf868f1",
+      "excerpt": "将基础设施错误与用户计划状态分开处理：`CURRENT_TURN_UNAVAILABLE`、`WORK_STORE_UNAVAILABLE`、`ANALYSIS_AUTHORIZATION_UNAVA",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 6,
+      "sha256": "efe8baac09898535232d2732381e2b25b4b70befcbfc5f0dd404392b1c612677",
+      "excerpt": "保存 `unknown/pending/rejected` 时保留冻结提交和 operationId，停止自动重发并交程序核对。保存已成功而交接失败时只用相同 artifactRef 重试交接；交接 ",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/execution"
+      ],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 7,
+      "sha256": "f8b7fe8d3ff39f0b8d537054b0e14189e94f9bac3f41a68fcded4de522d5e83b",
+      "excerpt": "暂不设置默认创作轮次的调用数、查询轮数、修改次数、累计时长与累计证据字节预算；语义发现的模型调用次数也不设默认上限。普通查询的模型证据保留全部返回行，不默认截取前 20 行或按字节裁剪。只有用户明确要",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/execution"
+      ],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 8,
+      "sha256": "9c0114fc2b4c1b42043b19dcedebe23854deb3f9507f454004c07c46a40e7136",
+      "excerpt": "合法的独立成功操作可组成 partial 并保存；失败操作回滚，依赖操作 skipped。全失败、无变化或非法页面不保存。下一次修复必须读新 workVersion，按明确错误做有依据的定向修复。未知",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/execution"
+      ],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 9,
+      "sha256": "72743f7661e6dcddd7e804a7b02121f66c14cb31eb64b0f21857742141089881",
+      "excerpt": "程序可以验证字段、单位、组件形状和页面协议，不能仅凭 Schema 证明业务叙述与布局质量。模型必须在提交前检查阅读顺序、指标关系、期间和局限；实际页面呈现需要集成应用的渲染验收。没有渲染证据时如实说",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/execution"
+      ],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 10,
+      "sha256": "c358842644a8cc9b277367ab6606467735b5dc007bf4dce4c9d7291a3c6c4467",
+      "excerpt": "## 部署验收",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 11,
+      "sha256": "fb662a9cabe52df4a6f74ef17ef257e76ca4cca271009e69676875f7019b2a5e",
+      "excerpt": "本发布要求上下文提供方、持久化工作存储、计划授权、数据发现/DQE、Java 当前读取与条件保存、Relay 预览适配器全部接通。仅启动 MCP 或 list_tools 成功不算功能就绪。至少实际跑",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/execution.md",
+      "paragraph": 12,
+      "sha256": "b7804fda6d92f14203c371f3856bb95bf7dca17f9c87311c9f45cf4cfaed0109",
+      "excerpt": "Skill 内只引用可随包读取的执行规则。维护者查看 Bundle 的 tool/README.md，按调用链定位实现与测试；生产接通情况以集成回执为准，本地替身通过不能替代它。\n",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 1,
+      "sha256": "0faf467aa1d9555f58dd45bbfdb3f0b1c59488fd4ac22b00f389aef42c1c3c47",
+      "excerpt": "# dashboard 创建与修改基线",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 2,
+      "sha256": "88a98ad636f536c0687ffc1c4ccdba88ea1dea95769c50f825a1a1f67ba91ede",
+      "excerpt": "面向持续监控、指标概览与多模块浏览。用户明确选择优先；用途不明确先澄清。创建前说明采用 dashboard，并显式传 layout。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 3,
+      "sha256": "94fdf940ebbb68bdbc94266ed788168cf31f015fec315e78608ec729f1f0459b",
+      "excerpt": "## 新建默认",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 4,
+      "sha256": "a9a21f2adcf5df57cc87d570ac53181150d3c4c7985f72a516b83b7b95035b8f",
+      "excerpt": "自动 reportHeader 使用 plain 页头分区；内容模块采用缺省分区的组件卡面，模块标题属于 props.title。生成的分组标题需要独立表达时，用显式 card 共卡分区保留 sect",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 5,
+      "sha256": "3f30c3da57e7a3f9d5d472aa3e45e268a8e1b4bedbb85818f823767491516667",
+      "excerpt": "占满集成应用提供的宽度，不固定为某个屏幕像素值。布局仍使用共同12轨道/span，组件卡面与间距由统一运行时决定；当前容器760px断点转单列。columnTracks、connectPrevious",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 6,
+      "sha256": "b02cfc03db013981b6d02c395eb3472a9c449ca0e8784c5db9497f0cebfc8f70",
+      "excerpt": "## 既有页转换",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 7,
+      "sha256": "693c49b5d670efcea1d93eb63b116e8328449d7f2e0192b5d08f2c3466f94a84",
+      "excerpt": "显式 set_page_layout 只切根形态并说明可用宽度、工具栏及响应式影响。保留已有 section.title、props.title、容器与组件布局，不能用新建默认替换旧页。dashboa",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/dashboard"
+      ],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 8,
+      "sha256": "af05aa1e09d7d72d66418fc081f2efaad79163700e8eda806c966c485645ec69",
+      "excerpt": "默认不是 dashboard=plain 的限制。出现真实非法候选时整项回滚，先说明错误路径及需要决定的调整；用户未要求的标题/绑定/查询/手工设置保持原文。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 9,
+      "sha256": "4d680cb96e090aa566159e0e3703904a64806d134c54494c24f7001512b5862d",
+      "excerpt": "## 年季月与近一年",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/dashboard.md",
+      "paragraph": 10,
+      "sha256": "52ed240108b83019240bbd0838dc3aaba923ef51d059871b24b8999dfcf151fc",
+      "excerpt": "需要组合期间筛选时，复用 dateFilters／add_date_filter 的 timeRange 声明，增加 display=period。默认使用 {mode:\"month\"}，季度值使用 ",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/dashboard"
+      ],
+      "skillRetains": "references/layouts/dashboard.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 1,
+      "sha256": "e60f5d4db167c2f9a20ec9742a9889dfad3262fec0d2d26b655dc8686f0377f7",
+      "excerpt": "# report 创建与修改基线",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 2,
+      "sha256": "0783b61dfea3499f4f1bf1efe9a5697e1821d954d9078d114390af6dd06e2938",
+      "excerpt": "面向阅读、解释与分析报告。用户明确选择优先；用途不明确先澄清。创建前说明采用 report，并显式传 layout。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 3,
+      "sha256": "94fdf940ebbb68bdbc94266ed788168cf31f015fec315e78608ec729f1f0459b",
+      "excerpt": "## 新建默认",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 4,
+      "sha256": "8003ee0e227dc1fb8ac6324e384dd9ad7910229a09876f3b4795c0cc3698576f",
+      "excerpt": "完整报告以[场景与结构](../scenarios.md)组织业务章节：页头在 plain 分区，章节容器由计划选择，默认 panel。同章可组合不同口径内容，用可见说明保留期间、粒度和筛选。comp",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 5,
+      "sha256": "d7dd15b42515b9f11d98bbe2be5106f8d90ec21e2806779ad110cf9aa2b24924",
+      "excerpt": "采用统一运行时的定宽居中（当前最大75rem），较窄集成应用内收缩。组件占位使用既有12轨道/span；数据构造器已有比例装配，不把像素尺寸写入文档。响应式由集成应用容器宽度驱动，当前760px断点转",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 6,
+      "sha256": "b02cfc03db013981b6d02c395eb3472a9c449ca0e8784c5db9497f0cebfc8f70",
+      "excerpt": "## 既有页转换",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 7,
+      "sha256": "6ee591f3a8447b9528e51703429e8434e0c03771902c6125771dcebb3582f1ee",
+      "excerpt": "显式 set_page_layout 只切根形态，保留标题归属、容器、span、数据源、筛选、参数与手工属性，并返回呈现影响。看板工具栏在 report 不呈现，其声明保留；需要其中入口的用户应获知该",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/report"
+      ],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/layouts/report.md",
+      "paragraph": 8,
+      "sha256": "401153d38d1306ce327e2b7aeed5c59f6ec8a0319ef38efedbf204d2a4b45398",
+      "excerpt": "默认不是硬约束：不将已有 plain/card 改成 panel，不搬标题，不为适配新宽度删组件。整页校验失败时回滚；仅调整形态不能解决的真实冲突需明确目标设置后用受控操作处理。\n",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/layouts/report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/page-data-execution.md",
+      "paragraph": 1,
+      "sha256": "31d0f6a237ab084ec7e8e50519565f1ad9860c75af91558e928b77373aa4b94d",
+      "excerpt": "# 已有页面召回与刷新",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/page-data-execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/page-data-execution.md",
+      "paragraph": 2,
+      "sha256": "151e99e849f8d264d57abeaaa2913d34beda7e2cbe8f230637167d50d031a524",
+      "excerpt": "已有完整页面仅更换实际参数或重新取数时，由集成程序调用共享页面数据执行入口。保持已有查询定义、查询结果绑定、字段契约、compute和组件；新的业务口径仍走数据分析流程。",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/page-data-execution"
+      ],
+      "skillRetains": "references/page-data-execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/page-data-execution.md",
+      "paragraph": 3,
+      "sha256": "d2ded4f8d9d93e8ca02ee4e5dbda75d42cc8f5ef3ed018321396a2e715c0ad00",
+      "excerpt": "1. 集成程序读取准确的完整页面文档。填参使用程序参数能力；实际查询条件改变时清除受影响源及其下游旧initial，同条件刷新保留。\n2. 集成程序通过已部署的Node入口执行完整metadata，绑",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/page-data-execution"
+      ],
+      "skillRetains": "references/page-data-execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/page-data-execution.md",
+      "paragraph": 4,
+      "sha256": "e2461ad0544800ade173bca6f5a390803f215fc112181ffc6f7740ac8a53b31e",
+      "excerpt": "该入口消费已有查询，不承担数据发现、查询生成、业务分析或保存。计算声明由引擎执行；调用结果不构成保存前计算验真。query详情继续点击后取数。部署未接入时报告已有页面刷新能力缺失，不把query_da",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/page-data-execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/page-data-execution.md",
+      "paragraph": 5,
+      "sha256": "1c1fc2acdb06662fe5547d7fedc9fd17213b3cbf306a06fcce8d3ac8b2332eb3",
+      "excerpt": "Node入口是集成程序能力，不是本Skill新增的MCP工具。沿用既有工具白名单；模型只消费集成程序提供的状态或摘要，完整metadata保持在程序通道。Relay部署方负责安装执行包和注入可信配置。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/page-data-execution.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 1,
+      "sha256": "dfb16b72bcd3249906ce999be5a80e99d3749d9f561507fd6d4ab4cc874ab3c7",
+      "excerpt": "# 阅读层级与表达",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 2,
+      "sha256": "39908175921bf6c06f3a5452eb2f238d6291bb9af898b0c93fd0e2142a304645",
+      "excerpt": "创建完整页面或重新组织信息时读取；只改标题、列宽时无需加载。先决定读者要完成什么，再选择表达和占位；无需额外模型往返或向用户展示内部推演。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 3,
+      "sha256": "ab6ea8faf95edd75d320a17bcde4650e82549ba8ed6e47fd9f99b6f7b340662a",
+      "excerpt": "## 根据任务选表达",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 4,
+      "sha256": "d90b495e736ce4355d8a7f4c6ee1f102738294c4db8f7571c40fcc3dec398e5c",
+      "excerpt": "| 读者任务 | 优先考虑 | 必要条件与取舍 |\n| --- | --- | --- |\n| 快速了解整体与变化 | 指标摘要 | 主辅关系须有可信证据；整体和子对象可有不同宽度/摘要形态 |\n| ",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/plan-expression"
+      ],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 5,
+      "sha256": "d6609a4c3542c4a9de3b2bff65574311f8c5bacf659630ca99b3ff166cd29b2a",
+      "excerpt": "## 安排层级与空间",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 6,
+      "sha256": "38f499ad6ba4c8e17647bdab9d1533c62cd813e013b0d8697ea00b27a9a6d1b7",
+      "excerpt": "<a id=\"module-titles\"></a>",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 7,
+      "sha256": "8a50a49fe1a0e1d2f819d651973847ef2bfc370442e941e7eb84f49b08ac484d",
+      "excerpt": "### 模块标题与组件标题",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 8,
+      "sha256": "043f46dc9e48b9473b6ee75b35d42c0dfd0d8615d90f5d59417ff0b25bda4238",
+      "excerpt": "业务模块的可见标题写在 `plan.sections[].title`，概括整组回答的问题，例如“流水总览”“目标与推演”；块的 `title` 标识具体对象或图表，例如“整体”“Core”“云通信”",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 9,
+      "sha256": "3f3a1ed34e178d05713fed61a8aa464c9cbf2deb5419daba436b7ac6d36d9a52",
+      "excerpt": "多组件业务模块默认保留非空分区标题，包括多张指标卡、图表与核对表的组合。去重只针对单组件模块且组件标题与模块标题完全同义时，才考虑省略分区标题；页头、纯装饰分区和用户明确要求无标题的模块例外。不能因为",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 10,
+      "sha256": "70fd6638b5861ff9807c98ec0a13831ad5cc19dad9a8c3036a285154636ca49b",
+      "excerpt": "整体与子对象不是必须同等强调；根据任务确定哪部分先读。并排内容应便于同层比较，宽表和长时间序列通常需要通栏。分区容器表达共同归属，也承载内容表面；report 的具体选型遵循布局参考，不能因为组件有标",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 11,
+      "sha256": "7ccee07c52b097733122d2a2cb3e210d92680a8f028b6aa707899b1b5365960d",
+      "excerpt": "重点对象只需一段短观察时，把它放在相关分析模块的图表或明细附近，并按阅读顺序决定前后；独立章节要有独立业务问题和足够内容。编辑既有页时，用户指出某章过短，应优先把其中内容并入相关章节，保留原有事实范围",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 12,
+      "sha256": "68bdde5bf6654afc1dd36b30d4d5e00b76b7e36fa696a66c6cc8cb786e9da5aa",
+      "excerpt": "一源可多用，但每次表达要有独立用途：图负责比较、表负责精确核对可以共存。字段重叠提示不授权程序删组件。没有信息增量的块由模型在计划中省略，而不是生成后被隐式清理。",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/plan-expression"
+      ],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 13,
+      "sha256": "21c55a9904763082f5aeb13743791423580c5c1188be3194bf20a94cedac340c",
+      "excerpt": "## 面向读者的文案",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 14,
+      "sha256": "e5a3f9d65676f30abde572d94ab0a11c8b94e20de732399014b023ec4facabea",
+      "excerpt": "正文只呈现业务信息。查询粒度、可信关系校验、工具能力以及“本页不计算/不支持什么”属于执行过程，留在交接说明或程序审计，不逐章生成“口径说明”。结果引用装配会由程序生成口径说明；模型无需重复生成同一说",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 15,
+      "sha256": "f5e3e173d42069fadcda5cf1bd95e75d73417ebc7fcb328ad22ff8da1484fe42",
+      "excerpt": "确实影响理解的边界仍须可见，但用简短的业务语言就近表达：例如标题中的“年度推演”、名单副标题“仅含入选客户”、页头报告月份、趋势标题或横轴的期间。同一事实只出现一次；查询期间不冒充指标统计期间。用户明",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 16,
+      "sha256": "4560368b956f3f0e96f060166283d5d085743748b1a54539007afa287016c7a6",
+      "excerpt": "用户明确删去口径说明时，删除对应正文，不换一个标题再次添加。若报告还要求标明样例或非生产来源，用页头等已有可见位置承载最短标识。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 17,
+      "sha256": "b88831caa550685b71e84404d9b5baeee4b566a21c2a7dec780c5f38d2ad3e41",
+      "excerpt": "## 交接前检查",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 18,
+      "sha256": "f919285e0a5bc935627596a21b04a7001ed87cf24e5e8549e3f9c28174436d76",
+      "excerpt": "确认每个业务问题有对应表达或明确缺口；多组件业务模块已声明可见分区标题；显式组件/宽度受到支持；正文没有从元数据推断数值结论；查询期间与指标期间没有混为一谈。检查有理由保留的重复与无意义重复，区分结构",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/reading-design.md",
+      "paragraph": 19,
+      "sha256": "1350d7a1944685926af14af0d349b2ea6dc39337594d1ce7af29ba0af9801bd5",
+      "excerpt": "参考组合可以调整、裁剪；评价的是阅读任务是否完成，不是卡数、图数或固定栅格形状。\n",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/reading-design.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 1,
+      "sha256": "01ad74dec95654fb0d94b1e09c8ed24f9eb20a7be25dbdc9a21add49dead190c",
+      "excerpt": "# 场景参考与结构计划",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 2,
+      "sha256": "b1c90ebc627fc5d9c4cf627c65f53a78539b6d12edccc3ada27a2a8075237fe3",
+      "excerpt": "完整报告取得证据后使用 compose_page(context_ref, request, expected_version)。以工具实际 Schema 为准。",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/reading"
+      ],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 3,
+      "sha256": "4345ef8bb211817c6482f04a30b3bd17d64d07a65033f28575c26eb6942ab69e",
+      "excerpt": "## 从阅读问题开始",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 4,
+      "sha256": "9782923e10152961ad816e59ea208393a5859cf6ee2ac0976e6b19de6f946720",
+      "excerpt": "经营分析报告：总览 → 业务板块 → 重点对象 → 明细。总览可以同章放本月/累计卡片和月度趋势；业务板块可重复，客户/赛道等视角只在数据与需求成立时出现。不要按分组维度或时间差异机械拆章节。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 5,
+      "sha256": "f26765dd4c9bd3aeec8463106e64ad896d0ef1068bbabf2bedad006eeb970a23",
+      "excerpt": "资源用量报告：概况与趋势 → 区域/模型分布 → 重点对象。不是每份报告都需要所有视角；读者关心某个对象时可将其提前。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 6,
+      "sha256": "1e682cbefc1f06718cfae00a910df6b3501e92e6105b48bb00c15aee2347af4a",
+      "excerpt": "概况章优先用少量关键指标卡建立主次，再接通栏趋势；完整明细放在后面供核对。若来源包含多个对象，已发现的总量/指定对象可由唯一行选择支撑卡片，其他对象留在排名或明细；没有可证明的唯一对象时才退回表格。不",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 7,
+      "sha256": "e23889e1b55f8c912d53bf8db81b441201bb38b4275218575649ca3c5a0de17c",
+      "excerpt": "组合示意（语义占位，字段和对象值须先发现，不直接照抄）：概况章 = 当前值卡（third）+ 累计值卡（third）+ 已有比率卡（third）+ 月度趋势（full）+ 必要时的简短边界提示。用量报",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/reading"
+      ],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 8,
+      "sha256": "2bc4ec18601d51859aff4aa72f46cff7b36a94f722db4bdd945f87a24eaf6916",
+      "excerpt": "用户明确结构优先。参考提供阅读路径，允许裁剪、重复、重排；没有合适组合时用 custom，在支持面内受控组合。缺指标/维度时说明缺口，场景参考不提供业务事实。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 9,
+      "sha256": "590d4c444e073cf604c51a06d4e05a29f10df319e6a18e021b9f780866d5fb47",
+      "excerpt": "重点对象若只有一段短观察，就放在相关分析章节的图表和明细旁；只有它独立回答一个业务问题且内容足以支撑章节，才单列章节。同一事实只呈现一次，章节标题与单个文字块标题同义时省略后者。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 10,
+      "sha256": "d5e9b08823f9e6295a738ee8b37a89f4afdc358ee6ec9953f6128f456384a55d",
+      "excerpt": "## 结构与取数分开",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 11,
+      "sha256": "93ad639798113713049180ccbf2a17f2b1f5658dbcfade9ad156037f8efaf285",
+      "excerpt": "request 包含 title、layout、sources、sections。sources 把稳定页面数据源 ID 映射到 query_data 返回的 resultRef；一个源可支持多个内容",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/reading"
+      ],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 12,
+      "sha256": "5e2e8685a390b574c5ee55859ac23e1513d3e0a59ff9d29dc6877f401eee41d8",
+      "excerpt": "页面、源、章节和组件 id 使用小写字母、数字和连字符；页头章 header 与组件 page-header 由程序保留。\nsection 包含稳定 id、业务 title、pattern、block",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 13,
+      "sha256": "4a2d62a71fa42e077f985a8520c1821629edfa00d2bf826c7a078a93df61c8bb",
+      "excerpt": "数据块：id、type=\"data\"、source（dataSourceId）、component（实际枚举）、fields（已发现字段名或可信字段 ID）、title；可选 width、intent",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/reading"
+      ],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 14,
+      "sha256": "295f64de22f3136237e9d27eab55fd963a8349b3398f52af820b452c37bcb605",
+      "excerpt": "金额与百分比拆图或用独立格式表格；同章展示不代表可以合计。业务比率与占比应来自已验证指标或受控查询结果；只有计数行时保留计数，不在正文里自行计算百分比。同单位指标在实际行数据中相差一个数量级以上时，也",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/reading"
+      ],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 15,
+      "sha256": "28f4c1a855e29cd28f8130cbe0df34e25d64b7ae47c0f1df1bdf20999c7a5c15",
+      "excerpt": "```json\n{\"title\":\"操作指引\",\"sources\":{},\"sections\":[{\"id\":\"instructions\",\"title\":\"使用说明\",\"pattern\":\"expl",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 16,
+      "sha256": "4e6aa4425bbb9cd22e6355bb5da9bacfe18a1b949e98bf319d615dcbb2d24e04",
+      "excerpt": "字段无法解析、单轴混合单位、截断数据做占比、组件形状不适用会返回精确问题。修正真实错误，不通过反复换词检索参考文档；read_page_context 只读页面配置。",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/reading"
+      ],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios.md",
+      "paragraph": 17,
+      "sha256": "18e124e22743704aa3cbed5287473d1d4dbc8740c2e3770aea7ad0431f0981c0",
+      "excerpt": "已有页按当前结构局部修改。新增章节用 add_section（含至少一个初始 blocks），set_section 改标题/容器，move_section 改顺序；add_source_compon",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "layout/reading"
+      ],
+      "skillRetains": "references/scenarios.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/business-report.md",
+      "paragraph": 1,
+      "sha256": "a29fa3e77e7e90171274f7a26a25b6fea23957b01de120b32baf44e437531415",
+      "excerpt": "# 经营场景",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios/business-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/business-report.md",
+      "paragraph": 2,
+      "sha256": "e8d3c28068a33a214b5073af39ed8f8a764e3b681a4ecd0a149c5edb0f63ce78",
+      "excerpt": "先识别读者关注的业务对象及问题。整体、Core、云通信是对象层次的示意；具体对象来自已发现维度取值，不将示例名字写进别的业务查询。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios/business-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/business-report.md",
+      "paragraph": 3,
+      "sha256": "1475f48e18e2031c6f74905d822c622484a935b8883a054dda01b9e84b660045",
+      "excerpt": "若同对象有年累计、本月及相关变化，可在同卡分成两行，年累计附有证据的同比、本月附有证据的环比。变化值帮助理解主值，不应机械拆成与主值同等强调的裸数字卡。对象之间并排比较，每卡保留自己的表面与对象标题。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios/business-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/business-report.md",
+      "paragraph": 4,
+      "sha256": "450209e991fd6b74550b52df4e74ef78170b03d9224d00c72a8a29c6d1ed2ded",
+      "excerpt": "随后按需求选择时间变化、重点业务或核对内容。趋势已经说明的问题不靠一个笼统“结构分析”章再说一次。分布要有可信分母及完整数据；核对表只有读者需要精确对照时保留，并标明 reconciliation 用",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "scenario/business-report"
+      ],
+      "skillRetains": "references/scenarios/business-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/business-report.md",
+      "paragraph": 5,
+      "sha256": "e365ad3724f0c4d067ffe7427106a1231014022d3ff9d429d1667a76d3614955",
+      "excerpt": "经营阅读的可选组合：整体摘要先行，子对象紧凑比较，年度目标与年度推演用同量纲对比图，待关注客户用精简名单。只有相应数据与阅读任务都存在时采用；无目标或客户数据时不补造对应章节。查询字段可多于显示字段；",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "scenario/business-report"
+      ],
+      "skillRetains": "references/scenarios/business-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/usage-report.md",
+      "paragraph": 1,
+      "sha256": "0cfa75629853d7b4ea814b3534fd972b6723e6f6166c7c3432d924bab62b9e67",
+      "excerpt": "# 用量场景",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios/usage-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/usage-report.md",
+      "paragraph": 2,
+      "sha256": "d74cd7a3b79a0c59ba64e8d59371fea3ff3e0146104f62c35b313a5900dfa597",
+      "excerpt": "从使用者关注的资源或对象开始：当前用量及有依据的变化可以同卡，再选择能解释容量、区域或模型使用差异的视角。只有被发现的指标、对象和维度可进入计划。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/scenarios/usage-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/scenarios/usage-report.md",
+      "paragraph": 3,
+      "sha256": "98b9bd7a6f6e7987f7bb8d76ce86c75a96f642f034c03877dafc24213f443619",
+      "excerpt": "按对象组合主辅值；没有受信变化关系时保留单值概况或独立指标。趋势、区域分布与明细是可选表达，不是必备章节。相同结果的趋势图和核对表可共存，后者须服务精确核对；不因存在表格能力就机械添加整章。\n",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "scenario/usage-report"
+      ],
+      "skillRetains": "references/scenarios/usage-report.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 1,
+      "sha256": "45a787dd9fb459825692eb901790ed467a592ca18b15001e7213d77b393ec6d1",
+      "excerpt": "# 工具与部署契约",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 2,
+      "sha256": "7c816a036c289dddbd9b5d07ace1f61eead67f706a576709f7e2889622d1ab73",
+      "excerpt": "本 Skill 使用 `metriccanvas-platform-content`，部署接口标识 `platformProtocolVersion=2.0`；页面输出遵循 Schema 6.58。模",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 3,
+      "sha256": "2670199ca1e845731fa80ec8ce13b8f5884f6efc103fc190457bb42ac878d9b7",
+      "excerpt": "| 工具 | 输入与行为 |\n|---|---|\n| read_page_context | context_ref，必要目标/选择与分页；向 Java 核对当前资源后返回 pageId、ref、配置",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 4,
+      "sha256": "a3dfffd53b4d850c51d14dd2e5c06972c16fa15eff7e0fcdd7004dac043275ea",
+      "excerpt": "所有写入基于程序注入的身份和基线。工作稿按版本竞争检查，提交 document/base/operationId 冻结。draftId 映射保存回执 ref.resourceId，ref.pageId",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 5,
+      "sha256": "4b6d7ce899c1abca32403d2ad1ff5eabbbb6abaccfe25c95d11334819f8db176",
+      "excerpt": "只有 modelSummary 进入模型通道。query_data 的有界行证据需计划确认和模型数据策略授权；完整响应、SQL、查询体和页面产物不进入模型。document 保存查询定义而不带 que",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 6,
+      "sha256": "b05f9d78620ad5adb4244f56050c0caec0ba508a21e565c311b724c107b76696",
+      "excerpt": "工具列表、Schema、Skill、Bundle 版本一起切换。部署就绪检查区分提供方装配与当前轮次有效：启动时须有轮次提供方，但不需要已有用户轮次。缺轮次、工作存储、查询授权、数据上下文/DQE、保",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 7,
+      "sha256": "e7985c91bbe823934736e33643b012276046d448448b3d96de0430dc18266ebd",
+      "excerpt": "## 页面身份与新鲜度",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 8,
+      "sha256": "b269aeea32a3128dfc1a4d8bc5421d478db2d2520cba51a51ace50c55342ed24",
+      "excerpt": "`page_id` 是模型声明的目标校验值，不授予权限；`context_ref` 绑定已认证身份、工作区、创作轮次和 pageId。`expected_version` 只约束本轮工作稿，不能代替 ",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 9,
+      "sha256": "02f7eb5fb5beecc0f5b640c6fc2a685cad0f4d8ab06491b2438508d4789a2563",
+      "excerpt": "集成程序依据用户打开的 pageId 解析当前资源，读取 Java 的完整页面及精确 `resourceId/revisionId`，构造创作基线。工具在读配置和修改前用 `current_match",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 10,
+      "sha256": "2d96c8936df4e0810a5bb742ad50ef68e0b50838414b24149868434e0ddc3cee",
+      "excerpt": "检测到其他人修改、内容不一致或资源切换时，返回 CURRENT_PAGE_STALE / CURRENT_PAGE_MISMATCH，交集成程序重新获取当前页面并新建创作轮次。保存仍提交 `base_",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 11,
+      "sha256": "78f3e5d55c49e3e61fb0c3d27cae2094b817bc2b48a3a9e4c2ce60de56574e97",
+      "excerpt": "## 语义元数据发现",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 12,
+      "sha256": "256d780d18a232e63c65e1e0d8e41031c2b91ed50bb72aaba7fe1e1185078233",
+      "excerpt": "Java 原始指标语义层使用批量 query-dataset-from-lab 查询，由部署方指定空间和数据集范围。query 与 limit 用于本地筛选语义卡片，不是后端搜索参数。模型只消费定义、",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 13,
+      "sha256": "fd238eaf7ef6154209776e920ec365a56608e1e573e4fe50843356615b5a75f9",
+      "excerpt": "检查 status/coverage/issues：部分数据集失败时保留成功结果并说明覆盖缺口；全部失败不解释为“没有这个指标”。查询接口 DB 优先、未命中回源，不能声称已主动刷新 Lab。deta",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 14,
+      "sha256": "6b9a8ed70e70aace0f8a7e5621e00ae1bd0c29e5cecd4c04e3032150fe290301",
+      "excerpt": "同轮已发布的元数据由已接入快照复用的 Adapter 缓存；查询与组装继续消费同一版本。部分 dataset 失败时，工具可先仅补取失败来源一次，再固定可用部分快照；不要反复发现试图刷掉缺口。已发现的",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 15,
+      "sha256": "9cf5056d47cdde3c82b9106a26af25b72178a61fdecc1651b985c9fc72869d84",
+      "excerpt": "## 组件与结果证据",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 16,
+      "sha256": "f280f16bb0264f9ac8c61f8792160775c7735c1e192607511877b501cadf8312",
+      "excerpt": "先根据 query_data 的字段 ID、行形状和 coverage 选表达，再提交组件：",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 17,
+      "sha256": "ce5de58a17db1cecca4ed5dd8771a4aaf015a169623d6f8d012780e95ac05008",
+      "excerpt": "`coverage.resultComplete` 描述程序保存的查询结果是否完整；`coverage.sampleTruncated` 描述给模型的样本是否缩短。`complete`/`trunca",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 18,
+      "sha256": "fae2f9e36f65104a667016dba970d16cf2f923f960e150e02c96014f87e2e0f9",
+      "excerpt": "| 目的 | 输入要求与选择 |\n|---|---|\n| 总量卡 | 单行总量直接绑定 measure，可包含多个指标；无需 dimension 或 match |\n| 指定对象卡片 | 多行结果使用",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 19,
+      "sha256": "b8b1b62f7275daf850860d098e8d52d6e45d3b8dcfa44dca23fce6049b887546",
+      "excerpt": "STRUCTURE_INCOMPLETE_PROPORTION / STRUCTURE_ROW_SELECTION_UNVERIFIED 时复用现有 resultRef 调整到可验证的表达，或在业务计",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 20,
+      "sha256": "6bca1c752b44ca2c06b562e9feff649ebe66a912b81f7cae4a7a37213ebe9a8a",
+      "excerpt": "查询使用发现返回的规范名与 queryBinding。DATA_CONTEXT_NAME_AMBIGUOUS 时从当前授权候选中选择明确指标；意图仍不清楚则澄清。相同别名可能属于多个指标，strict",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 21,
+      "sha256": "1036dcaf85f0bcba6e736a38720d3d7de00bb93e60af67b66a0d979cda4c8ced",
+      "excerpt": "独立取数在工具当前批次上限内合并；同轮修改按当前 workVersion 和操作依赖合批。依赖尚未返回的 resultRef 或后续 workVersion 时分步执行。失败按 issues.acti",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "references/tools.md",
+      "paragraph": 22,
+      "sha256": "30eb094b1f6e04b35c440e04e86b4ff1314ece790159207d3c36a417ccccd536",
+      "excerpt": "格式消费可信字段单位、币种、尺度及受支持的 defaultFormat；原始值保持不变。缺失货币信息时保留未知，“流水”名称不能证明人民币。工具返回 SCOPE_NOTE_REVIEW_REQUIRE",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/tool-behavior"
+      ],
+      "skillRetains": "references/tools.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/create.md",
+      "paragraph": 1,
+      "sha256": "b95956fab5393a237ce697abd8c53e1d8d44d110ab98d2c4cde3fcd13c4e60c0",
+      "excerpt": "# 新建页面",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/create.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/create.md",
+      "paragraph": 2,
+      "sha256": "ac694cffbf90f37ea853583016c5e51f19e3b5b88f1c0ae34dd686d1cecefab3",
+      "excerpt": "1. 读取本轮可信 context_ref，调用 read_page_context 获取 pageId/workVersion；只有 mode=new 的空基线可创建。工具负责校验 mode，已有页",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/plan-expression"
+      ],
+      "skillRetains": "workflows/create.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/create.md",
+      "paragraph": 3,
+      "sha256": "918e2fe47538fefa4240c5f62b42b82cf4bca7324938e39dc6407bef3c0f7aac",
+      "excerpt": "保存冲突或未知状态交程序核对原操作。普通输入错误按具体路径局部修正，复用已有结果；成功内容继续，不重启整轮。保存回执、预览回执、业务证据和最终结构共同构成完成依据，见[执行检查点](../refere",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/create.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/data-analysis.md",
+      "paragraph": 1,
+      "sha256": "630535bde8e7573ec8b1b99cc325cedd68f6cb1aa168d21ae4bf48e081b160eb",
+      "excerpt": "# 数据分析",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/data-analysis.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/data-analysis.md",
+      "paragraph": 2,
+      "sha256": "77467eb80a7b852d4e08e82e3da0a2b9a9a70d3247405443d563f174d849905a",
+      "excerpt": "1. 从原始需求或“当前页＋修改意见”提取指标、维度、时间、筛选与核心问题。复用仍有效的语义摘要；仅缺少必要定义时 discover_data_context。定义等同名称、空单位、空维度均保持 un",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "protocol/discovery-query"
+      ],
+      "skillRetains": "workflows/data-analysis.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/data-analysis.md",
+      "paragraph": 3,
+      "sha256": "9ef5c284d9d6ad9020e9033f2866886536e63630b1c47316f8015629fcafeaa5",
+      "excerpt": "必要详情通过精确 detailRef 按需补读；身份未匹配不借用相近指标，已确认缺失不重复读。跨身份、页面、轮次或数据上下文版本的结果引用会被拒绝；查询返回引用不是长期数据资产。",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "protocol/discovery-query"
+      ],
+      "skillRetains": "workflows/data-analysis.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/data-analysis.md",
+      "paragraph": 4,
+      "sha256": "12401c34a8f50a9f3e3e239a167781b3027cbd7854320fd6a8b3736dc8bd29ef",
+      "excerpt": "当 discover 返回 `discoveryProtocolVersion=1.0` 时：按 discovery.requirements 区分择一候选、多项需求和主题范围；仅 readyRequ",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "protocol/discovery-query"
+      ],
+      "skillRetains": "workflows/data-analysis.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 1,
+      "sha256": "275332d9edd92346dd5985bf76c42f77e90b8e6950543bf499306a87c61db3a5",
+      "excerpt": "# 修改页面",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 2,
+      "sha256": "64fd4ebccb0629488727f75cfdedf32a4506b9c50180f32305a498afe9a45236",
+      "excerpt": "## 进入条件与读取",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 3,
+      "sha256": "3be062fb949ec1a5ee13c26d02300a23039933d02f91cc3172d2ff5fe3bfc3d2",
+      "excerpt": "1. 由可信集成程序从 Java 当前页面建立本轮 context_ref，包含 pageId、resourceId、revisionId 和完整创作基线。用户只有页面名时先由平台定位；同名歧义先澄清",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 4,
+      "sha256": "4a6f2a3b646ffcb0797fecaddecf63bd2fcbdcf46f705ed39f464f48e6af7959",
+      "excerpt": "## 形成操作",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 5,
+      "sha256": "0f76442ba5e4a5006564d04b921d84a55b321dfb2686f21c2268d9a265252566",
+      "excerpt": "- 样式、标题、列宽或重排：直接生成受控 operations，不调用发现或业务查询。\n- 新增取数或改变口径：按[数据分析](data-analysis.md)完成计划审核和证据读取，再用 add_",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 6,
+      "sha256": "8067917218a79344802595858aac3e80987e40132e22db63896d904c51e1bda9",
+      "excerpt": "提交 `edit_page` 前逐个检查跨分区 `move_component`：若源分区只有这一个组件，必须把该操作改成上面的复制正文、删除原分区、定位新组件三步；即使同批随后有 `remove_s",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 7,
+      "sha256": "eb180b86520baed1ac6ae436c6a93f58645a40814a99982581d89969506f7888",
+      "excerpt": "```json\n{\"operations\":[{\"id\":\"copy-note\",\"type\":\"add_text\",\"componentId\":\"new-note\",\"sectionId\":\"tar",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 8,
+      "sha256": "3c0a200509dc4c0844f8f7609471279a3a19a16c5f0c815df3858552ed170dff",
+      "excerpt": "新增查询结果到现有章节的最小形态：",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 9,
+      "sha256": "8e5199d7aa7dad818c18c11da3981f280bea2fe3b2666a2bbf1e1e26ea754eea",
+      "excerpt": "```json\n{\"operations\":[{\"id\":\"add-filtered-table\",\"type\":\"add_result_component\",\"sectionId\":\"已读取的现有章",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 10,
+      "sha256": "95c3707b4a5085bda3b2cb8517282577dd7998b6508b888674739b21d383fdf9",
+      "excerpt": "只有用户明确要求新章节或现有章节都不适合时才新增章节。add_section 的初始 blocks 只能引用页面已有源或文本；新结果源不能在同一批 add_section 中提前引用。确需新章节时，先",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 11,
+      "sha256": "df11b26d865d73a8be91969e9f877a8ed6c37266f48734181331fe408f18ea44",
+      "excerpt": "## 执行与验收",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 12,
+      "sha256": "cf8fcb580fe262a13dc7bdb333325688128e80d7393c8c1b3e164de13567b7be",
+      "excerpt": "4. 调 edit_page(context_ref, page_id=读取的pageId, expected_version=读取的workVersion, request={operations}",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 13,
+      "sha256": "783b4ae96a5de01c2784029114757250d08397c8881a0621cb799f5cf1141612",
+      "excerpt": "完成条件：用户授权项有逐项结果，保存与预览状态分别有回执。页面有效不代表布局、业务关系与可见结论都正确；按[执行检查点](../references/execution.md)核对最终表达。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 14,
+      "sha256": "e34ea0654b464ebe28a2eb2066f24a73429e8558f3dc51fba72b88b979ea0ce2",
+      "excerpt": "## IOC公共页头（6.32）",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/edit.md",
+      "paragraph": 15,
+      "sha256": "ee1958e73ee98f3ce9372af73796e75ce6ecaa907e8788fc0025dafa1cc81510",
+      "excerpt": "`set_ioc_header`以完整`header`替换根级声明（null删除）；沿用Page的身份TextValue、filterIds、presentation与back规则。看板首次配置须在同",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/editing"
+      ],
+      "skillRetains": "workflows/edit.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 1,
+      "sha256": "5498e716411a8bf1835de3f713f61037743eac3562b3aa1d58dbff06d0aa4093",
+      "excerpt": "# 页面参数流程",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 2,
+      "sha256": "1a66916e31535f575009d4cdeca6fb2e675d79999efddeb49687a33bc24fe345",
+      "excerpt": "页面文档遵循当前产品 Schema 与读取兼容边界。页面 JSON 只在程序通道流转，baseline、dimensionIdentities、timeIdentities 和 timePointFi",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/parameters"
+      ],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 3,
+      "sha256": "cdef126ebb9b1c73bea377a6e7693b1635532d49d0484c7ac222bbda78214f9e",
+      "excerpt": "## 提取模板",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 4,
+      "sha256": "13678deb8c9a4447c98207ba0dfbeb09595f3430ab1ff76d9362f3743fe4f54f",
+      "excerpt": "1. 用本轮 context_ref 调 extract_page_parameters；同轮生成/编辑结果显式传 artifact_ref。成功取得 extraction_ref 后，按候选标签、类",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/parameters"
+      ],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 5,
+      "sha256": "8f9de0eb09ecd77be7d26cc7226433b64e670b2d7305125c80ef0d631e02320a",
+      "excerpt": "## 召回后赋值",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 6,
+      "sha256": "7298241470d6ba4df92e3b875eb0b56ffdb65624b136bbcf70147e34ea469fa5",
+      "excerpt": "1. 由外部模板检索/选择提供方打开精确模板，并建立本轮 context_ref；不能用上一轮 artifact_ref 当永久模板 ID。\n2. read_page_context 返回参数类型、精",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/parameters"
+      ],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 7,
+      "sha256": "9c37249b1adb34ca660884d9b16582a3b699563c72eaa259a45d9c8253be31c6",
+      "excerpt": "只有可信保存/发布回执才能报告已保存/已发布。参数工具不提供模板搜索，也不替代缺失的部署提供方。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 8,
+      "sha256": "ad60fc54b9162b0fc5da257dccf1d765f08a85f2ed8a4a47affa398306a9c85c",
+      "excerpt": "## 日期候选与报告页头",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 9,
+      "sha256": "34c4cb5eab79c2abeb508220b1bf48caf28939c9a74a2e70329d742adb10baf0",
+      "excerpt": "初次创作按已验证查询生成页面；查询没有日期参数时，页头保持纯展示。`extract_page_parameters` 只识别日期候选，确认选择后由 `apply_page_parameter_sele",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 10,
+      "sha256": "1c96a1a578043e47386879863855272daac775ca6ff28b1005373a342552d102",
+      "excerpt": "同值文字不能证明多个查询拥有同一期间。按可信日期身份合并候选；已有日期筛选器和参数复用原身份。单点驱动期间、年初至当前或最近 N 期时，窗口必须由创作规格明确声明。返回跳过项时说明缺口，保持原查询。",
+      "ownership": "Skill methodology / optional scenario guidance",
+      "mcKeys": [],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    },
+    {
+      "source": "workflows/parameters.md",
+      "paragraph": 11,
+      "sha256": "be0da80b067f5e7f2480acdbac0d5ffbf0baa4ae0604eaa91cd3faeac6e6bc5e",
+      "excerpt": "页面参数只提供实例初值；读者修改日期筛选器后，查询与报告期间文字读取已应用筛选值。无值模板保留参数声明，不保留查询初始数据。新增能力要求 Schema 6.13；修改其他内容时保持已有能力，不降级文档",
+      "ownership": "MC facts extracted; Skill retains decisions",
+      "mcKeys": [
+        "runtime/parameters"
+      ],
+      "skillRetains": "workflows/parameters.md",
+      "verification": "MC facts from product/authored sources; deployed services separately"
+    }
+  ],
+  "sourceFiles": [
+    "SKILL.md",
+    "references/errors.md",
+    "references/examples.md",
+    "references/execution.md",
+    "references/layouts/dashboard.md",
+    "references/layouts/report.md",
+    "references/page-data-execution.md",
+    "references/reading-design.md",
+    "references/scenarios.md",
+    "references/scenarios/business-report.md",
+    "references/scenarios/usage-report.md",
+    "references/tools.md",
+    "workflows/create.md",
+    "workflows/data-analysis.md",
+    "workflows/edit.md",
+    "workflows/parameters.md"
+  ]
+}

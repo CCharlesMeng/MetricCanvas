@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "6.58",
+  "id": "tab-url-source",
+  "layout": "report",
+  "params": {
+    "display": [
+      {
+        "id": "preferred-tab",
+        "type": "string",
+        "value": "detail"
+      }
+    ]
+  },
+  "dataSources": {
+    "routes": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "tab-id": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "从当前行打开销售明细",
+            "tab-id": "detail"
+          },
+          {
+            "name": "从当前行打开销售概览",
+            "tab-id": "overview"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "links",
+      "components": [
+        {
+          "id": "navigation-links",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "URL 初始化 Tab：来源页",
+            "body": "内联演示：静态 href、页面参数绑定和表格当前行绑定。",
+            "links": [
+              {
+                "label": "固定打开明细与已关闭工单",
+                "href": "/pages/tab-url-initialization?sales-tab=detail&support-tab=closed#tabs"
+              },
+              {
+                "label": "页面参数打开明细",
+                "href": "/pages/tab-url-initialization?static=kept",
+                "query": {
+                  "sales-tab": {
+                    "source": "param",
+                    "id": "preferred-tab"
+                  }
+                }
+              },
+              {
+                "label": "未指定使用默认",
+                "href": "/pages/tab-url-initialization"
+              },
+              {
+                "label": "无效值回退",
+                "href": "/pages/tab-url-initialization?sales-tab=missing&support-tab=missing"
+              },
+              {
+                "label": "空值回退",
+                "href": "/pages/tab-url-initialization?sales-tab="
+              },
+              {
+                "label": "重复值回退",
+                "href": "/pages/tab-url-initialization?sales-tab=overview&sales-tab=detail"
+              }
+            ]
+          }
+        },
+        {
+          "id": "row-links",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "routes"
+          },
+          "props": {
+            "title": "行字段决定目标 Tab",
+            "columns": [
+              {
+                "field": "name",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/tab-url-initialization",
+                  "query": {
+                    "sales-tab": {
+                      "source": "row",
+                      "field": "tab-id"
+                    }
+                  }
+                },
+                "title": "跳转入口"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

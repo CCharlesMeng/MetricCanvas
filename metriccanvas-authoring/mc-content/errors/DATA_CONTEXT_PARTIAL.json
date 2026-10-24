@@ -5,6 +5,12 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/validation_policy.py",
+      "line": 107
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

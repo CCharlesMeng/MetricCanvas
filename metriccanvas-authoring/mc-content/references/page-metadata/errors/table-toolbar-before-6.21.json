@@ -1,0 +1,44 @@
+{
+  "case": "table-toolbar-before-6.21",
+  "invariant": "table-toolbar-search",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格独立搜索与完整 Excel 导出工具区 由 6.21 引入，文档声明的是 6.20",
+      "paths": [
+        "/sections/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "records-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "客户明细",
+              "toolbar": {
+                "…": "共2个键"
+              },
+              "pagination": {
+                "…": "共2个键"
+              },
+              "columns": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

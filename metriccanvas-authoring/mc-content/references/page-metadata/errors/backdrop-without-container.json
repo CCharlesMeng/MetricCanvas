@@ -1,0 +1,19 @@
+{
+  "case": "backdrop-without-container",
+  "invariant": "backdrop-container-plain",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "声明 backdrop 的内容分区必须使用 container: plain，当前为 缺省",
+      "paths": [
+        "/sections/0/container"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {}
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

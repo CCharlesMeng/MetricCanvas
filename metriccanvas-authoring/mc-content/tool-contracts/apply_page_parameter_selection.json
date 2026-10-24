@@ -8,5 +8,80 @@
     "selected_ids",
     "text_choices"
   ],
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "context_ref": {
+        "type": "string"
+      },
+      "extraction_ref": {
+        "type": "string"
+      },
+      "selected_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "type": "array"
+      },
+      "text_choices": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "slot_id": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "parameter",
+                "literal"
+              ],
+              "type": "string"
+            },
+            "candidate_id": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "text": {
+              "anyOf": [
+                {
+                  "maxLength": 4096,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "slot_id",
+            "kind"
+          ],
+          "type": "object"
+        },
+        "maxItems": 200,
+        "type": "array"
+      }
+    },
+    "required": [
+      "context_ref",
+      "extraction_ref",
+      "selected_ids"
+    ],
+    "type": "object"
+  },
   "source": "active platform_mcp.py"
 }

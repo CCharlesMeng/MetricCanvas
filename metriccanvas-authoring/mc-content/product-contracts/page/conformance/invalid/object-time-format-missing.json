@@ -1,0 +1,101 @@
+{
+  "case": "object-time-format-missing",
+  "invariant": "dqe-object-query",
+  "input": {
+    "schemaVersion": "6.55",
+    "id": "object-query-page",
+    "layout": "dashboard",
+    "meta": {
+      "title": "对象查询契约"
+    },
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "precision": "date",
+        "default": {
+          "from": "2025-01-01",
+          "to": "2025-01-31"
+        }
+      }
+    ],
+    "dataSources": {
+      "approvals": {
+        "fields": {
+          "business": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "商务编号"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Business/Business Approval Details",
+                  "output_fields": [
+                    "商务编号"
+                  ],
+                  "filter": {
+                    "fields": []
+                  },
+                  "order": {
+                    "offset": 0,
+                    "limit": 1000,
+                    "order_by_field": "商务编号",
+                    "type": "asc"
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "period": {
+                "target": "time",
+                "queryField": "特价审批通过时间"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "approvals",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "approvals"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "business",
+                  "sortable": true
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/approvals/source/query/filterBindings/period",
+      "message": "object 时间绑定必须显式声明 queryField 和 valueFormat"
+    }
+  ]
+}

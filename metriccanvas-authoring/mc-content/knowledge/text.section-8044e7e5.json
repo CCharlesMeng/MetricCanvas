@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "text.section-8044e7e5"
+  ],
+  "semantics": [
+    {
+      "module": "text",
+      "reference": "references/page-metadata/components/text.md",
+      "blocks": [
+        "# 文本 text\n\n承载说明、口径提示或由后端返回的人工/AI 已确认分析结论；可显式使用受控语义 HTML 正文。适用于摘要默认使用 text；说明、提示、后端返回或已确认结论均选择本组件、页面内分隔章节的大标题使用 variant: heading，标题写在 props.title，通常放在 container: plain 的分区里、摘要需要分色富文本时声明 bodyFormat: semanticHtml，并在 body 中只使用受控标签和语义类、分析报告摘要使用 variant: reportInline；它会默认显示图标和“AI 总结：”，metadata 只需声明正文。数据形状：不绑定页面数据源。\n\n静态文字使用body及受控variant。plain、insight、heading、reportInline、riskNotice表达不同文体。bodyFormat:semanticHtml显式选择受控富文本；未声明时按普通文本呈现，不执行任意HTML。",
+        "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。\n\n6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。\n\n`variant: heading` 的标题按页面layout分别呈现：Dashboard为黑色16px、500字重、左对齐、无装饰图标；Report为32px居中图标标题。两种形态不通过plain容器回退到共用标题。完整对照页为dashboard-title-styles与report-title-styles。"
+      ],
+      "rules": [
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/reference-text-page.json",
+        "references/page-metadata/examples/url-navigation-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/dashboard-title-styles.json",
+        "references/page-metadata/examples/report-title-styles.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

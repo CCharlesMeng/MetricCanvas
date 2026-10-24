@@ -1,0 +1,27 @@
+{
+  "case": "chart-option-other-component",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "echartsOption 只支持 barChart、lineChart、pieChart",
+      "paths": [
+        "/sections/0/components/0/props/echartsOption"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "echartsOption": {}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": "6.46",
+  "id": "ioc-header-inputs",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头组件 · 输入与模型协调"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "项目分析"
+    },
+    "back": true,
+    "filterIds": [
+      "month",
+      "model",
+      "region",
+      "key"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "统计月份",
+      "required": true,
+      "availability": {
+        "fact": "sales",
+        "initial": "latest",
+        "max": "latest",
+        "blockMissing": true
+      }
+    },
+    {
+      "id": "model",
+      "type": "dimension",
+      "dimension": "model",
+      "label": "模型",
+      "default": [
+        "M-2026-10"
+      ],
+      "selection": {
+        "mode": "single"
+      },
+      "candidateContext": {
+        "filterIds": [
+          "month"
+        ],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "模型"
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo_department",
+      "label": "区域样例",
+      "selection": {
+        "mode": "single"
+      },
+      "display": "tree",
+      "treeSelection": "level",
+      "hierarchy": [
+        {
+          "id": "department",
+          "dimension": "demo_department",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "demo_office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "department",
+      "emptyLabel": "区域样例"
+    },
+    {
+      "id": "key",
+      "type": "boolean",
+      "label": "重点样例",
+      "default": false
+    }
+  ],
+  "dataSources": {
+    "models-data": {
+      "fields": {
+        "model": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "model"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "model"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "month": {
+              "target": "timePoint",
+              "queryField": "month"
+            },
+            "model": {
+              "target": "dimension",
+              "queryField": "model"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "intro",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示数据。此页验证正式页头组件和筛选状态；未接真实IOC服务。"
+          }
+        },
+        {
+          "id": "model-result",
+          "type": "table",
+          "data": {
+            "main": "models-data"
+          },
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "model",
+                "title": "合成模型"
+              },
+              {
+                "field": "amount",
+                "title": "合成指标"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

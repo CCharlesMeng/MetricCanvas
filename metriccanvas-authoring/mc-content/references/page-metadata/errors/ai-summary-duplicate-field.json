@@ -1,0 +1,37 @@
+{
+  "case": "ai-summary-duplicate-field",
+  "invariant": "ai-summary-related-data",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "关联字段重复:gmv",
+      "paths": [
+        "/sections/0/components/0/props/relatedData/kpi/fields/2/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "relatedData": {
+                "kpi": {
+                  "fields": [
+                    "…",
+                    "…",
+                    {
+                      "field": "gmv"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

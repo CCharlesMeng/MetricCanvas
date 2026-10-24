@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "6.58",
+  "id": "dashboard-title-styles",
+  "layout": "dashboard",
+  "meta": {
+    "title": "看板标题样式验收"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "default",
+      "title": "默认分区标题",
+      "components": [
+        {
+          "id": "default-heading",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "heading",
+            "title": "内容章节标题"
+          }
+        },
+        {
+          "id": "default-body",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "静态示例：核对分区标题与内容章节标题的布局形态，不涉及查询或业务数据。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "plain",
+      "title": "无外壳分区标题",
+      "components": [
+        {
+          "id": "plain-heading",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "heading",
+            "title": "内容章节标题"
+          }
+        },
+        {
+          "id": "plain-body",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "静态示例：核对分区标题与内容章节标题的布局形态，不涉及查询或业务数据。"
+          }
+        }
+      ],
+      "container": "plain"
+    },
+    {
+      "id": "panel",
+      "title": "章节面板分区标题",
+      "components": [
+        {
+          "id": "panel-heading",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "heading",
+            "title": "内容章节标题"
+          }
+        },
+        {
+          "id": "panel-body",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "静态示例：核对分区标题与内容章节标题的布局形态，不涉及查询或业务数据。"
+          }
+        }
+      ],
+      "container": "panel"
+    },
+    {
+      "id": "card",
+      "title": "卡片分区标题",
+      "components": [
+        {
+          "id": "card-heading",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "heading",
+            "title": "内容章节标题"
+          }
+        },
+        {
+          "id": "card-body",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "静态示例：核对分区标题与内容章节标题的布局形态，不涉及查询或业务数据。"
+          }
+        }
+      ],
+      "container": "card"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "case": "period-filter-datetime",
+  "invariant": "period-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间筛选不支持 datetime",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period-filter",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "datetime",
+        "label": "统计期间",
+        "required": true,
+        "default": {
+          "mode": "month"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

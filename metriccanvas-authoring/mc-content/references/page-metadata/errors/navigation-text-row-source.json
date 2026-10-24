@@ -1,0 +1,36 @@
+{
+  "case": "navigation-text-row-source",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "当前行缺少可传参的标量字段:code",
+      "paths": [
+        "/sections/0/components/1/props/links/0/query/project/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "links": [
+                {
+                  "query": {
+                    "project": {
+                      "field": "code"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

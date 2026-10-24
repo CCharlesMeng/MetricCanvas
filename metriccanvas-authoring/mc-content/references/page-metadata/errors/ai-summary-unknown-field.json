@@ -1,0 +1,35 @@
+{
+  "case": "ai-summary-unknown-field",
+  "invariant": "ai-summary-related-data",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "关联字段 nope 不在数据源 current 中",
+      "paths": [
+        "/sections/0/components/0/props/relatedData/kpi/fields/0/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "relatedData": {
+                "kpi": {
+                  "fields": [
+                    {
+                      "field": "nope"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

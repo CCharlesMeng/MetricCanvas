@@ -1,0 +1,58 @@
+{
+  "case": "query-modes-before-6.50",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询分支原始响应字段到稳定页面字段的显式映射 由 6.57 引入，文档声明的是 6.49",
+      "paths": [
+        "/dataSources/amount-trend",
+        "/dataSources/amount-total"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "固定单选选择不同静态DQE查询分支，共享结果字段契约 由 6.50 引入，文档声明的是 6.49",
+      "paths": [
+        "/dataSources/amount-trend",
+        "/dataSources/amount-total"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "fields": {
+          "month": {
+            "…": "共2个键"
+          },
+          "amount": {
+            "…": "共5个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "…": "共2个键"
+          }
+        }
+      },
+      "amount-total": {
+        "fields": {
+          "amount": {
+            "…": "共5个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "…": "共2个键"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

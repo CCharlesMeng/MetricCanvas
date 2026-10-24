@@ -5,6 +5,12 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/semantic_catalog.py",
+      "line": 108
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

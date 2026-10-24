@@ -1,0 +1,142 @@
+{
+  "type": "pieChart",
+  "label": "饼图",
+  "aliases": [
+    "圆饼图",
+    "环形图"
+  ],
+  "purpose": "展示少量类别对整体的占比或构成",
+  "chooseWhen": [
+    "占比、构成、份额，且类别数量较少"
+  ],
+  "dataShape": "一个 dimension 类别字段 + 一个 metric 数值字段",
+  "authoringShape": {
+    "bindsData": true,
+    "dimensions": {
+      "min": 1,
+      "max": 1
+    },
+    "measures": {
+      "min": 1,
+      "max": 1
+    }
+  },
+  "requiredProps": [
+    "categoryField",
+    "valueField"
+  ],
+  "title": "optional",
+  "defaultSpan": 4,
+  "renderable": true,
+  "assembled": true,
+  "data_editable": true,
+  "knowledge": "pieChart.overview",
+  "reference": "references/page-metadata/components/pieChart.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/composite-page.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "key-value-panel-six-columns",
+          "minor": 0,
+          "description": "key-value 信息面板的六列排布"
+        },
+        {
+          "id": "component-backdrop-layer",
+          "minor": 0,
+          "description": "组件 layout.layer:分区内叠放层,组件铺满分区置于其余组件之下"
+        },
+        {
+          "id": "key-value-panel-component",
+          "minor": 0,
+          "description": "key-value 信息面板组件"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "category-breakdown-component",
+          "minor": 0,
+          "description": "分类明细组件(ADR-0053)"
+        },
+        {
+          "id": "key-value-panel-single-column",
+          "minor": 0,
+          "description": "key-value 信息面板的单列排布"
+        },
+        {
+          "id": "section-column-tracks",
+          "minor": 0,
+          "description": "内容分区的受控列轨权重(ADR-0054)"
+        },
+        {
+          "id": "metric-row-context",
+          "minor": 0,
+          "description": "指标行与主值同排的短上下文"
+        },
+        {
+          "id": "table-embedded",
+          "minor": 0,
+          "description": "表格嵌入式密度与底部渐隐"
+        },
+        {
+          "id": "key-value-item-unit",
+          "minor": 0,
+          "description": "信息面板条目的展示单位"
+        },
+        {
+          "id": "widget-symbol-icons",
+          "minor": 0,
+          "description": "组合卡和信息面板的受控语义图标"
+        },
+        {
+          "id": "metric-row-link",
+          "minor": 0,
+          "description": "指标行的显式非空值导航入口"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        },
+        {
+          "id": "tab-container-analysis-stack",
+          "minor": 0,
+          "description": "Tab 容器的分析表格堆叠呈现档"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

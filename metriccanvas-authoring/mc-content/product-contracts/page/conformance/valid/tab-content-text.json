@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "6.49",
+  "layout": "report",
+  "id": "tab-content-text",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "content-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "contentLayout": "grid",
+            "tabs": [
+              {
+                "id": "one",
+                "label": "内容",
+                "component": {
+                  "id": "explanation",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": "章节说明",
+                    "body": "这是页面中的静态说明正文。",
+                    "variant": "plain"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

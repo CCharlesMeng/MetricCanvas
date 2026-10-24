@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "reportHeader.section-2d8eecea"
+  ],
+  "semantics": [
+    {
+      "module": "reportHeader",
+      "reference": "references/page-metadata/components/reportHeader.md",
+      "blocks": [
+        "# 报告页头 reportHeader\n\n表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML。适用于任何完整页面的开头。数据形状：不绑定页面数据源。\n\n页面内容页头；title为必需文本取值，可引用必需页面参数或当前已应用筛选；6.23 起可用 `{parts:[{filter:\"report-month\",format:\"period\"},\" 经营分析报告\"]}` 组合动态期间与固定名称，规则见[文本片段组合](../params-and-text-values.md#文本片段组合623)。页面meta.title是另一个页面级声明，不替代该组件必填title。\n\ndashboard 的筛选器由统一工具栏呈现，reportHeader 禁止配置 filterIds；下述日期工具带只用于 report。\n\nfilterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封面上方独立工具带；宽容器右对齐，窄容器换行。控件使用运行时筛选状态，不拥有查询。6.15 起 filterIds 仅决定控件位置，不自动创建或覆盖 asOf。期间文字使用 asOf.value: {filter: 筛选器id, format: \"period\"} 显式引用当前已应用值；字面量保持静态，param 引用保持打开时的参数值。6.13/6.14 继续按旧的期间派生规则读取。导出保留捕获时已经解析的静态文字。",
+        "## 单张高清 PNG\n\nPNG内部按有界块截图、Worker持续行流式编码，结果始终是一张完整图片，不创建整图画布。整图宽≤8192、高≤32767、面积≤134217728像素，单截图块面积≤16777216像素、最长边≤8192，编码结果≤128MiB。超限明确失败，不降倍率、不下载部分图，也不回退到其他格式。编码后直接下载并释放任务资源，不保留待保存的结果。\n\n引擎在独立iframe文档内重新挂载正式静态视图，仅带入引擎自有组件样式、受限主题值及字体资源，不复制父文档样式表、伪元素或背景图片。原页面水印不会被删除或临时隐藏。同源脚本若主动向iframe注入水印，仍需集成应用提供干净运行环境；真实门户与浏览器扩展单列实测，图片素材自身水印不在此机制处理范围。\n\n长报告按有界块截图，Worker使用持续的行流式PNG编码，最终仍是一张完整图片；不创建整图大小的画布。当前整图宽≤8192、高≤32767、面积≤134217728像素，单截图块面积≤16777216像素，编码结果≤128MiB；超限明确失败，不降倍率或更换格式。准备60秒、编码60秒无进展、更新/销毁清理、每结果10000行及现有部分数据规则与PDF共用。下载成功不证明数据完整或磁盘写入。\n\n编码依赖随npm与HTML ES/IIFE分发，无需集成应用安装。实际解码、像素清晰度、水印隔离与数据范围由浏览器验收证明，静态页面校验只证明协议。部署侧需核验Worker/CSP、字体图片访问和真实水印注入方式。"
+      ],
+      "rules": [
+        {
+          "id": "report-header-export-buttons",
+          "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
+          "valid": [
+            "report-export-buttons",
+            "report-export-scale-fallback"
+          ],
+          "invalid": [
+            "report-export-before-6.31",
+            "report-export-dashboard",
+            "report-export-other-format",
+            "report-export-duplicate-format",
+            "report-export-mixed-legacy"
+          ]
+        },
+        {
+          "id": "report-header-png-export",
+          "description": "6.30 Report导出图片，只输出一张PNG，固定名称与3/4倍倍率",
+          "valid": [
+            "report-png-export",
+            "report-export-scale-fallback"
+          ],
+          "invalid": [
+            "report-png-before-6.30",
+            "report-png-dashboard",
+            "report-png-empty-filename",
+            "report-png-fixed-label",
+            "report-png-other-format"
+          ]
+        },
+        {
+          "id": "report-header-pdf-export",
+          "description": "Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值",
+          "valid": [
+            "report-pdf-export"
+          ],
+          "invalid": [
+            "report-pdf-before-6.28",
+            "report-pdf-on-dashboard",
+            "report-pdf-empty-label",
+            "report-pdf-empty-filename",
+            "report-pdf-unknown-option"
+          ]
+        },
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/inline-report.json",
+        "references/page-metadata/examples/text-composition-page.json",
+        "references/page-metadata/examples/report-pdf-export.json",
+        "references/page-metadata/examples/report-png-export.json",
+        "references/page-metadata/examples/report-export-buttons.json",
+        "references/page-metadata/examples/report-export-scale-fallback.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/relay-page-artifact-envelope/0.1.0",
+  "title": "MetricCanvas Relay Page Artifact Envelope",
+  "description": "Discriminated compose_page success payload. Relay stores artifact as the latest session checkpoint and exposes only modelSummary to the model.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "formatVersion", "artifact", "modelSummary"],
+  "properties": {
+    "kind": {
+      "const": "metriccanvas.page-build-artifact"
+    },
+    "formatVersion": {
+      "const": "1.0"
+    },
+    "artifact": {
+      "$ref": "https://metriccanvas.local/contracts/page-build-artifact/0.1.0"
+    },
+    "modelSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "pageId",
+        "unitCount",
+        "topLevelComponentCount",
+        "dataContextVersion",
+        "bundleVersion",
+        "documentSha256"
+      ],
+      "properties": {
+        "status": {
+          "const": "page_composed"
+        },
+        "pageId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unitCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "topLevelComponentCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dataContextVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bundleVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "documentSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

@@ -48,7 +48,8 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       cpSync(path.join(root, relative), path.join(isolated, relative));
     }
     mkdirSync(path.join(isolated, 'docs'), { recursive: true });
-    for (const relative of ['docs/schema-metadata.schema.json', 'package.json', 'tsconfig.base.json']) {
+    for (const relative of ['docs/schema-metadata.schema.json', 'docs/schema-metadata.md', 'docs/examples/schema-metadata.example.json', 'pnpm-lock.yaml', 'package.json', 'tsconfig.base.json']) {
+      mkdirSync(path.dirname(path.join(isolated, relative)), {recursive: true});
       cpSync(path.join(root, relative), path.join(isolated, relative));
     }
     // 复用已安装工具和 page 的第三方依赖；旧 workspace 源码不复制。
@@ -269,4 +270,82 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       rmSync(regenerationRoot, { recursive: true, force: true });
     }
   }, scenarioTimeout * 2);
+
+  it('产品新增字段/枚举但无语义说明时生成失败，写出前不破坏已有 MC', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-source-gap-'));
+    try {
+      cpSync(isolated, folder, {recursive: true, verbatimSymlinks: true});
+      const source = path.join(folder, 'packages/page/src/schema/page.ts');
+      const before = readFileSync(path.join(folder, 'metriccanvas-authoring/mc-content/mc-content.version.json'));
+      writeFileSync(source, readFileSync(source, 'utf8').replace('description: z.string().optional()', "description: z.string().optional(), mcProbe: z.enum(['unmapped-a', 'unmapped-b']).optional()"));
+      const result = runExport([], folder);
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toMatch(/semantic|coverage|Unmapped|Missing/i);
+      expect(readFileSync(path.join(folder, 'metriccanvas-authoring/mc-content/mc-content.version.json'))).toEqual(before);
+    } finally { rmSync(folder, {recursive: true, force: true}); }
+  }, scenarioTimeout);
+
+  it('结构不变的语义修复使旧 MC 失效，重新生成后同源主题更新', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-semantic-change-'));
+    try {
+      cpSync(isolated, folder, {recursive: true, verbatimSymlinks: true});
+      const source = path.join(folder, 'docs/page-metadata/components/table.md');
+      const marker = 'MC semantic-only source mutation.';
+      writeFileSync(source, readFileSync(source, 'utf8').replace(/(# .+\n)/, '$1\n' + marker + '\n'));
+      expect(runExport(['--check'], folder).status).not.toBe(0);
+      expect(runExport([], folder).status).toBe(0);
+      expect(readFileSync(path.join(folder, 'metriccanvas-authoring/mc-content/knowledge/table.overview.json'), 'utf8')).toContain(marker);
+    } finally { rmSync(folder, {recursive: true, force: true}); }
+  }, scenarioTimeout * 2);
+
+  it('活动 query 工具参数变动进入完整 inputSchema，内部 Adapter 不改变公共 MC', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-registration-change-'));
+    try {
+      cpSync(isolated, folder, {recursive: true, verbatimSymlinks: true});
+      const internal = path.join(folder, 'metriccanvas-authoring/tool/metriccanvas_authoring/adapters/mc_probe.py');
+      writeFileSync(internal, 'raise RuntimeError("PRIVATE_MC_PROBE_ERROR")\n');
+      expect(runExport(['--check'], folder).status).toBe(0);
+      const source = path.join(folder, 'metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/mcp/platform_mcp.py');
+      writeFileSync(source, readFileSync(source, 'utf8').replace('result_ref: str | None = None) -> ToolResult:', 'result_ref: str | None = None, mc_probe: bool = False) -> ToolResult:'));
+      expect(runExport([], folder).status).toBe(0);
+      const tool = JSON.parse(readFileSync(path.join(folder, 'metriccanvas-authoring/mc-content/tool-contracts/query_data.json'), 'utf8'));
+      expect(tool.inputSchema.properties.mc_probe).toMatchObject({type: 'boolean', default: false});
+    } finally { rmSync(folder, {recursive: true, force: true}); }
+  }, scenarioTimeout * 2);
+
+
+  it('隔离新 minor 加入真实字段语义后，旧页检查与迁移均保留原件', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-semantic-release-'));
+    try {
+      cpSync(isolated, folder, {recursive: true, verbatimSymlinks: true});
+      const policyFile = path.join(folder, 'packages/page/src/version.ts');
+      const policy = readFileSync(policyFile, 'utf8');
+      const match = /const CURRENT_MINOR = (\d+);/.exec(policy)!;
+      writeFileSync(policyFile, policy.replace(match[0], `const CURRENT_MINOR = ${Number(match[1]) + 1};`));
+      const schemaFile = path.join(folder, 'packages/page/src/schema/page.ts');
+      // A real optional protocol field with semantic metadata, not just a version string.
+      writeFileSync(schemaFile, readFileSync(schemaFile, 'utf8').replace('description: z.string().optional()', "description: z.string().optional(), mcReleaseNote: z.string().optional().describe('隔离发布验收：可选迁移说明，不改变旧页显示')"));
+      const referenceFile = path.join(folder, 'docs/page-metadata/reference-map.json');
+      const reference = JSON.parse(readFileSync(referenceFile, 'utf8'));
+      reference.fieldNotes.mcReleaseNote = '隔离发布验收：可选迁移说明，不改变旧页显示';
+      reference.enumNotes[`6.${Number(match[1]) + 1}`] = '隔离真实语义增量发布';
+      writeFileSync(referenceFile, JSON.stringify(reference));
+      const generated = runExport([], folder);
+      expect(generated.status, generated.stderr).toBe(0);
+      const scripts = path.join(folder, 'metriccanvas-authoring/mc-content/scripts');
+      const input = path.join(folder, 'pages/capabilities/layout/mc-layout-business-report.json');
+      const before = readFileSync(input);
+      const report = spawnSync(process.execPath, [path.join(scripts, 'inspect-page.mjs'), input], {encoding: 'utf8'});
+      expect(JSON.parse(report.stdout)).toMatchObject({readable: true, upgrade: {possible: true}});
+      const migrated = spawnSync(process.execPath, [path.join(scripts, 'upgrade-page.mjs'), input, '--out-dir', path.join(folder, 'upgraded')], {encoding: 'utf8'});
+      expect(migrated.status, migrated.stdout).toBe(0);
+      expect(readFileSync(input)).toEqual(before);
+      const output = JSON.parse(migrated.stdout).output;
+      const document = JSON.parse(readFileSync(output, 'utf8'));
+      document.meta = {...document.meta, mcReleaseNote: '真实新增字段'};
+      writeFileSync(output, JSON.stringify(document));
+      expect(JSON.parse(spawnSync(process.execPath, [path.join(scripts, 'inspect-page.mjs'), output], {encoding: 'utf8'}).stdout).readable).toBe(true);
+    } finally { rmSync(folder, {recursive: true, force: true}); }
+  }, scenarioTimeout * 2);
+
 });

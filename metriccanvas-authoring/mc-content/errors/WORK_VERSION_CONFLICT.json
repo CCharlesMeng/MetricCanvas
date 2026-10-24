@@ -5,6 +5,32 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py",
+      "line": 223
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/platform_authoring.py",
+      "line": 146
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/work/state.py",
+      "line": 86
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/work/state.py",
+      "line": 89
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/work/state.py",
+      "line": 93
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/work/state.py",
+      "line": 96
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

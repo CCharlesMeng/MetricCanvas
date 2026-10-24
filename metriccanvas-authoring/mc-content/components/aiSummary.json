@@ -1,0 +1,133 @@
+{
+  "type": "aiSummary",
+  "label": "AI 总结",
+  "aliases": [],
+  "purpose": "Report 区域分析摘要：展示已有正文，或基于限定范围和时间条件异步生成",
+  "chooseWhen": [
+    "Report 已有非空 body 直接展示；否则根据提示词和区域范围生成，集成应用注入异步 generate",
+    "明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配"
+  ],
+  "dataShape": "不声明数据槽；relatedDataSources 显式引用、relatedSections 收集可见分区、或 scope: container 收集直接所属区域；采用非明细字段，文字不参与",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [],
+  "title": "optional",
+  "defaultSpan": 12,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "aiSummary.overview",
+  "reference": "references/page-metadata/components/aiSummary.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/forecast-page.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "field-text-component",
+          "minor": 0,
+          "description": "字段绑定长文本组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-ai-summary.json",
+      "requiredVersion": "6.54",
+      "capabilities": [
+        {
+          "id": "ai-summary-body-routing",
+          "minor": 54,
+          "description": "AI 总结由非空 body 直接决定展示，无正文时动态生成"
+        },
+        {
+          "id": "ai-summary-plural-source-references",
+          "minor": 53,
+          "description": "AI 总结数据源数组采用复数 relatedDataSources"
+        },
+        {
+          "id": "ai-summary-report-modes",
+          "minor": 51,
+          "description": "Report 双模式区域 AI 总结与会话缓存"
+        },
+        {
+          "id": "report-header-export-buttons",
+          "minor": 31,
+          "description": "Report 统一导出按钮，按格式配置名称、文件名和渲染倍率"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-ai-summary-regions.json",
+      "requiredVersion": "6.58",
+      "capabilities": [
+        {
+          "id": "ai-summary-container-scope",
+          "minor": 58,
+          "description": "AI 总结组合卡准入、显式所在区域与顶部结构约束"
+        },
+        {
+          "id": "ai-summary-plural-source-references",
+          "minor": 53,
+          "description": "AI 总结数据源数组采用复数 relatedDataSources"
+        },
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "report-header-export-buttons",
+          "minor": 31,
+          "description": "Report 统一导出按钮，按格式配置名称、文件名和渲染倍率"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

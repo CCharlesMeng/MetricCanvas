@@ -1,0 +1,279 @@
+{
+  "case": "ai-summary-scope-required",
+  "invariant": "report-ai-summary",
+  "input": {
+    "schemaVersion": "6.54",
+    "id": "report-ai-summary",
+    "layout": "report",
+    "meta": {
+      "title": "Report 区域 AI 总结",
+      "description": "本地 Mock：正文优先、页头时间查询、多区域范围、后台任务复用与安全文字降级。"
+    },
+    "filters": [
+      {
+        "id": "month",
+        "type": "timeRange",
+        "precision": "month",
+        "label": "报告期间",
+        "required": true,
+        "default": {
+          "from": "2026-09",
+          "to": "2026-09"
+        }
+      }
+    ],
+    "dataSources": {
+      "usage": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension",
+            "label": "月份",
+            "queryField": "统计周期"
+          },
+          "tokens": {
+            "type": "number",
+            "role": "measure",
+            "label": "Tokens 消耗量",
+            "queryField": "Tokens消耗量"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "统计周期"
+                  ],
+                  "output_metrics": [
+                    "Tokens消耗量"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": false
+                    },
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "month": {
+                "target": "time"
+              }
+            }
+          }
+        }
+      },
+      "comparison": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension",
+            "label": "月份",
+            "queryField": "统计周期"
+          },
+          "tokens": {
+            "type": "number",
+            "role": "measure",
+            "label": "Tokens 消耗量",
+            "queryField": "Tokens消耗量"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "统计周期"
+                  ],
+                  "output_metrics": [
+                    "Tokens消耗量"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": false
+                    },
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "month": {
+                "target": "time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "header",
+        "container": "plain",
+        "components": [
+          {
+            "id": "header-title",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "Report 区域 AI 总结（本地 Mock）",
+              "filterIds": [
+                "month"
+              ],
+              "exportButtons": [
+                {
+                  "format": "png"
+                },
+                {
+                  "format": "pdf"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "provided",
+        "container": "plain",
+        "components": [
+          {
+            "id": "provided-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "后端已生成正文",
+              "body": "<p><strong>已有结论：</strong>本段由页面直接提供，无需调用 AI。</p>"
+            }
+          },
+          {
+            "id": "fallback-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "结构容错示例",
+              "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字"
+            }
+          }
+        ]
+      },
+      {
+        "id": "usage-region",
+        "container": "plain",
+        "title": "用量分析区域",
+        "components": [
+          {
+            "id": "usage-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "用量区域分析",
+              "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。"
+            }
+          },
+          {
+            "id": "usage-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "usage"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "month",
+                  "title": "月份"
+                },
+                {
+                  "field": "tokens",
+                  "title": "Tokens 消耗"
+                }
+              ],
+              "pagination": {
+                "mode": "none"
+              },
+              "title": "用量分析区域"
+            }
+          }
+        ]
+      },
+      {
+        "id": "comparison-region",
+        "container": "plain",
+        "title": "独立对照区域",
+        "components": [
+          {
+            "id": "comparison-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "独立数据源分析",
+              "promptTemplate": "概括对照数据，不使用其他区域的数据。",
+              "relatedDataSources": [
+                "comparison"
+              ]
+            }
+          },
+          {
+            "id": "comparison-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "comparison"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "month",
+                  "title": "月份"
+                },
+                {
+                  "field": "tokens",
+                  "title": "对照用量"
+                }
+              ],
+              "pagination": {
+                "mode": "none"
+              },
+              "title": "独立对照区域"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/2/components/0/props",
+      "message": "动态生成需要 relatedDataSources 或 relatedSections 或 scope（旧声明仍可读取）"
+    }
+  ]
+}

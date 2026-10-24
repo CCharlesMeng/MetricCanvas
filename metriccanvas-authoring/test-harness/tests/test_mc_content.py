@@ -249,5 +249,129 @@ class McContentTest(unittest.TestCase):
             self.assertNotEqual(subprocess.run(command, capture_output=True, check=False).returncode, 0)
 
 
+class McCompletenessTest(unittest.TestCase):
+    def test_full_tool_schemas_match_live_registration_and_refs_close(self):
+        import asyncio
+        from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
+        from jsonschema import Draft202012Validator
+        tools = asyncio.run(create_platform_mcp_server(None).list_tools())
+        for tool in tools:
+            actual = query_content('tool', tool.name, {'includeSchema': True, 'maxBytes': 1048576}, root=CONTENT)['content']
+            self.assertEqual(actual['inputSchema'], tool.parameters)
+            Draft202012Validator.check_schema(actual['inputSchema'])
+            self.assert_references(actual['inputSchema'], actual['inputSchema'])
+
+    def assert_references(self, value, schema):
+        if isinstance(value, dict):
+            if '$ref' in value:
+                target = schema
+                self.assertTrue(value['$ref'].startswith('#/'))
+                for part in value['$ref'][2:].split('/'):
+                    target = target[part.replace('~1', '/').replace('~0', '~')]
+            for child in value.values():
+                self.assert_references(child, schema)
+        elif isinstance(value, list):
+            for child in value:
+                self.assert_references(child, schema)
+
+    def test_common_knowledge_and_tool_fields_are_bounded_with_continuations(self):
+        for key in ['table.width', 'fields.format', 'data.query']:
+            result = query_content('knowledge', key, root=CONTENT)
+            self.assertFalse(result['truncated'], key)
+            self.assertTrue(result['content']['semantics'])
+        result = query_content('tool', 'edit_page', {'pointer': '#/properties/expected_version'}, root=CONTENT)
+        self.assertFalse(result['truncated'])
+        self.assertEqual(result['content']['facts']['minimum'], 0)
+        self.assertIn('required', result['content']['ancestors'][0]['facts'])
+        with self.assertRaises(ContentError):
+            query_content('tool', 'edit_page', {'pointer': '#/missing'}, root=CONTENT)
+        node = query_content('node', '#/definitions/tableComponent', root=CONTENT)
+        self.assertTrue(node['content']['nodes'])
+
+    def test_nested_components_use_product_walk_and_preserve_slot_selection(self):
+        value = envelope()
+        value['userRequirements'] = [{'id': 'note', 'mustBe': 'text'}]
+        compiled = compile_layout(value, root=CONTENT)
+        document = page()
+        document['sections'][1]['components'] = [{'id': 'container', 'type': 'tabContainer', 'layout': {'span': 12},
+            'props': {'tabs': [{'id': 'first', 'label': '合成', 'components': document['sections'][1]['components']}]}}]
+        report = inspect_assembly(document, compiled['inspectionSpec'], root=CONTENT)
+        self.assertEqual(report['status'], 'ok', report)
+        nested = next(item for item in report['schema']['components'] if item['id'] == 'note')
+        self.assertIn('/props/tabs/0/components/', nested['path'])
+        self.assertIn('compute-business-semantics', report['notVerified'])
+
+    def test_exact_program_association_and_wrong_artifact(self):
+        from mc_resources import value_digest
+        value = {**envelope(), 'requestId': 'parallel-request-A'}
+        compiled = compile_layout(value, root=CONTENT)
+        document = page()
+        spec = compiled['inspectionSpec']
+        association = {'requestId': value['requestId'], 'compileInput': value,
+            'documentSha256': value_digest(document), 'inspectionSpecSha256': value_digest(spec)}
+        report = inspect_assembly(document, spec, correlation=association, root=CONTENT)
+        self.assertEqual(report['correlation']['status'], 'checked')
+        association['requestId'] = 'parallel-request-B'
+        self.assertEqual(inspect_assembly(document, spec, correlation=association, root=CONTENT)['status'], 'not_run')
+        self.assertEqual(inspect_assembly(document, spec, root=CONTENT)['correlation']['status'], 'not_run')
+
+    def test_old_loaded_code_rejects_a_self_consistently_replaced_script(self):
+        from mc_resources import digest
+        with tempfile.TemporaryDirectory() as folder:
+            installed = Path(folder) / 'changed-code'
+            shutil.copytree(CONTENT, installed, ignore=shutil.ignore_patterns('__pycache__'))
+            changed = installed / 'scripts/mc_layout_compiler.py'
+            changed.write_text(changed.read_text() + '\n# replaced implementation\n')
+            path = installed / 'mc-content.version.json'
+            manifest = json.loads(path.read_text())
+            for item in manifest['files']:
+                item['sha256'] = digest((installed / item['file']).read_bytes())
+            manifest['contentSha256'] = digest((json.dumps(manifest['files'], ensure_ascii=False, indent=2) + '\n').encode())
+            path.write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ContentError, 'Reload all MC modules'):
+                verify_package(installed)
+
+    def test_distributed_tool_call_examples_match_full_input_schemas(self):
+        from jsonschema import Draft202012Validator
+        for example in json.loads((CONTENT / 'examples/tool-calls.json').read_text()):
+            schema = json.loads((CONTENT / f"tool-contracts/{example['tool']}.json").read_text())['inputSchema']
+            self.assertEqual(list(Draft202012Validator(schema).iter_errors(example['arguments'])), [])
+
+    def test_common_knowledge_is_identical_to_standalone_local_authoring(self):
+        mc = (CONTENT / 'references/authoring-knowledge/model.json').read_bytes()
+        local = (ROOT / 'skill/metriccanvas-local-authoring/references/authoring-knowledge/model.json').read_bytes()
+        self.assertEqual(mc, local)
+
+    def test_standalone_install_knowledge_compile_inspect_and_real_migration(self):
+        import os
+        from mc_content import upgrade_page
+        with tempfile.TemporaryDirectory() as folder:
+            installed = Path(folder) / 'only-mc'
+            shutil.copytree(CONTENT, installed, ignore=shutil.ignore_patterns('__pycache__'))
+            env = {**os.environ, 'PYTHONPATH': '', 'METRICCANVAS_BUNDLE_ROOT': str(Path(folder) / 'missing-repository')}
+            command = [sys.executable, str(installed / 'scripts/mc_content.py')]
+            result = subprocess.run([*command, 'query', '--topic', 'knowledge', '--key', 'table.width'], cwd=folder, env=env, capture_output=True, text=True, check=True)
+            self.assertFalse(json.loads(result.stdout)['truncated'])
+            sample = subprocess.run([sys.executable, str(installed / 'examples/program-call.py')], cwd=folder, env=env, capture_output=True, text=True, check=True)
+            self.assertEqual(json.loads(sample.stdout)['inspectionStatus'], 'ok')
+            compiled = compile_layout(envelope(), root=installed)
+            self.assertEqual(inspect_assembly(page(), compiled['inspectionSpec'], root=installed)['status'], 'ok')
+            legacy = ROOT.parent / 'tools/fixtures/local-authoring-upgrade/chart-filter.json'
+            original = Path(folder) / 'legacy.json'
+            original.write_bytes(legacy.read_bytes())
+            before = original.read_bytes()
+            dry = upgrade_page(original, root=installed)
+            self.assertEqual(dry['status'], 'ready', dry)
+            output = Path(folder) / 'migrated'
+            written = upgrade_page(original, output, root=installed)
+            self.assertEqual(written['status'], 'ready', written)
+            self.assertTrue(written['output'])
+            self.assertEqual((output / 'original/legacy.json').read_bytes(), before)
+            target = json.loads(Path(written['output']).read_text())
+            self.assertTrue(inspect_schema(target, root=installed)['readable'])
+            self.assertTrue(any(item['type'] == 'compositeCard' for section in target['sections'] for item in section['components']))
+            self.assertEqual(original.read_bytes(), before)
+
+
 if __name__ == '__main__':
     unittest.main()

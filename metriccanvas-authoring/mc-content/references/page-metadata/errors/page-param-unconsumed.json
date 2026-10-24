@@ -1,0 +1,24 @@
+{
+  "case": "page-param-unconsumed",
+  "invariant": "page-param-consumed",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页面参数 unused 没有任何消费者;未被消费的参数通常意味着绑错了位置",
+      "paths": [
+        "/params/3/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "params": [
+      "…",
+      "…",
+      "…",
+      {
+        "id": "unused"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

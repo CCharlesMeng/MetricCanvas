@@ -1,0 +1,35 @@
+{
+  "case": "ai-summary-term-conflict",
+  "invariant": "ai-summary-related-data",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "关联字段 gmv 的术语映射冲突:成交额/销售额",
+      "paths": [
+        "/sections/0/components/0/props/relatedData/other/fields/0/term"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "relatedData": {
+                "other": {
+                  "fields": [
+                    {
+                      "term": "销售额"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

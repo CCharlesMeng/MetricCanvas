@@ -1,0 +1,36 @@
+{
+  "case": "ranking-semantic-description-not-detail",
+  "invariant": "ranking-detail-semantic-description",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 note 的 role 为 dimension，此处要求 detail",
+      "paths": [
+        "/sections/0/components/2/props/semanticDescriptionField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "语义 HTML 说明必须绑定 semanticHtml 字段:note",
+      "paths": [
+        "/sections/0/components/2/props/semanticDescriptionField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "props": {
+              "semanticDescriptionField": "note"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

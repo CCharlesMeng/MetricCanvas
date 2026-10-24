@@ -1,0 +1,17 @@
+{
+  "case": "layout-invalid-value",
+  "invariant": "page-layout-compatibility",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"report\",\"dashboard\"]",
+      "paths": [
+        "/layout"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "layout": "kiosk"
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

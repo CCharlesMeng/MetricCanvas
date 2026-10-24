@@ -1,0 +1,28 @@
+{
+  "case": "filter-group-duplicate-control",
+  "invariant": "filter-group",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "同一个筛选器只能声明一个筛选按钮组",
+      "paths": [
+        "/sections/0/components/1/props/filterId"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "filterId": "channel"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

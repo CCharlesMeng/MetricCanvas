@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "chart-option.section-4730cdac"
+  ],
+  "semantics": [
+    {
+      "module": "chart-option",
+      "reference": "references/page-metadata/chart-option.md",
+      "blocks": [
+        "# 图表高级 ECharts 呈现扩展\n\n自 6.32 起，`barChart`、`lineChart`、`pieChart` 可声明隐含 `props.echartsOption`。它是正式协议中的高级入口，属性面板不展示、AI 默认不主动生成；只在用户明确要求 ECharts 定制，或现有属性不足且用户已接受时使用。普通编辑保留已有配置；切换图表类型时清除并向 console 说明，撤销恢复。",
+        "## 失败、降级和诊断\n\n非法 JSON、受保护路径、越界等校验错误直接拒绝，不降级绕过。通过校验后，扩展构造、合并、布局或绘制抛错时，销毁失败实例，干净基础配置回退一次；基础配置自身失败则保留标题和容器、绘图区留空。原页面配置保留。resize 不重新启用已失败的扩展，有效数据或配置变化后重新尝试。\n\n本能力诊断只写 console，包含组件 id/type、stage、path 和原始 cause。页面、toast、tooltip 和导出按钮不展示错误文字；CLI/工具/独立校验器仍返回结构化错误。无法定位叶子时使用选项入口路径，不虚构位置。导出视图发生降级或基础绘制失败就终止 PDF/PNG，无下载，原因只 console；其他既有错误处理保持。\n\n完整场景 `chart-echarts-option-page` 由本模块的示例路由提供，全部为内联演示数据。数据/结构拒绝由契约反例验证；绘制恢复与导出终止由浏览器故障注入验证，不依赖某个 ECharts 属性恰好报错。地图和其他组件不支持本入口。\n\n货币字段选择同样只消费页面协议拥有的字段绑定；不透明`echartsOption`内部的`byFilter`等同名键不声明IOC能力、不参与选择器依赖，也不被运行时货币投影改写。"
+      ],
+      "rules": [
+        {
+          "id": "chart-echarts-option",
+          "description": "6.32 三图高级呈现 JSON、保护数据结构、系列和轴补丁边界",
+          "valid": [
+            "chart-echarts-option-page"
+          ],
+          "invalid": [
+            "chart-option-before-6.32",
+            "chart-option-legacy-version",
+            "chart-option-html-template",
+            "chart-option-css-fragment",
+            "chart-option-data-protected",
+            "chart-option-series-overflow",
+            "chart-option-wrapper-forbidden",
+            "chart-option-other-component"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/chart-echarts-option-page.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

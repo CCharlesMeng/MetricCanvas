@@ -1,0 +1,278 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "reportHeader.export"
+  ],
+  "semantics": [
+    {
+      "module": "reportHeader",
+      "reference": "references/page-metadata/components/reportHeader.md",
+      "blocks": [
+        "# 报告页头 reportHeader\n\n表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML。适用于任何完整页面的开头。数据形状：不绑定页面数据源。\n\n页面内容页头；title为必需文本取值，可引用必需页面参数或当前已应用筛选；6.23 起可用 `{parts:[{filter:\"report-month\",format:\"period\"},\" 经营分析报告\"]}` 组合动态期间与固定名称，规则见[文本片段组合](../params-and-text-values.md#文本片段组合623)。页面meta.title是另一个页面级声明，不替代该组件必填title。\n\ndashboard 的筛选器由统一工具栏呈现，reportHeader 禁止配置 filterIds；下述日期工具带只用于 report。\n\nfilterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封面上方独立工具带；宽容器右对齐，窄容器换行。控件使用运行时筛选状态，不拥有查询。6.15 起 filterIds 仅决定控件位置，不自动创建或覆盖 asOf。期间文字使用 asOf.value: {filter: 筛选器id, format: \"period\"} 显式引用当前已应用值；字面量保持静态，param 引用保持打开时的参数值。6.13/6.14 继续按旧的期间派生规则读取。导出保留捕获时已经解析的静态文字。",
+        "## 导出按钮（6.31）\n\n统一声明 `exportButtons` 数组，按数组顺序显示按钮。一项显示一个按钮，两项显示两个按钮；每种格式最多一项。不声明即不显示。只允许Report顶层页头，不能与旧 `pdfExport` / `pngExport` 混用。\n\n```json\n{\n  \"exportButtons\": [\n    { \"format\": \"pdf\", \"label\": \"导出 PDF\", \"scale\": 2 },\n    { \"format\": \"png\", \"label\": \"导出图片\", \"scale\": 3 }\n  ]\n}\n```\n\n每一项都是相同的导出按钮配置：\n\n| 字段 | 声明与行为 |\n|---|---|\n| `format` | 必需，只允许 `pdf` 或 `png`；图片只能输出一张PNG。 |\n| `label` | 可选非空文本取值；默认PDF为“导出 PDF”，PNG为“导出图片”。 |\n| `filename` | 可选非空文本取值，默认触发页头标题；清理非法字符并规范为格式对应的单一扩展名。 |\n| `scale` | 渲染倍数，PDF有效值2、3、4，默认2；PNG有效值3、4，默认3。任何不支持的值（包括字符串、空值和其他类型）按未配置处理，读取时移除该项scale，使用对应默认值，不阻止页面打开或下载。图表、渐变文字和截图同步消费，不叠加设备DPR，不改变布局CSS宽度。 |\n\n`label`、`filename`复用参数、已应用筛选及parts文本取值，点击同步捕获；之后的筛选变化不改变本次文件名与报告内容。配置决定按钮名称、格式和清晰度，运行时不再弹出格式菜单或清晰度设置。点击直接准备、编码并下载；无二次“生成/保存”步骤。PDF与PNG使用同一种按钮和实例任务状态，生成期间禁用本实例重复导出，在触发按钮显示进度；失败显示“导出失败，重试”及具体原因。成功后恢复名称。工具带和进度不进入文件。\n\n已有6.28 `pdfExport: {label?, filename?}` 和6.30 `pngExport: {filename?, scale?}` 继续读取，并转换为同一种直接下载按钮；旧PDF默认文字“下载 PDF”保留，旧PNG的有效scale作为直接导出的倍率，无效值同样回退3倍，不再提供运行时选择。编辑器修改导出配置时写入 `exportButtons` 并升级至6.31。\n\n完整作者页面见 `report-png-export`：首个页头同时启用PDF 2倍和PNG 3倍，第二个页头展示PDF与PNG 4倍，普通页头为未启用对照；长图见 `report-png-long-export`，PNG 3倍。它们使用本地合成数据。既有 `report-pdf-export` 覆盖旧PDF兼容读取。`report-export-scale-fallback` 覆盖PDF的99、PNG的2及旧PNG字符串倍率，分别回退2/3/3倍。\n\nPDF默认A4竖向，存在引擎标记的宽内容时整份横向；零额外外边距，按原有排布连续切片，不按章节强制换页、不重复表头或添加页码。单页像素超过截图块预算时进一步分块并写入同一纸张，保持配置倍率。主线程按时间预算让出执行权，Worker无损编码，全部成功才下载。"
+      ],
+      "rules": [
+        {
+          "id": "report-header-export-buttons",
+          "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
+          "valid": [
+            "report-export-buttons",
+            "report-export-scale-fallback"
+          ],
+          "invalid": [
+            "report-export-before-6.31",
+            "report-export-dashboard",
+            "report-export-other-format",
+            "report-export-duplicate-format",
+            "report-export-mixed-legacy"
+          ]
+        },
+        {
+          "id": "report-header-png-export",
+          "description": "6.30 Report导出图片，只输出一张PNG，固定名称与3/4倍倍率",
+          "valid": [
+            "report-png-export",
+            "report-export-scale-fallback"
+          ],
+          "invalid": [
+            "report-png-before-6.30",
+            "report-png-dashboard",
+            "report-png-empty-filename",
+            "report-png-fixed-label",
+            "report-png-other-format"
+          ]
+        },
+        {
+          "id": "report-header-pdf-export",
+          "description": "Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值",
+          "valid": [
+            "report-pdf-export"
+          ],
+          "invalid": [
+            "report-pdf-before-6.28",
+            "report-pdf-on-dashboard",
+            "report-pdf-empty-label",
+            "report-pdf-empty-filename",
+            "report-pdf-unknown-option"
+          ]
+        },
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/inline-report.json",
+        "references/page-metadata/examples/text-composition-page.json",
+        "references/page-metadata/examples/report-pdf-export.json",
+        "references/page-metadata/examples/report-png-export.json",
+        "references/page-metadata/examples/report-export-buttons.json",
+        "references/page-metadata/examples/report-export-scale-fallback.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.58",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent",
+      "path": "@reportHeaderComponent",
+      "module": "reportHeader",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "layout",
+          "props"
+        ],
+        "properties": {
+          "id": "#/definitions/reportHeaderComponent/properties/id",
+          "visibleWhen": "#/definitions/reportHeaderComponent/properties/visibleWhen",
+          "type": "#/definitions/reportHeaderComponent/properties/type",
+          "layout": "#/definitions/reportHeaderComponent/properties/layout",
+          "props": "#/definitions/reportHeaderComponent/properties/props"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props",
+      "path": "@reportHeaderComponent.props",
+      "module": "reportHeader",
+      "required": "本分支必填",
+      "note": "组件的受控呈现配置。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": "#/definitions/reportHeaderComponent/properties/props/properties/title",
+          "filterIds": "#/definitions/reportHeaderComponent/properties/props/properties/filterIds",
+          "exportButtons": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons",
+          "pdfExport": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport",
+          "pngExport": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport",
+          "subtitle": "#/definitions/reportHeaderComponent/properties/props/properties/subtitle",
+          "subtitleFormat": "#/definitions/reportHeaderComponent/properties/props/properties/subtitleFormat",
+          "generatedBy": "#/definitions/reportHeaderComponent/properties/props/properties/generatedBy",
+          "badge": "#/definitions/reportHeaderComponent/properties/props/properties/badge",
+          "asOf": "#/definitions/reportHeaderComponent/properties/props/properties/asOf",
+          "tags": "#/definitions/reportHeaderComponent/properties/props/properties/tags",
+          "variant": "#/definitions/reportHeaderComponent/properties/props/properties/variant",
+          "decoration": "#/definitions/reportHeaderComponent/properties/props/properties/decoration"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons",
+      "path": "@reportHeaderComponent.props.exportButtons",
+      "module": "reportHeader",
+      "required": "本分支可选",
+      "note": "6.31统一导出按钮数组，1至2项，每种格式最多一项，顺序即显示顺序；不能混用旧导出字段。每项声明format、可选label/filename/scale，点击直接下载。",
+      "enums": {},
+      "facts": {
+        "minItems": 1,
+        "maxItems": 2,
+        "type": "array",
+        "items": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items"
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

@@ -1,0 +1,25 @@
+{
+  "case": "time-point-month-format",
+  "invariant": "time-point-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点须为 YYYY-MM 格式",
+      "paths": [
+        "/filters/4/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      "…",
+      "…",
+      {
+        "default": "202607"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

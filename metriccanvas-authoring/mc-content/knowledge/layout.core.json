@@ -1,0 +1,190 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "layout.core"
+  ],
+  "semantics": [
+    {
+      "module": "sections-and-layout",
+      "reference": "references/page-metadata/sections-and-layout.md",
+      "blocks": [
+        "# 内容分区与布局\n\nsections组织有序内容分区，每个分区至少一个组件。默认12列等权网格；columnTracks声明正整数比例，span占轨道数量而非像素。组件自身layout不保存页面派生宽度。\n\nplain去掉分区容器，由组件自带外观；panel为章节面板；card为小节卡片。容器样式只由section.container声明。layer区分content与backdrop；铺底层不占正常内容流，不能伪造一套绝对坐标画布。"
+      ],
+      "rules": [
+        {
+          "id": "section-id-unique",
+          "description": "内容分区 id 唯一",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "duplicate-section-id"
+          ]
+        },
+        {
+          "id": "component-id-unique",
+          "description": "组件 id 在整页（含容器内）唯一",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "duplicate-component-id",
+            "duplicate-component-id-in-container"
+          ]
+        },
+        {
+          "id": "layer-top-level-only",
+          "description": "layout.layer 只能声明在内容分区的顶层组件上",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "layer-inside-composite-card"
+          ]
+        },
+        {
+          "id": "single-backdrop-per-section",
+          "description": "一个分区最多一个 backdrop",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "two-backdrops"
+          ]
+        },
+        {
+          "id": "backdrop-needs-siblings",
+          "description": "声明 backdrop 的分区必须还有别的组件叠在其上",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "backdrop-only-section"
+          ]
+        },
+        {
+          "id": "backdrop-container-plain",
+          "description": "声明 backdrop 的分区必须使用 container: plain",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "backdrop-in-card-container",
+            "backdrop-without-container"
+          ]
+        },
+        {
+          "id": "column-track-span",
+          "description": "声明列轨的分区里顶层组件 span 不得超过轨数",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "span-exceeds-column-tracks"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/composite-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/dashboard-title-styles.json",
+        "references/page-metadata/examples/report-title-styles.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.58",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/componentLayout",
+      "path": "@componentLayout",
+      "module": "sections-and-layout",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "span"
+        ],
+        "properties": {
+          "span": "#/definitions/componentLayout/properties/span",
+          "connectPrevious": "#/definitions/componentLayout/properties/connectPrevious",
+          "layer": "#/definitions/componentLayout/properties/layer"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/section",
+      "path": "@section",
+      "module": "sections-and-layout",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "id",
+          "components"
+        ],
+        "properties": {
+          "id": "#/definitions/section/properties/id",
+          "visibleWhen": "#/definitions/section/properties/visibleWhen",
+          "title": "#/definitions/section/properties/title",
+          "container": "#/definitions/section/properties/container",
+          "columnTracks": "#/definitions/section/properties/columnTracks",
+          "components": "#/definitions/section/properties/components"
+        },
+        "additionalProperties": false
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

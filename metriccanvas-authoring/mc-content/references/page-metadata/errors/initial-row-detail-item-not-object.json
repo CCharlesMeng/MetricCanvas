@@ -1,0 +1,31 @@
+{
+  "case": "initial-row-detail-item-not-object",
+  "invariant": "detail-item-object",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 嵌套明细字段 events 的第 1 项必须是对象",
+      "paths": [
+        "/dataSources/customers/source/initial/rows/0/events/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "customers": {
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "events": [
+                  "续约"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

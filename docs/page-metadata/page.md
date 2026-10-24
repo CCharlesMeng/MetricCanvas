@@ -68,3 +68,5 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 
 
 普通行内页头（`layout:"inline"`、`density:"normal"`、`collapse:"none"`）按小箭头 `<`、标题、可选灰色标签、筛选依次进入同一个换行流；窄容器不固定两栏。标准/密集/详情合成页不自动添加说明、编码或期间事实。compact、firstRow、overflow和stacked继续各自原有呈现。返回仍要求可信 returnContext/back。完整场景见 `ioc-header-standard`、`ioc-header-dense`、`ioc-header-detail` 与 `/ioc-header-review`。
+
+MC 内容投影与本地创作知识由同一产品参考生成。完整性诊断场景为 `mc-content-layout-demo`；内容身份、页面版本与实际部署身份分别核对。旧文件的可读性、能力下限、可迁移性和人工语义处理项分别返回，不能仅提升 schemaVersion 绕过迁移。

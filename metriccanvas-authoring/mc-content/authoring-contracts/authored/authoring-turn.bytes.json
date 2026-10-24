@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "cases": [
+    {
+      "name": "unicode-and-order",
+      "input": {
+        "𐀀": "扩展",
+        "": "值",
+        "title": "销售",
+        "a": 1
+      },
+      "documentJson": "{\"a\":1,\"title\":\"销售\",\"𐀀\":\"扩展\",\"\":\"值\"}",
+      "sha256": "6a69adf0fc12c972503ae3ab58ad0fe38011819280fb625610e6c6ade3a36261"
+    },
+    {
+      "name": "numbers",
+      "input": {
+        "small": 1e-7,
+        "large": 1e+21,
+        "decimal": 1.25,
+        "zero": 0,
+        "integer": 1
+      },
+      "documentJson": "{\"decimal\":1.25,\"integer\":1,\"large\":1e+21,\"small\":1e-7,\"zero\":0}",
+      "sha256": "90161a2d61f14c5874e66a741ae92408455994c5d215e43900754e2e801ee9b4"
+    },
+    {
+      "name": "nested",
+      "input": {
+        "z": [
+          null,
+          true,
+          false,
+          {
+            "b": 2,
+            "a": "\n文本"
+          }
+        ],
+        "a": 0
+      },
+      "documentJson": "{\"a\":0,\"z\":[null,true,false,{\"a\":\"\\n文本\",\"b\":2}]}",
+      "sha256": "d36d1c97e52c8290a8e4eb95c82ce36e796d1b5568ad0b7f4521505d42f6ebc8"
+    }
+  ]
+}

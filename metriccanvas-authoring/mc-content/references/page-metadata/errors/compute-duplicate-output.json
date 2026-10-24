@@ -1,0 +1,40 @@
+{
+  "case": "compute-duplicate-output",
+  "invariant": "compute-operator-outputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "算子产出字段重复:rate",
+      "paths": [
+        "/dataSources/targets/compute/1/output"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行缺少字段:gap",
+      "paths": [
+        "/dataSources/targets/source/rows/0/gap",
+        "/dataSources/targets/source/rows/1/gap"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "targets": {
+        "compute": [
+          "…",
+          {
+            "output": "rate"
+          }
+        ],
+        "source": {
+          "rows": [
+            {},
+            {}
+          ]
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

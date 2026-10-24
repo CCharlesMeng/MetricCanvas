@@ -5,6 +5,16 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "tools/mc-content/scripts/mc_inspection.py",
+      "line": 16
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_inspection.py",
+      "line": 14
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

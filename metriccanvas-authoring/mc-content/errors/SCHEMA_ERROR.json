@@ -1,6 +1,528 @@
 {
   "code": "SCHEMA_ERROR",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/node_validator.py",
+      "line": 15
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 150
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 157
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 186
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 242
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 761
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 142
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 191
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 210
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 213
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 402
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 644
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 652
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 654
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 656
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 707
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 713
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1312
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1325
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1628
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1678
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1799
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1931
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1944
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2472
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2475
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2481
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2485
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2657
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2791
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 125
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 196
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 390
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 531
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 682
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 698
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 804
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 808
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 811
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 814
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1321
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1343
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1487
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1666
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1694
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1758
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1956
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1968
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2077
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2082
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2092
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2105
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2128
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2132
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2299
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2325
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2494
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 173
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 275
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 282
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 289
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 378
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 398
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 473
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 476
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 479
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 481
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 509
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 522
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 602
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 785
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 853
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1203
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1210
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1300
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1501
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1503
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1542
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1544
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1549
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1580
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1616
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1720
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1724
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1808
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1971
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1973
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2013
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2099
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2116
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2234
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2241
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2518
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 296
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 386
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 620
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 730
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 834
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 836
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 838
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 842
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 858
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1509
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1591
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1731
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1743
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1753
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1884
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2256
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2259
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2355
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2365
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2389
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2438
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2448
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2501
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 860
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1561
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1611
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1769
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2048
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2269
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 878
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1566
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2288
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 370
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 871
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 876
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 2278
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

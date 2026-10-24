@@ -1,0 +1,164 @@
+{
+  "type": "text",
+  "label": "文本",
+  "aliases": [],
+  "purpose": "承载说明、口径提示或由后端返回的人工/AI 已确认分析结论；可显式使用受控语义 HTML 正文",
+  "chooseWhen": [
+    "摘要默认使用 text；说明、提示、后端返回或已确认结论均选择本组件",
+    "页面内分隔章节的大标题使用 variant: heading，标题写在 props.title，通常放在 container: plain 的分区里",
+    "摘要需要分色富文本时声明 bodyFormat: semanticHtml，并在 body 中只使用受控标签和语义类",
+    "分析报告摘要使用 variant: reportInline；它会默认显示图标和“AI 总结：”，metadata 只需声明正文"
+  ],
+  "dataShape": "不绑定页面数据源",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [],
+  "title": "optional",
+  "defaultSpan": 12,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "text.overview",
+  "reference": "references/page-metadata/components/text.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/reference-text-page.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/url-navigation-page.json",
+      "requiredVersion": "6.10",
+      "capabilities": [
+        {
+          "id": "open-detail-action",
+          "minor": 10,
+          "description": "组件点击在页内打开详情浮层"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "page-params",
+          "minor": 0,
+          "description": "顶层 params:页面参数声明(ADR-0047)"
+        },
+        {
+          "id": "filter-hierarchy",
+          "minor": 0,
+          "description": "层级维度筛选器(ADR-0050)"
+        },
+        {
+          "id": "metric-row-link",
+          "minor": 0,
+          "description": "指标行的显式非空值导航入口"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/reference-branches-page.json",
+      "requiredVersion": "6.5",
+      "capabilities": [
+        {
+          "id": "inline-page-params",
+          "minor": 5,
+          "description": "页面参数 value、timeRange 与 DQE 取值位置的受控原位引用"
+        },
+        {
+          "id": "dimension-params",
+          "minor": 2,
+          "description": "维度参数、查询目标与筛选初值绑定"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "page-params",
+          "minor": 0,
+          "description": "顶层 params:页面参数声明(ADR-0047)"
+        },
+        {
+          "id": "dashboard-toolbar-visibility",
+          "minor": 0,
+          "description": "顶层 dashboardToolbar:显式关闭 dashboard 统一工具栏"
+        },
+        {
+          "id": "text-value-reference",
+          "minor": 0,
+          "description": "文本取值引用页面参数而不是写字面量(ADR-0047)"
+        },
+        {
+          "id": "key-value-panel-component",
+          "minor": 0,
+          "description": "key-value 信息面板组件"
+        },
+        {
+          "id": "filter-relative-time",
+          "minor": 0,
+          "description": "结构化相对时间表达(ADR-0035 / ADR-0050)"
+        },
+        {
+          "id": "category-breakdown-component",
+          "minor": 0,
+          "description": "分类明细组件(ADR-0053)"
+        },
+        {
+          "id": "map-legend-bands",
+          "minor": 0,
+          "description": "地图分档图例"
+        },
+        {
+          "id": "map-tooltip-fields",
+          "minor": 0,
+          "description": "地图 tooltip 扩展字段"
+        },
+        {
+          "id": "map-regional-overview",
+          "minor": 0,
+          "description": "地域概览地图与稳定字段匹配的固定摘要"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/dashboard-title-styles.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/report-title-styles.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

@@ -1,0 +1,1571 @@
+{
+  "invariants": [
+    {
+      "id": "query-dimension-measures",
+      "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+      "valid": [
+        "stored-count-measures"
+      ],
+      "invalid": [
+        "dimension-measure-version",
+        "dimension-measure-legacy",
+        "dimension-measure-time-qualified-version",
+        "dimension-measure-nonnumeric",
+        "dimension-number-not-series",
+        "dimension-measure-not-collapsible"
+      ]
+    },
+    {
+      "id": "dqe-object-query",
+      "description": "6.55 对象输出、显式时间字段与原始行契约",
+      "valid": [
+        "object-query-page"
+      ],
+      "invalid": [
+        "object-version",
+        "object-type-missing",
+        "object-output-missing",
+        "object-output-mixed",
+        "object-time-field-missing",
+        "object-time-format-missing"
+      ]
+    },
+    {
+      "id": "currency-range-presets",
+      "description": "6.46单位case内的币种预设保持单一金额状态",
+      "valid": [
+        "ioc-header-currency"
+      ],
+      "invalid": [
+        "currency-presets-version",
+        "currency-presets-missing",
+        "currency-presets-shared",
+        "currency-presets-invalid"
+      ]
+    },
+    {
+      "id": "independent-filter-candidates",
+      "description": "6.46显式无依赖候选使用V2及局部门禁",
+      "valid": [
+        "ioc-header-business",
+        "ioc-header-unconfigured"
+      ],
+      "invalid": [
+        "independent-candidates-version"
+      ]
+    },
+    {
+      "id": "required-multiple-selection",
+      "description": "6.46必选多选保持非空离散集合",
+      "valid": [
+        "ioc-header-months"
+      ],
+      "invalid": [
+        "required-multiple-version",
+        "required-multiple-empty"
+      ]
+    },
+    {
+      "id": "unified-page-header",
+      "description": "6.41 唯一页头及自然年选择",
+      "valid": [
+        "unified-year-header",
+        "unified-overflow-header"
+      ],
+      "invalid": [
+        "unified-header-version",
+        "unified-header-conflict",
+        "period-modes-empty",
+        "period-modes-duplicate",
+        "period-modes-default",
+        "period-modes-plain-range"
+      ]
+    },
+    {
+      "id": "conditional-presentation",
+      "description": "6.35共用展示条件、稳定目标和本地行边界",
+      "valid": [
+        "page-visibility-region-linkage",
+        "page-visibility-inputs",
+        "page-visibility-report",
+        "reference-conditions-page"
+      ],
+      "invalid": [
+        "condition-before-6.35",
+        "condition-row-outside-table",
+        "condition-level-set-unknown",
+        "condition-filter-unknown",
+        "condition-mixed-literals",
+        "condition-depth-limit",
+        "condition-part-duplicate",
+        "condition-row-key-required"
+      ]
+    },
+    {
+      "id": "metric-card-before",
+      "description": "6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度",
+      "valid": [
+        "metric-card-equation"
+      ],
+      "invalid": [
+        "metric-before-version",
+        "metric-before-report",
+        "metric-before-tracks",
+        "metric-before-span",
+        "metric-before-empty",
+        "metric-before-gap",
+        "metric-before-nested"
+      ]
+    },
+    {
+      "id": "tab-url-initialization",
+      "description": "6.33 Tab 显式 URL 初值与页面输入名称互斥",
+      "valid": [
+        "tab-url-initialization",
+        "tab-url-source"
+      ],
+      "invalid": [
+        "tab-url-before-6.33",
+        "tab-url-empty-key",
+        "tab-url-duplicate-key",
+        "tab-url-filter-conflict",
+        "tab-url-param-conflict"
+      ]
+    },
+    {
+      "id": "chart-echarts-option",
+      "description": "6.32 三图高级呈现 JSON、保护数据结构、系列和轴补丁边界",
+      "valid": [
+        "chart-echarts-option-page"
+      ],
+      "invalid": [
+        "chart-option-before-6.32",
+        "chart-option-legacy-version",
+        "chart-option-html-template",
+        "chart-option-css-fragment",
+        "chart-option-data-protected",
+        "chart-option-series-overflow",
+        "chart-option-wrapper-forbidden",
+        "chart-option-other-component"
+      ]
+    },
+    {
+      "id": "navigation-target-inputs",
+      "description": "6.40 显式跨页传值意图与受控来源",
+      "valid": [
+        "navigation-source-page",
+        "navigation-list-page",
+        "navigation-detail-page"
+      ],
+      "invalid": [
+        "navigation-inputs-before-6.40",
+        "navigation-policy-fixed-input",
+        "navigation-policy-false",
+        "navigation-inputs-false",
+        "navigation-inputs-unknown-filter"
+      ]
+    },
+    {
+      "id": "query-modes",
+      "description": "6.50 固定单选选择完整静态跨表查询，共享结果字段契约",
+      "valid": [
+        "query-modes-page"
+      ],
+      "invalid": [
+        "query-modes-before-6.50",
+        "query-modes-missing-case",
+        "query-modes-mapping-version",
+        "query-modes-mapping-missing",
+        "query-modes-mapping-unknown",
+        "query-modes-native-alias-rejected",
+        "query-modes-output-mismatch",
+        "query-modes-selector-missing",
+        "query-modes-root-body"
+      ]
+    },
+    {
+      "id": "time-extensions",
+      "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+      "valid": [
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "time-binding-branches-page"
+      ],
+      "invalid": [
+        "time-before-6.39",
+        "time-case-missing",
+        "time-query-xor",
+        "time-period-mismatch",
+        "time-output-mismatch",
+        "time-default-week",
+        "time-availability-default",
+        "time-fact-kind",
+        "time-window-static-options"
+      ]
+    },
+    {
+      "id": "currency-selection",
+      "description": "6.38金额范围和静态货币字段选择",
+      "valid": [
+        "currency-selection-page"
+      ],
+      "invalid": [
+        "currency-before-6.38",
+        "currency-case-missing",
+        "currency-metric-mismatch",
+        "currency-negative-default",
+        "currency-equal-default",
+        "currency-compute-mixed"
+      ]
+    },
+    {
+      "id": "business-filters",
+      "description": "6.37 封闭枚举与业务选择语义",
+      "valid": [
+        "business-filter-page"
+      ],
+      "invalid": [
+        "business-filter-before-6.37",
+        "business-filter-single-many",
+        "business-filter-disabled-default",
+        "business-filter-options-dependent",
+        "business-filter-unrestricted-without-options",
+        "business-filter-cycle"
+      ]
+    },
+    {
+      "id": "ioc-header",
+      "description": "6.36 页级IOC身份与唯一筛选归属",
+      "valid": [
+        "ioc-header-page"
+      ],
+      "invalid": [
+        "ioc-header-before-6.36",
+        "ioc-header-empty",
+        "ioc-header-toolbar-conflict",
+        "ioc-header-hidden-filter",
+        "ioc-header-missing-filter",
+        "ioc-header-duplicate-identity"
+      ]
+    },
+    {
+      "id": "table-row-number",
+      "description": "6.48表格序号列不绑定数据字段且受版本约束",
+      "valid": [
+        "table-row-number-page"
+      ],
+      "invalid": [
+        "row-number-before-6.48",
+        "row-number-invalid-width",
+        "row-number-no-data-field"
+      ]
+    },
+    {
+      "id": "table-row-expansion",
+      "description": "6.44单层子表格的作用域、只读及查询分页约束",
+      "valid": [
+        "table-row-expansion-inline",
+        "table-row-expansion-query"
+      ],
+      "invalid": [
+        "row-expansion-before-6.44",
+        "row-expansion-missing-parent-key",
+        "row-expansion-query-local-page",
+        "row-expansion-unbound-parent"
+      ]
+    },
+    {
+      "id": "report-header-export-buttons",
+      "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
+      "valid": [
+        "report-export-buttons",
+        "report-export-scale-fallback"
+      ],
+      "invalid": [
+        "report-export-before-6.31",
+        "report-export-dashboard",
+        "report-export-other-format",
+        "report-export-duplicate-format",
+        "report-export-mixed-legacy"
+      ]
+    },
+    {
+      "id": "report-header-png-export",
+      "description": "6.30 Report导出图片，只输出一张PNG，固定名称与3/4倍倍率",
+      "valid": [
+        "report-png-export",
+        "report-export-scale-fallback"
+      ],
+      "invalid": [
+        "report-png-before-6.30",
+        "report-png-dashboard",
+        "report-png-empty-filename",
+        "report-png-fixed-label",
+        "report-png-other-format"
+      ]
+    },
+    {
+      "id": "period-filter",
+      "description": "6.27 Dashboard 年季月与近一年期间筛选",
+      "valid": [
+        "dashboard-period-filter",
+        "dashboard-period-filter-month",
+        "dashboard-period-filter-more",
+        "dashboard-period-filter-readonly",
+        "period-filter-year-page",
+        "period-filter-quarter-page",
+        "period-filter-last12-months-page",
+        "period-filter-parameter-page"
+      ],
+      "invalid": [
+        "period-filter-before-6.27",
+        "period-filter-quarter-invalid",
+        "period-filter-report",
+        "period-filter-datetime",
+        "period-filter-no-default",
+        "period-filter-static-time"
+      ]
+    },
+    {
+      "id": "filter-group-presentation",
+      "description": "6.47固定单选下拉和左右对齐",
+      "valid": [
+        "filter-group-page"
+      ],
+      "invalid": [
+        "filter-select-version",
+        "filter-select-default"
+      ]
+    },
+    {
+      "id": "filter-group",
+      "description": "6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐",
+      "valid": [
+        "chart-local-filter-page",
+        "filter-group-state-page"
+      ],
+      "invalid": [
+        "filter-group-version",
+        "filter-group-report",
+        "filter-group-detail",
+        "filter-group-invalid-default",
+        "filter-group-duplicate-options",
+        "filter-group-duplicate-control",
+        "filter-group-no-binding",
+        "filter-group-removed-chart-filter"
+      ]
+    },
+    {
+      "id": "report-header-pdf-export",
+      "description": "Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值",
+      "valid": [
+        "report-pdf-export"
+      ],
+      "invalid": [
+        "report-pdf-before-6.28",
+        "report-pdf-on-dashboard",
+        "report-pdf-empty-label",
+        "report-pdf-empty-filename",
+        "report-pdf-unknown-option"
+      ]
+    },
+    {
+      "id": "time-point-disable-future",
+      "description": "6.25 时间点禁止未来月份与日期",
+      "valid": [
+        "time-point-no-future"
+      ],
+      "invalid": [
+        "time-point-disable-future-before-6.25",
+        "time-point-disable-future-default-month",
+        "time-point-disable-future-default-date"
+      ]
+    },
+    {
+      "id": "time-point-min",
+      "description": "6.24 时间点下限与默认值日历语义",
+      "valid": [
+        "time-point-min-page"
+      ],
+      "invalid": [
+        "time-point-min-before-6.24",
+        "time-point-min-invalid-month",
+        "time-point-min-wrong-precision",
+        "time-point-min-default-before",
+        "time-point-min-invalid-date"
+      ]
+    },
+    {
+      "id": "text-value-composition",
+      "description": "6.23 文本片段组合；引用先校验，物化后只传递字符串",
+      "valid": [
+        "text-composition-page"
+      ],
+      "invalid": [
+        "text-composition-before-6.23",
+        "text-composition-unknown-filter",
+        "text-composition-unknown-param",
+        "text-composition-incompatible-format",
+        "text-composition-empty-result",
+        "text-composition-optional-required-title",
+        "text-composition-empty",
+        "text-composition-nested"
+      ]
+    },
+    {
+      "id": "paged-join",
+      "description": "6.22 组合表全局视图与普通查询定义引用",
+      "valid": [
+        "paged-join-page",
+        "table-number-range-page"
+      ],
+      "invalid": [
+        "table-number-range-before-6.22",
+        "paged-join-initial-predicate-in",
+        "paged-join-initial-predicate-numeric",
+        "paged-join-initial-predicate-date",
+        "paged-join-before-6.22",
+        "paged-join-unknown-member",
+        "paged-join-invalid-key",
+        "paged-join-invalid-projection",
+        "paged-join-member-topn",
+        "paged-join-shared-root",
+        "paged-join-invalid-initial",
+        "table-number-range-non-numeric"
+      ]
+    },
+    {
+      "id": "table-toolbar-search",
+      "description": "表格工具区由6.21引入，搜索显式引用文本标量字段",
+      "valid": [
+        "table-toolbar-page"
+      ],
+      "invalid": [
+        "table-toolbar-before-6.21",
+        "table-search-nontext-field",
+        "table-search-duplicate-field"
+      ]
+    },
+    {
+      "id": "table-search-options",
+      "description": "6.42 静态搜索选项唯一、默认项有效且每项引用文本字段",
+      "valid": [
+        "table-search-options-page"
+      ],
+      "invalid": [
+        "table-search-options-before-6.42",
+        "table-search-options-duplicate",
+        "table-search-options-default-missing",
+        "table-search-options-nontext",
+        "table-search-options-unmapped"
+      ]
+    },
+    {
+      "id": "signed-number-family-capability",
+      "description": "两位小数与千分位带符号数值格式由6.18引入",
+      "valid": [
+        "signed-number-family-page"
+      ],
+      "invalid": [
+        "signed-number-two-decimal-before-6.18",
+        "signed-number-grouped-before-6.18",
+        "signed-number-family-param-before-6.18"
+      ]
+    },
+    {
+      "id": "signed-number-format-capability",
+      "description": "带符号普通数值格式由6.17引入",
+      "valid": [
+        "signed-number-page"
+      ],
+      "invalid": [
+        "signed-number-binding-before-6.17",
+        "signed-number-default-before-6.17",
+        "signed-number-param-before-6.17"
+      ]
+    },
+    {
+      "id": "explicit-color-local",
+      "description": "显式颜色只绑定数字且不与旧染色声明冲突",
+      "valid": [
+        "explicit-presentation-page"
+      ],
+      "invalid": [
+        "color-rule-legacy-conflict",
+        "color-rule-nonnumeric",
+        "color-rule-tone-conflict"
+      ]
+    },
+    {
+      "id": "chart-value-label-exclusive",
+      "description": "常驻数值标签不与旧标签重复启用",
+      "valid": [
+        "explicit-presentation-page"
+      ],
+      "invalid": [
+        "value-label-bar-conflict",
+        "value-label-line-conflict"
+      ]
+    },
+    {
+      "id": "presentation-capability",
+      "description": "颜色与图表标签声明由6.16引入",
+      "valid": [
+        "explicit-presentation-page"
+      ],
+      "invalid": [
+        "presentation-before-6.16"
+      ]
+    },
+    {
+      "id": "filter-text-declared",
+      "description": "筛选文本必须引用已声明筛选器",
+      "valid": [
+        "report-filter-text-page"
+      ],
+      "invalid": [
+        "filter-text-unknown"
+      ]
+    },
+    {
+      "id": "filter-text-format-compatible",
+      "description": "period 只接受时间输入，禁止数值日期格式混用",
+      "valid": [
+        "report-filter-text-page"
+      ],
+      "invalid": [
+        "filter-text-format-mismatch"
+      ]
+    },
+    {
+      "id": "filter-text-capability",
+      "description": "筛选文本引用与 period 格式需要 6.15",
+      "valid": [
+        "report-filter-text-page"
+      ],
+      "invalid": [
+        "filter-text-before-6.15"
+      ]
+    },
+    {
+      "id": "page-layout-compatibility",
+      "description": "6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取",
+      "valid": [
+        "legacy-layout-report",
+        "legacy-layout-dashboard",
+        "layout-6-1-report",
+        "layout-6-1-dashboard"
+      ],
+      "invalid": [
+        "layout-before-6.1",
+        "layout-dual-equal",
+        "layout-dual-conflict",
+        "layout-invalid-value"
+      ]
+    },
+    {
+      "id": "url-navigation-source-contract",
+      "description": "URL 与来源绑定可校验，目标存在性与必填项由目标负责",
+      "valid": [
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "navigation-invalid-authority",
+        "navigation-invalid-port",
+        "navigation-scheme-without-authority",
+        "navigation-unsafe-url",
+        "navigation-missing-row-field",
+        "navigation-unknown-param",
+        "navigation-wrong-filter-part",
+        "navigation-text-row-source",
+        "navigation-text-unsafe-url",
+        "navigation-url-input-collision",
+        "navigation-url-input-wrong-part",
+        "navigation-clicked-slot-missing-field",
+        "navigation-legacy-target-rejected"
+      ]
+    },
+    {
+      "id": "schema-structure",
+      "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+      "valid": [
+        "inline-report",
+        "mixed-page",
+        "query-dashboard",
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "params-page",
+        "composite-page",
+        "map-page",
+        "forecast-page",
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "missing-schema-version",
+        "unknown-top-level-field",
+        "layout-span-out-of-range",
+        "field-id-pattern",
+        "sections-empty"
+      ]
+    },
+    {
+      "id": "schema-version-supported",
+      "description": "schemaVersion 必须是当前主版本内的受支持次版本",
+      "valid": [
+        "inline-report",
+        "mixed-page",
+        "query-dashboard",
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "params-page",
+        "composite-page",
+        "map-page",
+        "forecast-page",
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "version-major-unsupported",
+        "version-minor-ahead"
+      ]
+    },
+    {
+      "id": "composite-card-pure-container",
+      "description": "组合卡是纯容器：不声明 data / actions、至少一个子组件、不嵌套容器、子组件在白名单内",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "composite-card-with-data",
+        "composite-card-with-actions",
+        "composite-card-empty",
+        "composite-card-nested-container",
+        "composite-card-child-not-whitelisted"
+      ]
+    },
+    {
+      "id": "page-param-id-unique",
+      "description": "页面参数 id 唯一",
+      "valid": [
+        "params-page"
+      ],
+      "invalid": [
+        "duplicate-page-param-id"
+      ]
+    },
+    {
+      "id": "page-param-not-filter-name",
+      "description": "页面参数不得与筛选器同名",
+      "valid": [
+        "params-page",
+        "filters-page"
+      ],
+      "invalid": [
+        "page-param-named-like-filter"
+      ]
+    },
+    {
+      "id": "page-param-default-type",
+      "description": "页面参数默认值符合声明类型",
+      "valid": [
+        "params-page"
+      ],
+      "invalid": [
+        "page-param-default-type-mismatch"
+      ]
+    },
+    {
+      "id": "text-value-param-declared",
+      "description": "文本取值只能引用已声明的页面参数",
+      "valid": [
+        "params-page"
+      ],
+      "invalid": [
+        "text-value-unknown-param"
+      ]
+    },
+    {
+      "id": "text-value-format-compatible",
+      "description": "文本取值引用的展示格式与参数类型相容",
+      "valid": [
+        "params-page"
+      ],
+      "invalid": [
+        "text-value-format-mismatch"
+      ]
+    },
+    {
+      "id": "page-param-consumed",
+      "description": "每个页面参数至少被一处文本取值消费",
+      "valid": [
+        "params-page"
+      ],
+      "invalid": [
+        "page-param-unconsumed"
+      ]
+    },
+    {
+      "id": "optional-param-not-in-required-text",
+      "description": "必填文本属性只能引用必需参数",
+      "valid": [
+        "params-page"
+      ],
+      "invalid": [
+        "required-title-references-optional-param"
+      ]
+    },
+    {
+      "id": "grouped-query-fields-unique",
+      "description": "按角色分组的查询字段在维度组与度量组之间不得重名",
+      "valid": [
+        "grouped-fields-page"
+      ],
+      "invalid": [
+        "grouped-field-duplicate"
+      ]
+    },
+    {
+      "id": "grouped-query-field-label-not-id",
+      "description": "分组查询字段的 label 与字段 id 相同时应省略",
+      "valid": [
+        "grouped-fields-page"
+      ],
+      "invalid": [
+        "grouped-field-label-equals-id"
+      ]
+    },
+    {
+      "id": "query-initial-rows-normalize",
+      "description": "DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验",
+      "valid": [
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "map-page",
+        "forecast-page",
+        "query-numeric-tolerance"
+      ],
+      "invalid": [
+        "initial-row-missing-query-field",
+        "initial-row-null-not-allowed",
+        "initial-row-type-mismatch",
+        "initial-row-date-invalid",
+        "initial-row-semantic-html-too-large",
+        "initial-row-detail-missing-query-field",
+        "initial-row-detail-null-not-allowed",
+        "initial-row-detail-type-mismatch"
+      ]
+    },
+    {
+      "id": "filter-id-unique",
+      "description": "筛选器 id 唯一",
+      "valid": [
+        "filters-page",
+        "map-page"
+      ],
+      "invalid": [
+        "duplicate-filter-id"
+      ]
+    },
+    {
+      "id": "time-range-default-calendar",
+      "description": "timeRange 绝对默认值须为合法公历值、精度一致且 from 不晚于 to",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "time-range-from-format",
+        "time-range-to-calendar",
+        "time-range-datetime-without-precision",
+        "time-range-from-after-to"
+      ]
+    },
+    {
+      "id": "relative-time-anchor",
+      "description": "结构化相对时间的 anchor 须为合法公历日期",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "relative-time-anchor-invalid"
+      ]
+    },
+    {
+      "id": "time-point-default",
+      "description": "timePoint 默认值符合其粒度的格式与日历",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "time-point-month-format",
+        "time-point-month-range",
+        "time-point-date-format",
+        "time-point-date-calendar"
+      ]
+    },
+    {
+      "id": "number-range-default",
+      "description": "numberRange 默认值至少有一端且 from 不大于 to",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "number-range-empty",
+        "number-range-inverted"
+      ]
+    },
+    {
+      "id": "hierarchy-level-id-unique",
+      "description": "层级 id 在同一筛选器内唯一",
+      "valid": [
+        "filters-page",
+        "map-page"
+      ],
+      "invalid": [
+        "duplicate-hierarchy-level-id"
+      ]
+    },
+    {
+      "id": "default-level-declared",
+      "description": "defaultLevel 只能用于声明了 hierarchy 的筛选器并引用已声明层级",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "default-level-without-hierarchy",
+        "default-level-unknown"
+      ]
+    },
+    {
+      "id": "hierarchy-picker-requires-hierarchy",
+      "description": "hierarchyPicker 只能用于声明了 hierarchy 的维度筛选器",
+      "valid": [
+        "filters-page",
+        "map-page"
+      ],
+      "invalid": [
+        "hierarchy-picker-without-hierarchy"
+      ]
+    },
+    {
+      "id": "filter-depends-on",
+      "description": "级联只能依赖另一个已声明的 dimension 筛选器且不成环",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "depends-on-self",
+        "depends-on-undeclared",
+        "depends-on-non-dimension",
+        "depends-on-cycle"
+      ]
+    },
+    {
+      "id": "hidden-hierarchy-picker-needs-map",
+      "description": "隐藏层级切换器时必须有地图通过 hierarchyFilter 承担下钻",
+      "valid": [
+        "map-page"
+      ],
+      "invalid": [
+        "hidden-hierarchy-picker-without-map"
+      ]
+    },
+    {
+      "id": "section-id-unique",
+      "description": "内容分区 id 唯一",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "duplicate-section-id"
+      ]
+    },
+    {
+      "id": "component-id-unique",
+      "description": "组件 id 在整页（含容器内）唯一",
+      "valid": [
+        "inline-report",
+        "mixed-page",
+        "query-dashboard",
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "params-page",
+        "composite-page",
+        "map-page",
+        "forecast-page",
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "duplicate-component-id",
+        "duplicate-component-id-in-container"
+      ]
+    },
+    {
+      "id": "layer-top-level-only",
+      "description": "layout.layer 只能声明在内容分区的顶层组件上",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "layer-inside-composite-card"
+      ]
+    },
+    {
+      "id": "single-backdrop-per-section",
+      "description": "一个分区最多一个 backdrop",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "two-backdrops"
+      ]
+    },
+    {
+      "id": "backdrop-needs-siblings",
+      "description": "声明 backdrop 的分区必须还有别的组件叠在其上",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "backdrop-only-section"
+      ]
+    },
+    {
+      "id": "backdrop-container-plain",
+      "description": "声明 backdrop 的分区必须使用 container: plain",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "backdrop-in-card-container",
+        "backdrop-without-container"
+      ]
+    },
+    {
+      "id": "column-track-span",
+      "description": "声明列轨的分区里顶层组件 span 不得超过轨数",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "span-exceeds-column-tracks"
+      ]
+    },
+    {
+      "id": "inline-rows-contract",
+      "description": "inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）",
+      "valid": [
+        "inline-report",
+        "mixed-page",
+        "compute-page",
+        "params-page",
+        "composite-page",
+        "forecast-page"
+      ],
+      "invalid": [
+        "inline-row-undeclared-field",
+        "inline-row-missing-field",
+        "inline-row-null-not-allowed",
+        "inline-row-type-mismatch",
+        "inline-row-date-invalid",
+        "inline-row-datetime-invalid",
+        "inline-row-semantic-html-type",
+        "inline-row-detail-undeclared-field",
+        "inline-row-detail-missing-field",
+        "inline-row-detail-null-not-allowed",
+        "inline-row-detail-type-mismatch"
+      ]
+    },
+    {
+      "id": "detail-item-object",
+      "description": "嵌套明细的每一项必须是对象；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
+      "valid": [
+        "compute-page",
+        "forecast-page"
+      ],
+      "invalid": [
+        "initial-row-detail-item-not-object",
+        "inline-row-detail-item-not-object"
+      ]
+    },
+    {
+      "id": "detail-list-max-items",
+      "description": "嵌套明细最多 100 项；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
+      "valid": [
+        "compute-page",
+        "forecast-page"
+      ],
+      "invalid": [
+        "initial-row-detail-list-too-large",
+        "inline-row-detail-list-too-large"
+      ]
+    },
+    {
+      "id": "captured-at-valid",
+      "description": "内嵌初始行的 capturedAt 须为有效的 RFC 3339 日期时间",
+      "valid": [
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "map-page",
+        "forecast-page"
+      ],
+      "invalid": [
+        "captured-at-invalid-month"
+      ]
+    },
+    {
+      "id": "query-field-mapping",
+      "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+      "valid": [
+        "query-dashboard",
+        "mixed-page",
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "map-page",
+        "forecast-page"
+      ],
+      "invalid": [
+        "query-field-without-mapping",
+        "query-field-duplicate-mapping",
+        "query-field-not-output",
+        "query-detail-item-duplicate-mapping",
+        "query-dimension-role-mismatch",
+        "query-role-mismatch",
+        "query-output-unmapped"
+      ]
+    },
+    {
+      "id": "filter-binding",
+      "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
+      "valid": [
+        "query-dashboard",
+        "filters-page",
+        "map-page",
+        "hierarchy-binding-page"
+      ],
+      "invalid": [
+        "level-query-fields-on-flat-filter",
+        "level-query-fields-missing-level",
+        "level-query-fields-undeclared-level",
+        "hierarchy-filter-flat-query-field",
+        "time-point-target-not-time-point",
+        "boolean-target-not-boolean",
+        "number-range-target-not-number-range",
+        "time-point-initial-param-not-times",
+        "time-point-initial-param-precision",
+        "time-point-initial-param-range",
+        "time-point-initial-param-and-default",
+        "time-point-initial-param-without-query-target",
+        "unknown-filter-binding",
+        "filter-binding-time-target-not-time-range",
+        "filter-binding-dimension-target-not-dimension"
+      ]
+    },
+    {
+      "id": "compute-operator-inputs",
+      "description": "算子引用的字段已声明、角色相容、数值算子输入为数值类型",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "compute-undeclared-field",
+        "compute-role-mismatch",
+        "compute-non-numeric-input"
+      ]
+    },
+    {
+      "id": "compute-operator-outputs",
+      "description": "算子产出字段已声明、不重名、不来自外部响应",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "compute-duplicate-output",
+        "compute-output-with-query-field"
+      ]
+    },
+    {
+      "id": "compute-folding-collapsible",
+      "description": "折叠算子只能作用于显式声明 collapsible 的度量字段",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "compute-fold-non-collapsible"
+      ]
+    },
+    {
+      "id": "compute-row-kind-field",
+      "description": "行类别字段必须是可空的 string 维度",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "compute-row-kind-not-string",
+        "compute-row-kind-not-nullable"
+      ]
+    },
+    {
+      "id": "compute-pivot-categories-unique",
+      "description": "透视类别取值只能映射到一个目标列",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "compute-pivot-duplicate-category"
+      ]
+    },
+    {
+      "id": "compute-output-not-in-rows",
+      "description": "算子产出字段不得出现在数据行中",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "compute-output-in-inline-rows"
+      ]
+    },
+    {
+      "id": "data-slot-known-source",
+      "description": "组件数据槽只能引用已声明的页面数据源",
+      "valid": [
+        "inline-report",
+        "mixed-page",
+        "query-dashboard",
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "params-page",
+        "composite-page",
+        "map-page",
+        "forecast-page",
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "data-slot-unknown-source"
+      ]
+    },
+    {
+      "id": "field-binding-resolves",
+      "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+      "valid": [
+        "inline-report",
+        "mixed-page",
+        "query-dashboard",
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "params-page",
+        "composite-page",
+        "map-page",
+        "forecast-page",
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "field-binding-undeclared-slot",
+        "unknown-component-field"
+      ]
+    },
+    {
+      "id": "field-binding-role",
+      "description": "字段绑定的角色符合组件属性要求",
+      "valid": [
+        "inline-report",
+        "mixed-page",
+        "query-dashboard",
+        "filters-page",
+        "compute-page",
+        "grouped-fields-page",
+        "params-page",
+        "composite-page",
+        "map-page",
+        "forecast-page",
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "field-binding-role-mismatch"
+      ]
+    },
+    {
+      "id": "detail-field-consumption",
+      "description": "嵌套明细字段只能由显式支持 detail 的组件属性消费",
+      "valid": [
+        "compute-page",
+        "forecast-page"
+      ],
+      "invalid": [
+        "detail-field-in-generic-binding",
+        "record-list-in-table-column"
+      ]
+    },
+    {
+      "id": "field-binding-match",
+      "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "match-field-unknown",
+        "match-field-not-dimension",
+        "match-value-type-mismatch"
+      ]
+    },
+    {
+      "id": "ai-summary-source-references",
+      "description": "AI 总结直接引用数据源 ID，采用数据源非明细字段",
+      "valid": [
+        "report-ai-summary"
+      ],
+      "invalid": [
+        "ai-summary-source-id-unknown",
+        "ai-summary-source-id-duplicate",
+        "ai-summary-source-spellings-mixed",
+        "ai-summary-source-id-empty",
+        "ai-summary-source-id-version"
+      ]
+    },
+    {
+      "id": "ai-summary-regions",
+      "description": "AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部",
+      "valid": [
+        "report-ai-summary-regions"
+      ],
+      "invalid": [
+        "ai-summary-region-version",
+        "ai-summary-region-mixed-scope",
+        "ai-summary-region-not-top",
+        "ai-summary-page-not-top",
+        "ai-summary-region-not-full-width"
+      ]
+    },
+    {
+      "id": "report-ai-summary",
+      "description": "AI 总结仅用于 Report，非空 body 直接展示，否则需要生成提示词与范围",
+      "valid": [
+        "report-ai-summary"
+      ],
+      "invalid": [
+        "ai-summary-dashboard",
+        "ai-summary-unknown-section",
+        "ai-summary-blank-body-without-input",
+        "ai-summary-body-routing-version",
+        "ai-summary-scope-required",
+        "ai-summary-version-floor"
+      ]
+    },
+    {
+      "id": "ai-summary-related-data",
+      "description": "AI 总结关联数据引用已声明数据源中的非明细字段，不重复且术语一致",
+      "valid": [
+        "forecast-page"
+      ],
+      "invalid": [
+        "ai-summary-unknown-source",
+        "ai-summary-unknown-field",
+        "ai-summary-detail-field",
+        "ai-summary-duplicate-field",
+        "ai-summary-term-conflict"
+      ]
+    },
+    {
+      "id": "metric-row-link-needs-navigate",
+      "description": "指标行声明 link 时组件必须至少有一个 navigate 动作",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "metric-row-link-without-navigate"
+      ]
+    },
+    {
+      "id": "bar-forecast-boundary",
+      "description": "实际 / 预测系列不得跨越采集时间所在月",
+      "valid": [
+        "forecast-page"
+      ],
+      "invalid": [
+        "forecast-before-captured-month",
+        "actual-after-captured-month"
+      ]
+    },
+    {
+      "id": "table-row-key",
+      "description": "多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey",
+      "valid": [
+        "forecast-page"
+      ],
+      "invalid": [
+        "table-multi-slot-without-row-key",
+        "table-row-key-missing-in-slot",
+        "table-row-key-not-dimension",
+        "table-row-key-type-inconsistent"
+      ]
+    },
+    {
+      "id": "table-row-kind-field",
+      "description": "表格行类别字段必须存在且由该数据源的折叠算子写入",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "table-row-kind-field-unknown",
+        "table-row-kind-field-not-written"
+      ]
+    },
+    {
+      "id": "table-merge-by-column",
+      "description": "mergeBy 必须是表格已声明的列字段",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "table-merge-by-not-column"
+      ]
+    },
+    {
+      "id": "table-selection-writes",
+      "description": "单元格选择只能写入已声明的 dimension 筛选器",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "table-selection-writes-unknown-filter",
+        "table-selection-writes-non-dimension"
+      ]
+    },
+    {
+      "id": "table-column-binding-unique",
+      "description": "表格列字段绑定不重复",
+      "valid": [
+        "query-dashboard",
+        "filters-page",
+        "compute-page",
+        "forecast-page"
+      ],
+      "invalid": [
+        "table-duplicate-column-binding"
+      ]
+    },
+    {
+      "id": "table-filterable-dimension",
+      "description": "表头筛选只能声明在 dimension 列上",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "table-filterable-on-measure"
+      ]
+    },
+    {
+      "id": "category-swatches-need-pie",
+      "description": "分类明细开启色点要求同页有饼图绑定同一类别字段",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "category-swatches-without-pie"
+      ]
+    },
+    {
+      "id": "map-legend-bands-increasing",
+      "description": "地图图例档位下界严格递增",
+      "valid": [
+        "map-page"
+      ],
+      "invalid": [
+        "map-legend-bands-not-increasing"
+      ]
+    },
+    {
+      "id": "map-pinned-summary",
+      "description": "固定地域摘要只用于 regionalOverview，匹配值符合类型，标签不重复",
+      "valid": [
+        "map-page"
+      ],
+      "invalid": [
+        "map-pinned-summary-wrong-variant",
+        "map-pinned-summary-match-value-type",
+        "map-pinned-summary-duplicate-label"
+      ]
+    },
+    {
+      "id": "map-hierarchy",
+      "description": "地图下钻字段只与 hierarchyFilter 一起使用，目标是声明了 hierarchy 的维度筛选器",
+      "valid": [
+        "map-page"
+      ],
+      "invalid": [
+        "map-level-fields-without-hierarchy-filter",
+        "map-hierarchy-filter-undeclared",
+        "map-hierarchy-filter-not-hierarchical",
+        "map-level-maps-unknown-level"
+      ]
+    },
+    {
+      "id": "tab-content-boundary",
+      "description": "Tab混合内容禁止页头、嵌套Tab及子内容铺底，能力下限6.49",
+      "valid": [
+        "tab-mixed-content"
+      ],
+      "invalid": [
+        "tab-content-header",
+        "tab-content-nested-tab",
+        "tab-content-backdrop",
+        "tab-content-version-floor"
+      ]
+    },
+    {
+      "id": "tab-container",
+      "description": "Tab id 唯一且 defaultTab 已声明",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "tab-id-duplicate",
+        "tab-default-unknown"
+      ]
+    },
+    {
+      "id": "ranking-detail-semantic-description",
+      "description": "语义 HTML 说明必须绑定 semanticHtml 类型的 detail 字段",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "ranking-semantic-description-not-detail",
+        "ranking-semantic-description-record-list"
+      ]
+    },
+    {
+      "id": "ranking-detail-records",
+      "description": "结构化明细必须绑定 recordList 字段，项字段存在且角色相容",
+      "valid": [
+        "compute-page"
+      ],
+      "invalid": [
+        "ranking-details-not-record-list",
+        "ranking-details-item-field-unknown",
+        "ranking-details-item-role-mismatch"
+      ]
+    },
+    {
+      "id": "actions-live-only",
+      "description": "旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方",
+      "valid": [
+        "query-dashboard",
+        "filters-page",
+        "params-page",
+        "composite-page",
+        "map-page"
+      ],
+      "invalid": [
+        "write-filter-on-inline-component"
+      ]
+    },
+    {
+      "id": "write-filter-target",
+      "description": "回写目标是已声明的 dimension 筛选器",
+      "valid": [
+        "query-dashboard",
+        "filters-page"
+      ],
+      "invalid": [
+        "write-filter-undeclared",
+        "write-filter-non-dimension"
+      ]
+    },
+    {
+      "id": "navigation-filter-source",
+      "description": "导航绑定只能引用已声明的筛选器",
+      "valid": [
+        "filters-page",
+        "map-page"
+      ],
+      "invalid": [
+        "navigation-filter-undeclared"
+      ]
+    },
+    {
+      "id": "pagination-local-inline",
+      "description": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源",
+      "valid": [
+        "composite-page"
+      ],
+      "invalid": [
+        "pagination-local-on-query"
+      ]
+    },
+    {
+      "id": "pagination-query-source",
+      "description": "pagination.mode='query' 只允许绑定 query 数据源",
+      "valid": [
+        "query-dashboard",
+        "filters-page"
+      ],
+      "invalid": [
+        "pagination-query-on-inline"
+      ]
+    },
+    {
+      "id": "pagination-query-order",
+      "description": "查询分页要求 DQE order.offset 为 0 且 limit 为正整数",
+      "valid": [
+        "query-dashboard",
+        "filters-page"
+      ],
+      "invalid": [
+        "pagination-offset-not-zero",
+        "pagination-limit-not-positive"
+      ]
+    },
+    {
+      "id": "pagination-initial-rows",
+      "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+      "valid": [
+        "filters-page"
+      ],
+      "invalid": [
+        "pagination-initial-without-total-count",
+        "pagination-initial-not-full-page"
+      ]
+    },
+    {
+      "id": "pagination-exclusive-source",
+      "description": "查询分页表格必须独占页面数据源",
+      "valid": [
+        "query-dashboard",
+        "filters-page"
+      ],
+      "invalid": [
+        "pagination-shared-source"
+      ]
+    },
+    {
+      "id": "detail-view-component-types",
+      "description": "详情只允许说明、图表和表格；共享 Schema 其它组件分支有显式拒绝见证",
+      "valid": [
+        "detail-views"
+      ],
+      "invalid": [
+        "detail-component-reject-reportheader",
+        "detail-component-reject-metriccard",
+        "detail-component-reject-mapchart",
+        "detail-component-reject-tabcontainer",
+        "detail-component-reject-compositecard",
+        "detail-component-reject-rankingcard",
+        "detail-component-reject-rankingdetailcard",
+        "detail-component-reject-keyvaluepanel",
+        "detail-component-reject-categorybreakdown",
+        "detail-component-reject-fieldtext",
+        "detail-component-reject-aisummary",
+        "detail-component-reject-button"
+      ]
+    }
+  ]
+}

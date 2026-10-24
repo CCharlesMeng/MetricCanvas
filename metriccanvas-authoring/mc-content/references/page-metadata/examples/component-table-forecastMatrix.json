@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "6.58",
+  "id": "tab-url-initialization",
+  "layout": "report",
+  "dataSources": {
+    "demo": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "合成数据，仅验证页签与导航"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "sales-tabs-detail",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "demo"
+          },
+          "props": {
+            "title": "销售明细：内联演示数据",
+            "columns": [
+              {
+                "field": "name",
+                "title": "演示内容"
+              }
+            ],
+            "variant": "forecastMatrix"
+          }
+        }
+      ]
+    }
+  ]
+}

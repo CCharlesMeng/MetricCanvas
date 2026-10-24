@@ -2,8 +2,7 @@
 import json
 import subprocess
 
-from mc_resources import ContentError, resource, verify_package
-from mc_layout_compiler import issue
+from mc_resources import ContentError, resource, verify_package, issue
 
 
 def inspect_schema(document, *, root=None):
@@ -18,11 +17,6 @@ def inspect_schema(document, *, root=None):
     return json.loads(result.stdout)
 
 
-def component_nodes(document):
-    return [(section, component) for section in document.get('sections', [])
-        for component in section.get('components', [])]
-
-
 def bound_field_gap(fields, binding, uses):
     requested = {key for key, field in fields.items() for name in binding['fields']
         if name in (key, field.get('label'), field.get('queryField'))}
@@ -35,8 +29,8 @@ def binding_gap(document, nodes, binding, uses):
     found = nodes.get(binding['id'])
     if found is None:
         return issue('DATA_ROLE_BINDING_GAP', binding['id'], reason='component_missing')
-    section, component = found
-    if section['id'] != binding['sectionId'] or component.get('data', {}).get('main') != binding['source']:
+    component = found
+    if component['sectionId'] != binding['sectionId'] or component.get('data', {}).get(binding.get('slot', 'main')) != binding['source']:
         return issue('DATA_ROLE_BINDING_GAP', binding['id'], reason='container_or_source_changed')
     fields = document.get('dataSources', {}).get(binding['source'], {}).get('fields', {})
     aliases = {name for key, field in fields.items() for name in (key, field.get('label'), field.get('queryField')) if isinstance(name, str)}
@@ -44,7 +38,7 @@ def binding_gap(document, nodes, binding, uses):
     return issue('DATA_ROLE_BINDING_GAP', binding['id'], missing=missing) if missing else bound_field_gap(fields, binding, uses)
 
 
-def inspect_assembly(document, specification, *, root=None):
+def inspect_assembly(document, specification, *, root=None, correlation=None):
     gaps = []
     try:
         root, manifest = verify_package(root)
@@ -54,10 +48,11 @@ def inspect_assembly(document, specification, *, root=None):
             raise ContentError('INSPECTION_SPEC_INVALID')
         if specification.get('contentSha256') != manifest['contentSha256']:
             raise ContentError('INSPECTION_CONTENT_MISMATCH')
-        nodes = {component['id']: (section, component) for section, component in component_nodes(document)}
         schema = inspect_schema(document, root=root)
+        nodes = {component['id']: component for component in schema['components']}
+        association = inspect_correlation(document, specification, correlation)
         for pin in specification['requirements']:
-            actual = nodes.get(pin['id'], ({}, {}))[1].get('type')
+            actual = nodes.get(pin['id'], {}).get('type')
             if actual != pin['mustBe']:
                 gaps.append(issue('MANDATORY_COMPONENT_DEGRADED', pin['id'], expected=pin['mustBe'], actual=actual, origin=pin['origin']))
         for binding in specification['bindings']:
@@ -65,8 +60,26 @@ def inspect_assembly(document, specification, *, root=None):
             if gap:
                 gaps.append(gap)
         return {'status': 'gap' if gaps or not schema['readable'] else 'ok', 'gaps': gaps, 'schema': schema,
-            'coverage': ['top-level-component-type', 'container', 'source-and-field-selection', 'product-page-validation'],
-            'notVerified': ['visual-quality', 'DQE-execution', 'save-status', 'user-intent-authenticity']}
+            'correlation': association,
+            'coverage': ['product-component-tree', 'container', 'declared-data-slot-and-field-selection', 'product-page-validation', 'schema-driven-data-scan'],
+            'notVerified': ['visual-quality', 'DQE-execution', 'save-status', 'user-intent-authenticity', 'undeclared-binding-intent', 'compute-business-semantics']}
     except (ContentError, KeyError, TypeError, OSError, ValueError) as error:
         diagnostic = error.issue if isinstance(error, ContentError) else issue('INSPECTION_UNAVAILABLE', message=str(error))
         return {'status': 'not_run', 'gaps': gaps, 'issues': [diagnostic]}
+
+
+def inspect_correlation(document, specification, correlation):
+    from mc_resources import value_digest
+    if correlation is None:
+        return {'status': 'not_run', 'reason': 'No trusted caller association supplied'}
+    proof = specification.get('correlation')
+    if not isinstance(correlation, dict) or not isinstance(proof, dict) or not proof.get('requestId'):
+        raise ContentError('INSPECTION_CORRELATION_REQUIRED')
+    checks = [proof.get('requestId') == correlation.get('requestId'),
+        proof.get('compileInputSha256') == value_digest(correlation.get('compileInput')),
+        correlation.get('documentSha256') == value_digest(document),
+        correlation.get('inspectionSpecSha256') == value_digest(specification)]
+    if not all(checks):
+        raise ContentError('INSPECTION_CORRELATION_MISMATCH')
+    return {'status': 'checked', 'documentSha256': correlation['documentSha256'],
+        'requestId': correlation['requestId'], 'note': 'Caller association only; not authentication or a save/preview receipt'}

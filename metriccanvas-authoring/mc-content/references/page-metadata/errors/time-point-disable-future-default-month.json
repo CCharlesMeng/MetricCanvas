@@ -1,0 +1,21 @@
+{
+  "case": "time-point-disable-future-default-month",
+  "invariant": "time-point-disable-future",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点不得晚于当前月份",
+      "paths": [
+        "/filters/0/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "default": "9999-12"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

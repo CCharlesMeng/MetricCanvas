@@ -1,0 +1,25 @@
+{
+  "case": "captured-at-invalid-month",
+  "invariant": "captured-at-valid",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "capturedAt 必须是有效的 RFC 3339 日期时间",
+      "paths": [
+        "/dataSources/orders/source/initial/capturedAt"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "source": {
+          "initial": {
+            "capturedAt": "2026-13-01T00:00:00Z"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

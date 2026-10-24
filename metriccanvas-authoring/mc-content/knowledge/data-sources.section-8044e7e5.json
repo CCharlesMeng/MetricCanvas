@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "data-sources.section-8044e7e5"
+  ],
+  "semantics": [
+    {
+      "module": "data-sources",
+      "reference": "references/page-metadata/data-sources.md",
+      "blocks": [
+        "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nquery.initial保存捕获时间和匹配该查询的初始行，只能在当前条件与声明初值匹配时使用；变更后由网关查询。执行bootstrap初始结果另走执行端口，条件标识与查询定义一致才复用，不与旧initial混用。非查询分页数据源即使 initial.rows.length 小于 initial.totalCount，也直接呈现内嵌初始行，不为补齐数据自动查询；组件提示当前载入条数与总数，不将部分数据当成完整结果。空 initial.rows 同样是可复用快照；未知总数不推断完整性。查询分页的持久化initial仍需有效totalCount与完整第一页，动态结果的总数不一致不阻止显示已有行。跨数据源计算继续使用本轮返回行。\n\n可选compute作用于已归一化行集。inline行使用页面字段id；query结果经queryField映射。静态JSON通过校验不证明真实DQE成功。\n\n查询数值度量在进入快照和 compute 前归一化为有限数字或 `null`，单个异常值不再拒绝整份查询；首屏 initial、动态响应和一层嵌套明细使用同一规则，详见[结果字段契约](fields.md#查询数值度量的容错)。`nullable: false` 的数值度量缺失只告警，查询字段缺失、维度错误与结构错误仍会失败。`query-numeric-tolerance` 是对应完整合成验收示例。",
+        "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。"
+      ],
+      "rules": [
+        {
+          "id": "paged-join",
+          "description": "6.22 组合表全局视图与普通查询定义引用",
+          "valid": [
+            "paged-join-page",
+            "table-number-range-page"
+          ],
+          "invalid": [
+            "table-number-range-before-6.22",
+            "paged-join-initial-predicate-in",
+            "paged-join-initial-predicate-numeric",
+            "paged-join-initial-predicate-date",
+            "paged-join-before-6.22",
+            "paged-join-unknown-member",
+            "paged-join-invalid-key",
+            "paged-join-invalid-projection",
+            "paged-join-member-topn",
+            "paged-join-shared-root",
+            "paged-join-invalid-initial",
+            "table-number-range-non-numeric"
+          ]
+        },
+        {
+          "id": "query-initial-rows-normalize",
+          "description": "DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验",
+          "valid": [
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page",
+            "query-numeric-tolerance"
+          ],
+          "invalid": [
+            "initial-row-missing-query-field",
+            "initial-row-null-not-allowed",
+            "initial-row-type-mismatch",
+            "initial-row-date-invalid",
+            "initial-row-semantic-html-too-large",
+            "initial-row-detail-missing-query-field",
+            "initial-row-detail-null-not-allowed",
+            "initial-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "inline-rows-contract",
+          "description": "inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "compute-page",
+            "params-page",
+            "composite-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "inline-row-undeclared-field",
+            "inline-row-missing-field",
+            "inline-row-null-not-allowed",
+            "inline-row-type-mismatch",
+            "inline-row-date-invalid",
+            "inline-row-datetime-invalid",
+            "inline-row-semantic-html-type",
+            "inline-row-detail-undeclared-field",
+            "inline-row-detail-missing-field",
+            "inline-row-detail-null-not-allowed",
+            "inline-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "captured-at-valid",
+          "description": "内嵌初始行的 capturedAt 须为有效的 RFC 3339 日期时间",
+          "valid": [
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "captured-at-invalid-month"
+          ]
+        },
+        {
+          "id": "pagination-initial-rows",
+          "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-initial-without-total-count",
+            "pagination-initial-not-full-page"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/query-dashboard.json",
+        "references/page-metadata/examples/paged-join-page.json",
+        "references/page-metadata/examples/paged-join-fixed-rank-page.json",
+        "references/page-metadata/examples/query-numeric-tolerance.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

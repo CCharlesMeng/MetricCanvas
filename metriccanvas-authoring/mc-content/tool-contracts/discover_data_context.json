@@ -8,5 +8,41 @@
     "limit",
     "detail_refs"
   ],
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "context_ref": {
+        "type": "string"
+      },
+      "query": {
+        "default": "",
+        "type": "string"
+      },
+      "limit": {
+        "default": 10,
+        "maximum": 50,
+        "minimum": 1,
+        "type": "integer"
+      },
+      "detail_refs": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "context_ref"
+    ],
+    "type": "object"
+  },
   "source": "active platform_mcp.py"
 }

@@ -5,6 +5,16 @@
     "action": null,
     "owner": "caller"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/drafts.py",
+      "line": 24
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/assets/drafts.py",
+      "line": 35
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

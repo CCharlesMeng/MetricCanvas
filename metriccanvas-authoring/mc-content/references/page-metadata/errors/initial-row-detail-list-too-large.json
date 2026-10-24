@@ -1,0 +1,40 @@
+{
+  "case": "initial-row-detail-list-too-large",
+  "invariant": "detail-list-max-items",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 嵌套明细字段 events 最多允许 100 项，实际 101 项",
+      "paths": [
+        "/dataSources/customers/source/initial/rows/0/events"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "customers": {
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "events": [
+                  {
+                    "event_title": "e0",
+                    "event_impact": 0,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e1",
+                    "event_impact": 1,
+                    "event_desc": null
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

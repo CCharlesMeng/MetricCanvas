@@ -1,6 +1,44 @@
 {
   "code": "FILTER_BINDING_ERROR",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1128
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1136
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1147
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1156
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1069
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1082
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1090
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "line": 1101
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

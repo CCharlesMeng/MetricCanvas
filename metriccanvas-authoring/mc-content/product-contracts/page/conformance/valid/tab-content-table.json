@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "6.49",
+  "id": "tab-content-table",
+  "layout": "report",
+  "dataSources": {
+    "fill-1": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "time": "2026-01",
+            "amount": 1
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "timeFill",
+          "timeField": "time",
+          "granularity": "month",
+          "format": "iso",
+          "range": {
+            "currentYearOffset": 0
+          },
+          "measures": [
+            "amount"
+          ]
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "content-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "contentLayout": "grid",
+            "tabs": [
+              {
+                "id": "one",
+                "label": "内容",
+                "component": {
+                  "id": "table-fill-1",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "fill-1"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "time"
+                      },
+                      {
+                        "field": "amount"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

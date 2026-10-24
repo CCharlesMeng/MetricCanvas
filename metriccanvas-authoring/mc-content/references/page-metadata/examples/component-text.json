@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "6.58",
+  "id": "page-visibility-inputs",
+  "layout": "report",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "fact-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "业务事实已就绪。"
+          }
+        }
+      ]
+    }
+  ]
+}

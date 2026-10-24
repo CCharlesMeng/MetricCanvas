@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "sections-and-layout.section-049fc2fc"
+  ],
+  "semantics": [
+    {
+      "module": "sections-and-layout",
+      "reference": "references/page-metadata/sections-and-layout.md",
+      "blocks": [
+        "# 内容分区与布局\n\nsections组织有序内容分区，每个分区至少一个组件。默认12列等权网格；columnTracks声明正整数比例，span占轨道数量而非像素。组件自身layout不保存页面派生宽度。\n\nplain去掉分区容器，由组件自带外观；panel为章节面板；card为小节卡片。容器样式只由section.container声明。layer区分content与backdrop；铺底层不占正常内容流，不能伪造一套绝对坐标画布。",
+        "## 指标卡连接排布 6.34\n\n`metricCard.layout.before` 由统一运行时派生内部连接排布盒，页面文档仍由内容分区直接包含组件。外层默认 12 列保持；整组占成员 span 之和，内部从文字与双侧间距之外的剩余宽度按 span 分配。连接整组铺满其 span 对应的可用宽度；外层不绘制边框，每张小卡保留独立白底灰边，连接文字两侧gap固定，卡片按span比例吸收剩余宽度。在 plain 分区内，连接排布盒保留白底、16px圆角与20px内边距；在显式 card 分区内，白底与内边距统一由分区承担，连接排布盒不再叠加外框或内边距。标题使用 section.title；filterGroup 作为分区内首个 span:12 组件，放在标题下方并左对齐，后接相邻的 Before 指标卡。无需新增容器字段，也不允许把标题、筛选器塞入 layout.before；筛选影响仍只由 filterBindings 决定。无 before 的页面继续采用原栅格规则。声明、限制与场景见[指标卡](components/metricCard.md#metric-card-before)。"
+      ],
+      "rules": [
+        {
+          "id": "section-id-unique",
+          "description": "内容分区 id 唯一",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "duplicate-section-id"
+          ]
+        },
+        {
+          "id": "component-id-unique",
+          "description": "组件 id 在整页（含容器内）唯一",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "duplicate-component-id",
+            "duplicate-component-id-in-container"
+          ]
+        },
+        {
+          "id": "layer-top-level-only",
+          "description": "layout.layer 只能声明在内容分区的顶层组件上",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "layer-inside-composite-card"
+          ]
+        },
+        {
+          "id": "single-backdrop-per-section",
+          "description": "一个分区最多一个 backdrop",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "two-backdrops"
+          ]
+        },
+        {
+          "id": "backdrop-needs-siblings",
+          "description": "声明 backdrop 的分区必须还有别的组件叠在其上",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "backdrop-only-section"
+          ]
+        },
+        {
+          "id": "backdrop-container-plain",
+          "description": "声明 backdrop 的分区必须使用 container: plain",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "backdrop-in-card-container",
+            "backdrop-without-container"
+          ]
+        },
+        {
+          "id": "column-track-span",
+          "description": "声明列轨的分区里顶层组件 span 不得超过轨数",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "span-exceeds-column-tracks"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/composite-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/dashboard-title-styles.json",
+        "references/page-metadata/examples/report-title-styles.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

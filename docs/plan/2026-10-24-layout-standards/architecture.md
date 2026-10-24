@@ -1,6 +1,8 @@
 # MC 内容包与布局能力：架构结果
 
-日期：2026-10-24。状态：MC 侧第一批实现及本地验收完成；Skill / Relay 真实接线另验。
+日期：2026-10-24。状态：MC 内容补全及本仓验收完成；Skill / Relay 真实接线另验。
+
+完整性复核已实施：知识、发现/查询字段、场景、完整工具参数、检索与覆盖门禁现已补齐；本仓验收见[实施记录](../../evidence/mc-content-layout/implementation-results.md)。逐项范围仍以[完整性主计划](mc-content-completeness-plan.md)为准；真实 Relay/DQE/保存/预览部署未验，不能用本地结果替代。
 
 本文件是本批次的架构主入口。两份附件原文保留：[布局冻结提案](layout-standards-frozen-design.md)、[MC 侧需求提案](mc-engine-requirements.md)。与本轮确认冲突的表述以本文件为准；原文的“设计冻结”不代表其中所有外部环境断言已经通过 MC 仓或部署验收。
 

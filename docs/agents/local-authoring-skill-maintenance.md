@@ -58,3 +58,9 @@ Python 测试需要 Bundle 锁定依赖；使用已装依赖的环境执行，�
 项目概览的历史复测见[问题与改进](../evidence/local-authoring-ioc-overview/improvements.md)：布局和结构改善，完整业务/视觉验收仍失败；后续文档追加不能改写历史结论。记录所用知识版本与当前分发版本的差异，不能用过去模型测试替当前版本背书。
 
 升级与回退均交付完整Skill目录，重新核对版本、哈希及用户页面。Skill内知识清单覆盖生成文件；作者文件随完整目录/仓库提交版本保存，Bundle锁覆盖所有分发文件。
+
+## MC 同步完成条件
+
+页面 Schema、验证器、迁移、组件目录、语义章节/规则/例子、发现/查询/参数或工具契约更新（包括不升 Schema 的语义修复），同批执行 `pnpm authoring:contracts` 与 `pnpm mc:content:check`。原有导出入口从同一产品输出图生成 MC 和 local-authoring；完整 MC 覆盖检查使用产品注册/reference-map/活动工具注册作为分母，不能只核对已有文件 hash。不要从安装副本回读事实。
+
+CI authoring job 不按变更路径跳过此链路；MC 独立归档使用 `pnpm mc:content:pack --output <new-path>`，源树/内容/归档摘要和部署状态分开记录。每次发布补旧页可读/可迁移/人工处理矩阵及受影响产品引擎回放；真实 Relay/DQE/保存/预览由部署方另验。local-authoring 仍整目录仓外安装，不依赖 MC 兄弟目录。说明与验收入口见 `tools/mc-content/README.md`、`HANDOFF.md` 和 `docs/plan/2026-10-24-layout-standards/mc-content-completeness-plan.md`。

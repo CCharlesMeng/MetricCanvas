@@ -1,0 +1,31 @@
+{
+  "case": "depends-on-cycle",
+  "invariant": "filter-depends-on",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选器级联存在循环:region",
+      "paths": [
+        "/filters/0/dependsOn"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选器级联存在循环:city",
+      "paths": [
+        "/filters/1/dependsOn"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "dependsOn": "city"
+      },
+      {
+        "dependsOn": "region"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,8 +1,13 @@
 {
   "code": "DQE_FIELD_MAPPING_ERROR",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [],
   "coverage": {
-    "literalCallSite": true,
+    "literalCallSite": false,
     "queryClosedSet": true,
     "pageErrorType": false,
     "authoredGuidance": false

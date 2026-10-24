@@ -1,0 +1,31 @@
+{
+  "case": "level-query-fields-undeclared-level",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "筛选器 area 未声明层级:country",
+      "paths": [
+        "/dataSources/sales/source/query/filterBindings/area/levelQueryFields/country"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "area": {
+                "levelQueryFields": {
+                  "country": "country_code"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -112,7 +112,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
       "templateRef": {
         "scene": "usage-report",
         "variant": "standard",
@@ -152,11 +152,21 @@
             "amount"
           ]
         }
-      ]
+      ],
+      "correlation": {
+        "requestId": null,
+        "compileInputSha256": "73cae67134469da004312c9cf01fb944e32f1d1ee9d6829ae5cef27a74d1fa28",
+        "planSha256": "7065bba010e4b9900b289085bd614e29d0805e9bbf0147aa764f0c122054d70a"
+      }
     },
-    "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+    "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
     "deploymentAlignment": "not_run",
-    "checkedVersionFields": []
+    "checkedVersionFields": [],
+    "deploymentEvidence": {
+      "status": "not_run",
+      "comparedFields": [],
+      "note": "Only supplied version values were compared; no live service or deployed artifact identity was observed"
+    }
   },
   "assembly": [
     {
@@ -249,33 +259,106 @@
           "componentId": "primary",
           "source": "summary",
           "field": "amount",
-          "path": "/sections/1/components/0/props/rows/0/valueField"
+          "path": "/sections/1/components/0/props/rows/0/valueField",
+          "slot": "main",
+          "kind": "field"
         },
         {
           "componentId": "trend",
           "source": "trend",
           "field": "month",
-          "path": "/sections/1/components/1/props/xField"
+          "path": "/sections/1/components/1/props/xField",
+          "slot": "main",
+          "kind": "field"
         },
         {
           "componentId": "trend",
           "source": "trend",
           "field": "amount",
-          "path": "/sections/1/components/1/props/series/0/field"
+          "path": "/sections/1/components/1/props/series/0/field",
+          "slot": "main",
+          "kind": "field"
         },
         {
           "componentId": "detail-table",
           "source": "trend",
           "field": "month",
-          "path": "/sections/2/components/0/props/columns/0/field"
+          "path": "/sections/2/components/0/props/columns/0/field",
+          "slot": "main",
+          "kind": "field"
         },
         {
           "componentId": "detail-table",
           "source": "trend",
           "field": "amount",
-          "path": "/sections/2/components/0/props/columns/1/field"
+          "path": "/sections/2/components/0/props/columns/1/field",
+          "slot": "main",
+          "kind": "field"
         }
       ],
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "path": "/sections/0/components/0",
+          "data": {},
+          "sectionId": "header"
+        },
+        {
+          "id": "primary",
+          "type": "metricCard",
+          "path": "/sections/1/components/0",
+          "data": {
+            "main": "summary"
+          },
+          "sectionId": "summary"
+        },
+        {
+          "id": "trend",
+          "type": "lineChart",
+          "path": "/sections/1/components/1",
+          "data": {
+            "main": "trend"
+          },
+          "sectionId": "summary"
+        },
+        {
+          "id": "detail-table",
+          "type": "table",
+          "path": "/sections/2/components/0",
+          "data": {
+            "main": "trend"
+          },
+          "sectionId": "detail"
+        }
+      ],
+      "dataCoverage": {
+        "diagnostics": [],
+        "sources": [
+          {
+            "id": "summary",
+            "type": "inline",
+            "fields": [
+              "amount"
+            ],
+            "definitionDependencies": [],
+            "resultDependencies": [],
+            "computeOperations": 0
+          },
+          {
+            "id": "trend",
+            "type": "inline",
+            "fields": [
+              "month",
+              "amount"
+            ],
+            "definitionDependencies": [],
+            "resultDependencies": [],
+            "computeOperations": 0
+          }
+        ],
+        "declarationScope": "all declared data slots, filter branches and source dependencies; no query bodies or data rows"
+      },
       "upgrade": {
         "possible": true,
         "changes": [],
@@ -285,17 +368,24 @@
       "status": "current",
       "note": "Read-only diagnosis. Upgrade writes only to an explicitly chosen new directory; never edit schemaVersion alone."
     },
+    "correlation": {
+      "status": "not_run",
+      "reason": "No trusted caller association supplied"
+    },
     "coverage": [
-      "top-level-component-type",
+      "product-component-tree",
       "container",
-      "source-and-field-selection",
-      "product-page-validation"
+      "declared-data-slot-and-field-selection",
+      "product-page-validation",
+      "schema-driven-data-scan"
     ],
     "notVerified": [
       "visual-quality",
       "DQE-execution",
       "save-status",
-      "user-intent-authenticity"
+      "user-intent-authenticity",
+      "undeclared-binding-intent",
+      "compute-business-semantics"
     ]
   }
 }

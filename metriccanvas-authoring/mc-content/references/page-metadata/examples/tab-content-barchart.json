@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "6.58",
+  "id": "tab-content-barchart",
+  "layout": "dashboard",
+  "dataSources": {
+    "control-data": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_orders"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_orders"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "content-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "contentLayout": "grid",
+            "tabs": [
+              {
+                "id": "one",
+                "label": "内容",
+                "component": {
+                  "id": "control",
+                  "type": "barChart",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "control-data"
+                  },
+                  "props": {
+                    "title": "全区域对照（保持不变）",
+                    "categoryField": "category",
+                    "series": [
+                      {
+                        "field": "value",
+                        "label": "订单对比"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

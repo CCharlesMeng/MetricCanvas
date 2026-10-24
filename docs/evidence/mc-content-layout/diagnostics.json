@@ -37,7 +37,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -50,11 +50,21 @@
           "origin": "productMandatory"
         }
       ],
-      "bindings": []
+      "bindings": [],
+      "correlation": {
+        "requestId": null,
+        "compileInputSha256": "4bb0d89ac20de4692cebc280dafae788509a2ff388921ba5f736f2e443eb8fc3",
+        "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
+      }
     },
-    "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+    "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
     "deploymentAlignment": "not_run",
-    "checkedVersionFields": []
+    "checkedVersionFields": [],
+    "deploymentEvidence": {
+      "status": "not_run",
+      "comparedFields": [],
+      "note": "Only supplied version values were compared; no live service or deployed artifact identity was observed"
+    }
   },
   "required": {
     "status": "gap",
@@ -102,7 +112,7 @@
     ],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -120,11 +130,21 @@
           "origin": "userRequired"
         }
       ],
-      "bindings": []
+      "bindings": [],
+      "correlation": {
+        "requestId": null,
+        "compileInputSha256": "cb491ec4574b1dba3655c8511f961e0bc4df151815ebdd88e8c49aae72cc3e46",
+        "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
+      }
     },
-    "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+    "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
     "deploymentAlignment": "not_run",
-    "checkedVersionFields": []
+    "checkedVersionFields": [],
+    "deploymentEvidence": {
+      "status": "not_run",
+      "comparedFields": [],
+      "note": "Only supplied version values were compared; no live service or deployed artifact identity was observed"
+    }
   },
   "planned": {
     "status": "invalid",
@@ -208,6 +228,8 @@
       }
     ],
     "fieldUses": [],
+    "components": [],
+    "dataCoverage": null,
     "upgrade": {
       "possible": true,
       "changes": [
@@ -300,6 +322,8 @@
       }
     ],
     "fieldUses": [],
+    "components": [],
+    "dataCoverage": null,
     "upgrade": {
       "possible": false,
       "changes": [],
@@ -317,12 +341,12 @@
   },
   "evaluation": {
     "testedContent": {
-      "contentVersion": "1-e9aba00bba96353d",
-      "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+      "contentVersion": "1-ebf417635014c58b",
+      "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
       "alignedWith": {
         "productContractVersion": "1.0.0-rc.4",
         "productManifest": "contract-snapshot/manifest.json",
-        "productManifestSha256": "f45ff5a3c0ae4b39af538b8f9380c290c35892eddddffe0545a92260a66806a1",
+        "productManifestSha256": "fe32c10005fea8ef470a3ee3ce59c9d04279dd4f7612bbfa637c6f98e3971d91",
         "authoringContractVersion": "0.3.1",
         "authoringManifest": "contracts/manifest.json",
         "authoringManifestSha256": "932ae05e5829992b2170bdda195fcee2d2c3c24fb5bf1234a320032e5c092cd3",
@@ -373,7 +397,7 @@
           "gaps": [],
           "inspectionSpec": {
             "formatVersion": 1,
-            "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+            "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
             "templateRef": {
               "scene": "business-report",
               "variant": "standard",
@@ -386,11 +410,21 @@
                 "origin": "productMandatory"
               }
             ],
-            "bindings": []
+            "bindings": [],
+            "correlation": {
+              "requestId": null,
+              "compileInputSha256": "4bb0d89ac20de4692cebc280dafae788509a2ff388921ba5f736f2e443eb8fc3",
+              "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
+            }
           },
-          "contentSha256": "e9aba00bba96353d204bb30549fe3c0b395f290474842dd1b1487cc420662295",
+          "contentSha256": "ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5",
           "deploymentAlignment": "not_run",
-          "checkedVersionFields": []
+          "checkedVersionFields": [],
+          "deploymentEvidence": {
+            "status": "not_run",
+            "comparedFields": [],
+            "note": "Only supplied version values were compared; no live service or deployed artifact identity was observed"
+          }
         }
       },
       {
@@ -405,5 +439,19 @@
       "not_run": 1
     },
     "adoptionPolicy": "caller-owned; no approval, exemption or activation is performed"
+  },
+  "knowledge": {
+    "key": "table.width",
+    "requiredBytes": 9618,
+    "truncated": false
+  },
+  "coverageCounts": {
+    "product": 1150,
+    "authoring": 31,
+    "modules": 33,
+    "topics": 155,
+    "nodes": 2032,
+    "tools": 9,
+    "components": 19
   }
 }

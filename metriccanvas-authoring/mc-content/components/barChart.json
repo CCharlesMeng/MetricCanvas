@@ -1,0 +1,91 @@
+{
+  "type": "barChart",
+  "label": "柱状图",
+  "aliases": [
+    "条形图",
+    "柱图",
+    "柱线混合图"
+  ],
+  "purpose": "比较离散类别之间的大小或展示分类分布",
+  "chooseWhen": [
+    "区域/渠道/产品对比",
+    "分类分布",
+    "多指标类别比较"
+  ],
+  "dataShape": "一个 dimension 类别字段 + 一个或多个 metric 字段",
+  "authoringShape": {
+    "bindsData": true,
+    "dimensions": {
+      "min": 1,
+      "max": 1
+    },
+    "measures": {
+      "min": 1
+    }
+  },
+  "requiredProps": [
+    "categoryField",
+    "series[].field"
+  ],
+  "title": "optional",
+  "defaultSpan": 6,
+  "renderable": true,
+  "assembled": true,
+  "data_editable": true,
+  "knowledge": "barChart.overview",
+  "reference": "references/page-metadata/components/barChart.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/forecast-page.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "field-text-component",
+          "minor": 0,
+          "description": "字段绑定长文本组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/stored-count-measures.json",
+      "requiredVersion": "6.56",
+      "capabilities": [
+        {
+          "id": "query-dimension-measures",
+          "minor": 56,
+          "description": "DQE output_dims 数值输出显式声明页面度量"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "chart-label-presentation",
+          "minor": 16,
+          "description": "类别标签全量展示与旋转、常驻节点数值标签"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

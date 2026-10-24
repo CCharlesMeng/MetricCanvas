@@ -1,0 +1,78 @@
+{
+  "case": "time-point-min-invalid-date",
+  "invariant": "time-point-min",
+  "input": {
+    "schemaVersion": "6.24",
+    "id": "time-point-min-page",
+    "layout": "report",
+    "meta": {
+      "title": "时间点下限验收",
+      "description": "纯文本交互，无业务查询。月份最早2020-06，日期最早2020-06-15。"
+    },
+    "filters": [
+      {
+        "id": "report-month",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "报告月份",
+        "default": "2026-09",
+        "required": true,
+        "min": "2020-06"
+      },
+      {
+        "id": "report-date",
+        "type": "timePoint",
+        "granularity": "date",
+        "label": "报告日期",
+        "required": true,
+        "min": "2020-02-30",
+        "default": "2020-06-15"
+      }
+    ],
+    "dataSources": {},
+    "sections": [
+      {
+        "id": "header",
+        "container": "plain",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "parts": [
+                  {
+                    "filter": "report-month",
+                    "format": "period"
+                  },
+                  " 月份下限验收"
+                ]
+              },
+              "asOf": {
+                "label": "统计月份",
+                "value": {
+                  "filter": "report-month",
+                  "format": "period"
+                }
+              },
+              "filterIds": [
+                "report-month",
+                "report-date"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1/min",
+      "message": "时间点不是有效的公历日期"
+    }
+  ]
+}

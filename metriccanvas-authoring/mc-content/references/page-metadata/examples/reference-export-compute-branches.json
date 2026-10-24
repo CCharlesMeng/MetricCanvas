@@ -1,0 +1,288 @@
+{
+  "schemaVersion": "6.58",
+  "id": "reference-export-compute-branches",
+  "layout": "report",
+  "filters": [
+    {
+      "id": "mode",
+      "type": "dimension",
+      "dimension": "mode",
+      "default": [
+        "base"
+      ]
+    },
+    {
+      "id": "range",
+      "type": "timeRange",
+      "precision": "month",
+      "default": {
+        "from": "2026-01",
+        "to": "2026-03"
+      }
+    }
+  ],
+  "dataSources": {
+    "calc": {
+      "fields": {
+        "a": {
+          "type": "number",
+          "role": "measure"
+        },
+        "b": {
+          "type": "number",
+          "role": "measure"
+        },
+        "n": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total": {
+          "type": "number",
+          "role": "measure"
+        },
+        "growth": {
+          "type": "number",
+          "role": "measure"
+        },
+        "selected": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "a": 10,
+            "b": 20,
+            "n": 2
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "sumFields",
+          "fields": [
+            "a",
+            "b"
+          ],
+          "output": "total",
+          "onMissing": "ignore"
+        },
+        {
+          "op": "cagr",
+          "beginning": "a",
+          "ending": "b",
+          "periods": "n",
+          "output": "growth"
+        },
+        {
+          "op": "selectField",
+          "filter": "mode",
+          "cases": {
+            "base": "a",
+            "alternate": "b"
+          },
+          "defaultMode": "base",
+          "output": "selected"
+        }
+      ]
+    },
+    "fill-0": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "time": "2026-01",
+            "amount": 1
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "timeFill",
+          "timeField": "time",
+          "granularity": "month",
+          "format": "iso",
+          "range": {
+            "from": "2026-01",
+            "to": "2026-03"
+          },
+          "measures": [
+            "amount"
+          ]
+        }
+      ]
+    },
+    "fill-1": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "time": "2026-01",
+            "amount": 1
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "timeFill",
+          "timeField": "time",
+          "granularity": "month",
+          "format": "iso",
+          "range": {
+            "currentYearOffset": 0
+          },
+          "measures": [
+            "amount"
+          ]
+        }
+      ]
+    },
+    "fill-2": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "time": "2026-01",
+            "amount": 1
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "timeFill",
+          "timeField": "time",
+          "granularity": "month",
+          "format": "iso",
+          "range": {
+            "filter": "range"
+          },
+          "measures": [
+            "amount"
+          ]
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "calc-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "calc"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "total"
+              },
+              {
+                "field": "growth"
+              },
+              {
+                "field": "selected"
+              }
+            ]
+          }
+        },
+        {
+          "id": "table-fill-0",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "fill-0"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "time"
+              },
+              {
+                "field": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "table-fill-1",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "fill-1"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "time"
+              },
+              {
+                "field": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "table-fill-2",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "fill-2"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "time"
+              },
+              {
+                "field": "amount"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

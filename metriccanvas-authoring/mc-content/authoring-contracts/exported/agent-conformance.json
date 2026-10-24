@@ -1,0 +1,1727 @@
+{
+  "formatVersion": "1.0",
+  "source": {
+    "implementation": "typescript",
+    "module": "ask/retrieval+ask/model-port+ask/orchestrator",
+    "dataContext": "docs/examples/schema-metadata.example.json"
+  },
+  "dataContext": {
+    "formatVersion": "1.1",
+    "id": "customer-activity-context",
+    "version": "2026-07-31.1",
+    "generatedAt": "2026-07-31T08:00:00.000Z",
+    "source": "customer-activity-dqe",
+    "executionEnvironments": [
+      {
+        "id": "dqe-customer-activity",
+        "name": "客户活动 DQE",
+        "language": "dqe",
+        "endpointRef": "dqe-primary",
+        "description": "面向客户活动风险分析的受控 DQE 执行环境",
+        "schemas": [
+          {
+            "id": "customer-activity",
+            "name": "客户活动",
+            "description": "客户分层、活动次数与活动完成情况",
+            "metrics": [
+              {
+                "name": "NA客户数",
+                "type": "number",
+                "description": "符合当前查询条件的 NA 客户数量",
+                "aliases": [
+                  "客户数"
+                ],
+                "unit": "个",
+                "additivity": "半可加",
+                "timeAggregation": "期末值",
+                "isRatio": false,
+                "dimensions": [
+                  "客户级别",
+                  "地区部",
+                  "统计月份"
+                ],
+                "nullable": false,
+                "sensitive": false
+              }
+            ],
+            "objects": [
+              {
+                "id": "customer-activity-summary",
+                "name": "客户活动汇总",
+                "kind": "dataset",
+                "description": "按客户级别、地区部和统计周期查询客户活动汇总",
+                "fields": [
+                  {
+                    "name": "客户级别",
+                    "type": "string",
+                    "description": "客户经营分层",
+                    "aliases": [
+                      "客户层级",
+                      "NA级别"
+                    ],
+                    "roleHints": [
+                      "dimension"
+                    ],
+                    "nullable": false,
+                    "sensitive": false
+                  },
+                  {
+                    "name": "地区部",
+                    "type": "string",
+                    "description": "客户归属地区部",
+                    "aliases": [
+                      "区域"
+                    ],
+                    "roleHints": [
+                      "dimension"
+                    ],
+                    "nullable": false,
+                    "sensitive": false
+                  },
+                  {
+                    "name": "统计月份",
+                    "type": "date",
+                    "description": "月粒度统计时间",
+                    "aliases": [
+                      "月份"
+                    ],
+                    "roleHints": [
+                      "dimension",
+                      "time"
+                    ],
+                    "granularity": "month",
+                    "nullable": false,
+                    "sensitive": false
+                  }
+                ]
+              }
+            ],
+            "relationships": [],
+            "verifiedQueries": [
+              {
+                "id": "customer-count-by-level",
+                "question": "按客户级别查看 NA 客户数",
+                "description": "返回客户级别和对应 NA 客户数量",
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "客户级别"
+                      ],
+                      "output_metrics": [
+                        "NA客户数"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {}
+                    }
+                  ]
+                },
+                "resultFields": [
+                  {
+                    "name": "客户级别",
+                    "type": "string",
+                    "role": "dimension",
+                    "nullable": false
+                  },
+                  {
+                    "name": "NA客户数",
+                    "type": "number",
+                    "role": "measure",
+                    "unit": "个",
+                    "nullable": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "operations-analytics",
+            "name": "运营分析",
+            "description": "Tokens 服务的用量、计费与调用运营分析",
+            "metrics": [
+              {
+                "name": "Tokens消耗量",
+                "type": "number",
+                "description": "统计期内推理与训练消耗的 Token 总量",
+                "aliases": [
+                  "消耗量",
+                  "用量"
+                ],
+                "unit": "Token",
+                "additivity": "可加",
+                "timeAggregation": "求和",
+                "isRatio": false,
+                "dimensions": [
+                  "区域",
+                  "模型",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              },
+              {
+                "name": "计费Tokens量",
+                "type": "number",
+                "description": "统计期内计费的 Token 量,排除内部试用额度",
+                "aliases": [
+                  "计费量"
+                ],
+                "unit": "Token",
+                "additivity": "可加",
+                "timeAggregation": "求和",
+                "isRatio": false,
+                "dimensions": [
+                  "区域",
+                  "模型",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              },
+              {
+                "name": "Tokens请求量",
+                "type": "number",
+                "description": "统计期内的模型调用请求次数,按请求计数而非 Token 计数",
+                "aliases": [
+                  "调用次数"
+                ],
+                "unit": "次",
+                "additivity": "可加",
+                "timeAggregation": "求和",
+                "isRatio": false,
+                "dimensions": [
+                  "区域",
+                  "模型",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              },
+              {
+                "name": "客户数",
+                "type": "number",
+                "description": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同",
+                "aliases": [
+                  "在用客户数",
+                  "活跃客户数"
+                ],
+                "unit": "家",
+                "additivity": "不可加",
+                "timeAggregation": "均值",
+                "isRatio": false,
+                "dimensions": [
+                  "区域",
+                  "模型",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              }
+            ],
+            "objects": [
+              {
+                "id": "operations-analytics-surface",
+                "name": "运营分析语义面",
+                "kind": "dataset",
+                "description": "业务域「运营分析」组合式语义面的可组合指标与维度",
+                "fields": [
+                  {
+                    "name": "区域",
+                    "type": "string",
+                    "description": "业务归属区域。取值域:华东、华南、华北、西南、华中、东北、西北。",
+                    "aliases": [
+                      "大区"
+                    ],
+                    "roleHints": [
+                      "dimension"
+                    ],
+                    "nullable": false,
+                    "sensitive": false
+                  },
+                  {
+                    "name": "模型",
+                    "type": "string",
+                    "description": "提供服务的模型系列。取值域:通用大模型、代码大模型、多模态大模型。",
+                    "aliases": [
+                      "模型系列"
+                    ],
+                    "roleHints": [
+                      "dimension"
+                    ],
+                    "nullable": false,
+                    "sensitive": false
+                  },
+                  {
+                    "name": "统计周期",
+                    "type": "date",
+                    "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month、day。",
+                    "aliases": [
+                      "统计时间"
+                    ],
+                    "roleHints": [
+                      "dimension",
+                      "time"
+                    ],
+                    "granularity": "month,day",
+                    "nullable": false,
+                    "sensitive": false
+                  }
+                ]
+              }
+            ],
+            "relationships": [],
+            "verifiedQueries": [
+              {
+                "id": "tokens-consumption-by-region",
+                "question": "各区域一季度的 Tokens 消耗量是多少",
+                "description": "按区域返回 2026 年一季度的 Tokens 消耗量合计",
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "区域"
+                      ],
+                      "output_metrics": [
+                        "Tokens消耗量"
+                      ],
+                      "filter": {
+                        "time": {
+                          "period": "month",
+                          "start": "2026-01",
+                          "end": "2026-03"
+                        },
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {}
+                    }
+                  ]
+                },
+                "resultFields": [
+                  {
+                    "name": "区域",
+                    "type": "string",
+                    "role": "dimension",
+                    "nullable": false
+                  },
+                  {
+                    "name": "Tokens消耗量",
+                    "type": "number",
+                    "role": "measure",
+                    "unit": "Token",
+                    "nullable": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "customer-management",
+            "name": "客户经营",
+            "description": "客户规模、增长与流失的经营分析",
+            "metrics": [
+              {
+                "name": "客户数",
+                "type": "number",
+                "description": "期末在册客户总数,与运营分析域的在用调用口径不同",
+                "aliases": [
+                  "在册客户数",
+                  "存量客户数"
+                ],
+                "unit": "家",
+                "additivity": "半可加",
+                "timeAggregation": "期末值",
+                "isRatio": false,
+                "dimensions": [
+                  "客户级别",
+                  "行业",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              },
+              {
+                "name": "新增客户数",
+                "type": "number",
+                "description": "统计期内新增签约的客户数",
+                "aliases": [
+                  "新签客户数"
+                ],
+                "unit": "家",
+                "additivity": "可加",
+                "timeAggregation": "求和",
+                "isRatio": false,
+                "dimensions": [
+                  "客户级别",
+                  "行业",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              },
+              {
+                "name": "流失客户数",
+                "type": "number",
+                "description": "统计期内终止合作的客户数",
+                "aliases": [
+                  "流失数"
+                ],
+                "unit": "家",
+                "additivity": "可加",
+                "timeAggregation": "求和",
+                "isRatio": false,
+                "dimensions": [
+                  "客户级别",
+                  "行业",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              },
+              {
+                "name": "客户留存率",
+                "type": "number",
+                "description": "统计期末仍然在册的客户占期初在册客户的比例",
+                "aliases": [
+                  "留存率"
+                ],
+                "unit": "%",
+                "additivity": "不可加",
+                "timeAggregation": "均值",
+                "isRatio": true,
+                "dimensions": [
+                  "客户级别",
+                  "行业",
+                  "统计周期"
+                ],
+                "nullable": false,
+                "sensitive": false
+              }
+            ],
+            "objects": [
+              {
+                "id": "customer-management-surface",
+                "name": "客户经营语义面",
+                "kind": "dataset",
+                "description": "业务域「客户经营」组合式语义面的可组合指标与维度",
+                "fields": [
+                  {
+                    "name": "客户级别",
+                    "type": "string",
+                    "description": "客户经营分层。取值域:卓越、战略、核心、成长。",
+                    "aliases": [
+                      "客户层级"
+                    ],
+                    "roleHints": [
+                      "dimension"
+                    ],
+                    "nullable": false,
+                    "sensitive": false
+                  },
+                  {
+                    "name": "行业",
+                    "type": "string",
+                    "description": "客户所属行业。取值域:金融、制造、互联网、能源、政务。",
+                    "aliases": [
+                      "所属行业"
+                    ],
+                    "roleHints": [
+                      "dimension"
+                    ],
+                    "nullable": false,
+                    "sensitive": false
+                  },
+                  {
+                    "name": "统计周期",
+                    "type": "date",
+                    "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                    "aliases": [
+                      "统计时间"
+                    ],
+                    "roleHints": [
+                      "dimension",
+                      "time"
+                    ],
+                    "granularity": "month",
+                    "nullable": false,
+                    "sensitive": false
+                  }
+                ]
+              }
+            ],
+            "relationships": [],
+            "verifiedQueries": [
+              {
+                "id": "customer-count-by-level-period-end",
+                "question": "按客户级别查看期末在册客户数",
+                "description": "返回 2026 年 6 月期末各客户级别的在册客户数",
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "客户级别"
+                      ],
+                      "output_metrics": [
+                        "客户数"
+                      ],
+                      "filter": {
+                        "time": {
+                          "period": "month",
+                          "start": "2026-06",
+                          "end": "2026-06"
+                        },
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {}
+                    }
+                  ]
+                },
+                "resultFields": [
+                  {
+                    "name": "客户级别",
+                    "type": "string",
+                    "role": "dimension",
+                    "nullable": false
+                  },
+                  {
+                    "name": "客户数",
+                    "type": "number",
+                    "role": "measure",
+                    "unit": "家",
+                    "nullable": false
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "constraints": {
+          "readOnly": true,
+          "maxRows": 1000,
+          "maxColumns": 20,
+          "maxQueriesPerBatch": 5,
+          "timeoutMs": 30000
+        },
+        "security": {
+          "scope": "current-user",
+          "notes": [
+            "只返回当前身份可访问的对象和字段",
+            "敏感字段不得进入查询候选或普通日志"
+          ]
+        }
+      }
+    ]
+  },
+  "cases": [
+    {
+      "case": "canonical-name-hit",
+      "kind": "business_term_resolution",
+      "input": {
+        "question": "上个月的 Tokens消耗量是多少?",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "limit": 5
+      },
+      "expected": {
+        "candidates": [
+          {
+            "metricName": "Tokens消耗量",
+            "businessDomain": "运营分析",
+            "definition": "统计期内推理与训练消耗的 Token 总量",
+            "unit": "Token",
+            "matchedTerm": "Tokens消耗量",
+            "score": 109
+          }
+        ],
+        "selected": [
+          {
+            "metricName": "Tokens消耗量",
+            "businessDomain": "运营分析",
+            "definition": "统计期内推理与训练消耗的 Token 总量",
+            "unit": "Token",
+            "matchedTerm": "Tokens消耗量",
+            "score": 109
+          }
+        ],
+        "ambiguousTerms": []
+      }
+    },
+    {
+      "case": "alias-hit",
+      "kind": "business_term_resolution",
+      "input": {
+        "question": "上个月的调用次数是多少?",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "limit": 5
+      },
+      "expected": {
+        "candidates": [
+          {
+            "metricName": "Tokens请求量",
+            "businessDomain": "运营分析",
+            "definition": "统计期内的模型调用请求次数,按请求计数而非 Token 计数",
+            "unit": "次",
+            "matchedTerm": "调用次数",
+            "score": 54
+          }
+        ],
+        "selected": [
+          {
+            "metricName": "Tokens请求量",
+            "businessDomain": "运营分析",
+            "definition": "统计期内的模型调用请求次数,按请求计数而非 Token 计数",
+            "unit": "次",
+            "matchedTerm": "调用次数",
+            "score": 54
+          }
+        ],
+        "ambiguousTerms": []
+      }
+    },
+    {
+      "case": "longest-name-hit",
+      "kind": "business_term_resolution",
+      "input": {
+        "question": "各模型的新增客户数是多少?",
+        "businessDomains": [
+          "运营分析",
+          "客户经营"
+        ],
+        "limit": 5
+      },
+      "expected": {
+        "candidates": [
+          {
+            "metricName": "新增客户数",
+            "businessDomain": "客户经营",
+            "definition": "统计期内新增签约的客户数",
+            "unit": "家",
+            "matchedTerm": "新增客户数",
+            "score": 105
+          }
+        ],
+        "selected": [
+          {
+            "metricName": "新增客户数",
+            "businessDomain": "客户经营",
+            "definition": "统计期内新增签约的客户数",
+            "unit": "家",
+            "matchedTerm": "新增客户数",
+            "score": 105
+          }
+        ],
+        "ambiguousTerms": []
+      }
+    },
+    {
+      "case": "ambiguous-canonical-name",
+      "kind": "business_term_resolution",
+      "input": {
+        "question": "6 月份的客户数是多少?",
+        "businessDomains": [
+          "运营分析",
+          "客户经营"
+        ],
+        "limit": 5
+      },
+      "expected": {
+        "candidates": [
+          {
+            "metricName": "客户数",
+            "businessDomain": "客户经营",
+            "definition": "期末在册客户总数,与运营分析域的在用调用口径不同",
+            "unit": "家",
+            "matchedTerm": "客户数",
+            "score": 103
+          },
+          {
+            "metricName": "客户数",
+            "businessDomain": "运营分析",
+            "definition": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同",
+            "unit": "家",
+            "matchedTerm": "客户数",
+            "score": 103
+          }
+        ],
+        "selected": [],
+        "ambiguousTerms": [
+          "客户数"
+        ]
+      }
+    },
+    {
+      "case": "longest-alias-hit",
+      "kind": "business_term_resolution",
+      "input": {
+        "question": "上个月各区域的在用客户数是多少?",
+        "businessDomains": [
+          "运营分析",
+          "客户经营"
+        ],
+        "limit": 5
+      },
+      "expected": {
+        "candidates": [
+          {
+            "metricName": "客户数",
+            "businessDomain": "运营分析",
+            "definition": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同",
+            "unit": "家",
+            "matchedTerm": "在用客户数",
+            "score": 55
+          }
+        ],
+        "selected": [
+          {
+            "metricName": "客户数",
+            "businessDomain": "运营分析",
+            "definition": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同",
+            "unit": "家",
+            "matchedTerm": "在用客户数",
+            "score": 55
+          }
+        ],
+        "ambiguousTerms": []
+      }
+    },
+    {
+      "case": "terms-dimension-alias-recent-time-trend",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "最近6个月按大区看Tokens消耗量趋势",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "最近6个月按大区看Tokens消耗量趋势",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "最近6个月",
+              "canonicalName": "recent_months",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 35,
+              "start": 0,
+              "end": 5
+            },
+            {
+              "kind": "dimension",
+              "matchedTerm": "大区",
+              "canonicalName": "区域",
+              "businessDomain": "运营分析",
+              "source": "alias",
+              "score": 52,
+              "definition": "业务归属区域。取值域:华东、华南、华北、西南、华中、东北、西北。",
+              "start": 6,
+              "end": 8
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "趋势",
+              "canonicalName": "trend",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 18,
+              "end": 20
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2026-03",
+          "end": "2026-08",
+          "providedBy": "user"
+        },
+        "intent": "trend",
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-value-previous-month",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "上个月华东的Tokens请求量是多少",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "上个月华东的Tokens请求量是多少",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "上个月",
+              "canonicalName": "previous_month",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 33,
+              "start": 0,
+              "end": 3
+            },
+            {
+              "kind": "dimension_value",
+              "matchedTerm": "华东",
+              "canonicalName": "华东",
+              "businessDomain": "运营分析",
+              "source": "value_domain",
+              "score": 82,
+              "definition": "区域",
+              "start": 3,
+              "end": 5
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2026-07",
+          "end": "2026-07",
+          "providedBy": "user"
+        },
+        "intent": null,
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-dimension-half-year-ranking",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "2025年下半年各模型系列调用次数排行前10",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "2025年下半年各模型系列调用次数排行前10",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "2025年下半年",
+              "canonicalName": "second_half_year",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 38,
+              "start": 0,
+              "end": 8
+            },
+            {
+              "kind": "dimension",
+              "matchedTerm": "模型系列",
+              "canonicalName": "模型",
+              "businessDomain": "运营分析",
+              "source": "alias",
+              "score": 54,
+              "definition": "提供服务的模型系列。取值域:通用大模型、代码大模型、多模态大模型。",
+              "start": 9,
+              "end": 13
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "排行",
+              "canonicalName": "ranking",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 17,
+              "end": 19
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2025-07",
+          "end": "2025-12",
+          "providedBy": "user"
+        },
+        "intent": "ranking",
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-current-year-composition",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "今年各区域客户数占比",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "今年各区域客户数占比",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "今年",
+              "canonicalName": "current_year",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            },
+            {
+              "kind": "dimension",
+              "matchedTerm": "区域",
+              "canonicalName": "区域",
+              "businessDomain": "运营分析",
+              "source": "canonical_name",
+              "score": 102,
+              "definition": "业务归属区域。取值域:华东、华南、华北、西南、华中、东北、西北。",
+              "start": 3,
+              "end": 5
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "占比",
+              "canonicalName": "composition",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 8,
+              "end": 10
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2026-01",
+          "end": "2026-08",
+          "providedBy": "user"
+        },
+        "intent": "composition",
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-cross-domain-dimension-ambiguity",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "按统计周期看客户数",
+        "businessDomains": [
+          "运营分析",
+          "客户经营"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "按统计周期看客户数",
+          "matches": [],
+          "ambiguities": [
+            {
+              "matchedTerm": "统计周期",
+              "candidates": [
+                {
+                  "kind": "dimension",
+                  "canonicalName": "统计周期",
+                  "businessDomain": "客户经营",
+                  "score": 104,
+                  "definition": "按查询时间粒度展开的统计周期。支持的时间粒度:month。"
+                },
+                {
+                  "kind": "dimension",
+                  "canonicalName": "统计周期",
+                  "businessDomain": "运营分析",
+                  "score": 104,
+                  "definition": "按查询时间粒度展开的统计周期。支持的时间粒度:month、day。"
+                }
+              ]
+            }
+          ]
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-add-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "新增一个华南的Tokens请求量图表",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "新增一个华南的Tokens请求量图表",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "新增一个",
+              "canonicalName": "add",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 34,
+              "start": 0,
+              "end": 4
+            },
+            {
+              "kind": "dimension_value",
+              "matchedTerm": "华南",
+              "canonicalName": "华南",
+              "businessDomain": "运营分析",
+              "source": "value_domain",
+              "score": 82,
+              "definition": "区域",
+              "start": 4,
+              "end": 6
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "add"
+      }
+    },
+    {
+      "case": "terms-remove-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "删除这个图表",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "删除这个图表",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "删除",
+              "canonicalName": "remove",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "remove"
+      }
+    },
+    {
+      "case": "terms-replace-detail",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "换成明细列表",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "换成明细列表",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "换成",
+              "canonicalName": "replace",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "明细",
+              "canonicalName": "detail",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 2,
+              "end": 4
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": "detail",
+        "structureOperation": "replace"
+      }
+    },
+    {
+      "case": "terms-split-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "拆成两个图表分别展示",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "拆成两个图表分别展示",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "拆成",
+              "canonicalName": "split",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "split"
+      }
+    },
+    {
+      "case": "terms-merge-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "合并放到一张图",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "合并放到一张图",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "合并",
+              "canonicalName": "merge",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "merge"
+      }
+    },
+    {
+      "case": "model-route-one-domain",
+      "kind": "model_decision",
+      "input": {
+        "stage": "route_business_domains",
+        "rawOutput": {
+          "businessDomains": [
+            "运营分析"
+          ]
+        }
+      },
+      "expected": {
+        "decisionType": "route_business_domains",
+        "businessDomains": [
+          "运营分析"
+        ]
+      }
+    },
+    {
+      "case": "model-form-one-unit",
+      "kind": "model_decision",
+      "input": {
+        "stage": "submit_data_request_units",
+        "rawOutput": {
+          "outcome": "unit",
+          "unit": {
+            "businessDomain": "运营分析",
+            "metrics": [
+              {
+                "kind": "metric",
+                "name": "Tokens请求量"
+              }
+            ],
+            "groupBy": [
+              "区域"
+            ],
+            "filters": [],
+            "time": {
+              "granularity": "month",
+              "start": "2026-08",
+              "end": "2026-08",
+              "providedBy": "user"
+            },
+            "title": "按区域查看 Tokens 请求量"
+          }
+        },
+        "hasPreviousUnits": false
+      },
+      "expected": {
+        "decisionType": "submit_data_request_units",
+        "outcome": "unit",
+        "unit": {
+          "businessDomain": "运营分析",
+          "metrics": [
+            {
+              "kind": "metric",
+              "name": "Tokens请求量"
+            }
+          ],
+          "groupBy": [
+            "区域"
+          ],
+          "filters": [],
+          "time": {
+            "granularity": "month",
+            "start": "2026-08",
+            "end": "2026-08",
+            "providedBy": "user"
+          },
+          "title": "按区域查看 Tokens 请求量"
+        }
+      }
+    },
+    {
+      "case": "model-add-unit-operation",
+      "kind": "model_decision",
+      "input": {
+        "stage": "submit_data_request_units",
+        "rawOutput": {
+          "outcome": "operations",
+          "operations": [
+            {
+              "op": "add",
+              "unit": {
+                "businessDomain": "运营分析",
+                "metrics": [
+                  {
+                    "kind": "metric",
+                    "name": "Tokens请求量"
+                  }
+                ],
+                "groupBy": [
+                  "区域"
+                ],
+                "filters": [],
+                "time": {
+                  "granularity": "month",
+                  "start": "2026-08",
+                  "end": "2026-08",
+                  "providedBy": "user"
+                },
+                "title": "按区域查看 Tokens 请求量"
+              }
+            }
+          ]
+        },
+        "hasPreviousUnits": false
+      },
+      "expected": {
+        "decisionType": "submit_data_request_units",
+        "outcome": "operations",
+        "operations": [
+          {
+            "op": "add",
+            "unit": {
+              "businessDomain": "运营分析",
+              "metrics": [
+                {
+                  "kind": "metric",
+                  "name": "Tokens请求量"
+                }
+              ],
+              "groupBy": [
+                "区域"
+              ],
+              "filters": [],
+              "time": {
+                "granularity": "month",
+                "start": "2026-08",
+                "end": "2026-08",
+                "providedBy": "user"
+              },
+              "title": "按区域查看 Tokens 请求量"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "model-modify-unit-operation",
+      "kind": "model_decision",
+      "input": {
+        "stage": "submit_data_request_units",
+        "rawOutput": {
+          "outcome": "operations",
+          "operations": [
+            {
+              "op": "modify",
+              "dataSourceId": "unit-1",
+              "patch": {
+                "groupBy": [
+                  "统计周期"
+                ]
+              }
+            }
+          ]
+        },
+        "hasPreviousUnits": true
+      },
+      "expected": {
+        "decisionType": "submit_data_request_units",
+        "outcome": "operations",
+        "operations": [
+          {
+            "op": "modify",
+            "dataSourceId": "unit-1",
+            "patch": {
+              "groupBy": [
+                "统计周期"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "model-analysis-intent",
+      "kind": "model_decision",
+      "input": {
+        "stage": "submit_analysis_intent",
+        "rawOutput": {
+          "intent": "trend"
+        }
+      },
+      "expected": {
+        "decisionType": "submit_analysis_intent",
+        "intent": "trend"
+      }
+    },
+    {
+      "case": "step-events-success",
+      "kind": "step_event_sequence",
+      "input": {
+        "runId": "conformance-success",
+        "question": "最近6个月Tokens消耗量的月度趋势如何?",
+        "scriptedDecisions": {
+          "route": [
+            {
+              "businessDomains": [
+                "运营分析"
+              ]
+            }
+          ],
+          "unit": [
+            {
+              "outcome": "unit",
+              "unit": {
+                "businessDomain": "运营分析",
+                "metrics": [
+                  {
+                    "kind": "metric",
+                    "name": "Tokens消耗量"
+                  }
+                ],
+                "groupBy": [
+                  "统计周期"
+                ],
+                "filters": [],
+                "time": {
+                  "granularity": "month",
+                  "start": "2026-03",
+                  "end": "2026-08",
+                  "providedBy": "user"
+                },
+                "title": "最近 6 个月 Tokens 消耗趋势"
+              }
+            }
+          ],
+          "intent": [
+            {
+              "intent": "trend"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "events": [
+          {
+            "type": "domain_routed",
+            "question": "最近6个月Tokens消耗量的月度趋势如何?",
+            "routedDomains": [
+              "运营分析"
+            ],
+            "overriddenByUser": false
+          },
+          {
+            "type": "candidates_retrieved",
+            "candidates": [
+              {
+                "metricName": "Tokens消耗量",
+                "businessDomain": "运营分析",
+                "definitionDifference": "统计期内推理与训练消耗的 Token 总量"
+              }
+            ],
+            "selectedMetric": "Tokens消耗量",
+            "selectedMetrics": [
+              "Tokens消耗量"
+            ],
+            "adHocDefinition": null
+          },
+          {
+            "type": "scope_card_presented",
+            "businessDomain": "运营分析",
+            "metricName": "Tokens消耗量",
+            "adHocDefinition": null,
+            "groupBy": [
+              "统计周期"
+            ],
+            "timeRange": "2026-03 ~ 2026-08",
+            "granularity": "month",
+            "filters": [],
+            "blockedOnConfirmation": false,
+            "dataSourceId": "result"
+          },
+          {
+            "type": "execution_started",
+            "effectiveQuery": {
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "统计周期"
+                    ],
+                    "output_metrics": [
+                      "Tokens消耗量"
+                    ],
+                    "filter": {
+                      "time": {
+                        "period": "month",
+                        "start": "2026-03",
+                        "end": "2026-08"
+                      },
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              },
+              "fieldMappings": {
+                "field-1": {
+                  "queryField": "统计周期",
+                  "type": "string",
+                  "role": "dimension",
+                  "label": "统计周期",
+                  "nullable": false
+                },
+                "field-2": {
+                  "queryField": "Tokens消耗量",
+                  "type": "number",
+                  "role": "measure",
+                  "label": "Tokens消耗量",
+                  "unit": "Token",
+                  "nullable": false
+                }
+              }
+            },
+            "dataSourceId": "result"
+          },
+          {
+            "type": "rows_ready",
+            "summary": {
+              "rowCount": 3,
+              "totalCount": 3,
+              "outputFields": [
+                "统计周期",
+                "Tokens消耗量"
+              ]
+            },
+            "dataSourceId": "result"
+          },
+          {
+            "type": "document_ready",
+            "components": [
+              {
+                "componentType": "lineChart",
+                "pinnedByUser": false,
+                "dataSourceId": "result",
+                "intent": "trend"
+              }
+            ],
+            "transientPageId": "ask-transient-c8e6eea8"
+          }
+        ],
+        "portCalls": [
+          "retrieval.domainInventory",
+          "model.routeDomains",
+          "retrieval.searchMetricCandidates",
+          "retrieval.domainSurfaces",
+          "model.formUnit",
+          "verification.verifyUnit",
+          "dqe.execute",
+          "model.decideIntent",
+          "page.assemble"
+        ],
+        "terminal": "completed",
+        "documentPresent": true,
+        "executionAttempts": 1
+      }
+    },
+    {
+      "case": "step-events-out-of-scope",
+      "kind": "step_event_sequence",
+      "input": {
+        "runId": "conformance-out-of-scope",
+        "question": "上季度员工离职率是多少?",
+        "scriptedDecisions": {
+          "route": [
+            {
+              "businessDomains": [
+                "运营分析"
+              ]
+            }
+          ],
+          "unit": [
+            {
+              "outcome": "out_of_scope",
+              "reason": "语义面内没有员工离职率相关指标"
+            }
+          ],
+          "intent": []
+        }
+      },
+      "expected": {
+        "events": [
+          {
+            "type": "domain_routed",
+            "question": "上季度员工离职率是多少?",
+            "routedDomains": [
+              "运营分析"
+            ],
+            "overriddenByUser": false
+          },
+          {
+            "type": "candidates_retrieved",
+            "candidates": [],
+            "selectedMetric": null,
+            "selectedMetrics": [],
+            "adHocDefinition": null
+          },
+          {
+            "type": "step_failed",
+            "stage": "discovery",
+            "code": "OUT_OF_SEMANTIC_SURFACE",
+            "message": "语义面内没有员工离职率相关指标"
+          }
+        ],
+        "portCalls": [
+          "retrieval.domainInventory",
+          "model.routeDomains",
+          "retrieval.searchMetricCandidates",
+          "retrieval.domainSurfaces",
+          "model.formUnit"
+        ],
+        "terminal": "interaction_required",
+        "documentPresent": false,
+        "executionAttempts": 0
+      }
+    },
+    {
+      "case": "step-events-execution-retry-failed",
+      "kind": "step_event_sequence",
+      "input": {
+        "runId": "conformance-execution-failed",
+        "question": "Tokens消耗量趋势",
+        "scriptedDecisions": {
+          "route": [
+            {
+              "businessDomains": [
+                "运营分析"
+              ]
+            }
+          ],
+          "unit": [
+            {
+              "outcome": "unit",
+              "unit": {
+                "businessDomain": "运营分析",
+                "metrics": [
+                  {
+                    "kind": "metric",
+                    "name": "Tokens消耗量"
+                  }
+                ],
+                "groupBy": [
+                  "统计周期"
+                ],
+                "filters": [],
+                "time": {
+                  "granularity": "month",
+                  "start": "2026-03",
+                  "end": "2026-08",
+                  "providedBy": "user"
+                },
+                "title": "最近 6 个月 Tokens 消耗趋势"
+              }
+            }
+          ],
+          "intent": []
+        },
+        "executionFailure": {
+          "code": "DQE_TRANSPORT_ERROR",
+          "message": "DQE 服务不可达"
+        }
+      },
+      "expected": {
+        "events": [
+          {
+            "type": "domain_routed",
+            "question": "Tokens消耗量趋势",
+            "routedDomains": [
+              "运营分析"
+            ],
+            "overriddenByUser": false
+          },
+          {
+            "type": "candidates_retrieved",
+            "candidates": [
+              {
+                "metricName": "Tokens消耗量",
+                "businessDomain": "运营分析",
+                "definitionDifference": "统计期内推理与训练消耗的 Token 总量"
+              }
+            ],
+            "selectedMetric": "Tokens消耗量",
+            "selectedMetrics": [
+              "Tokens消耗量"
+            ],
+            "adHocDefinition": null
+          },
+          {
+            "type": "scope_card_presented",
+            "businessDomain": "运营分析",
+            "metricName": "Tokens消耗量",
+            "adHocDefinition": null,
+            "groupBy": [
+              "统计周期"
+            ],
+            "timeRange": "2026-03 ~ 2026-08",
+            "granularity": "month",
+            "filters": [],
+            "blockedOnConfirmation": false,
+            "dataSourceId": "result"
+          },
+          {
+            "type": "execution_started",
+            "effectiveQuery": {
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "统计周期"
+                    ],
+                    "output_metrics": [
+                      "Tokens消耗量"
+                    ],
+                    "filter": {
+                      "time": {
+                        "period": "month",
+                        "start": "2026-03",
+                        "end": "2026-08"
+                      },
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              },
+              "fieldMappings": {
+                "field-1": {
+                  "queryField": "统计周期",
+                  "type": "string",
+                  "role": "dimension",
+                  "label": "统计周期",
+                  "nullable": false
+                },
+                "field-2": {
+                  "queryField": "Tokens消耗量",
+                  "type": "number",
+                  "role": "measure",
+                  "label": "Tokens消耗量",
+                  "unit": "Token",
+                  "nullable": false
+                }
+              }
+            },
+            "dataSourceId": "result"
+          },
+          {
+            "type": "step_failed",
+            "stage": "execution",
+            "code": "DQE_TRANSPORT_ERROR",
+            "message": "DQE 服务不可达"
+          }
+        ],
+        "portCalls": [
+          "retrieval.domainInventory",
+          "model.routeDomains",
+          "retrieval.searchMetricCandidates",
+          "retrieval.domainSurfaces",
+          "model.formUnit",
+          "verification.verifyUnit",
+          "dqe.execute",
+          "verification.verifyUnit",
+          "dqe.execute"
+        ],
+        "terminal": "completed",
+        "documentPresent": false,
+        "executionAttempts": 2
+      }
+    }
+  ]
+}

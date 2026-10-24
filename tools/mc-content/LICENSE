@@ -1,0 +1,11 @@
+MC source licensing notice
+
+This repository does not declare a repository-wide license grant for MC source,
+authored knowledge, or examples. This distribution does not create an open-source
+license or grant additional rights. Distribution/use must follow the applicable
+repository owner's agreement.
+
+Third-party code bundled into each scripts/*.mjs executable is covered by the
+adjacent *.LICENSES.md file, which contains the actual dependency license texts.
+Python dependencies are separately installed under their own licenses and are
+not vendored into this directory.

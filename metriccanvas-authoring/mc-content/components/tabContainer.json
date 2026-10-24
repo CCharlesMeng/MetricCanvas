@@ -1,0 +1,753 @@
+{
+  "type": "tabContainer",
+  "label": "Tab 容器",
+  "aliases": [
+    "页签",
+    "选项卡"
+  ],
+  "purpose": "在同一区域切换普通内容与组合卡",
+  "chooseWhen": [
+    "多个分析视角需要共用同一区域，可混合指标卡、图表、文本、表格、组合卡和AI总结"
+  ],
+  "dataShape": "不绑定页面数据源；每个子组件自己声明数据槽",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [
+    "tabs[].id",
+    "tabs[].label",
+    "tabs[].component"
+  ],
+  "title": "optional",
+  "defaultSpan": 4,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "tabContainer.overview",
+  "reference": "references/page-metadata/components/tabContainer.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/composite-page.json",
+      "requiredVersion": "6.1",
+      "capabilities": [
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "key-value-panel-six-columns",
+          "minor": 0,
+          "description": "key-value 信息面板的六列排布"
+        },
+        {
+          "id": "component-backdrop-layer",
+          "minor": 0,
+          "description": "组件 layout.layer:分区内叠放层,组件铺满分区置于其余组件之下"
+        },
+        {
+          "id": "key-value-panel-component",
+          "minor": 0,
+          "description": "key-value 信息面板组件"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "category-breakdown-component",
+          "minor": 0,
+          "description": "分类明细组件(ADR-0053)"
+        },
+        {
+          "id": "key-value-panel-single-column",
+          "minor": 0,
+          "description": "key-value 信息面板的单列排布"
+        },
+        {
+          "id": "section-column-tracks",
+          "minor": 0,
+          "description": "内容分区的受控列轨权重(ADR-0054)"
+        },
+        {
+          "id": "metric-row-context",
+          "minor": 0,
+          "description": "指标行与主值同排的短上下文"
+        },
+        {
+          "id": "table-embedded",
+          "minor": 0,
+          "description": "表格嵌入式密度与底部渐隐"
+        },
+        {
+          "id": "key-value-item-unit",
+          "minor": 0,
+          "description": "信息面板条目的展示单位"
+        },
+        {
+          "id": "widget-symbol-icons",
+          "minor": 0,
+          "description": "组合卡和信息面板的受控语义图标"
+        },
+        {
+          "id": "metric-row-link",
+          "minor": 0,
+          "description": "指标行的显式非空值导航入口"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        },
+        {
+          "id": "tab-container-analysis-stack",
+          "minor": 0,
+          "description": "Tab 容器的分析表格堆叠呈现档"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-url-initialization.json",
+      "requiredVersion": "6.33",
+      "capabilities": [
+        {
+          "id": "tab-url-initial-state",
+          "minor": 33,
+          "description": "Tab 容器通过显式 URL 参数初始化活动页签"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-mixed-content.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "filter-binding-non-dimension-targets",
+          "minor": 9,
+          "description": "timePoint / boolean / numberRange 筛选器的查询绑定目标"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-aisummary.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-barchart.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-categorybreakdown.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "category-breakdown-component",
+          "minor": 0,
+          "description": "分类明细组件(ADR-0053)"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-compositecard.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "key-value-panel-six-columns",
+          "minor": 0,
+          "description": "key-value 信息面板的六列排布"
+        },
+        {
+          "id": "key-value-panel-component",
+          "minor": 0,
+          "description": "key-value 信息面板组件"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "category-breakdown-component",
+          "minor": 0,
+          "description": "分类明细组件(ADR-0053)"
+        },
+        {
+          "id": "metric-row-context",
+          "minor": 0,
+          "description": "指标行与主值同排的短上下文"
+        },
+        {
+          "id": "key-value-item-unit",
+          "minor": 0,
+          "description": "信息面板条目的展示单位"
+        },
+        {
+          "id": "widget-symbol-icons",
+          "minor": 0,
+          "description": "组合卡和信息面板的受控语义图标"
+        },
+        {
+          "id": "metric-row-link",
+          "minor": 0,
+          "description": "指标行的显式非空值导航入口"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-fieldtext.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "field-text-component",
+          "minor": 0,
+          "description": "字段绑定长文本组件"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-gauge.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-keyvaluepanel.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "key-value-panel-component",
+          "minor": 0,
+          "description": "key-value 信息面板组件"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "key-value-panel-single-column",
+          "minor": 0,
+          "description": "key-value 信息面板的单列排布"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-linechart.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-mapchart.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-metriccard.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-piechart.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-rankingcard.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-rankingdetailcard.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-table.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "data-source-computation",
+          "minor": 0,
+          "description": "页面数据源的受控计算阶段与具名算子(ADR-0046)"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-text.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-filtergroup.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "filter-binding-non-dimension-targets",
+          "minor": 9,
+          "description": "timePoint / boolean / numberRange 筛选器的查询绑定目标"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/tab-content-button.json",
+      "requiredVersion": "6.49",
+      "capabilities": [
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "filter-binding-non-dimension-targets",
+          "minor": 9,
+          "description": "timePoint / boolean / numberRange 筛选器的查询绑定目标"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        },
+        {
+          "id": "tab-container-multi-table",
+          "minor": 0,
+          "description": "Tab item 按顺序承载非空表格列表"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

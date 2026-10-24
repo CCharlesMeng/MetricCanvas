@@ -1,0 +1,41 @@
+{
+  "case": "row-expansion-query-local-page",
+  "invariant": "table-row-expansion",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询子表格必须显式声明 mode:query",
+      "paths": [
+        "/sections/0/components/0/props/rowExpansion/table/pagination"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源:orders-default",
+      "paths": [
+        "/sections/0/components/0/props/rowExpansion/table/pagination/mode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rowExpansion": {
+                "table": {
+                  "pagination": {
+                    "mode": "local",
+                    "pageSize": 10
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

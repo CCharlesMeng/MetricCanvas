@@ -1,0 +1,220 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "table.section-10a32426"
+  ],
+  "semantics": [
+    {
+      "module": "table",
+      "reference": "references/page-metadata/components/table.md",
+      "blocks": [
+        "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。\n\n**决策意见明细合成预览。**\n\n`decision-opinion-details` 使用现有 `query` 数据源和查询分页，首轮查询通过 `order.by` 声明决策总次数降序。Playground 专用适配器分别读取合同、商务两个分页模拟源，归并后返回当前页及匹配总数；类型列通过现有表头多选筛选限定参与来源，候选来自完整匹配范围，支持候选搜索和清除，三个数值列可以切换全局排序。256 条记录中相同姓名与两边重复的局部行键分别保留，来源 ID 与局部键共同确定行身份。\n\n后端占比原值按约定刻度展示，不根据其他列重算；该模拟源从 0—1 转成既有 percent 格式所需的 0—100。页面未声明新的默认排序或合并源协议；JSON 单独加载不提供两个来源的执行能力，初始列头方向也沿现有行为。此场景用于交互与有序归并预览，不证明真实 DQE 已支持相同排序、空值位置或计数能力。",
+        "## 单元格点击与筛选联动\n\n交互态的 `selection` 选择列和 `link: true` 链接列均以下划线提示可点击，覆盖普通、`forecastMatrix`、`embedded` 和 `reportCompact` 变体；普通数据列不加下划线。选择列不额外添加蓝色背景，选中后保持普通文字颜色，不加蓝色边框；显式业务颜色照常生效，键盘焦点框跟随文字颜色。静态导出不呈现点击控件。\n\n当主字段原始值为 `null`、`undefined` 或非有限数字时，单元格呈现默认 `—` 或绑定的 `missingText`，不生成选择按钮、导航链接或详情入口，也不显示下划线或进入键盘焦点顺序。按原始值判定，不比较展示文案；真实的 `0`、`false`、空字符串或恰好等于缺省文案的文本不因此禁用。次字段或徽标有值不能使缺失的主字段恢复可点击。该规则覆盖全部表格变体，保留现有动作资格与启用条件。可观察示例：`table-missing-cell-actions`，使用内联合成数据，无需 DQE。\n\n选择列的 `selection.writes` 以**页面筛选器 id** 为键，以当前行的**页面字段 id** 或固定值为输入。例如：\n\n```json\n{\n  \"field\": \"region-dept-name\",\n  \"title\": \"区域\",\n  \"width\": 150,\n  \"fixed\": \"left\",\n  \"selection\": {\n    \"writes\": { \"region\": { \"field\": \"region-dept-name\" } }\n  }\n}\n```\n\n页面须声明 `id: \"region\"`、`type: \"dimension\"` 的筛选器；点击将当前行原始取值转为字符串写入其单选状态，不使用格式化文案。空值不写入，多目标写入一次完成。再次点击同一取值保持选中，不自动清空；`fixed` 和 `width` 只影响呈现，不影响写入。\n\n选择动作沿用组件动作资格；当前协议允许 `inline` 入口写入会产生可观察结果的筛选，例如联动下游查询。维度筛选值还须通过显式 `options` 或可信动态候选确认，候选未就绪时相关查询等待。选择列写入筛选状态，不直接筛选其他表格；下游查询必须显式声明 `source.query.filterBindings.region: { \"target\": \"dimension\", \"queryField\": \"region_dept_name\" }`。这里 `region_dept_name` 是真实 DQE 字段，不能从页面字段 id 猜测。不订阅该筛选的查询不重跑，`inline` 行也不会因此自动过滤。\n\n可观察示例：`table-cell-selection` 使用 DQE Sim 合成数据，点击“华南地区部”后，下表仅显示“深圳代表处”；上表不订阅该筛选，保留全部入口。浏览器回归同时覆盖四种变体下划线、键盘选择、重复点击、未绑定下游及内联入口联动查询的行为，不代表真实 DQE 验收。"
+      ],
+      "rules": [
+        {
+          "id": "table-row-expansion",
+          "description": "6.44单层子表格的作用域、只读及查询分页约束",
+          "valid": [
+            "table-row-expansion-inline",
+            "table-row-expansion-query"
+          ],
+          "invalid": [
+            "row-expansion-before-6.44",
+            "row-expansion-missing-parent-key",
+            "row-expansion-query-local-page",
+            "row-expansion-unbound-parent"
+          ]
+        },
+        {
+          "id": "paged-join",
+          "description": "6.22 组合表全局视图与普通查询定义引用",
+          "valid": [
+            "paged-join-page",
+            "table-number-range-page"
+          ],
+          "invalid": [
+            "table-number-range-before-6.22",
+            "paged-join-initial-predicate-in",
+            "paged-join-initial-predicate-numeric",
+            "paged-join-initial-predicate-date",
+            "paged-join-before-6.22",
+            "paged-join-unknown-member",
+            "paged-join-invalid-key",
+            "paged-join-invalid-projection",
+            "paged-join-member-topn",
+            "paged-join-shared-root",
+            "paged-join-invalid-initial",
+            "table-number-range-non-numeric"
+          ]
+        },
+        {
+          "id": "table-toolbar-search",
+          "description": "表格工具区由6.21引入，搜索显式引用文本标量字段",
+          "valid": [
+            "table-toolbar-page"
+          ],
+          "invalid": [
+            "table-toolbar-before-6.21",
+            "table-search-nontext-field",
+            "table-search-duplicate-field"
+          ]
+        },
+        {
+          "id": "table-search-options",
+          "description": "6.42 静态搜索选项唯一、默认项有效且每项引用文本字段",
+          "valid": [
+            "table-search-options-page"
+          ],
+          "invalid": [
+            "table-search-options-before-6.42",
+            "table-search-options-duplicate",
+            "table-search-options-default-missing",
+            "table-search-options-nontext",
+            "table-search-options-unmapped"
+          ]
+        },
+        {
+          "id": "table-row-key",
+          "description": "多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-multi-slot-without-row-key",
+            "table-row-key-missing-in-slot",
+            "table-row-key-not-dimension",
+            "table-row-key-type-inconsistent"
+          ]
+        },
+        {
+          "id": "table-row-kind-field",
+          "description": "表格行类别字段必须存在且由该数据源的折叠算子写入",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-row-kind-field-unknown",
+            "table-row-kind-field-not-written"
+          ]
+        },
+        {
+          "id": "table-merge-by-column",
+          "description": "mergeBy 必须是表格已声明的列字段",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-merge-by-not-column"
+          ]
+        },
+        {
+          "id": "table-selection-writes",
+          "description": "单元格选择只能写入已声明的 dimension 筛选器",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-selection-writes-unknown-filter",
+            "table-selection-writes-non-dimension"
+          ]
+        },
+        {
+          "id": "table-column-binding-unique",
+          "description": "表格列字段绑定不重复",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-duplicate-column-binding"
+          ]
+        },
+        {
+          "id": "table-filterable-dimension",
+          "description": "表头筛选只能声明在 dimension 列上",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-filterable-on-measure"
+          ]
+        },
+        {
+          "id": "pagination-local-inline",
+          "description": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "pagination-local-on-query"
+          ]
+        },
+        {
+          "id": "pagination-query-source",
+          "description": "pagination.mode='query' 只允许绑定 query 数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-query-on-inline"
+          ]
+        },
+        {
+          "id": "pagination-query-order",
+          "description": "查询分页要求 DQE order.offset 为 0 且 limit 为正整数",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-offset-not-zero",
+            "pagination-limit-not-positive"
+          ]
+        },
+        {
+          "id": "pagination-initial-rows",
+          "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-initial-without-total-count",
+            "pagination-initial-not-full-page"
+          ]
+        },
+        {
+          "id": "pagination-exclusive-source",
+          "description": "查询分页表格必须独占页面数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-shared-source"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/query-dashboard.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/reference-export-column-actions.json",
+        "references/page-metadata/examples/table-toolbar-page.json",
+        "references/page-metadata/examples/table-number-range-page.json",
+        "references/page-metadata/examples/paged-join-fixed-rank-page.json",
+        "references/page-metadata/examples/table-search-options-page.json",
+        "references/page-metadata/examples/table-row-expansion-inline.json",
+        "references/page-metadata/examples/table-row-expansion-query.json",
+        "references/page-metadata/examples/table-row-expansion-inputs.json",
+        "references/page-metadata/examples/table-row-expansion-none.json",
+        "references/page-metadata/examples/table-row-number-page.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

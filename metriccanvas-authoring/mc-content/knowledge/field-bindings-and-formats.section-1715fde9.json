@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "field-bindings-and-formats.section-1715fde9"
+  ],
+  "semantics": [
+    {
+      "module": "field-bindings-and-formats",
+      "reference": "references/page-metadata/field-bindings-and-formats.md",
+      "blocks": [
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\nformat优先于字段defaultFormat；未设置时走组件/类型的既有格式行为。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。",
+        "## 显式数字颜色与图表标签（6.16）\n\n表格数字列及指标卡变化项可就地声明 `colorRule`。`{\"mode\":\"fixed\",\"color\":\"green\"}` 对全部有效数字（包括零）固定染色；`{\"mode\":\"sign\",\"positive\":\"red\",\"negative\":\"green\"}` 按原始正负值映射；6.17新增的带符号普通数值格式按展示精度判断，见上节。颜色只接受 `red` / `green`；正负模式的零和所有模式的缺失值保持普通文字颜色。字段绑定必须为 `number` / `money`。同一字段在不同展示位置可使用不同规则，不从数据源或页面继承颜色。\n\n`colorRule` 与表格 `visual: \"signed\"`、`dangerValues` 或指标卡旧 `tone` 同时声明时校验失败。旧页未使用新规则时保留旧染色与箭头行为；使用新规则的指标卡箭头独立按方向显示 ↑ / ↓；6.17新增的带符号普通数值格式按展示精度，其余按原始正负值，颜色不控制方向。\n\n柱状图、折线图和柱线混合图可声明 `categoryLabels: {\"mode\":\"all\",\"rotate\":45}`，全部展示完整类别名称，不自动抽样隐藏或默认缩放到前20个类别。`mode: \"auto\"` 保留原有类别显示策略；`rotate` 范围为 -90—90。横向柱状图作用于类别Y轴。\n\n同类图表可声明 `showValueLabels: true`，逐柱或逐节点常驻显示对应格式化数值，零值显示，缺失不伪造节点。混合图逐系列显示。堆叠柱显示各段值。数字格式服从字段绑定 `format` 优先于 `defaultFormat`，与 tooltip 一致。不得同时开启旧 `showPointLabels` / `showSegmentLabels` / `showStackTotalLabels`，以免重复显示。旧开关继续可读。\n\n常驻数字贴近对应柱端或折线节点；密集场景也不把数字移到远离节点的交错行，不使用全局垂直避让拉开距离。图例和绘图区的空间仍独立预留，不能用移动数字代替图例布局。\n\n表格需要优先在正常尺寸容器内展示全部列时，显式声明 `fit: \"container\"`。列 `width` 在此模式下作为比例权重，表头及内容允许完整换行；保留文字和短数字所需的最小列宽，窄容器允许表格内部横向滚动，不强制均分或无限压缩。普通表格高度可随内容增长，适配不删除列、不以省略号替代正文；embedded 与 forecastMatrix 仍保留其专用呈现约束。`fit: \"content\"` 保留内容及像素列宽优先的行为。\n\n旋转标签与数值标签可以使图表高度增加，数字标签不会通过隐藏重叠标签自动省略。系列图例、坐标轴名称与绘图区的间距由统一运行时根据直接容器计算；页面不声明像素位置。静态导出保留这些标签。"
+      ],
+      "rules": [
+        {
+          "id": "currency-selection",
+          "description": "6.38金额范围和静态货币字段选择",
+          "valid": [
+            "currency-selection-page"
+          ],
+          "invalid": [
+            "currency-before-6.38",
+            "currency-case-missing",
+            "currency-metric-mismatch",
+            "currency-negative-default",
+            "currency-equal-default",
+            "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "signed-number-family-capability",
+          "description": "两位小数与千分位带符号数值格式由6.18引入",
+          "valid": [
+            "signed-number-family-page"
+          ],
+          "invalid": [
+            "signed-number-two-decimal-before-6.18",
+            "signed-number-grouped-before-6.18",
+            "signed-number-family-param-before-6.18"
+          ]
+        },
+        {
+          "id": "signed-number-format-capability",
+          "description": "带符号普通数值格式由6.17引入",
+          "valid": [
+            "signed-number-page"
+          ],
+          "invalid": [
+            "signed-number-binding-before-6.17",
+            "signed-number-default-before-6.17",
+            "signed-number-param-before-6.17"
+          ]
+        },
+        {
+          "id": "explicit-color-local",
+          "description": "显式颜色只绑定数字且不与旧染色声明冲突",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "color-rule-legacy-conflict",
+            "color-rule-nonnumeric",
+            "color-rule-tone-conflict"
+          ]
+        },
+        {
+          "id": "chart-value-label-exclusive",
+          "description": "常驻数值标签不与旧标签重复启用",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "value-label-bar-conflict",
+            "value-label-line-conflict"
+          ]
+        },
+        {
+          "id": "presentation-capability",
+          "description": "颜色与图表标签声明由6.16引入",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "presentation-before-6.16"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/million-formats-page.json",
+        "references/page-metadata/examples/compute-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/explicit-presentation-page.json",
+        "references/page-metadata/examples/signed-number-page.json",
+        "references/page-metadata/examples/signed-number-family-page.json",
+        "references/page-metadata/examples/currency-selection-page.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

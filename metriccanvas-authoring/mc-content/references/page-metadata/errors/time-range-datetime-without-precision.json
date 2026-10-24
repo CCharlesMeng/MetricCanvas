@@ -1,0 +1,25 @@
+{
+  "case": "time-range-datetime-without-precision",
+  "invariant": "time-range-default-calendar",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间范围 to 须为 YYYY-MM-DD 格式",
+      "paths": [
+        "/filters/2/default/to"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      {
+        "default": {
+          "to": "2026-07-31T10:00"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

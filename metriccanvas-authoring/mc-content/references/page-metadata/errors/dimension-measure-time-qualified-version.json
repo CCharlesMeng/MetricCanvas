@@ -1,0 +1,41 @@
+{
+  "case": "dimension-measure-time-qualified-version",
+  "invariant": "query-dimension-measures",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE output_dims 数值输出显式声明页面度量 由 6.56 引入，文档声明的是 6.55",
+      "paths": [
+        "/dataSources/counts"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "counts": {
+        "fields": {
+          "region": {
+            "…": "共3个键"
+          },
+          "regionId": {
+            "…": "共3个键"
+          },
+          "projects": {
+            "…": "共5个键"
+          },
+          "completed": {
+            "…": "共5个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "…": "共3个键"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

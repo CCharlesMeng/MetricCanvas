@@ -3,6 +3,8 @@ import { builtinModules } from 'node:module';
 import { readFile, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { build, type Plugin } from 'esbuild';
+import { normalizePageDocument, validate } from '../../packages/page/src/validate';
+import { versionPolicy } from '../../packages/page/src/version';
 import { validateReferenceLinks } from './page-reference';
 
 const json = (value: unknown) => JSON.stringify(value, null, 2) + '\n';
@@ -119,8 +121,8 @@ export async function localValidatorOutputs(root: string, entryPoint = 'tools/sc
       folder = path.dirname(folder);
     }
   }
-  outputs.set('scripts/THIRD-PARTY-LICENSES.md', '# Bundled dependency licenses\n\n' +
-    [...licenses].sort(([a],[b]) => a.localeCompare(b)).map(([name,text]) => `## ${name}\n\n${text.trim()}\n`).join('\n'));
+  outputs.set('scripts/THIRD-PARTY-LICENSES.md', ('# Bundled dependency licenses\n\n' +
+    [...licenses].sort(([a],[b]) => a.localeCompare(b)).map(([name,text]) => `## ${name}\n\n${text.trim()}\n`).join('\n')).trimEnd() + '\n');
   if (!outputs.has(outfile)) throw new Error('Missing standalone validator');
   return outputs;
 }
@@ -131,4 +133,22 @@ export function localKnowledgeManifest(outputs: Map<string, string>, schemaVersi
     node: '>=22', schemaSha256: hash(outputs.get('references/page-metadata/schema.json')!),
     files: [...outputs].map(([file, content]) => ({file, sha256: hash(content)})).sort((a,b) => a.file.localeCompare(b.file))
   });
+}
+
+export function referenceProjection(outputs: Map<string, string>): Map<string, string> {
+  return new Map([...outputs].filter(([file]) => file.startsWith('page/reference/')).map(([file, content]) => {
+    const relative = file.slice('page/reference/'.length);
+    // Published authoring examples always target the current writer. Historical
+    // conformance vectors remain in the product contracts, not example recipes.
+    if (relative.startsWith('examples/') && relative.endsWith('.json')) {
+      const parsed = JSON.parse(content);
+      const normalized = normalizePageDocument({...parsed, schemaVersion: versionPolicy.current});
+      if (!normalized.ok) throw new Error(`Invalid current Skill example: ${relative}`);
+      const document = {...normalized.document, schemaVersion: versionPolicy.current};
+      const errors = validate(document);
+      if (errors.length) throw new Error(`Invalid current Skill example ${relative}: ${JSON.stringify(errors)}`);
+      return [relative, JSON.stringify(document, null, 2) + '\n'];
+    }
+    return [relative, content];
+  }));
 }

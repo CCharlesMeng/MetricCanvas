@@ -1,0 +1,484 @@
+{
+  "schemaVersion": "6.58",
+  "id": "query-result-page-window-page",
+  "layout": "report",
+  "meta": {
+    "title": "项目资金排序与评估跟进",
+    "description": "本地DQE仿真：80个项目，服务端任意列排序与分页；下游独立过滤当前查询窗口并提取编号。"
+  },
+  "filters": [],
+  "dataSources": {
+    "projects": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "项目编号",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "状态",
+          "nullable": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "role": "dimension",
+          "queryField": "启用",
+          "nullable": true
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "label": "项目金额",
+          "queryField": "金额",
+          "currency": "CNY",
+          "unit": "元",
+          "nullable": false,
+          "defaultFormat": "number-grouped"
+        },
+        "duration": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "时长",
+          "nullable": true,
+          "label": "执行周期",
+          "unit": "天"
+        },
+        "day": {
+          "type": "date",
+          "role": "dimension",
+          "queryField": "日期",
+          "nullable": true
+        },
+        "at": {
+          "type": "datetime",
+          "role": "dimension",
+          "queryField": "采集时间",
+          "nullable": true
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号",
+                  "项目名称",
+                  "状态",
+                  "启用",
+                  "日期",
+                  "采集时间"
+                ],
+                "output_metrics": [
+                  "金额",
+                  "时长"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202610",
+                    "end": "202610"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "by": [
+                    {
+                      "field": "金额",
+                      "type": "desc",
+                      "priority": 1
+                    }
+                  ],
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "details-high": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "项目编号",
+          "nullable": true
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分",
+          "nullable": true
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": false
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "label": "项目金额",
+          "queryField": "金额",
+          "currency": "CNY",
+          "unit": "元",
+          "nullable": false,
+          "defaultFormat": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号",
+                  "项目名称"
+                ],
+                "output_metrics": [
+                  "得分",
+                  "金额"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202610",
+                    "end": "202610"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "金额",
+                  "type": "desc"
+                }
+              }
+            ]
+          },
+          "resultBindings": [
+            {
+              "source": "projects",
+              "field": "project-id",
+              "target": "dimension",
+              "queryField": "项目编号",
+              "maxValues": 500,
+              "where": {
+                "all": [
+                  {
+                    "field": "status",
+                    "op": "eq",
+                    "value": "进行中"
+                  },
+                  {
+                    "field": "amount",
+                    "op": "gt",
+                    "value": 3000000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "details-low": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "项目编号",
+          "nullable": true
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分",
+          "nullable": true
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": false
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "label": "项目金额",
+          "queryField": "金额",
+          "currency": "CNY",
+          "unit": "元",
+          "nullable": false,
+          "defaultFormat": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号",
+                  "项目名称"
+                ],
+                "output_metrics": [
+                  "得分",
+                  "金额"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202610",
+                    "end": "202610"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "金额",
+                  "type": "desc"
+                }
+              }
+            ]
+          },
+          "resultBindings": [
+            {
+              "source": "projects",
+              "field": "project-id",
+              "target": "dimension",
+              "queryField": "项目编号",
+              "maxValues": 500,
+              "where": {
+                "all": [
+                  {
+                    "field": "status",
+                    "op": "eq",
+                    "value": "进行中"
+                  },
+                  {
+                    "field": "amount",
+                    "op": "lte",
+                    "value": 3000000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "scenario-intro",
+      "container": "plain",
+      "components": [
+        {
+          "id": "scenario-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "项目资金排序与评估跟进",
+            "subtitle": "80个项目 · 按任意列排序，从第一页重新查询；评估结果随当前页项目更新。",
+            "badge": "本地仿真 · 级联查询",
+            "asOf": {
+              "label": "查询期间",
+              "value": "2026年10月"
+            },
+            "tags": [
+              "80个项目",
+              "查询分页 · 首轮10条",
+              "任意列排序联动"
+            ],
+            "decoration": "shortBar",
+            "variant": "projectDetail"
+          }
+        }
+      ]
+    },
+    {
+      "id": "primary-query",
+      "container": "plain",
+      "components": [
+        {
+          "id": "projects-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "projects"
+          },
+          "props": {
+            "title": "01 · 项目清单",
+            "subtitle": "点击任意列排序；翻页或排序后，下方评估只使用当前页的在建项目。",
+            "variant": "reportCompact",
+            "columns": [
+              {
+                "field": "project-id",
+                "title": "项目编号",
+                "width": 95,
+                "sortable": true
+              },
+              {
+                "field": "project-name",
+                "title": "项目名称",
+                "width": 240,
+                "sortable": true
+              },
+              {
+                "field": "status",
+                "title": "项目状态",
+                "width": 95,
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "title": "金额（元）",
+                "align": "right",
+                "sortable": true,
+                "emphasis": "strong"
+              },
+              {
+                "field": "duration",
+                "title": "执行周期（天）",
+                "align": "right",
+                "sortable": true,
+                "width": 130
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "project-id",
+            "fit": "container"
+          }
+        }
+      ]
+    },
+    {
+      "id": "follow-up-queries",
+      "container": "plain",
+      "components": [
+        {
+          "id": "details-high-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "details-high"
+          },
+          "props": {
+            "title": "02 · 大额在建项目评估",
+            "subtitle": "本页进行中 · 金额 > 300万元",
+            "variant": "reportCompact",
+            "columns": [
+              {
+                "field": "project-id",
+                "title": "项目编号",
+                "width": 95
+              },
+              {
+                "field": "project-name",
+                "title": "项目名称",
+                "width": 240
+              },
+              {
+                "field": "amount",
+                "title": "金额（元）",
+                "align": "right",
+                "sortable": true,
+                "emphasis": "strong"
+              },
+              {
+                "field": "score",
+                "title": "评估得分",
+                "align": "right",
+                "sortable": true,
+                "width": 95
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            },
+            "rowKey": "project-id",
+            "fit": "container"
+          }
+        },
+        {
+          "id": "details-low-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "details-low"
+          },
+          "props": {
+            "title": "03 · 小额在建项目评估",
+            "subtitle": "本页进行中 · 金额 ≤ 300万元",
+            "variant": "reportCompact",
+            "columns": [
+              {
+                "field": "project-id",
+                "title": "项目编号",
+                "width": 95
+              },
+              {
+                "field": "project-name",
+                "title": "项目名称",
+                "width": 240
+              },
+              {
+                "field": "amount",
+                "title": "金额（元）",
+                "align": "right",
+                "sortable": true,
+                "emphasis": "strong"
+              },
+              {
+                "field": "score",
+                "title": "评估得分",
+                "align": "right",
+                "sortable": true,
+                "width": 95
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            },
+            "rowKey": "project-id",
+            "fit": "container"
+          }
+        }
+      ]
+    }
+  ]
+}

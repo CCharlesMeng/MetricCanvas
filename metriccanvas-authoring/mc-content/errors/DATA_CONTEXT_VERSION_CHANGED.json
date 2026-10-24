@@ -1,6 +1,36 @@
 {
   "code": "DATA_CONTEXT_VERSION_CHANGED",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discover_data_context.py",
+      "line": 116
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/service.py",
+      "line": 32
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/query.py",
+      "line": 126
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/results.py",
+      "line": 64
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/semantic_catalog.py",
+      "line": 102
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/work/discovery_tasks.py",
+      "line": 138
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

@@ -1,0 +1,48 @@
+{
+  "case": "duplicate-hierarchy-level-id",
+  "invariant": "hierarchy-level-id-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "层级 id 重复:region-level",
+      "paths": [
+        "/filters/0/hierarchy/1/id"
+      ]
+    },
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "筛选器 region 未声明层级:city-level",
+      "paths": [
+        "/dataSources/orders/source/query/filterBindings/region/levelQueryFields/city-level"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "hierarchy": [
+          "…",
+          {
+            "id": "region-level"
+          }
+        ]
+      }
+    ],
+    "dataSources": {
+      "orders": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "region": {
+                "levelQueryFields": {
+                  "city-level": "city"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

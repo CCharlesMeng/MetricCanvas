@@ -1,0 +1,29 @@
+{
+  "case": "map-level-maps-unknown-level",
+  "invariant": "map-hierarchy",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "levelMaps 引用了筛选器 area 未声明的层级:country",
+      "paths": [
+        "/sections/0/components/0/props/levelMaps/country"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "levelMaps": {
+                "country": "world"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

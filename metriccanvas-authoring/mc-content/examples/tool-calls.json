@@ -1,0 +1,59 @@
+[
+  {
+    "tool": "compose_page",
+    "arguments": {
+      "context_ref": "current-context",
+      "expected_version": 0,
+      "request": {
+        "title": "说明",
+        "sources": {},
+        "sections": [
+          {
+            "id": "main",
+            "title": "说明",
+            "pattern": "custom",
+            "blocks": [
+              {
+                "id": "note",
+                "type": "text",
+                "body": "本页说明操作流程。"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "tool": "query_data",
+    "arguments": {
+      "context_ref": "current-context",
+      "result_ref": "result-from-this-turn"
+    }
+  },
+  {
+    "tool": "edit_page",
+    "arguments": {
+      "context_ref": "current-context",
+      "page_id": "current-page",
+      "expected_version": 1,
+      "request": {
+        "operations": [
+          {
+            "id": "rename",
+            "type": "set_title",
+            "componentId": "table",
+            "title": "区域明细"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "tool": "page_metadata_emit_preview",
+    "arguments": {
+      "context_ref": "current-context",
+      "artifact_ref": "artifact-from-save-result"
+    }
+  }
+]

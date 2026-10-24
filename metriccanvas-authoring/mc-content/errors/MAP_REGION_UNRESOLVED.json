@@ -1,6 +1,20 @@
 {
   "code": "MAP_REGION_UNRESOLVED",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/text_map_building.py",
+      "line": 87
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/text_map_building.py",
+      "line": 89
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

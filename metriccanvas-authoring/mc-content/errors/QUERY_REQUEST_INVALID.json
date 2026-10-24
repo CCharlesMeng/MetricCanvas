@@ -5,6 +5,12 @@
     "action": "correct_request",
     "owner": "model"
   },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/results.py",
+      "line": 48
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

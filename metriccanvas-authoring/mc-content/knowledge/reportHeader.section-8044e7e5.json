@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "6.58",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "reportHeader.section-8044e7e5"
+  ],
+  "semantics": [
+    {
+      "module": "reportHeader",
+      "reference": "references/page-metadata/components/reportHeader.md",
+      "blocks": [
+        "# 报告页头 reportHeader\n\n表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML。适用于任何完整页面的开头。数据形状：不绑定页面数据源。\n\n页面内容页头；title为必需文本取值，可引用必需页面参数或当前已应用筛选；6.23 起可用 `{parts:[{filter:\"report-month\",format:\"period\"},\" 经营分析报告\"]}` 组合动态期间与固定名称，规则见[文本片段组合](../params-and-text-values.md#文本片段组合623)。页面meta.title是另一个页面级声明，不替代该组件必填title。\n\ndashboard 的筛选器由统一工具栏呈现，reportHeader 禁止配置 filterIds；下述日期工具带只用于 report。\n\nfilterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封面上方独立工具带；宽容器右对齐，窄容器换行。控件使用运行时筛选状态，不拥有查询。6.15 起 filterIds 仅决定控件位置，不自动创建或覆盖 asOf。期间文字使用 asOf.value: {filter: 筛选器id, format: \"period\"} 显式引用当前已应用值；字面量保持静态，param 引用保持打开时的参数值。6.13/6.14 继续按旧的期间派生规则读取。导出保留捕获时已经解析的静态文字。",
+        "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。\n\n后台导出需要浏览器支持Worker、ImageBitmap和OffscreenCanvas，宿主CSP允许`worker-src blob:`。这些属于引擎运行环境，不新增页面字段。线程调度与资源清理由引擎负责。"
+      ],
+      "rules": [
+        {
+          "id": "report-header-export-buttons",
+          "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
+          "valid": [
+            "report-export-buttons",
+            "report-export-scale-fallback"
+          ],
+          "invalid": [
+            "report-export-before-6.31",
+            "report-export-dashboard",
+            "report-export-other-format",
+            "report-export-duplicate-format",
+            "report-export-mixed-legacy"
+          ]
+        },
+        {
+          "id": "report-header-png-export",
+          "description": "6.30 Report导出图片，只输出一张PNG，固定名称与3/4倍倍率",
+          "valid": [
+            "report-png-export",
+            "report-export-scale-fallback"
+          ],
+          "invalid": [
+            "report-png-before-6.30",
+            "report-png-dashboard",
+            "report-png-empty-filename",
+            "report-png-fixed-label",
+            "report-png-other-format"
+          ]
+        },
+        {
+          "id": "report-header-pdf-export",
+          "description": "Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值",
+          "valid": [
+            "report-pdf-export"
+          ],
+          "invalid": [
+            "report-pdf-before-6.28",
+            "report-pdf-on-dashboard",
+            "report-pdf-empty-label",
+            "report-pdf-empty-filename",
+            "report-pdf-unknown-option"
+          ]
+        },
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/inline-report.json",
+        "references/page-metadata/examples/text-composition-page.json",
+        "references/page-metadata/examples/report-pdf-export.json",
+        "references/page-metadata/examples/report-png-export.json",
+        "references/page-metadata/examples/report-export-buttons.json",
+        "references/page-metadata/examples/report-export-scale-fallback.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

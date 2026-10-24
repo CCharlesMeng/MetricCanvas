@@ -29,6 +29,21 @@
         "type": "inline",
         "rows": [
           {
+            "case": "同源知识有界读取",
+            "result": "ok",
+            "detail": "table.width 保留语义与父约束；未展开引用可继续定位"
+          },
+          {
+            "case": "完整工具参数",
+            "result": "ok",
+            "detail": "query_data 外层与 request 来自实际 FastMCP 注册"
+          },
+          {
+            "case": "来源覆盖对账",
+            "result": "ok",
+            "detail": "155 主题 / 9 工具 / 19 组件；独立分母检查"
+          },
+          {
             "case": "正常编译",
             "result": "ok",
             "detail": "summary 保留；未提交的 detail 章节不会补回"

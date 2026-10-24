@@ -1,6 +1,32 @@
 {
   "code": "DATA_CONTEXT_CONFIG_ERROR",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 449
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 469
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 22
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 27
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 43
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

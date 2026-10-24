@@ -7,5 +7,338 @@
     "request",
     "result_ref"
   ],
-  "source": "active platform_mcp.py"
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "context_ref": {
+        "type": "string"
+      },
+      "request": {
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "question": {
+                "maxLength": 8000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "dataContextVersion": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "requests": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "dataSourceId": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "pattern": "^[a-z0-9][a-z0-9-]*$",
+                      "type": "string"
+                    },
+                    "businessDomain": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "metrics": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "kind": {
+                            "const": "metric"
+                          },
+                          "name": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "name"
+                        ],
+                        "type": "object"
+                      },
+                      "maxItems": 6,
+                      "minItems": 1,
+                      "type": "array"
+                    },
+                    "groupBy": {
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "filters": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "dimension": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "values": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "minItems": 1,
+                            "type": "array",
+                            "uniqueItems": true
+                          }
+                        },
+                        "required": [
+                          "dimension",
+                          "values"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "time": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "granularity": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "start": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "end": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "providedBy": {
+                              "enum": [
+                                "user",
+                                "model"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "granularity",
+                            "start",
+                            "end",
+                            "providedBy"
+                          ],
+                          "type": "object"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "businessDomain",
+                    "dataSourceId",
+                    "metrics",
+                    "groupBy",
+                    "filters",
+                    "time"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 6,
+                "minItems": 1,
+                "type": "array"
+              },
+              "reason": {
+                "maxLength": 8000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "question",
+              "dataContextVersion",
+              "requests"
+            ],
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "result_ref": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "context_ref"
+    ],
+    "type": "object"
+  },
+  "source": "active platform_mcp.py",
+  "requestSchema": {
+    "anyOf": [
+      {
+        "additionalProperties": false,
+        "properties": {
+          "question": {
+            "maxLength": 8000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "dataContextVersion": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "requests": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "dataSourceId": {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[a-z0-9][a-z0-9-]*$",
+                  "type": "string"
+                },
+                "businessDomain": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "metrics": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "const": "metric"
+                      },
+                      "name": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "name"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 6,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "groupBy": {
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "filters": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "dimension": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "values": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "type": "array",
+                        "uniqueItems": true
+                      }
+                    },
+                    "required": [
+                      "dimension",
+                      "values"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "time": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "granularity": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "start": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "end": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "providedBy": {
+                          "enum": [
+                            "user",
+                            "model"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "granularity",
+                        "start",
+                        "end",
+                        "providedBy"
+                      ],
+                      "type": "object"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "businessDomain",
+                "dataSourceId",
+                "metrics",
+                "groupBy",
+                "filters",
+                "time"
+              ],
+              "type": "object"
+            },
+            "maxItems": 6,
+            "minItems": 1,
+            "type": "array"
+          },
+          "reason": {
+            "maxLength": 8000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "dataContextVersion",
+          "requests"
+        ],
+        "type": "object"
+      },
+      {
+        "type": "null"
+      }
+    ],
+    "default": null
+  }
 }

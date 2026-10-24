@@ -1,6 +1,52 @@
 {
   "code": "DATA_CONTEXT_ENVELOPE_ERROR",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 116
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 130
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 140
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 171
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 221
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 410
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 478
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 441
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 433
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "line": 520
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

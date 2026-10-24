@@ -1,0 +1,136 @@
+{
+  "type": "filterGroup",
+  "label": "独立筛选",
+  "aliases": [],
+  "purpose": "用固定单选按钮或下拉控制一个或多个查询消费者",
+  "chooseWhen": [
+    "Dashboard 正文独立筛选，或组合卡内多个指标共用筛选"
+  ],
+  "dataShape": "不绑定数据源；通过 filterId 写入筛选状态，查询通过 filterBindings 消费",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [
+    "filterId",
+    "options[].label",
+    "options[].value"
+  ],
+  "title": "unsupported",
+  "defaultSpan": 12,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "filterGroup.overview",
+  "reference": "references/page-metadata/components/filterGroup.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.58",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/filter-group-page.json",
+      "requiredVersion": "6.47",
+      "capabilities": [
+        {
+          "id": "filter-group-presentation",
+          "minor": 47,
+          "description": "独立固定单选筛选的下拉呈现与左右对齐"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/filter-group-state-page.json",
+      "requiredVersion": "6.45",
+      "capabilities": [
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "signed-number-formats",
+          "minor": 17,
+          "description": "带符号普通数值格式，按展示精度统一零值方向"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/chart-local-filter-page.json",
+      "requiredVersion": "6.45",
+      "capabilities": [
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

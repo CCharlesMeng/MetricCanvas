@@ -1,6 +1,16 @@
 {
   "code": "STRUCTURE_CHANGE_FIELD_INVALID",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py",
+      "line": 44
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,

@@ -1,0 +1,36 @@
+{
+  "case": "currency-metric-mismatch",
+  "invariant": "currency-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "金额case USD需要匹配币种的静态money查询字段",
+      "paths": [
+        "/dataSources/main/source/query/filterBindings/amount",
+        "/dataSources/main/source/query/filterBindings/amount"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "main": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "amount": {
+                "target": "numberRange",
+                "metricByFilter": {
+                  "filterId": "currency",
+                  "cases": {
+                    "…": "共2个键"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

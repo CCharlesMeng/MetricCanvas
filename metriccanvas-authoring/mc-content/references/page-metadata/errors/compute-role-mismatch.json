@@ -1,0 +1,32 @@
+{
+  "case": "compute-role-mismatch",
+  "invariant": "compute-operator-inputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 region 的 role 为 dimension，此处要求 measure",
+      "paths": [
+        "/dataSources/targets/compute/0/numerator"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 region 的类型 string 不能参与数值算子",
+      "paths": [
+        "/dataSources/targets/compute/0/numerator"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "targets": {
+        "compute": [
+          {
+            "numerator": "region"
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

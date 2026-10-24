@@ -1,0 +1,30 @@
+{
+  "case": "ai-summary-scope-required",
+  "invariant": "report-ai-summary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "动态生成需要 relatedDataSources 或 relatedSections 或 scope（旧声明仍可读取）",
+      "paths": [
+        "/sections/2/components/0/props"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "title": "用量区域分析",
+              "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

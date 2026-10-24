@@ -1,0 +1,37 @@
+{
+  "case": "time-point-disable-future-before-6.25",
+  "invariant": "time-point-disable-future",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点筛选禁止选择未来月份或日期 由 6.25 引入，文档声明的是 6.24",
+      "paths": [
+        "/filters/0",
+        "/filters/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "report-month",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "报告月份",
+        "required": true,
+        "default": "2026-10",
+        "disableFuture": true
+      },
+      {
+        "id": "report-date",
+        "type": "timePoint",
+        "granularity": "date",
+        "label": "报告日期",
+        "required": true,
+        "default": "2020-06-15",
+        "disableFuture": true
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

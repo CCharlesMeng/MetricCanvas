@@ -1,0 +1,46 @@
+{
+  "case": "ai-summary-region-not-top",
+  "invariant": "ai-summary-regions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "AI 总结必须位于所属区域内容顶部（页头和区域标题之后）",
+      "paths": [
+        "/sections/3/components/0/props/components/2"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                "…",
+                {
+                  "id": "left-card-summary",
+                  "type": "aiSummary",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": "区域总结",
+                    "variant": "reportInline",
+                    "promptTemplate": "仅根据本区域数据概括变化。",
+                    "scope": "container"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

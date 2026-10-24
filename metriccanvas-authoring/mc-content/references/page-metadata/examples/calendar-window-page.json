@@ -1,0 +1,338 @@
+{
+  "schemaVersion": "6.58",
+  "id": "calendar-window-page",
+  "layout": "dashboard",
+  "dashboardToolbar": "hidden",
+  "meta": {
+    "title": "IOC B4：离散月份与时间模型",
+    "description": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "IOC B4：离散月份与时间模型",
+      "tags": [
+        {
+          "id": "demo",
+          "text": "合成验收",
+          "tone": "info"
+        }
+      ],
+      "facts": [
+        {
+          "id": "period",
+          "kind": "queryPeriod",
+          "label": "已应用期间",
+          "value": {
+            "filter": "period",
+            "format": "period"
+          }
+        }
+      ]
+    },
+    "filterIds": [
+      "period",
+      "months",
+      "model"
+    ],
+    "presentation": {
+      "collapse": "firstRow"
+    }
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "modes",
+      "label": "统计期间",
+      "required": true,
+      "defaultMode": "month",
+      "modes": [
+        {
+          "id": "month",
+          "default": {
+            "from": "2026-01",
+            "to": "2026-03"
+          }
+        },
+        {
+          "id": "day",
+          "default": {
+            "from": "2026-09-01",
+            "to": "2026-09-03"
+          }
+        }
+      ]
+    },
+    {
+      "id": "months",
+      "type": "dimension",
+      "dimension": "ioc_b4_month",
+      "label": "离散月份",
+      "display": "search",
+      "candidateWindow": {
+        "unit": "month",
+        "n": 12,
+        "includeCurrent": true,
+        "anchorFact": "sales"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "default": [
+        "2026-01",
+        "2026-03"
+      ]
+    },
+    {
+      "id": "model",
+      "type": "dimension",
+      "dimension": "ioc_b4_model",
+      "label": "时间模型",
+      "display": "search",
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [
+          "period",
+          "months"
+        ],
+        "reconcile": "intersection"
+      },
+      "default": [
+        "A",
+        "B"
+      ]
+    }
+  ],
+  "dataSources": {
+    "bound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        },
+        "month_code": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "month_code",
+          "nullable": true
+        },
+        "model_code": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "model_code",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "timeModes": {
+            "filterId": "period",
+            "cases": {
+              "month": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "ioc_header_scope",
+                        "month_code",
+                        "model_code"
+                      ],
+                      "output_metrics": [
+                        "ioc_header_count"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {
+                        "limit": 10,
+                        "offset": 0
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "period": {
+                    "target": "time"
+                  },
+                  "months": {
+                    "target": "dimension",
+                    "queryField": "month_code"
+                  },
+                  "model": {
+                    "target": "dimension",
+                    "queryField": "model_code"
+                  }
+                }
+              },
+              "day": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "ioc_header_scope",
+                        "month_code",
+                        "model_code"
+                      ],
+                      "output_metrics": [
+                        "ioc_header_count"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "time": {
+                          "period": "day",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {
+                        "limit": 10,
+                        "offset": 0
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "period": {
+                    "target": "time"
+                  },
+                  "months": {
+                    "target": "dimension",
+                    "queryField": "month_code"
+                  },
+                  "model": {
+                    "target": "dimension",
+                    "queryField": "model_code"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "unbound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_header_scope"
+                ],
+                "output_metrics": [
+                  "ioc_header_count"
+                ],
+                "filter": {
+                  "dims": []
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "container": "card",
+      "components": [
+        {
+          "id": "bound-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "bound"
+          },
+          "props": {
+            "title": "已绑定条件",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务收到的条件（本地合成）"
+              },
+              {
+                "field": "count",
+                "title": "合成响应标识"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "本地页头验收"
+              }
+            }
+          }
+        },
+        {
+          "id": "unbound-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "unbound"
+          },
+          "props": {
+            "title": "无关查询（不随筛选刷新）",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务收到的条件（本地合成）"
+              },
+              {
+                "field": "count",
+                "title": "合成响应标识"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "本地页头验收"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "case": "compute-output-with-query-field",
+  "invariant": "compute-operator-outputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "算子产出字段 online 不来自外部响应，不得声明 queryField",
+      "paths": [
+        "/dataSources/pivoted/compute/0/columns/0/output"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "算子产出字段 online 不得出现在数据行中，它由计算阶段产出",
+      "paths": [
+        "/dataSources/pivoted/source/initial/rows/0/online"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行包含未声明字段:online",
+      "paths": [
+        "/dataSources/pivoted/source/initial/rows/0/online"
+      ]
+    },
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "queryField online 不在 DQE 输出字段中",
+      "paths": [
+        "/dataSources/pivoted/fields/online/queryField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "pivoted": {
+        "compute": [
+          {
+            "columns": [
+              {
+                "output": "online"
+              }
+            ]
+          }
+        ],
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "online": 5
+              }
+            ]
+          }
+        },
+        "fields": {
+          "online": {
+            "queryField": "online"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

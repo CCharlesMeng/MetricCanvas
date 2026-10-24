@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "6.58",
+  "id": "report-title-styles",
+  "layout": "report",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "card-heading",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "riskNotice",
+            "title": "内容章节标题"
+          }
+        }
+      ]
+    }
+  ]
+}

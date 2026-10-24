@@ -1,0 +1,25 @@
+{
+  "case": "time-range-to-calendar",
+  "invariant": "time-range-default-calendar",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间范围 to 不是有效的公历日期",
+      "paths": [
+        "/filters/2/default/to"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      {
+        "default": {
+          "to": "2026-02-30"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

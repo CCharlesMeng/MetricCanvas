@@ -1,0 +1,43 @@
+{
+  "case": "report-export-duplicate-format",
+  "invariant": "report-header-export-buttons",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "每种格式只能配置一个导出按钮",
+      "paths": [
+        "/sections/0/components/0/props/exportButtons"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "exportButtons": [
+                {
+                  "format": "pdf",
+                  "label": "导出 PDF",
+                  "filename": {
+                    "…": "共1个键"
+                  },
+                  "scale": 2
+                },
+                {
+                  "format": "pdf",
+                  "filename": {
+                    "…": "共1个键"
+                  },
+                  "scale": 3
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

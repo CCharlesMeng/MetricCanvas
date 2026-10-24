@@ -1,6 +1,16 @@
 {
   "code": "DATA_CONTEXT_NAME_AMBIGUOUS",
-  "guidance": null,
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py",
+      "line": 308
+    }
+  ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,
