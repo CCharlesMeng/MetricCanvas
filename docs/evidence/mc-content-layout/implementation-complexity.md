@@ -351,3 +351,5 @@
 类聚合不等于可调用函数；按方法另列。公共 Python 固定门禁另测 15 文件、368 函数、最大 15、超限 0，不代表全仓或外部 CodeCheck。未触及的原函数也列在表中，便于核对覆盖；匿名函数位置变化导致的 new/moved 不表示它们一定新增。
 
 交付前许可证生成格式修订：`localValidatorOutputs` 仅对最终文本统一末尾换行；metriccanvas-ts-ast/1、TypeScript 5.9.3 实测 selfCC 13 → 13，全部 11 个嵌套函数逐项复测保持不变，无新增函数。重新生成、MC 检查和仓外最小环境调用验证行为保持。
+
+CI 冷构建测试修订：`tests/authoring-export-isolation.test.ts` 只调整本文件场景和导出子进程等待上限；metriccanvas-ts-ast/1、TypeScript 5.9.3 前后实测全部 34 个函数/回调的 selfCC 不变，修改函数 `runExport` 1 → 1，无新增函数。CI 的 Python 安装步骤无 TypeScript/Python 函数变更；两项失败导出场景已回归通过。

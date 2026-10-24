@@ -6,9 +6,9 @@ import { spawnSync } from 'node:child_process';
 
 const root = process.cwd();
 const isolated = mkdtempSync(path.join(tmpdir(), 'metriccanvas-contract-export-'));
-// CI measured 36–38s for nine exports combined. Budget each independent scenario
-// separately; keep the existing subprocess ceiling instead of widening all tests.
-const scenarioTimeout = 30_000;
+// Cold CI generation now builds the complete MC package and registered tool graph.
+// Scope this build deadline here; page checking and migration budgets are separate.
+const scenarioTimeout = 90_000;
 const versionedFiles = [
   'contracts/metriccanvas/manifest.json',
   'metriccanvas-authoring/contract-snapshot/manifest.json',
@@ -18,7 +18,7 @@ afterAll(() => rmSync(isolated, { recursive: true, force: true }));
 
 function runExport(args = ['--check'], cwd = isolated) {
   return spawnSync(process.execPath, ['--import', 'tsx', 'tools/scripts/export-authoring-contracts.ts', ...args], {
-    cwd, encoding: 'utf8', timeout: 30_000
+    cwd, encoding: 'utf8', timeout: scenarioTimeout
   });
 }
 

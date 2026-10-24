@@ -86,3 +86,7 @@ W1–W6 已完成本仓职责。W7 已提供随包 HANDOFF 与独立运行样例
 首个交付提交 `58a56f255a8f8cbba51484fd72f11485ff7e96fb` 的 [CI](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/40079317527) 在新增浏览器步骤启动前失败：干净 build job 未生成 Playground 的 `.svelte-kit/tsconfig.json`。已在 Playwright 前显式执行 `pnpm --filter playground exec svelte-kit sync`，不依赖其他 job 的生成目录。
 
 本地停止本任务的 5183 服务，将生成目录移至临时备份，复现相同配置解析失败；执行 sync 后从冷启动完成三个浏览器场景（3/3，6.9 秒）。该修复只改 CI 前置命令和本说明，无新增函数或执行分支，函数复杂度不适用；MC 内容版本保持 `1-ebf417635014c58b`。远端最终结果以修复提交的完整 CI 回执为准。
+
+全量 tests job 另暴露缺少构建期 FastMCP 依赖（10 项隔离导出失败）；authoring job 的依赖不能跨 job 复用。已在 tests job 按 requirements.lock 安装 Python 3.12 构建依赖。通过仅含 MC 最小运行依赖的环境复现导入失败，完整构建环境中隔离导出通过（1/1，另 29 项定向跳过）；不增加 MC 独立包的运行依赖。
+
+旧 authoring job 的 175 项中 173 通过、2 项触发导出构建超时：冷子进程约 30.13 秒被终止，旧单入口场景约 36.08 秒超过测试上限。仅将 authoring-export-isolation 文件的构建子进程和场景等待上限设为 90 秒，不修改全局测试、页面检查或迁移预算。两项失败场景本地重新通过（2/2，另 28 项定向跳过，总 46.40 秒）。MC 内容版本保持不变；以最终提交的完整 CI 再验。
