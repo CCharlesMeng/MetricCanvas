@@ -111,7 +111,9 @@ jobs:
         run: pnpm --filter playground exec playwright install --with-deps chrome
 
       - name: 回放 MC 内容诊断、Report 与旧页迁移场景
-        run: pnpm --filter playground exec playwright test mc-content.browser.ts --workers=1
+        run: |
+          pnpm --filter playground exec svelte-kit sync
+          pnpm --filter playground exec playwright test mc-content.browser.ts --workers=1
 
       - name: 验证 qiankun 调试包源码映射
         run: node apps/platform/tests/microfrontend/debug-browser.mjs

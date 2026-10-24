@@ -80,3 +80,9 @@ W1–W6 已完成本仓职责。W7 已提供随包 HANDOFF 与独立运行样例
 详见 [逐函数测量](implementation-complexity.md)：metriccanvas-ts-ast/1（TypeScript 5.9.3）与 Radon 6.0.1，全部新增 helper/回调/闭包分别检查；本批新增/修改函数 CC <= 15。buildSkillProjections 的函数体未改，存量 CC=52 保持，未关闭；无外部 CodeCheck 复扫。
 
 尚未完成：真实 Relay SDK/tools.py 注册与部署验收、实际引擎/工具产物身份、可信上下文/并发交接、重载、真实 DQE/权限、Java 保存/预览、标记替换及卡片注入。真实 DS 模型不在本次默认范围，未追加。CI 配置已接入；上述本地验收时尚未提交，远端 SHA 与真实 CI 结果须在 Git 交付后另外核实。
+
+## Git 交付中的 CI 修复
+
+首个交付提交 `58a56f255a8f8cbba51484fd72f11485ff7e96fb` 的 [CI](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/40079317527) 在新增浏览器步骤启动前失败：干净 build job 未生成 Playground 的 `.svelte-kit/tsconfig.json`。已在 Playwright 前显式执行 `pnpm --filter playground exec svelte-kit sync`，不依赖其他 job 的生成目录。
+
+本地停止本任务的 5183 服务，将生成目录移至临时备份，复现相同配置解析失败；执行 sync 后从冷启动完成三个浏览器场景（3/3，6.9 秒）。该修复只改 CI 前置命令和本说明，无新增函数或执行分支，函数复杂度不适用；MC 内容版本保持 `1-ebf417635014c58b`。远端最终结果以修复提交的完整 CI 回执为准。
