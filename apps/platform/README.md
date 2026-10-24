@@ -2,6 +2,14 @@
 
 运行 `pnpm dev:platform`。默认 macOS/Linux 使用 `https://127.0.0.1:5174`，Windows 使用 `https://local.cloudbu.huawei.com:443`；服务前缀 `/rest/cdi/cdinl2databuilderservice/` 代理到 `https://ioc.cloudbu.huawei.com`。
 
+## 正常 Platform 的本地体验
+
+运行 `pnpm dev:assets` 启动已有本机页面资产服务，再运行 `pnpm --filter platform dev:local`，打开 `http://127.0.0.1:5175/manage`。与默认开发服务共用 index.html、standalone/main.ts 和正常 `/manage`、`/create` 路由；没有验收横条、悬浮日志或合成 Chat。
+
+此模式只把页面资产接口代理到 127.0.0.1:8080，修改持久保存在 `.scratch/platform-page-assets/store.json`，原 pages 文件不改写。保留默认 5174 HTTPS 服务和 CloudIOC 代理行为。查询演示需另启动 DQE Sim；本地数据不证明真实 Java/DQE 接入。
+
+管理列表只保留“基本信息”和“可视化编辑”两个入口。可直接进入画布，调整组件和布局、修改页面标题、保存草稿，或从“基本信息”进入独立表单。默认本地资产服务未声明可访问路径维护，路径字段如实禁用。未配置真实云宝 SDK 时，Chat 显示未接通，不用替身冒充真实发送。
+
 ## Windows 连接 gray CloudIOC
 
 在已被 Git 忽略的 `apps/platform/.env.local` 中追加以下配置，或从 `.env.example` 复制后填写：

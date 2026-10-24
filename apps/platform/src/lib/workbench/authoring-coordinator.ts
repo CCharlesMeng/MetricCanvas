@@ -5,7 +5,7 @@ import { validateHistoryPage, type ListRevisions } from './authoring-history';
 import { validateAuthoringRecord } from './authoring-recovery';
 import type { AuthoringStorage, StoredRecord } from './authoring-storage';
 import { PageAssetsError, type PageRevision, type SavePageRevision, type PageAssets } from '../page-assets/contract';
-import { createCanvasAuthoringDraft, type CanvasAuthoringDraft } from './document-edit';
+import { createCanvasAuthoringDraft, projectCanvasDraft, type CanvasAuthoringDraft } from './document-edit';
 import { type SavedDraft, type ReadSavedDraft, unavailableDraftReader } from '../dialogue/port';
 
 /** Internal authoring-coordinator/1. Not a provider HTTP DTO or T04 strong Saved receipt. */
@@ -103,7 +103,7 @@ export function createAuthoringCoordinator(options: {
   const replacementBlocked = () => !!((preparation && !flushing) || languageLease || recoveryLocked() || disposed || (syncConfig && state.loading) || state.save?.status === 'pending' || (options.manualSave && (state.sync?.pending ?? 0) > 0));
   const restorationBlocked = () => !!preparation || !!languageLease || disposed || owner !== identityKey();
   function incompatibleSavedDraft(draft: SavedDraft, newPage: boolean): boolean {
-    return !!(draft.document.id !== draft.ref.pageId || state.dirty || (!newPage && state.ref?.resourceId && state.ref.resourceId !== draft.ref.resourceId) || (!newPage && state.draft && state.draft.pageDocument.id !== draft.ref.pageId));
+    return !!(draft.document.id !== draft.ref.pageId || (!newPage && state.ref?.resourceId && state.ref.resourceId !== draft.ref.resourceId) || (!newPage && state.draft && state.draft.pageDocument.id !== draft.ref.pageId));
   }
   async function attachSync(prepared?: StoredRecord<DurableAuthoringState> | null, incoming = false, receipt?: PageRevision) {
     if (!syncConfig || !state.draft) return;
@@ -221,21 +221,39 @@ export function createAuthoringCoordinator(options: {
       return structuredClone(state.ref);
     },
     /** Local lease; trusted Relay association is separately verified by authoring-language. */
-    beginLanguage(newPageId?: string) {
-      if (preparation || languageLease || languageBlocked() || state.dirty) throw Error('等待当前工作同步后再进行语言修改。');
+    beginLanguage(newPageId?: string,workingCopy=false) {
+      if (preparation || languageLease || languageBlocked() || state.dirty&&!workingCopy) throw Error('等待当前工作保护后再进行语言修改。');
       const identity = options.identity();
       if (!identity.actorId || !identity.workspaceId) throw Error('身份失效。');
-      const token = Symbol('language'), expected = scope();
+      const token = Symbol('language');let expected = scope();
       languageLease = token;
       state = { ...state, languageLocked: true }; emit();
       return {
         identity: { ...identity }, base: state.ref ? structuredClone(state.ref) : null,
         retainDimensionValues,
+        input:state.draft?structuredClone(state.draft.pageDocument):null,
         current: () => !disposed && languageLease === token && scope() === expected,
         accept(draft: SavedDraft) {
           if (disposed || languageLease !== token || scope() !== expected) return false;
           if (newPageId && draft.ref.pageId !== newPageId) return false;
           return coordinator.acceptSavedDraft(draft, token, !!newPageId);
+        },
+        async applyDocument(value:unknown){
+          if(!workingCopy||disposed||languageLease!==token||scope()!==expected)throw Error('本轮页面更新已过期。');
+          const raw=typeof value==='string'?JSON.parse(value):value;
+          const parsed=createCanvasAuthoringDraft(raw);
+          if(!parsed.ok)throw Error(parsed.message);
+          if(state.draft&&parsed.draft.pageDocument.id!==state.draft.pageDocument.id)throw Error('本轮页面身份不匹配。');
+          owner=identityKey();change(parsed.draft);state={...state,dirty:true};expected=scope();emit();
+          if(!sync&&syncConfig)await attachSync();
+          if(sync)await sync.enqueue(parsed.draft,'Agent 组件更新工作副本',retainDimensionValues,true);
+          expected=scope();
+        },
+        async applyRevision(revision:PageRevision){
+          if(!workingCopy||disposed||languageLease!==token||scope()!==expected)throw Error('本轮页面更新已过期。');
+          const pageId=String(state.draft?.pageDocument.id??revision.pageId);
+          adoptLoadedRevision(revision,pageId);expected=scope();
+          await attachSync(undefined,true,revision);expected=scope();emit();
         },
         release() {
           if (languageLease !== token) return;
@@ -266,6 +284,20 @@ export function createAuthoringCoordinator(options: {
             await coordinator.save(token);
           }
         },
+        async protectWorkingCopy(){
+          if(!current())throw Error('工作范围已变化。');
+          if(sync&&!await sync.protect())throw Error('前端工作副本保护失败。');
+          if(!current()||languageBlocked())throw Error('当前工作副本不可用。');
+          return {document:state.draft?structuredClone(state.draft.pageDocument):null,ref:state.ref?structuredClone(state.ref):null};
+        },
+        async rebaseTitle(revision:PageRevision,title:string){
+          if(!current()||!state.draft)throw Error('工作范围已变化。');
+          if(revision.pageId!==state.draft.pageDocument.id)throw Error('标题回执页面不匹配。');
+          const parsed=projectCanvasDraft({...state.draft.canvasDocument,meta:{...(state.draft.canvasDocument.meta as object),title}});
+          if(!parsed.ok)throw Error(parsed.message);
+          if(sync)await sync.rebase(revision,parsed.draft);
+          change(parsed.draft);state={...state,ref:refOf(revision),dirty:stable(parsed.draft.pageDocument)!==stable(revision.document)};emit();
+        },
         async latest(signal: AbortSignal) {
           if (!current() || languageBlocked() || state.dirty) throw Error('当前工作尚未同步。');
           if (!options.port.capabilities.latestRead && !options.port.assets) throw Error('CAPABILITY_UNAVAILABLE：当前页面读取尚未接通。');
@@ -286,10 +318,10 @@ export function createAuthoringCoordinator(options: {
           await attachSync(undefined, true); emit();
           if (!current() || state.sync?.protection === 'failed') throw Error('最新工作副本保护失败。');
         },
-        acquire(newPageId?: string) {
+        acquire(newPageId?: string,workingCopy=false) {
           if (!current()) throw Error('工作范围已变化。');
           preparation = null;
-          try { return coordinator.beginLanguage(newPageId); }
+          try { return coordinator.beginLanguage(newPageId,workingCopy); }
           catch (error) { preparation = token; throw error; }
         },
         release() {
@@ -382,7 +414,7 @@ export function createAuthoringCoordinator(options: {
     }) as ReadSavedDraft,
     acceptSavedDraft(draft: SavedDraft, lease?: symbol, newPage = false): boolean {
       if (preparation || (languageLease && languageLease !== lease) || languageBlocked()) return false;
-      if (incompatibleSavedDraft(draft, newPage)) {
+      if (state.dirty&&lease!==languageLease || incompatibleSavedDraft(draft, newPage)) {
         state = { ...state, error: '草稿通知与当前工作副本不兼容，保留当前页面。' }; emit(); return false;
       }
       if (options.port.assets && (!Number.isSafeInteger(draft.revisionNumber) || Number(draft.revisionNumber) < 1 || draft.isDraft !== true)) return false;

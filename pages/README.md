@@ -537,3 +537,5 @@ DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/qu
 
 现成计数绘图：[各区域项目数量](capabilities/query/stored-count-measures.json)，入口 `/pages/stored-count-measures`；DQE `output_dims` 返回已有计数，页面显式声明数值度量。初始合成数据可直接预览，区域筛选需本地 DQE Sim；步骤及零值/缺失预期见[查询场景](capabilities/query/README.md#已存储计数直接绘制柱状图656)。
 - AI Summary 容器组合与顶部规则：[`report-ai-summary-regions`](capabilities/ai-summary/report-ai-summary-regions.json)，入口 `/pages/report-ai-summary-regions`；合成 inline 数据 + 本地 Mock，操作见[主题说明](capabilities/ai-summary/README.md#容器组合与顶部摘要)。
+
+平台创作：[云宝会话、最新工作副本与管理信息](platform/README.md#云宝创作与最新工作副本)，内容预览 `/pages/flow-page`，完整交互使用真实 Platform 本地夹具。

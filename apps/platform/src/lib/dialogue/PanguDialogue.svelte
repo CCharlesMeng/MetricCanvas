@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { DialogueAdapter } from './port';
+  import type { DialogueAdapter,DialogueMountContext } from './port';
   import { attachDialogue } from './lifecycle';
-  let { adapter }: { adapter: DialogueAdapter } = $props();
+  let { adapter,context }: { adapter: DialogueAdapter;context?:DialogueMountContext } = $props();
   let container: HTMLDivElement;
   let error = $state('');
   $effect(() => {
     error = '';
     return attachDialogue(adapter, container, (cause) => {
       error = cause instanceof Error ? cause.message : String(cause);
-    });
+    },context);
   });
 </script>
 <div class="dialogue" aria-label="盘古对话模块">

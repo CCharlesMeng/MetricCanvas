@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 116 份 ADR（0001–0117）：现行 109、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 117 份 ADR（0001–0118）：现行 110、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -96,11 +96,11 @@
 | [0076](./0076-formal-architecture-contract-scope-and-enforcement.md) | 以概念、关系和约束形式化架构，并对照代码与交付事实 | 现行；#95 主干范围及 CI 约束方向已确认；模型草案待收口，校验器尚未实现 |
 | [0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) | 盘古接管现有左侧对话，每轮 ask 返回结果并保留已有页面 | 现行；已确认布局与首版反馈边界；接口及页面交付仍待 #106–#108 实证 |
 | [0078](./0078-dimension-values-templates-and-page-instances.md) | 创作草稿经维度取值提取发布为模板，执行产生页面实例 | 现行；部分由 [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 修订；后续设计；当前 Java 发布不以模板/参数提取为前置 |
-| [0079](./0079-trusted-authoring-turns-gate-content-tools.md) | 可信创作轮次约束内容工具，最新页面与模型上下文分通道 | 现行；部分由 [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 修订；本轮身份与固定基线现行；强 latest/精确回读前置已调整 |
+| [0079](./0079-trusted-authoring-turns-gate-content-tools.md) | 可信创作轮次约束内容工具，最新页面与模型上下文分通道 | 现行；部分由 [0080](./0080-java-assets-single-attempt-save-and-status-publication.md)、[0118](./0118-cloud-dialogue-and-frontend-working-copy.md) 修订；本轮身份与固定基线现行；强 latest/精确回读前置已调整；0118 云宝模式采用前端完整工作副本 |
 | [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) | 按外部 Java 契约单次保存，发布更新页面状态 | 现行；当前 Java 接入依据；本仓实现已落地，真实联调另验 |
 | [0081](./0081-read-schema-5-x-with-6-x-runtime.md) | 6.x 运行时兼容读取 Schema 5.x | 现行；平台与页面试验场读取 5.0—5.4 后规范化为 6.x |
 | [0082](./0082-explicit-business-sections-in-platform-authoring.md) | 完整页面创作以业务章节组织，口径组不强制决定分区 | 现行；计划不进入渲染协议；首期不含自动分析结论 |
-| [0083](./0083-platform-evidence-work-and-internal-draft-save.md) | 平台创作先取证据，维护单份工作稿并在内容工具内保存草稿 | 现行；部分替代 0064/0079 的平台不保存与候选选择；单份工作稿加工具内保存草稿 |
+| [0083](./0083-platform-evidence-work-and-internal-draft-save.md) | 平台创作先取证据，维护单份工作稿并在内容工具内保存草稿 | 现行；部分由 [0118](./0118-cloud-dialogue-and-frontend-working-copy.md) 修订；部分替代 0064/0079 的平台不保存与候选选择；单份工作稿加工具内保存草稿 |
 | [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md) | 层级维度筛选绑定逐级声明谓词字段 | 现行；补齐 ADR-0050 层级维度筛选器在查询侧的绑定形状；6.7 新增分支，6.8 按 ADR-0051 例外收紧 |
 | [0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md) | timePoint / boolean / numberRange 各有自己的查询绑定目标 | 现行；补齐 ADR-0050 闭集里三类筛选器在查询侧的绑定目标；交付页面协议 6.9 |
 | [0086](./0086-server-side-sorting-and-header-filters-under-query-pagination.md) | 查询分页下由上游执行排序与表头筛选 | 现行；部分由 [0114](./0114-table-column-candidates-use-matching-results.md) 修订；解除 ADR-0049 查询分页与排序/表头筛选的互斥；排序编码待真实环境复验 |
@@ -134,6 +134,7 @@
 | [0115](./0115-standalone-filter-groups-and-controlled-migration.md) | 固定筛选按钮组成为独立页面组件，旧图表声明受控迁移 | 现行；用户确认固定单选独立组件、一控多、统一显隐、旧声明全部迁移，并明确批准本次采用6.45的受控迁移例外 |
 | [0116](./0116-tab-mixed-content-and-activation.md) | Tab 混合内容与活动面板生命周期 | 现行；用户确认混合内容、12列布局、独立局部筛选、按需取数、保活、URL恢复及Report导出规则，并授权实施 |
 | [0117](./0117-query-projections-and-page-measure-roles.md) | 查询投影位置与页面数值度量角色分别声明 | 现行；用户确认将通过 output_dims 取得的现成项目数量用于按区域绘制柱状图，并授权实施 |
+| [0118](./0118-cloud-dialogue-and-frontend-working-copy.md) | 云宝拥有创作会话，MC 以当前前端工作副本发起创作轮次 | 现行；用户确认云宝承载 Agent、独立 dialogue 保留，创作 URL 同时携带页面与会话身份 |
 
 <!-- adr-index:end -->
 
@@ -150,9 +151,9 @@
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 0111 0112 0113 0115 0116 |
 | [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 0112 0114 0117 |
-| [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 |
+| [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 0118 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |
-| [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 |
+| [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 0118 |
 | [AI 总结组件](./topics/ai-summary-component.md) | Report 的 AI 正文与区域生成由 aiSummary 承载，普通说明使用 text；它是垂直组件，不是第三种数据源。 | 0019 0025 0027 0029 |
 | [未决事项](./topics/open-questions.md) | 已登记但尚未裁决的问题，以及在裁决前不得做的事。**这里记的是没定的事，不要当成结论读。** | 0015 0024 0025 0030 0032 0033 0034 0037 0043 0044 0045 0046 0048 0060 0063 |
 | [编号与历史记录说明](./topics/numbering-and-history.md) | 编号冲突重编、纯清理类 ADR、已被替换的历史实现描述，以及本基线自身的整理记录。 | 0068 |

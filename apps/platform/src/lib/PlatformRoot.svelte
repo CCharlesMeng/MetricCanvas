@@ -7,6 +7,7 @@
   import PlatformFrame from './PlatformFrame.svelte';
   import ManagementList from './views/ManagementList.svelte';
   import PageReading from './views/PageReading.svelte';
+  import PageInfoView from './views/PageInfoView.svelte';
   import PageAuthoringWorkbench from './PageAuthoringWorkbench.svelte';
   let {services}: {services:PlatformServices} = $props();
   untrack(()=>setContext(PLATFORM_CONTEXT, services));
@@ -32,6 +33,10 @@
     const next=new URL(url),from=services.navigation.checkpoint(),controller=new AbortController();
     const currentRoute=route;
     void (async()=>{
+      if(services.dialogueSessions){
+        const id=await services.dialogueSessions.open(currentRoute.sessionId,next.href);
+        controller.signal.throwIfAborted();next.searchParams.set('sessionId',id);next.searchParams.delete('task');next.searchParams.delete('new');next.searchParams.sort();
+      }
       if(currentRoute.pageId&&!currentRoute.resourceId&&!currentRoute.taskId){
         const asset=await services.pageAssets.resolve(currentRoute.pageId,controller.signal);
         controller.signal.throwIfAborted();next.searchParams.set('resource',asset.resourceId);
@@ -43,7 +48,7 @@
     return()=>{controller.abort();opening=false;};
   });
   $effect(() => {
-    if (!services.embedded) document.title = path.startsWith('/manage') ? '页面管理 | MetricCanvas' : 'MetricCanvas 指标画布';
+    if (!services.embedded) document.title = (route.kind==='management'||route.kind==='settings') ? '页面管理 | MetricCanvas' : 'MetricCanvas 指标画布';
   });
   $effect(() => {
     DevView=null;
@@ -63,6 +68,7 @@
   {#if !active}<p role="alert">身份或服务目标已变化，请重新打开平台。原恢复记录已保留。</p>
   {:else}
     {#if workError}<p role="alert">{workError} 原恢复记录已保留。</p>{/if}
+    {#if creating&&services.dialogueSessions&&(opening||workError)&&route.kind==='create'&&route.pageId}<PageReading pageId={route.pageId} resourceId={route.resourceId} editable={false}/>{/if}
     {#if restored}
       <div class="work-stack" class:work-stack-hidden={!creating||!work.current||!!DevView||opening||!!workError}>
         {#each work.tasks as task(task.key)}<div class="work-task" hidden={work.current!==task.key||!!DevView||opening||!!workError}><PageAuthoringWorkbench taskUrl={new URL(task.url,url.origin)} showPageInfo={route.kind==='create'&&route.showPageInfo&&work.current===task.key} active={creating&&work.current===task.key&&!DevView&&!opening&&!workError}/></div>{/each}
@@ -73,6 +79,7 @@
       {#if DevView}<DevView/>
       {:else if creating}{#if !restored}<p role="status">正在恢复工作会话…</p>{/if}
       {:else if route.kind === 'management'}<ManagementList/>
+      {:else if route.kind === 'settings'}<PageInfoView pageId={route.pageId} resourceId={route.resourceId}/>
       {:else if route.kind === 'reading'}<PageReading pageId={route.pageId} resourceId={route.resourceId}/>
       {:else if route.kind === 'invalid'}<p role="alert">{route.message}</p>
       {:else}<p role="alert">页面不存在。</p>{/if}

@@ -1,3 +1,6 @@
+import {createDialogueSessions} from '../dialogue/sessions';
+import {createPageInfoPort} from '../page-assets/info';
+import type {PageInfoPort} from './contract';
 import {platformFilterCandidates} from './filter-candidates';
 import {isDisplayInputs} from '@metriccanvas/engine';
 import {createWorkSession} from '../workbench/work-session';
@@ -12,7 +15,7 @@ import { panguDialogueAdapter } from '../dialogue/runtime';
 import type { AuthoringIntegration } from '../dialogue/authoring-integration';
 export const PLATFORM_CONTEXT = Symbol('platform-services');
 export function createPlatformServices(session: ReturnType<typeof createPlatformSession>, navigation: PlatformNavigation, options: {
-  embedded: boolean; displayInputs?:unknown; filterCandidates?:unknown; dialogueAdapter?: DialogueAdapter; authoring?: AuthoringIntegration;
+  embedded: boolean; displayInputs?:unknown; filterCandidates?:unknown; dialogueAdapter?: DialogueAdapter; authoring?: AuthoringIntegration; pageInfo?:PageInfoPort;
 }) {
   if(options.displayInputs!==undefined&&!isDisplayInputs(options.displayInputs))throw Error('displayInputs必须实现getSnapshot/subscribe');
   const displayInputs=isDisplayInputs(options.displayInputs)?options.displayInputs:undefined;
@@ -20,11 +23,16 @@ export function createPlatformServices(session: ReturnType<typeof createPlatform
   const config=session.readConfig();
   const workSession=createWorkSession({scope:{actorId:config?.operatorId??'',workspaceId:config?.workspaceId??'',pageId:'__platform-work-session__',serviceTarget:JSON.stringify([config?.pageMetadataBaseUrl,config?.dqeEndpoint])},base:navigation.base,origin:location.origin});
   session.onInvalidate(()=>workSession.dispose());
-  return {workSession,displayInputs,...createPageAssetServices({readConfig:session.readConfig,fetchImpl:session.fetchImpl}),session,navigation,
+  const assets=createPageAssetServices({readConfig:session.readConfig,fetchImpl:session.fetchImpl});
+  const dialogueAdapter=options.dialogueAdapter??panguDialogueAdapter;
+  const dialogueSessions=dialogueAdapter.agent?createDialogueSessions(dialogueAdapter.agent):undefined;
+  session.onInvalidate(()=>dialogueSessions?.dispose());
+  return {workSession,displayInputs,...assets,session,navigation,dialogueSessions,
+    pageInfo:options.pageInfo??createPageInfoPort(assets.pageAssets),
     workbenchGateway:{...createWorkbenchDqeGateway(session.fetchImpl,session.readConfig),...candidates},
     dataGateway:{...createInjectedDqeGateway(session.fetchImpl,undefined,session.readConfig),...candidates},
     embedded:options.embedded,
-    dialogueAdapter:options.dialogueAdapter ?? panguDialogueAdapter, authoring:options.authoring};
+    dialogueAdapter, authoring:options.authoring};
 }
 export type PlatformServices = ReturnType<typeof createPlatformServices>;
 export function usePlatformServices(): PlatformServices {

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "34de35ae543ab49a336b0d6c9978f4fd0f6e138bcff53824a2de50c73cef49eb",
+  "sha256": "4e4d58163086e401183f3653cadf642097afb5da4ac00ecbba4096fc40843e7e",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -132,7 +132,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "d3f5a8582cab87d423c32824da20e91e7d2b3db57a25bcc08cddafce0b613da2"
+      "sha256": "28bc7b819c3b557c651af8907c2563e689e81b433a4f526c6d93e6c1fe11e833"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -152,7 +152,7 @@
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
-      "sha256": "2be3fd409952d7a26a0e5e29b67086caecf42fe9af006f2e55b9e9b2a0e58ddc"
+      "sha256": "7fdbabd9fe25018d234e89a51bd4f49142ca49ad4307c8bc3711a15e8abd9c08"
     },
     {
       "file": "docs/page-metadata/semantic-html.md",
@@ -1652,7 +1652,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "b8b531d14a4f42eaff1811994e6fb6399c189c9125f04939c295ade8ac3ac6a0"
+      "sha256": "81310177a437445edc1c9aee1ef555507a5f9b892a96944742d7d9b7655ac9f5"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -2092,7 +2092,11 @@
     },
     {
       "file": "pages/platform/README.md",
-      "sha256": "2e73f1ca78dc86a61fde5c49eb1ba46bc450c1f4d3491684f1fa1d9a18170ceb"
+      "sha256": "68b5229f11d23fe1fd7ead2afe22ae1240101ce3b0c05c22b9f6afeaa7a9ca6b"
+    },
+    {
+      "file": "pages/platform/flow-page.json",
+      "sha256": "27a4e460bf8d6c845cd4435fd1eb47a5552641decf5bf0b7bfe4d6e2598e78c5"
     },
     {
       "file": "pages/platform/platform-canvas-experience.json",

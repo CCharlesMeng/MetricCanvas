@@ -20,22 +20,32 @@ function htmlEntry(): Plugin {
   };
 }
 
+/** Normal Platform entry with persistent local assets; no fixture UI or alternate app root. */
+function developmentServer(localPreview:boolean,cloudIoc:ReturnType<typeof readCloudIocDevConfig>){
+  const windows=process.platform==='win32'&&!localPreview;
+  const domain=cloudIoc?CLOUDIOC_DEV_DOMAIN:localDomain;
+  const proxy=createDqeDevProxy();
+  if(localPreview){
+    proxy['/rest/cdi/cdinl2databuilderservice/v1/user-page-metadata']={target:'http://127.0.0.1:8080',changeOrigin:true};
+  }else{
+    delete proxy['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'];
+    proxy['/rest/cdi/cdinl2databuilderservice/']=cloudIoc?createCloudIocDevProxy(cloudIoc):{target:'https://ioc.cloudbu.huawei.com',changeOrigin:true};
+  }
+  return {host:windows?domain:'127.0.0.1',port:localPreview?5175:windows?443:5174,strictPort:true,proxy};
+}
+
 export default defineConfig((config) => {
   const {mode} = config;
   const debug = mode === 'microfrontend-debug';
   const micro = mode === 'microfrontend' || debug;
-  const windows = process.platform === 'win32';
-  const cloudIoc = readCloudIocDevConfig(config, appRoot, 'platform');
-  const domain = cloudIoc ? CLOUDIOC_DEV_DOMAIN : localDomain;
-  const proxy = createDqeDevProxy();
-  delete proxy['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'];
-  proxy['/rest/cdi/cdinl2databuilderservice/'] = cloudIoc ? createCloudIocDevProxy(cloudIoc) : {
-    target: 'https://ioc.cloudbu.huawei.com', changeOrigin: true
-  };
+  const localPreview=config.command==='serve'&&mode==='local-preview';
+  const cloudIoc=localPreview?undefined:readCloudIocDevConfig(config,appRoot,'platform');
+  const windows=process.platform==='win32';
+  const domain=cloudIoc?CLOUDIOC_DEV_DOMAIN:localDomain;
   return {
     // Library mode intentionally leaves NODE_ENV untouched unless explicitly defined.
     define: micro ? {'process.env.NODE_ENV': JSON.stringify('production')} : {},
-    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl(windows ? {domains: [domain]} : undefined)])],
+    plugins: [svelte(), ...(micro ? [htmlEntry()] : localPreview ? [] : [basicSsl(windows ? {domains: [domain]} : undefined)])],
     resolve: {alias: {
       $lib: resolve(appRoot, 'src/lib'),
       $pages: resolve(appRoot, '../../pages'),
@@ -52,9 +62,6 @@ export default defineConfig((config) => {
         fileName: () => 'assets/platform.umd.js', cssFileName: 'assets/platform'
       }
     } : {outDir: 'build', target: 'es2022'},
-    server: {
-      host: windows ? domain : '127.0.0.1', port: windows ? 443 : 5174, strictPort: true,
-      proxy
-    }
+    server: developmentServer(localPreview,cloudIoc)
   };
 });

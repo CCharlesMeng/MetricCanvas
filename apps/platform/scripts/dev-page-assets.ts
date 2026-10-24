@@ -77,7 +77,7 @@ function summary(record: RecordValue) {
 let writes: Promise<void> = Promise.resolve();
 const server = createServer((request, response) => {
   const origin = request.headers.origin;
-  if (origin && !/^https?:\/\/(127\.0\.0\.1|localhost):(5174|4174)$/.test(origin)) {
+  if (origin && !/^https?:\/\/(127\.0\.0\.1|localhost):(5174|5175|4174)$/.test(origin)) {
     response.writeHead(403); response.end(); return;
   }
   if (origin) {

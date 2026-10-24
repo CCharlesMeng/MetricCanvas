@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "6.58",
+  "id": "flow-page",
+  "layout": "dashboard",
+  "meta": {
+    "title": "创作流程验收页",
+    "description": "合成元数据；会话和创作入口由 Platform 提供"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "content",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "服务端初始组件标题",
+            "body": "用于检查未保存工作副本的上下文。当前页面使用合成数据；试验场只展示内容，完整创作交互见 pages/platform/README.md。"
+          }
+        }
+      ]
+    }
+  ]
+}

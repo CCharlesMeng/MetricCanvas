@@ -22,3 +22,23 @@
 关键声明：`sections[].components[].layout`, `sections[].components[].type`。
 
 关联：[metric-card-equation](../capabilities/layout/metric-card-equation.json)。
+
+## 云宝创作与最新工作副本
+
+内容预览入口：`/pages/flow-page`；[完整页面](flow-page.json)，显式 Dashboard，合成内容、不含真实数据查询。`pnpm dev:playground` 启动后直接访问该入口，检查页头与文本正常渲染。试验场只展示页面内容，不承担创建云宝会话。
+
+完整 Platform 场景：`pnpm --filter platform dev:agent-flow`，打开 `http://127.0.0.1:5178/?pageId=flow-page`。使用真实工作台、检查器、管理列表、独立表单与既有更新通知，云宝和元数据服务为本地替身；页面源直接读取上面的同一 JSON。
+
+1. 进入后 URL 自动补 sessionId；选择文本组件，在检查器更改组件标题，不点保存。
+2. 左上角更改页面标题并移开焦点。验收记录 infoWrites 增加一次；画布中组件手改保持，assetWrites 仍为 0。
+3. 点击“发送到云宝”。返回说明引用刚手改的组件标题；展开验收记录，lastInput 同时包含两个新标题，sendCount 只增加一次。
+4. 点击“删除地址中的会话 ID”，保留页面，自动获得另一个云宝会话。页面不消失；验收记录列出两次不同会话准备。
+5. 管理目录仅提供“基本信息”和“可视化编辑”；从“基本信息”进入独立表单修改标题/描述/路径。路径保留 `?pageId=flow-page`，保存直接增加 infoWrites，sendCount 不变。错误 pageId 给出校验消息并保留输入。
+6. 刷新分别打开 `?sessionId=existing-session`、无参数入口、`?pageId=flow-page&sessionId=broken`，核对仅恢复对话、空画布自动新建，以及会话失败仍能读页面。
+7. `?pageId=flow-page&delaySession=1` 可暂停会话准备，在“验收记录”点“完成会话准备”继续。等待期间仍能预览页面。
+
+边界：本夹具的服务记录在内存，重新加载会重置。执行中禁止编辑、重复提交、失败、取消及过期结果由工作副本单元测试补充。真实 SDK 与真实服务尚未验收，见[记录](../../docs/evidence/agent-authoring-flow/acceptance.md)。
+
+管理目录入口：正常 Platform `/manage` 操作列仅保留“基本信息”和“可视化编辑”，分别进入独立信息表单和页面搭建工作台；不再提供行内编辑或单独预览入口。
+
+组件清单排序：在正常 Platform 的可视化编辑中，清空组件选中后，在右侧“页面组件”列表按住条目上下拖动；上半区插入前面，下半区插入后面。观察列表与画布同时重排、列表仍保留；顶部撤销恢复上一次移动。拖到列表外松手不修改文档。保存或预览期间禁用排序，保存仍沿用现有工作副本流程。跨分区和原地落点使用同一画布移动校验；自动用例基于本目录 platform-canvas-experience.json。

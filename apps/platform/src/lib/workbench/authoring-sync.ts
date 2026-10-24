@@ -247,6 +247,17 @@ export function createAuthoringSync(options: {
       if (persisted) await pump();
     },
     async protect(): Promise<boolean> { await serial; return durable || await transaction(() => { }); },
+    /** A direct metadata edit advances the remote base without sending local content. */
+    async rebase(revision:import('../page-assets/contract').PageRevision,draft:CanvasAuthoringDraft):Promise<void>{
+      await serial;
+      if(disposed||running||state.queue.length||!identityMatches())throw Error('当前工作不能采用外部页面修订。');
+      if(revision.pageId!==state.scope.pageId||draft.pageDocument.id!==revision.pageId)throw Error('页面修订身份不匹配。');
+      if(!await transaction(()=>{
+        state.base={pageId:revision.pageId,resourceId:revision.resourceId!,revisionId:revision.revisionId};
+        state.confirmed=structuredClone(revision);state.draft=structuredClone(draft);
+        state.localDirty=!same(draft.pageDocument,revision.document);
+      }))throw Error('新页面基线未能在本地保护。');
+    },
     async undo(retainDimensionValues = true): Promise<CanvasAuthoringDraft | null> {
       if (undoing) return null;
       undoing = true;

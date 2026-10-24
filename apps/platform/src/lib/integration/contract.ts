@@ -11,6 +11,45 @@ export interface PlatformEvent {
   code: 'ready' | 'login-required' | 'session-invalidated';
   message: string;
 }
+
+/** Portable dialogue contract: SDK implementation remains in the intranet Adapter. */
+export interface DialoguePageInput {
+  pageId: string | null;
+  documentJson: string | null;
+  documentSha256: string | null;
+  persistedRef: {pageId:string;resourceId:string;revisionId:string} | null;
+}
+export interface DialoguePageRequest {
+  requestId:string; sessionId:string;
+  intent:'create'|'adjust'|'publish'|'confirm-save'; question:string;
+  input:DialoguePageInput;
+}
+export interface DialogueAgentPort {
+  /** Missing ID creates a real session; supplied ID restores that exact session. */
+  openSession(input:{sessionId?:string},signal:AbortSignal):Promise<{sessionId:string}>;
+  /** Resolves after the turn and existing component updates have finished, not on enqueue. */
+  send(request:DialoguePageRequest,signal:AbortSignal):Promise<{requestId:string;status:'completed'|'failed'|'unknown';message?:string}>;
+}
+export interface DialogueMountContext {
+  sessionId:string;
+  /** SDK input must use this entry before sending, including user-typed questions. */
+  submit(question:string):Promise<void>;
+}
+export interface PlatformDialogueAdapter {
+  mount(element:HTMLElement,context?:DialogueMountContext):Promise<()=>void>;
+  agent?:DialogueAgentPort;
+}
+export interface PageInfoTarget {pageId:string;resourceId:string}
+export interface PageInfoRecord extends PageInfoTarget {
+  revisionId:string;title:string;description:string;accessPath?:string;titleIsBound?:boolean;
+  /** Optional confirmed provider document; never copied from conversational text. */
+  documentJson?:string;
+}
+export interface PageInfoChanges {title?:string;description?:string;accessPath?:string;replaceBoundTitle?:boolean}
+export interface PageInfoPort {
+  read(target:PageInfoTarget,signal?:AbortSignal):Promise<PageInfoRecord>;
+  update(target:PageInfoTarget&{revisionId:string},changes:PageInfoChanges):Promise<PageInfoRecord>;
+}
 export interface PlatformPortalProps<TrustedAuthoring = never> {
   routeBase: string;
   readConfig: () => Partial<PlatformRuntimeConfig> | null | undefined;
@@ -20,7 +59,8 @@ export interface PlatformPortalProps<TrustedAuthoring = never> {
   configChanges?: 'subscribe' | 'reload';
   onEvent?: (event: PlatformEvent) => void;
   registerLeaveGuard?: (guard: () => boolean | Promise<boolean>) => () => void;
-  dialogueAdapter?: { mount(element: HTMLElement): Promise<() => void> };
+  dialogueAdapter?: PlatformDialogueAdapter;
+  pageInfo?:PageInfoPort;
   /** Optional trusted program adapter; use the repository's AuthoringIntegration type. */
   authoring?: TrustedAuthoring;
   /** Optional engine DisplayInputs; validated at platform composition, no credentials. */

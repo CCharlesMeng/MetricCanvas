@@ -92,11 +92,11 @@ export function createWorkSession(options:{scope:StorageScope;base:string;origin
       return target.pathname+target.search;
     },
     async bind(taskUrl:URL,pageId:string,resourceId?:string){
-      const {url,route}=taskAddress(taskUrl);if(!route.taskId)return;
-      const key='new:'+route.taskId;url.searchParams.set('page',pageId);if(resourceId)url.searchParams.set('resource',resourceId);
+      const {url,route}=taskAddress(taskUrl);const key=workTaskKey(route);if(!key)return;
+      url.searchParams.set('page',pageId);if(resourceId)url.searchParams.set('resource',resourceId);
       url.searchParams.delete('info');const canonical=taskAddress(url).url,target=canonical.pathname+canonical.search;
-      if(state.tasks.find(task=>task.key===key)?.url===target)return;
-      await protect(()=>{const task=state.tasks.find(task=>task.key===key);if(task)task.url=target;});
+      if(state.tasks.find(task=>task.key===key)?.url===target)return target;
+      await protect(()=>{const task=state.tasks.find(task=>task.key===key);if(task)task.url=target;});return target;
     },
     async rememberDirectory(input:URL,scroll=0,focus:string|null=null){
       const {url,route}=parse(input);if(route.kind!=='management')throw Error('目录返回目标无效。');

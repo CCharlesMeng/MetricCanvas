@@ -1,8 +1,8 @@
 export const CREATE_PATH = '/create';
 export type PlatformRoute =
-  | {kind:'create';path:typeof CREATE_PATH;pageId:string|null;resourceId:string|null;taskId:string|null;newTask:boolean;showPageInfo:boolean}
+  | {kind:'create';path:typeof CREATE_PATH;pageId:string|null;resourceId:string|null;taskId:string|null;sessionId:string|null;newTask:boolean;showPageInfo:boolean}
   | {kind:'management';path:'/manage';page:number;state:''|'draft'|'published'}
-  | {kind:'reading';path:string;pageId:string;resourceId:string|null}
+  | {kind:'reading'|'settings';path:string;pageId:string;resourceId:string|null}
   | {kind:'not-found';path:string}
   | {kind:'invalid';path:string;message:string};
 
@@ -15,62 +15,74 @@ export function platformPath(base:string,path:string,params?:{pageId:string}):st
   return `${base}${path.replace('[pageId]',encodeURIComponent(params?.pageId??''))}`;
 }
 
+type RouteResult={url:URL;route:PlatformRoute};
+const invalid=(url:URL,path:string):RouteResult=>({url,route:{kind:'invalid',path,message:'页面地址参数无效，请检查页面、资源、任务或会话身份。'}});
+function invalidIdentity(query:URLSearchParams,names:string[]):boolean {
+  return names.some(name=>query.getAll(name).length>1||query.has(name)&&!query.get(name)!.trim());
+}
+function createRoute(url:URL,original:URL):RouteResult {
+  const query=url.searchParams;
+  if(invalidIdentity(query,['page','pageId','resource','task','sessionId','new','info']))return invalid(original,CREATE_PATH);
+  if(query.has('pageId')){
+    if(query.has('page')&&query.get('page')!==query.get('pageId'))return invalid(original,CREATE_PATH);
+    query.set('page',query.get('pageId')!);query.delete('pageId');
+  }
+  const pageId=query.get('page'),resourceId=query.get('resource'),taskId=query.get('task'),sessionId=query.get('sessionId');
+  if(resourceId&&!pageId)return invalid(original,CREATE_PATH);
+  if(query.has('new')&&query.get('new')!=='1')return invalid(original,CREATE_PATH);
+  if(query.get('new')==='1'&&!taskId&&pageId)return invalid(original,CREATE_PATH);
+  if(taskId)query.delete('new');
+  const newTask=query.get('new')==='1',showPageInfo=query.get('info')==='1';
+  if(!showPageInfo)query.delete('info');
+  query.delete('reading');query.sort();
+  return {url,route:{kind:'create',path:CREATE_PATH,pageId,resourceId,taskId,sessionId,newTask,showPageInfo}};
+}
+function managementRoute(url:URL,original:URL):RouteResult {
+  const query=url.searchParams;
+  if(query.getAll('page').length>1||query.getAll('state').length>1)return invalid(original,'/manage');
+  const page=Number(query.get('page')??1),state=query.get('state')??'';
+  if(!Number.isSafeInteger(page)||page<1||!['','draft','published'].includes(state))return invalid(original,'/manage');
+  if(query.has('page'))query.set('page',String(page));
+  if(!state)query.delete('state');query.sort();
+  return {url,route:{kind:'management',path:'/manage',page,state:state as ''|'draft'|'published'}};
+}
+function detailRoute(url:URL,original:URL,encoded:string,settings:boolean):RouteResult {
+  let pageId:string;try{pageId=decodeURIComponent(encoded);}catch{return invalid(original,url.pathname);}
+  if(!pageId.trim()||invalidIdentity(url.searchParams,['resource']))return invalid(original,url.pathname);
+  const resourceId=url.searchParams.get('resource');url.searchParams.delete('reading');url.searchParams.sort();
+  return {url,route:{kind:settings?'settings':'reading',path:url.pathname,pageId,resourceId}};
+}
 /** Compatibility and canonicalization have one owner; applying this twice is a no-op. */
-export function resolvePlatformRoute(input:URL,base:string):{url:URL;route:PlatformRoute} {
+export function resolvePlatformRoute(input:URL,base:string):RouteResult {
   const url=new URL(input),original=new URL(input);
-  let path=isPlatformPath(url.pathname,base)?url.pathname.slice(base.length)||'/':url.pathname;
-  const invalid=()=>({url:original,route:{kind:'invalid',path,message:'页面地址参数无效，请检查页面、资源或任务身份。'} as const});
-  if(!isPlatformPath(url.pathname,base))return {url,route:{kind:'not-found',path}};
-  path=path.replace(/\/+$/,'')||'/';
+  if(!isPlatformPath(url.pathname,base))return {url,route:{kind:'not-found',path:url.pathname}};
+  let path=(url.pathname.slice(base.length)||'/').replace(/\/+$/,'')||'/';
   if(path==='/'||path==='/ask')path=CREATE_PATH;
-  const detail=/^\/manage\/pages\/([^/]+)(\/edit)?$/.exec(path);
-  if(detail?.[2]){
-    try{const pageId=decodeURIComponent(detail[1]);if(!pageId.trim())return invalid();url.searchParams.set('page',pageId);}catch{return invalid();}
+  const detail=/^\/manage\/pages\/([^/]+)(\/edit|\/settings)?$/.exec(path);
+  if(detail?.[2]==='/edit'){
+    try{const id=decodeURIComponent(detail[1]);if(!id.trim())return invalid(original,path);url.searchParams.set('page',id);}catch{return invalid(original,path);}
     path=CREATE_PATH;url.searchParams.delete('reading');
   }
   url.pathname=platformPath(base,path);
-  const query=url.searchParams;
-  if(path===CREATE_PATH){
-    for(const name of ['page','resource','task','new','info'])if(query.getAll(name).length>1)return invalid();
-    const pageId=query.get('page'),resourceId=query.get('resource'),taskId=query.get('task');
-    if([pageId,resourceId,taskId].some(value=>value!==null&&!value.trim())||resourceId&&!pageId)return invalid();
-    if(query.has('new')&&query.get('new')!=='1')return invalid();
-    if(query.get('new')==='1'&&!taskId&&pageId)return invalid();
-    if(taskId)query.delete('new');
-    const newTask=query.get('new')==='1',showPageInfo=query.get('info')==='1';
-    if(!showPageInfo)query.delete('info');
-    query.delete('reading');query.sort();
-    return {url,route:{kind:'create',path:CREATE_PATH,pageId,resourceId,taskId,newTask,showPageInfo}};
-  }
-  if(path==='/manage'){
-    if(query.getAll('page').length>1||query.getAll('state').length>1)return invalid();
-    const page=Number(query.get('page')??1),state=query.get('state')??'';
-    if(!Number.isSafeInteger(page)||page<1||!['','draft','published'].includes(state))return invalid();
-    if(query.has('page'))query.set('page',String(page));
-    if(!state)query.delete('state');query.sort();
-    return {url,route:{kind:'management',path:'/manage',page,state:state as ''|'draft'|'published'}};
-  }
-  if(detail){
-    let pageId:string;try{pageId=decodeURIComponent(detail[1]);}catch{return invalid();}
-    const resourceId=query.get('resource');
-    if(!pageId.trim()||query.getAll('resource').length>1||resourceId!==null&&!resourceId.trim())return invalid();
-    query.delete('reading');query.sort();
-    return {url,route:{kind:'reading',path,pageId,resourceId}};
-  }
+  if(path===CREATE_PATH)return createRoute(url,original);
+  if(path==='/manage')return managementRoute(url,original);
+  if(detail)return detailRoute(url,original,detail[1],detail[2]==='/settings');
   return {url,route:{kind:'not-found',path}};
 }
 
-export function createHref(base:string,input:{pageId?:string;resourceId?:string;taskId?:string;newTask?:boolean;showPageInfo?:boolean}={}):string {
+export function createHref(base:string,input:{pageId?:string;resourceId?:string;taskId?:string;sessionId?:string;newTask?:boolean;showPageInfo?:boolean}={}):string {
   const query=new URLSearchParams();
   if(input.pageId!==undefined)query.set('page',input.pageId);
   if(input.resourceId!==undefined)query.set('resource',input.resourceId);
   if(input.taskId!==undefined)query.set('task',input.taskId);
+  if(input.sessionId!==undefined)query.set('sessionId',input.sessionId);
   if(input.newTask)query.set('new','1');
   if(input.showPageInfo)query.set('info','1');
   query.sort();return platformPath(base,CREATE_PATH)+(query.size?`?${query}`:'');
 }
 
 export function workTaskKey(route:Extract<PlatformRoute,{kind:'create'}>):string|null {
+  if(route.sessionId)return 'session:'+route.sessionId;
   return route.taskId?`new:${route.taskId}`:route.pageId?JSON.stringify([route.pageId,route.resourceId]):null;
 }
 
@@ -87,4 +99,8 @@ export function managementHref(base:string,page:number,state:string=''):string {
 }
 export function readingHref(base:string,pageId:string,resourceId:string):string {
   return platformPath(base,'/manage/pages/[pageId]',{pageId})+`?${new URLSearchParams({resource:resourceId})}`;
+}
+
+export function settingsHref(base:string,pageId:string,resourceId:string):string {
+  return platformPath(base,'/manage/pages/[pageId]/settings',{pageId})+'?'+new URLSearchParams({resource:resourceId});
 }

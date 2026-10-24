@@ -10,6 +10,8 @@
   import type { ComponentCandidate } from './component-selection';
   import type { ComponentLocator } from './document-edit';
   import type { PageComponentView, WorkbenchPageViewModel } from './transient-page';
+  import type { AuthoringIntent } from '@metriccanvas/metric-canvas/types';
+  import {componentListMove} from './component-list-order';
 
   /**
    * 检查器(原型 ask-workbench.v2 右栏):选中画布组件后展示组件形态切换
@@ -27,6 +29,7 @@
     busy = false,
     onSelectType,
     onSelectComponent,
+    onMoveComponent,
     onEdit,
     properties = [],
     onPropertyEdit, dateDraft, onDateEdit, onClearSelection
@@ -46,6 +49,7 @@
     busy?: boolean;
     onSelectType: (type: ComponentCandidate['type']) => void;
     onSelectComponent: (componentId: string) => void;
+    onMoveComponent?: (intent: Extract<AuthoringIntent, {type: 'move_component'}>) => void;
     onEdit: (edit: { title?: string; span?: number }) => void;
     properties?: PropertyControl[];
     onPropertyEdit?: (edit: PropertyEdit) => void;
@@ -58,6 +62,62 @@
     previousSelection = componentId;
   });
   const widthPresets = $derived([...new Set([Math.max(1, Math.round(selectedColumnCount / 4)), Math.max(1, Math.round(selectedColumnCount / 3)), Math.max(1, Math.round(selectedColumnCount / 2)), selectedColumnCount])]);
+  let draggingId = $state<string | null>(null);
+  let dropTarget = $state<{componentId: string; after: boolean} | null>(null);
+  let orderList = $state<HTMLUListElement | null>(null);
+  let dragSession: {componentId: string; pointerId: number; x: number; y: number} | null = null;
+  let suppressClick = false;
+  $effect(() => { if (busy) clearListDrag(); });
+
+  function clearListDrag() { dragSession = null; draggingId = null; dropTarget = null; }
+
+  function startListDrag(event: PointerEvent, componentId: string) {
+    suppressClick = false;
+    if (busy || !onMoveComponent || !dateDraft || event.button !== 0) return;
+    dragSession = {componentId, pointerId: event.pointerId, x: event.clientX, y: event.clientY};
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  }
+
+  function listDropIntent(event: PointerEvent) {
+    if (busy || !draggingId || !dateDraft) return null;
+    const element = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-order-component]');
+    if (!(element instanceof HTMLElement) || !orderList?.contains(element)) return null;
+    const componentId = element.dataset.orderComponent!;
+    const bounds = element.getBoundingClientRect();
+    const after = event.clientY >= bounds.top + bounds.height / 2;
+    const intent = componentListMove(dateDraft.authoringSections, draggingId, componentId, after);
+    return intent ? {intent, target: {componentId, after}} : null;
+  }
+
+  function overListItem(event: PointerEvent) {
+    if (!dragSession || event.pointerId !== dragSession.pointerId) return;
+    if (!draggingId && Math.hypot(event.clientX - dragSession.x, event.clientY - dragSession.y) < 6) return;
+    draggingId = dragSession.componentId;
+    suppressClick = true;
+    event.preventDefault();
+    dropTarget = listDropIntent(event)?.target ?? null;
+    scrollListEdge(event);
+  }
+
+  function scrollListEdge(event: PointerEvent) {
+    const container = orderList?.closest('.inspector-content');
+    if (!(container instanceof HTMLElement)) return;
+    const bounds = container.getBoundingClientRect();
+    if (event.clientY < bounds.top + 40) container.scrollTop -= 16;
+    else if (event.clientY > bounds.bottom - 40) container.scrollTop += 16;
+  }
+
+  function dropListItem(event: PointerEvent) {
+    if (!dragSession || event.pointerId !== dragSession.pointerId) return;
+    const drop = listDropIntent(event);
+    clearListDrag();
+    if (drop) onMoveComponent?.(drop.intent);
+  }
+
+  function selectListItem(event: MouseEvent, componentId: string) {
+    if (suppressClick && event.detail > 0) return;
+    onSelectComponent(componentId);
+  }
 </script>
 
 <aside class="inspector">
@@ -154,11 +214,21 @@
     <div class="panel">
       <section>
         <div class="list-heading"><h5>页面组件</h5><span>{pageModel.components.length}</span></div>
-        <p class="hint">点击组件进入配置，悬停画布可显示拖动与删除操作。</p>
-        <ul class="mlist">
+        <p class="hint">上下拖动组件调整顺序，点击组件进入配置。修改可通过顶部撤销恢复。</p>
+        <ul class="mlist" bind:this={orderList}>
           {#each pageModel.components as component (component.componentId)}
             <li>
-              <button type="button" class="component-entry" disabled={busy} onclick={() => onSelectComponent(component.componentId)}>
+              <button type="button" class="component-entry" disabled={busy}
+                draggable="false" data-order-component={component.componentId}
+                class:dragging={draggingId === component.componentId}
+                class:drop-before={dropTarget?.componentId === component.componentId && !dropTarget.after}
+                class:drop-after={dropTarget?.componentId === component.componentId && dropTarget.after}
+                onpointerdown={event => startListDrag(event, component.componentId)}
+                onpointermove={overListItem}
+                onpointerup={dropListItem}
+                onpointercancel={clearListDrag}
+                onlostpointercapture={clearListDrag}
+                onclick={event => selectListItem(event, component.componentId)}>
                 <span class="entry-icon" aria-hidden="true">▤</span>
                 <span class="entry-copy"><b>{component.title ?? component.componentLabel}</b>
                 <small>
@@ -219,6 +289,10 @@
   .mlist { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
   .component-entry { display:flex; align-items:center; gap:10px; width:100%; padding:12px 10px; text-align:left; border:1px solid #e9edf3; background:#fff; border-radius:9px; color:#303b4d; font:inherit; cursor:pointer; transition:border-color .15s,background .15s; }
   .component-entry:hover:not(:disabled) { background:#f7faff; border-color:#bfd6fc; }
+  .component-entry:not(:disabled) { cursor:grab; touch-action:none; user-select:none; }
+  .component-entry.dragging { opacity:.45; cursor:grabbing; }
+  .component-entry.drop-before { box-shadow:0 -3px 0 #1476ff; }
+  .component-entry.drop-after { box-shadow:0 3px 0 #1476ff; }
   .entry-icon { display:grid; place-items:center; width:30px; height:30px; flex:none; background:#f0f5ff; border-radius:7px; color:#6891ca; }
   .entry-copy { display:grid; gap:4px; min-width:0; flex:1; }
   .entry-copy b { font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }

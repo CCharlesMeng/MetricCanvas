@@ -5,7 +5,7 @@
   import ToolAction from '../ToolAction.svelte';
   import {usePlatformServices} from '../integration/services';
   import type {AssetRef,DraftHistoryEntry,PageRevision} from '../page-assets/contract';
-  let {asset,disabled=false,onaction}:{asset:AssetRef;disabled?:boolean;onaction:(action:'remove'|'restore',version?:number)=>Promise<void>}=$props();
+  let {asset,disabled=false,allowMutation=true,onaction}:{asset:AssetRef;disabled?:boolean;allowMutation?:boolean;onaction:(action:'remove'|'restore',version?:number)=>Promise<void>}=$props();
   const {pageAssets}=usePlatformServices();
   const controller=new AbortController();
   let revision=$state<PageRevision|null>(null),history=$state<DraftHistoryEntry[]>([]);
@@ -23,10 +23,10 @@
     <dl><dt>页面 ID</dt><dd>{asset.pageId}</dd><dt>资源 ID</dt><dd>{asset.resourceId}</dd><dt>当前修订</dt><dd>R{revision.revisionNumber}</dd><dt>服务端状态</dt><dd><Tag type={revision.isDraft===false?'success':'info'}>{revision.isDraft===false?'已发布':revision.isDraft===true?'草稿':'状态待核实'}</Tag></dd></dl>
     <details ontoggle={event=>{if(event.currentTarget.open)void readHistory();}}><summary>页面历史</summary>
       {#if historyLoading}<p role="status">正在读取历史…</p>{:else if historyError}<p role="alert">{historyError}</p><ToolAction onclick={readHistory}>重试</ToolAction>
-      {:else if historyLoaded&&!history.length}<p>暂无草稿历史。</p>{:else}{#each history as item(item.historyId)}<div class="history-row"><span>R{item.draftVersion} · {item.comment||item.description||'无备注'}</span><ToolAction disabled={disabled||busy} onclick={()=>{restoreVersion=item.draftVersion;confirmation='restore';}}>回退草稿</ToolAction></div>{/each}{/if}
+      {:else if historyLoaded&&!history.length}<p>暂无草稿历史。</p>{:else}{#each history as item(item.historyId)}<div class="history-row"><span>R{item.draftVersion} · {item.comment||item.description||'无备注'}</span>{#if allowMutation}<ToolAction disabled={disabled||busy} onclick={()=>{restoreVersion=item.draftVersion;confirmation='restore';}}>回退草稿</ToolAction>{/if}</div>{/each}{/if}
       <p class="hint">当前展示草稿历史摘要；回退会修改当前草稿。</p>
     </details>
-    <div class="remove"><ToolAction danger disabled={disabled||busy} onclick={()=>confirmation='remove'}>删除当前记录</ToolAction>{#if disabled}<span class="hint">请先处理未保存或未决工作。</span>{/if}</div>
+    {#if allowMutation}<div class="remove"><ToolAction danger disabled={disabled||busy} onclick={()=>confirmation='remove'}>删除当前记录</ToolAction>{#if disabled}<span class="hint">请先处理未保存或未决工作。</span>{/if}</div>{/if}
   {/if}
   <Dialog open={confirmation!==null} title={confirmation==='remove'?'删除当前记录':'回退草稿'} onclose={()=>{if(!busy)confirmation=null;}}>
     <p>{confirmation==='remove'?'删除当前资源记录？此操作尚无整页所有修订永久删除保证，请确认没有其他窗口正在修改此页面。':`将当前草稿回退到版本 ${restoreVersion}。当前服务未保证追加新修订，请确认没有其他窗口正在修改此页面。`}</p>

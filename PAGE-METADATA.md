@@ -28,7 +28,7 @@
 
 查询失败时，页面 UI 组件呈现空数据，具体错误打印到控制台，内部错误态及 `data-error` 事件保留。普通查询的 `totalCount` 与返回行数不一致仅告警，继续渲染已有行；详见[查询异常与结果总数](docs/page-metadata/data-sources.md#查询异常与结果总数)。
 
-页面搭建的拖动手柄、蓝色选框、就地操作条与删除属于创作期交互，不新增页面协议字段。组件顺序与宽度仍由 `sections[].components`、`layout.span` 声明；空分区草稿与删除行为见[内容分区与布局](docs/page-metadata/sections-and-layout.md#页面搭建中的移动与删除)，验收页面为 `pages/platform/platform-canvas-experience.json`。
+页面搭建的拖动手柄、组件清单拖动排序、蓝色选框、就地操作条与删除属于创作期交互，不新增页面协议字段。组件顺序与宽度仍由 `sections[].components`、`layout.span` 声明；空分区草稿与删除行为见[内容分区与布局](docs/page-metadata/sections-and-layout.md#页面搭建中的移动与删除)，验收页面为 `pages/platform/platform-canvas-experience.json`。
 
 表格 select 列筛选统一从本表完整匹配结果取候选，保留其他条件并排除自身表头条件，不新增 scope 配置。候选分页和搜索独立于表格；已选值失配时保留。弹层按内容自适应宽度。语义及远程能力边界见[明细表候选值](docs/page-metadata/components/table.md#列筛选候选值)。
 
@@ -124,6 +124,8 @@ Report 顶层页头可用 `reportHeader.props.pdfExport`（6.28）启用引擎�
 Report顶层页头统一声明`exportButtons`（6.31），每项配置`format`、`label?`、`filename?`、`scale?`；一项一个按钮，点击直接下载。PDF默认2倍、支持2/3/4倍；PNG默认3倍、支持3/4倍，始终只输出一张完整PNG。不支持的scale值按未配置处理，回退对应默认倍率，不阻止打开或下载。旧`pdfExport`/`pngExport`保留读取兼容；声明与限制见[报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631)。
 
 ## 版本、初始化与持久化
+
+平台云宝创作入口的页面 ID 与会话 ID 分别定位页面资产与对话。每轮自然语言操作使用前端当前完整工作副本，包括未保存修改；会话、锁和可访问路径不写入页面协议，也不增加 Schema 版本。左上角标题直接更新 `meta.title` 并保留其他本地修改。详见[页面与创作身份边界](docs/page-metadata/page.md)、[接入说明](docs/pangu-agent-authoring.md)与[可观察场景](pages/platform/README.md#云宝创作与最新工作副本)。
 
 新文档写当前作者版本和 `layout`。已支持版本的 `layoutForm` 在输入边界兼容读取，双字段同时出现拒绝；布局兼容规范化不自动升级其他能力。历史修订先核验原文hash，迁移结果另存新修订。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 

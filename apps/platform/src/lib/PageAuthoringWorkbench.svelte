@@ -1,6 +1,8 @@
 <script lang="ts">
   import { aiSummary } from '@metriccanvas/engine/ui/ai-summary/yunbao-assistant';
-  import {createHref} from './integration/routes';
+  import {createHref,resolvePlatformRoute} from './integration/routes';
+  import {createWorkingCopyAgent} from './workbench/working-copy-agent';
+  import type {DialogueMountContext} from './dialogue/port';
   import PrimaryAction from './PrimaryAction.svelte';
 
   import {Input,Select} from '@metriccanvas/ui';
@@ -59,7 +61,7 @@
   } = $props();
   const coordinator = untrack(() => createAuthoringCoordinator({
     manualSave:true,
-    localTaskId: taskUrl?.searchParams.get('task')??undefined,
+    localTaskId: taskUrl?.searchParams.get('sessionId')??taskUrl?.searchParams.get('task')??undefined,
     storageTarget: () => { const config=readRuntimeConfig(); return JSON.stringify([config?.pageMetadataBaseUrl,config?.dqeEndpoint]); },
     port: {
       ...authoringPort,
@@ -71,6 +73,13 @@
       return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' };
     }
   }));
+  const cloudNavigationNotice='云宝正在处理当前页面，暂不能切换页面或会话。';
+  let cloudAgent=$state<ReturnType<typeof createWorkingCopyAgent>|null>(null);
+  let cloudState=$state<ReturnType<ReturnType<typeof createWorkingCopyAgent>['snapshot']>|null>(null);
+  let dialogueContext=$state.raw<DialogueMountContext|undefined>();
+  let titlePending:Promise<boolean>=Promise.resolve(true);
+  let confirmedTitle:string|undefined;
+  let titleRef:string|undefined;
   let activateTask=$state<(()=>void)|null>(null);
   let activated=false;
   let publication = $state<ReturnType<typeof createAuthoringPublication> | null>(null);
@@ -87,7 +96,7 @@
   let authoring = $state(coordinator.snapshot());
   const currentDraft = $derived(authoring.draft);
   const baseRevisionId = $derived(authoring.ref?.revisionId ?? null);
-  const savePending = $derived(authoring.save?.status === 'pending' || authoring.languageLocked || publicationBusy);
+  const savePending = $derived(cloudState?.phase==='preparing' || authoring.save?.status === 'pending' || authoring.languageLocked || publicationBusy);
   const saveBlocked = $derived(authoring.sync?.phase==='unknown' || authoring.sync?.phase==='identity-changed' || savePending || authoring.save?.status === 'unknown' ||
     (authoring.save?.status === 'rejected' && authoring.save.code === 'REVISION_CONFLICT'));
   const loading = $derived(authoring.loading);
@@ -131,6 +140,7 @@
     };
     const stopGuard = services.navigation.registerGuard(destination => {
       if(!destination)return !hasUnsavedWork()||window.confirm('当前工作尚未确认保存，仍要离开？原恢复记录将保留。');
+      if(!canNavigateDuringCloud(destination)){editError=cloudNavigationNotice;return false;}
       return (async()=>{
         const input=document.activeElement;
         if(input instanceof HTMLInputElement||input instanceof HTMLTextAreaElement){if(workbenchElement?.contains(input)){input.dispatchEvent(new Event('change',{bubbles:true}));input.blur();}}
@@ -154,7 +164,7 @@
       languageRecovery.subscribe(value => { recoveryState = value; });
       void languageRecovery.check(pageId);
       onLanguageRecoveryReady?.(languageRecovery);
-    } else {const resumed=resume(pageId);activated=active;activateTask=()=>{if(activated)return;activated=true;void resumed.then(()=>{const snapshot=coordinator.snapshot();const currentPageId=snapshot.ref?.pageId??String(snapshot.draft?.pageDocument.id??taskUrl?.searchParams.get('page')??'');if(currentPageId&&!snapshot.dirty&&!snapshot.languageLocked&&!snapshot.sync?.pending)void coordinator.load(currentPageId,{refreshCurrent:!!snapshot.draft,resourceId:snapshot.ref?.resourceId??taskUrl?.searchParams.get('resource')??undefined});});};}
+    } else {const resumed=resume(pageId);activated=active;activateTask=()=>{if(activated)return;activated=true;void resumed.then(()=>{const snapshot=coordinator.snapshot();const currentPageId=snapshot.ref?.pageId??String(snapshot.draft?.pageDocument.id??taskUrl?.searchParams.get('page')??'');if(currentPageId&&!snapshot.loading&&!snapshot.dirty&&!snapshot.languageLocked&&!snapshot.sync?.pending)void coordinator.load(currentPageId,{refreshCurrent:!!snapshot.draft,resourceId:snapshot.ref?.resourceId??taskUrl?.searchParams.get('resource')??undefined});});};}
     coordinator.setOnline(navigator.onLine);
     if (parameterInstancePort && parameterContextRef) {
       parameterInstance = createParameterInstanceSession({port: parameterInstancePort, scope: () => {
@@ -179,7 +189,16 @@
     publication?.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); parameterReview?.invalidate(); parameterInstance?.invalidate(); });
 
-    if (languagePort) {
+    const cloudPort=dialogueAdapter.agent;
+    const cloudSessionId=taskUrl?.searchParams.get('sessionId');
+    if(cloudPort&&cloudSessionId){
+      cloudAgent=createWorkingCopyAgent({coordinator,port:cloudPort,sessionId:cloudSessionId,flushInput:flushWorkingInput,
+        beforeStart:async()=>{flushWorkingInput();if(!await titlePending)throw Error('页面标题尚未确认保存。');},
+        readPage:(pageId,signal)=>authoringPort.getLatest(pageId,signal)});
+      cloudAgent.subscribe(value=>{cloudState=value;if((value.phase==='completed'||value.phase==='failed')&&editError===cloudNavigationNotice)editError='';});
+      dialogueContext={sessionId:cloudSessionId,submit:question=>cloudAgent!.start(question,coordinator.snapshot().draft?'adjust':'create')};
+    }
+    if (languagePort && !cloudPort) {
       language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
         selection: () => currentDocument && selectedComponent ? { pageId: String(currentDocument.id), componentId: selectedComponent.componentId } : null,
         flushPendingInput: () => {
@@ -193,7 +212,7 @@
       onLanguageReady?.(language);
       // The active view connects below; background leases remain owned by this task.
     }
-    const stop = languagePort ? () => {} : listenForSavedDrafts({
+    const stop = languagePort || cloudPort ? () => {} : listenForSavedDrafts({
       target: window, read: coordinator.readSavedDraft,
       captureIdentity: () => {
         const identity = readRuntimeConfig();
@@ -215,6 +234,7 @@
       },
       onpreview: (previewJson) => {
         if(!active)return;
+        if(cloudAgent)return cloudAgent.applyPreview(previewJson);
         if (languagePort || publicationBusy || languageRecoveryPort) {
           saveError = '当前受控操作尚未完成，暂不能应用页面通知。'; return;
         }
@@ -224,6 +244,7 @@
       },
       onapply: async (pageId) => {
         if(!active)return;
+        if(cloudAgent){await cloudAgent.applyPage(pageId);return;}
         if (languagePort || publicationBusy || languageRecoveryPort) {
           saveError = '当前受控操作尚未完成，暂不能应用页面通知。'; return;
         }
@@ -233,14 +254,15 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { stopWork();stopGuard(); stopInvalidation(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); parameterReview?.dispose(); parameterInstance?.dispose(); unsubscribe(); coordinator.dispose(); };
+    return () => { stopWork();stopGuard(); stopInvalidation(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); cloudAgent?.dispose(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); parameterReview?.dispose(); parameterInstance?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   $effect(()=>{if(!active)activated=false;else if(activateTask)activateTask();});
   $effect(()=>{if(active&&showPageInfo)settingsOpen=true;});
   $effect(()=>{if(active&&language)return services.authoring?.connect?.(language);});
   const displayTitle=$derived.by(()=>{const meta=authoring.draft?.pageDocument.meta;return meta&&typeof meta==='object'&&'title' in meta&&typeof meta.title==='string'?meta.title:String(authoring.draft?.pageDocument.id??'新建页面');});
-  $effect(()=>{if(taskUrl&&authoring.draft)void services.workSession.bind(taskUrl,String(authoring.draft.pageDocument.id),authoring.ref?.resourceId).catch(error=>{editError=String(error);});});
+  $effect(()=>{if(taskUrl&&authoring.draft)void services.workSession.bind(taskUrl,String(authoring.draft.pageDocument.id),authoring.ref?.resourceId).then(address=>{if(active&&address&&new URL(address,taskUrl).href!==services.navigation.current().href)void services.navigation.navigate(address,{replaceState:true});}).catch(error=>{editError=String(error);});});
+  $effect(()=>{if(authoring.ref?.revisionId!==titleRef){titleRef=authoring.ref?.revisionId;const meta=authoring.draft?.pageDocument.meta;confirmedTitle=typeof meta==='object'&&meta&&'title' in meta&&typeof meta.title==='string'?meta.title:undefined;}});
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
   const canvasDocument = $derived(currentDraft?.canvasDocument ?? null);
   const pageModel = $derived(
@@ -305,7 +327,38 @@
     );
   });
 
+  function canNavigateDuringCloud(destination:URL){
+    const state=coordinator.snapshot();
+    if(!cloudAgent||!state.languageLocked)return true;
+    const route=resolvePlatformRoute(destination,services.navigation.base).route;
+    return route.kind==='create'&&route.sessionId===taskUrl?.searchParams.get('sessionId')&&route.pageId===String(state.draft?.pageDocument.id??'');
+  }
+  function flushWorkingInput(){
+    const input=document.activeElement;
+    if(input instanceof HTMLInputElement||input instanceof HTMLTextAreaElement){
+      if(workbenchElement?.contains(input))input.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+  }
+  function savePageTitle(value:string){
+    if(value===confirmedTitle||!currentDraft||savePending)return;
+    const result=editPageTitle(currentDraft,value);if(!result.ok){editError=result.message;return;}
+    applyDocumentEdit(result);titlePending=commitPageTitle(value);
+  }
+  async function commitPageTitle(value:string):Promise<boolean>{
+    const preparing=coordinator.beginPreparation();
+    try{
+      await preparing.protectWorkingCopy();
+      const pageId=String(coordinator.snapshot().draft!.pageDocument.id);
+      const target=coordinator.snapshot().ref??await services.pageAssets.resolve(pageId);
+      const info=await services.pageInfo.read(target);
+      const updated=await services.pageInfo.update(info,{title:value,replaceBoundTitle});
+      const revision=await authoringPort.getLatest(pageId,undefined,updated.resourceId);
+      if(revision.revisionId!==updated.revisionId)throw Error('标题保存回执尚未能核对，当前工作已保留。');
+      await preparing.rebaseTitle(revision,value);confirmedTitle=value;saveError='';return true;
+    }catch(error){saveError=String(error);return false;}finally{preparing.release();}
+  }
   async function saveRevision() {
+    if(cloudAgent){await cloudAgent.start('确认保存当前页面元数据。','confirm-save');return;}
     if (!currentDocument || !pageModel || saveBlocked) return;
     const input=document.activeElement;if(input instanceof HTMLInputElement||input instanceof HTMLTextAreaElement){if(workbenchElement?.contains(input))input.dispatchEvent(new Event('change',{bubbles:true}));}
     saveError = '';
@@ -361,6 +414,11 @@
     selectedComponent = locatorOfComponent(canvasDocument, componentId);
   }
 
+  function moveComponentFromList(intent: Extract<AuthoringIntent, {type: 'move_component'}>) {
+    if (savePending || previewOpen || loading || !currentDraft) return;
+    applyDocumentEdit(moveComponent(currentDraft, intent.locator, intent.destination));
+  }
+
   async function managePageRecord(action:'remove'|'restore',version?:number){
     const ref=coordinator.requireSynchronizedRef();
     const result=action==='remove'?recordManager.remove(ref):recordManager.restore(ref,version!);
@@ -394,7 +452,7 @@
   <div class="docbar" data-testid="workbench-contextbar" data-contract-critical>
     <div class="l">
       <ToolAction icon="back" iconOnly ariaLabel="返回页面管理" onclick={()=>services.navigation.navigate(services.workSession.snapshot().directory)}/>
-      {#if currentDraft&&!previewOpen}<div class="page-title-editor"><Input label="页面标题" value={typeof currentDraft.pageDocument.meta==='object'&&currentDraft.pageDocument.meta&&'title' in currentDraft.pageDocument.meta&&typeof currentDraft.pageDocument.meta.title==='string'?currentDraft.pageDocument.meta.title:''} placeholder={displayTitle} disabled={savePending||loading||(titleIsBound&&!replaceBoundTitle)} oncommit={value=>{if(currentDraft)applyDocumentEdit(editPageTitle(currentDraft,value));}}/>{#if titleIsBound&&!replaceBoundTitle}<ToolAction onclick={()=>replaceBoundTitle=true}>改为固定标题</ToolAction>{/if}</div>{:else}<strong class="canvas-title">{displayTitle}</strong>{/if}
+      {#if currentDraft&&!previewOpen}<div class="page-title-editor"><Input label="页面标题" value={typeof currentDraft.pageDocument.meta==='object'&&currentDraft.pageDocument.meta&&'title' in currentDraft.pageDocument.meta&&typeof currentDraft.pageDocument.meta.title==='string'?currentDraft.pageDocument.meta.title:''} placeholder={displayTitle} disabled={savePending||loading||(titleIsBound&&!replaceBoundTitle)} oncommit={savePageTitle}/>{#if titleIsBound&&!replaceBoundTitle}<ToolAction onclick={()=>replaceBoundTitle=true}>改为固定标题</ToolAction>{/if}</div>{:else}<strong class="canvas-title">{displayTitle}</strong>{/if}
       {#if pageModel&&!previewOpen}
         <span class="badge" class:transient={pageModel.transient}>
           {pageModel.transient ? '临时页面态' : authoring.dirty ? '未保存工作副本' : '已保存页面修订'}
@@ -424,7 +482,7 @@
   {/if}
 
   <aside class="chat" aria-label="分析会话" data-testid="workbench-track">
-    {#if active}<PanguDialogue adapter={dialogueAdapter} />{/if}
+    {#if active}<PanguDialogue adapter={dialogueAdapter} context={dialogueContext}/>{/if}
 
   </aside>
 
@@ -435,13 +493,14 @@
         <div class="settings-actions">
           <ToolAction onclick={()=>services.navigation.navigate(createHref(services.navigation.base,{newTask:true}))}>新建页面</ToolAction>
           {#if parameterReview}<ToolAction disabled={saveBlocked||authoring.dirty} onclick={()=>parameterReviewOpen=!parameterReviewOpen}>参数模板评审</ToolAction>{/if}
-          {#if publicationPort.available}<ToolAction disabled={!authoring.ref||authoring.languageLocked} onclick={()=>publicationOpen=!publicationOpen}>发布评审</ToolAction>
+          {#if cloudAgent}<ToolAction disabled={saveBlocked} onclick={()=>cloudAgent?.start('请发布当前页面元数据。','publish')}>发布页面</ToolAction>
+          {:else if publicationPort.available}<ToolAction disabled={!authoring.ref||authoring.languageLocked} onclick={()=>publicationOpen=!publicationOpen}>发布评审</ToolAction>
           {:else}<ToolAction disabled={!authoring.ref||authoring.dirty||saveBlocked||authoring.sync?.phase==='saving'} onclick={async()=>{if(!window.confirm('发布当前页面？后续保存编辑会将当前记录改为草稿。'))return;try{await coordinator.publish();}catch(error){saveError=String(error);}}}>发布当前记录</ToolAction>{/if}
-          {#if !authoringPort.assets}<ToolAction disabled={!authoring.ref} onclick={()=>historyOpen=!historyOpen}>页面历史</ToolAction>{/if}
+          {#if !cloudAgent&&!authoringPort.assets}<ToolAction disabled={!authoring.ref} onclick={()=>historyOpen=!historyOpen}>页面历史</ToolAction>{/if}
         </div>
         {#if pageModel}<p class="document-summary">{pageModel.components.length} 个组件 · {pageModel.dataSourceCount} 个页面数据源</p>{/if}
         {#if authoring.sync&&stableSavePort.delivery!=='single'}<label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} disabled={savePending} onchange={event=>coordinator.setRetainDimensionValues(event.currentTarget.checked)}/>保存时保留维度取值</label>{#if authoring.sync.pending>0}<ToolAction disabled={authoring.sync.phase==='saving'} onclick={()=>coordinator.retrySync()}>核实并重试同步</ToolAction>{/if}{/if}
-        {#if authoringPort.assets&&authoring.ref}{#key authoring.ref.revisionId}<PageAssetInfo asset={authoring.ref} disabled={authoring.dirty||saveBlocked||loading} onaction={managePageRecord}/>{/key}{/if}
+        {#if authoringPort.assets&&authoring.ref}{#key authoring.ref.revisionId}<PageAssetInfo asset={authoring.ref} allowMutation={!cloudAgent} disabled={authoring.dirty||saveBlocked||loading} onaction={managePageRecord}/>{/key}{/if}
       </section>
     {/if}
     {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
@@ -463,6 +522,7 @@
       {#if ['unknown', 'cancelled', 'recovered'].includes(languageState.phase) && authoring.languageLocked}<button class="btn" onclick={() => language?.lookup()}>查询本轮保存结果</button>{/if}
       {#if languageState.recovery}<button class="btn" onclick={() => { previewRef = languageState!.recovery; previewOpen = true; }}>查看取消后已保存修订</button><a class="linkish" href={resolve('/manage')}>返回页面目录重新打开</a>{/if}
     {/if}
+    {#if cloudState?.message}<p role="status" class="notice">{cloudState.message}</p>{/if}
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
     {#if authoring.sync?.lastSaved?.revision?.isDraft === false}<p role="status">当前页面已发布。</p>{/if}
     {#if authoring.sync}
@@ -512,9 +572,9 @@
         />
       {:else}
         <div class="empty">
-          <h2>{loading ? '正在加载页面文档…' : '从页面目录打开页面'}</h2>
+          <h2>{loading ? '正在加载页面文档…' : cloudAgent ? '描述需求，开始创建页面' : '从页面目录打开页面'}</h2>
           <p>
-            已保存页面可在这里调整组件与布局，并显式保存为新修订。
+            {cloudAgent?'在左侧对话中描述需求，生成后可在画布继续调整。':'已保存页面可在这里调整组件与布局，并显式保存为新修订。'}
           </p>
         </div>
       {/if}
@@ -543,6 +603,7 @@
       busy={savePending || previewOpen || loading}
       onSelectType={selectComponentType}
       onSelectComponent={selectComponentFromList}
+      onMoveComponent={moveComponentFromList}
       onEdit={(edit) => {
         if ((!savePending || flushingInput) && currentDraft && selectedComponent) {
           applyDocumentEdit(editComponent(currentDraft, selectedComponent, edit));

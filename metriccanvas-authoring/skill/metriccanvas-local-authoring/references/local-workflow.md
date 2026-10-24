@@ -6,6 +6,8 @@
 
 输出文件用页面 id 命名，例如 id 为 operations-dashboard 时保存为 operations-dashboard.json。新增文件的身份由用户项目约定确定，不把本地 id 冒充已分配的线上资产身份。
 
+平台的云宝创作接入使用前端当前完整工作副本作为每轮输入，包括未保存修改。本地 Skill 继续输出页面文件，不新建线上会话或访问链接；sessionId、编辑锁与管理路径属于平台/部署接口，不写入页面 params 或 meta。线上页面身份以实际服务回执为准。
+
 ## 自然语言与设计源
 
 新建、整页重组或切换形态时，先完成入口的[形态识别与确认](page-form.md)，再按已确认形态读取[Dashboard 范式](dashboard-patterns.md)或[Report 范式](report-patterns.md)。未确认时本轮停在识别摘要；章节与组件映射在确认后进行。范式摘要只提供结构，不能作为完整页面或业务数据输入。

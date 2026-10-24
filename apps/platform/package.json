@@ -14,7 +14,9 @@
     "pack:microfrontend:all": "pnpm pack:microfrontend && pnpm pack:microfrontend:debug",
     "pack:deployment": "node scripts/pack-deployment.mjs",
     "test:microfrontend": "cd ../.. && node apps/platform/tests/microfrontend/production-browser.mjs",
-    "test:microfrontend:debug": "cd ../.. && MICROFRONTEND_PROFILE=debug DEPLOYMENT_ADAPTER_TEST=1 node apps/platform/tests/microfrontend/production-browser.mjs && node apps/platform/tests/microfrontend/debug-browser.mjs"
+    "test:microfrontend:debug": "cd ../.. && MICROFRONTEND_PROFILE=debug DEPLOYMENT_ADAPTER_TEST=1 node apps/platform/tests/microfrontend/production-browser.mjs && node apps/platform/tests/microfrontend/debug-browser.mjs",
+    "dev:agent-flow": "vite --config tests/agent-flow/vite.config.ts",
+    "dev:local": "vite --mode local-preview"
   },
   "dependencies": {
     "@metriccanvas/application-runtime": "workspace:*",

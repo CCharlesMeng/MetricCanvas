@@ -16,9 +16,7 @@ export type ReadSavedDraft = (draftId: string, signal: AbortSignal) => Promise<S
 export const unavailableDraftReader: ReadSavedDraft = async () => {
   throw new Error('CAPABILITY_UNAVAILABLE：当前页面资产接口尚未确认按精确草稿 ID 读取，保留当前页面。');
 };
-export interface DialogueAdapter {
-  mount(element: HTMLElement): Promise<() => void>;
-}
+export type {PlatformDialogueAdapter as DialogueAdapter,DialogueAgentPort,DialogueMountContext} from '../integration/contract';
 
 export function draftIdOf(detail: unknown): string | null {
   if (!detail || typeof detail !== 'object' || Array.isArray(detail)) return null;
