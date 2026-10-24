@@ -1,7 +1,0 @@
-Layers: rules, adapters, delivery, evaluation; 60 files; 541 tests
-Ran 541 tests in 128.533s
-OK (skipped=1)
-{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-complex-report": "pass"}}
-{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-complex-report": "pass"}}
-{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-complex-report": "pass"}}
-{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-report": "pass", "create-dashboard": "pass", "create-complex-report": "pass", "edit-report": "pass", "edit-dashboard": "pass", "edit-add-data": "pass"}}

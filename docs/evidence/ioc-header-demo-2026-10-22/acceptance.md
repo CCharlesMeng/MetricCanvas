@@ -22,14 +22,14 @@
 ## 视口与最终复核
 
 - 390×844：页头自然换行，指标卡单列、图表左右控件换行；布局稳定后 `innerWidth=390`、文档 `scrollWidth=390`，没有全页横向溢出，表格沿既有内部滚动呈现。
-- 已保存 [默认宽屏全页](overview.jpg)、[390px全页](narrow.jpg)。最终保留默认宽屏 `?back=1` 供用户打开。
+- 已保存 [默认宽屏全页](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-demo-2026-10-22/overview.jpg)、[390px全页](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-demo-2026-10-22/narrow.jpg)。最终保留默认宽屏 `?back=1` 供用户打开。
 - 最终 `git diff --check`、独立页面校验及第3次尝试快照哈希检查通过；Playground检查再次0错误0警告。当前改动仅为新示例及其宿主、合成网关、目录和说明，无既有产品协议或控件改动。
 
 ## 2026-10-22 区域选择修正（现行）
 
 按用户反馈，移除Region前置“全球／地区部／代表处”层级按钮，保留一个树形单选下拉。复用既有普通树 `treeSelection:independent` + `selection.mode:single`，显式parentValue建树，全球／地区部／代表处均可直接选择，展开不提交。单一稳定区域码由演示网关映射到样例行域；不改变生产IOC区域谓词契约。
 
-浏览器确认：选择中国地区部后年度签约额92,880；直接改选北京代表处后41,640，明细仅北京；选全球后恢复全量。已保存 [单下拉树形单选](region-tree-single.jpg)。独立校验第4次快照通过，Playground检查0错误0警告，目录9项测试通过，git diff --check通过。此前记录中的“切层级再选值”步骤为历史，当前直接在同一树内选节点。
+浏览器确认：选择中国地区部后年度签约额92,880；直接改选北京代表处后41,640，明细仅北京；选全球后恢复全量。已保存 [单下拉树形单选](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-demo-2026-10-22/region-tree-single.jpg)。独立校验第4次快照通过，Playground检查0错误0警告，目录9项测试通过，git diff --check通过。此前记录中的“切层级再选值”步骤为历史，当前直接在同一树内选节点。
 
 ## main交付复核
 

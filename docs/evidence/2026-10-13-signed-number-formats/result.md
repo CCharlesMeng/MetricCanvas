@@ -8,14 +8,14 @@
 
 | 验证层 | 结论 |
 |---|---|
-| TypeScript回归 | `pnpm test`：202文件、1800测试通过，见[日志](vitest.txt) |
+| TypeScript回归 | `pnpm test`：202文件、1800测试通过，见[日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-formats/vitest.txt) |
 | 创作侧Python回归 | `metriccanvas-authoring/tool/.venv/bin/python metriccanvas-authoring/test-harness/run_tests.py`：59文件、527测试通过；包含共享正反例校验，不调用真实模型 |
 | 创作公共模块复杂度 | `check-authoring-complexity.py`通过：radon 6.0.1，上限15、最大15、零违规 |
-| 全仓类型/Svelte检查 | `pnpm check`通过，见[日志](typecheck.txt) |
+| 全仓类型/Svelte检查 | `pnpm check`通过，见[日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-formats/typecheck.txt) |
 | 页面产物 | `pnpm validate`：16个页面文档全部通过；6.17新格式门禁、6.16旧文档读取、字段绑定/默认格式/参数与筛选文本/详情视图覆盖通过 |
 | 分发 | `pnpm authoring:contracts`生成；contracts检查与Bundle摘要校验通过；没有手改锁或副本 |
-| 浏览器 | 本地页面试验场及DQE仿真通过；实际6项卡片变化和2张表展示见[结构记录](browser-actual.json)与[截图](business-sdt.jpg)；浏览器error日志为空 |
-| 边界夹具 | 表格和指标卡实际渲染8组正负/零/舍入/缺失值，`±0.04 → 0.0`无符号无色无箭头，`±0.05 → ±0.1`保留方向；见[记录](browser-boundaries.json)与[截图](boundaries.jpg) |
+| 浏览器 | 本地页面试验场及DQE仿真通过；实际6项卡片变化和2张表展示见[结构记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-formats/browser-actual.json)与[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-formats/business-sdt.jpg)；浏览器error日志为空 |
+| 边界夹具 | 表格和指标卡实际渲染8组正负/零/舍入/缺失值，`±0.04 → 0.0`无符号无色无箭头，`±0.05 → ±0.1`保留方向；见[记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-formats/browser-boundaries.json)与[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-formats/boundaries.jpg) |
 | 真实模型及生产集成 | 未运行真实DS模型、真实DQE、Relay/Java或生产部署 |
 
 边界页面取自[正式合法夹具](../../../packages/page/fixtures/contract-valid/signed-number-page.json)，验收时临时复制至页面目录，验收后删除临时副本。夹具的主值保留普通 `number-1`，可出现负零，用来对照旧格式兼容性；变化项始终按新格式展示。浏览器还发现报告摘要有3处手写 `+0.0天`，已改成 `0.0天`，与变化项的零值规则一致。

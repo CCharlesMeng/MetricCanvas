@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run tests/authoring-export-isolation.test.ts -t '本地模型评估产物不影响交付锁'
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/chart-filter-delivery/DataDashboard
-
-
- Test Files  1 passed (1)
-      Tests  1 passed | 18 skipped (19)
-   Start at  22:24:26
-   Duration  10.89s (transform 13ms, setup 0ms, import 19ms, tests 10.81s, environment 0ms)

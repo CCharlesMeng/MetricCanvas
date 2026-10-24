@@ -54,11 +54,11 @@ DQE_SIM_HOST=127.0.0.1 pnpm sim:dqe
 node docs/evidence/unified-page-header/reproduction-sim.mjs
 ```
 
-前者使用真实页面并注入合成 DQE 响应，固定时钟为 2026-10-20；输出 [results.json](results.json) 与截图。后者重新构建六个包，打包安装到仓库外，检查无工作区链接并执行浏览器测试；输出 [installed-result.json](installed-result.json)，安装目录在该结果中记录。
+前者使用真实页面并注入合成 DQE 响应，固定时钟为 2026-10-20；输出 [results.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/unified-page-header/results.json) 与截图。后者重新构建六个包，打包安装到仓库外，检查无工作区链接并执行浏览器测试；输出 [installed-result.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/unified-page-header/installed-result.json)，安装目录在该结果中记录。
 
-日常访问期间页原先触发 DQE_SIM_UNSUPPORTED_QUERY；补齐严格按 entry + amount/unbound_amount 识别的合成期间夹具，两种测试宿主共用该响应。Sim 浏览器验证输出 [sim-result.json](sim-result.json)。它证明本地代理/Sim 往返，不代表真实 DQE 验收。
+日常访问期间页原先触发 DQE_SIM_UNSUPPORTED_QUERY；补齐严格按 entry + amount/unbound_amount 识别的合成期间夹具，两种测试宿主共用该响应。Sim 浏览器验证输出 [sim-result.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/unified-page-header/sim-result.json)。它证明本地代理/Sim 往返，不代表真实 DQE 验收。
 
-截图：[普通页头窄屏](list-390.png)、[紧凑页头窄屏](compact-390.png)、[年份选择窄屏](year-390.png)。静态导出沿用同一页头并展开全部条件，紧凑模式不裁切静态条件和说明。
+截图：[普通页头窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/unified-page-header/list-390.png)、[紧凑页头窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/unified-page-header/compact-390.png)、[年份选择窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/unified-page-header/year-390.png)。静态导出沿用同一页头并展开全部条件，紧凑模式不裁切静态条件和说明。
 
 本批只验收本地源码、Chrome、合成数据、仓外安装及 local-authoring。真实 DQE、Relay、CloudIOC、门户、DS 模型、Edge、CI 和部署未运行；本地通过不替代这些集成验收。未提交或推送。
 

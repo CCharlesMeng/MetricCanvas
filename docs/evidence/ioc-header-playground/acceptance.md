@@ -30,9 +30,9 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:4220 node apps/playground/tests/ioc-header-
 PLAYGROUND_BASE_URL=http://127.0.0.1:4220 node apps/playground/tests/page-catalog-browser.mjs /tmp/ioc-header-hub-main-catalog
 ```
 
-[页头结果](browser-result.json)：15 个实际场景通过；能力筛选及 ISO 周关键词能进入对应场景；能力索引能按 T08 搜索并链接演示；日/月/ISO 周真实控件与合成回显同步；人民币/美元静态字段和金额范围确认后过滤正确；地区部切换代表处后查询字段正确变为 office_code；概览→清单→详情实际跳转及详情单月修改正常；刷新/后退保持专题选择；390px 外框与演示窗口无横向溢出。浏览器错误为 0，外部 POST 查询为 0。
+[页头结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-playground/browser-result.json)：15 个实际场景通过；能力筛选及 ISO 周关键词能进入对应场景；能力索引能按 T08 搜索并链接演示；日/月/ISO 周真实控件与合成回显同步；人民币/美元静态字段和金额范围确认后过滤正确；地区部切换代表处后查询字段正确变为 office_code；概览→清单→详情实际跳转及详情单月修改正常；刷新/后退保持专题选择；390px 外框与演示窗口无横向溢出。浏览器错误为 0，外部 POST 查询为 0。
 
-[目录回归](catalog-browser-result.json)：54 个页面、116 处配置片段、下载 JSON 和相关页面链接通过，桌面与 390px 布局通过，浏览器错误为 0。浏览器结果从同一源文件读取页面，不替换页面声明；只注入明确标注的试验场合成输入。
+[目录回归](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-playground/catalog-browser-result.json)：54 个页面、116 处配置片段、下载 JSON 和相关页面链接通过，桌面与 390px 布局通过，浏览器错误为 0。浏览器结果从同一源文件读取页面，不替换页面声明；只注入明确标注的试验场合成输入。
 
 截图位于命令输出目录：`time-desktop.png`、`capabilities-desktop.png`、`capabilities-mobile.png`、`interactive-mobile.png`，已检查桌面与移动布局。临时目录截图不作为持久产品资产，命令可重新生成。
 
@@ -51,7 +51,7 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:4220 node apps/playground/tests/page-catalo
 - `pnpm authoring:contracts:check`：943 product、4 authoring、1 interface 文件 current。
 - 页头浏览器：15 个场景、32 项索引、筛选后进入专题及返回目录保留关键词/能力选择、刷新/后退、区域层级切换、币种金额、跨页流程及 390px 布局通过。
 - 全目录浏览器：54 个页面、116 处配置片段、下载和相关导航通过。按上游示例最新文案调整“只刷新”检索预期；移动端检查前显式重置恢复的目录条件，避免错误假定每次返回都是无筛选目录。
-- [上游目录导航回归](catalog-navigation-result.json)：详情重载返回、滚动、独立历史条目、空结果/重置/相关导航、锚点、新标签及禁用存储场景均通过。命令为 `PLAYGROUND_BASE_URL=http://127.0.0.1:4220 node apps/playground/tests/catalog-navigation-browser.mjs /tmp/ioc-header-hub-main-navigation`。
+- [上游目录导航回归](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-playground/catalog-navigation-result.json)：详情重载返回、滚动、独立历史条目、空结果/重置/相关导航、锚点、新标签及禁用存储场景均通过。命令为 `PLAYGROUND_BASE_URL=http://127.0.0.1:4220 node apps/playground/tests/catalog-navigation-browser.mjs /tmp/ioc-header-hub-main-navigation`。
 
 本轮页面协议及 local-authoring 产物相对最新 main 仍无改动；原工作区并行内容继续保留。CI 最终结论在交付报告中单独核对，不将上述本地结果计作 CI 或真实服务验收。
 

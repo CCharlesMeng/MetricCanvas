@@ -8,7 +8,7 @@ B3按主计划§17.5落地Schema6.34：金额范围草稿/预设/基本单位、
 
 [金额与币种验收页](http://127.0.0.1:4200/pages/ioc-header-currency-demo)使用本地合成HTTP，页面同时具有独立人民币/美元基本单位字段，不做汇率换算。切币后先清金额并等待显式确认；金额输入与预设按万元/万美元显示，URL/查询保留基本单位。
 
-![美元交互预览](evidence/preview-currency.png)
+[历史截图：美元交互预览](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b3/evidence/preview-currency.png)
 
 ## 验证状态
 
@@ -22,6 +22,6 @@ B3按主计划§17.5落地Schema6.34：金额范围草稿/预设/基本单位、
 | 独立Skill | 最终46项分发、知识/校验器与导出隔离检查通过 |
 | 真实服务 | DQE、CloudIOC、Relay、DS模型、门户、CI、部署及真实USD业务未运行；本地证据不替代业务验收 |
 
-[正式验收](acceptance.md)由SDD聚合器生成；[声明账本](alpha-tests.md)、[共享原始证据](evidence/review-evidence.json)、[B3净增量](evidence/b3.diff)、[代码清单](evidence/code-manifest.json)。B3起点基于未提交B2的文件备份；不能将HEAD累计差异当作B3净增量。
+[正式验收](acceptance.md)由SDD聚合器生成；[声明账本](alpha-tests.md)、[共享原始证据](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b3/evidence/review-evidence.json)、[B3净增量](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b3/evidence/b3.diff)、[代码清单](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b3/evidence/code-manifest.json)。B3起点基于未提交B2的文件备份；不能将HEAD累计差异当作B3净增量。
 
 非阻断建议：currency-selection.test.ts存在4组重复用例，后续可去重，保留单份断言以免维护分叉。按SDD建议级handoff处理，冻结版本不为此扩大重跑。

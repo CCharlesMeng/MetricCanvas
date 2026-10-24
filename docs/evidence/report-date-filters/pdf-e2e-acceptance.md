@@ -11,7 +11,7 @@
 - 方法结束后临时导出 DOM 为 0；编码临时目录清理；无同源标识的请求返回 403。
 - 页面试验场 Svelte 检查 0 错误、0 警告，TypeScript 检查通过；`git diff --check` 通过。
 
-证据：[文件校验](evidence/pdf-e2e/pdf-verification.json)、[八页渲染](evidence/pdf-e2e/pdf-all-pages.jpg)、[浏览器预览加载事实](evidence/pdf-e2e/browser-preview.json)、[检查日志](evidence/pdf-e2e/playground-check.txt)。本地文件：`output/pdf/report-date-example.pdf`。
+证据：[文件校验](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/pdf-e2e/pdf-verification.json)、[八页渲染](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/pdf-e2e/pdf-all-pages.jpg)、[浏览器预览加载事实](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/pdf-e2e/browser-preview.json)、[检查日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/pdf-e2e/playground-check.txt)。本地文件：`output/pdf/report-date-example.pdf`。
 
 ## 范围
 

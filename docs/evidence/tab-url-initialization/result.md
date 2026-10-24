@@ -24,7 +24,7 @@
 - 页面：`pnpm validate pages`，34/34 通过。
 - 定向单元：页面协议、版本、URL 解析与导航共 22 项通过。完整协议与分发回归共 689 项：首次 688 项成功，导出隔离的一项 30 秒边界超时；同一用例单独复验通过，未扩大超时或修改断言。最终协议、页面目录、参考手册及仓外 Skill 闭合另跑 6 个文件，49 项全部通过。
 - 类型：`pnpm --filter @metriccanvas/page check`、`pnpm --filter @metriccanvas/engine check`、`pnpm exec tsc --noEmit -p tests/tsconfig.json` 通过；引擎 Svelte 诊断 0 error / 0 warning。
-- 浏览器：独立页面试验场端口 5193，`node apps/playground/tests/tab-url-browser.mjs docs/evidence/tab-url-initialization/artifacts`，Chromium 151.0.7922.34 的 10 个场景通过，无 pageerror。直接消费两份完整页面，未在测试内重写交互配置；包括静态/页面参数/行字段跳转、多容器、默认及异常、手动切换不改 URL、刷新恢复和未声明参数。见[机器结果](artifacts/result.json)、[宽屏](artifacts/tabs-wide.png)、[窄屏](artifacts/tabs-narrow.png)。
+- 浏览器：独立页面试验场端口 5193，`node apps/playground/tests/tab-url-browser.mjs docs/evidence/tab-url-initialization/artifacts`，Chromium 151.0.7922.34 的 10 个场景通过，无 pageerror。直接消费两份完整页面，未在测试内重写交互配置；包括静态/页面参数/行字段跳转、多容器、默认及异常、手动切换不改 URL、刷新恢复和未声明参数。见[机器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-url-initialization/artifacts/result.json)、[宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-url-initialization/artifacts/tabs-wide.png)、[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-url-initialization/artifacts/tabs-narrow.png)。
 - 分发：`pnpm authoring:contracts:check`、Bundle 摘要检查通过；最终新增创作入口后再次生成并通过 `pnpm authoring:contracts:check`；Bundle 2818 项摘要检查通过。复制完整本地 Skill 至仓库外，独立校验来源页与目标页均通过；最终 49 项测试包含完整目录复制、知识/哈希/链接闭合。
 - 系统 Python 首轮缺少 jsonschema/httpx 等依赖，未作为产品失败；按 `metriccanvas-authoring/tool/requirements.lock` 使用 `uv pip sync --require-hashes` 安装临时独立环境，再运行完整创作回归。新增容器创建/修改、普通编辑保留与非法配置拒绝的 9 项定向回归通过。
 
@@ -40,7 +40,7 @@
 pnpm exec vitest run packages/page/tests/tab-url-initialization.test.ts packages/page/tests/version.test.ts packages/engine/runtime-ui/tests/initial-tabs.test.ts tests/page-reference.test.ts tests/local-authoring-skill.test.ts apps/playground/tests/page-catalog.test.ts
 ```
 
-6 个文件、49 项全部成功。对应[摘要](artifacts/unit-summary.txt)；Python [摘要](artifacts/python-summary.txt)。`pnpm validate pages` 再验 34/34，测试代码类型检查及 `git diff --check` 再验通过。10 个浏览器场景对应的功能源与双页配置在最终冻结过程中未再改变。
+6 个文件、49 项全部成功。对应[摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-url-initialization/artifacts/unit-summary.txt)；Python [摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-url-initialization/artifacts/python-summary.txt)。`pnpm validate pages` 再验 34/34，测试代码类型检查及 `git diff --check` 再验通过。10 个浏览器场景对应的功能源与双页配置在最终冻结过程中未再改变。
 
 本批次本地实现与验收完成；提交、推送、远端 CI 和真实集成验收未执行。
 

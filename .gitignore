@@ -38,3 +38,12 @@ viz/
 
 # 模型评测原始运行目录留在本地；精选页面与汇总说明放在 evidence 顶层交付。
 docs/plan/scenario-guided-authoring/refinement/evidence/*/
+
+# 验收原始产物留在本地；evidence 默认只提交简短结论与决策依据。
+# 新增机器输入应放在消费者旁的 fixtures；确需保留的原始来源单独放行。
+/docs/evidence/**/*
+!/docs/evidence/**/
+!/docs/evidence/**/*.md
+!/docs/evidence/platform-ui-os-theme-2026-10-12/**
+!/docs/evidence/qiankun-platform/portal-handoff/**
+!/docs/evidence/local-authoring-ioc-overview/retest/input/**

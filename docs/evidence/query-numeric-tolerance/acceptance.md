@@ -29,16 +29,16 @@
 
 ## 实际验证
 
-- 产品回归：95 个测试文件、874 项测试通过，含页面契约、数值容错、真实网关适配器、共享执行与全部 widgets。见 [vitest.txt](vitest.txt)。
-- Python 完整分类回归：543 项通过，使用 requirements.lock 的 Python 3.12 隔离环境。系统 Python 的首次缺依赖失败不算产品结果；补齐依赖后完整重跑。见 [python-full.txt](python-full.txt)。
-- 补充进度环场景后，Python 契约与创作回归 40 项通过，见 [python-targeted.txt](python-targeted.txt)。
+- 产品回归：95 个测试文件、874 项测试通过，含页面契约、数值容错、真实网关适配器、共享执行与全部 widgets。见 [vitest.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/vitest.txt)。
+- Python 完整分类回归：543 项通过，使用 requirements.lock 的 Python 3.12 隔离环境。系统 Python 的首次缺依赖失败不算产品结果；补齐依赖后完整重跑。见 [python-full.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/python-full.txt)。
+- 补充进度环场景后，Python 契约与创作回归 40 项通过，见 [python-targeted.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/python-targeted.txt)。
 - 类型：页面包、共享执行包、仓库 tests TypeScript 检查通过；engine svelte-check 为 0 errors / 0 warnings。
 - 页面：22 个页面文档校验通过。
-- 构建：五个发布包构建成功；补充组件改动后重新构建，见 [build.txt](build.txt)。
+- 构建：五个发布包构建成功；补充组件改动后重新构建，见 [build.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/build.txt)。
 
 浏览器初始行使用原有 5173 服务；动态取数使用本批隔离启动的 5183 / 18229 服务，预览编辑器仅省略同一页面的 initial，不改交互或组件配置。八行均渲染，数值为 10.0、—、—、12.5、0.0、-4.0、—、—，派生完成率一致。排序升序时有效值 -4、0、10、12.5 在前，缺失值在后，八行保留；图表 canvas 有非零尺寸。进度环明确显示“缺失值进度 —”与“真实零进度 0%”。
 
-证据：[首屏截图](browser-initial.png)、[首屏 DOM](browser-initial.json)、[排序截图](browser-sort.png)、[动态截图](browser-dynamic.png)、[动态 DOM](browser-dynamic.json)。动态截图采集早于追加进度环，动态数值、初始行/动态一致性及进度环分别由行为测试和最终首屏补证。
+证据：[首屏截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/browser-initial.png)、[首屏 DOM](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/browser-initial.json)、[排序截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/browser-sort.png)、[动态截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/browser-dynamic.png)、[动态 DOM](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/browser-dynamic.json)。动态截图采集早于追加进度环，动态数值、初始行/动态一致性及进度环分别由行为测试和最终首屏补证。
 
 ## 证据边界
 
@@ -51,6 +51,6 @@
 - `pnpm build:packages`：UI、page、data-execution、engine、metric-canvas 五个包通过。
 - `pnpm authoring:contracts:check`：651 product / 4 authoring / 1 interface files 一致。
 - `python3 metriccanvas-authoring/scripts/check_bundle.py`：2412 项摘要核验通过。
-- `tests/local-authoring-skill.test.ts`、`tests/page-reference.test.ts`、`tests/authoring-export-isolation.test.ts`：3 个测试文件、31 项通过，见 [distribution.txt](distribution.txt)。独立 CLI 的仓外复制、无仓库依赖、数值容错/严格边界及生成隔离均通过。
+- `tests/local-authoring-skill.test.ts`、`tests/page-reference.test.ts`、`tests/authoring-export-isolation.test.ts`：3 个测试文件、31 项通过，见 [distribution.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-numeric-tolerance/distribution.txt)。独立 CLI 的仓外复制、无仓库依赖、数值容错/严格边界及生成隔离均通过。
 - 本批临时 5183 / 18229 服务已停止；原有 5173 / 18228 服务保留。
 - 本批独立导出检出已清理；未执行 Git 提交、推送或部署。

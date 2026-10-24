@@ -18,13 +18,13 @@
 - Engine和Playground检查均0错误0警告；新增测试文件再次通过Engine测试类型检查。
 - authoring:contracts 导出1020 product/4 authoring/1 interface文件；authoring:contracts:check通过。
 - Playground生产构建通过；git diff --check通过。
-- 5173真实浏览器：7张图全部渲染，0浏览器错误；390px时7个canvas、页面scrollWidth=innerWidth=390。截图：[宽屏场景](bar-width-gallery.jpg)、[窄屏场景](bar-width-narrow.jpg)、[IOC页16px柱图](ioc-header-bar16.jpg)。浏览器临时视口已恢复。
+- 5173真实浏览器：7张图全部渲染，0浏览器错误；390px时7个canvas、页面scrollWidth=innerWidth=390。截图：[宽屏场景](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-default-bar-width-2026-10-22/bar-width-gallery.jpg)、[窄屏场景](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-default-bar-width-2026-10-22/bar-width-narrow.jpg)、[IOC页16px柱图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-default-bar-width-2026-10-22/ioc-header-bar16.jpg)。浏览器临时视口已恢复。
 
 ## 指标卡核对与审核
 
 当前页使用正式 `@metriccanvas/engine/widgets` 的MetricCard，页面类型为metricCard；没有替换为自写控件。默认variant配合RuntimeSection的metric-cell浅灰底，标题小、数值横排且重复“合计”，是本页使用方式不适合单指标概览。
 
-已用原组件构造对比预览：[原始JSON](metric-card-review.json)、[实际对比](metric-card-comparison.jpg)。下排复用compositeCard.metricGrid + metricCard.compactStack：白底、指标名在上、数值与单位在下，无新增CSS或数据语义。用户提供AGENTS.md要求样式冲突先审核，已先提供对比，随后用户明确确认“是的 修改一下 没问题”。已按确认替换ioc-header-demo的四张指标卡。
+已用原组件构造对比预览：[原始JSON](metric-card-review.json)、[实际对比](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-default-bar-width-2026-10-22/metric-card-comparison.jpg)。下排复用compositeCard.metricGrid + metricCard.compactStack：白底、指标名在上、数值与单位在下，无新增CSS或数据语义。用户提供AGENTS.md要求样式冲突先审核，已先提供对比，随后用户明确确认“是的 修改一下 没问题”。已按确认替换ioc-header-demo的四张指标卡。
 
 真实数据服务、生产部署及本轮Git提交/push均未执行。
 
@@ -37,7 +37,7 @@
 - 目录及页面id中立性2文件10项通过，git diff --check通过。
 - 实际浏览器：全球年度签约额393,840；勾重点后182,520，取消后恢复；四张卡均正确更新。
 - 1440px：四卡均位于top=118、宽336.25px；390px：四卡宽343px，单列自然排列，文档scrollWidth=innerWidth=390。临时视口已恢复。
-- 当前页面截图：[1440px](ioc-header-white-cards-1440.jpg)、[390px](ioc-header-white-cards-390.jpg)。仅页面配置调整，前批公共柱宽及其文档/Skill改动保留，当前批次尚未提交或push。
+- 当前页面截图：[1440px](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-default-bar-width-2026-10-22/ioc-header-white-cards-1440.jpg)、[390px](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-default-bar-width-2026-10-22/ioc-header-white-cards-390.jpg)。仅页面配置调整，前批公共柱宽及其文档/Skill改动保留，当前批次尚未提交或push。
 
 ## 交付前复杂度核对
 

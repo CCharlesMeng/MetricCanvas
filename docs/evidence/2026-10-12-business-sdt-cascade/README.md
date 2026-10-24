@@ -4,7 +4,7 @@
 
 ## 项目效率区域截图
 
-![项目决策效率当前页面](project-efficiency-current.jpg)
+[历史截图：项目决策效率当前页面](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/project-efficiency-current.jpg)
 
 上方为项目决策时长最快Top5，下方为最慢Top5。每表左侧为客户名称、项目名称、商务编号和商务决策时长；右侧为三个阶段的审批人次与决策时长。最快首行为Aaneti Consultoria / alfar 365，最慢首行为CPF_Mendix Landing Zone (Master Account)。
 

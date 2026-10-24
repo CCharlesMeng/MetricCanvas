@@ -28,12 +28,12 @@
 
 | 参考 | 证据 |
 | --- | --- |
-| 默认控件外观与实际样式 | [截图](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-default.png)、[样式及资源 URL](../../evidence/report-date-picker-tiny-os-2026-10-11/default-style-facts.json) |
-| 单日期展开 | [截图](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.json) |
-| 单月份展开 | [截图](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.json) |
-| 日期范围展开 | [截图](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.json) |
-| 月份范围展开 | [截图](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.json) |
-| 月份范围只选起点 / 完成 2026-01 至 2026-06 | [起点](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-start.png)、[完成后重新展开](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-selected.png)、[选中样式](../../evidence/report-date-picker-tiny-os-2026-10-11/selection-style-facts.json) |
+| 默认控件外观与实际样式 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-default.png)、[样式及资源 URL](../../evidence/report-date-picker-tiny-os-2026-10-11/default-style-facts.json) |
+| 单日期展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.json) |
+| 单月份展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.json) |
+| 日期范围展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.json) |
+| 月份范围展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.json) |
+| 月份范围只选起点 / 完成 2026-01 至 2026-06 | [起点](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-start.png)、[完成后重新展开](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-selected.png)、[选中样式](../../evidence/report-date-picker-tiny-os-2026-10-11/selection-style-facts.json) |
 
 已观察：
 

@@ -49,6 +49,6 @@
 4. 四类旧图表迁移后仍有实际 canvas。视觉复核发现的卡内画布塌缩已修复：布局层通过纯组件的 minHeights 接口保留现有图表最小高度，不新增页面像素尺寸字段；compactRing 保持既有固有尺寸。浏览器明确断言每个迁移画布高度大于 200px，不能只凭标题或查询文字判定可见。
 5. 生成的组件样例保留其查询依赖的固定筛选控件，避免把固定候选误作动态候选请求；普通组件呈现矩阵单独剥离 Dashboard 专属控件与对应绑定。
 
-截图：[实际 Playground 宽屏](playground-wide.png)、[窄屏](playground-narrow.png)、[迁移四图宽屏](migrated-charts-wide.png)、[窄屏](migrated-charts-narrow.png)。
+截图：[实际 Playground 宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/standalone-filter/playground-wide.png)、[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/standalone-filter/playground-narrow.png)、[迁移四图宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/standalone-filter/migrated-charts-wide.png)、[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/standalone-filter/migrated-charts-narrow.png)。
 
 实际 Playground 入口为 `http://127.0.0.1:5187/pages/filter-group-page`，DQE Sim 为 18328；没有替换原 5173 服务。合成数据与本地网关往返不证明真实 DQE/Relay、真实 DS 模型、线上权限或生产部署验收；这些未运行。

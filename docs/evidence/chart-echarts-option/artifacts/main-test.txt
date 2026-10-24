@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/chart-echarts-option/DataDashboard
-
-
- Test Files  257 passed (257)
-      Tests  2255 passed | 5 skipped (2260)
-   Start at  14:46:43
-   Duration  202.71s (transform 11.60s, setup 0ms, import 126.27s, tests 250.07s, environment 12ms)

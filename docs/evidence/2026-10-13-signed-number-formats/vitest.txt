@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run
-
- RUN  v4.1.11 /Users/moon/Documents/Code/公司项目/DataDashboard
-
-
- Test Files  202 passed (202)
-      Tests  1800 passed (1800)
-   Start at  15:21:44
-   Duration  62.53s (transform 8.31s, setup 0ms, import 80.05s, tests 84.56s, environment 13ms)

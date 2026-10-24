@@ -108,7 +108,7 @@ UI 采用现有标准 Svelte 打包方式，声明 peer `>=5.29.0 <6`。这项�
 
 详细证据与逐声明状态见 `platform-ui-management/ui-components/`、`platform-ui-management/platform-management/` 及 `docs/evidence/platform-ui-management-2026-10-12/`。
 
-最终本地证据：当前 Svelte 5.56.6 与最低 5.29.0 的隔离源码各为 201 个文件、1772 个测试通过、4 个跳过；每版仓外产品 Chrome 用例 96 个、UI-only 用例 20 个通过。真实五包 tarball 摘要和日志见 [兼容记录](../evidence/platform-ui-management-2026-10-12/compatibility/manifest.json)。包及构建输入与验收树 `b6c855feb90adb47816c384817ea36faeebb91f9` 一致。其后新增的工作台 unknown 状态文案/禁用保存由两版平台 check、当前 Chrome HTTP fixture 和生产微前端 fixture 单独验证；另补人工脏稿 AI 零发送与已保存回执无第二次前端保存两项测试，当前/最低 Svelte 的语言套件均 55/55、测试类型检查通过。这些增量没有被记成最终树全量单测重跑、远端 CI 或真实接缝通过。
+最终本地证据：当前 Svelte 5.56.6 与最低 5.29.0 的隔离源码各为 201 个文件、1772 个测试通过、4 个跳过；每版仓外产品 Chrome 用例 96 个、UI-only 用例 20 个通过。真实五包 tarball 摘要和日志见 [兼容记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/platform-ui-management-2026-10-12/compatibility/manifest.json)。包及构建输入与验收树 `b6c855feb90adb47816c384817ea36faeebb91f9` 一致。其后新增的工作台 unknown 状态文案/禁用保存由两版平台 check、当前 Chrome HTTP fixture 和生产微前端 fixture 单独验证；另补人工脏稿 AI 零发送与已保存回执无第二次前端保存两项测试，当前/最低 Svelte 的语言套件均 55/55、测试类型检查通过。这些增量没有被记成最终树全量单测重跑、远端 CI 或真实接缝通过。
 
 当前 Chrome 155 的工作台旅程已记录：无变化保存禁用；第二次保存已应用但丢失回执时，显示“保存结果未确认”、停止重复发送，导航和刷新后仍无额外 PUT。UI 7 项和平台 8 项冻结还原规则通过；它们是明确数值/状态声明，不能代替全状态 1:1 像素对照。完整视觉、Edge、CI 和 live 验收缺口保留在各 Story 的 alpha-tests.md 与 acceptance.md。
 

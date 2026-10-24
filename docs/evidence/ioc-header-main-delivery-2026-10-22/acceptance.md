@@ -38,4 +38,4 @@
 
 仅完成组件与合成业务场景迁移。产业/行业/档位仍为demo字典；完整真实组织payload、IOC/DQE/Relay、逐源查询和导出、真实货币单位与数据未验收。激励仍固定日历月预拉；生产月份清空10/12个月差异未裁决。区域父节点生产谓词、重点国代特殊规则、私有周与其它C组保持暂缓。这里的合成响应不证明真实业务已接通。
 
-命令原始输出见 [logs](logs/)，宽窄页头截图见 [1440px](batch-1440.png) / [390px](batch-390.png)。5173已从恢复来源切换到本交付检出，当前页面已实际打开确认；保留该检出供用户继续预览。
+命令原始输出见 [logs](logs/)，宽窄页头截图见 [1440px](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-main-delivery-2026-10-22/batch-1440.png) / [390px](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-main-delivery-2026-10-22/batch-390.png)。5173已从恢复来源切换到本交付检出，当前页面已实际打开确认；保留该检出供用户继续预览。

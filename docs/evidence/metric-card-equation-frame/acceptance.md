@@ -12,7 +12,7 @@
 
 ## 浏览器结果
 
-在页面试验场实际页面查看了符号公式和“其中”两组：灰色边框包裹整组，四卡左右拉宽，连接文字保留。最终截图：[实际页面](playground-confirmed.jpg)，[窄屏](playground-mobile.jpg)。第一阶段截图playground.jpg保留作为被用户纠正的历史结果，不代表最终验收。该截图视口1280px，组宽1233px，四卡宽为278.25/278.265625/278.265625/278.265625px，左右外边缘到首尾卡片均为21px（1px边框+20px内边距）。computed style确认为border-box、1px solid rgba(0,0,0,0.1)、16px圆角、rgb(255,255,255)背景。最终两组12处水平间距实测均为8px，小卡背景全部为rgb(255,255,255)，小卡1px灰边、12px圆角且内部指标面板无重复边框；测量回执为confirmed-geometry.json。
+在页面试验场实际页面查看了符号公式和“其中”两组：灰色边框包裹整组，四卡左右拉宽，连接文字保留。最终截图：[实际页面](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/metric-card-equation-frame/playground-confirmed.jpg)，[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/metric-card-equation-frame/playground-mobile.jpg)。第一阶段截图playground.jpg保留作为被用户纠正的历史结果，不代表最终验收。该截图视口1280px，组宽1233px，四卡宽为278.25/278.265625/278.265625/278.265625px，左右外边缘到首尾卡片均为21px（1px边框+20px内边距）。computed style确认为border-box、1px solid rgba(0,0,0,0.1)、16px圆角、rgb(255,255,255)背景。最终两组12处水平间距实测均为8px，小卡背景全部为rgb(255,255,255)，小卡1px灰边、12px圆角且内部指标面板无重复边框；测量回执为confirmed-geometry.json。
 
 生产global与ESM浏览器用同一页面，2项通过，覆盖小卡独立白底灰边、内部无重复边框、1440px四卡等宽及两组双侧8px；1980/1024/800px外框填满所占列、左右内容边缘对齐；680px局部容器扣除外框后的预算退化；部分跨度和390px窄屏单列及纵向8px，无页面横向溢出。
 
@@ -36,7 +36,7 @@
 
 新增并注册的正式对照页为pages/dashboard-title-styles.json与pages/report-title-styles.json，两页均只有静态内容，无服务依赖。文档同步PAGE-METADATA.md、sections-and-layout.md及components/text.md；reference-map登记来源与完整示例，导出器从pages真源生成conformance/valid及独立Skill中的完整例子，避免复制维护第二份页面。
 
-实际页面试验场截图：[当前指标卡页](playground-dashboard-titles.jpg)、[Dashboard标题对照](dashboard-title-styles.jpg)、[Report标题对照](report-title-styles.jpg)。当前指标卡页实测“收入构成”“业务拆分”均为16px、500字重、rgb(25,25,25)，::before content为none。
+实际页面试验场截图：[当前指标卡页](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/metric-card-equation-frame/playground-dashboard-titles.jpg)、[Dashboard标题对照](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/metric-card-equation-frame/dashboard-title-styles.jpg)、[Report标题对照](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/metric-card-equation-frame/report-title-styles.jpg)。当前指标卡页实测“收入构成”“业务拆分”均为16px、500字重、rgb(25,25,25)，::before content为none。
 
 浏览器layout-titles与metric-before共4项通过：1440/390宽度，四容器与text.heading，Report→Dashboard→Report切换，Report专属字号/颜色变量被改动时Dashboard标题保持独立，独立白色小卡与双侧8px回归。report-pdf中“页面配置驱动ShadowRoot里的PDF按钮和实际下载，无新窗口”1项通过。engine/embed检查0错误0警告，生产embed构建通过，测试TypeScript检查及report-pdf派生一致性通过；59个正式页面校验通过。
 

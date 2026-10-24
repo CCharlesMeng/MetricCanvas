@@ -25,7 +25,7 @@
 | 浏览器HTTP | Playwright/Chrome通过1场景；协议形状本地HTTP替身，A逻辑查询1次，B/C分别收到HIGH和LOW集合，A显示HIGH/LOW/CLOSED全部3行 |
 | ADR索引 | 0106及主题结论已落盘，索引检查通过。主工作区0104/0105属于其他工作，未覆盖 |
 
-浏览器截图：[完整结果与独立下游集合](browser/query-result-where-one-ful-2caf6-independently-filtered-sets/query-result-where.png)。该图确认主表3行、两个下游各1行；不用于声明真实业务数值正确。
+浏览器截图：[完整结果与独立下游集合](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-result-where/browser/query-result-where-one-ful-2caf6-independently-filtered-sets/query-result-where.png)。该图确认主表3行、两个下游各1行；不用于声明真实业务数值正确。
 
 ## 语义验收覆盖
 

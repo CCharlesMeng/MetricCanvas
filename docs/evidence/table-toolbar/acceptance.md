@@ -18,17 +18,17 @@
 
 ## 本地证据
 
-- 页面协议套件495项通过；单表导出6项独立通过。目标TypeScript回归44项通过，涵盖版本、字段、跨页搜索、完整取数、原报告导出、查询结果过滤及公共导出面。[目标回归日志](typescript.txt)。
-- 6项真实浏览器测试通过：独立搜索与Excel下载、查询分页的跨页搜索／完整导出、缺少搜索能力后的清空恢复、窄屏与Tab状态、取消后晚到结果不下载、详情查询作用域内搜索／导出。[浏览器日志](browser.txt)。
-- 创作端538项无模型测试通过，包含新增受控属性编辑与创建呈现；使用Bundle现有Python虚拟环境。[创作日志](authoring.txt)。系统Python缺少jsonschema的首次运行不计为产品测试结果。
-- Page、Data Execution、Engine及Embed类型检查通过；Svelte检查无错误／警告。[Engine检查](engine-check.txt)、[Embed检查](embed-check.txt)。
-- 共享包构建及HTML发行构建通过。[共享包构建](packages-build.txt)。HTML单文件ES产物约4.27MB、gzip约1.08MB；IIFE约3.17MB、gzip约0.96MB，包含ExcelJS代码，未以CDN规避发行依赖。
-- 独立副本生成并同步契约／创作知识／安装校验器；契约检查通过（601个产品文件、4个创作文件、1个接口文件），Bundle2256项摘要核验通过。[契约检查](contract-check.txt)、[Bundle检查](bundle-check.txt)。
-- 创作Skill隔离安装、协议参考、导出隔离和公共面回归38项通过。[分发回归](distribution.txt)。
+- 页面协议套件495项通过；单表导出6项独立通过。目标TypeScript回归44项通过，涵盖版本、字段、跨页搜索、完整取数、原报告导出、查询结果过滤及公共导出面。[目标回归日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/typescript.txt)。
+- 6项真实浏览器测试通过：独立搜索与Excel下载、查询分页的跨页搜索／完整导出、缺少搜索能力后的清空恢复、窄屏与Tab状态、取消后晚到结果不下载、详情查询作用域内搜索／导出。[浏览器日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/browser.txt)。
+- 创作端538项无模型测试通过，包含新增受控属性编辑与创建呈现；使用Bundle现有Python虚拟环境。[创作日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/authoring.txt)。系统Python缺少jsonschema的首次运行不计为产品测试结果。
+- Page、Data Execution、Engine及Embed类型检查通过；Svelte检查无错误／警告。[Engine检查](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/engine-check.txt)、[Embed检查](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/embed-check.txt)。
+- 共享包构建及HTML发行构建通过。[共享包构建](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/packages-build.txt)。HTML单文件ES产物约4.27MB、gzip约1.08MB；IIFE约3.17MB、gzip约0.96MB，包含ExcelJS代码，未以CDN规避发行依赖。
+- 独立副本生成并同步契约／创作知识／安装校验器；契约检查通过（601个产品文件、4个创作文件、1个接口文件），Bundle2256项摘要核验通过。[契约检查](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/contract-check.txt)、[Bundle检查](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/bundle-check.txt)。
+- 创作Skill隔离安装、协议参考、导出隔离和公共面回归38项通过。[分发回归](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/distribution.txt)。
 
-![独立表格搜索](independent-search.png)
+[历史截图：独立表格搜索](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/independent-search.png)
 
-![窄屏Tab表格搜索](narrow-tab-search.png)
+[历史截图：窄屏Tab表格搜索](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/narrow-tab-search.png)
 
 ## 真实接入与交付边界
 
@@ -50,4 +50,4 @@
 
 此处记录组件属性对照及浏览器操作验证，未执行逐像素图片差分。
 
-![OpenTiny搜索与分页效果](opentiny-style.jpg)
+[历史截图：OpenTiny搜索与分页效果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-toolbar/opentiny-style.jpg)

@@ -7,12 +7,12 @@
 | 能力 | 输入与操作 | 证据 |
 |---|---|---|
 | 15种内容与有界嵌套 | 全部普通内容/组合卡契约夹具；拒绝页头、嵌套Tab、铺底、低版本与畸形输入 | page/tests/tab-mixed-content；分发反例tab-content-* |
-| 显式栅格/旧布局兼容 | Dashboard页宽1440/390；旧compact/analysisStack不声明grid、span6的表仍占满内容宽度 | [宽屏](overview-wide.png)、[窄屏](overview-narrow.png)、浏览器用例 |
+| 显式栅格/旧布局兼容 | Dashboard页宽1440/390；旧compact/analysisStack不声明grid、span6的表仍占满内容宽度 | [宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-mixed-content/overview-wide.png)、[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-mixed-content/overview-narrow.png)、浏览器用例 |
 | 按需读取与失效 | 概览1次请求，首次明细累计3次；切回不重查；公共条件变化只刷新活动源；迟到响应拒绝 | runtime/tests/tab-activation、浏览器请求计数 |
 | 条件交集 | CN与OVERSEAS为空且不访问网关；时间/数值边界取交集；冲突初值不显示旧行 | data-execution/tests/filter-intersection、runtime/tests/tab-activation |
 | URL与隔离 | 活动页签/生效筛选恢复，无关revision保留，history.length不增加，组件独立筛选保留 | 浏览器用例；Playground 5197手工切换与刷新 |
-| 保活与AI | 首次进入生成，切走后隐藏文本继续完成，回来不再请求；表格搜索保留 | [保留总结](retained-summary.png) |
-| Report导出 | 读取注册Report页面；展开全部Tab及30行表格；未访问总结为空且不触发生成 | [实际PNG](report.png) |
+| 保活与AI | 首次进入生成，切走后隐藏文本继续完成，回来不再请求；表格搜索保留 | [保留总结](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-mixed-content/retained-summary.png) |
+| Report导出 | 读取注册Report页面；展开全部Tab及30行表格；未访问总结为空且不触发生成 | [实际PNG](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-mixed-content/report.png) |
 | local-authoring | 真源生成；仓外复制并验证结构、哈希、样例及反例 | local-authoring-skill与page-reference测试 |
 
 ## 实际检查
@@ -32,7 +32,7 @@
 
 用户指定复用5173中带文字连接的指标卡外框；实际参考为 `ioc-header-main-delivery` 检出的 `MetricConnectionRow.svelte`：1px `rgba(0,0,0,0.1)` 实线、16px圆角。当前实现由已声明的白底Tab与card/panel分区下发样式，未增加页面字段或计算背景色的脚本。普通指标卡整体带框，紧凑型的指标面板分别带框；组合卡只保留外框，灰底画布和Report沿用既有外观。
 
-- [宽屏](overview-wide.png)、[窄屏](overview-narrow.png) 已更新；Playground 5197实际页面已刷新检查。
+- [宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-mixed-content/overview-wide.png)、[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/tab-mixed-content/overview-narrow.png) 已更新；Playground 5197实际页面已刷新检查。
 - Embed与表格浏览器回归12项通过；覆盖白底Tab、card/panel分区、plain灰底、普通与紧凑型指标卡、组合卡内部无重复边框及原有切换/导出交互。
 - `pnpm check`、`pnpm build:packages`、Embed构建、Playground生产构建通过。
 - 页面元数据文档及local-authoring真源同步；26项Skill/页面参考验证（含仓外复制）、契约生成漂移检查、Bundle的2838次摘要检查通过。

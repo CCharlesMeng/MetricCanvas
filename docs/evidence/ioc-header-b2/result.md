@@ -25,4 +25,4 @@ B0+B1之后的B2业务筛选已完成本地实施与验收。唯一主计划仍�
 | 独立检视 | 布局L3、规范C1/C4/C5、质量Q2/Q5/Q6/Q7及F3-21..26均通过；聚合0阻断、0待决、0未证实声明 |
 | 真实服务 | DQE、CloudIOC、Relay、DS模型、门户、CI、部署均未运行；本地证据不替代真实服务验收 |
 
-[正式验收](acceptance.md)由SDD聚合器生成；[声明账本](alpha-tests.md)、[共享证据包](evidence/review-evidence.json)、[净增量](evidence/b2.diff)、[代码清单](evidence/code-manifest.json)。代码指纹仅按官方base_ref/head/files规范化；B2起点manifest单列，规范化前后文件哈希集合相同。
+[正式验收](acceptance.md)由SDD聚合器生成；[声明账本](alpha-tests.md)、[共享证据包](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b2/evidence/review-evidence.json)、[净增量](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b2/evidence/b2.diff)、[代码清单](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b2/evidence/code-manifest.json)。代码指纹仅按官方base_ref/head/files规范化；B2起点manifest单列，规范化前后文件哈希集合相同。

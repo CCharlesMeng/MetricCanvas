@@ -16,7 +16,7 @@
 
 ## 验收矩阵
 
-冻结输入与排除项见 [acceptance.json](acceptance.json)。完整聚合结果与首轮记录见 [results.json](results.json)。
+冻结输入与排除项见 [acceptance.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-29-authoring-value-formats/acceptance.json)。完整聚合结果与首轮记录见 [results.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-29-authoring-value-formats/results.json)。
 
 | 层 | 最终结论 | 证据 |
 |---|---|---|

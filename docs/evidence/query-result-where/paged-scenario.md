@@ -24,7 +24,7 @@
 
 原生DQE仿真服务+当前工作区5173页面，无路由桩。首轮总数80，仅10行；第3页首行P-047；点击执行周期升序后上一页按钮禁用，首行P-056/5天，随后5、6、7、8、9、10、11、12、12、13天，两组评估同步更新。
 
-执行周期第一页：大额项目编号P-041/P-056/P-021/P-077/P-051，小额P-016/P-046。名称升序首行P-075；Shift追加状态排序显示优先级1/2。切换20条后页面为4页且评估正常，再恢复10条并保留执行周期升序截图[paged-preview.png](paged-preview.png)。
+执行周期第一页：大额项目编号P-041/P-056/P-021/P-077/P-051，小额P-016/P-046。名称升序首行P-075；Shift追加状态排序显示优先级1/2。切换20条后页面为4页且评估正常，再恢复10条并保留执行周期升序截图[paged-preview.png](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/query-result-where/paged-preview.png)。
 
 复验地址：http://localhost:5173/pages/query-result-where-page。先翻到第3页，再点击任意列，检查返回第一页以及下方评估成员；Shift点击另一列检查排序优先级；切换每页20条检查范围。
 

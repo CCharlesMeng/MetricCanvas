@@ -12,7 +12,7 @@
 
 在当前工作区的 `http://127.0.0.1:5183/pages/table-cell-selection` 使用 DQE Sim；5173 属于其他工作树，未替换它。点击“华南地区部”后，URL 与筛选控件取值改变，区域单元格选中，下表从 8 行变为 1 行“深圳代表处”；上表保留 8 行。选择列与链接列均显示下划线。
 
-![Playground 点击结果](playground.png)
+[历史截图：Playground 点击结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-cell-selection/playground.png)
 
 `pnpm --filter @metriccanvas/embed exec playwright test table-cell-selection.spec.ts --workers=1`：4 项通过。自动验收直接加载本次页面，保留其选择配置，覆盖查询写筛选、键盘选择、重复点击、未订阅下游、纯内联入口，以及普通/forecastMatrix/embedded/reportCompact 的控件和主文字下划线。修复前同一检查得到 `text-decoration-line: none`；修复后为 `underline`。
 
@@ -38,7 +38,7 @@
 
 Playground 点击“华东地区部”，下游仅显示“杭州代表处”；点击前后该列保持白底和普通文字颜色。
 
-![去除蓝色后的点击结果](playground-neutral.png)
+[历史截图：去除蓝色后的点击结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-cell-selection/playground-neutral.png)
 
 新增浏览器回归对四种变体比较选择单元格和普通单元格的背景与文字颜色，覆盖键盘选中后的颜色、无选择内框、焦点颜色及下划线，继续检查下游剩 1 行。修复前在浅蓝底断言失败（`rgba(33, 111, 240, 0.05)`）；修复后与普通单元格一致。
 

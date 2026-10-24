@@ -12,13 +12,13 @@
 
 | 能力 | 实际页面与证据 | 协议入口 |
 |---|---|---|
-| 层级空选择、分区与父容器、按钮、条件文字、本地行、Tab、分区组回退 | `pages/page-visibility-region-linkage.json`；[宽屏](wide.png)、[窄屏](narrow.png) | `docs/page-metadata/conditions.md`、`components/button.md`、`filters.md` |
-| 有限事实、已有权限、等待/错误、修订停用、公共 JS mount | `pages/page-visibility-inputs.json`；[浏览器报告](browser.json) | `displayInputs`、runtime/Embed/Platform 接线 |
-| PDF/PNG/XLSX、导出冻结、权限修订取消 | `pages/page-visibility-report.json`；[实际 PNG](visibility.png)、浏览器 Worker 捕获断言 | 共享展示投影、既有导出链路 |
+| 层级空选择、分区与父容器、按钮、条件文字、本地行、Tab、分区组回退 | `pages/page-visibility-region-linkage.json`；[宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/wide.png)、[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/narrow.png) | `docs/page-metadata/conditions.md`、`components/button.md`、`filters.md` |
+| 有限事实、已有权限、等待/错误、修订停用、公共 JS mount | `pages/page-visibility-inputs.json`；[浏览器报告](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/browser.json) | `displayInputs`、runtime/Embed/Platform 接线 |
+| PDF/PNG/XLSX、导出冻结、权限修订取消 | `pages/page-visibility-report.json`；[实际 PNG](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/visibility.png)、浏览器 Worker 捕获断言 | 共享展示投影、既有导出链路 |
 | 协议版本、非法来源、类型、深度、行键、片段定位 | 产品与分发 conformance 向量、page/runtime 单元测试 | Schema 6.34、`reference-conditions-page.json` |
 | 人工/AI 操作差分、失败回滚、隐藏目标 | 产品 operation、属性编辑与 Python stdio 测试 | `set_presentation_condition`、`add_button`、`set_text_parts` |
 
-三页均注册在 Playground 目录；Sim 只由开发应用的目录配置注入，页面没有模拟权限开关。`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`pages/README.md` 和本地创作 Skill 已同步。生成器输出同版契约、参考文档、示例、Bundle 和独立 Node Bridge。最终文件树与独立安装结果见[安装验收](installed-acceptance.json)，原始失败阶段记录另存[原矩阵记录](compatibility-original.json)。
+三页均注册在 Playground 目录；Sim 只由开发应用的目录配置注入，页面没有模拟权限开关。`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`pages/README.md` 和本地创作 Skill 已同步。生成器输出同版契约、参考文档、示例、Bundle 和独立 Node Bridge。最终文件树与独立安装结果见[安装验收](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/installed-acceptance.json)，原始失败阶段记录另存[原矩阵记录](compatibility-original.json)。
 
 ## 浏览器与导出
 
@@ -32,11 +32,11 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 
 实际 PDF 验证 `%PDF` 文件头；Worker 接缝捕获真实导出 DOM，断言目标分区缺席、空父容器保留、只展开允许的 Tab、投影表格恰好两行；捕获后普通筛选变化不会改变内容。实际 PNG 已查看；XLSX 用 ExcelJS 读取，内容为“名称/金额、代表处A/60、代表处B/40”。权限修订发生在实际 Worker 启动接缝时，取消本次下载。下载文件保留在 `/tmp/metriccanvas-visibility-verified/`。
 
-公共 JS `mount` 直接注入稳定 displayInputs：等待、允许、修订失效及 destroy/remount 均通过。新增替换source对象的真实回归，确认页面重新初始化不能覆盖实例级权限失效锁；旧实例必须重新挂载。筛选批次中无效子级写入不再阻止父级清理旧后代；条件行回调重取当前行，缺键、重复键和已移除行均拒绝执行。平台保存重开使用真实 DS 产物和本地 HTTP Java/DQE 替身，在1440/640下通过，重开重新发出7次DQE请求，[报告](model-browser.json)。已人工查看640截图，标题、区域、18/12行值及柱图可读。
+公共 JS `mount` 直接注入稳定 displayInputs：等待、允许、修订失效及 destroy/remount 均通过。新增替换source对象的真实回归，确认页面重新初始化不能覆盖实例级权限失效锁；旧实例必须重新挂载。筛选批次中无效子级写入不再阻止父级清理旧后代；条件行回调重取当前行，缺键、重复键和已移除行均拒绝执行。平台保存重开使用真实 DS 产物和本地 HTTP Java/DQE 替身，在1440/640下通过，重开重新发出7次DQE请求，[报告](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/model-browser.json)。已人工查看640截图，标题、区域、18/12行值及柱图可读。
 
 ## 模型与受控链路
 
-[无模型预检](preflight.json) 通过，modelRequests=0；[确定性六用例](scripted.json) 全绿，modelCalls=0。[真实 DS 合并记录](model-merged.json) 覆盖三种创建和三种编辑；没有单次全量全绿。真实模型为 deepseek-v4-flash，各次参数、用量、Skill/用例 hash 在对应报告中。
+[无模型预检](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/preflight.json) 通过，modelRequests=0；[确定性六用例](scripted.json) 全绿，modelCalls=0。[真实 DS 合并记录](model-merged.json) 覆盖三种创建和三种编辑；没有单次全量全绿。真实模型为 deepseek-v4-flash，各次参数、用量、Skill/用例 hash 在对应报告中。
 
 | 用例 | 确定性 | 真实 DS | 页面产物 | 浏览器 |
 |---|---|---|---|---|
@@ -78,7 +78,7 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 
 ## Chrome安装验收收口
 
-[完整安装记录](installed-acceptance.json) 对应`/tmp/visibility-compatibility-complete/`。从冻结Git树重新安装依赖，完整测试、全仓类型检查和生产构建通过；六个包均tar安装到仓外，确认没有指回工作区。page-only Node ESM、UI-only无产品依赖、Svelte/TS类型及Vite构建通过，UI浏览器24项通过。
+[完整安装记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/installed-acceptance.json) 对应`/tmp/visibility-compatibility-complete/`。从冻结Git树重新安装依赖，完整测试、全仓类型检查和生产构建通过；六个包均tar安装到仓外，确认没有指回工作区。page-only Node ESM、UI-only无产品依赖、Svelte/TS类型及Vite构建通过，UI浏览器24项通过。
 
 组合浏览器最初因其他工作区占用4176端口而停止；后续Chrome完整运行138通过、16失败，均为新增按钮后旧矩阵仍要求53个分支。计数同步为54，并为受权限控制的静态参考按钮提供明确有限事实；保留原有所有测试，新条件用例使用独立文件。最终通过可配置空闲端口63453续跑，Chrome155下156项全部通过、零skip，包含实际层级页、事实页中的层级/父容器/私有行及替换输入源后失效锁。
 
@@ -97,6 +97,6 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 
 合并后的 `pnpm check` 零错误/警告，补丁后的 engine 类型检查、`pnpm build && pnpm build:playground` 均通过；页面 37/37 校验通过，契约生成一致性及 ADR 索引通过。版本、条件、属性编辑、指标卡、目录和投影的 45 项定向回归通过；仓外 local-authoring 安装与独立校验 20 项通过。未追加其他 Skill 或真实 DS 模型复验。
 
-`VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/metriccanvas-visibility-main-635` 在 6.35 三份实际页面上完成 16 类场景，pageerror 为零，包括公共 JS 输入、权限失效、替换输入源、PDF/PNG/XLSX 和导出取消。[浏览器结果](merge-browser-6.35.json)与[合并输入和检查记录](main-merge-6.35.json)分别保留机器证据。合并后的仓外浏览器矩阵交由远端 CI；真实 CloudIOC/Java/DQE/Relay 与新条件真实 DS 创作仍未运行。
+`VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/metriccanvas-visibility-main-635` 在 6.35 三份实际页面上完成 16 类场景，pageerror 为零，包括公共 JS 输入、权限失效、替换输入源、PDF/PNG/XLSX 和导出取消。[浏览器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/merge-browser-6.35.json)与[合并输入和检查记录](main-merge-6.35.json)分别保留机器证据。合并后的仓外浏览器矩阵交由远端 CI；真实 CloudIOC/Java/DQE/Relay 与新条件真实 DS 创作仍未运行。
 
 首次合并全量 TS 回归覆盖267文件，2329通过、5项既有skip、2项目录失败：自动合并把新增页面放入了能力列表，导致目录缺页及能力缺少文档。已修复为独立能力及三份完整页面说明，目录9/9与合并回归45/45通过。最终提交的全量结论以远端CI为准，未把首次失败写成全绿。

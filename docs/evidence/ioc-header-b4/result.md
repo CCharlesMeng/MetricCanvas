@@ -15,7 +15,7 @@
 
 预览为明确标注的本地合成HTTP，可信输入控制位于测试宿主。原4196/4198/4200预览服务保留。
 
-![已应用ISO周及实际合成查询](evidence/artifacts/preview-iso-week.jpg)
+[历史截图：已应用ISO周及实际合成查询](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b4/evidence/artifacts/preview-iso-week.jpg)
 
 ## 验证状态
 
@@ -31,4 +31,4 @@
 
 完整Python及页面/复杂度记录在最后候选显示修复之前执行，其输入未因该修复变化；修复后的完整前端测试、check/build、浏览器、静态、生成物、Bundle及全新安装重新执行。新增候选修复另有RED/GREEN记录，不能把历史全量结果冒充修复后的全量结果。
 
-[正式验收](acceptance.md)由SDD聚合器生成；[声明账本](alpha-tests.md)、[共享原始证据](evidence/review-evidence.json)、[B4净增量](evidence/b4.diff)、[代码清单](evidence/code-manifest.json)与[隔离保护核验](evidence/preservation.json)可复核。B4起点是未提交6.34快照，HEAD累计差异不等于本批净增量。
+[正式验收](acceptance.md)由SDD聚合器生成；[声明账本](alpha-tests.md)、[共享原始证据](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b4/evidence/review-evidence.json)、[B4净增量](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b4/evidence/b4.diff)、[代码清单](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b4/evidence/code-manifest.json)与[隔离保护核验](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-b4/evidence/preservation.json)可复核。B4起点是未提交6.34快照，HEAD累计差异不等于本批净增量。

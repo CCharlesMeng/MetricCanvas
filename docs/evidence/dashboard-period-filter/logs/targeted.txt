@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/period-filter.test.ts packages/page/tests/report-date-filters.test.ts packages/page/tests/version.test.ts packages/page/tests/canonical-writers.test.ts packages/engine/runtime/tests/period-filter.test.ts packages/engine/runtime/tests/period-execution.test.ts packages/engine/runtime/tests/filter-state.test.ts packages/engine/runtime/tests/cancel-stale-queries.test.ts packages/engine/runtime/tests/report-export.test.ts packages/ui/tests/calendar.test.ts packages/engine/runtime-ui/tests/date-picker.test.ts packages/engine/runtime-ui/tests/dashboard-filter-groups.test.ts packages/engine/runtime-ui/tests/filter-bar.test.ts apps/platform/tests/workbench/report-date-edit.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/dashboard-period-delivery/DataDashboard
-
-
- Test Files  14 passed (14)
-      Tests  103 passed (103)
-   Start at  22:17:03
-   Duration  1.66s (transform 5.01s, setup 0ms, import 11.87s, tests 1.23s, environment 1ms)

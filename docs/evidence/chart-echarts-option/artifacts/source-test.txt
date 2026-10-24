@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run
-
- RUN  v4.1.11 /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-chart-option-acceptance-1aja6ie5/5.56.6/source
-
-
- Test Files  256 passed (256)
-      Tests  2243 passed | 5 skipped (2248)
-   Start at  12:31:18
-   Duration  189.69s (transform 9.65s, setup 0ms, import 110.41s, tests 229.35s, environment 12ms)

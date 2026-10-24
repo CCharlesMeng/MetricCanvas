@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run packages/engine/runtime-ui/tests/metric-connections.test.ts tests/local-authoring-skill.test.ts tests/page-reference.test.ts tools/dqe-sim/tests/chart-local-filter.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/metric-card-group-delivery/DataDashboard
-
-
- Test Files  4 passed (4)
-      Tests  34 passed (34)
-   Start at  22:11:13
-   Duration  11.56s (transform 1.05s, setup 0ms, import 10.16s, tests 12.49s, environment 0ms)

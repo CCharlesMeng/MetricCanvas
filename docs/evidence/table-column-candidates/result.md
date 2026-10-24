@@ -53,7 +53,7 @@
 - 首轮隔离验证时，OS 样式、图标和几何定位与 589767c0 对齐；交付合并时继续保留最新主线对行内子表增加的选择器与定位隔离，不退回旧版。新候选逻辑与这些已交付能力共同回归。
 - 浏览器新增断言直接检查 Dashboard 工具栏、表头和行高、候选复选框；继承的 TinyVue 9 项浏览器检查包含三种网格与冻结官方 CSS 的零差异像素比较，均通过。此证据针对已覆盖网格，不宣称新增候选菜单的全部交互与 OpenTiny 完全相同。
 
-![Dashboard 与最新表格](dashboard.png)
+[历史截图：Dashboard 与最新表格](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-column-candidates/dashboard.png)
 
 ## 可观察场景与证据
 
@@ -63,9 +63,9 @@
 - 再将金额下限设为650000，表格为0行，已选办事处64保留并标记无匹配。
 - 另一张表仍为64行；数字级别0选择后首表为22行，其他级别仍可选。
 
-![候选搜索及独立表格](candidates.png)
+[历史截图：候选搜索及独立表格](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-column-candidates/candidates.png)
 
-![失配已选值保留](mismatch.png)
+[历史截图：失配已选值保留](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-column-candidates/mismatch.png)
 
 协议说明真源为 PAGE-METADATA.md 与 docs/page-metadata/components/table.md；已从真源生成 contracts、local-authoring知识、参考及锁文件。真实 DQE 的 DISTINCT、聚合后筛选、计数及权限不能从以上合成或本地结果推断通过。
 

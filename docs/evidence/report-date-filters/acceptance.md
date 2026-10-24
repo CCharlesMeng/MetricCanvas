@@ -6,21 +6,21 @@
 
 | 范围 | 结果 | 证据 |
 | --- | --- | --- |
-| TypeScript 回归 | 119 文件 / 982 项通过 | [日志](evidence/logs/ts-regression.txt) |
-| 创作 Python / MCP 回归 | 522 项通过；真实模型调用 0 | [日志](evidence/logs/authoring-regression.txt) |
-| page / engine / platform / playground 类型检查 | 通过；Svelte 0 错误、0 警告 | [engine](evidence/logs/engine-check.txt)、[platform](evidence/logs/platform-check.txt)、[playground](evidence/logs/playground-check.txt) |
-| embed 构建 | ES module / global / 类型声明通过 | [日志](evidence/logs/embed-build.txt) |
-| 源驱动契约 | 546 产品 / 4 创作 / 1 接口文件当前 | [日志](evidence/logs/contract-check.txt) |
-| Bundle | 1767 摘要校验通过 | [日志](evidence/logs/bundle-check.txt) |
-| 宽窄布局 | 1440 工具带右对齐；390/320 换行，无封面覆盖和页面溢出 | [宽屏](evidence/implemented-C-wide.jpg)、[390](evidence/implemented-C-mobile.jpg)、[320](evidence/implemented-C-320.jpg) |
+| TypeScript 回归 | 119 文件 / 982 项通过 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/ts-regression.txt) |
+| 创作 Python / MCP 回归 | 522 项通过；真实模型调用 0 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/authoring-regression.txt) |
+| page / engine / platform / playground 类型检查 | 通过；Svelte 0 错误、0 警告 | [engine](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/engine-check.txt)、[platform](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/platform-check.txt)、[playground](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/playground-check.txt) |
+| embed 构建 | ES module / global / 类型声明通过 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/embed-build.txt) |
+| 源驱动契约 | 546 产品 / 4 创作 / 1 接口文件当前 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/contract-check.txt) |
+| Bundle | 1767 摘要校验通过 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/logs/bundle-check.txt) |
+| 宽窄布局 | 1440 工具带右对齐；390/320 换行，无封面覆盖和页面溢出 | [宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/implemented-C-wide.jpg)、[390](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/implemented-C-mobile.jpg)、[320](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/implemented-C-320.jpg) |
 | 日期与提取 | 四形态、非法/半范围保持旧期间；初创/候选无日期框，确认才生成；既有身份复用 | BE-2/3/6；[测试映射](alpha-tests.md) |
-| 完整导出 | 全部分区组和 Tabs，159 表格行、1 静态图表、0 日期输入 | [截图](evidence/export-complete.jpg) |
-| HTML 公共方法 | 53 行、连接 DOM、并发拒绝、编码失败、准备和消费取消、超限、60 秒超时，结束后临时节点 0 | BE-5；[超时](evidence/embed-timeout.jpg)、[宽分区](evidence/embed-wide.jpg) |
+| 完整导出 | 全部分区组和 Tabs，159 表格行、1 静态图表、0 日期输入 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/export-complete.jpg) |
+| HTML 公共方法 | 53 行、连接 DOM、并发拒绝、编码失败、准备和消费取消、超限、60 秒超时，结束后临时节点 0 | BE-5；[超时](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/embed-timeout.jpg)、[宽分区](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/embed-wide.jpg) |
 | 冻结作用域 | 阅读期改为07..09，导出保持捕获的01..06 | BE-5 |
-| 人工创作 | platform 正式属性面板增改删、窗口选择、非法范围原子回滚 | BE-7；[截图](evidence/manual-editor.jpg) |
-| 独立检视 | 4 角色、16 维度通过；发现的重复谓词和跨 app 验收引用已修正 | [聚合报告](review-acceptance.md)、[机器结果](evidence/review-results.json) |
+| 人工创作 | platform 正式属性面板增改删、窗口选择、非法范围原子回滚 | BE-7；[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/manual-editor.jpg) |
+| 独立检视 | 4 角色、16 维度通过；发现的重复谓词和跨 app 验收引用已修正 | [聚合报告](review-acceptance.md)、[机器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/review-results.json) |
 
-实际操作序列、几何事实、依赖摘要与命令记录在 [共享证据](evidence/review-evidence.json)。日期草稿与已应用值分别持有；期间读取已应用值。无分页查询需要 totalCount 或显式完整结果契约；分页总数缺失、变化、提前结束及超限均明确失败。
+实际操作序列、几何事实、依赖摘要与命令记录在 [共享证据](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-filters/evidence/review-evidence.json)。日期草稿与已应用值分别持有；期间读取已应用值。无分页查询需要 totalCount 或显式完整结果契约；分页总数缺失、变化、提前结束及超限均明确失败。
 
 ## 交付入口
 

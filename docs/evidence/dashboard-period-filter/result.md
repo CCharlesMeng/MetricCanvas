@@ -25,9 +25,9 @@
 
 人工演示入口：`pnpm --filter platform exec vite --config tests/browser/report-date.vite.config.ts`，打开 `http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard`。这是正式属性面板＋运行时，使用本地合成网关，不代表业务数据真实性。选择“编辑已有筛选 → 统计期间”，可修改初始模式并应用。
 
-![正式季度面板](formal-quarter.png)
+[历史截图：正式季度面板](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/dashboard-period-filter/formal-quarter.png)
 
-![近一年无日期框](formal-last12.png)
+[历史截图：近一年无日期框](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/dashboard-period-filter/formal-last12.png)
 
 ## 已执行的验证
 
@@ -46,7 +46,7 @@
 | CUA 正式属性面板→运行时 | 季度应用、Q1—Q4、近一年移除输入均实测；键盘 Shift+Tab 到月分段，focus-visible=true，蓝色 2px outline / 2px offset，见 formal-focus.png |
 | 独立源码构建＋六包 tarball 严格依赖安装 | 构建、page-only Node ESM、UI-only 与组合消费者 svelte-check / tsc / Vite 均通过；UI 22 项、安装后 embed 期间 3 项 Chrome 通过 |
 
-安装包证据见 [installed-consumers.json](installed-consumers.json)、[浏览器结果](installed-period-browser-results.json) 与 [logs](logs/)。使用源码树 `b5adefa4752b480b2f46bc1b88c9a60fe32fcc57`；它是临时索引生成的 Git tree，未创建仓库分支或提交。原型 4183 和源码服务 4175 保留，安装包临时服务改用 4193 / 4195 / 4196。
+安装包证据见 [installed-consumers.json](installed-consumers.json)、[浏览器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/dashboard-period-filter/installed-period-browser-results.json) 与 [logs](logs/)。使用源码树 `b5adefa4752b480b2f46bc1b88c9a60fe32fcc57`；它是临时索引生成的 Git tree，未创建仓库分支或提交。原型 4183 和源码服务 4175 保留，安装包临时服务改用 4193 / 4195 / 4196。
 
 官方 `compatibility:check` 先跑全仓测试，遇下列失败后停止。为继续验证已安装产品，本轮仅在 `/tmp` 的临时 runner 跳过已记录的源码 test/check 门，保留源码 build、真实 pack/install、类型与构建检查，组合浏览器限期间用例、浏览器限 Chrome。这是定向安装包证据，不能写成官方完整兼容矩阵通过。未修改仓库兼容性脚本。
 
@@ -57,7 +57,7 @@
 3. 实施末期并行 PDF 批次修改 `report-pdf-client.ts`、engine 依赖和 `report-date-filters.ts` 的 PDF 位置限制，并把 Schema 升到 6.28。新增范围未被本次覆盖或回退。当前生成检查被其 `report-pdf-export.json` 非法样例阻断；最新广义定向集还命中 PDF capability 的版本期望和与页面 ID 重名的检查。期间功能集本身未出现失败。后续应在该批次收口后重跑 `pnpm authoring:contracts:check`、`pnpm check`、版本／页面中立性测试。
 4. 并行依赖切换时当前 engine 的两个 node_modules 链接缺失，曾令 5187 热更新报找不到 html2canvas；本地已恢复链接并重启服务，页面恢复。最初 frozen install 明确报并行 manifest 与锁文件未同步；不据此回退对方源码。最终依赖状态随并行批次维护。
 
-精确交付核对用 [scoped-source-tree.json](scoped-source-tree.json)：列出已验证源码快照相对任务初始混合工作区的增量，标识快照后又变化的文件。清单中包含生成物，不能据此整文件覆盖并行增量。当前实际工作区仍以各源码的并行最终状态为准。
+精确交付核对用 [scoped-source-tree.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/dashboard-period-filter/scoped-source-tree.json)：列出已验证源码快照相对任务初始混合工作区的增量，标识快照后又变化的文件。清单中包含生成物，不能据此整文件覆盖并行增量。当前实际工作区仍以各源码的并行最终状态为准。
 
 ## 尚未证明的范围
 

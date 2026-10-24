@@ -37,15 +37,15 @@ Python 主包从 113 个源文件、14,032 行变成 101 个源文件、13,013 �
 
 | 检查 | 结果 | 证据 |
 |---|---|---|
-| 修改前现行 MCP 关系回归 | 明确失败：三个卡片均 STRUCTURE_CHANGE_RELATION_UNVERIFIED | [失败记录](relations-before.log) |
-| 修改后 Authoring 全量 | 402 项通过；51 个测试文件全部登记 | [日志](python-tests.log) |
-| 现行结构验收 | 两次查询、三张卡、六个主指标行、六处变化绑定；页面合法 | [结果](structure-acceptance.json) |
-| 全项目 pnpm test | 1,509 通过、1 项既有失败 | [日志](project-tests.log) |
-| 全项目 pnpm check | 通过，Svelte 检查无错误/警告 | [日志](typecheck.log) |
-| authoring:contracts:check | 510 产品、4 创作、1 接口文件 current | [日志](contracts.log) |
-| check_bundle.py | 1,610 次摘要校验通过 | [日志](bundle.log) |
-| sdist → wheel 构建 | 通过 | [日志](build.log) |
-| 独立 wheel 启动 | 隔离目录消费内嵌契约；普通问数 2 工具、平台 9 工具；退役资产不在 wheel 内 | [结果](wheel-smoke.log) |
+| 修改前现行 MCP 关系回归 | 明确失败：三个卡片均 STRUCTURE_CHANGE_RELATION_UNVERIFIED | [失败记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/relations-before.log) |
+| 修改后 Authoring 全量 | 402 项通过；51 个测试文件全部登记 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/python-tests.log) |
+| 现行结构验收 | 两次查询、三张卡、六个主指标行、六处变化绑定；页面合法 | [结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/structure-acceptance.json) |
+| 全项目 pnpm test | 1,509 通过、1 项既有失败 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/project-tests.log) |
+| 全项目 pnpm check | 通过，Svelte 检查无错误/警告 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/typecheck.log) |
+| authoring:contracts:check | 510 产品、4 创作、1 接口文件 current | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/contracts.log) |
+| check_bundle.py | 1,610 次摘要校验通过 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/bundle.log) |
+| sdist → wheel 构建 | 通过 | [日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/build.log) |
+| 独立 wheel 启动 | 隔离目录消费内嵌契约；普通问数 2 工具、平台 9 工具；退役资产不在 wheel 内 | [结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-authoring-retirement/wheel-smoke.log) |
 | git diff --check | 通过 | 执行退出码 0 |
 | 截图、真实模型、生产服务联调 | 未执行 | 遵循本轮验收范围 |
 

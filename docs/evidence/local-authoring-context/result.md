@@ -31,7 +31,7 @@ skill-creator quick_validate 在默认 Python 缺 PyYAML 后，使用 `uv run --
 
 ## 读取量与独立前向试用
 
-Skill 入口由基线12,005 bytes缩为5,458 bytes，完整参考仍保留。[retrieval.json](retrieval.json) 是13类任务的确定性查阅路径对比，只统计 UTF-8 bytes，没有计入模型可能继续深查/修复的轮次，不能解读为实际总 input、缓存或费用节省。
+Skill 入口由基线12,005 bytes缩为5,458 bytes，完整参考仍保留。[retrieval.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/retrieval.json) 是13类任务的确定性查阅路径对比，只统计 UTF-8 bytes，没有计入模型可能继续深查/修复的轮次，不能解读为实际总 input、缓存或费用节省。
 
 另以相同冻结页面、相同“区域列宽改为220”请求，在全新上下文分别试用旧/新 Skill。评估只获得 Skill 和原输入，不提供预期输出或此前结论。父级核对两份输出逐字节一致，只改目标属性，原输入未变；各自快照、页面校验和快照完整性检查均通过。
 
@@ -42,9 +42,9 @@ Skill 入口由基线12,005 bytes缩为5,458 bytes，完整参考仍保留。[re
 | 解释边界 | 是文件读取与响应量，非模型可见内容的完整计量；脚本内部加载不计入模型阅读；没有token或费用推算 |
 | 统计边界 | 每版1次，不能代替12任务×3次的重复评估或证明普遍成功率 |
 
-上述小改动对照先于 --help 指引修正；原审计与冻结信息见[forward/summary.json](forward/summary.json)。
+上述小改动对照先于 --help 指引修正；原审计与冻结信息见[forward/summary.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/forward/summary.json)。
 
-独立数据分析试用覆盖全部5个字段位置和3个数据槽，识别金额当期/累计歧义、达成率查询契约缺口、区域维度映射和共享源的粒度/范围问题。报告检查通过，输入哈希未变，执行状态保持 not-run。首次试用打开压缩脚本导致截断，后增加 --help 与入口指引；第二次全新上下文试用未读压缩脚本，通过帮助与精确知识完成任务。保留[最终报告](forward/final-report.md)、[实际命令](forward/final-execution-log.md)、[检查回执](forward/final-check-receipt.json)和[输入完整性](forward/final-input-integrity.json)；这仍不是完整数据集的识别准确率测量。
+独立数据分析试用覆盖全部5个字段位置和3个数据槽，识别金额当期/累计歧义、达成率查询契约缺口、区域维度映射和共享源的粒度/范围问题。报告检查通过，输入哈希未变，执行状态保持 not-run。首次试用打开压缩脚本导致截断，后增加 --help 与入口指引；第二次全新上下文试用未读压缩脚本，通过帮助与精确知识完成任务。保留[最终报告](forward/final-report.md)、[实际命令](forward/final-execution-log.md)、[检查回执](forward/final-check-receipt.json)和[输入完整性](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/forward/final-input-integrity.json)；这仍不是完整数据集的识别准确率测量。
 
 ## 页面与浏览器
 
@@ -55,7 +55,7 @@ pnpm --filter playground exec vite dev --host 127.0.0.1 --port 5193
 PLAYGROUND_BASE_URL=http://127.0.0.1:5193 node apps/playground/tests/local-authoring-browser.mjs docs/evidence/local-authoring-context/browser
 ```
 
-1280和390宽度均核对金额4,200.0万、达成率42.0%、表格行；窄屏实际横滚访问右列；目录可搜索发现。页面无运行错误，截图已经人工查看。证据：[浏览器回执](browser/browser.json)、[宽屏](browser/page-1280.png)、[窄屏](browser/page-390.png)。仅修改测试页面元数据，未新增样式方案或修改组件。
+1280和390宽度均核对金额4,200.0万、达成率42.0%、表格行；窄屏实际横滚访问右列；目录可搜索发现。页面无运行错误，截图已经人工查看。证据：[浏览器回执](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/browser/browser.json)、[宽屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/browser/page-1280.png)、[窄屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/browser/page-390.png)。仅修改测试页面元数据，未新增样式方案或修改组件。
 
 ## 并行工作与未运行项
 
@@ -67,4 +67,4 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:5193 node apps/playground/tests/local-autho
 
 交付检出基于 origin/main `082eabbfa1872326bcf460d9fbe7cb0a56720547`（Schema 6.45）。已合入独立 filterGroup 的产品真源，保留筛选器迁移约束；登记新模块和改名章节，补充 filterGroup.core 主题、专题入口及卡内/正文引用扫描回归。清单、锁、机器知识和校验器重新生成，未手工混合旧产物。
 
-上文6.44基线的读取量和独立前向试用保留为历史证据；它们不代表6.45下重新运行了完整重复模型对照。本次合流复验5个文件、81项测试通过，类型/Playground检查、生产构建、分发与哈希检查、宽窄屏浏览器均通过；回执见[delivery.json](delivery.json)。相对上述main基线，本批没有 packages/engine、packages/page、packages/ui 或 packages/data-execution 源码改动；按用户明确要求使用 [skip ci]，远端CI记为跳过，不计作通过。
+上文6.44基线的读取量和独立前向试用保留为历史证据；它们不代表6.45下重新运行了完整重复模型对照。本次合流复验5个文件、81项测试通过，类型/Playground检查、生产构建、分发与哈希检查、宽窄屏浏览器均通过；回执见[delivery.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/delivery.json)。相对上述main基线，本批没有 packages/engine、packages/page、packages/ui 或 packages/data-execution 源码改动；按用户明确要求使用 [skip ci]，远端CI记为跳过，不计作通过。

@@ -19,4 +19,4 @@
 
 第二次CI运行[39359574313](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/39359574313)的四个其他任务通过；Chrome/Edge矩阵395/396通过。唯一失败为Chrome双实例用例，在宿主HTML加载后、异步页面JSON就绪前挂载第二实例，导致文档未定义而没有第二个月份控件。注入150ms元数据延迟后复现同一错误；增加首实例已显示声明月份的前置检查后，连续10次及全部6个页头用例通过，浏览器TypeScript检查通过。月份隔离、切季/月记忆及独立销毁断言全部保留；无跳过、重试或超时放宽。
 
-本次仅修改测试前置条件与证据，产品源码、协议、独立校验器保持db892ce0内容，因此复用该输入已通过的本地及远端检查。完整测试输入新指纹为`f9252c4644c24e0a6e2c2d7bcc240a15990d337d33970811e5d84fefb794ce3f`，见[测试输入](evidence/readiness-source-manifest.json)和[回归证据](evidence/readiness.json)。最终CI仍按新SHA完整执行。
+本次仅修改测试前置条件与证据，产品源码、协议、独立校验器保持db892ce0内容，因此复用该输入已通过的本地及远端检查。完整测试输入新指纹为`f9252c4644c24e0a6e2c2d7bcc240a15990d337d33970811e5d84fefb794ce3f`，见[测试输入](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-delivery/evidence/readiness-source-manifest.json)和[回归证据](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/ioc-header-delivery/evidence/readiness.json)。最终CI仍按新SHA完整执行。

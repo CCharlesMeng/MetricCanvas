@@ -15,7 +15,7 @@
 - `pnpm --filter @metriccanvas/ui build` 通过。
 - 实际 Playground 两张搜索表均测得右边距 13px、垂直偏移 0px。手动切换责任人后 placeholder 为“请输入完整责任人姓名”，DQE 仿真表可正常加载。
 
-![修复后的下拉框](./select-arrow-alignment.jpg)
+[历史截图：修复后的下拉框](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-search-options/select-arrow-alignment.jpg)
 
 本次仅修复中性 UI 布局，不改变页面协议、搜索语义或创作方式；沿用既有示例、页面元数据文档与 local-authoring 产物。真实 DQE 与 Edge 不由这些本地证据覆盖。
 

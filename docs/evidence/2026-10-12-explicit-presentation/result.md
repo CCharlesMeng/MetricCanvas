@@ -23,16 +23,16 @@
 | 类型检查 | engine 和 Playground 均0错误、0警告，见[engine](engine-check-final.log)、[Playground](playground-check.log)；page 包检查也通过 |
 | 页面校验 | `pnpm validate`，15/15页面通过 |
 | 生成物 | `authoring:contracts`、`authoring:contracts:check` 和 `check_bundle.py` 通过；570产品契约、4创作契约、1接口契约，bundle 0.3.1 的1829个摘要一致 |
-| 页面实际绘图 | [可重跑脚本](render-chart-evidence.ts) 使用 parsePage 后的初始行，调用实际 option 与 ECharts SVG 渲染；[汇总](svg-summary.json) 中无缺失类别，所有有效数据项数值均被绘制，无需 hover |
-| 浏览器颜色 | [实际页面](browser-colors.json) 与[边界样例](browser-edge-values.json)；表格和卡片红色一致，正红向上、负绿向下、sign零普通、fixed零绿色、缺失普通 |
-| 空数据/失败状态 | [空数据](browser-empty.json) 未伪造数值，[查询失败](browser-error.json) 正确显示5项查询错误，无图表成功假象 |
-| 静态导出视图 | RuntimeView.withExportView 使用[初始快照的 inline 回放](report-inline-export.json)，[冻结结果](browser-export.json) 为5个 ready 静态图、0 canvas；[截图](export-chart.png) 保留类别与数值。该回放仅为验收输入，正式页面数据源仍为 query |
+| 页面实际绘图 | [可重跑脚本](render-chart-evidence.ts) 使用 parsePage 后的初始行，调用实际 option 与 ECharts SVG 渲染；[汇总](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/svg-summary.json) 中无缺失类别，所有有效数据项数值均被绘制，无需 hover |
+| 浏览器颜色 | [实际页面](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/browser-colors.json) 与[边界样例](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/browser-edge-values.json)；表格和卡片红色一致，正红向上、负绿向下、sign零普通、fixed零绿色、缺失普通 |
+| 空数据/失败状态 | [空数据](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/browser-empty.json) 未伪造数值，[查询失败](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/browser-error.json) 正确显示5项查询错误，无图表成功假象 |
+| 静态导出视图 | RuntimeView.withExportView 使用[初始快照的 inline 回放](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/report-inline-export.json)，[冻结结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/browser-export.json) 为5个 ready 静态图、0 canvas；[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/export-chart.png) 保留类别与数值。该回放仅为验收输入，正式页面数据源仍为 query |
 
 实际页面的三条月份趋势分别为6类/6数值；代表处为60类/120数值；地区部为12类/22有效数值，缺失项不生成0。命令 `pnpm exec tsx docs/evidence/2026-10-12-explicit-presentation/render-chart-evidence.ts` 可重跑计数证据。
 
-![桌面真实呈现](desktop-chart.png)
+[历史截图：桌面真实呈现](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/desktop-chart.png)
 
-![390px窄屏真实呈现](narrow-chart.png)
+[历史截图：390px窄屏真实呈现](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/narrow-chart.png)
 
 ## 可见限制与未执行项
 

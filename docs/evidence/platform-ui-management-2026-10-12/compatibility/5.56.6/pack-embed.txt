@@ -1,24 +1,0 @@
-$ pnpm build
-$ vite build && tsc -p tsconfig.build.json
-vite v8.1.5 building client environment for production...
-[2Ktransforming...✓ 1073 modules transformed.
-rendering chunks...
-computing gzip size...
-dist/metriccanvas-runtime.es.js  2,921.24 kB │ gzip: 777.33 kB
-
-[2Ktransforming...✓ 1073 modules transformed.
-rendering chunks...
-computing gzip size...
-dist/metriccanvas-runtime.global.js  2,200.06 kB │ gzip: 693.65 kB
-
-✓ built in 948ms
-package: @metriccanvas/embed@1.0.0-rc.4
-Tarball Contents
-dist/index.d.ts
-dist/metriccanvas-runtime.es.js
-dist/metriccanvas-runtime.global.js
-dist/types.d.ts
-package.json
-README.md
-Tarball Details
-/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-compatibility-3Nh1ab/5.56.6/embed.tgz

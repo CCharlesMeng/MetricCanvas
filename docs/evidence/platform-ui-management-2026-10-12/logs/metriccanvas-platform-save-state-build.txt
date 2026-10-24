@@ -1,10 +1,0 @@
-$ vite build --mode microfrontend
-vite v8.1.5 building client environment for microfrontend...
-[2Ktransforming...✓ 1184 modules transformed.
-rendering chunks...
-computing gzip size...
-dist/microfrontend/index.html                  0.24 kB │ gzip:   0.18 kB
-dist/microfrontend/assets/platform.css       272.46 kB │ gzip:  40.86 kB
-dist/microfrontend/assets/platform.umd.js  2,263.65 kB │ gzip: 726.54 kB
-
-✓ built in 689ms

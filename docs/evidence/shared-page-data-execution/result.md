@@ -16,7 +16,7 @@
 
 | 层 | 执行与证据 | 结论 |
 |---|---|---|
-| TypeScript全仓测试 | `pnpm exec vitest run --maxWorkers=2 --reporter=json --outputFile=docs/evidence/shared-page-data-execution/vitest.json`；[机器报告](vitest.json) | 1878通过，0跳过，0失败 |
+| TypeScript全仓测试 | `pnpm exec vitest run --maxWorkers=2 --reporter=json --outputFile=docs/evidence/shared-page-data-execution/vitest.json`；[机器报告](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/shared-page-data-execution/vitest.json) | 1878通过，0跳过，0失败 |
 | 新执行包 | `packages/data-execution/tests`，14项：参数、级联、空集合、失败保留、不以旧结果驱动、未绑定源、缺失补查、筛选失效、参数清理、延迟详情、去重、Node HTTP与嵌套映射 | pass |
 | 类型 | `pnpm check`全仓通过；最后共享包和engine再次类型检查通过 | pass；Svelte诊断0错误/0警告 |
 | 构建 | `pnpm build`，全部库包、Embed ESM/IIFE和Platform静态构建 | pass；既有大chunk提示不影响退出码 |
@@ -32,9 +32,9 @@
 
 ## 浏览器截图
 
-[SDT回填首屏](browser/sdt-filled-initial.png)：首屏无数据查询，原始initial经过pivot/左关联得到代表处时长0.0及人次3。
+[SDT回填首屏](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/shared-page-data-execution/browser/sdt-filled-initial.png)：首屏无数据查询，原始initial经过pivot/左关联得到代表处时长0.0及人次3。
 
-[参数覆盖刷新](browser/sdt-parameter-refresh.png)：九月改十月后清除受影响旧initial，先查询主项目B，再用B编号取阶段，显示刷新项目。
+[参数覆盖刷新](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/shared-page-data-execution/browser/sdt-parameter-refresh.png)：九月改十月后清除受影响旧initial，先查询主项目B，再用B编号取阶段，显示刷新项目。
 
 ## 首次失败与修复
 

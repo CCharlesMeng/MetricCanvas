@@ -11,7 +11,7 @@
 - Schema 6.32、ECharts 6.1.0、Svelte 5.56.6；Node 24.11.1、pnpm 11.13.0、Python 3.14.7。
 - `pnpm-lock.yaml` SHA256：`63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0`。
 - Python 锁 SHA256：`4a9b20cb50b80477bffdd1c830fb29325e7c7e9f8379074168c4da561da79c26`。锁定依赖安装于临时 venv，系统 Python 未修改。
-- Chrome `155.0.8059.82`、真实 Microsoft Edge `155.0.4283.62`。本机缺 Edge，最初矩阵在启动前失败；最终完整运行使用官方 PKG 经 SHA256 核对后解包的临时 Edge，未运行安装脚本或修改系统应用。见[下载元数据](artifacts/edge-artifact.json)。
+- Chrome `155.0.8059.82`、真实 Microsoft Edge `155.0.4283.62`。本机缺 Edge，最初矩阵在启动前失败；最终完整运行使用官方 PKG 经 SHA256 核对后解包的临时 Edge，未运行安装脚本或修改系统应用。见[下载元数据](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/edge-artifact.json)。
 
 ## 实际检查
 
@@ -26,7 +26,7 @@
 | 功能浏览器 | 新增9个场景在安装后的 Chrome/Edge 各执行一次，共18项通过；直接消费完整页面，故障仅由测试注入 |
 | 文档与差异 | `pnpm adr:index:check`、新文档链接检查、`git diff --check` 通过 |
 
-本地设置 `CI=1` 的兼容进程仍是本地验收，不是 GitHub CI。完整步骤、真实浏览器版本和耗时见[兼容摘要](artifacts/compatibility-summary.json)。
+本地设置 `CI=1` 的兼容进程仍是本地验收，不是 GitHub CI。完整步骤、真实浏览器版本和耗时见[兼容摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/compatibility-summary.json)。
 
 ## 功能与交付物对应
 
@@ -46,11 +46,11 @@
 - 普通编辑、保存重开保留；跨类型清除并 console 记录；既有同步撤销精确恢复。属性面板仍无高级入口，三个创作 Skill 保留默认不主动使用的策略。
 - 饼图缺失行、真实零和重复类别保留正确的原行身份，完整类别色域保留。
 
-截图：[chart-options-chrome-1440](artifacts/chart-options-chrome-1440.png)、[chart-options-chrome-390](artifacts/chart-options-chrome-390.png)、[chart-options-msedge-1440](artifacts/chart-options-msedge-1440.png)、[chart-options-msedge-390](artifacts/chart-options-msedge-390.png)
+截图：[chart-options-chrome-1440](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/chart-options-chrome-1440.png)、[chart-options-chrome-390](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/chart-options-chrome-390.png)、[chart-options-msedge-1440](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/chart-options-msedge-1440.png)、[chart-options-msedge-390](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/chart-options-msedge-390.png)
 
 ## 证据与范围
 
-[完整 TS 测试](artifacts/source-test.txt)、[类型检查](artifacts/source-check.txt)、[构建](artifacts/source-build.txt)、[安装消费者浏览器](artifacts/consumer-browser.txt)、[Python 摘要](artifacts/python-summary.txt)。
+[完整 TS 测试](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/source-test.txt)、[类型检查](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/source-check.txt)、[构建](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/source-build.txt)、[安装消费者浏览器](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/consumer-browser.txt)、[Python 摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/python-summary.txt)。
 
 ECharts 静默忽略的未知属性不承诺提前识别。地图与其他组件不新增透传入口。真实服务、真实模型默认选择行为、远端 CI、发布和部署均未由本次本地成功推断；后续如需要，单列验收。
 
@@ -62,9 +62,9 @@ ECharts 静默忽略的未知属性不承诺提前识别。地图与其他组件
 
 复验输入树 `35da237dacc94ec2e793573b3149828b6469e39a`；复验后仅补充此交付记录和文本日志，不更改产品输入。
 
-- 完整 `pnpm test`：257 个文件通过，2255 项成功、5 项跳过，见[日志](artifacts/main-test.txt)。
-- `pnpm check`、`pnpm build` 通过，见[类型检查](artifacts/main-check.txt)、[构建](artifacts/main-build.txt)。
-- 完整 `pnpm authoring:test`：540 项成功、1 项跳过，无真实模型调用，见[摘要](artifacts/main-python.txt)。
+- 完整 `pnpm test`：257 个文件通过，2255 项成功、5 项跳过，见[日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/main-test.txt)。
+- `pnpm check`、`pnpm build` 通过，见[类型检查](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/main-check.txt)、[构建](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/main-build.txt)。
+- 完整 `pnpm authoring:test`：540 项成功、1 项跳过，无真实模型调用，见[摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-echarts-option/artifacts/main-python.txt)。
 - `pnpm validate pages`：30/30；契约检查、ADR 索引和差异检查通过；Bundle 摘要检查 2776 项通过。
 
 首轮本地安装后的 Chrome/Edge 298 项结果仍对应上文冻结树；不把它当作接入新基线后的浏览器证据。交付提交的完整安装消费与聚合检查由其 GitHub CI 提供，以实际提交 SHA 和完成结论为准。

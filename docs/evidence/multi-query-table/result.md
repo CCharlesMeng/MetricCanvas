@@ -13,15 +13,15 @@ Python 的新组合/数值范围语义通过 Bundle 内产品 TS Node Bridge，�
 | 层级 | 结果与边界 |
 |---|---|
 | 全仓静态/类型 | `pnpm check` 通过，TypeScript/Svelte 无错误；ADR 索引检查通过 |
-| 全量 TS 测试 | 最终源码 `pnpm test` 226 文件、1994 测试通过，包含最终状态所有者、初始快照资格与契约/隔离检查；见 [ts-suite.txt](ts-suite.txt) |
+| 全量 TS 测试 | 最终源码 `pnpm test` 226 文件、1994 测试通过，包含最终状态所有者、初始快照资格与契约/隔离检查；见 [ts-suite.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/multi-query-table/ts-suite.txt) |
 | 执行与兼容 | 普通、固定级联、TopN、导出、取消、计算、参数、跨源组合均回归；请求集合归一及最终配方检查通过 |
 | 协议/独立 Skill | 最新协议与独立校验器 57 文件、517 测试通过；旧版本拒绝、初始行资格、非法引用/字段、来源参数失效、1200 项普通本地选择集合兼容 |
 | Python | 全量 541 测试通过；最新规则/交付 467 测试复测通过，含无真实模型的确定性 stdio/HTTP 主流程 |
-| 浏览器 | 最终 Chrome 10 项回归覆盖组合、搜索/导出、where、共享执行与详情表；切换排序、第二页、跨源范围、非法草稿与完整 Excel 下载通过；见 [browser.txt](browser.txt) |
+| 浏览器 | 最终 Chrome 10 项回归覆盖组合、搜索/导出、where、共享执行与详情表；切换排序、第二页、跨源范围、非法草稿与完整 Excel 下载通过；见 [browser.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/multi-query-table/browser.txt) |
 | HTTP Sim | 原生 DQE 编码、选页/补列、跨源数值范围、总数和完整导出通过；真实验收 CLI 机制在 Sim 中通过。Sim 不解释 pagedJoin、不证明真实能力 |
 | 契约/Bundle | `authoring:contracts:check` 当前；629 product、4 authoring、1 interface 文件；Bundle 2346 摘要核对通过；公开面与共享执行依赖门禁通过 |
 | 安装/构建 | 产品包构建与 packages:check 通过；实际 sdist→wheel 构建成功，仓库外解包验证两种 6.22 分支，非法字段拒绝；独立 Skill 无仓库依赖验收通过 |
-| 真实 DQE/Relay | NOT_RUN；见[预检回执](real-preflight.json)和[真实验收步骤](real-acceptance.md)，目标引擎须支持 6.22 |
+| 真实 DQE/Relay | NOT_RUN；见[预检回执](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/multi-query-table/real-preflight.json)和[真实验收步骤](real-acceptance.md)，目标引擎须支持 6.22 |
 
 完整隔离生成检查 19 项通过。曾并发修改锁时两项复制测试出现 stale；冻结输入后两项复测和 19 项完整检查均通过，未放宽门禁。`git diff --check` 的生成空白模式未手改派生副本；详情见[范围保护](scope.md)。
 
@@ -44,7 +44,7 @@ Python 的新组合/数值范围语义通过 Bundle 内产品 TS Node Bridge，�
 | A14 | TS/Bridge 契约、Bundle、独立 Skill、实际 sdist/wheel、公开面与依赖门禁 |
 | A15 | NOT_RUN，不以仿真或真实模型密钥代替真实 DQE/Relay 能力 |
 
-![召开率排序后深圳进入第一页，独立图仍为 8 行](browser.png)
+[历史截图：召开率排序后深圳进入第一页，独立图仍为 8 行](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/multi-query-table/browser.png)
 
 大规模跨源条件仍受 fallback.maxRows（最大 1000）限制；没有上游事务快照令牌时，同总数内容变化无法完全检测。延期的无关校验、旧 Python 语义、详情/导航进一步拆分已登记到原方案第 16 节。
 
@@ -58,7 +58,7 @@ Python 的新组合/数值范围语义通过 Bundle 内产品 TS Node Bridge，�
 
 本轮验证：20/20 pages 校验、目录与 HTTP Sim 7 项测试、组合/普通表格/where 浏览器 8 项测试、协议参考/Skill/生成隔离 30 项测试通过；引擎检查 0 错误/0 警告、测试类型检查及 embed 构建通过；契约检查当前，Bundle 2346 摘要通过。实际页面通过 `pnpm dev:dqe` 加载，跨源条件得到 1 行、独立图和完整表保持 8 行。前述全仓 1994 项测试、Python 与 wheel 是前一实施快照的证据，本轮按新增页面、文档、弹层及分发范围回归。真实 DQE/Relay 仍未验收。
 
-![实际试验场的一行跨源结果与独立完整行集](pages-scene.jpg)
+[历史截图：实际试验场的一行跨源结果与独立完整行集](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/multi-query-table/pages-scene.jpg)
 
 ## 2026-10-15：当前序号与固定预签金额排名双表
 
@@ -72,4 +72,4 @@ Python 的新组合/数值范围语义通过 Bundle 内产品 TS Node Bridge，�
 
 协议/独立 Skill/参考/生成隔离 4 文件 38 项通过；订正独立固定排名示例的描述后，重新生成并核对契约与 Bundle，参考及独立 Skill 的 11 项定点复测通过。
 
-![两张表在召开率降序下分别呈现1/2/3和1/4/2](two-ranking-comparison.jpg)
+[历史截图：两张表在召开率降序下分别呈现1/2/3和1/4/2](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/multi-query-table/two-ranking-comparison.jpg)

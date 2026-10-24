@@ -49,6 +49,6 @@
 
 这些追加文档有静态检查，**没有再做第三次模型测试**。下一次模型验证应把独立数值断言与最终呈现文字检查作为交付门槛；不能仅靠继续增加文档认定模型会遵守。宏观区域完整地图仍需要业务区域到几何的明确契约；真实筛选与下钻仍需要可执行数据与查询前提。
 
-[第二轮机器结论](retest/parent/acceptance.json)、[独立计算核对](retest/parent/retest-business-check.json)、[浏览器与布局](retest/parent/retest-browser.json)、[实际交互](retest/parent/retest-interactions.json)、[模型反馈](retest/output/skill-feedback.md)。测试所用说明版本冻结在retest/parent/tested-knowledge；当前Skill含复测后追加说明。完整独立Skill仍保留于本轮临时测试目录，知识清单/输入哈希和关键说明已随证据保存。
+[第二轮机器结论](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-ioc-overview/retest/parent/acceptance.json)、[独立计算核对](retest/parent/retest-business-check.json)、[浏览器与布局](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-ioc-overview/retest/parent/retest-browser.json)、[实际交互](retest/parent/retest-interactions.json)、[模型反馈](retest/output/skill-feedback.md)。测试所用说明版本冻结在retest/parent/tested-knowledge；当前Skill含复测后追加说明。完整独立Skill仍保留于本轮临时测试目录，知识清单/输入哈希和关键说明已随证据保存。
 
-[宽屏截图](retest/parent/retest-desktop.png)、[窄屏截图](retest/parent/retest-mobile.png)、[模型原样最终JSON](retest/output/final/ioc-project-overview.json)。没有人工修正模型JSON，也没有改动运行时或pages中的旧页面。无真实DQE、目标业务页、生产发布或人工视觉验收声明。
+[宽屏截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-ioc-overview/retest/parent/retest-desktop.png)、[窄屏截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-ioc-overview/retest/parent/retest-mobile.png)、[模型原样最终JSON](retest/output/final/ioc-project-overview.json)。没有人工修正模型JSON，也没有改动运行时或pages中的旧页面。无真实DQE、目标业务页、生产发布或人工视觉验收声明。

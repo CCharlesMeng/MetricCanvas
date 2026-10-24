@@ -1,7 +1,0 @@
-Scope: 2 of 12 workspace projects
-packages/page build$ node ../../tools/package-build/build.mjs page
-packages/page build: .svelte-kit/package-input -> dist
-packages/page build: Done
-packages/data-execution build$ node ../../tools/package-build/build.mjs data-execution
-packages/data-execution build: .svelte-kit/package-input -> dist
-packages/data-execution build: Done

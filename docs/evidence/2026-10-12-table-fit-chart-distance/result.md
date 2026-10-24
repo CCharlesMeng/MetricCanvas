@@ -17,17 +17,17 @@
 | 1280px正常尺寸 | [六表测量](standard-complete.json)：容器宽1076、1036、492px，均 scrollWidth=clientWidth、单元格无裁切、页面无横向溢出 |
 | 390px窄屏 | [测量](narrow-complete.json)：项目两表约823px宽，由214px滚动层承接；其他表无需横向滚动，页面仍390px宽，单元格无裁切 |
 | 最后一组列可达 | [真实滚动操作](narrow-scroll.json)：scrollLeft=609=maxScroll，能到达华为云计算SDT列组，页面不随表格撑宽 |
-| 标签位置与完整性 | 实际 ECharts SVG 测试覆盖普通柱、折线、混合图，正负值/零值的标签中心距对应节点不超过16px；保留重复resize位置稳定回归。代表处60类别/120数值均绘制，见[汇总](svg-summary.json) |
+| 标签位置与完整性 | 实际 ECharts SVG 测试覆盖普通柱、折线、混合图，正负值/零值的标签中心距对应节点不超过16px；保留重复resize位置稳定回归。代表处60类别/120数值均绘制，见[汇总](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-table-fit-chart-distance/svg-summary.json) |
 | 组件及运行时回归 | 47文件、350测试通过，见[日志](widget-runtime-tests-complete.log) |
 | 本地项目数据链路 | 3项级联/导出测试通过；[HTTP模拟记录](project-simulation.json)为本地合成阶段值，不能作为生产数据证明 |
 | 类型检查 | engine 0错误0警告，见[日志](engine-check-complete.log)；Playground 检查见[日志](playground-check.log) |
 | 页面与分发 | 15/15页面校验通过；570产品、4创作、1接口生成契约一致；bundle 0.3.1 的1829摘要一致，见[页面](page-validation-complete.log)、[契约](contracts-check.log)、[bundle](bundle-check.log) |
 | 静态导出 | 正式 RuntimeView.withExportView 对[快照和项目模拟回放](export-replay.json)生成5张ready静态图、0 canvas；项目榜各5行。宽项目分区被标记为landscape并展开至适配宽度，表格无裁切，见[结果](export-complete.json) |
 
-![代表处数字贴近节点](chart-desktop.png)
+[历史截图：代表处数字贴近节点](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-table-fit-chart-distance/chart-desktop.png)
 
-![正常尺寸下项目表格全部列](tables-desktop.png)
+[历史截图：正常尺寸下项目表格全部列](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-table-fit-chart-distance/tables-desktop.png)
 
-窄屏效果见[起始列截图](tables-narrow-accepted.png)及[滚动到最后列](tables-narrow-right.png)。60类与120数值仍很密，全部保留可能局部重叠；本次处理距离问题，不以隐藏标签改善密度。
+窄屏效果见[起始列截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-table-fit-chart-distance/tables-narrow-accepted.png)及[滚动到最后列](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-table-fit-chart-distance/tables-narrow-right.png)。60类与120数值仍很密，全部保留可能局部重叠；本次处理距离问题，不以隐藏标签改善密度。
 
 静态导出回放是本地验收输入，原query整页导出重查、真实DQE/Relay/Java、生产PDF编码、CI及部署未在本轮验证。临时验收路由已移除，浏览器返回实际报告。未提交或推送。[批次结论](../../archive/2026-10-12-table-fit-chart-distance/README.md)保存过程中被用户补充要求替代的窄屏方案及中间检查日志。

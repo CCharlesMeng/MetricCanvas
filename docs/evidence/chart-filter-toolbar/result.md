@@ -28,4 +28,4 @@
 
 可观察值：初始收入合计 1,710 万元；切换订单为 5,579 笔；选择华东为 3,095 笔；切回收入为 951 万元。浏览器验证了实际 HTTP 查询条件、显示值、canvas 绘图高度和控件落位，没有用控件文本代替取数证据。控件不请求候选端口。
 
-实际 Playground：`http://127.0.0.1:5187/pages/filter-group-page`，DQE Sim 为 18328。正常浏览器视口的页面截图见 [playground.png](playground.png)。原工作区与原 5173 服务未改动。
+实际 Playground：`http://127.0.0.1:5187/pages/filter-group-page`，DQE Sim 为 18328。正常浏览器视口的页面截图见 [playground.png](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/chart-filter-toolbar/playground.png)。原工作区与原 5173 服务未改动。

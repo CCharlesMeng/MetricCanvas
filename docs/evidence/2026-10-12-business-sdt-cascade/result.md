@@ -24,10 +24,10 @@
 | 包构建 | passed | build:packages、embed build、packages:check通过 |
 | 契约/分发 | passed | authoring:contracts及check，548 product/4 authoring/1 interface；check_bundle.py 1772 digest checks通过 |
 | 决策及差分 | passed | ADR索引check、git diff --check通过 |
-| 本地HTTP | passed | 202609与202610两套编号集合，普通DQE两阶段取数及项目分区导出；[9月记录](local-http.json)、[10月记录](local-http-october.json) |
-| 浏览器正常数据 | passed | 两表10行100个单元格逐项对照夹具与number-1格式，见[DOM](browser-desktop.json)、[核对结果](browser-row-verification.json)、[截图](project-efficiency-cascade.jpg) |
+| 本地HTTP | passed | 202609与202610两套编号集合，普通DQE两阶段取数及项目分区导出；[9月记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/local-http.json)、[10月记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/local-http-october.json) |
+| 浏览器正常数据 | passed | 两表10行100个单元格逐项对照夹具与number-1格式，见[DOM](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-desktop.json)、[核对结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-row-verification.json)、[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/project-efficiency-cascade.jpg) |
 | 浏览器异常呈现 | passed | 空集显示暂无数据；主失败和阶段失败显示查询错误，不显示旧行；截图和HTTP分别见下方 |
-| 窄屏 | passed | 390×844模拟视口、每表5行10列、内部auto横向滚动及宽度证据，[DOM](browser-narrow.json)、[截图](project-efficiency-narrow.jpg)；不是实机触摸验证 |
+| 窄屏 | passed | 390×844模拟视口、每表5行10列、内部auto横向滚动及宽度证据，[DOM](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-narrow.json)、[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/project-efficiency-narrow.jpg)；不是实机触摸验证 |
 | 导出数据准备 | passed | 导出使用新主集合，保留Top5；complete辅助、普通分页、取消和行数限制均有运行时回归；没有进行此报告的完整PDF编码验收 |
 | 真实DQE/Relay/Java/DS模型 | not-run | 本批没有相应真实上下文与响应；本地数据不证明生产时长、完整性或权限 |
 | CI/部署/Git交付 | not-run | 未提交、推送或部署；保留其他会话改动 |
@@ -56,14 +56,14 @@ git diff --check
 
 ## 浏览器请求与失败证据
 
-[请求摘要](browser-request-summary.json)已从本地服务日志逐项核验，仅统计POST，CORS预检另列。正常打开：一次批量主请求包含两项逻辑查询；主响应成功后一次批量阶段请求包含两项逻辑查询，各含其自身全部且仅5个商务编号。截图不足以单独证明这个时序，时序使用HTTP记录。
+[请求摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-request-summary.json)已从本地服务日志逐项核验，仅统计POST，CORS预检另列。正常打开：一次批量主请求包含两项逻辑查询；主响应成功后一次批量阶段请求包含两项逻辑查询，各含其自身全部且仅5个商务编号。截图不足以单独证明这个时序，时序使用HTTP记录。
 
 空集和主查询失败均只有一次主POST，没有阶段POST；阶段失败有主、阶段两次POST，页面错误分类为DQE_QUERY_REJECTED。
 
-- 空集：[页面文字](browser-empty.txt)、[截图](project-efficiency-empty.jpg)、[HTTP](browser-empty-http.log)。
-- 主失败：[页面文字](browser-main-error.txt)、[截图](project-efficiency-main-error.jpg)、[HTTP](browser-main-error-http.log)。
-- 阶段失败：[页面文字](browser-detail-error.txt)、[截图](project-efficiency-detail-error.jpg)、[HTTP](browser-detail-error-http.log)。
-- 最终正常：[HTTP](browser-final-http.log)。已恢复正常仿真，浏览器正常预览保持打开，临时窄屏视口已恢复。
+- 空集：[页面文字](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-empty.txt)、[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/project-efficiency-empty.jpg)、[HTTP](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-empty-http.log)。
+- 主失败：[页面文字](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-main-error.txt)、[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/project-efficiency-main-error.jpg)、[HTTP](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-main-error-http.log)。
+- 阶段失败：[页面文字](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-detail-error.txt)、[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/project-efficiency-detail-error.jpg)、[HTTP](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-detail-error-http.log)。
+- 最终正常：[HTTP](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-business-sdt-cascade/browser-final-http.log)。已恢复正常仿真，浏览器正常预览保持打开，临时窄屏视口已恢复。
 
 DQE Sim接受DQE_SDT_SCENARIO=empty/main-error/detail-error注入本地验证状态；正常启动不设置此变量。延迟、代次竞争、共享消费者、同编号换月份和导出中止在确定性运行时测试中验证，未将其称为真实网络取消验收。当前页面月份固定202609；第二月份通过HTTP测试修改本轮四源声明验证，没有新增页面日期控件。
 

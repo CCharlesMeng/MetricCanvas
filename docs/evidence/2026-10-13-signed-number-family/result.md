@@ -14,12 +14,12 @@
 | 验证 | 结论 |
 |---|---|
 | 格式、方向、颜色、版本门禁定向测试 | 4文件、87测试全部通过；参数/筛选文本、默认格式及详情绑定同时覆盖 |
-| 全量TypeScript回归 | 202文件，1818通过、4跳过、0失败；见[日志](vitest.txt)，跳过项不计通过 |
+| 全量TypeScript回归 | 202文件，1818通过、4跳过、0失败；见[日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-family/vitest.txt)，跳过项不计通过 |
 | 全量创作侧Python回归 | 527测试：526通过、1跳过、0失败；真实模型调用为0，跳过项不计通过 |
-| 全仓类型检查 | `pnpm check`通过，Svelte无错误或警告；见[日志](typecheck.txt) |
+| 全仓类型检查 | `pnpm check`通过，Svelte无错误或警告；见[日志](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-family/typecheck.txt) |
 | 公共模块复杂度 | radon6.0.1检查通过，上限15、最大15、无违规 |
 | 分发与页面 | 生成契约及Bundle摘要检查通过；16个页面文档通过；ADR索引最新 |
-| 实际浏览器 | 表格8行、指标卡16个变化项均验证；新格式正负值、舍入零、舍入临界、缺失和千分位方向通过；见[记录](browser.json)及[截图](browser.jpg)；error日志为空 |
+| 实际浏览器 | 表格8行、指标卡16个变化项均验证；新格式正负值、舍入零、舍入临界、缺失和千分位方向通过；见[记录](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-family/browser.json)及[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-13-signed-number-family/browser.jpg)；error日志为空 |
 | 真实服务及部署 | 未执行真实DS模型、真实DQE、Relay/Java或生产部署 |
 
 本地跳过项依赖被gitignore排除的设计参考源及语义目录原始证据，在隔离工作树中未提供；格式定向测试没有跳过。

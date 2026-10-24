@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-skill.test.ts tests/page-reference.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/metric-card-group-delivery/DataDashboard
-
-
- Test Files  2 passed (2)
-      Tests  28 passed (28)
-   Start at  22:13:23
-   Duration  5.66s (transform 432ms, setup 0ms, import 3.70s, tests 6.75s, environment 0ms)

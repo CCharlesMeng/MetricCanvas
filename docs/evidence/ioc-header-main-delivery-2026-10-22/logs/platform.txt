@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run apps/platform/tests/microfrontend/dialogue-services.test.ts apps/platform/tests/microfrontend/filter-candidates.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-header-main-delivery/DataDashboard
-
-
- Test Files  2 passed (2)
-      Tests  6 passed (6)
-   Start at  09:37:06
-   Duration  832ms (transform 713ms, setup 0ms, import 1.26s, tests 7ms, environment 0ms)

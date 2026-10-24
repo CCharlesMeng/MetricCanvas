@@ -23,7 +23,7 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:5186 node apps/playground/tests/table-row-n
 
 16项通过：本地第2页11—20；金额降序客户25序号1；搜索客户2结果为1—7；数值下限24匹配2行并重编号；Excel完整行集从1编号且跨行表头正确；query网关桩第2页从11开始且未增加查询字段；多级表头、三种变体、空结果、390px固定列无重叠；父表展开colspan包含序号，子表第2页从11开始且父表仍为1；已有搜索、导出、子表行为回归通过。
 
-实际Playground路由 `/pages/table-row-number` 显示第1页序号1，切第2页后为11。最终元数据调整后单独重跑该路由测试通过。截图：[第2页及变体](playground.png)。
+实际Playground路由 `/pages/table-row-number` 显示第1页序号1，切第2页后为11。最终元数据调整后单独重跑该路由测试通过。截图：[第2页及变体](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/table-row-number/playground.png)。
 
 ## 其他检查
 

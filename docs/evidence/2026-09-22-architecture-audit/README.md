@@ -2,7 +2,7 @@
 
 > 本文记录修改前的审计快照。第 1、2、3 项已在后续修改中处理，当前交付与验收见[退役验收记录](../2026-09-22-authoring-retirement/README.md)。原关系复现脚本引用当时的旧模块，仅用于保留修改前证据；当前复现请使用退役记录中的现行命令。
 
-检视日期：2026-09-22。对象是当前工作区（包含已有未提交修改），不是仅 HEAD；HEAD 为 `0864ff572adefe4c3cb18e606347de2aea67d7ed`。计数时间和逐文件 SHA-256 见 [inventory.json](inventory.json)。检视期间其他工作仍在更新测试文件，测试运行与计数是分别记录的时间点，不宣称工作区原子快照。
+检视日期：2026-09-22。对象是当前工作区（包含已有未提交修改），不是仅 HEAD；HEAD 为 `0864ff572adefe4c3cb18e606347de2aea67d7ed`。计数时间和逐文件 SHA-256 见 [inventory.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-architecture-audit/inventory.json)。检视期间其他工作仍在更新测试文件，测试运行与计数是分别记录的时间点，不宣称工作区原子快照。
 
 结论：业务模块划分总体合理，创作期与渲染期已分离，HTTP/SQLite 实现没有通过 Python import 泄漏到业务模块；但不能声称内部系统变化完全局部化。现状仍包含一条可运行的旧保存入口、一组未被生产入口消费的旧编排、Java/Lab 原始字段在业务层的解析，以及尚未交付的 Relay 生产装配。最需要处理的是迁移收口和接入接口，而不是按目录大小全面拆包。
 
@@ -41,7 +41,7 @@ flowchart LR
 
 证据：`pages/referenced.py:65` 调用 `block_component(block, sources, pattern)`，没有传入 relations；`pages/composition/page_structure.py:80` 的默认值是空元组；`pages/components/section_presentation.py` 要求同比/环比的 evidenceRef 匹配可信关系。旧 `structure_composition.py` 会调用 `load_relations`，现行 `QueryResults` 与 `pages/referenced` 没有相应交付链。
 
-使用仓库现有 presentation_plan 与本地依赖实际复现：旧 compose_structure 返回 changed；把同样已执行的数据源与章节送入现行 compose，三个指标卡均返回 STRUCTURE_CHANGE_RELATION_UNVERIFIED，整体 failed。见 [复现代码](reproduce-relations.py) 与 [结果](relations-result.json)。这是带可信同比/环比关系的指标摘要场景，不能泛化成所有指标卡失败。
+使用仓库现有 presentation_plan 与本地依赖实际复现：旧 compose_structure 返回 changed；把同样已执行的数据源与章节送入现行 compose，三个指标卡均返回 STRUCTURE_CHANGE_RELATION_UNVERIFIED，整体 failed。见 [复现代码](reproduce-relations.py) 与 [结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-09-22-architecture-audit/relations-result.json)。这是带可信同比/环比关系的指标摘要场景，不能泛化成所有指标卡失败。
 
 后果：`test_structure_current.py` 的绿色不能证明现行 MCP 工具具备相同能力。先决定并迁移关系授权、结果记录和消费链，再删除旧编排；验收必须通过现行 query→compose/edit 接口。
 
