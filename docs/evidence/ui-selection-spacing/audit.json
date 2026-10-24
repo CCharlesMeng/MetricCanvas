@@ -1,0 +1,457 @@
+{
+  "status": "passed",
+  "results": [
+    {
+      "shadow": false,
+      "viewport": 1440,
+      "label": "检查单选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全部",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": false,
+      "viewport": 1440,
+      "label": "检查多选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全选",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": false,
+      "viewport": 1440,
+      "label": "检查树选择",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": 16,
+      "statusPadding": null
+    },
+    {
+      "shadow": false,
+      "viewport": 1440,
+      "label": "检查重试",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "重试",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "shadow": false,
+      "viewport": 1440,
+      "label": "检查空状态",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "shadow": false,
+      "viewport": 390,
+      "label": "检查单选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全部",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": false,
+      "viewport": 390,
+      "label": "检查多选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全选",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": false,
+      "viewport": 390,
+      "label": "检查树选择",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": 16,
+      "statusPadding": null
+    },
+    {
+      "shadow": false,
+      "viewport": 390,
+      "label": "检查重试",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "重试",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "shadow": false,
+      "viewport": 390,
+      "label": "检查空状态",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "shadow": true,
+      "viewport": 1440,
+      "label": "检查单选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全部",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": true,
+      "viewport": 1440,
+      "label": "检查多选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全选",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": true,
+      "viewport": 1440,
+      "label": "检查树选择",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": 16,
+      "statusPadding": null
+    },
+    {
+      "shadow": true,
+      "viewport": 1440,
+      "label": "检查重试",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "重试",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "shadow": true,
+      "viewport": 1440,
+      "label": "检查空状态",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "shadow": true,
+      "viewport": 390,
+      "label": "检查单选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全部",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": true,
+      "viewport": 390,
+      "label": "检查多选",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "全选",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "选项 A",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        },
+        {
+          "text": "禁用选项",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": 8
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": null
+    },
+    {
+      "shadow": true,
+      "viewport": 390,
+      "label": "检查树选择",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": 16,
+      "statusPadding": null
+    },
+    {
+      "shadow": true,
+      "viewport": 390,
+      "label": "检查重试",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [
+        {
+          "text": "重试",
+          "width": 240,
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "iconGap": null
+        }
+      ],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "shadow": true,
+      "viewport": 390,
+      "label": "检查空状态",
+      "width": 240,
+      "left": 24,
+      "right": 264,
+      "searchInset": 16,
+      "rows": [],
+      "treeInset": null,
+      "statusPadding": "16px"
+    },
+    {
+      "page": "table-cell-selection",
+      "selected": "中国地区部"
+    }
+  ]
+}
