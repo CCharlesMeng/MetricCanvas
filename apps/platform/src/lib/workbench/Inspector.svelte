@@ -12,6 +12,7 @@
   import type { PageComponentView, WorkbenchPageViewModel } from './transient-page';
   import type { AuthoringIntent } from '@metriccanvas/metric-canvas/types';
   import {componentListMove} from './component-list-order';
+  import type {ConditionFilter} from './condition-editor';
 
   /**
    * 检查器(原型 ask-workbench.v2 右栏):选中画布组件后展示组件形态切换
@@ -52,7 +53,7 @@
     onMoveComponent?: (intent: Extract<AuthoringIntent, {type: 'move_component'}>) => void;
     onEdit: (edit: { title?: string; span?: number }) => void;
     properties?: PropertyControl[];
-    onPropertyEdit?: (edit: PropertyEdit) => void;
+    onPropertyEdit?: (edit: PropertyEdit) => string|void;
   } = $props();
   let tab = $state<'component' | 'page'>('component');
   let previousSelection: string | undefined;
@@ -62,6 +63,10 @@
     previousSelection = componentId;
   });
   const widthPresets = $derived([...new Set([Math.max(1, Math.round(selectedColumnCount / 4)), Math.max(1, Math.round(selectedColumnCount / 3)), Math.max(1, Math.round(selectedColumnCount / 2)), selectedColumnCount])]);
+  const filters=$derived((dateDraft?.pageDocument.filters??[]) as ConditionFilter[]);
+  const availableCandidates=$derived(candidates.filter(candidate=>candidate.ok));
+  const unavailableCandidates=$derived(candidates.filter(candidate=>!candidate.ok));
+  const currentCandidate=$derived(candidates.find(candidate=>candidate.type===selectedView?.componentType));
   let draggingId = $state<string | null>(null);
   let dropTarget = $state<{componentId: string; after: boolean} | null>(null);
   let orderList = $state<HTMLUListElement | null>(null);
@@ -126,18 +131,23 @@
     <p>选择组件，调整布局与展示效果</p>
     <div class="panel-tabs" role="group" aria-label="配置范围">
       <button type="button" class:active={tab === 'component'} aria-pressed={tab === 'component'} onclick={() => tab = 'component'}>组件配置</button>
-      <button type="button" class:active={tab === 'page'} aria-pressed={tab === 'page'} onclick={() => tab = 'page'}>页面设置</button>
+      <button type="button" class:active={tab === 'page'} aria-pressed={tab === 'page'} onclick={() => tab = 'page'}>页面属性</button>
     </div>
+    {#if selected && pageModel}
+      <div class="component-switch">
+      <Select label="切换组件" value={selected.componentId} disabled={busy} options={pageModel.components.map(component=>({value:component.componentId,label:component.title??component.componentLabel}))} onchange={onSelectComponent}/>
+      </div>
+    {/if}
   </header>
 
   <div class="inspector-content">
   {#if tab === 'page'}
     <div class="panel">
-      {#if dateDraft && onPropertyEdit}<ComponentProperties controls={presentationControls(dateDraft)} {busy} onEdit={onPropertyEdit}/>{/if}
+      {#if dateDraft && onPropertyEdit}<ComponentProperties controls={presentationControls(dateDraft)} {filters} {busy} onEdit={onPropertyEdit}/>{/if}
       {#if dateDraft?.pageDocument.layout === 'dashboard' && onDateEdit}
         <ReportDateProperties draft={dateDraft} locator={null} {busy} onEdit={onDateEdit}/>
       {:else}
-        <div class="empty-state"><b>页面设置</b><p>页面标题可在画布顶部修改。报告日期筛选请选中报告页头后配置。</p></div>
+        <div class="empty-state"><b>页面属性</b><p>页面标题可在画布顶部修改，确认保存后生效。报告日期筛选请选中报告页头后配置。</p></div>
       {/if}
     </div>
   {:else if !pageModel}
@@ -154,8 +164,13 @@
       {#if candidates.length}
       <section>
         <h5>组件形态</h5>
-        <Select label="组件形态" value={selectedView.componentType} disabled={busy} options={candidates.map(candidate=>({value:candidate.type,label:candidate.label+(candidate.recommended&&candidate.ok?' · 推荐':candidate.ok?'':' · 不适用'),disabled:!candidate.ok}))} onchange={value=>{const candidate=candidates.find(item=>item.type===value);if(candidate?.ok)onSelectType(candidate.type);}}/>
+        <Select label="组件形态" value={selectedView.componentType} disabled={busy} options={[...(currentCandidate&&!currentCandidate.ok?[{value:currentCandidate.type,label:currentCandidate.label+' · 当前形态',disabled:true}]:[]),...availableCandidates.map(candidate=>({value:candidate.type,label:candidate.label+(candidate.recommended?' · 推荐':'')}))]} onchange={value=>{const candidate=availableCandidates.find(item=>item.type===value);if(candidate)onSelectType(candidate.type);}}/>
         <p class="hint">可用形态取决于当前组件的数据。</p>
+        {#if unavailableCandidates.length}
+          <details><summary>查看不可用形态及原因（{unavailableCandidates.length}）</summary>
+            <ul>{#each unavailableCandidates as candidate(candidate.type)}<li><b>{candidate.label}</b><ul>{#each candidate.reasons as reason}<li>{reason}</li>{/each}</ul></li>{/each}</ul>
+          </details>
+        {/if}
       </section>
       {/if}
 
@@ -180,7 +195,7 @@
         {/if}
       </section>
 
-      {#if onPropertyEdit}<ComponentProperties controls={properties} {busy} onEdit={onPropertyEdit} />{/if}
+      {#if onPropertyEdit}<ComponentProperties controls={properties} {filters} {busy} onEdit={onPropertyEdit} />{/if}
       {#if selectedView.componentType==='reportHeader' && selected && dateDraft && onDateEdit}<ReportDateProperties draft={dateDraft} locator={selected} {busy} onEdit={onDateEdit}/>{/if}
 
       {#if selectedView.dataSourceId}
@@ -254,6 +269,7 @@
   .inspector-heading > span,.list-heading > span { font-size:11px; color:#7b8494; }
   header p { margin:6px 0 14px; color:var(--faint,#7b8494); font-size:12px; }
   .panel-tabs { display:flex; gap:20px; }
+  .component-switch { padding:12px 0; }
   .panel-tabs button { padding:0 0 11px; border:0; border-bottom:2px solid transparent; background:transparent; font:inherit; font-size:12px; color:#7b8494; cursor:pointer; }
   .panel-tabs button.active { border-bottom-color:#1476ff; color:#1476ff; font-weight:600; }
   .inspector-content { flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin; }

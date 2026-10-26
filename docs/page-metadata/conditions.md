@@ -23,3 +23,11 @@ text的props.parts可声明{id,text,visibleWhen?}，与body/bodyFormat互斥，�
 PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不受当前选项限制；条件禁止的内容不导出，允许的空父容器保留。XLSX使用同一表格行投影。普通筛选变化不修改已捕获导出，权限修订变化取消下载；隐藏不会自动停止查询。
 
 验收入口：[层级联动](examples/page-visibility-region-linkage.json)、[外部事实Sim](examples/page-visibility-inputs.json)。示例使用明确的本地演示输入；内联数据与Sim事实不能替代真实CloudIOC/DQE联调。
+
+## 工作台中的条件编辑
+
+工作台的页面属性和组件属性默认只列已配置规则的业务名称与条件摘要，未声明条件时沿用原行为。点击“添加条件”后再选择作用对象；基础筛选表单支持维度筛选的已选择/未选择，以及时间筛选值或起止边界的已填写/未填写，分别写出既有 `isNotEmpty/isEmpty` 或 `isNotNull/isNull` 条件。
+
+组合、取值比较、已有权限、页面事实和行条件完整保留，使用“高级：JSON 条件”编辑。高级规则切换至基础表单时，只有显式应用才替换原规则，取消不修改文档。JSON 解析及完整页面校验成功后原子应用；引用不存在筛选器、非法操作或缺少行上下文均拒绝，错误在编辑窗口中解释。移除规则恢复未声明状态，修改进入工作副本，确认保存后持久化。不新增或放宽 Condition 协议。
+
+可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。

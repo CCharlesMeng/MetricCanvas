@@ -16,18 +16,21 @@
   $effect(()=>{
     displayedIds;
     if(!filters)return;
+    const element=filters;
+    let active=true;
     const measure=()=>{
-      const nodes=Array.from(filters!.children) as HTMLElement[];
+      if(!active)return;
+      const nodes=Array.from(element.children) as HTMLElement[];
       const first=nodes[0]?.getBoundingClientRect().top ?? 0;
       const hidden=nodes.filter(node=>node.getBoundingClientRect().top > first+2);
       hiddenIds=hidden.map(node=>node.dataset.iocFilter!);
       overflowing=hidden.length>0;
       firstHeight=Math.max(0,...nodes.filter(node=>!hidden.includes(node)).map(node=>node.getBoundingClientRect().bottom-first));
     };
-    const observer=new ResizeObserver(measure);observer.observe(filters);
-    for(const node of filters.children)observer.observe(node);
-    void filters.ownerDocument.fonts?.ready.then(measure);
-    measure();return()=>observer.disconnect();
+    const observer=new ResizeObserver(measure);observer.observe(element);
+    for(const node of element.children)observer.observe(node);
+    void element.ownerDocument.fonts?.ready.then(measure);
+    measure();return()=>{active=false;observer.disconnect();};
   });
   const collapsed=$derived(!staticView && model.collapse==='firstRow' && overflowing && !expanded);
   function toggle(){

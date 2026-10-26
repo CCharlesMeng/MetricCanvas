@@ -1,3 +1,4 @@
+import {presentationLabel} from './condition-editor';
 import { chartValueControls, applyChartValueEdit, type ChartValueTarget } from './chart-value-edit';
 import { pinnedTableControl, editPinnedTable } from './table-pinned-edit';
 import {applyPresentationOperation,presentationTarget,presentationTargets,type PresentationTarget} from '@metriccanvas/page/internal';
@@ -204,8 +205,9 @@ function changeExportButton(buttons: Record<string, unknown>[], edit: Extract<Pr
 
 export function presentationControls(draft:CanvasAuthoringDraft|null):PropertyControl[]{
  if(!draft)return [];
- return presentationTargets(draft.canvasDocument).flatMap(({target,label,enabled})=>{
+ return presentationTargets(draft.canvasDocument).flatMap(({target,enabled})=>{
   const node=presentationTarget(draft.canvasDocument,target);
+  const label=presentationLabel(draft.canvasDocument,target);
   return (enabled?['visibleWhen','enabledWhen'] as const:['visibleWhen'] as const).map(field=>({id:`condition-${JSON.stringify(target)}-${field}`,label:`${label} · ${field==='visibleWhen'?'显示条件':'执行条件'}`,kind:'json' as const,target:{kind:'presentation' as const,target,field},value:node?.[target.kind==='row'?'rowVisibleWhen':field]}));
  });
 }

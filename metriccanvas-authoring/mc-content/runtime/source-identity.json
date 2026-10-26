@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "777e375786d02a1b09267ef574e036f5e90755551e251c5c1c4997bbc4e87425",
+  "sha256": "4bb619141cd1efce35645ed513f600ec91c3ef1e72d6637ae77c4e8ea432160e",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/conditions.md",
-      "sha256": "c93974afea1a34f70cc509a0f8f19ba518cb026125958772284a8848b73dc3fb"
+      "sha256": "b43fc437136065c2c37b728f5a60d29e33c9ac7c3d47be5c371fe2e8314a39fa"
     },
     {
       "file": "docs/page-metadata/data-sources.md",
@@ -148,11 +148,11 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "13a41d086533c815f3131fae0505da40f9032598d706b0ccceceb46327a50040"
+      "sha256": "fc33072b1df15751e8cc689348ed3914185198aef40874cae4689af0fb42cb43"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
-      "sha256": "7fdbabd9fe25018d234e89a51bd4f49142ca49ad4307c8bc3711a15e8abd9c08"
+      "sha256": "f4b63ad45eb7a588f2f404c1756868249e0e2fe8c12f061321f8fafa01e1d94c"
     },
     {
       "file": "docs/page-metadata/semantic-html.md",
@@ -2240,7 +2240,7 @@
     },
     {
       "file": "pages/platform/README.md",
-      "sha256": "68b5229f11d23fe1fd7ead2afe22ae1240101ce3b0c05c22b9f6afeaa7a9ca6b"
+      "sha256": "bd7536d4832ffe713614f07f37320e14a867aa88a1bb53f64da998d5dc471e13"
     },
     {
       "file": "pages/platform/flow-page.json",
@@ -2249,6 +2249,10 @@
     {
       "file": "pages/platform/platform-canvas-experience.json",
       "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+    },
+    {
+      "file": "pages/platform/platform-interaction-audit.json",
+      "sha256": "4aef6268ac0c8d42b41d1975315e8ea0bb388d1b886dc260f5168f8d11ee87d4"
     },
     {
       "file": "pnpm-lock.yaml",

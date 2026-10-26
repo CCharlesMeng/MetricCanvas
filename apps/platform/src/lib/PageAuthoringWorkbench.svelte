@@ -5,7 +5,7 @@
   import type {DialogueMountContext} from './dialogue/port';
   import PrimaryAction from './PrimaryAction.svelte';
 
-  import {Input,Select} from '@metriccanvas/ui';
+  import {Dialog,Input,Select} from '@metriccanvas/ui';
   import ReadingHeader from './ReadingHeader.svelte';
   import ToolAction from './ToolAction.svelte';
   import PageAssetInfo from './workbench/PageAssetInfo.svelte';
@@ -38,7 +38,7 @@
     type ComponentLocator, type DocumentEditResult
   } from './workbench/document-edit';
   import { editReportDate } from './workbench/report-date-edit';
-  import { propertyControls, editProperty } from './workbench/property-edit';
+  import { propertyControls, editProperty, type PropertyEdit } from './workbench/property-edit';
   import Inspector from './workbench/Inspector.svelte';
   import MetadataJsonDrawer from './workbench/MetadataJsonDrawer.svelte';
   import RevisionPreview from './RevisionPreview.svelte';
@@ -77,9 +77,6 @@
   let cloudAgent=$state<ReturnType<typeof createWorkingCopyAgent>|null>(null);
   let cloudState=$state<ReturnType<ReturnType<typeof createWorkingCopyAgent>['snapshot']>|null>(null);
   let dialogueContext=$state.raw<DialogueMountContext|undefined>();
-  let titlePending:Promise<boolean>=Promise.resolve(true);
-  let confirmedTitle:string|undefined;
-  let titleRef:string|undefined;
   let activateTask=$state<(()=>void)|null>(null);
   let activated=false;
   let publication = $state<ReturnType<typeof createAuthoringPublication> | null>(null);
@@ -110,7 +107,6 @@
   let previewOpen = $state(false);
   let historyOpen = $state(false);
   let settingsOpen=$state(untrack(()=>taskUrl?.searchParams.get('info')==='1'));
-  const settingsId='page-settings-'+crypto.randomUUID();
   const recordManager=createAssetManagement(services.pageAssets,undefined,undefined,services.session.readConfig,services.workSession.canMutate);
   let previewRef = $state<DraftRef | null>(null);
   let savedPreviewTitle=$state('');
@@ -193,7 +189,7 @@
     const cloudSessionId=taskUrl?.searchParams.get('sessionId');
     if(cloudPort&&cloudSessionId){
       cloudAgent=createWorkingCopyAgent({coordinator,port:cloudPort,sessionId:cloudSessionId,flushInput:flushWorkingInput,
-        beforeStart:async()=>{flushWorkingInput();if(!await titlePending)throw Error('页面标题尚未确认保存。');},
+        beforeStart:async()=>flushWorkingInput(),
         readPage:(pageId,signal)=>authoringPort.getLatest(pageId,signal)});
       cloudAgent.subscribe(value=>{cloudState=value;if((value.phase==='completed'||value.phase==='failed')&&editError===cloudNavigationNotice)editError='';});
       dialogueContext={sessionId:cloudSessionId,submit:question=>cloudAgent!.start(question,coordinator.snapshot().draft?'adjust':'create')};
@@ -262,7 +258,6 @@
   $effect(()=>{if(active&&language)return services.authoring?.connect?.(language);});
   const displayTitle=$derived.by(()=>{const meta=authoring.draft?.pageDocument.meta;return meta&&typeof meta==='object'&&'title' in meta&&typeof meta.title==='string'?meta.title:String(authoring.draft?.pageDocument.id??'新建页面');});
   $effect(()=>{if(taskUrl&&authoring.draft)void services.workSession.bind(taskUrl,String(authoring.draft.pageDocument.id),authoring.ref?.resourceId).then(address=>{if(active&&address&&new URL(address,taskUrl).href!==services.navigation.current().href)void services.navigation.navigate(address,{replaceState:true});}).catch(error=>{editError=String(error);});});
-  $effect(()=>{if(authoring.ref?.revisionId!==titleRef){titleRef=authoring.ref?.revisionId;const meta=authoring.draft?.pageDocument.meta;confirmedTitle=typeof meta==='object'&&meta&&'title' in meta&&typeof meta.title==='string'?meta.title:undefined;}});
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
   const canvasDocument = $derived(currentDraft?.canvasDocument ?? null);
   const pageModel = $derived(
@@ -336,26 +331,14 @@
   function flushWorkingInput(){
     const input=document.activeElement;
     if(input instanceof HTMLInputElement||input instanceof HTMLTextAreaElement){
-      if(workbenchElement?.contains(input))input.dispatchEvent(new Event('change',{bubbles:true}));
+      if(!workbenchElement?.contains(input))return;
+      flushingInput=true;
+      try{input.dispatchEvent(new Event('change',{bubbles:true}));}finally{flushingInput=false;}
     }
   }
   function savePageTitle(value:string){
-    if(value===confirmedTitle||!currentDraft||savePending)return;
-    const result=editPageTitle(currentDraft,value);if(!result.ok){editError=result.message;return;}
-    applyDocumentEdit(result);titlePending=commitPageTitle(value);
-  }
-  async function commitPageTitle(value:string):Promise<boolean>{
-    const preparing=coordinator.beginPreparation();
-    try{
-      await preparing.protectWorkingCopy();
-      const pageId=String(coordinator.snapshot().draft!.pageDocument.id);
-      const target=coordinator.snapshot().ref??await services.pageAssets.resolve(pageId);
-      const info=await services.pageInfo.read(target);
-      const updated=await services.pageInfo.update(info,{title:value,replaceBoundTitle});
-      const revision=await authoringPort.getLatest(pageId,undefined,updated.resourceId);
-      if(revision.revisionId!==updated.revisionId)throw Error('标题保存回执尚未能核对，当前工作已保留。');
-      await preparing.rebaseTitle(revision,value);confirmedTitle=value;saveError='';return true;
-    }catch(error){saveError=String(error);return false;}finally{preparing.release();}
+    if(!currentDraft||(savePending&&!flushingInput))return;
+    applyDocumentEdit(editPageTitle(currentDraft,value));
   }
   async function saveRevision() {
     if(cloudAgent){await cloudAgent.start('确认保存当前页面元数据。','confirm-save');return;}
@@ -412,6 +395,21 @@
   function selectComponentFromList(componentId: string) {
     if (!canvasDocument) return;
     selectedComponent = locatorOfComponent(canvasDocument, componentId);
+    void tick().then(() => {
+      if(selectedComponent?.componentId!==componentId)return;
+      const cells = workbenchElement?.querySelectorAll<HTMLElement>('[data-component]');
+      const cell = Array.from(cells ?? []).find(node => node.getAttribute('data-component') === `${selectedComponent?.sectionId}/${componentId}`);
+      cell?.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});
+    });
+  }
+
+  function applyPropertyEdit(edit:PropertyEdit):string|void {
+    if((savePending&&!flushingInput)||previewOpen||loading||!currentDraft)return '页面当前不可编辑。';
+    if(!selectedComponent&&edit.kind!=='presentation')return '请先选择组件。';
+    const result=editProperty(currentDraft,selectedComponent??{sectionId:'',componentId:''},edit);
+    if(!result.ok&&edit.kind==='presentation')return result.message;
+    applyDocumentEdit(result);
+    if(!result.ok)return result.message;
   }
 
   function moveComponentFromList(intent: Extract<AuthoringIntent, {type: 'move_component'}>) {
@@ -473,7 +471,7 @@
       {#if !previewOpen}
         <ToolAction icon="undo" iconOnly ariaLabel="撤销上一步" disabled={!authoring.sync?.canUndo||loading||savePending} onclick={async()=>{try{await coordinator.undo();editError='';}catch(error){editError=String(error);}}}/>
         <ToolAction icon="code" iconOnly bind:element={metadataEntryEl} testId="metadata-json-entry" ariaLabel="查看元数据" disabled={!currentDocument} onclick={()=>metadataOpen=true}/>
-        <ToolAction icon="settings" expanded={settingsOpen} controls={settingsId} onclick={()=>settingsOpen=!settingsOpen}>页面设置</ToolAction>
+        <ToolAction icon="settings" expanded={settingsOpen} onclick={()=>settingsOpen=true}>页面管理</ToolAction>
         {#if pageModel}<PrimaryAction disabled={saveBlocked||!authoring.dirty||authoring.sync?.phase==='saving'} onclick={saveRevision}>{(authoring.sync?authoring.sync.phase==='saving':savePending)?'保存中…':authoring.sync?'保存草稿':baseRevisionId?'保存新修订':'保存首个修订'}</PrimaryAction>{/if}
       {/if}
     </div>
@@ -488,7 +486,7 @@
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
     {#if settingsOpen&&!previewOpen}
-      <section class="settings-panel" id={settingsId} aria-label="页面设置">
+      <Dialog open={settingsOpen} title="页面管理" onclose={()=>settingsOpen=false}>
         <h2 class="settings-heading">创作与发布</h2>
         <div class="settings-actions">
           <ToolAction onclick={()=>services.navigation.navigate(createHref(services.navigation.base,{newTask:true}))}>新建页面</ToolAction>
@@ -501,9 +499,10 @@
         {#if pageModel}<p class="document-summary">{pageModel.components.length} 个组件 · {pageModel.dataSourceCount} 个页面数据源</p>{/if}
         {#if authoring.sync&&stableSavePort.delivery!=='single'}<label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} disabled={savePending} onchange={event=>coordinator.setRetainDimensionValues(event.currentTarget.checked)}/>保存时保留维度取值</label>{#if authoring.sync.pending>0}<ToolAction disabled={authoring.sync.phase==='saving'} onclick={()=>coordinator.retrySync()}>核实并重试同步</ToolAction>{/if}{/if}
         {#if authoringPort.assets&&authoring.ref}{#key authoring.ref.revisionId}<PageAssetInfo asset={authoring.ref} allowMutation={!cloudAgent} disabled={authoring.dirty||saveBlocked||loading} onaction={managePageRecord}/>{/key}{/if}
-      </section>
+        {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
+        {#snippet footer()}<ToolAction onclick={()=>settingsOpen=false}>关闭</ToolAction>{/snippet}
+      </Dialog>
     {/if}
-    {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
     {#if recoveryState}
       <p class="notice" role="status" data-testid="language-recovery-status">{recoveryState.message || '正在检查未决操作…'}</p>
       {#if !recoveryState.summary}
@@ -597,7 +596,7 @@
       dateDraft={currentDraft}
       onDateEdit={(edit)=>{if(currentDraft&&!previewOpen&&!loading&&(currentDraft.pageDocument.layout==='dashboard'||selectedComponent))applyDocumentEdit(editReportDate(currentDraft,currentDraft.pageDocument.layout==='dashboard'?null:selectedComponent,edit));}}
       properties={propertyControls(currentDraft, selectedComponent)}
-      onPropertyEdit={(edit) => { if (currentDraft && (selectedComponent||edit.kind==='presentation') && !previewOpen && !loading) applyDocumentEdit(editProperty(currentDraft, selectedComponent??{sectionId:'',componentId:''}, edit)); }}
+      onPropertyEdit={applyPropertyEdit}
       candidates={typeCandidates}
       fieldRows={selectedFieldRows}
       busy={savePending || previewOpen || loading}
@@ -702,7 +701,6 @@
   .docbar .l{flex:1 1 260px;flex-wrap:wrap}
   .docbar .r{margin-left:auto;gap:8px}
   .page-title-editor{min-width:120px;max-width:320px;flex:1}
-  .settings-panel{flex:none;max-height:50%;overflow:auto;padding:24px;background:var(--surface);border-bottom:1px solid var(--line)}
   .settings-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
   .document-summary{font-size:12px;color:#808080;margin:12px 0 0}
   .canvas-title {
@@ -811,5 +809,5 @@
       display: none;
     }
   }
-  @media(max-width:700px){.workbench.reading .page-scroll,.settings-panel{padding:16px}}
+  @media(max-width:700px){.workbench.reading .page-scroll{padding:16px}}
 </style>

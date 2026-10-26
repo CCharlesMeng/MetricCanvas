@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| Platform 画布交互审计整改 | 先行五项本仓实现与本地验收完成；多步撤销/重做与编辑预览连续性待专项 | [审计与唯一执行计划](2026-10-25-platform-interaction-audit.md)、[实施与验收](../evidence/platform-interaction-audit/result.md)：首次实施验收与[当前 main 交付复验](../evidence/platform-interaction-audit/delivery.md)分别记录；保留全部问题与采纳边界 |
 | 表格原文容错与独立置顶行 | Schema 6.61 本地验收完成，按范围交付 | [主计划](2026-10-26-table-tolerance-and-pinned-row.md)：标量原文证据、本地尾排、独立汇总及导出 |
 | 表格列条件显隐 | 本仓实现与本地验收完成；Git交付、真实接入另验 | [主计划](2026-10-26-table-column-visibility.md)、[实施与验收](../evidence/table-column-visibility/result.md)：Schema 6.62，统一列投影/会话调和与 table 职责目录，3091 测试、Chrome及冻结导出通过；历史大文件和超限债务单列 |
 | Playground 目录与数据联动改进 | P0–P5 首轮实施及本地关键链路验收完成；下载回执等专项保留；Git 交付按授权跳过 CI | [整体改进计划](2026-10-24-playground-information-architecture.md)、[实施结果](../evidence/playground-information-architecture/result.md)：19 类组件目录、六阶段数据主线、21 个场景、当前文档试改；旧页面地址保留 |

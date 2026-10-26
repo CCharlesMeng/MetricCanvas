@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "6.64",
+  "id": "platform-interaction-audit",
+  "layout": "dashboard",
+  "meta": {
+    "title": "工作台交互审计验收",
+    "description": "本地内联合成数据；条件分层、组件定位和形态原因验收"
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "region",
+      "label": "区域",
+      "options": [
+        {
+          "value": "华东",
+          "label": "华东"
+        },
+        {
+          "value": "华北",
+          "label": "华北"
+        }
+      ],
+      "selection": {
+        "mode": "multiple"
+      },
+      "default": [
+        "华东"
+      ]
+    }
+  ],
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "销售额"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "华东",
+            "amount": 120
+          },
+          {
+            "region": "华北",
+            "amount": 80
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "intro",
+      "title": "操作与保存",
+      "container": "card",
+      "components": [
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "操作说明",
+            "body": "合成数据。工作台标题与组件修改均在确认保存后持久化；页面管理在对话框中展示。选择页面底部组件会自动定位。"
+          }
+        },
+        {
+          "id": "region-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "区域销售额",
+            "categoryField": "region",
+            "series": [
+              {
+                "field": "amount",
+                "label": "销售额"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "title": "条件规则",
+      "container": "card",
+      "components": [
+        {
+          "id": "conditional-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "values",
+            "op": "isNotEmpty"
+          },
+          "props": {
+            "title": "区域已选择时显示",
+            "body": "页面属性默认只展示已配置规则；添加条件后使用筛选表单，复杂规则在高级 JSON 中保留。可移除条件并通过现有单步撤销恢复。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bottom",
+      "title": "屏外组件定位",
+      "container": "card",
+      "components": [
+        {
+          "id": "last-chart",
+          "type": "pieChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "底部区域占比",
+            "categoryField": "region",
+            "valueField": "amount",
+            "ring": "55%"
+          }
+        },
+        {
+          "id": "audit-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "表格属性回归",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "amount",
+                "title": "销售额"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

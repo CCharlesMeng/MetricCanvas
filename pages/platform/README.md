@@ -42,3 +42,17 @@
 管理目录入口：正常 Platform `/manage` 操作列仅保留“基本信息”和“可视化编辑”，分别进入独立信息表单和页面搭建工作台；不再提供行内编辑或单独预览入口。
 
 组件清单排序：在正常 Platform 的可视化编辑中，清空组件选中后，在右侧“页面组件”列表按住条目上下拖动；上半区插入前面，下半区插入后面。观察列表与画布同时重排、列表仍保留；顶部撤销恢复上一次移动。拖到列表外松手不修改文档。保存或预览期间禁用排序，保存仍沿用现有工作副本流程。跨分区和原地落点使用同一画布移动校验；自动用例基于本目录 platform-canvas-experience.json。
+
+## 工作台交互审计验收
+
+Playground 入口：`/pages/platform-interaction-audit`；[页面 JSON](platform-interaction-audit.json)。Dashboard、内联合成数据；筛选只控制显隐，不声称重查或过滤销售额。无需 DQE。
+
+Platform 隔离验收：`pnpm --filter platform dev:agent-flow --host 127.0.0.1 --port 5176`，打开 `http://127.0.0.1:5176/flow/create?page=platform-interaction-audit&resource=resource-platform-interaction-audit`。此夹具复用正常 Platform，页面资产和 Chat 为明确标识的本地替身，内存记录随完整刷新重置，工作副本仍由正常本机保护流程管理。正常本地体验可按 `apps/platform/README.md` 启动 `/manage` 并打开已有资产。
+
+1. 修改顶部页面标题，离开输入框。观察未保存工作副本、本机保护和保存按钮；验收记录中的 `infoWrites/assetWrites/sendCount` 不增加。确认保存后，观察 `confirm-save` 输入含最新标题与条件、页面转为已保存。
+2. 顶部“页面管理”打开现有对话框，关闭后画布布局不被插入的管理信息挤占；右侧入口名为“页面属性”。
+3. 页面属性只展示“区域已选择时显示”的已配置条件摘要；添加条件使用基础表单。编辑原规则时在高级 JSON 输入 `{` 或 `{"filter":"missing","part":"values","op":"isEmpty"}`，应用应在窗口内报错并保留原规则，取消不改写。组合规则完整保留。
+4. 从组件目录选择“底部区域占比”，画布定位并高亮；通过属性面板的“切换组件”返回“操作说明”，不用先退出属性。
+5. 形态切换沿用既有 query 数据约束，本内联页不展示不具备的形态切换能力。正常本地资产 `http://127.0.0.1:5175/create?page=demo&resource=local-demo`，选择 GMV 指标卡，展开“查看不可用形态及原因”，观察柱/线/饼等缺少维度的具体原因；下拉只含允许项。也可加载既有查询验收文档 `apps/platform/tests/workbench/fixtures/document-edit.json` 验证。
+
+本批没有新增页面字段，没有实施多步撤销/重做或预览连续性。截图、检查命令和环境边界见 `docs/evidence/platform-interaction-audit/result.md`；真实 Chat/Java/DQE/Relay/门户单列待验。

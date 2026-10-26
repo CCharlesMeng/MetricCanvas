@@ -1,16 +1,20 @@
 import {mount,unmount} from 'svelte';
 import {writable} from 'svelte/store';
-import {canonicalizeJson,normalizePageDocument,type PageDocument} from '@metriccanvas/page';
+import {canonicalizeJson,normalizePageDocument,versionPolicy,type PageDocument} from '@metriccanvas/page';
 import {mountPlatform} from '../../src/lib/integration/mount';
 import type {PlatformDialogueAdapter,PageInfoPort,PageInfoRecord,PageInfoChanges} from '../../src/lib/integration/contract';
 import FixtureChat from './FixtureChat.svelte';
 import example from '../../../../pages/platform/flow-page.json';
+import interactionExample from '../../../../pages/platform/platform-interaction-audit.json';
 
-const parsed=normalizePageDocument(example);
+const parsed=normalizePageDocument({...example,schemaVersion:versionPolicy.current});
 if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
 const initial=parsed.document;
 type Stored={document:PageDocument;number:number;isDraft:boolean;path:string};
 const records=new Map<string,Stored>([[initial.id,{document:initial,number:1,isDraft:false,path:'/reports/flow?pageId='+initial.id}]]);
+const interaction=normalizePageDocument(interactionExample);
+if(!interaction.ok)throw Error(JSON.stringify(interaction.errors));
+records.set(interaction.document.id,{document:interaction.document,number:1,isDraft:true,path:'/reports/audit?pageId='+interaction.document.id});
 const conversations=new Map<string,ReturnType<typeof writable<string[]>>>();
 function messagesFor(sessionId:string){let messages=conversations.get(sessionId);if(!messages){messages=writable<string[]>([]);conversations.set(sessionId,messages);}return messages;}
 let sessions=0,sendCount=0,infoWrites=0,assetWrites=0;

@@ -1,8 +1,12 @@
 <script lang="ts">
   import {Input,Textarea,Select} from '@metriccanvas/ui';
+  import ConditionProperties from './ConditionProperties.svelte';
+  import type {ConditionFilter} from './condition-editor';
   import type { PropertyControl, PropertyEdit } from './property-edit';
-  let { controls, busy = false, onEdit }: { controls: PropertyControl[]; busy?: boolean; onEdit: (edit: PropertyEdit) => void } = $props();
+  let { controls, filters=[], busy = false, onEdit }: { controls: PropertyControl[]; filters?:ConditionFilter[]; busy?: boolean; onEdit: (edit: PropertyEdit) => string|void } = $props();
   const valueText = (value: unknown) => typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+  const fields=$derived(controls.filter(control=>control.target.kind!=='presentation'));
+  const conditions=$derived(controls.filter(control=>control.target.kind==='presentation'));
   let conditionError=$state('');
   function submit(control: PropertyControl, raw: string) {
     let value: unknown = raw;
@@ -14,10 +18,10 @@
     onEdit({ ...control.target, value });
   }
 </script>
-{#if controls.length}
+{#if fields.length}
   <section aria-label="展示属性">
     <h5>展示属性</h5>
-    {#each controls as control (control.id)}
+    {#each fields as control (control.id)}
       <div class="property-field">
         <span>{control.label}</span>
         {#if control.kind === 'boolean' || control.kind === 'choice'}
@@ -35,6 +39,7 @@
     {#if conditionError}<p role="alert">{conditionError}</p>{/if}
   </section>
 {/if}
+<ConditionProperties controls={conditions} {filters} {busy} {onEdit}/>
 <style>
   section { display: grid; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid #eef0f4; }
   h5 { margin: 0; color: #303b4d; font-size: 12px; }
