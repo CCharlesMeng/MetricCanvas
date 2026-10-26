@@ -2,9 +2,10 @@ import { expect, it } from 'vitest';
 import fixture from '../../../../pages/capabilities/table/table-pinned-summary.json';
 import { createCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 import { propertyControls, editProperty } from '../../src/lib/workbench/property-edit';
+import { versionPolicy } from '@metriccanvas/page/internal';
 
 it('edits the pinned source and its fields atomically and preserves body configuration', () => {
-  const original = structuredClone(fixture);
+  const original = { ...structuredClone(fixture), schemaVersion: versionPolicy.current };
   const created = createCanvasAuthoringDraft(original);
   if (!created.ok) throw Error(created.message);
   const locator = {sectionId:'main',componentId:'regional-table'};

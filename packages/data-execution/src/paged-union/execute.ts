@@ -1,4 +1,5 @@
-import { queryResultFieldContract, validateContractRows, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
+import { queryResultFieldContract, restoreCellFallbacks, validateContractRows, type Row } from '@metriccanvas/page/internal';
+import { rawSnapshot } from '../snapshots';
 import { intersectQueryFilters } from '../intersect-filters';
 import type { QueryRunner } from '../query-runner';
 import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
@@ -43,7 +44,7 @@ export function createUnionReader(runner: QueryRunner) {
       if (progress.position++ >= offset) rows.push(row);
     }
     if (!complete) { checkpoints.delete(key); checkpoints.set(key, cloneProgress(progress)); trim(checkpoints, 4); }
-    const snapshot: DataSnapshot = rows.length ? { status: 'ready', rows, totalCount: progress.total } : { status: 'empty', totalCount: progress.total };
+    const snapshot = rawSnapshot(rows, progress.total);
     return { snapshot, viewCorrection: pageIndex === plan.view.pageIndex ? undefined : { ...plan.view, pageIndex } };
   }
   return { read, clear() { checkpoints.clear(); } };
@@ -72,6 +73,7 @@ async function refill(plan: UnionPlan, cursor: Cursor, runner: QueryRunner, scop
   if (result.status === 'error') throw unionError(result.error.message, result.error.code);
   if (result.status === 'loading') throw unionError('来源结果尚未就绪');
   const raw = result.status === 'ready' ? result.rows : [];
+  restoreCellFallbacks(raw, result.status === 'ready' ? result.cellFallbacks : undefined);
   assertBatch(cursor, raw.length, result.totalCount);
   cursor.total = result.totalCount!;
   const rows = projectedRows(plan, cursor.member, raw);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePage, resolvePageParams } from '@metriccanvas/page';
 import type { DataSnapshot, Page, Row, TableQueryView } from '@metriccanvas/page/internal';
+import { rowCellFallback } from '@metriccanvas/page/internal';
 import fixture from '../../page/fixtures/contract-valid/paged-union-page.json';
 import { createUnionPreview } from '../../../apps/playground/fixtures/decision-opinion/union-gateway';
 import { createSourceProgram, defaultSourceView } from '../src/source-program/session';
@@ -16,6 +17,31 @@ async function read(program: ReturnType<typeof createSourceProgram>, p: Page, vi
   return result;
 }
 describe('pagedUnion through the shared SourceProgram', () => {
+  it('preserves scalar display evidence across projection, export and captured initial rows', async () => {
+    const p = page(), preview = createUnionPreview({ generatedCount: 0 });
+    const evidence = { raw: '原始占比', reason: 'TYPE_MISMATCH' as const };
+    const gateway: DataGateway = { async fetchData(query, diagnostics, signal) {
+      const result = await preview.dataGateway.fetchData(query, diagnostics, signal);
+      const index = result.rows.findIndex(row => row['contract-localRowId'] === '004');
+      if (index >= 0) result.cellFallbacks = { [index]: { 'contract-validOpinionRate': evidence } };
+      return result;
+    } };
+    const program = createSourceProgram(p, { gateway });
+    try {
+      for (const purpose of ['screen', 'complete'] as const) {
+        const result = await read(program, p, {}, purpose);
+        const index = rows(result).findIndex(row => row.memberId === 'contract' && row.localRowId === '004');
+        expect(rowCellFallback(rows(result)[index], 'validOpinionRate')).toEqual(evidence);
+        expect(result?.status === 'ready' && result.cellFallbacks?.[index]?.validOpinionRate).toEqual(evidence);
+      }
+    } finally { program.dispose(); }
+    const resolved = resolvePageParams(fixture); if (!resolved.ok) throw Error('fixture');
+    const output = await createPageDataExecutor({ gateway }).execute(resolved.document);
+    const source = output.dataSources.opinions.source;
+    if (source.type !== 'pagedUnion') throw Error('union source');
+    const initial = source.initial;
+    expect('view' in initial! && Object.values(initial.cellFallbacks ?? {}).some(cells => cells.validOpinionRate?.raw === evidence.raw)).toBe(true);
+  });
   it('maps distinct source fields, interleaves the global first page, and preserves backend ratios', async () => {
     const p = page(), preview = createUnionPreview({ generatedCount: 0 }), program = createSourceProgram(p, { gateway: preview.dataGateway });
     try {

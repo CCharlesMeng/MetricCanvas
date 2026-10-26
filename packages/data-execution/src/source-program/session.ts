@@ -239,7 +239,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
         function captureUnionInitial(id: string, source: PagedUnionDataSource, view: TableQueryView, snapshot: DataSnapshot): void {
           if (!defaultJoinedView(id, source, view) || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) return;
-          initials.set(id, { capturedAt: new Date().toISOString(), rows: snapshot.status === 'ready' ? snapshot.rows : [], totalCount: snapshot.totalCount!, view });
+          initials.set(id, { capturedAt: new Date().toISOString(), rows: snapshot.status === 'ready' ? snapshot.rows : [], ...(snapshot.status === 'ready' ? snapshotCellFallbacks(snapshot.rows) : {}), totalCount: snapshot.totalCount!, view });
         }
         function readJoined(plan: ReturnType<typeof compilePagedJoin>) {
           return request.purpose === 'complete' ? exportPagedJoin(plan, runner, scope, request.signal, request.allowPartial) : executePagedJoin(plan, runner, scope, request.signal);

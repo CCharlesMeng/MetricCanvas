@@ -1,4 +1,4 @@
-import { canonicalizeJson, selectQuerySource, tableHeaders, type EffectiveQuery, type Page, type PagedUnionDataSource, type PagedUnionMember, type QueryDataSource, type Row, type TableQueryView } from '@metriccanvas/page/internal';
+import { canonicalizeJson, copyFieldFallback, selectQuerySource, tableHeaders, type EffectiveQuery, type Page, type PagedUnionDataSource, type PagedUnionMember, type QueryDataSource, type Row, type TableQueryView } from '@metriccanvas/page/internal';
 import { composeEffectiveQuery } from '../effective-query';
 import { filterTableRows, searchTableRows } from '../table-view';
 import type { FilterValues } from '../filter-values';
@@ -50,6 +50,10 @@ export function unionRow(plan: UnionPlan, member: UnionMemberPlan, raw: Row): Ro
   const key = raw[member.member.rowKey];
   const keyType = member.input.fields[member.member.rowKey].type;
   if (typeof key !== keyType || (typeof key === 'string' && !key.trim()) || (typeof key === 'number' && !Number.isFinite(key))) throw unionError('来源内行键缺失或类型错误');
-  return Object.fromEntries([[plan.data.source.rowKey, JSON.stringify([member.id, key])], [plan.data.source.sourceField, member.id],
+  const row: Row = Object.fromEntries([[plan.data.source.rowKey, JSON.stringify([member.id, key])], [plan.data.source.sourceField, member.id],
     ...Object.entries(member.member.projection).map(([field, projection]) => [field, 'field' in projection ? raw[projection.field] : projection.value])]);
+  for (const [field, projection] of Object.entries(member.member.projection)) {
+    if ('field' in projection) copyFieldFallback(raw, projection.field, row, field);
+  }
+  return row;
 }

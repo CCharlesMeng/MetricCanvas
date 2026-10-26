@@ -158,27 +158,30 @@ describe('独立本地创作 Skill', () => {
     expect(() => pagePattern(source, JSON.stringify(page))).toThrow('Invalid pattern source');
   });
 
-  it('查询标量容错可在仓外独立校验，结构和缺字段仍被拒绝', async () => {
+  it.each([
+    { kind: '原始页面', expected: 0 },
+    { kind: '数值归一化', expected: 0 },
+    { kind: '空标量', expected: 0 },
+    { kind: '结构错误', expected: 1 },
+    { kind: '缺少字段', expected: 1 }
+  ])('查询标量仓外校验：$kind', async ({ kind, expected }) => {
     const sourcePage = files.get('references/page-metadata/examples/query-numeric-tolerance.json');
     expect(sourcePage).toBeDefined();
     const page = JSON.parse(sourcePage!);
-    const target = path.join(isolated, `${page.id}.json`);
+    const target = path.join(await mkdtemp(path.join(isolated, 'scalar-')), `${page.id}.json`);
+    const row = page.dataSources.samples.source.initial.rows[0];
+    if (kind !== '原始页面') {
+      row['容错数值'] = { invalid: true };
+      row['容错明细'][0]['明细数值'] = [1, 2];
+    }
+    if (kind === '空标量') row['容错样例'] = null;
+    if (kind === '结构错误') row['容错样例'] = { invalid: true };
+    if (kind === '缺少字段') {
+      row['容错样例'] = '正常';
+      delete row['容错数值'];
+    }
     await writeFile(target, JSON.stringify(page));
-    expect(run([target]).status).toBe(0);
-    page.dataSources.samples.source.initial.rows[0]['容错数值'] = { invalid: true };
-    page.dataSources.samples.source.initial.rows[0]['容错明细'][0]['明细数值'] = [1, 2];
-    await writeFile(target, JSON.stringify(page));
-    expect(run([target]).status).toBe(0);
-    page.dataSources.samples.source.initial.rows[0]['容错样例'] = null;
-    await writeFile(target, JSON.stringify(page));
-    expect(run([target]).status).toBe(0);
-    page.dataSources.samples.source.initial.rows[0]['容错样例'] = { invalid: true };
-    await writeFile(target, JSON.stringify(page));
-    expect(run([target]).status).toBe(1);
-    page.dataSources.samples.source.initial.rows[0]['容错样例'] = '正常';
-    delete page.dataSources.samples.source.initial.rows[0]['容错数值'];
-    await writeFile(target, JSON.stringify(page));
-    expect(run([target]).status).toBe(1);
+    expect(run([target]).status).toBe(expected);
   });
 
   it('仓外支持独立置顶槽，并拒绝将明细主槽作为汇总', async () => {
