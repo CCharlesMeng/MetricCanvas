@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/version.test.ts packages/page/tests/composite-filter-toolbar.test.ts packages/page/tests/filter-group.test.ts packages/engine/runtime-ui/tests/filter-toolbar.test.ts packages/engine/widgets/tests/composite-card-flow.test.ts tools/dqe-sim/tests/chart-local-filter.test.ts tools/dqe-sim/tests/filter-toolbar.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-tools.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/filter-toolbar-delivery/DataDashboard
+
+
+ Test Files  11 passed (11)
+      Tests  197 passed (197)
+   Start at  20:35:42
+   Duration  14.14s (transform 3.47s, setup 0ms, import 14.67s, tests 24.49s, environment 1ms)
+

@@ -1,0 +1,31 @@
+{
+  "wide": {
+    "dropdownGap": 11.9921875,
+    "dropdownWidths": [
+      160,
+      160
+    ],
+    "leftInset": 0,
+    "rightInset": 0,
+    "sameRow": true,
+    "width": 1275.52734375
+  },
+  "medium": {
+    "viewport": 600,
+    "rightInset": 0,
+    "rightGroupWrapped": true,
+    "dropdownGap": 11.9921875,
+    "sameDropdownRow": true
+  },
+  "narrow": {
+    "dropdownWidths": [
+      160,
+      160
+    ],
+    "groupItemsWrapped": true,
+    "groupRight": 330.01953125,
+    "rightInset": 0,
+    "toolbarRight": 330.01953125,
+    "viewport": 390
+  }
+}

@@ -1,0 +1,20 @@
+[WebServer] (node:62322) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:62323) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:62379) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chrome] › tests/browser/selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (540ms)
+  ✓  2 [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (489ms)
+  ✓  3 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (510ms)
+  ✓  4 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (534ms)
+  ✓  5 [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (291ms)
+  ✓  6 [chrome] › tests/browser/selection.spec.ts:91:37 › compact single dropdown follows trigger width; shadow=false (209ms)
+  ✓  7 [chrome] › tests/browser/selection.spec.ts:91:37 › compact single dropdown follows trigger width; shadow=true (268ms)
+  ✓  8 [chrome] › tests/browser/selection.spec.ts:108:35 › tree inset is16px and inert ancestors close; shadow=false (311ms)
+  ✓  9 [chrome] › tests/browser/selection.spec.ts:108:35 › tree inset is16px and inert ancestors close; shadow=true (263ms)
+
+  9 passed (6.1s)

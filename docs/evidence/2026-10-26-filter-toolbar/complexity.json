@@ -1,0 +1,101 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "packages/engine/runtime-ui/src/dashboard/filter-toolbar.ts",
+      "functions": [
+        {
+          "name": "compositeFilterToolbar",
+          "qualifiedName": "compositeFilterToolbar",
+          "line": 4,
+          "endLine": 12,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "functions": [
+        {
+          "name": "usedAt",
+          "qualifiedName": "usedAt",
+          "line": 45,
+          "endLine": 45,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@45:139>",
+          "qualifiedName": "usedAt/<anonymous@45:139>",
+          "line": 45,
+          "endLine": 45,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/page/tests/composite-filter-toolbar.test.ts",
+      "functions": [
+        {
+          "name": "<anonymous@5:95>",
+          "qualifiedName": "<anonymous@5:95>",
+          "line": 5,
+          "endLine": 11,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/runtime-ui/tests/filter-toolbar.test.ts",
+      "functions": [
+        {
+          "name": "<anonymous@6:104>",
+          "qualifiedName": "<anonymous@6:104>",
+          "line": 6,
+          "endLine": 15,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "tools/dqe-sim/tests/filter-toolbar.test.ts",
+      "functions": [
+        {
+          "name": "<anonymous@5:98>",
+          "qualifiedName": "<anonymous@5:98>",
+          "line": 5,
+          "endLine": 25,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@22:31>",
+          "qualifiedName": "<anonymous@5:98>/<anonymous@22:31>",
+          "line": 22,
+          "endLine": 22,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}
