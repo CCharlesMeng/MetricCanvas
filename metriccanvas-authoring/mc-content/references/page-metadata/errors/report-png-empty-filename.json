@@ -22,14 +22,16 @@
       "type": "SCHEMA_ERROR",
       "message": "must match a schema in anyOf",
       "paths": [
-        "/sections/0/components/0/props/pngExport/filename"
+        "/sections/0/components/0/props/pngExport/filename",
+        "/sections/0/components/0/props",
+        "/sections/0/components/0/props",
+        "/sections/0/components/0/props"
       ]
     },
     {
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 data",
       "paths": [
-        "/sections/0/components/0/data",
         "/sections/0/components/0/data",
         "/sections/0/components/0/data",
         "/sections/0/components/0/data",
@@ -94,6 +96,9 @@
         "/sections/0/components/0/props/subtitle",
         "/sections/0/components/0/props/subtitle",
         "/sections/0/components/0/props/subtitle",
+        "/sections/0/components/0/props/subtitle",
+        "/sections/0/components/0/props/subtitle",
+        "/sections/0/components/0/props/subtitle",
         "/sections/0/components/0/props/subtitle"
       ]
     },
@@ -101,6 +106,9 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 filterIds(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/filterIds",
+        "/sections/0/components/0/props/filterIds",
+        "/sections/0/components/0/props/filterIds",
         "/sections/0/components/0/props/filterIds",
         "/sections/0/components/0/props/filterIds",
         "/sections/0/components/0/props/filterIds",
@@ -142,6 +150,9 @@
         "/sections/0/components/0/props/asOf",
         "/sections/0/components/0/props/asOf",
         "/sections/0/components/0/props/asOf",
+        "/sections/0/components/0/props/asOf",
+        "/sections/0/components/0/props/asOf",
+        "/sections/0/components/0/props/asOf",
         "/sections/0/components/0/props/asOf"
       ]
     },
@@ -149,6 +160,9 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 pdfExport(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/pdfExport",
+        "/sections/0/components/0/props/pdfExport",
+        "/sections/0/components/0/props/pdfExport",
         "/sections/0/components/0/props/pdfExport",
         "/sections/0/components/0/props/pdfExport",
         "/sections/0/components/0/props/pdfExport",
@@ -190,6 +204,9 @@
         "/sections/0/components/0/props/pngExport",
         "/sections/0/components/0/props/pngExport",
         "/sections/0/components/0/props/pngExport",
+        "/sections/0/components/0/props/pngExport",
+        "/sections/0/components/0/props/pngExport",
+        "/sections/0/components/0/props/pngExport",
         "/sections/0/components/0/props/pngExport"
       ]
     },
@@ -214,6 +231,9 @@
         "/sections/0/components/0/props/decoration",
         "/sections/0/components/0/props/decoration",
         "/sections/0/components/0/props/decoration",
+        "/sections/0/components/0/props/decoration",
+        "/sections/0/components/0/props/decoration",
+        "/sections/0/components/0/props/decoration",
         "/sections/0/components/0/props/decoration"
       ]
     },
@@ -221,6 +241,7 @@
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 categoryField",
       "paths": [
+        "/sections/0/components/0/props/categoryField",
         "/sections/0/components/0/props/categoryField",
         "/sections/0/components/0/props/categoryField",
         "/sections/0/components/0/props/categoryField"
@@ -254,6 +275,15 @@
     },
     {
       "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 value",
+      "paths": [
+        "/sections/0/components/0/props/value",
+        "/sections/0/components/0/props/value",
+        "/sections/0/components/0/props/value"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 columns",
       "paths": [
         "/sections/0/components/0/props/columns",
@@ -266,6 +296,7 @@
       "paths": [
         "/sections/0/components/0/props/nameField",
         "/sections/0/components/0/props/nameField",
+        "/sections/0/components/0/props/nameField",
         "/sections/0/components/0/props/nameField"
       ]
     },
@@ -273,6 +304,7 @@
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 map",
       "paths": [
+        "/sections/0/components/0/props/map",
         "/sections/0/components/0/props/map"
       ]
     },

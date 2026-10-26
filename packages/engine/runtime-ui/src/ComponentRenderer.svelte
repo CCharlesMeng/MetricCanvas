@@ -114,7 +114,7 @@
   const gate=$derived(presentation?.()?.component(component.id));
   const visibleData = $derived(snapshot.status === 'error'
     ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
-      fields: data[slot]?.fields ?? {}, snapshot: { status: 'ready' as const, rows: [] }
+      fields: data[slot]?.fields ?? {}, sourceStatus: 'error' as const, snapshot: { status: 'ready' as const, rows: [] }
     }])) : data);
   const mainData = $derived({ main: visibleData.main! } as MainDataSlots);
   const metricData = $derived({
@@ -268,8 +268,9 @@
       {:else if component.type === 'gauge'}
         {@const gauge = component}
         <Gauge data={mainData} props={component.props} onclick={onchartclick && (() => {
-          const row = fieldRow(gauge.props.valueField, mainData);
+          const row = gauge.props.valueField === undefined ? mainData.main?.snapshot.rows[0] : fieldRow(gauge.props.valueField, mainData);
           if (row) onchartclick?.(row);
+          else if (!gauge.data) onchartclick?.({});
         })} />
       {:else if component.type === 'table' && table}
         <Table

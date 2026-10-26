@@ -51,6 +51,7 @@ ComponentCatalogEntry
 ComponentData
 ComponentDataMode
 ComponentLayout
+ComponentValueSource
 CompositeCardChild
 CompositeCardComponent
 CompositeCardProps
@@ -495,6 +496,7 @@ validateContractRows
 validateTimePointValue
 validationResolution
 valueFormatPresets
+valueSourceBinding
 versionErrors
 versionPolicy
 walkComponents

@@ -58,9 +58,10 @@
         "6.55",
         "6.56",
         "6.57",
-        "6.58"
+        "6.58",
+        "6.59"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59"
     },
     "id": {
       "type": "string",
@@ -6948,6 +6949,13 @@
                 }
               ]
             },
+            "emptyBehavior": {
+              "type": "string",
+              "enum": [
+                "default",
+                "showConstants"
+              ]
+            },
             "echartsOption": {
               "allOf": [
                 {
@@ -7076,49 +7084,159 @@
       ]
     },
     "barChartSeries": {
-      "type": "object",
-      "properties": {
-        "field": {
-          "$ref": "#/definitions/fieldBinding"
-        },
-        "label": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/textValue"
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "value": {
+              "not": {}
+            },
+            "label": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "bar",
+                "line"
+              ]
+            },
+            "axis": {
+              "type": "string",
+              "enum": [
+                "primary",
+                "secondary"
+              ]
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "actual",
+                "forecast"
+              ]
+            },
+            "stackOrder": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
             }
-          ]
+          },
+          "required": [
+            "field"
+          ],
+          "additionalProperties": false
         },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "bar",
-            "line"
-          ]
-        },
-        "axis": {
-          "type": "string",
-          "enum": [
-            "primary",
-            "secondary"
-          ]
-        },
-        "role": {
-          "type": "string",
-          "enum": [
-            "actual",
-            "forecast"
-          ]
-        },
-        "stackOrder": {
-          "type": "integer",
-          "minimum": -9007199254740991,
-          "maximum": 9007199254740991
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "not": {}
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-signed",
+                "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
+                "compact-yi-1",
+                "cny-adaptive",
+                "usd-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day",
+                "period"
+              ]
+            },
+            "unit": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "CNY",
+                "USD"
+              ]
+            },
+            "missingText": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "label": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "bar",
+                "line"
+              ]
+            },
+            "axis": {
+              "type": "string",
+              "enum": [
+                "primary",
+                "secondary"
+              ]
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "actual",
+                "forecast"
+              ]
+            },
+            "stackOrder": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
         }
-      },
-      "required": [
-        "field"
-      ],
-      "additionalProperties": false
+      ]
     },
     "categoryLabels": {
       "type": "object",
@@ -7172,6 +7290,13 @@
                 {
                   "$ref": "#/definitions/textValue"
                 }
+              ]
+            },
+            "emptyBehavior": {
+              "type": "string",
+              "enum": [
+                "default",
+                "showConstants"
               ]
             },
             "echartsOption": {
@@ -7244,23 +7369,107 @@
       "additionalProperties": false
     },
     "chartSeries": {
-      "type": "object",
-      "properties": {
-        "field": {
-          "$ref": "#/definitions/fieldBinding"
-        },
-        "label": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/textValue"
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "value": {
+              "not": {}
+            },
+            "label": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
             }
-          ]
+          },
+          "required": [
+            "field"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "not": {}
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-signed",
+                "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
+                "compact-yi-1",
+                "cny-adaptive",
+                "usd-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day",
+                "period"
+              ]
+            },
+            "unit": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "CNY",
+                "USD"
+              ]
+            },
+            "missingText": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "label": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
         }
-      },
-      "required": [
-        "field"
-      ],
-      "additionalProperties": false
+      ]
     },
     "pieChartComponent": {
       "type": "object",
@@ -7286,52 +7495,179 @@
           "$ref": "#/definitions/mainData"
         },
         "props": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/textValue"
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "valueField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "value": {
+                  "not": {}
+                },
+                "title": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "emptyBehavior": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "showConstants"
+                  ]
+                },
+                "echartsOption": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/chartOption"
+                    }
+                  ]
+                },
+                "variant": {
+                  "type": "string",
+                  "const": "compactRing"
+                },
+                "categoryField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "ring": {
+                  "type": "string",
+                  "pattern": "^\\d{1,2}%$"
+                },
+                "labelLine": {
+                  "type": "boolean"
+                },
+                "actions": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/actions"
+                    }
+                  ]
                 }
-              ]
+              },
+              "required": [
+                "valueField",
+                "categoryField"
+              ],
+              "additionalProperties": false
             },
-            "echartsOption": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/chartOption"
+            {
+              "type": "object",
+              "properties": {
+                "valueField": {
+                  "not": {}
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "number",
+                    "number-1",
+                    "number-signed",
+                    "number-1-signed",
+                    "number-2-signed",
+                    "number-grouped-signed",
+                    "number-2",
+                    "number-grouped",
+                    "compact-wan-0",
+                    "compact-wan-1",
+                    "compact-million-0",
+                    "compact-million-1",
+                    "compact-million-2",
+                    "compact-yi-1",
+                    "cny-adaptive",
+                    "usd-adaptive",
+                    "percent-0",
+                    "percent-1",
+                    "percent-2",
+                    "percent-2-signed",
+                    "date",
+                    "date-month-day",
+                    "period"
+                  ]
+                },
+                "unit": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "enum": [
+                    "CNY",
+                    "USD"
+                  ]
+                },
+                "missingText": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "title": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "emptyBehavior": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "showConstants"
+                  ]
+                },
+                "echartsOption": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/chartOption"
+                    }
+                  ]
+                },
+                "variant": {
+                  "type": "string",
+                  "const": "compactRing"
+                },
+                "categoryField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "ring": {
+                  "type": "string",
+                  "pattern": "^\\d{1,2}%$"
+                },
+                "labelLine": {
+                  "type": "boolean"
+                },
+                "actions": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/actions"
+                    }
+                  ]
                 }
-              ]
-            },
-            "variant": {
-              "type": "string",
-              "const": "compactRing"
-            },
-            "categoryField": {
-              "$ref": "#/definitions/fieldBinding"
-            },
-            "valueField": {
-              "$ref": "#/definitions/fieldBinding"
-            },
-            "ring": {
-              "type": "string",
-              "pattern": "^\\d{1,2}%$"
-            },
-            "labelLine": {
-              "type": "boolean"
-            },
-            "actions": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/actions"
-                }
-              ]
+              },
+              "required": [
+                "value",
+                "categoryField"
+              ],
+              "additionalProperties": false
             }
-          },
-          "required": [
-            "categoryField",
-            "valueField"
-          ],
-          "additionalProperties": false
+          ]
         }
       },
       "required": [
@@ -8501,121 +8837,317 @@
           "$ref": "#/definitions/mainData"
         },
         "props": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/textValue"
-                }
-              ]
-            },
-            "variant": {
-              "type": "string",
-              "const": "regionalOverview"
-            },
-            "nameField": {
-              "$ref": "#/definitions/fieldBinding"
-            },
-            "valueField": {
-              "$ref": "#/definitions/fieldBinding"
-            },
-            "map": {
-              "type": "string",
-              "enum": [
-                "china",
-                "world"
-              ]
-            },
-            "scatter": {
-              "type": "string",
-              "enum": [
-                "point",
-                "effect"
-              ]
-            },
-            "nameMap": {
+          "anyOf": [
+            {
               "type": "object",
-              "propertyNames": {
-                "type": "string"
+              "properties": {
+                "valueField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "value": {
+                  "not": {}
+                },
+                "title": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "emptyBehavior": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "showConstants"
+                  ]
+                },
+                "variant": {
+                  "type": "string",
+                  "const": "regionalOverview"
+                },
+                "nameField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "map": {
+                  "type": "string",
+                  "enum": [
+                    "china",
+                    "world"
+                  ]
+                },
+                "scatter": {
+                  "type": "string",
+                  "enum": [
+                    "point",
+                    "effect"
+                  ]
+                },
+                "nameMap": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "hierarchyFilter": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "levelField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldBinding"
+                    }
+                  ]
+                },
+                "parentField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldBinding"
+                    }
+                  ]
+                },
+                "codeField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldBinding"
+                    }
+                  ]
+                },
+                "levelMaps": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "string",
+                    "enum": [
+                      "china",
+                      "world"
+                    ]
+                  }
+                },
+                "legend": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/mapLegend"
+                    }
+                  ]
+                },
+                "tooltipFields": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/mapTooltipField"
+                  }
+                },
+                "pinnedSummary": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/mapPinnedSummary"
+                    }
+                  ]
+                },
+                "actions": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/actions"
+                    }
+                  ]
+                }
               },
-              "additionalProperties": {
-                "type": "string"
-              }
+              "required": [
+                "valueField",
+                "nameField",
+                "map"
+              ],
+              "additionalProperties": false
             },
-            "hierarchyFilter": {
-              "type": "string",
-              "pattern": "^[a-z0-9][a-z0-9-]*$"
-            },
-            "levelField": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/fieldBinding"
-                }
-              ]
-            },
-            "parentField": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/fieldBinding"
-                }
-              ]
-            },
-            "codeField": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/fieldBinding"
-                }
-              ]
-            },
-            "levelMaps": {
+            {
               "type": "object",
-              "propertyNames": {
-                "type": "string"
+              "properties": {
+                "valueField": {
+                  "not": {}
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "number",
+                    "number-1",
+                    "number-signed",
+                    "number-1-signed",
+                    "number-2-signed",
+                    "number-grouped-signed",
+                    "number-2",
+                    "number-grouped",
+                    "compact-wan-0",
+                    "compact-wan-1",
+                    "compact-million-0",
+                    "compact-million-1",
+                    "compact-million-2",
+                    "compact-yi-1",
+                    "cny-adaptive",
+                    "usd-adaptive",
+                    "percent-0",
+                    "percent-1",
+                    "percent-2",
+                    "percent-2-signed",
+                    "date",
+                    "date-month-day",
+                    "period"
+                  ]
+                },
+                "unit": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "enum": [
+                    "CNY",
+                    "USD"
+                  ]
+                },
+                "missingText": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "title": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "emptyBehavior": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "showConstants"
+                  ]
+                },
+                "variant": {
+                  "type": "string",
+                  "const": "regionalOverview"
+                },
+                "nameField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "map": {
+                  "type": "string",
+                  "enum": [
+                    "china",
+                    "world"
+                  ]
+                },
+                "scatter": {
+                  "type": "string",
+                  "enum": [
+                    "point",
+                    "effect"
+                  ]
+                },
+                "nameMap": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "hierarchyFilter": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "levelField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldBinding"
+                    }
+                  ]
+                },
+                "parentField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldBinding"
+                    }
+                  ]
+                },
+                "codeField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldBinding"
+                    }
+                  ]
+                },
+                "levelMaps": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "string",
+                    "enum": [
+                      "china",
+                      "world"
+                    ]
+                  }
+                },
+                "legend": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/mapLegend"
+                    }
+                  ]
+                },
+                "tooltipFields": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/mapTooltipField"
+                  }
+                },
+                "pinnedSummary": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/mapPinnedSummary"
+                    }
+                  ]
+                },
+                "actions": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/actions"
+                    }
+                  ]
+                }
               },
-              "additionalProperties": {
-                "type": "string",
-                "enum": [
-                  "china",
-                  "world"
-                ]
-              }
-            },
-            "legend": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/mapLegend"
-                }
-              ]
-            },
-            "tooltipFields": {
-              "minItems": 1,
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/mapTooltipField"
-              }
-            },
-            "pinnedSummary": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/mapPinnedSummary"
-                }
-              ]
-            },
-            "actions": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/actions"
-                }
-              ]
+              "required": [
+                "value",
+                "nameField",
+                "map"
+              ],
+              "additionalProperties": false
             }
-          },
-          "required": [
-            "nameField",
-            "valueField",
-            "map"
-          ],
-          "additionalProperties": false
+          ]
         }
       },
       "required": [
@@ -8667,20 +9199,94 @@
       "additionalProperties": false
     },
     "mapTooltipField": {
-      "type": "object",
-      "properties": {
-        "label": {
-          "$ref": "#/definitions/nonEmptyTextValue"
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "value": {
+              "not": {}
+            },
+            "label": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            }
+          },
+          "required": [
+            "field",
+            "label"
+          ],
+          "additionalProperties": false
         },
-        "field": {
-          "$ref": "#/definitions/fieldBinding"
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "not": {}
+            },
+            "value": {
+              "$ref": "#/definitions/scalar"
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-signed",
+                "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
+                "compact-yi-1",
+                "cny-adaptive",
+                "usd-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day",
+                "period"
+              ]
+            },
+            "unit": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "CNY",
+                "USD"
+              ]
+            },
+            "missingText": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "label": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            }
+          },
+          "required": [
+            "value",
+            "label"
+          ],
+          "additionalProperties": false
         }
-      },
-      "required": [
-        "label",
-        "field"
-      ],
-      "additionalProperties": false
+      ]
     },
     "mapPinnedSummary": {
       "type": "object",
@@ -8739,65 +9345,191 @@
           "$ref": "#/definitions/componentLayout"
         },
         "data": {
-          "$ref": "#/definitions/mainData"
+          "allOf": [
+            {
+              "$ref": "#/definitions/mainData"
+            }
+          ]
         },
         "props": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/textValue"
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "valueField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "value": {
+                  "not": {}
+                },
+                "title": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "variant": {
+                  "type": "string",
+                  "const": "mini"
+                },
+                "emptyBehavior": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "showConstants"
+                  ]
+                },
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "unit": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "label": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "actions": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/actions"
+                    }
+                  ]
                 }
-              ]
+              },
+              "required": [
+                "valueField"
+              ],
+              "additionalProperties": false
             },
-            "variant": {
-              "type": "string",
-              "const": "mini"
-            },
-            "valueField": {
-              "$ref": "#/definitions/fieldBinding"
-            },
-            "min": {
-              "type": "number"
-            },
-            "max": {
-              "type": "number",
-              "exclusiveMinimum": 0
-            },
-            "unit": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/textValue"
+            {
+              "type": "object",
+              "properties": {
+                "valueField": {
+                  "not": {}
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "number",
+                    "number-1",
+                    "number-signed",
+                    "number-1-signed",
+                    "number-2-signed",
+                    "number-grouped-signed",
+                    "number-2",
+                    "number-grouped",
+                    "compact-wan-0",
+                    "compact-wan-1",
+                    "compact-million-0",
+                    "compact-million-1",
+                    "compact-million-2",
+                    "compact-yi-1",
+                    "cny-adaptive",
+                    "usd-adaptive",
+                    "percent-0",
+                    "percent-1",
+                    "percent-2",
+                    "percent-2-signed",
+                    "date",
+                    "date-month-day",
+                    "period"
+                  ]
+                },
+                "unit": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "enum": [
+                    "CNY",
+                    "USD"
+                  ]
+                },
+                "missingText": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "title": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "variant": {
+                  "type": "string",
+                  "const": "mini"
+                },
+                "emptyBehavior": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "showConstants"
+                  ]
+                },
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "label": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "actions": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/actions"
+                    }
+                  ]
                 }
-              ]
-            },
-            "label": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/textValue"
-                }
-              ]
-            },
-            "actions": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/actions"
-                }
-              ]
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
             }
-          },
-          "required": [
-            "valueField"
-          ],
-          "additionalProperties": false
+          ]
         }
       },
       "required": [
         "id",
         "type",
         "layout",
-        "data",
         "props"
       ],
       "additionalProperties": false
@@ -10262,5 +10994,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.58"
+  "$id": "https://metriccanvas/page/v6.59"
 }

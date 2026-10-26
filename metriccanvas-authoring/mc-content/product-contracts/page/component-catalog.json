@@ -132,8 +132,7 @@
       }
     },
     "requiredProps": [
-      "categoryField",
-      "valueField"
+      "categoryField"
     ],
     "title": "optional",
     "defaultSpan": 4
@@ -185,7 +184,6 @@
     },
     "requiredProps": [
       "nameField",
-      "valueField",
       "map"
     ],
     "title": "optional",
@@ -216,9 +214,7 @@
       },
       "maxRows": 1
     },
-    "requiredProps": [
-      "valueField"
-    ],
+    "requiredProps": [],
     "title": "optional",
     "defaultSpan": 2
   },

@@ -5,6 +5,8 @@ import type { Row } from './snapshot';
 export interface BarForecastBoundaryIssue {
   rowIndex: number;
   field: string;
+  /** Constants belong to the series declaration, not to an input row's fields. */
+  seriesIndex?: number;
   message: string;
 }
 
@@ -25,12 +27,14 @@ export function barForecastBoundaryIssues(
   rows.forEach((row, rowIndex) => {
     const month = categoryMonth(row[categoryField]);
     if (month === undefined) return;
-    props.series.forEach((series) => {
+    props.series.forEach((series, seriesIndex) => {
       if (!series.role) return;
-      const field = fieldName(series.field);
-      if (row[field] === null) return;
+      const field = series.field === undefined ? 'value' : fieldName(series.field);
+      const value = series.field === undefined ? series.value : row[field];
+      if (value === null) return;
       if (series.role === 'forecast' && month <= capturedMonth) {
         issues.push({
+          ...(series.field === undefined ? {seriesIndex} : {}),
           rowIndex,
           field,
           message: `${month}月为统计月及之前不得提供预测系列 ${field}`
@@ -38,6 +42,7 @@ export function barForecastBoundaryIssues(
       }
       if (series.role === 'actual' && month > capturedMonth) {
         issues.push({
+          ...(series.field === undefined ? {seriesIndex} : {}),
           rowIndex,
           field,
           message: `${month}月为统计月之后不得提供实际系列 ${field}`

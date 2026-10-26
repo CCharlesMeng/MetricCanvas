@@ -56,7 +56,7 @@ export function exportComponentData(state:ExportRenderState,component:Component)
       const declaration=state.page.filters?.find(f=>f.id===component.props.hierarchyFilter);
       if(isHierarchyDeclaration(declaration))rows=filterMapRows(rows,component.props,declaration,state.filters.get(declaration.id));
     }
-    data[slot]={fields,snapshot:{status:'ready',rows}};
+    data[slot]={fields,sourceStatus:snapshot.status,snapshot:{status:'ready',rows}};
   }
   return data;
 }

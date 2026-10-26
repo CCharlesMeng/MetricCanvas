@@ -439,13 +439,13 @@
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/props/categoryField",
-      "message": "缺少必填字段 categoryField"
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/props/valueField",
-      "message": "缺少必填字段 valueField"
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
     },
     {
       "type": "SCHEMA_ERROR",
@@ -510,6 +510,86 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/writeFilter",
+      "message": "缺少必填字段 writeFilter"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/writeFilter",
+      "message": "缺少必填字段 writeFilter"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate/href",
+      "message": "缺少必填字段 href"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate/page",
+      "message": "存在未定义字段 page(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/openDetail",
+      "message": "缺少必填字段 openDetail"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
       "message": "must match a schema in anyOf"
     },
     {
@@ -594,13 +674,13 @@
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/props/nameField",
-      "message": "缺少必填字段 nameField"
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/props/valueField",
-      "message": "缺少必填字段 valueField"
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
     },
     {
       "type": "SCHEMA_ERROR",
@@ -670,6 +750,91 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/writeFilter",
+      "message": "缺少必填字段 writeFilter"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/writeFilter",
+      "message": "缺少必填字段 writeFilter"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate/href",
+      "message": "缺少必填字段 href"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate/page",
+      "message": "存在未定义字段 page(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/openDetail",
+      "message": "缺少必填字段 openDetail"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
       "message": "must match a schema in anyOf"
     },
     {
@@ -745,6 +910,81 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/writeFilter",
+      "message": "缺少必填字段 writeFilter"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/writeFilter",
+      "message": "缺少必填字段 writeFilter"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate/href",
+      "message": "缺少必填字段 href"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate/page",
+      "message": "存在未定义字段 page(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/openDetail",
+      "message": "缺少必填字段 openDetail"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/navigate",
+      "message": "存在未定义字段 navigate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
       "message": "must match a schema in anyOf"
     },
     {

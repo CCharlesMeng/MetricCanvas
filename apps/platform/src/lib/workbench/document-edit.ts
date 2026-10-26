@@ -3,6 +3,7 @@ import {
   resultShapeOfUnit,
   type ComponentInput
 } from './component-building';
+import { retainChartConstants } from './chart-value-conversion';
 import { recommendComponents, type ComponentCandidate } from './component-selection';
 import { validate, normalizePageDocument } from '@metriccanvas/page';
 import { isChartOptionError, type QueryFieldDefinition } from '@metriccanvas/page/internal';
@@ -147,9 +148,11 @@ export function changeComponentType(
 
   const built = constructComponent(unit, newType);
   if (!built.ok) return built;
+  const retained = retainChartConstants(recordOf(component.props) ?? {}, newType, built.component.props);
+  if (!retained.ok) return retained;
   if (recordOf(component.props)?.echartsOption !== undefined) console.warn('[MetricCanvas][CHART_OPTION_DROPPED]', { componentId: component.id, from: component.type, to: newType, path: 'props.echartsOption' });
   component.type = built.component.type;
-  component.props = built.component.props;
+  component.props = retained.props;
   return projectCanvasDraft(next);
 }
 

@@ -6,7 +6,7 @@
   let conditionError=$state('');
   function submit(control: PropertyControl, raw: string) {
     let value: unknown = raw;
-    if(control.kind==='json'){try{value=raw.trim()?JSON.parse(raw):undefined;conditionError='';}catch{conditionError='条件必须是合法JSON；原条件未修改。';return;}}
+    if(control.kind==='json'){try{value=raw.trim()?JSON.parse(raw):undefined;conditionError='';}catch{conditionError='输入必须是合法JSON；原值未修改。';return;}}
     else if (control.kind === 'boolean') value = raw === '' ? undefined : raw === 'true';
     else if (control.kind === 'number') value = raw.trim() === '' ? undefined : Number(raw);
     else if (control.kind === 'choice') value = raw === '' ? undefined : raw;
@@ -21,7 +21,7 @@
       <div class="property-field">
         <span>{control.label}</span>
         {#if control.kind === 'boolean' || control.kind === 'choice'}
-          <Select label={control.label} disabled={busy} value={control.value === undefined?'':String(control.value)} options={[{value:'',label:'默认'},...(control.kind==='boolean'?[{value:'true',label:'开启'},{value:'false',label:'关闭'}]:(control.choices??[]).map(choice=>({value:choice,label:({content:'按内容',container:'适配容器',left:'左侧',right:'右侧'} as Record<string,string>)[choice]??choice})))]} onchange={value=>submit(control,value)}/>
+          <Select label={control.label} disabled={busy} value={control.value === undefined?'':String(control.value)} options={[{value:'',label:'默认'},...(control.kind==='boolean'?[{value:'true',label:'开启'},{value:'false',label:'关闭'}]:(control.choices??[]).map(choice=>({value:choice,label:({content:'按内容',container:'适配容器',left:'左侧',right:'右侧',field:'字段',constant:'常量'} as Record<string,string>)[choice]??choice})))]} onchange={value=>submit(control,value)}/>
         {:else if control.kind==='json'}
           <Textarea label={control.label} disabled={busy} value={control.value===undefined?'':JSON.stringify(control.value,null,2)} oncommit={value=>submit(control,value)}/>
         {:else if control.kind === 'tags'}

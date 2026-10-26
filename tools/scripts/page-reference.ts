@@ -149,7 +149,7 @@ function requiredFilterGroups(document: any, component: any): any[] {
   return components(document.sections).filter(child => child.type === 'filterGroup' &&
     filters.has(child.props.filterId) && !ids.has(child.id));
 }
-function minimalExample(document: any, component: any): any | undefined {
+export function minimalExample(document: any, component: any): any | undefined {
   const controls = requiredFilterGroups(document, component);
   const candidate = structuredClone({...document, meta:undefined, sections:[{id:'main',components:[...controls,component]}]});
   const params = new Set<string>();
@@ -242,6 +242,13 @@ export function branchWitnesses(schema: Schema, examples: Map<string,string>, no
   return branches.map(n=>({schemaPointer:n.pointer,module:n.module,...evidence.get(n.pointer)}));
 }
 
+/** Missing-value witnesses remain branch evidence, never the default authoring example. */
+function onlyMissingConstants(component: any): boolean {
+  const props = component.props;
+  if (Object.hasOwn(props, 'value')) return props.value === null;
+  return Array.isArray(props.series) && props.series.length > 0 && props.series.every((series: any) => Object.hasOwn(series, 'value') && series.value === null);
+}
+
 export async function buildPageReference(root: string, schema: Schema, catalog: readonly {type: string; label: string; purpose: string; dataShape: string; chooseWhen: string[]}[], inputs: Map<string,string>, version: string): Promise<Map<string,string>> {
   const authorRoot = path.join(root, 'docs/page-metadata');
   const map = JSON.parse(await readFile(path.join(authorRoot, 'reference-map.json'), 'utf8')) as ReferenceMap;
@@ -254,7 +261,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
     const variants = nodes.filter(n=>n.module===`components/${component.type}.md` && n.pointer.endsWith('/properties/variant')).flatMap(n=>n.schema.enum ?? ('const' in n.schema ? [n.schema.const] : []));
     for (const variant of [undefined, ...new Set(variants)]) {
       const candidates = documents.flatMap(document => {
-        const direct = components(document).filter(c=>c.type===component.type);
+        const direct = components(document).filter(c=>c.type===component.type && !onlyMissingConstants(c));
         const parents = (document.sections ?? []).flatMap((section:any)=>section.components).filter((c:any)=>c.type!==component.type && components(c).some(n=>n.type===component.type));
         return [...direct,...parents].map(c => {
           const clone=structuredClone(c);

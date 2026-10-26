@@ -421,7 +421,9 @@
         "explicit-presentation-page",
         "signed-number-page",
         "signed-number-family-page",
-        "currency-selection-page"
+        "currency-selection-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -671,7 +673,9 @@
       ],
       "examples": [
         "forecast-page",
-        "stored-count-measures"
+        "stored-count-measures",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -694,7 +698,9 @@
         "折线图 lineChart"
       ],
       "examples": [
-        "mixed-page"
+        "mixed-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -718,7 +724,9 @@
         "饼图 pieChart"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -799,7 +807,9 @@
       ],
       "examples": [
         "map-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "sources": [
         "packages/page/src/schema/components/map-chart.ts",
@@ -822,7 +832,9 @@
       ],
       "examples": [
         "composite-page",
-        "reference-variants-page"
+        "reference-variants-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "sources": [
         "packages/page/src/schema/components/gauge.ts",
@@ -1591,7 +1603,10 @@
     "#/definitions/rowExpansionTable/properties/rowNumber": "6.48子表格独立序号列，复用普通表格声明和编号规则。",
     "#/definitions/tabContainerComponent/properties/props/properties/contentLayout": "6.49：显式grid复用12列栅格；缺省保留旧纵向全宽。普通内容与组合卡可入Tab，页头与嵌套Tab禁止。",
     "queryModes": "6.50：固定单选filterGroup或required单选枚举选择完整静态DQE查询；与timeModes及普通body互斥，共享结果字段契约。",
-    "fieldMappings": "6.57：queryModes各case的页面字段id到原始响应字段映射；不发送给DQE；全部case完整声明，根fields不再声明queryField。"
+    "fieldMappings": "6.57：queryModes各case的页面字段id到原始响应字段映射；不发送给DQE；全部case完整声明，根fields不再声明queryField。",
+    "emptyBehavior": "图表级空数据策略；只作用于成功空结果，不把错误或加载中当成空结果。",
+    "missingText": "当前取值缺失时显示的文字，不生成业务值。",
+    "axis": "显式柱线系列使用 primary 或 secondary 坐标轴。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1868,7 +1883,10 @@
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "历史值；当前无正文时根据提示词和范围生成，无需 mode。",
     "6.56": "DQE output_dims 中的现成数值显式声明为页面度量，保留查询与结果行粒度。",
     "6.57": "查询分支页面响应映射，普通指标保留原名。",
-    "6.58": "AI Summary 组合卡准入、显式所在区域和顶部结构约束。"
+    "6.58": "AI Summary 组合卡准入、显式所在区域和顶部结构约束。",
+    "6.59": "图表配置项支持字段或常量取值，图表级空态及独立常量仪表。",
+    "default": "沿用原有空数据呈现；空数据源不显示常量数值。",
+    "showConstants": "成功空结果时允许显示具备必要上下文的常量；不伪造类别和地域。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2271,6 +2289,15 @@
         "fields.core",
         "query.core"
       ]
+    },
+    "chart.values": {
+      "module": "field-bindings-and-formats",
+      "title": "图表配置项字段与常量取值",
+      "roots": [],
+      "headings": [
+        "图表配置项常量取值（6.59）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2338,7 +2365,8 @@
       "按百万呈现",
       "显式数字颜色与图表标签（6.16）",
       "查阅方式",
-      "静态货币字段选择（6.38）"
+      "静态货币字段选择（6.38）",
+      "图表配置项常量取值（6.59）"
     ],
     "actions-and-navigation.md": [
       "查阅方式",
@@ -2364,13 +2392,16 @@
     ],
     "components/barChart.md": [
       "默认柱宽",
-      "查阅方式"
+      "查阅方式",
+      "常量取值（6.59）"
     ],
     "components/lineChart.md": [
-      "查阅方式"
+      "查阅方式",
+      "常量取值（6.59）"
     ],
     "components/pieChart.md": [
-      "查阅方式"
+      "查阅方式",
+      "常量取值（6.59）"
     ],
     "components/table.md": [
       "单元格点击与筛选联动",
@@ -2385,10 +2416,12 @@
       "详情表格的浮层宽度"
     ],
     "components/mapChart.md": [
-      "查阅方式"
+      "查阅方式",
+      "常量取值（6.59）"
     ],
     "components/gauge.md": [
-      "查阅方式"
+      "查阅方式",
+      "常量取值（6.59）"
     ],
     "components/tabContainer.md": [
       "查阅方式",

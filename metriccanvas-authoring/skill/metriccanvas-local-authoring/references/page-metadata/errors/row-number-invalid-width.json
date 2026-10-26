@@ -65,6 +65,9 @@
         "/sections/0/components/0/props/toolbar",
         "/sections/0/components/0/props/toolbar",
         "/sections/0/components/0/props/toolbar",
+        "/sections/0/components/0/props/toolbar",
+        "/sections/0/components/0/props/toolbar",
+        "/sections/0/components/0/props/toolbar",
         "/sections/0/components/0/props/toolbar"
       ]
     },
@@ -72,6 +75,9 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 pagination(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/pagination",
+        "/sections/0/components/0/props/pagination",
+        "/sections/0/components/0/props/pagination",
         "/sections/0/components/0/props/pagination",
         "/sections/0/components/0/props/pagination",
         "/sections/0/components/0/props/pagination",
@@ -111,6 +117,9 @@
         "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns",
+        "/sections/0/components/0/props/columns",
+        "/sections/0/components/0/props/columns",
+        "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns"
       ]
     },
@@ -118,6 +127,9 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 rowNumber(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/rowNumber",
+        "/sections/0/components/0/props/rowNumber",
+        "/sections/0/components/0/props/rowNumber",
         "/sections/0/components/0/props/rowNumber",
         "/sections/0/components/0/props/rowNumber",
         "/sections/0/components/0/props/rowNumber",
@@ -151,6 +163,7 @@
       "paths": [
         "/sections/0/components/0/props/categoryField",
         "/sections/0/components/0/props/categoryField",
+        "/sections/0/components/0/props/categoryField",
         "/sections/0/components/0/props/categoryField"
       ]
     },
@@ -182,6 +195,25 @@
     },
     {
       "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 value",
+      "paths": [
+        "/sections/0/components/0/props/value",
+        "/sections/0/components/0/props/value",
+        "/sections/0/components/0/props/value"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/sections/0/components/0/props",
+        "/sections/0/components/0/props",
+        "/sections/0/components/0/props",
+        "/sections/0/components/0/props/columns"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "must be >= 1",
       "paths": [
         "/sections/0/components/0/props/rowNumber/width"
@@ -193,6 +225,7 @@
       "paths": [
         "/sections/0/components/0/props/nameField",
         "/sections/0/components/0/props/nameField",
+        "/sections/0/components/0/props/nameField",
         "/sections/0/components/0/props/nameField"
       ]
     },
@@ -200,6 +233,7 @@
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 map",
       "paths": [
+        "/sections/0/components/0/props/map",
         "/sections/0/components/0/props/map"
       ]
     },
@@ -232,13 +266,6 @@
         "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns",
-        "/sections/0/components/0/props/columns"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "must match a schema in anyOf",
-      "paths": [
         "/sections/0/components/0/props/columns"
       ]
     },

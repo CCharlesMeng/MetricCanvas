@@ -1,3 +1,4 @@
+import { resolveComponentValue } from '../../shared/component-value';
 import type { LineChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
@@ -35,15 +36,15 @@ export function lineOption(
       ...categoryLabelOption(props.categoryLabels, props.showValueLabels)
     },
     yAxis: dualOrSingleAxis(props.dualAxis, props.series.length, props.hideYAxis,
-      props.series.map(series => resolveField(series.field, data).format)),
+      props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format)),
     series: props.series.map((series, i) => {
-      const field = resolveField(series.field, data);
+      const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
-        name: series.label ?? field.definition?.label ?? field.field,
+        name: series.label ?? field.label,
         type: 'line' as const,
         smooth: props.smooth ?? false,
         ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText),
-          labelLayout: valueLabelLayout(rows.map(row => finiteNumber(row[field.field])), true), showAllSymbol: true } : {}),
+          labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), true), showAllSymbol: true } : {}),
         ...(props.stacked ? { stack: 'total' } : {}),
         ...(props.dualAxis && i > 0 ? { yAxisIndex: 1 } : {}),
         ...(props.areaGradient ? { areaStyle: gradientArea(i, palette) } : {}),
@@ -67,7 +68,7 @@ export function lineOption(
               }
             }
           : {}),
-        data: rows.map((row) => props.showValueLabels ? finiteNumber(row[field.field]) ?? null : finiteNumber(row[field.field]))
+        data: rows.map((row) => props.showValueLabels ? finiteNumber(field.read(row)) ?? null : finiteNumber(field.read(row)))
       };
     })
   };

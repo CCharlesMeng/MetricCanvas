@@ -205,7 +205,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。
 
 
-页面协议 6.58。结构真源为本册[schema.json](schema.json)，SHA256 `ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35`。字段表自动生成；可选不等于有默认值。
+页面协议 6.59。结构真源为本册[schema.json](schema.json)，SHA256 `604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2276,7 +2276,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 
 ## 联合分支见证（生成）
 
-- `#/definitions/pageQuery/oneOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/source/query`。
+- `#/definitions/pageQuery/oneOf/0`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/source/query`。
 - `#/definitions/queryResultWhere/anyOf/0`：[合法完整页面](examples/query-result-where-page.json)，JSON Pointer `#/dataSources/details-high/source/query/resultBindings/0/where`。
 - `#/definitions/queryResultWhere/anyOf/1`：[合法完整页面](examples/query-result-where-branches.json)，JSON Pointer `#/dataSources/details-high/source/query/resultBindings/0/where/all/8`。
 - `#/definitions/queryResultWhere/anyOf/2`：[合法完整页面](examples/query-result-where-page.json)，JSON Pointer `#/dataSources/details-high/source/query/resultBindings/0/where/all/0`。
@@ -2291,7 +2291,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - `#/definitions/queryResultWhere/anyOf/5`：[合法完整页面](examples/query-result-where-branches.json)，JSON Pointer `#/dataSources/details-high/source/query/resultBindings/0/where/all/8/any/0`。
 - `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dataSources/sales/source/query/paramBindings/regions`。
 - `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/current/source/query/paramBindings/report-month`。
-- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/dataSources/map-data/source/query/filterBindings/map-region`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/component-filterGroup.json)，JSON Pointer `#/dataSources/map-data/source/query/filterBindings/map-region`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/dataSources/opportunity-list/source/query/filterBindings/region`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/report-date-filters-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/period-filter`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/dataSources/bound/source/query/filterBindings/month`。

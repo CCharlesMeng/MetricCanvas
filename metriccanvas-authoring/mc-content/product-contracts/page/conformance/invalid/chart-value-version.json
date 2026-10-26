@@ -1,0 +1,451 @@
+{
+  "case": "chart-value-version",
+  "invariant": "chart-constant-values",
+  "input": {
+    "schemaVersion": "6.58",
+    "id": "chart-constant-values-page",
+    "layout": "dashboard",
+    "meta": {
+      "description": "全部图表常量取值：合成内联数据、独立仪表与空态对照"
+    },
+    "dataSources": {
+      "main": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区"
+          },
+          "actual": {
+            "type": "number",
+            "role": "measure",
+            "label": "实际值",
+            "unit": "个",
+            "defaultFormat": "number"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "category": "北京",
+              "actual": 1
+            },
+            {
+              "category": "上海",
+              "actual": 3
+            },
+            {
+              "category": "广东",
+              "actual": 4
+            }
+          ]
+        }
+      },
+      "empty": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区"
+          },
+          "actual": {
+            "type": "number",
+            "role": "measure",
+            "label": "实际值",
+            "unit": "个",
+            "defaultFormat": "number"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": []
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "charts",
+        "title": "配置项常量取值（合成内联演示）",
+        "components": [
+          {
+            "id": "line",
+            "type": "lineChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "折线：实际值 + 固定 2",
+              "xField": "category",
+              "series": [
+                {
+                  "field": "actual"
+                },
+                {
+                  "value": 2,
+                  "label": "基线"
+                }
+              ],
+              "showValueLabels": true
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "mixed",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "柱线混合：固定折线 2",
+              "categoryField": "category",
+              "series": [
+                {
+                  "field": "actual",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "value": 2,
+                  "label": "基线",
+                  "kind": "line",
+                  "axis": "primary",
+                  "unit": "个"
+                }
+              ],
+              "showValueLabels": true
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "horizontal",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "横向柱：固定值 2",
+              "categoryField": "category",
+              "horizontal": true,
+              "series": [
+                {
+                  "value": 2,
+                  "label": "固定值"
+                }
+              ],
+              "showValueLabels": true
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "stacked",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "堆叠柱：包含固定段 2",
+              "categoryField": "category",
+              "stacked": true,
+              "series": [
+                {
+                  "field": "actual"
+                },
+                {
+                  "value": 2,
+                  "label": "固定段",
+                  "format": "number"
+                }
+              ],
+              "showStackTotalLabels": true
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "area",
+            "type": "lineChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "面积：固定值 2",
+              "xField": "category",
+              "series": [
+                {
+                  "value": 2,
+                  "label": "固定值"
+                }
+              ],
+              "areaGradient": true,
+              "smooth": true
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "pie",
+            "type": "pieChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "饼图：三个现有类别均为 2",
+              "categoryField": "category",
+              "value": 2
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "ring",
+            "type": "pieChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "环图：常量取值",
+              "categoryField": "category",
+              "value": 2,
+              "variant": "compactRing"
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "map",
+            "type": "mapChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "地图与散点：现有地域均为 2",
+              "nameField": "category",
+              "value": 2,
+              "map": "china",
+              "scatter": "point",
+              "tooltipFields": [
+                {
+                  "label": "固定目标",
+                  "value": 2
+                },
+                {
+                  "label": "实际值",
+                  "field": "actual"
+                }
+              ],
+              "nameMap": {
+                "北京": "北京市",
+                "上海": "上海市",
+                "广东": "广东省"
+              }
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "map-summary",
+            "type": "mapChart",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "地域概览：固定摘要取值",
+              "nameField": "category",
+              "value": 2,
+              "map": "china",
+              "variant": "regionalOverview",
+              "pinnedSummary": {
+                "matchField": "category",
+                "matchValue": "北京",
+                "titleField": "category",
+                "fields": [
+                  {
+                    "label": "固定目标",
+                    "value": 2
+                  },
+                  {
+                    "label": "实际值",
+                    "field": "actual"
+                  }
+                ]
+              },
+              "nameMap": {
+                "北京": "北京市",
+                "上海": "上海市",
+                "广东": "广东省"
+              }
+            },
+            "data": {
+              "main": "main"
+            }
+          },
+          {
+            "id": "gauge",
+            "type": "gauge",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "title": "仪表：无数据源，固定值 2",
+              "value": 2,
+              "min": 0,
+              "max": 5,
+              "unit": "个"
+            }
+          },
+          {
+            "id": "gauge-empty-default",
+            "type": "gauge",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "title": "查询空结果：默认不显示常量",
+              "value": 2,
+              "min": 0,
+              "max": 5
+            },
+            "data": {
+              "main": "empty"
+            }
+          },
+          {
+            "id": "gauge-empty-show",
+            "type": "gauge",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "title": "查询空结果：显式显示常量 2",
+              "value": 2,
+              "min": 0,
+              "max": 5,
+              "emptyBehavior": "showConstants"
+            },
+            "data": {
+              "main": "empty"
+            }
+          },
+          {
+            "id": "empty-line",
+            "type": "lineChart",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "title": "空横轴：保留空图，不伪造类别",
+              "xField": "category",
+              "series": [
+                {
+                  "value": 2,
+                  "label": "固定值"
+                }
+              ],
+              "emptyBehavior": "showConstants"
+            },
+            "data": {
+              "main": "empty"
+            }
+          },
+          {
+            "id": "zero",
+            "type": "gauge",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "variant": "mini",
+              "value": 0,
+              "max": 5,
+              "label": "零值"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/2",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/4",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/5",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/6",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/7",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/8",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/9",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/10",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/11",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/12",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/13",
+      "message": "图表配置项常量取值及图表级空数据策略 由 6.59 引入，文档声明的是 6.58"
+    }
+  ]
+}

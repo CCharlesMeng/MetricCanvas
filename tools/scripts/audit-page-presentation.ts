@@ -1,10 +1,11 @@
+import { resolveComponentValue } from '../../packages/engine/widgets/src/shared/component-value';
 /** Offline presentation audit. Never executes queries or prints result rows. */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parsePage } from '../../packages/page/src/index';
 import { walkPageComponents } from '../../packages/page/src/component-walk';
-import { resolveField, type MainDataSlots } from '../../packages/engine/widgets/src/shared/component-data';
+import { type MainDataSlots } from '../../packages/engine/widgets/src/shared/component-data';
 import { barOption } from '../../packages/engine/widgets/src/components/bar-chart/options';
 import { lineOption } from '../../packages/engine/widgets/src/components/line-chart/options';
 import { formatValue } from '../../packages/engine/widgets/src/shared/value-format';
@@ -52,12 +53,12 @@ export function auditPresentation(input: unknown) {
     // Axis formatting depends on field contracts, not actual data values. Empty rows
     // deliberately avoid treating partial initial or uncomputed rows as full results.
     const data: MainDataSlots = { main: { fields: source.fields, snapshot: { status: 'ready', rows: [] } } };
-    const fields = component.props.series.map(series => resolveField(series.field, data));
+    const fields = component.props.series.map(series => resolveComponentValue(series, data, component.props.emptyBehavior));
     const formats = fields.map(field => field.format);
     fields.forEach((field, index) => {
-      const fieldPath = `${path}/props/series/${index}/field`;
+      const fieldPath = `${path}/props/series/${index}/${component.props.series[index].field === undefined ? 'value' : 'field'}`;
       if (!field.format || field.format === 'number') findings.push({ code: 'RAW_VALUE_FORMAT', path: fieldPath });
-      if (!field.definition || !('unit' in field.definition) || !field.definition.unit) findings.push({ code: 'BUSINESS_UNIT_UNKNOWN', path: fieldPath });
+      if (!field.unit) findings.push({ code: 'BUSINESS_UNIT_UNKNOWN', path: fieldPath });
     });
     const option = component.type === 'barChart' ? barOption(data, component.props) : lineOption(data, component.props);
     const axes = component.type === 'barChart' && component.props.horizontal ? option.xAxis : option.yAxis;

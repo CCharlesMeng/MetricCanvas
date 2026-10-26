@@ -1,3 +1,4 @@
+import { resolveComponentValue } from '../../shared/component-value';
 import type { MapChartProps, Row } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
@@ -74,9 +75,9 @@ export function mapOption(
 ): EChartsOption {
   const rows = data.main.snapshot.rows;
   const name = resolveField(props.nameField, data);
-  const value = resolveField(props.valueField, data);
+  const value = resolveComponentValue(props, data, props.emptyBehavior);
   const geoName = (row: Row) => geoRegionName(row, name.field, props.nameMap);
-  const values = rows.map((row) => finiteNumber(row[value.field]) ?? 0);
+  const values = rows.map((row) => finiteNumber(value.read(row)) ?? 0);
   const rawMin = values.length > 0 ? Math.min(...values) : 0;
   const rawMax = values.length > 0 ? Math.max(...values) : 0;
   const lo = rawMin < rawMax ? rawMin : Math.min(0, rawMin);
@@ -98,7 +99,7 @@ export function mapOption(
       row[pinnedMatch.field] === props.pinnedSummary?.matchValue;
     return [{
       name: rawName,
-      value: [...cp, finiteNumber(row[value.field]) ?? 0],
+      value: [...cp, finiteNumber(value.read(row)) ?? 0],
       ...(pinned ? { label: { show: false }, emphasis: { label: { show: false } } } : {})
     }];
   });
@@ -119,10 +120,10 @@ export function mapOption(
   const pieces = levels && scale ? mapLegendPieces(levels) : undefined;
 
   const tooltipFields: MapTooltipField[] = (props.tooltipFields ?? []).map((entry) => {
-    const resolved = resolveField(entry.field, data);
+    const resolved = resolveComponentValue(entry, data, props.emptyBehavior);
     return {
       label: entry.label,
-      field: resolved.field,
+      read: resolved.read,
       ...(resolved.format === undefined ? {} : { format: resolved.format }),
       missingText: resolved.missingText
     };
@@ -146,8 +147,8 @@ export function mapOption(
                 : itemName(params);
               return mapTooltipMarkup(title, [
                 {
-                  label: fieldLabel(props.valueField, data),
-                  value: formatValue(hovered?.[value.field], value.format, value.missingText)
+                  label: value.label,
+                  value: formatValue(hovered ? value.read(hovered) : undefined, value.format, value.missingText)
                 },
                 ...mapTooltipRows(hovered, tooltipFields)
               ]);
@@ -214,7 +215,7 @@ export function mapOption(
         geoIndex: 0,
         data: rows.map((row) => ({
           name: geoName(row),
-          value: finiteNumber(row[value.field]) ?? 0
+          value: finiteNumber(value.read(row)) ?? 0
         }))
       },
       ...(props.scatter

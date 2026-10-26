@@ -1,52 +1,37 @@
 {
-  "schemaVersion": "6.58",
-  "id": "composite-page",
+  "schemaVersion": "6.59",
+  "id": "chart-constant-values-page",
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true,
-    "note": "只读"
-  },
   "dataSources": {
-    "summary": {
+    "main": {
       "fields": {
-        "channel": {
+        "category": {
           "type": "string",
-          "role": "dimension"
+          "role": "dimension",
+          "label": "地区"
         },
-        "amount": {
+        "actual": {
           "type": "number",
-          "role": "measure"
-        },
-        "share": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "owner": {
-          "type": "string",
-          "role": "dimension"
+          "role": "measure",
+          "label": "实际值",
+          "unit": "个",
+          "defaultFormat": "number"
         }
       },
       "source": {
         "type": "inline",
         "rows": [
           {
-            "channel": "线上",
-            "amount": 60,
-            "share": 60,
-            "score": 88,
-            "owner": "张三"
+            "category": "北京",
+            "actual": 1
           },
           {
-            "channel": "线下",
-            "amount": 40,
-            "share": 40,
-            "score": 70,
-            "owner": "李四"
+            "category": "上海",
+            "actual": 3
+          },
+          {
+            "category": "广东",
+            "actual": 4
           }
         ]
       }
@@ -57,18 +42,19 @@
       "id": "main",
       "components": [
         {
-          "id": "share-pie",
+          "id": "ring",
           "type": "pieChart",
           "layout": {
             "span": 6
           },
-          "data": {
-            "main": "summary"
-          },
           "props": {
-            "categoryField": "channel",
-            "valueField": "share",
+            "title": "环图：常量取值",
+            "categoryField": "category",
+            "value": 2,
             "variant": "compactRing"
+          },
+          "data": {
+            "main": "main"
           }
         }
       ]

@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { readFile, readdir, access, cp, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { pageSchema, componentCatalog, validate, versionPolicy, normalizePageDocument } from '../packages/page/src/internal';
-import { atPointer, buildPageReference, referenceNodes, validateReferenceLinks, type ReferenceMap } from '../tools/scripts/page-reference';
+import { flattenPageComponents, pageSchema, componentCatalog, validate, versionPolicy, normalizePageDocument } from '../packages/page/src/internal';
+import { minimalExample, atPointer, buildPageReference, referenceNodes, validateReferenceLinks, type ReferenceMap } from '../tools/scripts/page-reference';
 
 const root = process.cwd();
 const bundle = JSON.parse(await readFile('metriccanvas-authoring/bundle.json','utf8'));
@@ -14,7 +14,7 @@ const skills: Array<{id:string;entrypoint:string;referenceProjection?:string}> =
 const authorMap = JSON.parse(await readFile('docs/page-metadata/reference-map.json', 'utf8')) as ReferenceMap;
 const inputs = new Map<string,string>();
 for(const example of new Set(Object.values(authorMap.modules).flatMap(module=>module.examples))){
-  if(['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles'].includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(pageFilesById('pages').get(`${example}`)!,'utf8'));
+  if(['chart-constant-values-page','page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles'].includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(pageFilesById('pages').get(`${example}`)!,'utf8'));
 }
 
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
@@ -135,9 +135,22 @@ describe('页面参考手册生成与分发', () => {
   });
 });
 
-it('standalone component examples retain the fixed controls required by their query graph',()=>{
- const map=JSON.parse(reference.get('examples/component-mapChart.json')!);
+it('standalone component examples retain the fixed controls required by their query graph',async()=>{
+ const source=JSON.parse(await readFile('packages/page/fixtures/contract-valid/chart-local-filter-page.json','utf8'));
+ const component=flattenPageComponents(source).find(c=>c.type==='mapChart');
+ const map=minimalExample(source,component);
+ expect(map).toBeDefined();
  const controls=map.sections.flatMap((section:any)=>section.components).filter((component:any)=>component.type==='filterGroup');
  expect(controls.map((component:any)=>component.props.filterId)).toEqual(['map-region']);
  expect(validate(map)).toEqual([]);
+});
+
+it('missing-constant branch witnesses do not become the default component example', () => {
+ for (const type of ['barChart','lineChart','pieChart','mapChart','gauge']) {
+  const example=JSON.parse(reference.get(`examples/component-${type}.json`)!);
+  const component=flattenPageComponents<{type: string; props: Record<string, unknown>}>(example).find(c=>c.type===type)!;
+  const props=component.props as Record<string,unknown>;
+  if(Object.hasOwn(props,'value'))expect(props.value).not.toBeNull();
+  expect(validate(example)).toEqual([]);
+ }
 });

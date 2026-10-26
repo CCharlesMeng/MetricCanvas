@@ -53,7 +53,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 嵌套明细字段可通过6.32的`table.props.rowExpansion.data:{type:"recordList",field:"..."}`被显式消费为子表格；字段契约仍为一层、每父行最多100项，子表列直接引用items.fields中的页面字段id。
 
 
-页面协议 6.58。结构真源为本册[schema.json](schema.json)，SHA256 `ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35`。字段表自动生成；可选不等于有默认值。
+页面协议 6.59。结构真源为本册[schema.json](schema.json)，SHA256 `604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1590,8 +1590,8 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `#/definitions/scalar/anyOf/2`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/flag`。
 - `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/at`。
 - `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/items`。
-- `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
-- `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
+- `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/name`。
+- `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/name`。
 - `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/dataSources/opportunity-list/fields/bidding-amount`。
 - `#/definitions/queryField/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/events`。
 - `#/definitions/queryField/anyOf/2`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/reason`。

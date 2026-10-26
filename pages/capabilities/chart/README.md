@@ -92,3 +92,11 @@
 关联：[ioc-header-demo](../ioc-header/business/ioc-header-demo.json)。
 
 关联：[chart-echarts-option-page](chart-echarts-option-page.json)。
+
+## 图表配置项常量取值
+
+入口：[chart-constant-values-page](chart-constant-values-page.json)，路由 `/pages/chart-constant-values-page`。从仓库根运行 `pnpm dev:playground`；也可给 Vite 显式指定端口。全部为合成 inline 数据，纯常量仪表没有页面数据源依赖，不访问真实 DQE。
+
+观察：折线和柱线混合的“基线”恒为2，横向柱同值；堆叠合计包括常量段。饼/环图三个已有类别均取2；地图仅北京、上海、广东记录取2，显式 nameMap 匹配底图。地图 tooltip 和地域摘要同时显示常量目标与实际字段值。无数据源仪表显示2，mini显示0；空数据源默认仪表显示横杠，showConstants 仪表显示2。空横轴折线不补造类别。
+
+移动到折线绘图区查看轴提示，点击图例隐藏/恢复基线。浏览器自动验收：`CHART_VALUES_BASE_URL=http://127.0.0.1:5173 node apps/playground/tests/chart-constant-values-browser.mjs /tmp/chart-values-evidence`。关键错误态和预测边界由运行态/协议测试覆盖；浏览器、导出、真实服务验收边界见主计划的实施结果。

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "6.59",
+  "id": "chart-constant-branches",
+  "layout": "dashboard",
+  "dataSources": {
+    "main": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "北京市"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "null-barchart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "categoryField": "category",
+            "series": [
+              {
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "null-linechart",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "xField": "category",
+            "series": [
+              {
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "null-piechart",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "categoryField": "category",
+            "value": null
+          }
+        },
+        {
+          "id": "null-mapchart",
+          "type": "mapChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "nameField": "category",
+            "value": null,
+            "map": "china"
+          }
+        },
+        {
+          "id": "null-gauge",
+          "type": "gauge",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "value": null
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -37,7 +37,7 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.58。结构真源为本册[schema.json](schema.json)，SHA256 `ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35`。字段表自动生成；可选不等于有默认值。
+页面协议 6.59。结构真源为本册[schema.json](schema.json)，SHA256 `604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -491,7 +491,7 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/18`。�
 - `#/definitions/section/properties/components/items/oneOf/3`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/4`：[合法完整页面](examples/component-pieChart.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/5`：[合法完整页面](examples/component-table.json)，JSON Pointer `#/sections/0/components/0`。
-- `#/definitions/section/properties/components/items/oneOf/6`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/1`。
+- `#/definitions/section/properties/components/items/oneOf/6`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/7`：[合法完整页面](examples/component-gauge.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/8`：[合法完整页面](examples/component-tabContainer.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/9`：[合法完整页面](examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0`。
@@ -503,4 +503,4 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/18`。�
 - `#/definitions/section/properties/components/items/oneOf/15`：[合法完整页面](examples/component-text.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/16`：[合法完整页面](examples/component-aiSummary.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/17`：[合法完整页面](examples/component-button.json)，JSON Pointer `#/sections/0/components/0`。
-- `#/definitions/section/properties/components/items/oneOf/18`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0`。
+- `#/definitions/section/properties/components/items/oneOf/18`：[合法完整页面](examples/component-filterGroup.json)，JSON Pointer `#/sections/0/components/0`。

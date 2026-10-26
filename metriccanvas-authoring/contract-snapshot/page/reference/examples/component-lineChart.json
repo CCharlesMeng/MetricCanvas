@@ -1,45 +1,26 @@
 {
-  "schemaVersion": "6.5",
-  "layout": "report",
-  "id": "mixed-page",
+  "schemaVersion": "6.59",
+  "id": "chart-constant-values-page",
+  "layout": "dashboard",
   "dataSources": {
-    "live-sales": {
+    "empty": {
       "fields": {
-        "stat-date": {
-          "queryField": "stat-date",
-          "type": "date",
+        "category": {
+          "type": "string",
           "role": "dimension",
-          "nullable": false
+          "label": "地区"
         },
-        "gmv": {
-          "queryField": "gmv",
+        "actual": {
           "type": "number",
           "role": "measure",
-          "nullable": false
+          "label": "实际值",
+          "unit": "个",
+          "defaultFormat": "number"
         }
       },
       "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "stat-date"
-                ],
-                "output_metrics": [
-                  "gmv"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {}
-              }
-            ]
-          }
-        }
+        "type": "inline",
+        "rows": []
       }
     }
   },
@@ -48,29 +29,24 @@
       "id": "main",
       "components": [
         {
-          "id": "sales-trend",
+          "id": "empty-line",
           "type": "lineChart",
           "layout": {
-            "span": 8
-          },
-          "data": {
-            "main": "live-sales"
+            "span": 6
           },
           "props": {
-            "xField": {
-              "data": "main",
-              "field": "stat-date",
-              "format": "date-month-day"
-            },
+            "title": "空横轴：保留空图，不伪造类别",
+            "xField": "category",
             "series": [
               {
-                "field": {
-                  "data": "main",
-                  "field": "gmv",
-                  "format": "compact-yi-1"
-                }
+                "value": 2,
+                "label": "固定值"
               }
-            ]
+            ],
+            "emptyBehavior": "showConstants"
+          },
+          "data": {
+            "main": "empty"
           }
         }
       ]

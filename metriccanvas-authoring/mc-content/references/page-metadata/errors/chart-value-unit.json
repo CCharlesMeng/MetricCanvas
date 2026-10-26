@@ -1,0 +1,37 @@
+{
+  "case": "chart-value-unit",
+  "invariant": "chart-constant-values",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "同一坐标轴的系列必须使用相同单位和币种",
+      "paths": [
+        "/sections/0/components/1/props/series/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "series": [
+                "…",
+                {
+                  "value": 2,
+                  "label": "基线",
+                  "kind": "line",
+                  "axis": "primary",
+                  "unit": "元"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

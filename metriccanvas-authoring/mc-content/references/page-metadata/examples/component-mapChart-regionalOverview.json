@@ -1,60 +1,39 @@
 {
-  "schemaVersion": "6.58",
-  "id": "tab-content-mapchart",
+  "schemaVersion": "6.59",
+  "id": "chart-constant-values-page",
   "layout": "dashboard",
-  "filters": [
-    {
-      "id": "map-region",
-      "type": "dimension",
-      "dimension": "chart_demo_region",
-      "label": "区域分布区域",
-      "default": [
-        "CN"
-      ]
-    }
-  ],
   "dataSources": {
-    "map-data": {
+    "main": {
       "fields": {
         "category": {
           "type": "string",
           "role": "dimension",
-          "queryField": "chart_demo_country"
+          "label": "地区"
         },
-        "value": {
+        "actual": {
           "type": "number",
           "role": "measure",
-          "queryField": "chart_demo_map"
+          "label": "实际值",
+          "unit": "个",
+          "defaultFormat": "number"
         }
       },
       "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "filterBindings": {
-            "map-region": {
-              "target": "dimension",
-              "queryField": "chart_demo_region"
-            }
+        "type": "inline",
+        "rows": [
+          {
+            "category": "北京",
+            "actual": 1
           },
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "chart_demo_country"
-                ],
-                "output_metrics": [
-                  "chart_demo_map"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {}
-              }
-            ]
+          {
+            "category": "上海",
+            "actual": 3
+          },
+          {
+            "category": "广东",
+            "actual": 4
           }
-        }
+        ]
       }
     }
   },
@@ -63,47 +42,36 @@
       "id": "main",
       "components": [
         {
-          "id": "map-filter",
-          "type": "filterGroup",
-          "layout": {
-            "span": 12
-          },
-          "props": {
-            "filterId": "map-region",
-            "options": [
-              {
-                "label": "中国区",
-                "value": "CN"
-              },
-              {
-                "label": "海外",
-                "value": "OVERSEAS"
-              }
-            ]
-          }
-        },
-        {
           "id": "map",
           "type": "mapChart",
           "layout": {
             "span": 6
           },
-          "data": {
-            "main": "map-data"
-          },
           "props": {
-            "title": "区域分布",
+            "title": "地图与散点：现有地域均为 2",
             "nameField": "category",
-            "valueField": "value",
-            "map": "world",
+            "value": 2,
+            "map": "china",
+            "scatter": "point",
+            "tooltipFields": [
+              {
+                "label": "固定目标",
+                "value": 2
+              },
+              {
+                "label": "实际值",
+                "field": "actual"
+              }
+            ],
             "nameMap": {
-              "中国": "China",
-              "日本": "Japan",
-              "美国": "United States of America",
-              "德国": "Germany",
-              "澳大利亚": "Australia"
+              "北京": "北京市",
+              "上海": "上海市",
+              "广东": "广东省"
             },
             "variant": "regionalOverview"
+          },
+          "data": {
+            "main": "main"
           }
         }
       ]

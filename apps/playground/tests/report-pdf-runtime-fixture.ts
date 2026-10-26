@@ -1,10 +1,11 @@
+import { versionPolicy } from '@metriccanvas/page';
 import { mount, unmount } from 'svelte';
 import RuntimeView from '../../../packages/engine/runtime-ui/src/RuntimeView.svelte';
 import type { RuntimeDataGateway } from '@metriccanvas/engine';
 
 export function mountPdfRuntimeFixture(target: HTMLElement, input: unknown, dataGateway?: RuntimeDataGateway) {
   const document = structuredClone(input) as any;
-  document.schemaVersion = '6.28';
+  document.schemaVersion = versionPolicy.current;
   const header = document.sections.flatMap((section:any)=>section.components).find((component:any)=>component.type==='reportHeader');
   if (!header || document.layoutForm === 'dashboard') throw Error('PDF fixture requires a Report header');
   header.props.pdfExport = {filename:'runtime-fidelity'};

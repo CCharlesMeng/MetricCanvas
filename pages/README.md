@@ -541,3 +541,4 @@ DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/qu
 - AI Summary 容器组合与顶部规则：[`report-ai-summary-regions`](capabilities/ai-summary/report-ai-summary-regions.json)，入口 `/pages/report-ai-summary-regions`；合成 inline 数据 + 本地 Mock，操作见[主题说明](capabilities/ai-summary/README.md#容器组合与顶部摘要)。
 
 平台创作：[云宝会话、最新工作副本与管理信息](platform/README.md#云宝创作与最新工作副本)，内容预览 `/pages/flow-page`，完整交互使用真实 Platform 本地夹具。
+- [图表配置项常量取值](capabilities/chart/README.md#图表配置项常量取值)：全部图表、仪表、图表级空态与无数据源场景。

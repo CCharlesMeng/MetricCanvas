@@ -31,6 +31,19 @@
       ]
     },
     {
+      "id": "chart-constant-values",
+      "description": "图表取值来源互斥、常量类型、单位与能力下限",
+      "valid": [
+        "chart-constant-values-page"
+      ],
+      "invalid": [
+        "chart-value-conflict",
+        "chart-value-string",
+        "chart-value-unit",
+        "chart-value-version"
+      ]
+    },
+    {
       "id": "currency-range-presets",
       "description": "6.46单位case内的币种预设保持单一金额状态",
       "valid": [

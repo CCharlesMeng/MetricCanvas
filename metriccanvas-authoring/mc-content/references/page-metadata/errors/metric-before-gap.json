@@ -26,10 +26,13 @@
         "/sections/1/components/1/type",
         "/sections/1/components/1/type",
         "/sections/1/components/1/props/variant",
+        "/sections/1/components/1/props/variant",
         "/sections/1/components/1/type",
         "/sections/1/components/1/type",
         "/sections/1/components/1/props/variant",
+        "/sections/1/components/1/props/variant",
         "/sections/1/components/1/type",
+        "/sections/1/components/1/props/variant",
         "/sections/1/components/1/props/variant",
         "/sections/1/components/1/type",
         "/sections/1/components/1/type",
@@ -99,6 +102,9 @@
         "/sections/1/components/1/props/rows",
         "/sections/1/components/1/props/rows",
         "/sections/1/components/1/props/rows",
+        "/sections/1/components/1/props/rows",
+        "/sections/1/components/1/props/rows",
+        "/sections/1/components/1/props/rows",
         "/sections/1/components/1/props/rows"
       ]
     },
@@ -113,6 +119,7 @@
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 categoryField",
       "paths": [
+        "/sections/1/components/1/props/categoryField",
         "/sections/1/components/1/props/categoryField",
         "/sections/1/components/1/props/categoryField",
         "/sections/1/components/1/props/categoryField"
@@ -156,6 +163,24 @@
     },
     {
       "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 value",
+      "paths": [
+        "/sections/1/components/1/props/value",
+        "/sections/1/components/1/props/value",
+        "/sections/1/components/1/props/value"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/sections/1/components/1/props",
+        "/sections/1/components/1/props",
+        "/sections/1/components/1/props"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 columns",
       "paths": [
         "/sections/1/components/1/props/columns",
@@ -175,6 +200,7 @@
       "paths": [
         "/sections/1/components/1/props/nameField",
         "/sections/1/components/1/props/nameField",
+        "/sections/1/components/1/props/nameField",
         "/sections/1/components/1/props/nameField"
       ]
     },
@@ -182,6 +208,7 @@
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 map",
       "paths": [
+        "/sections/1/components/1/props/map",
         "/sections/1/components/1/props/map"
       ]
     },

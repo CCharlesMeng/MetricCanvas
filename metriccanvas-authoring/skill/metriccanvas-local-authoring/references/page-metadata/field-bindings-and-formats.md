@@ -80,8 +80,26 @@ FieldBinding增加非递归`{byFilter:{filterId,cases:{RMB:{data:"main",field:"b
 
 字段选择投影只替换表格字段列标题与单位；显式指标行label、系列label/name和组件业务标题保持上下文含义。money自适应格式已带货币单位时不再追加独立unit，避免双重单位。
 
+<a id="chart-constant-values"></a>
 
-页面协议 6.58。结构真源为本册[schema.json](schema.json)，SHA256 `ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35`。字段表自动生成；可选不等于有默认值。
+## 图表配置项常量取值（6.59）
+
+柱图与折线图的每个 series 使用 field 或 value 二选一；饼图、地图与仪表的主数值使用 valueField 或 value 二选一。保留全部旧字段写法，不能将 value 嵌在 field 下。常量为有限数字或 null；地图 tooltipFields 和 pinnedSummary.fields 的展示项也支持标量 value。
+
+```json
+{"series":[{"field":"actual","label":"实际值"},{"value":2,"label":"基线"}]}
+```
+
+value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级声明 format、unit、currency 和 missingText；字段分支的格式仍写在原绑定中。常量不继承其他系列的格式，不自动换算刻度；cny-adaptive/usd-adaptive 要求显式匹配的 CNY/USD。显式混合图的常量系列需要 unit，并继续校验同轴单位和币种。常量与普通系列一样参与堆叠、合计、图例、标签和tooltip；actual/forecast 仍受统计月边界约束。
+
+多行位置沿当前行集逐项取常量，不改变查询或数据快照。饼图为每个现有类别取同一个值；地图为现有地域取值，不给底图中缺少记录的地域补数。结构字段（横轴、类别、地域身份、匹配、层级和 action 行引用）继续要求真实字段。仪表 props.value 可在未声明组件 data 时独立显示。
+
+图表级 emptyBehavior 缺省/default 保持原空态；showConstants 在查询成功零行时允许呈现常量。该策略不绕过加载和错误，不补造类别、地域或业务行；空横轴折线仍保留空图。数据有行但数值均为 null 不属于零行；常量系列仍沿这些类别呈现。无数据源的纯常量仪表直接显示，不需要 showConstants。
+
+沿真实行展开的常量点保留原行点击上下文；没有真实行时不制造字段或行身份。运行时和静态导出共用取值及空态规则。场景：[chart-constant-values-page](examples/chart-constant-values-page.json)，浏览器入口与步骤见 pages/capabilities/chart/README.md。
+
+
+页面协议 6.59。结构真源为本册[schema.json](schema.json)，SHA256 `604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -592,12 +610,14 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - [signed-number-page](examples/signed-number-page.json)：完整合法页面；查询仅为静态契约证据。
 - [signed-number-family-page](examples/signed-number-family-page.json)：完整合法页面；查询仅为静态契约证据。
 - [currency-selection-page](examples/currency-selection-page.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-constant-values-page](examples/chart-constant-values-page.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-constant-branches](examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
 - `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/staticFieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
-- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/sections/0/components/0/props/xField`。
+- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
 - `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/colorRule`。

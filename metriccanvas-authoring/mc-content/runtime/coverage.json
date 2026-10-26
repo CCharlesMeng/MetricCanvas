@@ -63,6 +63,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/chart-constant-branches.json",
+      "target": "product-contracts/page/conformance/valid/chart-constant-branches.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/chart-echarts-option-page.json",
       "target": "product-contracts/page/conformance/valid/chart-echarts-option-page.json",
       "scope": "exact product contract"
@@ -668,6 +673,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/chart-constant-values-page.json",
+      "target": "product-contracts/page/conformance/valid/chart-constant-values-page.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/page-visibility-region-linkage.json",
       "target": "product-contracts/page/conformance/valid/page-visibility-region-linkage.json",
       "scope": "exact product contract"
@@ -795,6 +805,26 @@
     {
       "source": "product:page/conformance/invalid/object-time-format-missing.json",
       "target": "product-contracts/page/conformance/invalid/object-time-format-missing.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/chart-value-conflict.json",
+      "target": "product-contracts/page/conformance/invalid/chart-value-conflict.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/chart-value-string.json",
+      "target": "product-contracts/page/conformance/invalid/chart-value-string.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/chart-value-unit.json",
+      "target": "product-contracts/page/conformance/invalid/chart-value-unit.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/chart-value-version.json",
+      "target": "product-contracts/page/conformance/invalid/chart-value-version.json",
       "scope": "exact product contract"
     },
     {
@@ -3045,6 +3075,26 @@
     {
       "source": "product:page/reference/errors/object-time-format-missing.json",
       "target": "references/page-metadata/errors/object-time-format-missing.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/chart-value-conflict.json",
+      "target": "references/page-metadata/errors/chart-value-conflict.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/chart-value-string.json",
+      "target": "references/page-metadata/errors/chart-value-string.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/chart-value-unit.json",
+      "target": "references/page-metadata/errors/chart-value-unit.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/chart-value-version.json",
+      "target": "references/page-metadata/errors/chart-value-version.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -5338,6 +5388,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/chart-constant-values-page.json",
+      "target": "references/page-metadata/examples/chart-constant-values-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/chart-constant-branches.json",
+      "target": "references/page-metadata/examples/chart-constant-branches.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/field-bindings-and-formats.md",
       "target": "references/page-metadata/field-bindings-and-formats.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -5909,11 +5969,11 @@
     }
   ],
   "counts": {
-    "product": 1150,
+    "product": 1162,
     "authoring": 31,
     "modules": 33,
-    "topics": 155,
-    "nodes": 2032,
+    "topics": 162,
+    "nodes": 2178,
     "tools": 9,
     "components": 19
   },

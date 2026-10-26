@@ -1,3 +1,4 @@
+import { fieldSeriesSourceZ, displayConstantSourceZ, fieldValueSourceZ, constantValueSourceZ, chartEmptyBehaviorZ } from '../chart-value';
 import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
@@ -34,13 +35,11 @@ const mapLegendZ = z
   .strict()
   .meta({ id: 'mapLegend' });
 
-const mapTooltipFieldZ = z
-  .object({
-    label: nonEmptyTextValueZ,
-    field: fieldBindingZ
-  })
-  .strict()
-  .meta({ id: 'mapTooltipField' });
+const tooltipShape = { label: nonEmptyTextValueZ };
+const mapTooltipFieldZ = z.union([
+  fieldSeriesSourceZ.extend(tooltipShape).strict(),
+  displayConstantSourceZ.extend(tooltipShape).strict()
+]).meta({ id: 'mapTooltipField' });
 
 const mapPinnedSummaryZ = z
   .object({
@@ -52,19 +51,12 @@ const mapPinnedSummaryZ = z
   .strict()
   .meta({ id: 'mapPinnedSummary' });
 
-export const mapChartComponentZ = z
-  .object({
-    id: componentIdZ,
-    ...visibilityShape,
-    type: z.literal('mapChart'),
-    layout: componentLayoutZ,
-    data: mainDataZ,
-    props: z
-      .object({
+const mapPropsShape = {
         title: textValueZ.optional(),
+        emptyBehavior: chartEmptyBehaviorZ.optional(),
         variant: z.literal('regionalOverview').optional(),
         nameField: fieldBindingZ,
-        valueField: fieldBindingZ,
+
         map: z.enum(['china', 'world']),
         scatter: z.enum(['point', 'effect']).optional(),
         nameMap: z.record(z.string(), z.string()).optional(),
@@ -88,11 +80,15 @@ export const mapChartComponentZ = z
         /** 按稳定字段值固定展示一条地域摘要，不按显示名称或页面 id 分支。 */
         pinnedSummary: mapPinnedSummaryZ.optional(),
         actions: actionsZ.optional()
-      })
-      .strict()
-  })
-  .strict()
-  .meta({ id: 'mapChartComponent' });
+};
+export const mapChartComponentZ = z.object({
+  id: componentIdZ, ...visibilityShape, type: z.literal('mapChart'),
+  layout: componentLayoutZ, data: mainDataZ,
+  props: z.union([
+    fieldValueSourceZ.extend(mapPropsShape).strict(),
+    constantValueSourceZ.extend(mapPropsShape).strict()
+  ])
+}).strict().meta({ id: 'mapChartComponent' });
 
 componentCatalogRegistry.add(mapChartComponentZ, {
   label: '地图',

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.58",
+  "schemaVersion": "6.59",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "lineChart.overview"
@@ -111,7 +111,9 @@
         }
       ],
       "examples": [
-        "references/page-metadata/examples/mixed-page.json"
+        "references/page-metadata/examples/mixed-page.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json"
       ]
     }
   ],

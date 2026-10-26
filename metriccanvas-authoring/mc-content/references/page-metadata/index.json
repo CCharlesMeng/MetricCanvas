@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.58",
-  "schemaSha256": "ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35",
+  "schemaVersion": "6.59",
+  "schemaSha256": "604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -347,7 +347,9 @@
         "explicit-presentation-page",
         "signed-number-page",
         "signed-number-family-page",
-        "currency-selection-page"
+        "currency-selection-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "rules": [
         "data-slot-known-source",
@@ -555,7 +557,9 @@
       ],
       "examples": [
         "forecast-page",
-        "stored-count-measures"
+        "stored-count-measures",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "rules": [
         "bar-forecast-boundary",
@@ -573,7 +577,9 @@
         "折线图 lineChart"
       ],
       "examples": [
-        "mixed-page"
+        "mixed-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "rules": [
         "schema-structure",
@@ -593,7 +599,9 @@
         "饼图 pieChart"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "rules": [
         "schema-structure",
@@ -664,7 +672,9 @@
       ],
       "examples": [
         "map-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "rules": [
         "map-legend-bands-increasing",
@@ -683,7 +693,9 @@
       ],
       "examples": [
         "composite-page",
-        "reference-variants-page"
+        "reference-variants-page",
+        "chart-constant-values-page",
+        "chart-constant-branches"
       ],
       "rules": [
         "schema-structure",
@@ -1113,7 +1125,8 @@
         "6.55",
         "6.56",
         "6.57",
-        "6.58"
+        "6.58",
+        "6.59"
       ]
     },
     {
@@ -9887,6 +9900,16 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/emptyBehavior",
+      "path": "@barChartComponent.props.emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/echartsOption",
       "path": "@barChartComponent.props.echartsOption",
       "required": "本分支可选",
@@ -10014,28 +10037,46 @@
       "module": "components/barChart.md"
     },
     {
-      "pointer": "#/definitions/barChartSeries/properties/field",
-      "path": "@barChartSeries.field",
+      "pointer": "#/definitions/barChartSeries/anyOf/0",
+      "path": "@barChartSeries · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/field",
+      "path": "@barChartSeries · anyOf[0].field",
       "required": "本分支必填",
       "module": "components/barChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/barChartSeries/properties/label",
-      "path": "@barChartSeries.label",
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/value",
+      "path": "@barChartSeries · anyOf[0].value",
       "required": "本分支可选",
       "module": "components/barChart.md"
     },
     {
-      "pointer": "#/definitions/barChartSeries/properties/label/allOf/0",
-      "path": "@barChartSeries.label · allOf[0]",
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/value/not",
+      "path": "@barChartSeries · anyOf[0].value · not",
+      "required": "条件结构",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/label",
+      "path": "@barChartSeries · anyOf[0].label",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/label/allOf/0",
+      "path": "@barChartSeries · anyOf[0].label · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/barChart.md",
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/barChartSeries/properties/kind",
-      "path": "@barChartSeries.kind",
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/kind",
+      "path": "@barChartSeries · anyOf[0].kind",
       "required": "本分支可选",
       "module": "components/barChart.md",
       "enum": [
@@ -10044,8 +10085,8 @@
       ]
     },
     {
-      "pointer": "#/definitions/barChartSeries/properties/axis",
-      "path": "@barChartSeries.axis",
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/axis",
+      "path": "@barChartSeries · anyOf[0].axis",
       "required": "本分支可选",
       "module": "components/barChart.md",
       "enum": [
@@ -10054,8 +10095,8 @@
       ]
     },
     {
-      "pointer": "#/definitions/barChartSeries/properties/role",
-      "path": "@barChartSeries.role",
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/role",
+      "path": "@barChartSeries · anyOf[0].role",
       "required": "本分支可选",
       "module": "components/barChart.md",
       "enum": [
@@ -10064,8 +10105,154 @@
       ]
     },
     {
-      "pointer": "#/definitions/barChartSeries/properties/stackOrder",
-      "path": "@barChartSeries.stackOrder",
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/stackOrder",
+      "path": "@barChartSeries · anyOf[0].stackOrder",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1",
+      "path": "@barChartSeries · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/field",
+      "path": "@barChartSeries · anyOf[1].field",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/field/not",
+      "path": "@barChartSeries · anyOf[1].field · not",
+      "required": "条件结构",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/value",
+      "path": "@barChartSeries · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/value/anyOf/0",
+      "path": "@barChartSeries · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/value/anyOf/1",
+      "path": "@barChartSeries · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/format",
+      "path": "@barChartSeries · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/unit",
+      "path": "@barChartSeries · anyOf[1].unit",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/unit/allOf/0",
+      "path": "@barChartSeries · anyOf[1].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/currency",
+      "path": "@barChartSeries · anyOf[1].currency",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "enum": [
+        "CNY",
+        "USD"
+      ]
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/missingText",
+      "path": "@barChartSeries · anyOf[1].missingText",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/label",
+      "path": "@barChartSeries · anyOf[1].label",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/label/allOf/0",
+      "path": "@barChartSeries · anyOf[1].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/kind",
+      "path": "@barChartSeries · anyOf[1].kind",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "enum": [
+        "bar",
+        "line"
+      ]
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/axis",
+      "path": "@barChartSeries · anyOf[1].axis",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "enum": [
+        "primary",
+        "secondary"
+      ]
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/role",
+      "path": "@barChartSeries · anyOf[1].role",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "enum": [
+        "actual",
+        "forecast"
+      ]
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/stackOrder",
+      "path": "@barChartSeries · anyOf[1].stackOrder",
       "required": "本分支可选",
       "module": "components/barChart.md"
     },
@@ -10233,6 +10420,16 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/emptyBehavior",
+      "path": "@lineChartComponent.props.emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/lineChart.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
       "pointer": "#/definitions/lineChartComponent/properties/props/properties/echartsOption",
       "path": "@lineChartComponent.props.echartsOption",
       "required": "本分支可选",
@@ -10272,21 +10469,149 @@
       "module": "components/lineChart.md"
     },
     {
-      "pointer": "#/definitions/chartSeries/properties/field",
-      "path": "@chartSeries.field",
+      "pointer": "#/definitions/chartSeries/anyOf/0",
+      "path": "@chartSeries · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/field",
+      "path": "@chartSeries · anyOf[0].field",
       "required": "本分支必填",
       "module": "components/lineChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/chartSeries/properties/label",
-      "path": "@chartSeries.label",
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/value",
+      "path": "@chartSeries · anyOf[0].value",
       "required": "本分支可选",
       "module": "components/lineChart.md"
     },
     {
-      "pointer": "#/definitions/chartSeries/properties/label/allOf/0",
-      "path": "@chartSeries.label · allOf[0]",
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/value/not",
+      "path": "@chartSeries · anyOf[0].value · not",
+      "required": "条件结构",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/label",
+      "path": "@chartSeries · anyOf[0].label",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/label/allOf/0",
+      "path": "@chartSeries · anyOf[0].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1",
+      "path": "@chartSeries · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/field",
+      "path": "@chartSeries · anyOf[1].field",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/field/not",
+      "path": "@chartSeries · anyOf[1].field · not",
+      "required": "条件结构",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/value",
+      "path": "@chartSeries · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/value/anyOf/0",
+      "path": "@chartSeries · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/value/anyOf/1",
+      "path": "@chartSeries · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/format",
+      "path": "@chartSeries · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "components/lineChart.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/unit",
+      "path": "@chartSeries · anyOf[1].unit",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/unit/allOf/0",
+      "path": "@chartSeries · anyOf[1].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/currency",
+      "path": "@chartSeries · anyOf[1].currency",
+      "required": "本分支可选",
+      "module": "components/lineChart.md",
+      "enum": [
+        "CNY",
+        "USD"
+      ]
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/missingText",
+      "path": "@chartSeries · anyOf[1].missingText",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/label",
+      "path": "@chartSeries · anyOf[1].label",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/label/allOf/0",
+      "path": "@chartSeries · anyOf[1].label · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/lineChart.md",
       "ref": "#/definitions/textValue"
@@ -10420,73 +10745,273 @@
       "module": "components/pieChart.md"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/title",
-      "path": "@pieChartComponent.props.title",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0",
+      "path": "@pieChartComponent.props · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/valueField",
+      "path": "@pieChartComponent.props · anyOf[0].valueField",
+      "required": "本分支必填",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/value",
+      "path": "@pieChartComponent.props · anyOf[0].value",
       "required": "本分支可选",
       "module": "components/pieChart.md"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/title/allOf/0",
-      "path": "@pieChartComponent.props.title · allOf[0]",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/value/not",
+      "path": "@pieChartComponent.props · anyOf[0].value · not",
+      "required": "条件结构",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/title",
+      "path": "@pieChartComponent.props · anyOf[0].title",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/title/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[0].title · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/pieChart.md",
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/echartsOption",
-      "path": "@pieChartComponent.props.echartsOption",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/emptyBehavior",
+      "path": "@pieChartComponent.props · anyOf[0].emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/echartsOption",
+      "path": "@pieChartComponent.props · anyOf[0].echartsOption",
       "required": "本分支可选",
       "module": "components/pieChart.md"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/echartsOption/allOf/0",
-      "path": "@pieChartComponent.props.echartsOption · allOf[0]",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/echartsOption/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[0].echartsOption · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/pieChart.md",
       "ref": "#/definitions/chartOption"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/variant",
-      "path": "@pieChartComponent.props.variant",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/variant",
+      "path": "@pieChartComponent.props · anyOf[0].variant",
       "required": "本分支可选",
       "module": "components/pieChart.md",
       "const": "compactRing"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/categoryField",
-      "path": "@pieChartComponent.props.categoryField",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/categoryField",
+      "path": "@pieChartComponent.props · anyOf[0].categoryField",
       "required": "本分支必填",
       "module": "components/pieChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/valueField",
-      "path": "@pieChartComponent.props.valueField",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/ring",
+      "path": "@pieChartComponent.props · anyOf[0].ring",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/labelLine",
+      "path": "@pieChartComponent.props · anyOf[0].labelLine",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/actions",
+      "path": "@pieChartComponent.props · anyOf[0].actions",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/actions/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[0].actions · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/actions"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1",
+      "path": "@pieChartComponent.props · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/valueField",
+      "path": "@pieChartComponent.props · anyOf[1].valueField",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/valueField/not",
+      "path": "@pieChartComponent.props · anyOf[1].valueField · not",
+      "required": "条件结构",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value",
+      "path": "@pieChartComponent.props · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/0",
+      "path": "@pieChartComponent.props · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/1",
+      "path": "@pieChartComponent.props · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/format",
+      "path": "@pieChartComponent.props · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/unit",
+      "path": "@pieChartComponent.props · anyOf[1].unit",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/unit/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[1].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/currency",
+      "path": "@pieChartComponent.props · anyOf[1].currency",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "CNY",
+        "USD"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/missingText",
+      "path": "@pieChartComponent.props · anyOf[1].missingText",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/title",
+      "path": "@pieChartComponent.props · anyOf[1].title",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/title/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[1].title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/emptyBehavior",
+      "path": "@pieChartComponent.props · anyOf[1].emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/echartsOption",
+      "path": "@pieChartComponent.props · anyOf[1].echartsOption",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/echartsOption/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[1].echartsOption · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/chartOption"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/variant",
+      "path": "@pieChartComponent.props · anyOf[1].variant",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "const": "compactRing"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/categoryField",
+      "path": "@pieChartComponent.props · anyOf[1].categoryField",
       "required": "本分支必填",
       "module": "components/pieChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/ring",
-      "path": "@pieChartComponent.props.ring",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/ring",
+      "path": "@pieChartComponent.props · anyOf[1].ring",
       "required": "本分支可选",
       "module": "components/pieChart.md"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/labelLine",
-      "path": "@pieChartComponent.props.labelLine",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/labelLine",
+      "path": "@pieChartComponent.props · anyOf[1].labelLine",
       "required": "本分支可选",
       "module": "components/pieChart.md"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/actions",
-      "path": "@pieChartComponent.props.actions",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/actions",
+      "path": "@pieChartComponent.props · anyOf[1].actions",
       "required": "本分支可选",
       "module": "components/pieChart.md"
     },
     {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/actions/allOf/0",
-      "path": "@pieChartComponent.props.actions · allOf[0]",
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/actions/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[1].actions · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/pieChart.md",
       "ref": "#/definitions/actions"
@@ -12058,42 +12583,70 @@
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/title",
-      "path": "@mapChartComponent.props.title",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0",
+      "path": "@mapChartComponent.props · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/valueField",
+      "path": "@mapChartComponent.props · anyOf[0].valueField",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/value",
+      "path": "@mapChartComponent.props · anyOf[0].value",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/title/allOf/0",
-      "path": "@mapChartComponent.props.title · allOf[0]",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/value/not",
+      "path": "@mapChartComponent.props · anyOf[0].value · not",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/title",
+      "path": "@mapChartComponent.props · anyOf[0].title",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/title/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[0].title · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/variant",
-      "path": "@mapChartComponent.props.variant",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/emptyBehavior",
+      "path": "@mapChartComponent.props · anyOf[0].emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/variant",
+      "path": "@mapChartComponent.props · anyOf[0].variant",
       "required": "本分支可选",
       "module": "components/mapChart.md",
       "const": "regionalOverview"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/nameField",
-      "path": "@mapChartComponent.props.nameField",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/nameField",
+      "path": "@mapChartComponent.props · anyOf[0].nameField",
       "required": "本分支必填",
       "module": "components/mapChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/valueField",
-      "path": "@mapChartComponent.props.valueField",
-      "required": "本分支必填",
-      "module": "components/mapChart.md",
-      "ref": "#/definitions/fieldBinding"
-    },
-    {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/map",
-      "path": "@mapChartComponent.props.map",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/map",
+      "path": "@mapChartComponent.props · anyOf[0].map",
       "required": "本分支必填",
       "module": "components/mapChart.md",
       "enum": [
@@ -12102,8 +12655,8 @@
       ]
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/scatter",
-      "path": "@mapChartComponent.props.scatter",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/scatter",
+      "path": "@mapChartComponent.props · anyOf[0].scatter",
       "required": "本分支可选",
       "module": "components/mapChart.md",
       "enum": [
@@ -12112,77 +12665,77 @@
       ]
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/nameMap",
-      "path": "@mapChartComponent.props.nameMap",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/nameMap",
+      "path": "@mapChartComponent.props · anyOf[0].nameMap",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/nameMap/additionalProperties",
-      "path": "@mapChartComponent.props.nameMap{key}",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/nameMap/additionalProperties",
+      "path": "@mapChartComponent.props · anyOf[0].nameMap{key}",
       "required": "动态键的值",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/nameMap/propertyNames",
-      "path": "@mapChartComponent.props.nameMap · propertyNames",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/nameMap/propertyNames",
+      "path": "@mapChartComponent.props · anyOf[0].nameMap · propertyNames",
       "required": "条件结构",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/hierarchyFilter",
-      "path": "@mapChartComponent.props.hierarchyFilter",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/hierarchyFilter",
+      "path": "@mapChartComponent.props · anyOf[0].hierarchyFilter",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/levelField",
-      "path": "@mapChartComponent.props.levelField",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/levelField",
+      "path": "@mapChartComponent.props · anyOf[0].levelField",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/levelField/allOf/0",
-      "path": "@mapChartComponent.props.levelField · allOf[0]",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/levelField/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[0].levelField · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/parentField",
-      "path": "@mapChartComponent.props.parentField",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/parentField",
+      "path": "@mapChartComponent.props · anyOf[0].parentField",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/parentField/allOf/0",
-      "path": "@mapChartComponent.props.parentField · allOf[0]",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/parentField/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[0].parentField · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/codeField",
-      "path": "@mapChartComponent.props.codeField",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/codeField",
+      "path": "@mapChartComponent.props · anyOf[0].codeField",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/codeField/allOf/0",
-      "path": "@mapChartComponent.props.codeField · allOf[0]",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/codeField/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[0].codeField · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/levelMaps",
-      "path": "@mapChartComponent.props.levelMaps",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/levelMaps",
+      "path": "@mapChartComponent.props · anyOf[0].levelMaps",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/levelMaps/additionalProperties",
-      "path": "@mapChartComponent.props.levelMaps{key}",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/levelMaps/additionalProperties",
+      "path": "@mapChartComponent.props · anyOf[0].levelMaps{key}",
       "required": "动态键的值",
       "module": "components/mapChart.md",
       "enum": [
@@ -12191,20 +12744,20 @@
       ]
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/levelMaps/propertyNames",
-      "path": "@mapChartComponent.props.levelMaps · propertyNames",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/levelMaps/propertyNames",
+      "path": "@mapChartComponent.props · anyOf[0].levelMaps · propertyNames",
       "required": "条件结构",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/legend",
-      "path": "@mapChartComponent.props.legend",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/legend",
+      "path": "@mapChartComponent.props · anyOf[0].legend",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/legend/allOf/0",
-      "path": "@mapChartComponent.props.legend · allOf[0]",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/legend/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[0].legend · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/mapLegend"
@@ -12261,14 +12814,14 @@
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/tooltipFields",
-      "path": "@mapChartComponent.props.tooltipFields",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/tooltipFields",
+      "path": "@mapChartComponent.props · anyOf[0].tooltipFields",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/tooltipFields/items",
-      "path": "@mapChartComponent.props.tooltipFields[]",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/tooltipFields/items",
+      "path": "@mapChartComponent.props · anyOf[0].tooltipFields[]",
       "required": "每个数组项",
       "module": "components/mapChart.md",
       "ref": "#/definitions/mapTooltipField"
@@ -12280,28 +12833,139 @@
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapTooltipField/properties/label",
-      "path": "@mapTooltipField.label",
-      "required": "本分支必填",
-      "module": "components/mapChart.md",
-      "ref": "#/definitions/nonEmptyTextValue"
+      "pointer": "#/definitions/mapTooltipField/anyOf/0",
+      "path": "@mapTooltipField · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapTooltipField/properties/field",
-      "path": "@mapTooltipField.field",
+      "pointer": "#/definitions/mapTooltipField/anyOf/0/properties/field",
+      "path": "@mapTooltipField · anyOf[0].field",
       "required": "本分支必填",
       "module": "components/mapChart.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/pinnedSummary",
-      "path": "@mapChartComponent.props.pinnedSummary",
+      "pointer": "#/definitions/mapTooltipField/anyOf/0/properties/value",
+      "path": "@mapTooltipField · anyOf[0].value",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/pinnedSummary/allOf/0",
-      "path": "@mapChartComponent.props.pinnedSummary · allOf[0]",
+      "pointer": "#/definitions/mapTooltipField/anyOf/0/properties/value/not",
+      "path": "@mapTooltipField · anyOf[0].value · not",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/0/properties/label",
+      "path": "@mapTooltipField · anyOf[0].label",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1",
+      "path": "@mapTooltipField · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/field",
+      "path": "@mapTooltipField · anyOf[1].field",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/field/not",
+      "path": "@mapTooltipField · anyOf[1].field · not",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/value",
+      "path": "@mapTooltipField · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/scalar"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/format",
+      "path": "@mapTooltipField · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/unit",
+      "path": "@mapTooltipField · anyOf[1].unit",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/unit/allOf/0",
+      "path": "@mapTooltipField · anyOf[1].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/currency",
+      "path": "@mapTooltipField · anyOf[1].currency",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "enum": [
+        "CNY",
+        "USD"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/missingText",
+      "path": "@mapTooltipField · anyOf[1].missingText",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipField/anyOf/1/properties/label",
+      "path": "@mapTooltipField · anyOf[1].label",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/pinnedSummary",
+      "path": "@mapChartComponent.props · anyOf[0].pinnedSummary",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/pinnedSummary/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[0].pinnedSummary · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/mapPinnedSummary"
@@ -12358,14 +13022,305 @@
       "ref": "#/definitions/mapTooltipField"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/actions",
-      "path": "@mapChartComponent.props.actions",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/actions",
+      "path": "@mapChartComponent.props · anyOf[0].actions",
       "required": "本分支可选",
       "module": "components/mapChart.md"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/actions/allOf/0",
-      "path": "@mapChartComponent.props.actions · allOf[0]",
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/actions/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[0].actions · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/actions"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1",
+      "path": "@mapChartComponent.props · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/valueField",
+      "path": "@mapChartComponent.props · anyOf[1].valueField",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/valueField/not",
+      "path": "@mapChartComponent.props · anyOf[1].valueField · not",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/value",
+      "path": "@mapChartComponent.props · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/value/anyOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/value/anyOf/1",
+      "path": "@mapChartComponent.props · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/format",
+      "path": "@mapChartComponent.props · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/unit",
+      "path": "@mapChartComponent.props · anyOf[1].unit",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/unit/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/currency",
+      "path": "@mapChartComponent.props · anyOf[1].currency",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "enum": [
+        "CNY",
+        "USD"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/missingText",
+      "path": "@mapChartComponent.props · anyOf[1].missingText",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/title",
+      "path": "@mapChartComponent.props · anyOf[1].title",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/title/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/emptyBehavior",
+      "path": "@mapChartComponent.props · anyOf[1].emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/variant",
+      "path": "@mapChartComponent.props · anyOf[1].variant",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "const": "regionalOverview"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/nameField",
+      "path": "@mapChartComponent.props · anyOf[1].nameField",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/map",
+      "path": "@mapChartComponent.props · anyOf[1].map",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "enum": [
+        "china",
+        "world"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/scatter",
+      "path": "@mapChartComponent.props · anyOf[1].scatter",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "enum": [
+        "point",
+        "effect"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/nameMap",
+      "path": "@mapChartComponent.props · anyOf[1].nameMap",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/nameMap/additionalProperties",
+      "path": "@mapChartComponent.props · anyOf[1].nameMap{key}",
+      "required": "动态键的值",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/nameMap/propertyNames",
+      "path": "@mapChartComponent.props · anyOf[1].nameMap · propertyNames",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/hierarchyFilter",
+      "path": "@mapChartComponent.props · anyOf[1].hierarchyFilter",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/levelField",
+      "path": "@mapChartComponent.props · anyOf[1].levelField",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/levelField/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].levelField · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/parentField",
+      "path": "@mapChartComponent.props · anyOf[1].parentField",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/parentField/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].parentField · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/codeField",
+      "path": "@mapChartComponent.props · anyOf[1].codeField",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/codeField/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].codeField · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/levelMaps",
+      "path": "@mapChartComponent.props · anyOf[1].levelMaps",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/levelMaps/additionalProperties",
+      "path": "@mapChartComponent.props · anyOf[1].levelMaps{key}",
+      "required": "动态键的值",
+      "module": "components/mapChart.md",
+      "enum": [
+        "china",
+        "world"
+      ]
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/levelMaps/propertyNames",
+      "path": "@mapChartComponent.props · anyOf[1].levelMaps · propertyNames",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/legend",
+      "path": "@mapChartComponent.props · anyOf[1].legend",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/legend/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].legend · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/mapLegend"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/tooltipFields",
+      "path": "@mapChartComponent.props · anyOf[1].tooltipFields",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/tooltipFields/items",
+      "path": "@mapChartComponent.props · anyOf[1].tooltipFields[]",
+      "required": "每个数组项",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/mapTooltipField"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/pinnedSummary",
+      "path": "@mapChartComponent.props · anyOf[1].pinnedSummary",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/pinnedSummary/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].pinnedSummary · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/mapPinnedSummary"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/actions",
+      "path": "@mapChartComponent.props · anyOf[1].actions",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/actions/allOf/0",
+      "path": "@mapChartComponent.props · anyOf[1].actions · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/actions"
@@ -12420,7 +13375,13 @@
     {
       "pointer": "#/definitions/gaugeComponent/properties/data",
       "path": "@gaugeComponent.data",
-      "required": "本分支必填",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/data/allOf/0",
+      "path": "@gaugeComponent.data · allOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "components/gauge.md",
       "ref": "#/definitions/mainData"
     },
@@ -12431,79 +13392,272 @@
       "module": "components/gauge.md"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/title",
-      "path": "@gaugeComponent.props.title",
-      "required": "本分支可选",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0",
+      "path": "@gaugeComponent.props · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "components/gauge.md"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/title/allOf/0",
-      "path": "@gaugeComponent.props.title · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/gauge.md",
-      "ref": "#/definitions/textValue"
-    },
-    {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/variant",
-      "path": "@gaugeComponent.props.variant",
-      "required": "本分支可选",
-      "module": "components/gauge.md",
-      "const": "mini"
-    },
-    {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/valueField",
-      "path": "@gaugeComponent.props.valueField",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/valueField",
+      "path": "@gaugeComponent.props · anyOf[0].valueField",
       "required": "本分支必填",
       "module": "components/gauge.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/min",
-      "path": "@gaugeComponent.props.min",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/value",
+      "path": "@gaugeComponent.props · anyOf[0].value",
       "required": "本分支可选",
       "module": "components/gauge.md"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/max",
-      "path": "@gaugeComponent.props.max",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/value/not",
+      "path": "@gaugeComponent.props · anyOf[0].value · not",
+      "required": "条件结构",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/title",
+      "path": "@gaugeComponent.props · anyOf[0].title",
       "required": "本分支可选",
       "module": "components/gauge.md"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/unit",
-      "path": "@gaugeComponent.props.unit",
-      "required": "本分支可选",
-      "module": "components/gauge.md"
-    },
-    {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/unit/allOf/0",
-      "path": "@gaugeComponent.props.unit · allOf[0]",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/title/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[0].title · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/gauge.md",
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/label",
-      "path": "@gaugeComponent.props.label",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/variant",
+      "path": "@gaugeComponent.props · anyOf[0].variant",
+      "required": "本分支可选",
+      "module": "components/gauge.md",
+      "const": "mini"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/emptyBehavior",
+      "path": "@gaugeComponent.props · anyOf[0].emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/gauge.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/min",
+      "path": "@gaugeComponent.props · anyOf[0].min",
       "required": "本分支可选",
       "module": "components/gauge.md"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/label/allOf/0",
-      "path": "@gaugeComponent.props.label · allOf[0]",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/max",
+      "path": "@gaugeComponent.props · anyOf[0].max",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/unit",
+      "path": "@gaugeComponent.props · anyOf[0].unit",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/unit/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[0].unit · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/gauge.md",
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/actions",
-      "path": "@gaugeComponent.props.actions",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/label",
+      "path": "@gaugeComponent.props · anyOf[0].label",
       "required": "本分支可选",
       "module": "components/gauge.md"
     },
     {
-      "pointer": "#/definitions/gaugeComponent/properties/props/properties/actions/allOf/0",
-      "path": "@gaugeComponent.props.actions · allOf[0]",
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/label/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[0].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/actions",
+      "path": "@gaugeComponent.props · anyOf[0].actions",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/0/properties/actions/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[0].actions · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md",
+      "ref": "#/definitions/actions"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1",
+      "path": "@gaugeComponent.props · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/valueField",
+      "path": "@gaugeComponent.props · anyOf[1].valueField",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/valueField/not",
+      "path": "@gaugeComponent.props · anyOf[1].valueField · not",
+      "required": "条件结构",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/value",
+      "path": "@gaugeComponent.props · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/value/anyOf/0",
+      "path": "@gaugeComponent.props · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/value/anyOf/1",
+      "path": "@gaugeComponent.props · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/format",
+      "path": "@gaugeComponent.props · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "components/gauge.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/unit",
+      "path": "@gaugeComponent.props · anyOf[1].unit",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/unit/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[1].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/currency",
+      "path": "@gaugeComponent.props · anyOf[1].currency",
+      "required": "本分支可选",
+      "module": "components/gauge.md",
+      "enum": [
+        "CNY",
+        "USD"
+      ]
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/missingText",
+      "path": "@gaugeComponent.props · anyOf[1].missingText",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/title",
+      "path": "@gaugeComponent.props · anyOf[1].title",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/title/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[1].title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/variant",
+      "path": "@gaugeComponent.props · anyOf[1].variant",
+      "required": "本分支可选",
+      "module": "components/gauge.md",
+      "const": "mini"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/emptyBehavior",
+      "path": "@gaugeComponent.props · anyOf[1].emptyBehavior",
+      "required": "本分支可选",
+      "module": "components/gauge.md",
+      "enum": [
+        "default",
+        "showConstants"
+      ]
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/min",
+      "path": "@gaugeComponent.props · anyOf[1].min",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/max",
+      "path": "@gaugeComponent.props · anyOf[1].max",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/label",
+      "path": "@gaugeComponent.props · anyOf[1].label",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/label/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[1].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/actions",
+      "path": "@gaugeComponent.props · anyOf[1].actions",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/actions/allOf/0",
+      "path": "@gaugeComponent.props · anyOf[1].actions · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/gauge.md",
       "ref": "#/definitions/actions"
@@ -14943,13 +16097,13 @@
     {
       "type": "mapChart",
       "file": "examples/component-mapChart.json",
-      "pointer": "#/sections/0/components/1"
+      "pointer": "#/sections/0/components/0"
     },
     {
       "type": "mapChart",
       "variant": "regionalOverview",
       "file": "examples/component-mapChart-regionalOverview.json",
-      "pointer": "#/sections/0/components/1"
+      "pointer": "#/sections/0/components/0"
     },
     {
       "type": "gauge",
@@ -15202,7 +16356,7 @@
     {
       "schemaPointer": "#/definitions/dashboardToolbar/anyOf/1",
       "module": "page.md",
-      "file": "examples/component-pieChart.json",
+      "file": "examples/component-keyValuePanel.json",
       "pointer": "#/dashboardToolbar"
     },
     {
@@ -15484,26 +16638,26 @@
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/1",
       "module": "data-sources.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales"
+      "file": "examples/component-rankingDetailCard.json",
+      "pointer": "#/dataSources/customers"
     },
     {
       "schemaPointer": "#/definitions/queryDataSource/properties/fields/anyOf/0",
       "module": "data-sources.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/fields"
+      "file": "examples/component-rankingDetailCard.json",
+      "pointer": "#/dataSources/customers/fields"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/fields/stat-date"
+      "file": "examples/component-rankingDetailCard.json",
+      "pointer": "#/dataSources/customers/fields/name"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/0",
       "module": "fields.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/fields/stat-date"
+      "file": "examples/component-rankingDetailCard.json",
+      "pointer": "#/dataSources/customers/fields/name"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
@@ -15562,8 +16716,8 @@
     {
       "schemaPointer": "#/definitions/pageQuery/oneOf/0",
       "module": "queries-and-bindings.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/source/query"
+      "file": "examples/component-rankingDetailCard.json",
+      "pointer": "#/dataSources/customers/source/query"
     },
     {
       "schemaPointer": "#/definitions/queryResultWhere/anyOf/0",
@@ -15682,7 +16836,7 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0",
       "module": "queries-and-bindings.md",
-      "file": "examples/component-mapChart.json",
+      "file": "examples/component-filterGroup.json",
       "pointer": "#/dataSources/map-data/source/query/filterBindings/map-region"
     },
     {
@@ -15841,7 +16995,7 @@
     {
       "schemaPointer": "#/properties/filters/items/oneOf/0",
       "module": "page.md",
-      "file": "examples/component-mapChart.json",
+      "file": "examples/component-filterGroup.json",
       "pointer": "#/filters/0"
     },
     {
@@ -16213,8 +17367,8 @@
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/sections/0/components/0/props/xField"
+      "file": "examples/inline-report.json",
+      "pointer": "#/sections/0/components/1/props/rows/0/valueField"
     },
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
@@ -16367,16 +17521,88 @@
       "pointer": "#/sections/0/components/1/props/echartsOption/grid"
     },
     {
+      "schemaPointer": "#/definitions/barChartSeries/anyOf/0",
+      "module": "components/barChart.md",
+      "file": "examples/component-barChart.json",
+      "pointer": "#/sections/0/components/0/props/series/0"
+    },
+    {
+      "schemaPointer": "#/definitions/barChartSeries/anyOf/1",
+      "module": "components/barChart.md",
+      "file": "examples/chart-constant-values-page.json",
+      "pointer": "#/sections/0/components/1/props/series/1"
+    },
+    {
+      "schemaPointer": "#/definitions/barChartSeries/anyOf/1/properties/value/anyOf/0",
+      "module": "components/barChart.md",
+      "file": "examples/chart-constant-values-page.json",
+      "pointer": "#/sections/0/components/1/props/series/1/value"
+    },
+    {
+      "schemaPointer": "#/definitions/barChartSeries/anyOf/1/properties/value/anyOf/1",
+      "module": "components/barChart.md",
+      "file": "examples/chart-constant-branches.json",
+      "pointer": "#/sections/0/components/0/props/series/0/value"
+    },
+    {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/3",
       "module": "page.md",
       "file": "examples/reference-export-detail-branches.json",
       "pointer": "#/detailViews/0/components/3"
     },
     {
+      "schemaPointer": "#/definitions/chartSeries/anyOf/0",
+      "module": "components/lineChart.md",
+      "file": "examples/reference-export-detail-branches.json",
+      "pointer": "#/detailViews/0/components/3/props/series/0"
+    },
+    {
+      "schemaPointer": "#/definitions/chartSeries/anyOf/1",
+      "module": "components/lineChart.md",
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/sections/0/components/0/props/series/0"
+    },
+    {
+      "schemaPointer": "#/definitions/chartSeries/anyOf/1/properties/value/anyOf/0",
+      "module": "components/lineChart.md",
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/sections/0/components/0/props/series/0/value"
+    },
+    {
+      "schemaPointer": "#/definitions/chartSeries/anyOf/1/properties/value/anyOf/1",
+      "module": "components/lineChart.md",
+      "file": "examples/chart-constant-branches.json",
+      "pointer": "#/sections/0/components/1/props/series/0/value"
+    },
+    {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/4",
       "module": "page.md",
       "file": "examples/reference-export-detail-branches.json",
       "pointer": "#/detailViews/0/components/4"
+    },
+    {
+      "schemaPointer": "#/definitions/pieChartComponent/properties/props/anyOf/0",
+      "module": "components/pieChart.md",
+      "file": "examples/reference-export-detail-branches.json",
+      "pointer": "#/detailViews/0/components/4/props"
+    },
+    {
+      "schemaPointer": "#/definitions/pieChartComponent/properties/props/anyOf/1",
+      "module": "components/pieChart.md",
+      "file": "examples/component-pieChart.json",
+      "pointer": "#/sections/0/components/0/props"
+    },
+    {
+      "schemaPointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/0",
+      "module": "components/pieChart.md",
+      "file": "examples/component-pieChart.json",
+      "pointer": "#/sections/0/components/0/props/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/1",
+      "module": "components/pieChart.md",
+      "file": "examples/chart-constant-branches.json",
+      "pointer": "#/sections/0/components/2/props/value"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/5",
@@ -16544,10 +17770,28 @@
       }
     },
     {
+      "schemaPointer": "#/definitions/mapChartComponent/properties/props/anyOf/0",
+      "module": "components/mapChart.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/sections/0/components/12/props"
+    },
+    {
+      "schemaPointer": "#/definitions/mapTooltipField/anyOf/0",
+      "module": "components/mapChart.md",
+      "file": "examples/component-mapChart.json",
+      "pointer": "#/sections/0/components/0/props/tooltipFields/1"
+    },
+    {
+      "schemaPointer": "#/definitions/mapTooltipField/anyOf/1",
+      "module": "components/mapChart.md",
+      "file": "examples/component-mapChart.json",
+      "pointer": "#/sections/0/components/0/props/tooltipFields/0"
+    },
+    {
       "schemaPointer": "#/definitions/mapPinnedSummary/properties/matchValue/anyOf/0",
       "module": "components/mapChart.md",
-      "file": "examples/map-page.json",
-      "pointer": "#/sections/0/components/0/props/pinnedSummary/matchValue"
+      "file": "examples/chart-constant-values-page.json",
+      "pointer": "#/sections/0/components/8/props/pinnedSummary/matchValue"
     },
     {
       "schemaPointer": "#/definitions/mapPinnedSummary/properties/matchValue/anyOf/1",
@@ -16556,10 +17800,52 @@
       "pointer": "#/sections/0/components/12/props/pinnedSummary/matchValue"
     },
     {
+      "schemaPointer": "#/definitions/mapChartComponent/properties/props/anyOf/1",
+      "module": "components/mapChart.md",
+      "file": "examples/component-mapChart.json",
+      "pointer": "#/sections/0/components/0/props"
+    },
+    {
+      "schemaPointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/value/anyOf/0",
+      "module": "components/mapChart.md",
+      "file": "examples/component-mapChart.json",
+      "pointer": "#/sections/0/components/0/props/value"
+    },
+    {
+      "schemaPointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/value/anyOf/1",
+      "module": "components/mapChart.md",
+      "file": "examples/chart-constant-branches.json",
+      "pointer": "#/sections/0/components/3/props/value"
+    },
+    {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/7",
       "module": "page.md",
       "file": "examples/reference-export-detail-branches.json",
       "pointer": "#/detailViews/0/components/5"
+    },
+    {
+      "schemaPointer": "#/definitions/gaugeComponent/properties/props/anyOf/0",
+      "module": "components/gauge.md",
+      "file": "examples/reference-export-detail-branches.json",
+      "pointer": "#/detailViews/0/components/5/props"
+    },
+    {
+      "schemaPointer": "#/definitions/gaugeComponent/properties/props/anyOf/1",
+      "module": "components/gauge.md",
+      "file": "examples/component-gauge.json",
+      "pointer": "#/sections/0/components/0/props"
+    },
+    {
+      "schemaPointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/value/anyOf/0",
+      "module": "components/gauge.md",
+      "file": "examples/component-gauge.json",
+      "pointer": "#/sections/0/components/0/props/value"
+    },
+    {
+      "schemaPointer": "#/definitions/gaugeComponent/properties/props/anyOf/1/properties/value/anyOf/1",
+      "module": "components/gauge.md",
+      "file": "examples/chart-constant-branches.json",
+      "pointer": "#/sections/0/components/4/props/value"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/8",
@@ -16934,7 +18220,7 @@
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/6",
       "module": "sections-and-layout.md",
       "file": "examples/component-mapChart.json",
-      "pointer": "#/sections/0/components/1"
+      "pointer": "#/sections/0/components/0"
     },
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/7",
@@ -17005,7 +18291,7 @@
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/18",
       "module": "sections-and-layout.md",
-      "file": "examples/component-mapChart.json",
+      "file": "examples/component-filterGroup.json",
       "pointer": "#/sections/0/components/0"
     }
   ],
@@ -17015,5 +18301,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "1b4a9426050255eb997a5b9b51da795f68af6375107531b9f68aa7cd7324c367"
+  "semanticSourceDigest": "444b2e795b68ad20b119ce1be7872c0f949e850c70cf86ed4d5e314709209d5d"
 }

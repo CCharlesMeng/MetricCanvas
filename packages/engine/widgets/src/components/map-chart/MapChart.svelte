@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { resolveComponentValue } from '../../shared/component-value';
   import { getContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   import type { MapChartProps, Row } from '@metriccanvas/page/internal';
@@ -114,10 +115,10 @@
     return {
       title: formatValue(row[title.field], title.format, title.missingText),
       fields: declaration.fields.map((entry) => {
-        const field = resolveField(entry.field, data);
+        const field = resolveComponentValue(entry, data, props.emptyBehavior);
         return {
           label: entry.label,
-          value: formatValue(row[field.field], field.format, field.missingText)
+          value: formatValue(field.read(row), field.format, field.missingText)
         };
       })
     };

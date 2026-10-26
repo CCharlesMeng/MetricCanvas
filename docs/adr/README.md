@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 117 份 ADR（0001–0118）：现行 110、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 118 份 ADR（0001–0119）：现行 111、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -30,7 +30,7 @@
 | [0010](./0010-page-templates-reference-published-revisions.md) | 页面模板引用已发布页面修订而不复制页面文档 | 现行 |
 | [0011](./0011-derive-query-fields-from-catalog.md) | query 字段契约由结构化查询与元数据快照解析 | 已取代，见 [0014](./0014-query-artifacts-replace-metrics.md) |
 | [0012](./0012-query-dp-and-verify-data-service-for-metric-fulfillment.md) | 指标履约只查询 DP 并以数据服务目录验真 | 已取代，见 [0014](./0014-query-artifacts-replace-metrics.md) |
-| [0013](./0013-format-belongs-to-component-field-binding.md) | 展示格式属于组件字段绑定 | 现行；部分由 [0110](./0110-hidden-echarts-presentation-options.md) 修订 |
+| [0013](./0013-format-belongs-to-component-field-binding.md) | 展示格式属于组件字段绑定 | 现行；部分由 [0110](./0110-hidden-echarts-presentation-options.md)、[0119](./0119-component-values-can-use-constants.md) 修订 |
 | [0014](./0014-query-artifacts-replace-metrics.md) | 查询产物取代指标成为页面的数据基础 | 现行；部分由 [0016](./0016-send-embedded-query-definitions.md) 修订；“仅提交查询执行引用、禁止提交查询原文”的边界已被推翻，其余结论有效 |
 | [0015](./0015-defer-cascading-data-source-input-semantics.md) | 挂起级联页面数据源的输入绑定语义 | 提议中；未实现，暂不接受相关 schema 改动 |
 | [0016](./0016-send-embedded-query-definitions.md) | 看板页面内嵌并直接提交查询定义 | 现行 |
@@ -135,6 +135,7 @@
 | [0116](./0116-tab-mixed-content-and-activation.md) | Tab 混合内容与活动面板生命周期 | 现行；用户确认混合内容、12列布局、独立局部筛选、按需取数、保活、URL恢复及Report导出规则，并授权实施 |
 | [0117](./0117-query-projections-and-page-measure-roles.md) | 查询投影位置与页面数值度量角色分别声明 | 现行；用户确认将通过 output_dims 取得的现成项目数量用于按区域绘制柱状图，并授权实施 |
 | [0118](./0118-cloud-dialogue-and-frontend-working-copy.md) | 云宝拥有创作会话，MC 以当前前端工作副本发起创作轮次 | 现行；用户确认云宝承载 Agent、独立 dialogue 保留，创作 URL 同时携带页面与会话身份 |
+| [0119](./0119-component-values-can-use-constants.md) | 组件取值支持字段来源与常量来源 | 现行；用户确认配置项可从字段或常量取值，覆盖全部图表及仪表，空态策略为图表级，并授权实施 |
 
 <!-- adr-index:end -->
 
@@ -149,7 +150,7 @@
 | [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 0095 0096 |
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 0110 |
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 |
-| [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 0111 0112 0113 0115 0116 |
+| [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 0111 0112 0113 0115 0116 0119 |
 | [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 0112 0114 0117 |
 | [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 0118 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |

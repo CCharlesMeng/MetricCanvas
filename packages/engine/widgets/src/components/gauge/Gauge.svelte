@@ -1,7 +1,8 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { resolveComponentValue } from '../../shared/component-value';
   import type { GaugeProps } from '@metriccanvas/page/internal';
-  import type { MainDataSlots } from '../../shared/component-data';
+  import type { NamedDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField } from '../../shared/component-data';
   import { finiteNumber, formatValue } from '../../shared/value-format';
   import { gaugeArc, gaugeProgress } from './gauge';
@@ -11,15 +12,15 @@
    * 交互由统一运行时挂接,组件本身不上抛。
    */
   interface Props {
-    data: MainDataSlots;
+    data: NamedDataSlots;
     props: GaugeProps;
     onclick?: () => void;
   }
 
   let { data, props, onclick }: Props = $props();
 
-  const resolved = $derived(resolveField(props.valueField, data));
-  const raw = $derived(fieldValue(props.valueField, data));
+  const resolved = $derived(resolveComponentValue(props, data, props.emptyBehavior));
+  const raw = $derived(resolved.read());
   const numeric = $derived(finiteNumber(raw));
   const min = $derived(props.min ?? 0);
   const max = $derived(props.max ?? 100);

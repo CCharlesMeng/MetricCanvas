@@ -1080,7 +1080,7 @@
           };
         }
       }
-      data[slot] = { snapshot: visible, fields };
+      data[slot] = { snapshot: visible, fields, sourceStatus: snapshot.status };
     }
     return data;
   }

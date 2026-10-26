@@ -12,6 +12,8 @@ export type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
 
 /** 统一运行时已解析的数据槽：数据快照与其数据源字段契约保持同槽交付。 */
 export interface ComponentDataSlot {
+  /** Original source state, preserved before the rendering projection erases empty/error. */
+  sourceStatus?: DataSnapshot['status'];
   snapshot: ReadyDataSnapshot;
   fields: Record<string, ResolvedFieldDefinition>;
 }

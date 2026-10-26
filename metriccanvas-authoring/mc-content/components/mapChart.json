@@ -23,7 +23,6 @@
   },
   "requiredProps": [
     "nameField",
-    "valueField",
     "map"
   ],
   "title": "optional",
@@ -34,7 +33,7 @@
   "knowledge": "mapChart.overview",
   "reference": "references/page-metadata/components/mapChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.58",
+  "currentWriter": "6.59",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/map-page.json",
@@ -151,6 +150,70 @@
           "id": "map-regional-overview",
           "minor": 0,
           "description": "地域概览地图与稳定字段匹配的固定摘要"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/chart-constant-values-page.json",
+      "requiredVersion": "6.59",
+      "capabilities": [
+        {
+          "id": "chart-constant-values",
+          "minor": 59,
+          "description": "图表配置项常量取值及图表级空数据策略"
+        },
+        {
+          "id": "chart-label-presentation",
+          "minor": 16,
+          "description": "类别标签全量展示与旋转、常驻节点数值标签"
+        },
+        {
+          "id": "mixed-chart-series",
+          "minor": 12,
+          "description": "柱线混合系列与显式坐标轴"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
+        },
+        {
+          "id": "map-tooltip-fields",
+          "minor": 0,
+          "description": "地图 tooltip 扩展字段"
+        },
+        {
+          "id": "map-regional-overview",
+          "minor": 0,
+          "description": "地域概览地图与稳定字段匹配的固定摘要"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/chart-constant-branches.json",
+      "requiredVersion": "6.59",
+      "capabilities": [
+        {
+          "id": "chart-constant-values",
+          "minor": 59,
+          "description": "图表配置项常量取值及图表级空数据策略"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "gauge-component",
+          "minor": 0,
+          "description": "gauge 仪表组件"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

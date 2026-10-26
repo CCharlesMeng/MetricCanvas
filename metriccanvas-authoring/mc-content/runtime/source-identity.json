@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "a5cc618b08afbd792768fe08fdbe16e93ed219a93bf57e07b53b3005c77bfa51",
+  "sha256": "9992c2e60242b34b2da540501d1985c560d16e34e441cde4bdfbc8e7f80b15cc",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -28,7 +28,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "692c64f8c23f9abf05de138061b45fc4f1f0d947b3ee7a9cefeb158296a678c4"
+      "sha256": "8237b3be585c6ee0bd47f7216f95869fa2ba9a4eebc68dacc83f161ccb9cd381"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -52,7 +52,7 @@
     },
     {
       "file": "docs/page-metadata/components/gauge.md",
-      "sha256": "2220b113a8f1e29fe8af5f95d1083997424ec0388fd37f2c4f4bd1f6e7254791"
+      "sha256": "f056a39bc210f1566df8227c328f75b62967418019a71e364963872f72992711"
     },
     {
       "file": "docs/page-metadata/components/keyValuePanel.md",
@@ -60,11 +60,11 @@
     },
     {
       "file": "docs/page-metadata/components/lineChart.md",
-      "sha256": "396d0bb7313d7c92d26b91fa02cf7ab4b68410e92c44bd6f3172d9ba418bc9e4"
+      "sha256": "ad1c5a18e2c4fb0e2d8417f1243be6f23eed261d6624eb52234fc9f275fee9b8"
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
-      "sha256": "28796ad223103d4649d9eb1c5140ce6fd75e5ab5b932e6b78a034acff0689f9b"
+      "sha256": "abbbbdab5f95b08db64e9fd517c8db81cdd1c4ba54f9898774d99bf6f8523f5d"
     },
     {
       "file": "docs/page-metadata/components/metricCard.md",
@@ -72,7 +72,7 @@
     },
     {
       "file": "docs/page-metadata/components/pieChart.md",
-      "sha256": "bb4782ef3b43cdff978c3b3b66f7d38c522de5312b43c6265be1bbd3b74d996f"
+      "sha256": "a7aaf673c9083589e02bc3423a5fc0cf3d539a136440779950db212e77d9b3de"
     },
     {
       "file": "docs/page-metadata/components/rankingCard.md",
@@ -116,7 +116,7 @@
     },
     {
       "file": "docs/page-metadata/field-bindings-and-formats.md",
-      "sha256": "064e7d7989801c96a184096eb46df9fb7c62494415309f77a7f364c07219eba7"
+      "sha256": "3f2182ec96f095a212f0a361e4cde601710195c50f8782bd5583a1ae95e1cabe"
     },
     {
       "file": "docs/page-metadata/fields.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "1a631ae1580f3c20014c3002901b8671f0f7f6a0c602d64134d53552cd73f75f"
+      "sha256": "600133ce36264537cfd6a7b512e0d79385a946f27205f1d20d539ef71996e3b3"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -695,6 +695,10 @@
       "sha256": "1f7e83223615d3ac1b90dac3d806187c616c1d59f2f401507c1a98c24a06044d"
     },
     {
+      "file": "packages/page/fixtures/contract-valid/chart-constant-branches.json",
+      "sha256": "e7a9c9793730c76e1e194440f24a0e2e74864e51fb381e8e50db1bc89413d4dc"
+    },
+    {
       "file": "packages/page/fixtures/contract-valid/chart-echarts-option-page.json",
       "sha256": "d62bc3d296bae33138b2a3c09a6246b7d61a9ed0179e1710481ec680cf1182b5"
     },
@@ -1208,7 +1212,7 @@
     },
     {
       "file": "packages/page/src/bar-forecast-boundary.ts",
-      "sha256": "4ea4374f40c4f9d0fbc0bf8b822b6848acd0214fc3ec92d7ec5d833afcc714eb"
+      "sha256": "b665aaf93ba47530988893e115d87c114233e01fe27b5450f956d516269d148b"
     },
     {
       "file": "packages/page/src/canonical-json.ts",
@@ -1219,8 +1223,16 @@
       "sha256": "a8886733d5fe8f4ab57c59506e55bb41ed8bd8f10b580725f2300a5702853c46"
     },
     {
+      "file": "packages/page/src/chart-value-validation.ts",
+      "sha256": "0199c2fefe034a8b2b3c6dd58e79df7edb62420ecd7bc66338f92fd80109d799"
+    },
+    {
       "file": "packages/page/src/component-catalog.ts",
-      "sha256": "a32b071500736e8e5b71d1324448cc9726841dc8fe4eb36c701decd08d50223e"
+      "sha256": "6511951f58089534e76bf71abe9b1d957c02dcf4d5857d97f29f54b161a39a4a"
+    },
+    {
+      "file": "packages/page/src/component-value.ts",
+      "sha256": "4e921868b88146843b575e3464c53f80bab4ff1eb1b79a5184c4197ac10f5c42"
     },
     {
       "file": "packages/page/src/component-walk.ts",
@@ -1296,7 +1308,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "6ab21f4c7509a86dca6ebebcce59c390b655f2819ccd07f2e96333f5a93059f0"
+      "sha256": "11947d583422cbb97730232e5868fcafc103bbbd9e10417e63ce5d402be156f9"
     },
     {
       "file": "packages/page/src/ioc-header.ts",
@@ -1447,6 +1459,10 @@
       "sha256": "f942fcb73f35c8a87f8581622112b5a43727a661af293ccf0e9df6eef833bf2a"
     },
     {
+      "file": "packages/page/src/schema/chart-value.ts",
+      "sha256": "2745ceecff9873ef01caa8d67b59087a4687381bf3c29342b83a57d885e26655"
+    },
+    {
       "file": "packages/page/src/schema/component.ts",
       "sha256": "4706a6b0332346e28ce811176115425abd907bf0e40146dcedf0f9716d138160"
     },
@@ -1464,7 +1480,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "302b0433b1ec472d578747e7709b871f6ceefdcf340eb4a22d922a36653ec6eb"
+      "sha256": "9259f3b3918d55e59f5eed0ea37c5b157f54b21cd9fcc5c06e5ab3db45da056f"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -1480,7 +1496,7 @@
     },
     {
       "file": "packages/page/src/schema/components/gauge.ts",
-      "sha256": "1e9d0017d1e46382388e4a9b20f4e17d36d8a97f533cd38cef876395a0d013cf"
+      "sha256": "de25a4904660fc612465b4f03b8b4d26a58ac571dafa18556420797f53b6455f"
     },
     {
       "file": "packages/page/src/schema/components/key-value-panel.ts",
@@ -1488,7 +1504,7 @@
     },
     {
       "file": "packages/page/src/schema/components/map-chart.ts",
-      "sha256": "b6fe73ea24c70ccb32cfdf095483d760080cc624801c89fbac38fa54a972234b"
+      "sha256": "b35cb210fceb789feef36c0c532df76094c9add7163fe410d4023d0eb3b0b207"
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
@@ -1644,15 +1660,15 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "3f2c6a014d01bd8f6e6fbb5d78a7b25eb48d7f6577beae5e96eeda800383d65d"
+      "sha256": "e1d3b2235d5dc60248ff6713dc839fcb45437b3636ada8480304259d7ab7fea3"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "f5e3ae66556790904d9adf3ea64e7b27733f6d902769f66ed1158dda1ac50194"
+      "sha256": "9c64e0a78cb35b4ec82f9d1174f48975643f70e316e1632dd5372a97a034497d"
     },
     {
       "file": "pages/README.md",
-      "sha256": "25583ddea217cb46ffab65b9394bd5575d67e802cfef285e458bdf21d07579d5"
+      "sha256": "86e2c8ece964f20d681ee499e6ee4609e1a512b1edb8e895acc1f728337ea305"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -1744,11 +1760,15 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "b9233bc4e86045e0003059a8610c47963d15e6179120a66991117c2aa9883968"
+      "sha256": "4a442a45573975e17bd7804ab69de4ff21666a7850b8827762bf8654e4ac84c4"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
       "sha256": "80662020cff7fdb3ee3e5f81ffdaf28b4a5a8a5fe787fc4b7df5f113dd057dd0"
+    },
+    {
+      "file": "pages/capabilities/chart/chart-constant-values-page.json",
+      "sha256": "0ea9c9d921cadb40f59632c14e624ca64641dbb4504bf8407134f62dc33057db"
     },
     {
       "file": "pages/capabilities/chart/chart-echarts-option-page.json",
@@ -1996,7 +2016,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "222395d2ee4c76be35b28ab0a036dcfe90e7f31c5dc1f322c5e586b3b78d862e"
+      "sha256": "2985de0f436a03cdaa9f8a37082b3251e49805d898932afee4da3cf73da895db"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2284,7 +2304,7 @@
     },
     {
       "file": "tools/scripts/export-authoring-contracts.ts",
-      "sha256": "1d7710a4e09cca49831dce2fa1111af7ea703e75aa194af8c69534556f067c6f"
+      "sha256": "d7c2b1d9984a1aeba7305a0c119518d6bd10182c7edcacd113168e5a8d3cd7f1"
     },
     {
       "file": "tools/scripts/local-authoring-data-analysis.ts",
@@ -2372,7 +2392,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "5bfc58663a14fa7991bd4f8f0a4ad526c3a90a8720ef353d8d432f321eb6c6ec"
+      "sha256": "877bf5699d0af89e7b7fb3ec770831c466a9aa0e22e0f78e3702de6ffa7421d9"
     },
     {
       "file": "tools/scripts/page-files.d.mts",
@@ -2384,7 +2404,7 @@
     },
     {
       "file": "tools/scripts/page-reference.ts",
-      "sha256": "adffad647e7ff7b8fac857c8d12a1af4aa8d529afe10153e0d8387cb407f82d5"
+      "sha256": "02e13c849c0306ac59435a2c466745df93e08443ba2c0669d697fa0c459b8afd"
     },
     {
       "file": "tools/scripts/page-validation-bridge.ts",

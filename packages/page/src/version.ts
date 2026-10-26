@@ -20,7 +20,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 58;
+const CURRENT_MINOR = 59;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -71,6 +71,10 @@ export const pageCapabilities = {
   'ai-summary-plural-source-references': {minor: 53, legacyReadable: false, description: 'AI 总结数据源数组采用复数 relatedDataSources', usedAt: document => componentPaths(document, c => c.type === 'aiSummary' && has(props(c), 'relatedDataSources'))},
   'ai-summary-source-references': {minor: 52, legacyReadable: false, description: 'AI 总结直接引用页面数据源 ID', usedAt: document => componentPaths(document, c => c.type === 'aiSummary' && has(props(c), 'relatedDataSource'))},
   'dqe-object-query': { minor: 55, legacyReadable: false, description: 'DQE 对象查询、字段条件与显式时间绑定', usedAt: document => dataSourcePaths(document, source => usesObjectQuery(source.source)) },
+  'chart-constant-values': {
+    minor: 59, legacyReadable: false, description: '图表配置项常量取值及图表级空数据策略',
+    usedAt: document => componentPaths(document, c => chartConstantCapability(c))
+  },
   'ai-summary-report-modes': {minor: 51, legacyReadable: false, description: 'Report 双模式区域 AI 总结与会话缓存', usedAt: document => componentPaths(document, c => c.type === 'aiSummary' && ['mode','body','initial','relatedSections'].some(key => has(props(c), key)))},
   'tab-content-layout': {
     minor: 49, legacyReadable: false, description: 'Tab 混合内容、显式栅格与按需呈现',
@@ -1159,4 +1163,14 @@ function usesObjectQuery(source: unknown): boolean {
   if(!query)return false;
   const leaves=[query,...Object.values(record(record(query.queryModes)?.cases)??{}),...Object.values(record(record(query.timeModes)?.cases)??{})];
   return leaves.some(leaf=>{const items=record(record(leaf)?.body)?.dsl_list;return Array.isArray(items)&&items.some(isObjectDqeItem);});
+}
+
+function chartConstantCapability(component: unknown): boolean {
+  const c = record(component);
+  if (!c || !['barChart', 'lineChart', 'pieChart', 'mapChart', 'gauge'].includes(String(c.type))) return false;
+  const p = record(c.props);
+  if (!p) return false;
+  if (has(p, 'value') || has(p, 'emptyBehavior')) return true;
+  return ['series', 'tooltipFields'].some(key => Array.isArray(p[key]) && (p[key] as unknown[]).some(item => has(record(item), 'value'))) ||
+    (Array.isArray(record(p.pinnedSummary)?.fields) && (record(p.pinnedSummary)!.fields as unknown[]).some(item => has(record(item), 'value')));
 }

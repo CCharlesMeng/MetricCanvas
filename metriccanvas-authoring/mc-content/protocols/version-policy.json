@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 58,
-  "current": "6.58",
+  "minor": 59,
+  "current": "6.59",
   "capabilities": {
     "query-dimension-measures": {
       "minor": 56,
@@ -36,6 +36,11 @@
     "dqe-object-query": {
       "minor": 55,
       "description": "DQE 对象查询、字段条件与显式时间绑定",
+      "legacyReadable": false
+    },
+    "chart-constant-values": {
+      "minor": 59,
+      "description": "图表配置项常量取值及图表级空数据策略",
       "legacyReadable": false
     },
     "ai-summary-report-modes": {
@@ -653,6 +658,7 @@
     "6.55",
     "6.56",
     "6.57",
-    "6.58"
+    "6.58",
+    "6.59"
   ]
 }

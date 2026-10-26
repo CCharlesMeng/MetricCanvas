@@ -1,3 +1,4 @@
+import { resolveComponentValue } from '../../shared/component-value';
 import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page/internal';
 import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
@@ -38,9 +39,9 @@ export function barOption(
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
   const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
-    props.series.map(series => resolveField(series.field, data).format));
+    props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format));
   const reportValueFormat = props.series[0]
-    ? resolveField(props.series[0].field, data).format
+    ? resolveComponentValue(props.series[0], data, props.emptyBehavior).format
     : undefined;
   const valueAxis = props.variant === 'reportForecast'
     ? reportValueAxis(baseValueAxis, reportValueFormat)
@@ -60,13 +61,13 @@ export function barOption(
   }
   const stackTotals = rows.map((row) =>
     props.series.reduce((total, series) => {
-      const field = resolveField(series.field, data);
-      return total + (finiteNumber(row[field.field]) ?? 0);
+      const field = resolveComponentValue(series, data, props.emptyBehavior);
+      return total + (finiteNumber(field.read(row)) ?? 0);
     }, 0)
   );
   const legendData = props.series.map((series) => {
-    const field = resolveField(series.field, data);
-    return series.label ?? field.definition?.label ?? field.field;
+    const field = resolveComponentValue(series, data, props.emptyBehavior);
+    return series.label ?? field.label;
   });
   return {
     ...(palette ? { color: [...palette] } : {}),
@@ -94,7 +95,7 @@ export function barOption(
     yAxis: props.horizontal ? categoryAxis : valueAxis,
     series: seriesEntries.map((entry) => {
       const { series, originalIndex, roleIndex } = entry;
-      const field = resolveField(series.field, data);
+      const field = resolveComponentValue(series, data, props.emptyBehavior);
       const roleColor =
         roleIndex === undefined
           ? undefined
@@ -127,7 +128,7 @@ export function barOption(
             }
           : {})
       };
-      const values = rows.map((row) => finiteNumber(row[field.field]));
+      const values = rows.map((row) => finiteNumber(field.read(row)));
       const segmentLabelFormatter = valueLabelFormatter(field.format);
       const displayedValues = props.showValueLabels ? values.map(value => value === undefined ? null : {
         value, label: { position: props.horizontal ? (value < 0 ? 'left' as const : 'right' as const) : (value < 0 ? 'bottom' as const : 'top' as const) }
@@ -148,7 +149,7 @@ export function barOption(
         return [{ name: categories[rowIndex] ?? '', coord: [categories[rowIndex], value], value }];
       });
       return {
-        name: series.label ?? field.definition?.label ?? field.field,
+        name: series.label ?? field.label,
         type: 'bar' as const,
         ...(props.stacked ? { stack: 'total' } : {}),
         barWidth: DEFAULT_BAR_WIDTH,
@@ -281,10 +282,10 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
   const category = resolveField(props.categoryField, data);
   const axis = (name: 'primary' | 'secondary') => {
     const fields = props.series.filter(series => (series.axis ?? 'primary') === name)
-      .map(series => resolveField(series.field, data));
+      .map(series => resolveComponentValue(series, data, props.emptyBehavior));
     const field = fields[0];
     return { ...formattedValueAxis(fields.map(field => field.format)),
-      name: field?.definition && 'unit' in field.definition ? field.definition.unit : undefined };
+      name: field?.unit };
   };
   return {
     color: [...(palette ?? CHART_PALETTE)], grid: GRID,
@@ -292,18 +293,18 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
     xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)), ...categoryLabelOption(props.categoryLabels, props.showValueLabels) },
     yAxis: props.dualAxis ? [axis('primary'), axis('secondary')] : axis('primary'),
     series: props.series.map(series => {
-      const field = resolveField(series.field, data);
+      const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
-        type: series.kind ?? 'bar', name: series.label ?? field.definition?.label ?? field.field,
+        type: series.kind ?? 'bar', name: series.label ?? field.label,
         yAxisIndex: series.axis === 'secondary' ? 1 : 0,
         ...(series.kind === 'line' ? { connectNulls: false } : { barWidth: DEFAULT_BAR_WIDTH }),
         ...(props.showValueLabels ? {
-          label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(row[field.field])), series.kind === 'line'),
+          label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
           ...(series.kind === 'line' ? { showAllSymbol: true } : {})
         } : {}),
         tooltip: { valueFormatter: (value: unknown) => formatValue(formatterValue(value), field.format, field.missingText) },
         data: rows.map(row => {
-          const value = finiteNumber(row[field.field]);
+          const value = finiteNumber(field.read(row));
           if (value === undefined) return null;
           return props.showValueLabels && series.kind !== 'line'
             ? { value, label: { position: value < 0 ? 'bottom' as const : 'top' as const } } : value;

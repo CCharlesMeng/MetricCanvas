@@ -1,8 +1,9 @@
+import { chartValueControls, applyChartValueEdit, type ChartValueTarget } from './chart-value-edit';
 import {applyPresentationOperation,presentationTarget,presentationTargets,type PresentationTarget} from '@metriccanvas/page/internal';
-import { versionPolicy } from '@metriccanvas/page';
+import { versionPolicy, parsePage } from '@metriccanvas/page';
 import { projectCanvasDraft, type CanvasAuthoringDraft, type ComponentLocator, type DocumentEditResult } from './document-edit';
 type PropertyName = 'filterIds' | 'subtitle' | 'badge' | 'tags' | 'showTrendArrows' | 'horizontal' | 'stacked' | 'rounded' | 'showSegmentLabels' | 'showStackTotalLabels' | 'smooth' | 'areaGradient' | 'showPointLabels' | 'hideYAxis' | 'ring' | 'labelLine' | 'fit';
-export type PropertyTarget =
+export type PropertyTarget = ChartValueTarget
   | {kind:'presentation';target:PresentationTarget;field:'visibleWhen'|'enabledWhen'}
   | { kind: 'property'; name: PropertyName }
   | { kind: 'metric-before'; field: 'text' | 'gap' }
@@ -37,6 +38,7 @@ export function propertyControls(draft: CanvasAuthoringDraft | null, locator: Co
   const component = componentOf(draft.canvasDocument, locator), props = object(component?.props), type = String(component?.type);
   if (!props) return [];
   const controls: PropertyControl[] = (names[type] ?? []).map((name) => ({ id: name, label: labels[name], target: { kind: 'property', name }, value: props[name], kind: ['tags', 'filterIds'].includes(name) ? 'tags' : name === 'fit' ? 'choice' : ['subtitle', 'badge', 'ring'].includes(name) ? 'text' : 'boolean', ...(name === 'fit' ? { choices: ['content', 'container'] } : {}) }));
+  controls.push(...chartValueControls(type, props));
   addMetricBeforeControls(draft, locator);
   if (isReportHeader(type, draft)) addExportControls(props);
   if (type === 'barChart' || type === 'lineChart') (Array.isArray(props.series) ? props.series : []).forEach((series, index) => controls.push({ id: `series-${index}`, label: `系列 ${index + 1} 标签`, kind: 'text', target: { kind: 'series-label', index }, value: object(series)?.label }));
@@ -88,8 +90,29 @@ export function propertyControls(draft: CanvasAuthoringDraft | null, locator: Co
 type ResolvedProperty = { target: Record<string, unknown>; key: string };
 const invalidProperty = (): DocumentEditResult => ({ ok: false, message: '属性不在白名单内或目标已变化，未修改页面。' });
 
-/** Closed targets only; no JSON path, binding, action, data source or component creation mutation. */
+/** Closed targets only; chart value changes use their own atomic projection. */
 export function editProperty(draft: CanvasAuthoringDraft, locator: ComponentLocator, edit: PropertyEdit): DocumentEditResult {
+  if (isChartValueEdit(edit)) return editChartProperty(draft, locator, edit);
+  return editExistingProperty(draft, locator, edit);
+}
+
+function isChartValueEdit(edit: PropertyEdit): edit is ChartValueTarget & {value: unknown} {
+  return edit.kind === 'chart-value' || edit.kind === 'chart-empty' || edit.kind === 'chart-series-add';
+}
+
+function editChartProperty(draft: CanvasAuthoringDraft, locator: ComponentLocator, edit: ChartValueTarget & {value: unknown}): DocumentEditResult {
+  const next = JSON.parse(JSON.stringify(draft.canvasDocument)) as Record<string, unknown>;
+  const component = componentOf(next, locator);
+  if (!component) return invalidProperty();
+  const parsed = parsePage(draft.pageDocument);
+  if (!parsed.ok) return {ok: false, message: '当前页面数据契约不可用，未修改取值来源'};
+  const message = applyChartValueEdit({dataSources: parsed.page.dataSources}, component, edit);
+  if (message) return {ok: false, message};
+  next.schemaVersion = versionPolicy.current;
+  return projectCanvasDraft(next);
+}
+
+function editExistingProperty(draft: CanvasAuthoringDraft, locator: ComponentLocator, edit: PropertyEdit): DocumentEditResult {
   if (edit.kind === 'presentation') {
     const result = applyPresentationOperation(draft.canvasDocument, { type: 'set_presentation_condition', target: edit.target, field: edit.field, condition: (edit.value ?? null) as import('@metriccanvas/page/internal').Condition | null });
     return result.ok && result.document ? projectCanvasDraft(result.document) : { ok: false, message: result.errors.map(error => error.message).join('；') };

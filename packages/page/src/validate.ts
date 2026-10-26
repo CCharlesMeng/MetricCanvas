@@ -1,5 +1,7 @@
 import { aiSummaryErrors, aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
 import { aiSummaryPositionErrors } from './ai-summary-region';
+import { chartConstantInputErrors, chartConstantErrors } from './chart-value-validation';
+import { valueSourceBinding, type ComponentValueSource } from './component-value';
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './validate-row-expansion';
@@ -110,7 +112,7 @@ export function parsePage(
   document: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
-  const removed = obsoleteChartFilterErrors(document);
+  const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
   if (optionErrors.length) {
@@ -187,7 +189,7 @@ export function parsePage(
 export function normalizePageDocument(document: unknown):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
-  const removed = obsoleteChartFilterErrors(document);
+  const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
   if (optionErrors.length) return { ok: false, errors: parsePage(document).errors };
@@ -1342,7 +1344,7 @@ function componentErrors(
   componentPath: string,
   filterIds: ReadonlySet<string>
 ): TypedError[] {
-  const errors: TypedError[] = [];
+  const errors: TypedError[] = chartConstantErrors(component, componentPath);
   const checkColor = (binding: FieldBinding, path: string, legacy: boolean) => {
     if (legacy) errors.push(schemaError(`${path}/colorRule`, 'colorRule 不得与旧染色声明同时使用'));
     binding = staticFieldBinding(binding);
@@ -1555,6 +1557,11 @@ function componentErrors(
 
   }
 
+  function checkValue(source: ComponentValueSource, path: string, key: string, role?: FieldDefinition['role']): void {
+    const binding = valueSourceBinding(source);
+    if (binding !== undefined) check(binding, `${path}/${key}`, role);
+  }
+
   function checkBarChart(component: Extract<Component, { type: 'barChart' }>): void {
     checkBarLabels();
     function checkBarLabels(): void {
@@ -1562,7 +1569,7 @@ function componentErrors(
     }
     check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
     component.props.series.forEach((series, index) =>
-      check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
+      checkValue(series, `${componentPath}/props/series/${index}`, 'field', 'measure')
     );
     if (component.props.series.some(series => series.kind !== undefined || series.axis !== undefined)) {
       const props = component.props;
@@ -1577,12 +1584,11 @@ function componentErrors(
         const seriesPath = `${path}/series/${index}`;
         if (!series.axis) errors.push(schemaError(`${seriesPath}/axis`, '显式系列必须声明 primary 或 secondary 轴'));
         if (series.axis === 'secondary' && !props.dualAxis) errors.push(schemaError(`${seriesPath}/axis`, 'secondary 轴要求 dualAxis: true'));
-        const resolved = resolveBinding(page, component, series.field);
-        if ('error' in resolved) return;
-        const definition = resolved.field;
-        const unit = 'unit' in definition ? definition.unit : undefined;
-        if (!unit) errors.push(schemaError(`${seriesPath}/field`, '显式系列的结果字段契约必须声明单位'));
-        const signature = JSON.stringify([unit, definition.type === 'money' ? definition.currency : null]);
+        const definition = chartSeriesUnits(page, component, series);
+        if (!definition) return;
+        const unit = definition.unit;
+        if (!unit) errors.push(schemaError(`${seriesPath}/${series.field === undefined ? 'unit' : 'field'}`, series.field === undefined ? '常量显式系列必须声明单位' : '显式系列的结果字段契约必须声明单位'));
+        const signature = JSON.stringify([unit, definition.currency ?? null]);
         const axis = series.axis ?? 'primary';
         if (axisUnits.has(axis) && axisUnits.get(axis) !== signature) errors.push(schemaError(seriesPath, '同一坐标轴的系列必须使用相同单位和币种'));
         axisUnits.set(axis, signature);
@@ -1599,7 +1605,9 @@ function componentErrors(
         )) {
           errors.push(
             schemaError(
-              `/dataSources/${escapePointer(sourceId)}/source/initial/rows/${issue.rowIndex}/${escapePointer(issue.field)}`,
+              issue.seriesIndex === undefined
+                ? `/dataSources/${escapePointer(sourceId)}/source/initial/rows/${issue.rowIndex}/${escapePointer(issue.field)}`
+                : `${componentPath}/props/series/${issue.seriesIndex}/value`,
               issue.message
             )
           );
@@ -1614,7 +1622,7 @@ function componentErrors(
     if (component.props.showValueLabels && component.props.showPointLabels) errors.push(schemaError(`${componentPath}/props/showValueLabels`, 'showValueLabels 不得与 showPointLabels 同时启用'));
     check(component.props.xField, `${componentPath}/props/xField`, 'dimension');
     component.props.series.forEach((series, index) =>
-      check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
+      checkValue(series, `${componentPath}/props/series/${index}`, 'field', 'measure')
     );
     errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
 
@@ -1622,7 +1630,7 @@ function componentErrors(
 
   function checkPieChart(component: Extract<Component, { type: 'pieChart' }>): void {
     check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
-    check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
+    checkValue(component.props, `${componentPath}/props`, 'valueField', 'measure');
     errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
 
   }
@@ -1709,9 +1717,9 @@ function componentErrors(
 
   function checkMapChart(component: Extract<Component, { type: 'mapChart' }>): void {
     check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
-    check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
+    checkValue(component.props, `${componentPath}/props`, 'valueField', 'measure');
     (component.props.tooltipFields ?? []).forEach((item, index) =>
-      check(item.field, `${componentPath}/props/tooltipFields/${index}/field`)
+      checkValue(item, `${componentPath}/props/tooltipFields/${index}`, 'field')
     );
     if (component.props.pinnedSummary) {
       check(
@@ -1725,7 +1733,7 @@ function componentErrors(
         'dimension'
       );
       component.props.pinnedSummary.fields.forEach((item, index) =>
-        check(item.field, `${componentPath}/props/pinnedSummary/fields/${index}/field`)
+        checkValue(item, `${componentPath}/props/pinnedSummary/fields/${index}`, 'field')
       );
     }
     errors.push(...mapPinnedSummaryErrors(page, component, componentPath));
@@ -1736,7 +1744,7 @@ function componentErrors(
   }
 
   function checkGauge(component: Extract<Component, { type: 'gauge' }>): void {
-    check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
+    checkValue(component.props, `${componentPath}/props`, 'valueField', 'measure');
     errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
 
   }
@@ -2537,4 +2545,13 @@ function tabContainerStructureErrors(document: unknown): TypedError[] {
     });
   });
   return errors;
+}
+
+function chartSeriesUnits(page: Page, component: Component, source: ComponentValueSource): {unit?: string; currency?: string} | undefined {
+  const binding = valueSourceBinding(source);
+  if (binding === undefined) return {unit: source.unit, currency: source.currency};
+  const resolved = resolveBinding(page, component, binding);
+  if ('error' in resolved) return undefined;
+  return {unit: 'unit' in resolved.field ? resolved.field.unit : undefined,
+    currency: resolved.field.type === 'money' ? resolved.field.currency : undefined};
 }

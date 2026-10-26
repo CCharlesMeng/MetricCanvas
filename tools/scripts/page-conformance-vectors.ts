@@ -93,6 +93,13 @@ export const invariants: InvariantDefinition[] = [
     {case:'object-time-field-missing',base:'object-query-page',expect:/queryField/,mutate:d=>{delete d.dataSources.approvals.source.query.filterBindings.period.queryField;}},
     {case:'object-time-format-missing',base:'object-query-page',expect:/valueFormat/,mutate:d=>{delete d.dataSources.approvals.source.query.filterBindings.period.valueFormat;}}
   ]},
+
+  {id:'chart-constant-values',description:'图表取值来源互斥、常量类型、单位与能力下限',valid:['chart-constant-values-page'],cases:[
+    {case:'chart-value-conflict',base:'chart-constant-values-page',expect:/不允许|未定义|必须|required|additional|match|匹配|常量|存在/,mutate:d=>{d.sections[0].components[0].props.series[1].field='actual';}},
+    {case:'chart-value-string',base:'chart-constant-values-page',expect:/number|类型|匹配|必须/,mutate:d=>{d.sections[0].components[0].props.series[1].value='2';}},
+    {case:'chart-value-unit',base:'chart-constant-values-page',expect:/同一坐标轴/,mutate:d=>{d.sections[0].components[1].props.series[1].unit='元';}},
+    {case:'chart-value-version',base:'chart-constant-values-page',expect:/6.59/,mutate:d=>{d.schemaVersion='6.58';}}
+  ]},
   {id:'currency-range-presets',description:'6.46单位case内的币种预设保持单一金额状态',valid:['ioc-header-currency'],cases:[
     {case:'currency-presets-version',base:'ioc-header-currency',expect:/由 6.46 引入/,mutate:d=>{d.schemaVersion='6.45';}},
     {case:'currency-presets-missing',base:'ioc-header-currency',expect:/覆盖全部/,mutate:d=>{delete d.filters[1].units.cases.USD.presets;}},

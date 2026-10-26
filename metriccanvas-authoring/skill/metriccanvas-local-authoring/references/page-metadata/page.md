@@ -74,7 +74,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 MC 内容投影与本地创作知识由同一产品参考生成。完整性诊断场景为 `mc-content-layout-demo`；内容身份、页面版本与实际部署身份分别核对。旧文件的可读性、能力下限、可迁移性和人工语义处理项分别返回，不能仅提升 schemaVersion 绕过迁移。
 
 
-页面协议 6.58。结构真源为本册[schema.json](schema.json)，SHA256 `ddcd6a83446832b44a1d276b53c46dbf297ea5736d9e66ede5bdbef38053fe35`。字段表自动生成；可选不等于有默认值。
+页面协议 6.59。结构真源为本册[schema.json](schema.json)，SHA256 `604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -96,7 +96,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58","6.59"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -154,6 +154,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.56" | DQE output_dims 中的现成数值显式声明为页面度量，保留查询与结果行粒度。 |
 | "6.57" | 查询分支页面响应映射，普通指标保留原名。 |
 | "6.58" | AI Summary 组合卡准入、显式所在区域和顶部结构约束。 |
+| "6.59" | 图表配置项支持字段或常量取值，图表级空态及独立常量仪表。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -1374,12 +1375,12 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 ## 联合分支见证（生成）
 
 - `#/definitions/dashboardToolbar/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dashboardToolbar`。
-- `#/definitions/dashboardToolbar/anyOf/1`：[合法完整页面](examples/component-pieChart.json)，JSON Pointer `#/dashboardToolbar`。
+- `#/definitions/dashboardToolbar/anyOf/1`：[合法完整页面](examples/component-keyValuePanel.json)，JSON Pointer `#/dashboardToolbar`。
 - `#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/0`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/iocHeader/identity/facts/0/value`。
 - `#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/iocHeader/identity/facts/1/value`。
 - `#/properties/params/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params`。
 - `#/properties/params/anyOf/1`：[合法完整页面](examples/report-date-filters-page.json)，JSON Pointer `#/params`。
-- `#/properties/filters/items/oneOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/filters/0`。
+- `#/properties/filters/items/oneOf/0`：[合法完整页面](examples/component-filterGroup.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1`。
 - `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/filters/1`。

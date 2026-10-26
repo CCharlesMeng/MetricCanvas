@@ -33,7 +33,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = componentSchem
     if (!meta) {
       throw new Error('组件缺少目录元数据：请在对应 schema/components/*.ts 里补 registry.add(...)');
     }
-    const shape = componentSchema.shape as { type: z.ZodLiteral<string>; props: z.ZodObject };
+    const shape = componentSchema.shape as { type: z.ZodLiteral<string>; props: z.ZodTypeAny };
     return {
       type: shape.type.value as Component['type'],
       label: meta.label,
@@ -54,7 +54,12 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = componentSchem
  * “数组套对象”（如 metricCard 的 rows、table 的 columns），则展开为
  * `field[].nestedField` 提示 Agent 数组元素内部的必填项。
  */
-function requiredPropsOf(propsSchema: z.ZodObject): string[] {
+function requiredPropsOf(propsSchema: z.ZodTypeAny): string[] {
+  if (propsSchema instanceof z.ZodUnion) {
+    const branches = (propsSchema.options as z.ZodTypeAny[]).map(requiredPropsOf);
+    return (branches[0] ?? []).filter(key => branches.every(branch => branch.includes(key)));
+  }
+  if (!(propsSchema instanceof z.ZodObject)) return [];
   const required: string[] = [];
   for (const [key, fieldSchema] of Object.entries(propsSchema.shape)) {
     const schema = fieldSchema as z.ZodTypeAny;

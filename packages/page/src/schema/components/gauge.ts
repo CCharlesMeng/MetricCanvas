@@ -1,3 +1,4 @@
+import { fieldValueSourceZ, constantValueSourceZ, chartEmptyBehaviorZ } from '../chart-value';
 import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
@@ -10,28 +11,21 @@ import {
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
 
-export const gaugeComponentZ = z
-  .object({
-    id: componentIdZ,
-    ...visibilityShape,
-    type: z.literal('gauge'),
-    layout: componentLayoutZ,
-    data: mainDataZ,
-    props: z
-      .object({
-        title: textValueZ.optional(),
-        variant: z.literal('mini').optional(),
-        valueField: fieldBindingZ,
-        min: z.number().optional(),
-        max: z.number().positive().optional(),
-        unit: textValueZ.optional(),
-        label: textValueZ.optional(),
-        actions: actionsZ.optional()
-      })
-      .strict()
-  })
-  .strict()
-  .meta({ id: 'gaugeComponent' });
+const gaugePropsShape = {
+  title: textValueZ.optional(),
+  variant: z.literal('mini').optional(),
+  emptyBehavior: chartEmptyBehaviorZ.optional(),
+  min: z.number().optional(), max: z.number().positive().optional(),
+  unit: textValueZ.optional(), label: textValueZ.optional(), actions: actionsZ.optional()
+};
+export const gaugeComponentZ = z.object({
+  id: componentIdZ, ...visibilityShape, type: z.literal('gauge'),
+  layout: componentLayoutZ, data: mainDataZ.optional(),
+  props: z.union([
+    fieldValueSourceZ.extend(gaugePropsShape).strict(),
+    constantValueSourceZ.extend(gaugePropsShape).strict()
+  ])
+}).strict().meta({ id: 'gaugeComponent' });
 
 componentCatalogRegistry.add(gaugeComponentZ, {
   label: '仪表',

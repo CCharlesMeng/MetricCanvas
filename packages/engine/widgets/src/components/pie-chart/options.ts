@@ -1,3 +1,4 @@
+import { resolveComponentValue } from '../../shared/component-value';
 import type { PieChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
@@ -24,7 +25,7 @@ export function pieOption(
 ): EChartsOption {
   const rows = pieRows(data, props);
   const category = resolveField(props.categoryField, data);
-  const value = resolveField(props.valueField, data);
+  const value = resolveComponentValue(props, data, props.emptyBehavior);
   const showLabelLine = props.labelLine ?? true;
   const compactRing = props.variant === 'compactRing';
   const names = rows.map((row) => formatValue(row[category.field], category.format, category.missingText));
@@ -52,7 +53,7 @@ export function pieOption(
         label: { show: compactRing ? false : showLabelLine, formatter: '{b}: {d}%' },
         labelLine: { show: compactRing ? false : showLabelLine },
         data: rows.flatMap((row, index) => {
-          const numeric = finiteNumber(row[value.field]);
+          const numeric = finiteNumber(value.read(row));
           if (numeric === undefined) return [];
           const name = names[index] ?? '';
           const color = categoricalColor(palette, name, domain);
@@ -69,6 +70,6 @@ export function pieOption(
 
 /** One projection for sectors and click identities: missing numbers do not shift original-row selection. */
 export function pieRows(data: MainDataSlots, props: PieChartProps) {
-  const value = resolveField(props.valueField, data);
-  return data.main.snapshot.rows.filter(row => finiteNumber(row[value.field]) !== undefined);
+  const value = resolveComponentValue(props, data, props.emptyBehavior);
+  return data.main.snapshot.rows.filter(row => finiteNumber(value.read(row)) !== undefined);
 }

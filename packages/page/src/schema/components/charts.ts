@@ -1,3 +1,4 @@
+import { fieldSeriesSourceZ, constantSeriesSourceZ, fieldValueSourceZ, constantValueSourceZ, chartEmptyBehaviorZ } from '../chart-value';
 import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import type { JsonValue } from '../../query';
@@ -15,27 +16,26 @@ import { categoryLabelsZ } from '../presentation';
 const chartOptionValueZ: z.ZodType<JsonValue> = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(chartOptionValueZ), z.record(z.string(), chartOptionValueZ)])).meta({ id: 'chartOptionValue' });
 export const chartOptionZ = z.record(z.string(), chartOptionValueZ).meta({ id: 'chartOption', description: '高级 ECharts 呈现 JSON；数据、结构和交互由引擎管理，不执行代码' });
 
-export const chartSeriesZ = z
-  .object({
-    field: fieldBindingZ,
-    label: textValueZ.optional()
-  })
-  .strict()
-  .meta({ id: 'chartSeries' });
+const seriesShape = { label: textValueZ.optional() };
+export const chartSeriesZ = z.union([
+  fieldSeriesSourceZ.extend(seriesShape).strict(),
+  constantSeriesSourceZ.extend(seriesShape).strict()
+]).meta({ id: 'chartSeries' });
 
 export const barSeriesRoleZ = z.enum(['actual', 'forecast']);
 
 /** 柱状图独有的业务系列语义；折线图继续使用未扩展的 chartSeriesZ。 */
-export const barChartSeriesZ = chartSeriesZ
-  .extend({
-    kind: z.enum(['bar', 'line']).optional(),
-    axis: z.enum(['primary', 'secondary']).optional(),
-    role: barSeriesRoleZ.optional(),
-    /** 同一 stack 内的绘制顺序；数值越小越靠近数值轴。 */
-    stackOrder: z.number().int().optional()
-  })
-  .strict()
-  .meta({ id: 'barChartSeries' });
+const barSeriesShape = {
+  ...seriesShape,
+  kind: z.enum(['bar', 'line']).optional(),
+  axis: z.enum(['primary', 'secondary']).optional(),
+  role: barSeriesRoleZ.optional(),
+  stackOrder: z.number().int().optional()
+};
+export const barChartSeriesZ = z.union([
+  fieldSeriesSourceZ.extend(barSeriesShape).strict(),
+  constantSeriesSourceZ.extend(barSeriesShape).strict()
+]).meta({ id: 'barChartSeries' });
 
 export const barChartComponentZ = z
   .object({
@@ -47,6 +47,7 @@ export const barChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        emptyBehavior: chartEmptyBehaviorZ.optional(),
         echartsOption: chartOptionZ.optional(),
         variant: z.literal('reportForecast').optional(),
         categoryField: fieldBindingZ,
@@ -91,6 +92,7 @@ export const lineChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        emptyBehavior: chartEmptyBehaviorZ.optional(),
         echartsOption: chartOptionZ.optional(),
         xField: fieldBindingZ,
         series: z.array(chartSeriesZ).min(1),
@@ -124,28 +126,24 @@ componentCatalogRegistry.add(lineChartComponentZ, {
   defaultSpan: 8
 });
 
-export const pieChartComponentZ = z
-  .object({
-    id: componentIdZ,
-    ...visibilityShape,
-    type: z.literal('pieChart'),
-    layout: componentLayoutZ,
-    data: mainDataZ,
-    props: z
-      .object({
-        title: textValueZ.optional(),
-        echartsOption: chartOptionZ.optional(),
-        variant: z.literal('compactRing').optional(),
-        categoryField: fieldBindingZ,
-        valueField: fieldBindingZ,
-        ring: z.string().regex(/^\d{1,2}%$/).optional(),
-        labelLine: z.boolean().optional(),
-        actions: actionsZ.optional()
-      })
-      .strict()
-  })
-  .strict()
-  .meta({ id: 'pieChartComponent' });
+const piePropsShape = {
+  title: textValueZ.optional(),
+  emptyBehavior: chartEmptyBehaviorZ.optional(),
+  echartsOption: chartOptionZ.optional(),
+  variant: z.literal('compactRing').optional(),
+  categoryField: fieldBindingZ,
+  ring: z.string().regex(/^\d{1,2}%$/).optional(),
+  labelLine: z.boolean().optional(),
+  actions: actionsZ.optional()
+};
+export const pieChartComponentZ = z.object({
+  id: componentIdZ, ...visibilityShape, type: z.literal('pieChart'),
+  layout: componentLayoutZ, data: mainDataZ,
+  props: z.union([
+    fieldValueSourceZ.extend(piePropsShape).strict(),
+    constantValueSourceZ.extend(piePropsShape).strict()
+  ])
+}).strict().meta({ id: 'pieChartComponent' });
 
 componentCatalogRegistry.add(pieChartComponentZ, {
   label: '饼图',
