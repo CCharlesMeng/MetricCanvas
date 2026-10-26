@@ -31,7 +31,10 @@ export function presentationPolicies(page: Page): PolicySite[] {
       if(node.props.rowVisibleWhen) add({visibleWhen:node.props.rowVisibleWhen},`${path}/props/row`,fields);
       function columns(items: any[],p:string) { items.forEach((col,i)=>{
         if(col.kind==='group') columns(col.children,`${p}/${i}/children`);
-        else for(const key of ['navigate','openDetail','selection']) add(col[key],`${p}/${i}/${key}`,fields);
+        else {
+          for(const key of ['navigate','openDetail','selection']) add(col[key],`${p}/${i}/${key}`,fields);
+          for(const [id, target] of Object.entries(col.navigateBySource?.cases ?? {})) add(target as PolicyNode,`${p}/${i}/navigateBySource/cases/${id}`,fields);
+        }
       }); }
       columns(node.props.columns,`${path}/props/columns`);
       for(const key of ['search','export']) add(props.toolbar?.[key],`${path}/props/toolbar/${key}`);

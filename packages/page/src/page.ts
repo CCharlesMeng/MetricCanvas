@@ -376,7 +376,7 @@ export function deriveComponentCapabilities(
     })
   );
   const hasInline = sourceTypes.has('inline');
-  const hasQuery = sourceTypes.has('query') || sourceTypes.has('pagedJoin');
+  const hasQuery = [...sourceTypes].some(type => type !== 'inline');
   const dataMode: ComponentDataMode =
     sourceTypes.size === 0 ? 'none' : hasInline && hasQuery ? 'mixed' : hasQuery ? 'query' : 'inline';
   const props = component.props as { actions?: ComponentAction[]; pagination?: { mode: string } };
@@ -387,7 +387,7 @@ export function deriveComponentCapabilities(
   // 页内详情与 navigate 同理:读当前行、不依赖 query 重跑,inline 组件也可声明。
   const hasOpenDetail = (props.actions ?? []).some((action) => 'openDetail' in action);
   const columnDetail = (columns: TableColumnNode[]): boolean => columns.some(column => column.kind === 'group'
-    ? columnDetail(column.children) : column.openDetail !== undefined || column.navigate !== undefined);
+    ? columnDetail(column.children) : column.openDetail !== undefined || column.navigate !== undefined || column.navigateBySource !== undefined);
   const hasMapHierarchy =
     component.type === 'mapChart' && component.props.hierarchyFilter !== undefined;
   return {

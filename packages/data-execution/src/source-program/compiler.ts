@@ -7,7 +7,7 @@ export function compileSources(page: Page) {
   for (const component of flattenPageComponents({ sections: page.sections, detailViews: page.detailViews?.filter(v => v.mode === 'snapshot') })) {
     if (component.type !== 'table' || component.props.pagination?.mode !== 'query') continue;
     const source = sources.get(component.data.main);
-    const limit = source?.source.type === 'pagedJoin' ? source.source.pagination.pageSize : source?.source.type === 'query' ? declaredPaginationLimit(source.source.query) : undefined;
+    const limit = (source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion') ? source.source.pagination.pageSize : source?.source.type === 'query' ? declaredPaginationLimit(source.source.query) : undefined;
     if (limit !== undefined) limits.set(component.data.main, limit);
   }
   return { sources, limits, automatic: automaticQueryTableSources(page) };

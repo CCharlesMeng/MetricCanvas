@@ -1,0 +1,125 @@
+{
+  "case": "union-before-6.61",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格按行来源选择导航 由 6.61 引入，文档声明的是 6.60",
+      "paths": [
+        "/sections/0/components/0"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "多来源字段投影、逐行合并与整体排序分页 由 6.61 引入，文档声明的是 6.60",
+      "paths": [
+        "/dataSources/opinions"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "opinions-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "opinions"
+            },
+            "props": {
+              "title": "审批统计明细",
+              "subtitle": "两个来源统一映射后整体排序；重复记录保留（合成数据）",
+              "rowNumber": {
+                "…": "共2个键"
+              },
+              "rowKey": "rowKey",
+              "columns": [
+                "…（共9项）"
+              ],
+              "pagination": {
+                "…": "共1个键"
+              },
+              "fit": "content",
+              "toolbar": {
+                "…": "共2个键"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "dataSources": {
+      "opinions": {
+        "fields": {
+          "rowKey": {
+            "…": "共4个键"
+          },
+          "localRowId": {
+            "…": "共4个键"
+          },
+          "memberId": {
+            "…": "共4个键"
+          },
+          "approverId": {
+            "…": "共4个键"
+          },
+          "approver": {
+            "…": "共4个键"
+          },
+          "regionId": {
+            "…": "共4个键"
+          },
+          "region": {
+            "…": "共4个键"
+          },
+          "officeId": {
+            "…": "共4个键"
+          },
+          "office": {
+            "…": "共4个键"
+          },
+          "roleId": {
+            "…": "共4个键"
+          },
+          "role": {
+            "…": "共4个键"
+          },
+          "businessType": {
+            "…": "共4个键"
+          },
+          "decisionCount": {
+            "…": "共5个键"
+          },
+          "validOpinionCount": {
+            "…": "共5个键"
+          },
+          "validOpinionRate": {
+            "…": "共5个键"
+          },
+          "missingNote": {
+            "…": "共3个键"
+          }
+        },
+        "source": {
+          "type": "pagedUnion",
+          "rowKey": "rowKey",
+          "sourceField": "memberId",
+          "members": {
+            "…": "共2个键"
+          },
+          "ordering": {
+            "…": "共3个键"
+          },
+          "pagination": {
+            "…": "共1个键"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-before-6.61.json"
+}

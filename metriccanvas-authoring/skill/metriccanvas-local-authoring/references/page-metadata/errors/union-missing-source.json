@@ -1,0 +1,27 @@
+{
+  "case": "union-missing-source",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "合并成员必须引用普通查询源",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/source"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "source": "missing"
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

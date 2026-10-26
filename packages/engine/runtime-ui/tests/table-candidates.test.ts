@@ -31,3 +31,33 @@ it('refreshes only affected candidates and isolates same-source table state', as
     expect(snapshot().candidates.every(value => Number(String(value.value).slice(-2)) % 2 === 1)).toBe(true);
   } finally { controller.dispose(); stop(); }
 });
+
+it('opens union candidates when ordinary member snapshots are intentionally absent', async () => {
+  const { default: document } = await import('../../../page/fixtures/contract-valid/paged-union-page.json');
+  const { createUnionPreview } = await import('../../../../apps/playground/fixtures/decision-opinion/union-gateway');
+  const parsed = parsePage(document); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  const page = parsed.page, table = page.sections[0].components[0]; if (table.type !== 'table') throw Error('table');
+  const stream = orchestrate(page, createUnionPreview({ generatedCount: 0 }).dataGateway);
+  const stop = stream.subscribe(() => {});
+  const controller = createTableController(page, () => stream, () => {});
+  try {
+    controller.candidateBinding(table).oncandidateopen('businessType', true);
+    await vi.waitFor(() => expect(controller.candidateBinding(table).columnCandidates.businessType?.totalCount).toBe(2));
+    expect(stream.captureRawSnapshots().has('contract')).toBe(false);
+    expect(stream.captureRawSnapshots().has('commercial')).toBe(false);
+  } finally { controller.dispose(); stop(); }
+});
+
+it('shows the existing notice area for union failures while retaining ordinary empty-state behavior', async () => {
+  const { default: document } = await import('../../../page/fixtures/contract-valid/paged-union-page.json');
+  const { componentDataNotices } = await import('../src/component-render');
+  const parsed = parsePage(document); if (!parsed.ok) throw Error('fixture');
+  const table = parsed.page.sections[0].components[0]; if (table.type !== 'table') throw Error('table');
+  const controller = createTableController(parsed.page, () => null, () => {});
+  const binding = controller.binding(table, { filterOptions: {}, oncellselect() {} });
+  try {
+    expect(componentDataNotices(table, { status: 'error', error: { code: 'DQE_TIMEOUT', message: 'failed' } }, new Map(), binding)).toEqual(['多来源数据加载失败，请刷新重试。']);
+    expect(componentDataNotices(table, { status: 'empty', totalCount: 0 }, new Map(), binding)).toEqual([]);
+    expect(componentDataNotices(table, { status: 'error', error: { code: 'DQE_TIMEOUT', message: 'failed' } }, new Map())).toEqual([]);
+  } finally { controller.dispose(); }
+});

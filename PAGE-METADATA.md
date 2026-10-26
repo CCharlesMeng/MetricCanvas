@@ -2,7 +2,7 @@
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.60**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53、6.54、6.55、6.56、6.57、6.58、6.59和6.60；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.61**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53、6.54、6.55、6.56、6.57、6.58、6.59、6.60和6.61；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -475,3 +475,5 @@ MC 内容包随本协议同步生成，包含同源字段语义、规则、例�
 ## 表格原文容错与独立置顶行（6.60）
 
 表格的异常标量保留原文并告警，本地升降序统一将空白及纯横杠排最后；有效类型值继续用于计算和交互。props.pinnedTop 声明独立完整查询槽，列级 pinnedTop 显式绑定汇总字段；每页首行展示、无序号、不占分页计数，汇总失败不阻塞明细但阻止完整 Excel 导出。声明和限制见[表格模块](docs/page-metadata/components/table.md)，结果证据见[字段契约](docs/page-metadata/fields.md)。可观察页面为 table-value-tolerance、table-missing-sort、table-pinned-summary，均为合成数据。
+
+6.61 新增 `pagedUnion` 分页合并源：按成员显式字段/常量/null 投影统一列，逐行保留全部记录，在完整匹配范围整体排序、搜索、筛选、计数、分页和导出；表格可按来源选择详情导航。声明、执行限制与真实接入边界见[数据源](docs/page-metadata/data-sources.md#paged-union)和[表格](docs/page-metadata/components/table.md#source-navigation)，验收页为 [multi-source-table.json](pages/capabilities/table/multi-source-table.json)。

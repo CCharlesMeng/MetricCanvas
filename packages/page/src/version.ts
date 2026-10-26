@@ -20,7 +20,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 60;
+const CURRENT_MINOR = 61;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -51,6 +51,8 @@ export const pageCapabilities = {
     minor: 60, legacyReadable: false, description: '表格独立查询置顶行',
     usedAt: document => componentPaths(document, component => component.type === 'table' && has(props(component), 'pinnedTop')).map(path => path + '/props/pinnedTop')
   },
+  'table-source-navigation': { minor: 61, legacyReadable: false, description: '表格按行来源选择导航', usedAt: document => componentPaths(document, c => c.type === 'table' && sourceNavigationUsed(props(c)?.columns)) },
+  'paged-union': { minor: 61, legacyReadable: false, description: '多来源字段投影、逐行合并与整体排序分页', usedAt: document => dataSourcePaths(document, data => record(data.source)?.type === 'pagedUnion') },
   'query-dimension-measures': {
     minor: 56, legacyReadable: false, description: 'DQE output_dims 数值输出显式声明页面度量',
     usedAt: document => dataSourcePaths(document, hasNumericDimensionMeasure)
@@ -1180,4 +1182,11 @@ function chartConstantCapability(component: unknown): boolean {
   if (has(p, 'value') || has(p, 'emptyBehavior')) return true;
   return ['series', 'tooltipFields'].some(key => Array.isArray(p[key]) && (p[key] as unknown[]).some(item => has(record(item), 'value'))) ||
     (Array.isArray(record(p.pinnedSummary)?.fields) && (record(p.pinnedSummary)!.fields as unknown[]).some(item => has(record(item), 'value')));
+}
+
+function sourceNavigationUsed(columns: unknown): boolean {
+  return Array.isArray(columns) && columns.some(value => {
+    const column = record(value);
+    return has(column, 'navigateBySource') || sourceNavigationUsed(column?.children);
+  });
 }

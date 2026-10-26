@@ -409,7 +409,7 @@ describe('DQE 数据网关', () => {
     });
   });
 
-  it('行契约错误只报告行号、字段与预期类型,不回显业务字段值', async () => {
+  it('结构化行契约错误只报告行号、字段与预期类型,不回显业务字段值', async () => {
     const sentinel = '机密客户名-绝不入错误信息';
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
@@ -419,7 +419,7 @@ describe('DQE 数据网关', () => {
             results: [
               {
                 code: 'SUCCESS',
-                data: [{ 客户级别: '卓越NA', NA客户数: sentinel }],
+                data: [{ 客户级别: '卓越NA', NA客户数: { value: sentinel } }],
                 total_count: 1
               }
             ]
@@ -446,7 +446,7 @@ describe('DQE 数据网关', () => {
     ).not.toContain(sentinel);
   });
 
-  it('nullable=false 的数值维度在数据网关拒绝 null', async () => {
+  it('nullable=false 的数值维度保留 null 并返回聚合告警', async () => {
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
         new Response(
@@ -463,8 +463,7 @@ describe('DQE 数据网关', () => {
         )) as typeof fetch
     });
 
-    await expect(
-      gateway.fetchData(
+    const result = await gateway.fetchData(
         dqeQuery(fullDslItem, {
           'customer-level': {
             queryField: '客户级别',
@@ -478,11 +477,15 @@ describe('DQE 数据网关', () => {
             nullable: false
           }
         })
-      )
-    ).rejects.toMatchObject({
-      code: 'DQE_ROW_CONTRACT_ERROR',
-      message: expect.stringContaining('nullable=false')
-    });
+      );
+    expect(result.rows).toEqual([{ 'customer-level': '卓越NA', 'na-customer-count': null }]);
+    expect(result.warnings).toEqual([{
+      code: 'SCALAR_NULL_NOT_ALLOWED',
+      fieldId: 'na-customer-count',
+      queryField: 'NA客户数',
+      expectedType: 'number',
+      count: 1
+    }]);
   });
 
 });

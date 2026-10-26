@@ -1,3 +1,4 @@
+import { unionCandidates } from '../paged-union/candidates';
 import { createCandidateValidator } from '../candidate-validation';
 import { selectQuerySource, canonicalizeJson, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../ports';
@@ -66,15 +67,8 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
       return runner.runCandidates({ query, field: request.field, queryField: mappedField.queryField, search: request.candidateSearch ?? '', offset, limit },
         { pageId: page.id, dataSourceIds: [request.sourceId] }, scope, signal);
     }
-    if (source.source.type === 'pagedJoin') {
-      const plan = compilePagedJoin(page, request.sourceId, request.conditions, view, request.now);
-      const result = await executePagedJoin({ ...plan, selection: undefined, strategy: 'completeJoin' }, runner, scope, signal, true);
-      const snapshot = result.snapshot;
-      if (snapshot.status !== 'ready' && snapshot.status !== 'empty') return { kind: 'unavailable' };
-      const rows = snapshot.status === 'ready' ? snapshot.rows : [];
-      if (snapshot.totalCount !== rows.length) return { kind: 'unavailable' };
-      return localColumnCandidates(pageSearchRows(rows, request.conditions, source.fields), request.field, view, request.candidateSearch ?? '', offset, limit);
-    }
+    if (source.source.type === 'pagedUnion') return unionCandidates(page, request, runner, scope, signal);
+    if (source.source.type === 'pagedJoin') return joinedCandidates(page, request, view, runner, scope, signal);
     // Preserve upstream declared windows. Only the target local view loses table predicates.
     views.set(request.sourceId, { ...view, predicates: [], search: undefined });
     const seeds = new Map(request.seeds); seeds.delete(request.sourceId);
@@ -92,3 +86,13 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
     return localColumnCandidates(pageSearchRows(rows, request.conditions, source.fields), request.field, view, request.candidateSearch ?? '', offset, limit);
   };
 }
+
+async function joinedCandidates(page: Page, request: ColumnCandidatesRead, view: TableQueryView, runner: QueryRunner, scope: string, signal?: AbortSignal): Promise<ColumnCandidatesPage> {
+      const plan = compilePagedJoin(page, request.sourceId, request.conditions, view, request.now);
+      const result = await executePagedJoin({ ...plan, selection: undefined, strategy: 'completeJoin' }, runner, scope, signal, true);
+      const snapshot = result.snapshot;
+      if (snapshot.status !== 'ready' && snapshot.status !== 'empty') return { kind: 'unavailable' };
+      const rows = snapshot.status === 'ready' ? snapshot.rows : [];
+      if (snapshot.totalCount !== rows.length) return { kind: 'unavailable' };
+      return localColumnCandidates(pageSearchRows(rows, request.conditions, page.dataSources[request.sourceId].fields), request.field, view, request.candidateSearch ?? '', request.offset ?? 0, request.pageSize ?? 50);
+ }

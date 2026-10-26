@@ -1,3 +1,4 @@
+import { pagedUnionDataSourceZ } from './paged-union';
 import { pagedJoinDataSourceZ } from './paged-join';
 import { MAX_QUERY_RESULT_VALUES } from '../query-result-limits';
 import { z } from 'zod';
@@ -219,5 +220,5 @@ export const queryDataSourceDocumentZ = z
   .meta({ id: 'queryDataSource' });
 
 export const dataSourceDocumentZ = z
-  .union([inlineDataSourceZ, queryDataSourceDocumentZ, pagedJoinDataSourceZ])
+  .union([inlineDataSourceZ, queryDataSourceDocumentZ, pagedJoinDataSourceZ, pagedUnionDataSourceZ])
   .meta({ id: 'dataSource' });

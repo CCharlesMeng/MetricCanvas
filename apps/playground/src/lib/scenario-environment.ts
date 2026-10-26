@@ -1,3 +1,4 @@
+import { createUnionPreview } from '../../fixtures/decision-opinion/union-gateway';
 import { createIocHeaderPreview } from './ioc-header-preview-inputs';
 import { createIocBusinessPreview } from './ioc-business-preview';
 import { createVisibilityDemoInputs } from './visibility-inputs';
@@ -12,6 +13,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
   if (kind === 'ioc-header') return createIocHeaderPreview();
   if (kind === 'ioc-business') return createIocBusinessPreview(exampleId, state, 'catalog-preview');
   if (kind === 'selection') return { dataGateway: iocSelectionGateway };
+  if (kind === 'paged-union') return createUnionPreview();
   if (kind === 'decision-opinion') return createDecisionOpinionPreview({});
   if (kind === 'visibility') {
     const visibility = createVisibilityDemoInputs();

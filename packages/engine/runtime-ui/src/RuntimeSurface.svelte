@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { tableColumnNavigation } from '@metriccanvas/page/internal';
  import {selectTimeQuery} from '@metriccanvas/page/internal';
 </script>
 <svelte:options css="injected" />
@@ -836,8 +837,9 @@
       row=current;
     }
     if(column&&!tableInteractionGate(component,row,column).enabled){event.preventDefault();return;}
-    if (column?.navigate && actionAllowed(component,column.navigate,row)) {
-      navigateTarget(column.navigate,row,event);
+    const target = tableColumnNavigation(column, row);
+    if (target && actionAllowed(component,target,row)) {
+      navigateTarget(target,row,event);
       return;
     }
     if (column?.openDetail && actionAllowed(component,column.openDetail,row)) {
@@ -1158,7 +1160,7 @@
 
   function queryPageSize(loaded: Page, component: TableComponent): number | undefined {
     const source = loaded.dataSources[component.data.main];
-    if (source?.source.type === 'pagedJoin') return source.source.pagination.pageSize;
+    if ((source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')) return source.source.pagination.pageSize;
     if (source?.source.type !== 'query') return undefined;
     const order = selectTimeQuery(source.source.query,filterValues).body.dsl_list[0].order;
     if (typeof order !== 'object' || order === null || Array.isArray(order)) return undefined;
@@ -1175,7 +1177,9 @@
   }
 
   function tableInteractionGate(component:TableComponent,row:Row,column:TableColumn){
-    const node=column.selection??column.navigate??column.openDetail;
+    const target = tableColumnNavigation(column, row);
+    if (column.navigateBySource && !target) return { eligible: false, enabled: false };
+    const node=column.selection??target??column.openDetail;
     if(node)return presentation?.gate(node,row,presentation.component(component.id))??{eligible:true,enabled:true};
     const actions=component.props.actions??[];
     const gates=actions.map(action=>presentation?.gate(action,row,presentation.component(component.id))??{eligible:true,enabled:true});
@@ -1203,8 +1207,11 @@
       toolbarEnabled:{search:component.props.toolbar?.search?actionAllowed(component,component.props.toolbar.search):true,export:component.props.toolbar?.export?actionAllowed(component,component.props.toolbar.export):true},
       oncellselect: ({ rowIndex, column, row }) =>
         handleTableCellSelect(component, rowIndex, column,row),
-      linkHref: (row, column) => column?.navigate && actionAllowed(component,column.navigate,row) ? targetHref(column.navigate,row)
-        : column?.openDetail ? undefined : componentHref(component, row),
+      linkHref: (row, column) => {
+        const target = tableColumnNavigation(column, row);
+        if (target && actionAllowed(component, target, row)) return targetHref(target, row);
+        return column?.openDetail || column?.navigateBySource ? undefined : componentHref(component, row);
+      },
       onlink: ({ row, column }, event) => handleTableLink(component, row, event, column)
     });
   }

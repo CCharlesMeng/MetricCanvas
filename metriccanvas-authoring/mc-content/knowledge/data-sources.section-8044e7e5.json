@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.60",
+  "schemaVersion": "6.61",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data-sources.section-8044e7e5"
@@ -13,6 +13,27 @@
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。"
       ],
       "rules": [
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches"
+          ],
+          "invalid": [
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
+          ]
+        },
         {
           "id": "paged-join",
           "description": "6.22 组合表全局视图与普通查询定义引用",
@@ -113,7 +134,9 @@
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/paged-join-page.json",
         "references/page-metadata/examples/paged-join-fixed-rank-page.json",
-        "references/page-metadata/examples/query-numeric-tolerance.json"
+        "references/page-metadata/examples/query-numeric-tolerance.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json"
       ]
     }
   ],

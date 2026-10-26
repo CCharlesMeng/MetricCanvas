@@ -14,6 +14,7 @@ description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页�
 | 本次任务 | 读取与动作 |
 |---|---|
 | 局部呈现修改 | 定位原页面相关对象，保留原形态、数据与查询；只查受影响属性。大页面用脚本提取结构，不打印全部数据行。 |
+| 同表合并多个来源、同列异字段映射与整体排序 | 按[多来源表格](references/multi-source-table.md)确认记录、字段映射、行键和整体默认排序。 |
 | 数据源生成、指标匹配、查询或交互修改 | 读[数据识别与接数](references/data-analysis.md)，先交付有来源的匹配、取数条件和缺口；只查所涉协议主题。 |
 | 新建、整页重组、切换形态 | 读[形态识别与确认](references/page-form.md)，确认本目标页 Dashboard/Report 后，只选[看板](references/dashboard-patterns.md)或[报表](references/report-patterns.md)的一张范式卡与摘要。 |
 | 校验修复 | 按 type/path/message 定位最上游声明，查相关主题；跨引用核对两端，修复后完整校验。 |
@@ -32,7 +33,7 @@ node "<skill-dir>/scripts/read-knowledge.mjs" list --module table
 node "<skill-dir>/scripts/read-knowledge.mjs" show --topic table.width
 ```
 
-已知主题直接 show，可重复 --topic 合并查阅。常用入口：page.core、layout.core、data.inline/query/pagedJoin、fields.core/format、query.core、table.columns/width/search/pagination/export、metricCard.core/title、text.core、filters.time、reportHeader.export。斜杠表示分别独立的主题，如 data.query。
+已知主题直接 show，可重复 --topic 合并查阅。常用入口：page.core、layout.core、data.inline/query/pagedJoin/pagedUnion、fields.core/format、query.core、table.columns/width/search/pagination/export、metricCard.core/title、text.core、filters.time、reportHeader.export。斜杠表示分别独立的主题，如 data.query。
 
 脚本返回语义原文、局部约束、未展开引用和完整参考路径；需要引用类型时继续检索所属模块。其他能力从[专题查阅](references/protocol-routing.md)或[协议索引](references/page-metadata/README.md)定位。完整示例按实际变体读取；概览需要时读[布局](references/overview-layouts.md)和[短写法](references/component-recipes.md)，涉及地图再读[地图绑定](references/map-bindings.md)。主题不存在/工具失败时深查完整参考，说明精确读取未执行，不能当成没有约束。运行时不兼容时说明差异，不降版本绕过能力下限。
 

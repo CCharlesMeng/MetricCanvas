@@ -333,6 +333,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/paged-union-branches.json",
+      "target": "product-contracts/page/conformance/valid/paged-union-branches.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/paged-union-page.json",
+      "target": "product-contracts/page/conformance/valid/paged-union-page.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/params-page.json",
       "target": "product-contracts/page/conformance/valid/params-page.json",
       "scope": "exact product contract"
@@ -1565,6 +1575,61 @@
     {
       "source": "product:page/conformance/invalid/text-composition-nested.json",
       "target": "product-contracts/page/conformance/invalid/text-composition-nested.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-initial-predicate-date.json",
+      "target": "product-contracts/page/conformance/invalid/union-initial-predicate-date.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-initial-predicate-numeric.json",
+      "target": "product-contracts/page/conformance/invalid/union-initial-predicate-numeric.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-initial-predicate-in.json",
+      "target": "product-contracts/page/conformance/invalid/union-initial-predicate-in.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-before-6.61.json",
+      "target": "product-contracts/page/conformance/invalid/union-before-6.61.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-missing-source.json",
+      "target": "product-contracts/page/conformance/invalid/union-missing-source.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-missing-mapping.json",
+      "target": "product-contracts/page/conformance/invalid/union-missing-mapping.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-incompatible-unit.json",
+      "target": "product-contracts/page/conformance/invalid/union-incompatible-unit.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-null-required.json",
+      "target": "product-contracts/page/conformance/invalid/union-null-required.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-source-window.json",
+      "target": "product-contracts/page/conformance/invalid/union-source-window.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-invalid-key.json",
+      "target": "product-contracts/page/conformance/invalid/union-invalid-key.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-source-navigation-field.json",
+      "target": "product-contracts/page/conformance/invalid/union-source-navigation-field.json",
       "scope": "exact product contract"
     },
     {
@@ -3883,6 +3948,61 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/union-initial-predicate-date.json",
+      "target": "references/page-metadata/errors/union-initial-predicate-date.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-initial-predicate-numeric.json",
+      "target": "references/page-metadata/errors/union-initial-predicate-numeric.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-initial-predicate-in.json",
+      "target": "references/page-metadata/errors/union-initial-predicate-in.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-before-6.61.json",
+      "target": "references/page-metadata/errors/union-before-6.61.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-missing-source.json",
+      "target": "references/page-metadata/errors/union-missing-source.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-missing-mapping.json",
+      "target": "references/page-metadata/errors/union-missing-mapping.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-incompatible-unit.json",
+      "target": "references/page-metadata/errors/union-incompatible-unit.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-null-required.json",
+      "target": "references/page-metadata/errors/union-null-required.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-source-window.json",
+      "target": "references/page-metadata/errors/union-source-window.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-invalid-key.json",
+      "target": "references/page-metadata/errors/union-invalid-key.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-source-navigation-field.json",
+      "target": "references/page-metadata/errors/union-source-navigation-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/table-number-range-before-6.22.json",
       "target": "references/page-metadata/errors/table-number-range-before-6.22.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -5278,6 +5398,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/paged-union-page.json",
+      "target": "references/page-metadata/examples/paged-union-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/paged-union-branches.json",
+      "target": "references/page-metadata/examples/paged-union-branches.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/data-sources.md",
       "target": "references/page-metadata/data-sources.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6089,11 +6219,11 @@
     }
   ],
   "counts": {
-    "product": 1186,
+    "product": 1212,
     "authoring": 31,
     "modules": 33,
-    "topics": 166,
-    "nodes": 2198,
+    "topics": 171,
+    "nodes": 2295,
     "tools": 9,
     "components": 19
   },

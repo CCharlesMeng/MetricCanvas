@@ -542,3 +542,5 @@ DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/qu
 
 平台创作：[云宝会话、最新工作副本与管理信息](platform/README.md#云宝创作与最新工作副本)，内容预览 `/pages/flow-page`，完整交互使用真实 Platform 本地夹具。
 - [图表配置项常量取值](capabilities/chart/README.md#图表配置项常量取值)：全部图表、仪表、图表级空态与无数据源场景。
+
+多来源逐行合并、同列异字段映射和整体默认排序：[`multi-source-table`](capabilities/table/README.md#多来源字段映射与整体排序)，使用产品 `pagedUnion` 与本地模拟分页接口。

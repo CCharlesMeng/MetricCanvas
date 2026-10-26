@@ -298,3 +298,19 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order.by`；初始�
 - `/pages/table-pinned-summary`：需要本地 DQE Sim。每页显示独立中国区汇总，无序号、总数只计地区；翻页及选择地区不改变汇总，切换产品或月份更新两源。汇总场景可选零行、多行、查询失败，后两项仍显示明细但不能完整导出Excel。示例没有真实授权能力，不能作为真实服务权限验收。
 
 隔离端口启动示例：`DQE_SIM_PORT=18229 pnpm sim:dqe`；`DQE_SIM_PORT=18229 pnpm --filter playground exec vite dev --port 5180 --host 127.0.0.1`。浏览器回归：`PLAYGROUND_BASE_URL=http://127.0.0.1:5180 node apps/playground/tests/table-enhancements-browser.mjs`。
+
+## 多来源字段映射与整体排序
+
+入口：`/pages/multi-source-table`。从仓库启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5193`，访问 `http://127.0.0.1:5193/pages/multi-source-table`。同一页面也在组件目录的表格场景、数据功能目录的多来源有序合并中可发现；详情目标 `/pages/multi-source-contract-detail` 和 `/pages/multi-source-commercial-detail` 接收 `record-id`。
+
+数据环境为本地合成普通分页接口，各 128 行；真实归并由产品 SourceProgram 执行，页面使用通用 `pagedUnion` 声明。成员的原始字段与最终列使用不同 ID，类型来自显式常量，商务的“可空说明”显式为 null。无真实 DQE 请求。
+
+1. 打开页面：默认“决策总次数”降序，前 3 行依次为商务 130、合同 120、商务 100，总数 256，13 页；合同 001 的占比为 63%，保持上游值。
+2. 点击“有效意见占比”：在两个来源全部记录上升序，再点降序；null 在两个方向均位于末尾。任意跳页后序号跨页连续；同值按来源与原始键稳定排序。
+3. 搜索“审批人甲”：总数 3，商务 001、合同 001 和合同 003 都保留。打开类型表头筛选，可见合同、商务；选择合同后总数 2，清除恢复 3。清空搜索后恢复 256。
+4. 打开审批人候选：候选从两个来源完整匹配域合并并去重；候选搜索与表格搜索独立。可空说明只有“合同专属说明”候选，不把 null 当作普通选项。
+5. 点击导出：无筛选时得到 256 行的 Excel，带一行表头，排序保持当前提交视图；搜索或筛选后只导出全部匹配行。容量与异常沿用 10000 行/60 秒上限，不输出部分文件。
+6. 点击合同、商务记录中的审批人，分别进入对应来源详情；URL 保留原始 `record-id`。浏览器后退可回到原页面。
+7. 访问 `/pages/multi-source-table?sourceFailure=commercial`：任一参与来源失败，整表报错，不展示合同半份记录。非法投影、单位冲突、缺失行键和旧协议版本有产品契约反例；取消、总数变化重试、缓存检查点和大规模按需源由行为测试补充。
+
+验收记录：[paged-union](../../../docs/evidence/paged-union/acceptance.md)。模拟、真实浏览器、静态协议及真实 DQE 分层报告；本页不证明真实服务具有稳定排序、NULL 规则、搜索编码、准确计数或候选接口。

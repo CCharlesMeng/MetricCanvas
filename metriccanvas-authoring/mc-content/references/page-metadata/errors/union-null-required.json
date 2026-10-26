@@ -1,0 +1,31 @@
+{
+  "case": "union-null-required",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "投影常量与输出字段类型或可空性不相容",
+      "paths": [
+        "/dataSources/opinions/source/members/commercial/projection/missingNote"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "commercial": {
+              "projection": {
+                "missingNote": {
+                  "value": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

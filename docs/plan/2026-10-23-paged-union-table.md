@@ -1,6 +1,8 @@
 # 表格默认排序与决策意见明细合并分页方案
 
-日期：2026-10-23。状态：业务选择已确认，已建立现有协议下的 Playground 归并预览；通用 defaultSort 与 pagedUnion 产品协议尚未实施。
+日期：2026-10-23；更新：2026-10-26。状态：6.61 pagedUnion 通用协议、整体默认排序、检查点、完整表格操作与 local-authoring 引导已实现并完成本地验收；真实 DQE/Relay 接入未验。现行实现与未关闭项见[验收记录](../evidence/paged-union/acceptance.md)。
+
+本轮确认将整体默认排序放在合并源 `ordering.default`，Table 首屏同步、清除用户排序后恢复。早期独立 `props.defaultSort` 草案未纳入本次；下文保留原方案与专用预览背景，实施状态以本段和验收记录为准。新入口为 `/pages/multi-source-table`；本地开发服务使用 5193 端口，模拟与真实服务分别验收。
 
 预览入口：`http://localhost:5173/pages/decision-opinion-details`，运行说明见[表格示例](../../pages/capabilities/table/README.md#决策意见明细)。本次采用既有 query 数据源和专用模拟适配器，冷跳页扫描前缀并保留最多 8 页缓存，尚未实施通用执行器、检查点或真实 DQE 接入。
 
@@ -141,3 +143,7 @@
 | P5 | 性能与真实接入 | 分别报告 mock、浏览器、CI 和真实 DQE 状态；无真实环境时保留真实接入未验，不影响本地阶段完成 |
 
 每次编码前识别会修改的职责与分支，编码后按[复杂度规则](../agents/code-complexity.md)实测修改函数及全部新增函数，记录同口径前后值。实现与验收按[功能与协议能力要求](../agents/feature-acceptance.md)闭合。P0 已完成，P1 已建立可运行归并预览并补行为验证；P2—P5 的通用协议、检查点、大规模性能及真实接入继续保持未完成。预览证据见[本地验收](../evidence/decision-opinion-preview/result.md)。
+
+## 2026-10-26 实施收口
+
+P2 按本轮确认的源级整体默认排序实施；P3 通用 pagedUnion、请求缓存与检查点完成；P4 Playground、浏览器、文档、Skill 生成与仓外独立安装验收完成。P5 已验证按需大规模模拟源的有界读取；真实 DQE/Relay 的排序/NULL/总数/搜索/候选能力仍待验。导出隔离的既有用例曾触及 90 秒超时，交付前在原预算内独立复验通过（34.47 秒）；不据此报告完整 authoring:check 全绿。远端交付与 CI 以交付回执为准，未执行生产部署。

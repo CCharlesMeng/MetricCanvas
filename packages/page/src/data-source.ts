@@ -1,3 +1,4 @@
+import type { PagedUnionDataSource } from './paged-union';
 import type { PagedJoinDataSource } from './paged-join';
 import type { ComputeOperator } from './compute';
 import {
@@ -45,7 +46,7 @@ export interface QueryDataSource {
   source: QuerySource;
 }
 
-export type DataSource = InlineDataSource | QueryDataSource | PagedJoinDataSource;
+export type DataSource = InlineDataSource | QueryDataSource | PagedJoinDataSource | PagedUnionDataSource;
 export type DataSources = Record<string, DataSource>;
 export type DataSourceMode = 'inline' | 'query' | 'mixed';
 
@@ -108,3 +109,8 @@ export function resolveDataSourceFields(
 }
 
 export function isPagedJoinDataSource(source: DataSource): source is PagedJoinDataSource { return source.source.type === 'pagedJoin'; }
+
+/** Windowed sources reuse member definitions without publishing member reads. */
+export function isCombinedDataSource(source: DataSource | undefined): source is PagedJoinDataSource | PagedUnionDataSource {
+  return source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion';
+}

@@ -1,0 +1,27 @@
+{
+  "case": "union-invalid-key",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "来源内行键必须是非空 string/number 原始维度",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/rowKey"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "rowKey": "contract-decisionCount"
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-invalid-key.json"
+}

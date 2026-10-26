@@ -51,7 +51,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         const inputs = [...conditions()].filter(([id, value]) => filterIds.has(id) || value.type === 'search')
           .map(([id, value]) => [id, value.type === 'timeRange' ? { type: value.type, from: value.from, to: value.to } : value]);
         return canonicalizeJson({ context: candidateContext(), conditions: inputs, predicates: current.predicates.filter(p => p.field !== field), search: current.search,
-          dependencies: [...ids].filter(id => id !== table.data.main).map(id => [id, raw?.get(id)]) });
+          dependencies: [...ids].filter(id => id !== table.data.main).map(id => [id, raw?.get(id) ?? null]) });
       }, changed);
       candidates.set(table.id, session);
     }
@@ -69,7 +69,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     },
     binding(table:TableComponent,presentation:Omit<TableRenderBinding,'view'|'searchDraft'|'searchOption'|'onsearchoption'|'onsearchdraft'|'onsearch'|'onpage'|'onpagesize'|'onsort'|'onheaderfilter'>):TableRenderBinding {
       const source=page.dataSources[table.data.main];
-      return {...presentation,sortReset:source?.source.type==='pagedJoin'?source.source.ordering.default:undefined,view:controller.render(table),searchDraft:controller.searchDraft(table),searchOption:controller.searchOption(table),
+      return {...presentation,failureNotice:source?.source.type==='pagedUnion'?'多来源数据加载失败，请刷新重试。':undefined,sortReset:(source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')?source.source.ordering.default:undefined,view:controller.render(table),searchDraft:controller.searchDraft(table),searchOption:controller.searchOption(table),
         onsearchoption:value=>{if(presentation.toolbarEnabled?.search!==false)controller.selectSearchOption(table,value);},
         onsearchdraft:query=>{if(presentation.toolbarEnabled?.search!==false)controller.setSearchDraft(table,query);},onsearch:query=>{if(presentation.toolbarEnabled?.search!==false)controller.search(table,query);},
         onpage:index=>controller.page(table,index),onpagesize:size=>controller.pageSize(table,size),

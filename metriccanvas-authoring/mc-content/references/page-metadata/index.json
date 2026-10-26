@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.60",
-  "schemaSha256": "42ab238060ebcf4d08a3ecd245c31d47ac6d3f27655476e11409c6f8ae72251e",
+  "schemaVersion": "6.61",
+  "schemaSha256": "4c59f431d4af3e0561590734831d09c7d8886f5f612f4866d8ec2af8a447f130",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -96,7 +96,9 @@
         "querySource",
         "embeddedInitialRows",
         "pagedJoinSource",
-        "pagedJoinDataSource"
+        "pagedJoinDataSource",
+        "pagedUnionSource",
+        "pagedUnionDataSource"
       ],
       "keywords": [
         "data-sources",
@@ -106,14 +108,17 @@
         "query-dashboard",
         "paged-join-page",
         "paged-join-fixed-rank-page",
-        "query-numeric-tolerance"
+        "query-numeric-tolerance",
+        "paged-union-page",
+        "paged-union-branches"
       ],
       "rules": [
         "query-initial-rows-normalize",
         "inline-rows-contract",
         "captured-at-valid",
         "pagination-initial-rows",
-        "paged-join"
+        "paged-join",
+        "paged-union"
       ]
     },
     "fields.md": {
@@ -641,7 +646,9 @@
         "table-row-expansion-none",
         "table-row-number-page",
         "table-scalar-fallback-page",
-        "table-pinned-summary-page"
+        "table-pinned-summary-page",
+        "paged-union-page",
+        "paged-union-branches"
       ],
       "rules": [
         "table-row-key",
@@ -659,7 +666,8 @@
         "paged-join",
         "table-search-options",
         "table-row-expansion",
-        "table-pinned-top"
+        "table-pinned-top",
+        "paged-union"
       ]
     },
     "components/mapChart.md": {
@@ -1132,7 +1140,8 @@
         "6.57",
         "6.58",
         "6.59",
-        "6.60"
+        "6.60",
+        "6.61"
       ]
     },
     {
@@ -5950,6 +5959,466 @@
     {
       "pointer": "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search/properties/match",
       "path": "@pagedJoinSource.initial.view.search.match",
+      "required": "本分支可选",
+      "module": "data-sources.md",
+      "const": "equals"
+    },
+    {
+      "pointer": "#/definitions/dataSource/anyOf/3",
+      "path": "@dataSource · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md",
+      "ref": "#/definitions/pagedUnionDataSource"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionDataSource",
+      "path": "@pagedUnionDataSource",
+      "required": "类型/分支",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionDataSource/properties/fields",
+      "path": "@pagedUnionDataSource.fields",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "ref": "#/definitions/fields"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionDataSource/properties/source",
+      "path": "@pagedUnionDataSource.source",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "ref": "#/definitions/pagedUnionSource"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource",
+      "path": "@pagedUnionSource",
+      "required": "类型/分支",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/type",
+      "path": "@pagedUnionSource.type",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "const": "pagedUnion"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/rowKey",
+      "path": "@pagedUnionSource.rowKey",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/sourceField",
+      "path": "@pagedUnionSource.sourceField",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members",
+      "path": "@pagedUnionSource.members",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties",
+      "path": "@pagedUnionSource.members{key}",
+      "required": "动态键的值",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/source",
+      "path": "@pagedUnionSource.members{key}.source",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/rowKey",
+      "path": "@pagedUnionSource.members{key}.rowKey",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection",
+      "path": "@pagedUnionSource.members{key}.projection",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties",
+      "path": "@pagedUnionSource.members{key}.projection{key}",
+      "required": "动态键的值",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0/properties/field",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[0].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/propertyNames",
+      "path": "@pagedUnionSource.members{key}.projection · propertyNames",
+      "required": "条件结构",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/propertyNames",
+      "path": "@pagedUnionSource.members · propertyNames",
+      "required": "条件结构",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering",
+      "path": "@pagedUnionSource.ordering",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering/properties/default",
+      "path": "@pagedUnionSource.ordering.default",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering/properties/default/items",
+      "path": "@pagedUnionSource.ordering.default[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering/properties/default/items/properties/field",
+      "path": "@pagedUnionSource.ordering.default[].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering/properties/default/items/properties/direction",
+      "path": "@pagedUnionSource.ordering.default[].direction",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering/properties/sortableFields",
+      "path": "@pagedUnionSource.ordering.sortableFields",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering/properties/sortableFields/items",
+      "path": "@pagedUnionSource.ordering.sortableFields[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/ordering/properties/nulls",
+      "path": "@pagedUnionSource.ordering.nulls",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "const": "last"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/pagination",
+      "path": "@pagedUnionSource.pagination",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/pagination/properties/pageSize",
+      "path": "@pagedUnionSource.pagination.pageSize",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial",
+      "path": "@pagedUnionSource.initial",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/capturedAt",
+      "path": "@pagedUnionSource.initial.capturedAt",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/rows",
+      "path": "@pagedUnionSource.initial.rows",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/rows/items",
+      "path": "@pagedUnionSource.initial.rows[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/rows/items/additionalProperties",
+      "path": "@pagedUnionSource.initial.rows[]{key}",
+      "required": "动态键的值",
+      "module": "data-sources.md",
+      "ref": "#/definitions/fieldValue"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/rows/items/propertyNames",
+      "path": "@pagedUnionSource.initial.rows[] · propertyNames",
+      "required": "条件结构",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks",
+      "path": "@pagedUnionSource.initial.cellFallbacks",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks/allOf/0",
+      "path": "@pagedUnionSource.initial.cellFallbacks · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md",
+      "ref": "#/definitions/cellFallbacks"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/totalCount",
+      "path": "@pagedUnionSource.initial.totalCount",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view",
+      "path": "@pagedUnionSource.initial.view",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/pageIndex",
+      "path": "@pagedUnionSource.initial.view.pageIndex",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/pageSize",
+      "path": "@pagedUnionSource.initial.view.pageSize",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/sort",
+      "path": "@pagedUnionSource.initial.view.sort",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/sort/items",
+      "path": "@pagedUnionSource.initial.view.sort[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/sort/items/properties/field",
+      "path": "@pagedUnionSource.initial.view.sort[].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/sort/items/properties/direction",
+      "path": "@pagedUnionSource.initial.view.sort[].direction",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates",
+      "path": "@pagedUnionSource.initial.view.predicates",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items",
+      "path": "@pagedUnionSource.initial.view.predicates[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/field",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[0].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/op",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[0].op",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "const": "in"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[0].values",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[0].values[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/0",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[0].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/1",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[0].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/1",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/1/properties/field",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[1].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/1/properties/op",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[1].op",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "enum": [
+        "gte",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/1/properties/value",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/2",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/2/properties/field",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[2].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/2/properties/op",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[2].op",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "const": "dateRange"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/2/properties/from",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[2].from",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/2/properties/to",
+      "path": "@pagedUnionSource.initial.view.predicates[] · anyOf[2].to",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/search",
+      "path": "@pagedUnionSource.initial.view.search",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/search/properties/fields",
+      "path": "@pagedUnionSource.initial.view.search.fields",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/search/properties/fields/items",
+      "path": "@pagedUnionSource.initial.view.search.fields[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/search/properties/query",
+      "path": "@pagedUnionSource.initial.view.search.query",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/search/properties/match",
+      "path": "@pagedUnionSource.initial.view.search.match",
       "required": "本分支可选",
       "module": "data-sources.md",
       "const": "equals"
@@ -12140,6 +12609,163 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource",
+      "path": "@tableColumn.navigateBySource",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/field",
+      "path": "@tableColumn.navigateBySource.field",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases",
+      "path": "@tableColumn.navigateBySource.cases",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties",
+      "path": "@tableColumn.navigateBySource.cases{key}",
+      "required": "动态键的值",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/visibleWhen",
+      "path": "@tableColumn.navigateBySource.cases{key}.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.navigateBySource.cases{key}.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/enabledWhen",
+      "path": "@tableColumn.navigateBySource.cases{key}.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.navigateBySource.cases{key}.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/href",
+      "path": "@tableColumn.navigateBySource.cases{key}.href",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/validateTargetInputs",
+      "path": "@tableColumn.navigateBySource.cases{key}.validateTargetInputs",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "const": true
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query",
+      "path": "@tableColumn.navigateBySource.cases{key}.query",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key}",
+      "required": "动态键的值",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0/properties/source",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[0].source",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "row"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0/properties/field",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[0].field",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1/properties/source",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[1].source",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "param"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1/properties/id",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[1].id",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2/properties/source",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2].source",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "filter"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2/properties/id",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2].id",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2/properties/part",
+      "path": "@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2].part",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "value",
+        "from",
+        "to",
+        "level",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/propertyNames",
+      "path": "@tableColumn.navigateBySource.cases{key}.query · propertyNames",
+      "required": "条件结构",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/propertyNames",
+      "path": "@tableColumn.navigateBySource.cases · propertyNames",
+      "required": "条件结构",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/align",
       "path": "@tableColumn.align",
       "required": "本分支可选",
@@ -17145,6 +17771,93 @@
       }
     },
     {
+      "schemaPointer": "#/definitions/dataSource/anyOf/3",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-page.json",
+      "pointer": "#/dataSources/opinions"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-page.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/localRowId"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-page.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-page.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-branches.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/constantNumber/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-branches.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/constantFlag/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-page.json",
+      "pointer": "#/dataSources/opinions/source/members/commercial/projection/missingNote/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0",
+      "module": "data-sources.md",
+      "negativeWitness": {
+        "file": "errors/union-initial-predicate-in.json",
+        "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+        "rule": "paged-union"
+      }
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/0",
+      "module": "data-sources.md",
+      "negativeWitness": {
+        "file": "errors/union-initial-predicate-in.json",
+        "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+        "rule": "paged-union"
+      }
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/1",
+      "module": "data-sources.md",
+      "negativeWitness": {
+        "file": "errors/union-initial-predicate-in.json",
+        "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+        "rule": "paged-union"
+      }
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/1",
+      "module": "data-sources.md",
+      "negativeWitness": {
+        "file": "errors/union-initial-predicate-numeric.json",
+        "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+        "rule": "paged-union"
+      }
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/2",
+      "module": "data-sources.md",
+      "negativeWitness": {
+        "file": "errors/union-initial-predicate-date.json",
+        "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+        "rule": "paged-union"
+      }
+    },
+    {
       "schemaPointer": "#/properties/filters/items/oneOf/0",
       "module": "page.md",
       "file": "examples/component-filterGroup.json",
@@ -17841,6 +18554,24 @@
       "pointer": "#/sections/10/components/0/props/columns/0/navigate/query/customer"
     },
     {
+      "schemaPointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0",
+      "module": "components/table.md",
+      "file": "examples/paged-union-page.json",
+      "pointer": "#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/record-id"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1",
+      "module": "components/table.md",
+      "file": "examples/paged-union-branches.json",
+      "pointer": "#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/route-label"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2",
+      "module": "components/table.md",
+      "file": "examples/paged-union-branches.json",
+      "pointer": "#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/from"
+    },
+    {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/1",
       "module": "components/table.md",
       "file": "examples/reference-branches-page.json",
@@ -18453,5 +19184,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "edb555c549f2fd6510d49e688276877b23980140cb5a9d60c72fc91100cac5d0"
+  "semanticSourceDigest": "f61b89dee792b96fe0fba67275ef914266a38df766043dbd95532b676a2d30cd"
 }

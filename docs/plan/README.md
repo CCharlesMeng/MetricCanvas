@@ -6,10 +6,10 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
-| 表格原文容错与独立置顶行 | Schema 6.60 本地验收完成，按范围交付 | [主计划](2026-10-26-table-tolerance-and-pinned-row.md)：标量原文证据、本地尾排、独立汇总及导出 |
+| 表格原文容错与独立置顶行 | Schema 6.61 本地验收完成，按范围交付 | [主计划](2026-10-26-table-tolerance-and-pinned-row.md)：标量原文证据、本地尾排、独立汇总及导出 |
 | Playground 目录与数据联动改进 | P0–P5 首轮实施及本地关键链路验收完成；下载回执等专项保留；Git 交付按授权跳过 CI | [整体改进计划](2026-10-24-playground-information-architecture.md)、[实施结果](../evidence/playground-information-architecture/result.md)：19 类组件目录、六阶段数据主线、21 个场景、当前文档试改；旧页面地址保留 |
 | MC 内容包完整性与 Schema 同步构建 | MC 补全已交付；Relay 实施待验 | [接续交接](2026-10-24-layout-standards/relay-delivery-handoff.md) → [接入实施任务书](2026-10-24-layout-standards/relay-integration-execution.md)；[完整性主计划](2026-10-24-layout-standards/mc-content-completeness-plan.md)：当前包与配套公共源码已复验，完整 authoring 分发回读修复随本轮交付，Git/CI 以交付回执为准；Relay 通道、权限及部署另验 |
-| 表格默认排序与决策意见明细合并分页 | 业务规则已确认，Playground 归并预览可运行；通用协议待实施 | [实施主计划](2026-10-23-paged-union-table.md)、[页面入口](../../pages/capabilities/table/README.md#决策意见明细)、[合成样例](paged-union-table/example-input.json)：预览复用 query、查询 order 与分页，defaultSort/pagedUnion、检查点及真实接入另行承接 |
+| 表格默认排序与决策意见明细合并分页 | 6.61 pagedUnion、整体默认排序与本地验收完成；真实接入待验 | [实施主计划](2026-10-23-paged-union-table.md)、[页面入口](../../pages/capabilities/table/README.md#决策意见明细)、[合成样例](paged-union-table/example-input.json)：现行实现见 [验收](../evidence/paged-union/acceptance.md)；整体默认排序归合并源，导出隔离超时用例复验通过，真实 DQE/Relay 另验 |
 | DQE object 查询 | 本仓实现及本地验收完成，真实接入待验 | [实施计划](2026-10-23-dqe-object-query.md)：对象字段、页面交互、完整结果、关联及 local-authoring 已完成；[本地验收](../evidence/dqe-object-query/result.md)，真实 DQE 分页/排序/候选另验 |
 | Report AI 总结重启 | 本仓实现与本地验收完成，真实云宝接入待验 | [主计划](2026-10-22-report-ai-summary.md)：双模式、区域范围、应用会话缓存、单文件云宝 mock；真实内网接入另验 |
 | TypeScript 圈复杂度治理 | 已迁入最新main并执行完整验收；原清单现存文件超限175→125，4条定位待核 | [交付与验收](../evidence/code-complexity/2026-10-22-main-delivery.md)、[全部259条及剩余125个函数](../evidence/code-complexity/2026-10-22-original-list-follow-up.md)、[计划与规则](2026-10-22-code-complexity.md)；未宣称全量清零 |

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "6.61",
+  "id": "multi-source-contract-detail",
+  "meta": {
+    "title": "合同记录详情（合成示例）"
+  },
+  "layout": "dashboard",
+  "params": {
+    "display": [
+      {
+        "id": "record-id",
+        "type": "string",
+        "value": "001"
+      }
+    ]
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "description",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "parts": [
+                "原始来源内业务键：",
+                {
+                  "param": "record-id"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

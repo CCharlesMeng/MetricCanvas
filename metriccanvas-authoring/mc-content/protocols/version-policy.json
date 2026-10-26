@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 60,
-  "current": "6.60",
+  "minor": 61,
+  "current": "6.61",
   "capabilities": {
     "query-cell-display-evidence": {
       "minor": 60,
@@ -11,6 +11,16 @@
     "table-pinned-top": {
       "minor": 60,
       "description": "表格独立查询置顶行",
+      "legacyReadable": false
+    },
+    "table-source-navigation": {
+      "minor": 61,
+      "description": "表格按行来源选择导航",
+      "legacyReadable": false
+    },
+    "paged-union": {
+      "minor": 61,
+      "description": "多来源字段投影、逐行合并与整体排序分页",
       "legacyReadable": false
     },
     "query-dimension-measures": {
@@ -670,6 +680,7 @@
     "6.57",
     "6.58",
     "6.59",
-    "6.60"
+    "6.60",
+    "6.61"
   ]
 }

@@ -57,6 +57,7 @@ export interface TableColumn {
   link?: boolean;
   openDetail?: z.infer<typeof openDetailActionZ>['openDetail'];
   navigate?: NavigationTarget;
+  navigateBySource?: { field: string; cases: Record<string, NavigationTarget> };
   align?: 'left' | 'right';
   emphasis?: 'strong';
   visual?: 'plain' | 'rateBar' | 'signed';
@@ -101,6 +102,7 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     link: z.boolean().optional(),
     openDetail: openDetailActionZ.shape.openDetail.optional(),
     navigate: navigationTargetZ.optional(),
+    navigateBySource: z.object({ field: fieldNameZ, cases: z.record(z.string().min(1), navigationTargetZ).meta({ minProperties: 1 }) }).strict().optional(),
     align: z.enum(['left', 'right']).optional(),
     emphasis: z.literal('strong').optional(),
     visual: z.enum(['plain', 'rateBar', 'signed']).optional(),

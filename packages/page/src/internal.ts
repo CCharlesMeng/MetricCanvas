@@ -32,7 +32,7 @@ export {
   type PageParseResult
 } from './validate';
 export { fileNameErrors } from './file-name';
-export { navigationErrors, isNavigationHref, filterURLKeys, urlInputErrors, declaredNavigationTargets } from './navigate';
+export { tableColumnNavigation, navigationErrors, isNavigationHref, filterURLKeys, urlInputErrors, declaredNavigationTargets } from './navigate';
 export type { NavigationTarget, NavigationBinding } from './schema/navigation';
 export * from './version';
 export type { ColorRule, CategoryLabels } from './schema/presentation';
@@ -86,3 +86,5 @@ export * from './ai-summary';
 
 export * from './component-value';
 export * from './table-pinned';
+
+export type { PagedUnionDataSource, PagedUnionSource, PagedUnionMember } from './paged-union';

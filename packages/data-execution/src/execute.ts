@@ -1,6 +1,6 @@
 import {requiresQueryContext} from '@metriccanvas/page/internal';
 import { resolvePageParams, type PageDocument } from '@metriccanvas/page';
-import { createSourceProgram } from './source-program/session';
+import { createSourceProgram, type SourceUpdate } from './source-program/session';
 import { initialFilterValues } from './filter-values';
 import { seedPageParamFilters } from './page-params';
 import type { RuntimeDataGateway } from './ports';
@@ -22,10 +22,14 @@ export function createPageDataExecutor(config: { gateway: RuntimeDataGateway;dis
         const source = output.dataSources[update.sourceId].source;
         if(update.candidateRejected&&source.type!=='inline')delete source.initial;
         if (!update.initial) continue;
-        if (source.type === 'query') source.initial = update.initial;
-        else if (source.type === 'pagedJoin' && 'view' in update.initial) source.initial = update.initial;
+        captureSourceInitial(source, update.initial);
       }
     } finally { program.dispose(); }
     return output;
   } };
+}
+
+function captureSourceInitial(source: PageDocument['dataSources'][string]['source'], initial: NonNullable<SourceUpdate['initial']>): void {
+  if (source.type === 'query') source.initial = initial;
+  else if (source.type !== 'inline' && 'view' in initial) source.initial = initial;
 }

@@ -4,6 +4,8 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 const introducedAt: Record<string, number> = {
   "table-pinned-top": 60,
   "query-cell-display-evidence": 60,
+  "paged-union": 61,
+  "table-source-navigation": 61,
   "query-dimension-measures": 56,
   "query-mode-field-mappings": 57,
   "ai-summary-container-scope": 58,

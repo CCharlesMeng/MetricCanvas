@@ -2,7 +2,7 @@ import { tableSearchValue, type DataSource, type Row, type TableComponent, type 
 
 /** Complete sources can be searched locally without changing another consumer's snapshot. */
 export function remoteTableSearch(source: DataSource | undefined): boolean {
-  return source?.source.type === 'pagedJoin' || (source?.source.type === 'query' && source.source.resultScope !== 'complete');
+  return (source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion') || (source?.source.type === 'query' && source.source.resultScope !== 'complete');
 }
 
 import { searchTableRows } from '@metriccanvas/data-execution/runtime';

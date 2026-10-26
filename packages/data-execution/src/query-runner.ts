@@ -18,13 +18,17 @@ export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: Dat
     const page = await gateway.fetchColumnCandidates?.(request.candidates, request.diagnostics, request.controller.signal) ?? { kind: 'unavailable' as const };
     return validateCandidatePage(page, request.candidates.offset, request.candidates.limit);
   }
+  function remember(key: string, result: Result): void {
+    cache.delete(key); cache.set(key, result);
+    while (cache.size > 256) cache.delete(cache.keys().next().value!);
+  }
   function pump() {
     while (!disposed && active < maxConcurrent && queue.length) {
       const request = queue.shift()!;
       if (!request.consumers.size || request.controller.signal.aborted) continue;
       active++;
       void execute(request).then(result => {
-        if (!request.controller.signal.aborted && ('kind' in result || result.status === 'ready' || result.status === 'empty')) cache.set(request.key, result);
+        if (!request.controller.signal.aborted && ('kind' in result || result.status === 'ready' || result.status === 'empty')) remember(request.key, result);
         for (const consumer of [...request.consumers]) { consumer.detach(); consumer.resolve(result); }
       }, cause => {
         for (const consumer of [...request.consumers]) { consumer.detach(); consumer.reject(cause); }
@@ -40,7 +44,7 @@ export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: Dat
     const normalized = { ...query, filterValues: normalize(query.filterValues), ...(query.bindingValues ? { bindingValues: normalize(query.bindingValues) } : {}), ...(query.tableFilters ? { tableFilters: normalize(query.tableFilters) } : {}) };
     const key = scope + ':' + canonicalizeJson({ query: normalized, ...(candidates ? { candidates: { ...candidates, query: normalized } } : {}) });
     const hit = cache.get(key);
-    if (hit) return Promise.resolve(hit);
+    if (hit) { cache.delete(key); cache.set(key, hit); return Promise.resolve(hit); }
     let request = pending.get(key);
     if (!request) {
       request = { key, query, ...(candidates ? { candidates: structuredClone(candidates) } : {}), diagnostics: { ...diagnostics }, controller: new AbortController(), consumers: new Set() };

@@ -4,7 +4,7 @@
 
 columns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。
 
-**决策意见明细合成预览。**
+## 决策意见明细合成预览
 
 `decision-opinion-details` 使用现有 `query` 数据源和查询分页，首轮查询通过 `order.by` 声明决策总次数降序。Playground 专用适配器分别读取合同、商务两个分页模拟源，归并后返回当前页及匹配总数；类型列通过现有表头多选筛选限定参与来源，候选来自完整匹配范围，支持候选搜索和清除，三个数值列可以切换全局排序。256 条记录中相同姓名与两边重复的局部行键分别保留，来源 ID 与局部键共同确定行身份。
 
@@ -198,3 +198,13 @@ props.pinnedTop 指定一个独立命名槽，叶子列的 pinnedTop 通过 fiel
 Excel 表头后写一次汇总，无序号，然后导出全部匹配明细。汇总无记录可以导出，汇总失败或行数不合法则整个表格导出失败；输出总数据行仍受10000行及60秒准备限制。PDF/PNG 使用同一投影，成功汇总在展开后的表格中仅出现一次，保留报告既有部分失败策略。首版不扩展行内子表的声明；已有详情限制继续生效。
 
 完整场景 `/pages/table-pinned-summary` 使用两个独立的 DQE Sim 查询，支持地区、共同时间和产品条件，以及零行、多行、失败场景；不能据此宣称真实 DQE 权限及汇总口径已经验收。
+
+<a id="source-navigation"></a>
+
+## 多来源整体排序与来源导航（6.61）
+
+Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑定最终页面字段。字段对应、来源常量、null、整体默认排序和分页声明见[数据源](../data-sources.md#paged-union)。默认排序在两个来源的全部匹配记录上生效，再取全局页面；不要求一次取回全部记录。用户交互排序只开放 `ordering.sortableFields` 声明的字段。沿用 Table 的升降序与 Shift 多列操作，移除最后一项用户排序恢复源默认。
+
+链接列可声明 `navigateBySource: { field, cases }`：`field` 引用当前行的来源文本维度，`cases` 以来源值为键，每个值是普通导航目标（`href`、`query`、条件和目标参数校验）。它不能与 `navigate`、`openDetail` 或 `selection` 同时声明；配合 `link: true`，命中的来源使用对应目标并携带原始行字段，未配置的来源显示普通文本。来源身份字段可以不作为可见列。普通导航的 URL、权限与条件规则继续生效。
+
+完整示例 `paged-union-page`，浏览器场景 `/pages/multi-source-table` 及 `/pages/multi-source-contract-detail`、`/pages/multi-source-commercial-detail`。演示来源为本地合成分页接口，入口与验收步骤见表格示例说明。

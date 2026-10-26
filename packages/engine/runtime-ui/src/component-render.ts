@@ -1,3 +1,4 @@
+import { partialDataNotices } from './widget-host-state';
 import type { Component, DataSnapshot, Row, TableColumn, TableComponent } from '@metriccanvas/page/internal';
 import type {NamedDataSlots} from '../../widgets/src/shared/component-data';
 import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,TableSortRule,TableViewState} from '../../widgets/src/components/table/view-state';
@@ -7,6 +8,7 @@ import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,Table
  * 抽成显式契约,使 `ComponentRenderer` 不需要认识运行时的表格状态实现。
  */
 export interface TableRenderBinding {
+  failureNotice?: string;
   expansion?: { page: import('@metriccanvas/page').Page; gateway: import('../../runtime/src').RuntimeDataGateway;
     filters: import('../../runtime/src').FilterValues; params: import('../../runtime/src').PageParamValues; instanceId: string };
   searchDraft?: string;
@@ -60,3 +62,9 @@ export interface NestedComponentRender {
  * 契约要认识 widgets 的视图类型,进不了纯 TS 的测试程序。
  */
 export { rendersWithoutWidgetHost } from './widget-host-state';
+
+/** Preserve the existing notice presentation while distinguishing union failures from empty results. */
+export function componentDataNotices(component: Component, snapshot: DataSnapshot, snapshots: ReadonlyMap<string, DataSnapshot>, table?: TableRenderBinding): string[] {
+  if (snapshot.status === 'error' && table?.failureNotice) return [table.failureNotice];
+  return partialDataNotices(component, snapshots, table?.paginationConfig?.mode === 'query');
+}

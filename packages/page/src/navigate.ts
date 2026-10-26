@@ -1,7 +1,8 @@
 import {staticFieldBinding} from './field';
 import { resolveDataSourceFields } from './data-source';
 import { walkPageComponents } from './component-walk';
-import type { Page, TableColumnNode } from './page';
+import type { DataRow as Row } from './field';
+import type { Page, TableColumn, TableColumnNode } from './page';
 import type { TypedError } from './errors';
 import type { NavigationTarget } from './schema/navigation';
 
@@ -25,7 +26,15 @@ export function navigationErrors(page: Page): TypedError[] {
     if (component.type === 'table') {
       const visit = (columns: TableColumnNode[], columnPath: string) => columns.forEach((column, index) => {
         if (column.kind === 'group') visit(column.children, `${columnPath}/${index}/children`);
-        else if (column.navigate) targets.push([column.navigate, `${columnPath}/${index}/navigate`]);
+        else {
+          if (column.navigate) targets.push([column.navigate, `${columnPath}/${index}/navigate`]);
+          if (column.navigateBySource) {
+            const field = page.dataSources[component.data.main]?.fields[column.navigateBySource.field];
+            if (!field || field.type !== 'string' || field.role !== 'dimension') fail(`${columnPath}/${index}/navigateBySource/field`, '来源导航必须绑定文本维度');
+            if (column.navigate || column.openDetail || column.selection) fail(`${columnPath}/${index}/navigateBySource`, '来源导航不能与其他单元格动作同时声明');
+            for (const [id, target] of Object.entries(column.navigateBySource.cases)) targets.push([target, `${columnPath}/${index}/navigateBySource/cases/${id.replaceAll('~', '~0').replaceAll('/', '~1')}`]);
+          }
+        }
       });
       visit(component.props.columns, `${path}/props/columns`);
     }
@@ -113,5 +122,13 @@ export function declaredNavigationTargets(page: Page): NavigationTarget[] {
     if(component.type==='table')visit(component.props?.columns??[]);
   });
   return result;
-  function visit(columns:TableColumnNode[]){if(!Array.isArray(columns))return;for(const column of columns)if(column?.kind==='group')visit(column.children??[]);else if(column?.navigate)result.push(column.navigate);}
+  function visit(columns:TableColumnNode[]){if(!Array.isArray(columns))return;for(const column of columns)if(column?.kind==='group')visit(column.children??[]);else {if(column?.navigate)result.push(column.navigate);if(column?.navigateBySource)result.push(...Object.values(column.navigateBySource.cases));}}
+}
+
+/** Resolve only the matching row source; unmatched records remain ordinary text. */
+export function tableColumnNavigation(column: TableColumn | undefined, row: Row): NavigationTarget | undefined {
+  if (!column?.navigateBySource) return column?.navigate;
+  const value = row[column.navigateBySource.field];
+  const cases = column.navigateBySource.cases;
+  return typeof value === 'string' && Object.hasOwn(cases, value) ? cases[value] : undefined;
 }

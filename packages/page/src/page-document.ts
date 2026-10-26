@@ -1,3 +1,4 @@
+import type { PagedUnionDataSource } from './paged-union';
 import type { PagedJoinDataSource } from './paged-join';
 import type { GroupedPageParams, PageParamDeclaration } from './page-param';
 import type {
@@ -53,7 +54,7 @@ export interface GroupedQueryDataSource extends Omit<QueryDataSourceDocument, 'f
 }
 
 export type PageDataSourceDocument =
-  | PagedJoinDataSource
+  | PagedJoinDataSource | PagedUnionDataSource
   | InlineDataSource
   | QueryDataSourceDocument
   | GroupedQueryDataSource;

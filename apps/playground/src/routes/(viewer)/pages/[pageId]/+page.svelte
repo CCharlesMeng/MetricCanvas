@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createUnionPreview } from '../../../../../fixtures/decision-opinion/union-gateway';
   import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
   import {pageExternalInputs} from '../../../../../fixtures/preview-inputs';
@@ -101,7 +102,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;

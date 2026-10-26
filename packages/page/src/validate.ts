@@ -1,5 +1,7 @@
 import { attachInitialFallbacks } from './cell-fallback';
 import { tablePinnedErrors, tableAlignedSlots } from './table-pinned';
+
+import { pagedUnionErrors } from './validate-paged-union';
 import { aiSummaryErrors, aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
 import { aiSummaryPositionErrors } from './ai-summary-region';
 import { chartConstantInputErrors, chartConstantErrors } from './chart-value-validation';
@@ -335,7 +337,7 @@ function invariantErrors(page: Page): TypedError[] {
   errors.push(...aiSummaryErrors(page), ...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));
   errors.push(...queryResultBindingErrors(page));
-  errors.push(...pagedJoinErrors(page));
+  errors.push(...pagedJoinErrors(page), ...pagedUnionErrors(page));
 
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
     const path = `/dataSources/${escapePointer(sourceId)}`;
@@ -444,7 +446,7 @@ function invariantErrors(page: Page): TypedError[] {
     }
     if (props.pagination?.mode === 'query') errors.push(schemaError(componentPath, '详情表格当前只支持完整结果的本地分页'));
     if (component.type === 'text' && component.props.links?.length) errors.push(schemaError(componentPath, '详情说明不允许跨页链接'));
-    if (Object.values(component.data ?? {}).some(id => page.dataSources[id]?.source.type === 'pagedJoin')) errors.push(schemaError(componentPath, '详情不支持组合窗口结果'));
+    if (Object.values(component.data ?? {}).some(id => (page.dataSources[id]?.source.type === 'pagedJoin' || page.dataSources[id]?.source.type === 'pagedUnion'))) errors.push(schemaError(componentPath, '详情不支持组合窗口结果'));
     if (component.type === 'table') checkDetailTable(component, componentPath);
     errors.push(...componentErrors(page, component, componentPath, filterIds));
 
@@ -2030,7 +2032,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
     }
     if (querySearchNeedsOwner(component, source)) queryTables.push({ sourceId, componentPath, reason: '查询搜索' });
     if (pagination?.mode !== 'query') return;
-    if (source?.source.type === 'pagedJoin') { queryTables.push({ sourceId, componentPath }); return; }
+    if ((source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')) { queryTables.push({ sourceId, componentPath }); return; }
     if (source?.source.type !== 'query') {
       errors.push(
         schemaError(

@@ -1,5 +1,5 @@
 import {isObjectDqeItem,setObjectFieldValues,dqeRecord} from './dqe-object';
-import {versionPolicy} from './version';
+import {requiredMinorVersion,versionPolicy} from './version';
 import type {DqeQueryDefinition,JsonObject} from './query';
 import {ordinaryQuery} from './time-mode';
 import { pageParamDeclarations, type GroupedPageParams } from './page-param';
@@ -16,7 +16,7 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
   const normalized=normalizePageDocument(input);
   if(!normalized.ok)return {ok:false,issues:normalized.errors.map(e=>({code:'INVALID_PAGE',path:e.path,message:e.message}))};
   const document=normalized.document;
-  document.schemaVersion=hasObjectQuery(document)?versionPolicy.current:'6.11';
+  document.schemaVersion=requiredMinorVersion(document)>11?versionPolicy.current:'6.11';
   if (!document.params || !Array.isArray(document.params)) return {ok:true,document,issues:[]};
   const grouped:GroupedPageParams={query:{}};
   const reject=(id:string,message:string)=>({ok:false as const,issues:[{code:'INVALID_PAGE' as const,path:'/params',param:id,message}]});
@@ -41,8 +41,7 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
   }
   document.params=grouped;
   for(const ds of Object.values(document.dataSources)) {
-    if(ds.source.type==='pagedJoin'){delete ds.source.initial;continue;}
-    if(ds.source.type!=='query')continue;
+    if(ds.source.type!=='query'){Reflect.deleteProperty(ds.source, 'initial');continue;}
     const q=ds.source.query, item=ordinaryQuery(q).body.dsl_list[0];
     if(!Object.keys(q.paramBindings??{}).length)continue;
     for(const [id,b] of Object.entries(q.paramBindings??{})) {
@@ -57,9 +56,6 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
   return verified.ok?{ok:true,document,issues:[]}:{ok:false,issues:verified.errors.map(e=>({code:'INVALID_MATERIALIZATION',path:e.path,message:e.message}))};
 }
 
-function hasObjectQuery(document: PageDocument): boolean {
-  return Object.values(document.dataSources).some(source=>source.source.type==='query' && isObjectDqeItem(ordinaryQuery(source.source.query).body.dsl_list[0]));
-}
 function migrateBinding(item: JsonObject, id: string, binding: NonNullable<DqeQueryDefinition['paramBindings']>[string]): void {
   if(isObjectDqeItem(item)){migrateObjectBinding(item,id,binding);return;}
   const filter:Record<string,any>=record(item.filter)?item.filter:{};item.filter=filter;

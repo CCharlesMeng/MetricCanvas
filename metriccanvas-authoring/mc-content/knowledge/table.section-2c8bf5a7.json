@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.60",
+  "schemaVersion": "6.61",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-2c8bf5a7"
@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。\n\n**决策意见明细合成预览。**\n\n`decision-opinion-details` 使用现有 `query` 数据源和查询分页，首轮查询通过 `order.by` 声明决策总次数降序。Playground 专用适配器分别读取合同、商务两个分页模拟源，归并后返回当前页及匹配总数；类型列通过现有表头多选筛选限定参与来源，候选来自完整匹配范围，支持候选搜索和清除，三个数值列可以切换全局排序。256 条记录中相同姓名与两边重复的局部行键分别保留，来源 ID 与局部键共同确定行身份。\n\n后端占比原值按约定刻度展示，不根据其他列重算；该模拟源从 0—1 转成既有 percent 格式所需的 0—100。页面未声明新的默认排序或合并源协议；JSON 单独加载不提供两个来源的执行能力，初始列头方向也沿现有行为。此场景用于交互与有序归并预览，不证明真实 DQE 已支持相同排序、空值位置或计数能力。",
+        "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
         "## 数值范围和组合表（6.22）\n\n`filterable: { mode: \"numberRange\" }` 只用于 number/money 度量。控件保存字符串草稿，提交后转换为可缺省的数值 from/to，端点包含；非有限数、反向区间和输入中的 `-` 不改变已提交视图。金额按元、百分数按结果字段原始刻度比较。清空移除条件。\n\n绑定 pagedJoin 时使用单个 `data.main`、稳定业务 `props.rowKey` 和 `pagination: {mode:\"query\"}`；可点击排序列必须在组合 `ordering.sortableFields` 中。排序、筛选、搜索和页码均由 TableSession 持有，呈现层只显示和发事件。切换排序或条件回到第一页。组合搜索在有界完整最终行集上求值，导出使用同一已提交条件。\n\n`multi-query-table` 仿真验收场景中，金额下限 150000000 匹配 3 行，再加召开率下限 85 后匹配 1 行；这是跨源 AND 后的总数。清空条件后搜索天津返回 1 行，清空搜索后导出应含全部 8 行。输入 `-` 等非法草稿时保留已提交条件，导出与屏幕按相同条件求值。\n\n两张表分别展示「序号」和「预签金额排名」。序号随当前顺序变化；固定排名是数据源投影字段，切换召开率排序后仍跟随同一代表处，第一页可显示 1、4、2，第二页显示 5、6、3。召开率下限 85 时固定排名为 1、4，搜索天津时固定排名为 8；导出保留相同业务名次。两张表使用不同组合源，互不改变排序、筛选或页码。\n\n6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。\n\n<a id=\"row-expansion\"></a>"
       ],
       "rules": [
@@ -39,6 +39,27 @@
             "row-expansion-missing-parent-key",
             "row-expansion-query-local-page",
             "row-expansion-unbound-parent"
+          ]
+        },
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches"
+          ],
+          "invalid": [
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
           ]
         },
         {
@@ -227,7 +248,9 @@
         "references/page-metadata/examples/table-row-expansion-none.json",
         "references/page-metadata/examples/table-row-number-page.json",
         "references/page-metadata/examples/table-scalar-fallback-page.json",
-        "references/page-metadata/examples/table-pinned-summary-page.json"
+        "references/page-metadata/examples/table-pinned-summary-page.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json"
       ]
     }
   ],

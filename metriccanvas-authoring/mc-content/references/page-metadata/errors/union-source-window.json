@@ -1,0 +1,27 @@
+{
+  "case": "union-source-window",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "成员不允许计算、结果绑定或业务分页窗口",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/source"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "source": "contract"
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

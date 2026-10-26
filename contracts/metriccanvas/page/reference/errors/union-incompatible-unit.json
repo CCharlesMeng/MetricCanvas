@@ -1,0 +1,31 @@
+{
+  "case": "union-incompatible-unit",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "投影类型、角色、单位、币种及可空性必须相容",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/projection/decisionCount"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "projection": {
+                "decisionCount": {
+                  "field": "contract-decisionCount"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-incompatible-unit.json"
+}

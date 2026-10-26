@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.60",
+  "schemaVersion": "6.61",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data-sources.section-38baaf4a"
@@ -13,6 +13,27 @@
         "## 查询异常与结果总数\n\n查询失败在内部保留错误分类及 `data-error` 嵌入事件，页面 UI 组件按空数据呈现，不显示错误标题、错误码或错误消息。错误通过 `console.error` 打印页面、数据源、引用组件及具体原因；DQE 字段校验同时打印可用的行号、字段和预期类型。日志不包含原始数据行、字段值、凭据或上游响应正文。关联查询失败时 AI 总结也呈现空态。\n\n普通查询的有效 `totalCount` 小于返回行数，或 `resultScope: complete` 声明的完整结果与总数不一致时，通过 `console.warn` 打印 `TOTAL_COUNT_MISMATCH`，保留返回行与原始总数，继续渲染、计算及查询结果绑定。查询分页当前窗口已返回行时，不因较小的总数自动跳页；不符合完整第一页规则的动态窗口不回填到持久化 initial。分页窗口少于业务总数本身是正常情况，不告警。总数格式非法、缺少分页必需总数、返回行数超过请求上限、字段映射或结构不合法仍为错误。完整导出与组合查询源的跨页完整性规则保持独立。\n\n验收使用完整合成页面 `query-numeric-tolerance`：正常返回八行；测试在 DQE HTTP 边界分别注入缺字段、维度类型错误、总数小于或大于返回行数，核对空组件、全部返回行及控制台诊断。对应浏览器测试为 `result-diagnostics.spec.ts`；本地证据不代表真实 DQE 或部署验收。"
       ],
       "rules": [
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches"
+          ],
+          "invalid": [
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
+          ]
+        },
         {
           "id": "paged-join",
           "description": "6.22 组合表全局视图与普通查询定义引用",
@@ -113,7 +134,9 @@
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/paged-join-page.json",
         "references/page-metadata/examples/paged-join-fixed-rank-page.json",
-        "references/page-metadata/examples/query-numeric-tolerance.json"
+        "references/page-metadata/examples/query-numeric-tolerance.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json"
       ]
     }
   ],

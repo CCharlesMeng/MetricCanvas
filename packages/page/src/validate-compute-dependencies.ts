@@ -26,7 +26,7 @@ export function crossSourceComputeErrors(page: Page): TypedError[] {
 
 function fullRowsErrors(id: string, source: DataSource, path: string, paged: ReadonlySet<string>, error: ErrorReporter): void {
   if (source.source.type === 'inline') return;
-  if (source.source.type === 'pagedJoin') { error(path, '组合源是窗口结果，不能用于完整跨源计算'); return; }
+  if ((source.source.type === 'pagedJoin' || source.source.type === 'pagedUnion')) { error(path, '组合源是窗口结果，不能用于完整跨源计算'); return; }
   const query = ordinaryQuery(source.source.query).body.dsl_list[0];
   const order = query?.order;
   if (source.source.resultScope !== 'complete' || paged.has(id) ||

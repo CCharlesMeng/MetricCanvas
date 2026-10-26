@@ -14,10 +14,10 @@ export function reusableInitialSnapshot(source: DataSource, view?: TableQueryVie
   if (source.source.type === 'inline') return rawSnapshot(source.source.rows);
   const initial = source.source.initial;
   if (!initial) return undefined;
-  if (source.source.type === 'pagedJoin') {
+  if ((source.source.type === 'pagedJoin' || source.source.type === 'pagedUnion')) {
     if (!view || canonicalizeJson(source.source.initial!.view) !== canonicalizeJson(view)) return undefined;
   } else if (view && changedInitialView(view)) return undefined;
-  if ((windowed || source.source.type === 'pagedJoin') && view && initial.totalCount !== undefined && initial.rows.length !== Math.min(view.pageSize, initial.totalCount)) return undefined;
+  if ((windowed || (source.source.type === 'pagedJoin' || source.source.type === 'pagedUnion')) && view && initial.totalCount !== undefined && initial.rows.length !== Math.min(view.pageSize, initial.totalCount)) return undefined;
   return rawSnapshot(initial.rows, initial.totalCount, initial.cellFallbacks);
 }
 export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, limit?: number, diagnostics?: QueryDiagnosticContext & { pagination?: EffectiveQuery['pagination'] }): DataSnapshot {

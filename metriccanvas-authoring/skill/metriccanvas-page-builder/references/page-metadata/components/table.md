@@ -4,7 +4,7 @@
 
 columns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。
 
-**决策意见明细合成预览。**
+## 决策意见明细合成预览
 
 `decision-opinion-details` 使用现有 `query` 数据源和查询分页，首轮查询通过 `order.by` 声明决策总次数降序。Playground 专用适配器分别读取合同、商务两个分页模拟源，归并后返回当前页及匹配总数；类型列通过现有表头多选筛选限定参与来源，候选来自完整匹配范围，支持候选搜索和清除，三个数值列可以切换全局排序。256 条记录中相同姓名与两边重复的局部行键分别保留，来源 ID 与局部键共同确定行身份。
 
@@ -199,8 +199,18 @@ Excel 表头后写一次汇总，无序号，然后导出全部匹配明细。�
 
 完整场景 `/pages/table-pinned-summary` 使用两个独立的 DQE Sim 查询，支持地区、共同时间和产品条件，以及零行、多行、失败场景；不能据此宣称真实 DQE 权限及汇总口径已经验收。
 
+<a id="source-navigation"></a>
 
-页面协议 6.60。结构真源为本册[schema.json](../schema.json)，SHA256 `42ab238060ebcf4d08a3ecd245c31d47ac6d3f27655476e11409c6f8ae72251e`。字段表自动生成；可选不等于有默认值。
+## 多来源整体排序与来源导航（6.61）
+
+Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑定最终页面字段。字段对应、来源常量、null、整体默认排序和分页声明见[数据源](../data-sources.md#paged-union)。默认排序在两个来源的全部匹配记录上生效，再取全局页面；不要求一次取回全部记录。用户交互排序只开放 `ordering.sortableFields` 声明的字段。沿用 Table 的升降序与 Shift 多列操作，移除最后一项用户排序恢复源默认。
+
+链接列可声明 `navigateBySource: { field, cases }`：`field` 引用当前行的来源文本维度，`cases` 以来源值为键，每个值是普通导航目标（`href`、`query`、条件和目标参数校验）。它不能与 `navigate`、`openDetail` 或 `selection` 同时声明；配合 `link: true`，命中的来源使用对应目标并携带原始行字段，未配置的来源显示普通文本。来源身份字段可以不作为可见列。普通导航的 URL、权限与条件规则继续生效。
+
+完整示例 `paged-union-page`，浏览器场景 `/pages/multi-source-table` 及 `/pages/multi-source-contract-detail`、`/pages/multi-source-commercial-detail`。演示来源为本地合成分页接口，入口与验收步骤见表格示例说明。
+
+
+页面协议 6.61。结构真源为本册[schema.json](../schema.json)，SHA256 `4c59f431d4af3e0561590734831d09c7d8886f5f612f4866d8ec2af8a447f130`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1840,6 +1850,270 @@ Schema位置：`#/definitions/tableColumn/properties/navigate/properties/query/p
 |---|---|---|---|---|
 | "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f75726365"></a>
+
+### `@tableColumn.navigateBySource`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["field","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按行来源维度选择导航目标；未配置的来源显示普通文本。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f6669656c64"></a>
+
+### `@tableColumn.navigateBySource.field`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f6361736573"></a>
+
+### `@tableColumn.navigateBySource.cases`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@tableColumn.navigateBySource.cases{key}`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 动态键的值 | required=["href"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.visibleWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.enabledWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f68726566"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.href`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/href`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 目标URL，必须通过安全协议及结构检查。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f76616c6964617465546172676574496e70757473"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.validateTargetInputs`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/validateTargetInputs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@tableColumn.navigateBySource.cases{key}.validateTargetInputs分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f7175657279"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 受控查询定义，或导航URL参数映射，按所属结构判别。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key}`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f30"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f736f75726365"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[0].source`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="row" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "row" | 用于选择@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[0].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f6669656c64"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[0].field`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f31"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[1]`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","id"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f736f75726365"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[1].source`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="param" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "param" | 用于选择@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[1].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f6964"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[1].id`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f32"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2]`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","id"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f736f75726365"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2].source`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="filter" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "filter" | 用于选择@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f6964"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2].id`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f70617274"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query{key} · oneOf[2].part`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2/properties/part`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "value" | 普通单值/多值输入部分。 |
+| "from" | 范围起点部分。 |
+| "to" | 范围终点部分。 |
+| "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572792f70726f70657274794e616d6573"></a>
+
+### `@tableColumn.navigateBySource.cases{key}.query · propertyNames`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174654279536f757263652f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
+
+### `@tableColumn.navigateBySource.cases · propertyNames`
+
+Schema位置：`#/definitions/tableColumn/properties/navigateBySource/properties/cases/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f616c69676e"></a>
 
 ### `@tableColumn.align`
@@ -2723,6 +2997,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `table-search-options`：6.42 静态搜索选项唯一、默认项有效且每项引用文本字段。反例：[table-search-options-before-6.42](../errors/table-search-options-before-6.42.json)、[table-search-options-duplicate](../errors/table-search-options-duplicate.json)、[table-search-options-default-missing](../errors/table-search-options-default-missing.json)、[table-search-options-nontext](../errors/table-search-options-nontext.json)、[table-search-options-unmapped](../errors/table-search-options-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-expansion`：6.44单层子表格的作用域、只读及查询分页约束。反例：[row-expansion-before-6.44](../errors/row-expansion-before-6.44.json)、[row-expansion-missing-parent-key](../errors/row-expansion-missing-parent-key.json)、[row-expansion-query-local-page](../errors/row-expansion-query-local-page.json)、[row-expansion-unbound-parent](../errors/row-expansion-unbound-parent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-pinned-top`：独立完整查询置顶，明确字段及行域归属。反例：[pinned-top-version](../errors/pinned-top-version.json)、[pinned-top-main](../errors/pinned-top-main.json)、[pinned-top-window](../errors/pinned-top-window.json)、[pinned-top-unknown-field](../errors/pinned-top-unknown-field.json)、[pinned-top-incomplete](../errors/pinned-top-incomplete.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `paged-union`：多来源逐行合并、显式字段投影与全局视图。反例：[union-initial-predicate-date](../errors/union-initial-predicate-date.json)、[union-initial-predicate-numeric](../errors/union-initial-predicate-numeric.json)、[union-initial-predicate-in](../errors/union-initial-predicate-in.json)、[union-before-6.61](../errors/union-before-6.61.json)、[union-missing-source](../errors/union-missing-source.json)、[union-missing-mapping](../errors/union-missing-mapping.json)、[union-incompatible-unit](../errors/union-incompatible-unit.json)、[union-null-required](../errors/union-null-required.json)、[union-source-window](../errors/union-source-window.json)、[union-invalid-key](../errors/union-invalid-key.json)、[union-source-navigation-field](../errors/union-source-navigation-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2744,6 +3019,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-row-number-page](../examples/table-row-number-page.json)：完整合法页面；查询仅为静态契约证据。
 - [table-scalar-fallback-page](../examples/table-scalar-fallback-page.json)：完整合法页面；查询仅为静态契约证据。
 - [table-pinned-summary-page](../examples/table-pinned-summary-page.json)：完整合法页面；查询仅为静态契约证据。
+- [paged-union-page](../examples/paged-union-page.json)：完整合法页面；查询仅为静态契约证据。
+- [paged-union-branches](../examples/paged-union-branches.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -2789,6 +3066,9 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/tab-url-source.json)，JSON Pointer `#/sections/0/components/1/props/columns/0/navigate/query/sales-tab`。
 - `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/9/components/0/props/columns/0/navigate/query/customer`。
 - `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/10/components/0/props/columns/0/navigate/query/customer`。
+- `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/paged-union-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/record-id`。
+- `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/route-label`。
+- `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/from`。
 - `#/definitions/tableColumnNode/anyOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/columns/0`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/0`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/pagination`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/6/props/pagination`。

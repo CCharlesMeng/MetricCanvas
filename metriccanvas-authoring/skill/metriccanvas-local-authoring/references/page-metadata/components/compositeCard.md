@@ -19,7 +19,7 @@ Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px�
 6.58 增加 aiSummary 子组件（Report 限制仍适用）；摘要必须在卡内内容最前并占满 12 列，可显式 scope: "container" 总结本卡关联数据。正文、生成、缓存和导出复用同一 aiSummary；文字不进入分析输入。其他准入及嵌套规则不变。示例：[`report-ai-summary-regions`](../examples/report-ai-summary-regions.json)。
 
 
-页面协议 6.60。结构真源为本册[schema.json](../schema.json)，SHA256 `42ab238060ebcf4d08a3ecd245c31d47ac6d3f27655476e11409c6f8ae72251e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.61。结构真源为本册[schema.json](../schema.json)，SHA256 `4c59f431d4af3e0561590734831d09c7d8886f5f612f4866d8ec2af8a447f130`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

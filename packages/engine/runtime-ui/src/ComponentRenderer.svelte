@@ -49,7 +49,7 @@
   import WidgetHost from './WidgetHost.svelte';
   import FilterGroup from './dashboard/FilterGroup.svelte';
   import TableToolbar from '../../widgets/src/components/table/TableToolbar.svelte';
-  import { partialDataNotices } from './widget-host-state';
+  import { componentDataNotices } from './component-render';
   import {
     rendersWithoutWidgetHost,
     type NestedComponentRender,
@@ -230,7 +230,7 @@
       error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
       onexport={table.onexport} oncancel={table.oncancelexport} />
   {/if}
-  <WidgetHost {snapshot} title={'title' in component.props ? component.props.title : undefined} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
+  <WidgetHost {snapshot} title={'title' in component.props ? component.props.title : undefined} notices={componentDataNotices(component, snapshot, pageSnapshots, table)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />

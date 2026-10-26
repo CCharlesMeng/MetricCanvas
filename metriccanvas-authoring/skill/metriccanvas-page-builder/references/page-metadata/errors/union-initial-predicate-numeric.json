@@ -1,0 +1,41 @@
+{
+  "case": "union-initial-predicate-numeric",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "组合初始行必须匹配默认视图",
+      "paths": [
+        "/dataSources/opinions/source/initial/view"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "initial": {
+            "view": {
+              "pageIndex": 0,
+              "pageSize": 20,
+              "sort": [
+                {
+                  "…": "共2个键"
+                }
+              ],
+              "predicates": [
+                {
+                  "…": "共3个键"
+                },
+                {
+                  "…": "共3个键"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-initial-predicate-numeric.json"
+}

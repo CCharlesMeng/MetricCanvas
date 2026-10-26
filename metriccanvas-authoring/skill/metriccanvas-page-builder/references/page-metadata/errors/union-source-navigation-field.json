@@ -1,0 +1,33 @@
+{
+  "case": "union-source-navigation-field",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "来源导航必须绑定文本维度",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/navigateBySource/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "navigateBySource": {
+                    "field": "missing"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/union-source-navigation-field.json"
+}

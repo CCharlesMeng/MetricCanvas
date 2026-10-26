@@ -1,0 +1,27 @@
+{
+  "case": "union-missing-mapping",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "每个来源必须显式声明字段、常量或 null 投影",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/projection/approver"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "projection": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-missing-mapping.json"
+}

@@ -5,7 +5,7 @@ import { queryResultDependencies } from './query-dependencies';
 
 /** Definition references propagate conditions, never execution prerequisites. */
 export function definitionSourceIds(source: DataSource | undefined): string[] {
-  return source?.source.type === 'pagedJoin' ? [...new Set(Object.values(source.source.members).map(member => member.source))] : [];
+  return (source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion') ? [...new Set(Object.values(source.source.members).map(member => member.source))] : [];
 }
 export function resultSourceIds(source: DataSource | undefined): string[] {
   return [...new Set([...queryResultDependencies(source), ...computeDependencies(source?.compute ?? [])])];

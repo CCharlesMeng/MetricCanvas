@@ -1,4 +1,6 @@
 import { cellFallbackErrors } from './validate-cell-fallbacks';
+
+import type { PagedUnionDataSource, PagedUnionSource } from './paged-union';
 import { aiSummaryRelatedData } from './ai-summary';
 import {ordinaryQuery} from './time-mode';
 import {queryFilterIds} from './amount-filter';
@@ -140,7 +142,7 @@ function consumesSource(page: Page, component: Component, id: string): boolean {
   return Object.values(component.data ?? {}).includes(id) || (component.type === 'aiSummary' && Object.values(aiSummaryRelatedData(page, component.props, {}, component.id)).some(v => v.source === id));
 }
 
-function consumerErrors(page: Page, id: string, source: PagedJoinSource, path: string, error: ErrorReporter): void {
+export function consumerErrors(page: Page, id: string, source: PagedJoinSource | PagedUnionSource, path: string, error: ErrorReporter): void {
   let consumers = 0;
   walkPageComponents(page, (component, cp) => {
     if (!consumesSource(page, component, id)) return;
@@ -154,7 +156,7 @@ function consumerErrors(page: Page, id: string, source: PagedJoinSource, path: s
   if (consumers !== 1) error(path, '组合源必须由一张查询分页表独占');
 }
 
-function sortableColumnErrors(columns: Extract<Component, { type: 'table' }>['props']['columns'], source: PagedJoinSource, path: string, error: ErrorReporter): void {
+function sortableColumnErrors(columns: Extract<Component, { type: 'table' }>['props']['columns'], source: PagedJoinSource | PagedUnionSource, path: string, error: ErrorReporter): void {
   for (const col of columns) {
     if (col.kind === 'group') { sortableColumnErrors(col.children, source, path, error); continue; }
     const field = fieldName(col.field);
@@ -162,7 +164,7 @@ function sortableColumnErrors(columns: Extract<Component, { type: 'table' }>['pr
   }
 }
 
-function initialErrors(data: PagedJoinDataSource, path: string, error: ErrorReporter): void {
+export function initialErrors(data: PagedJoinDataSource | PagedUnionDataSource, path: string, error: ErrorReporter): void {
   const source = data.source, initial = source.initial;
   if (!initial) return;
   if (initial.view.search?.match === 'equals' && initial.view.search.fields.length !== 1) error(`${path}/source/initial/view/search`, '等值搜索只允许一个字段');

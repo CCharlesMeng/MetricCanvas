@@ -36,7 +36,7 @@ describe('按功能与实际布局形态查找数据能力', () => {
 
   it('功能只推荐直接相关的演示，不整组挂载场景变体', () => {
     expect(dashboard.find(feature => feature.id === 'keyed-join')?.entries.map(example => example.entry.id)).toEqual(['multi-query-table']);
-    expect(dashboard.find(feature => feature.id === 'ordered-merge')?.entries.map(example => example.entry.id)).toEqual(['decision-opinion-details']);
+    expect(dashboard.find(feature => feature.id === 'ordered-merge')?.entries.map(example => example.entry.id)).toEqual(['multi-source-table', 'decision-opinion-details']);
     expect(dashboard.find(feature => feature.id === 'month-set')?.entries.map(example => example.entry.id)).not.toContain('ioc-header-overview-demo');
     const reduced = featuresForLayout(availableScenes(pages.filter(page => page.id !== 'multi-query-table')), pages, 'dashboard');
     expect(reduced.some(feature => feature.id === 'keyed-join')).toBe(false);

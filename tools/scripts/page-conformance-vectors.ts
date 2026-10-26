@@ -318,6 +318,19 @@ export const invariants: InvariantDefinition[] = [
       { case: 'text-composition-nested', base: 'text-composition-page', expect: /type|match|additional|must/, mutate: d => { firstComponent(d).props.title = { parts: [{ parts: ['nested'] }] }; } }
     ]
   },
+  { id: 'paged-union', description: '多来源逐行合并、显式字段投影与全局视图', valid: ['paged-union-page', 'paged-union-branches'], cases: [
+    { case: 'union-initial-predicate-date', base: 'paged-union-branches', expect: /默认视图/, mutate: d => { d.dataSources.opinions.source.initial.view.predicates = [{ field: 'approver', op: 'dateRange', from: '2026-01-01', to: '2026-02-01' }]; } },
+    { case: 'union-initial-predicate-numeric', base: 'paged-union-branches', expect: /默认视图/, mutate: d => { d.dataSources.opinions.source.initial.view.predicates = [{ field: 'decisionCount', op: 'gte', value: 1 }, { field: 'decisionCount', op: 'lte', value: 2 }]; } },
+    { case: 'union-initial-predicate-in', base: 'paged-union-branches', expect: /默认视图/, mutate: d => { d.dataSources.opinions.source.initial.view.predicates = [{ field: 'approver', op: 'in', values: ['甲', 1] }]; } },
+    { case: 'union-before-6.61', base: 'paged-union-page', expect: /由 6.61 引入/, mutate: d => { d.schemaVersion = '6.60'; } },
+    { case: 'union-missing-source', base: 'paged-union-page', expect: /普通查询源/, mutate: d => { d.dataSources.opinions.source.members.contract.source = 'missing'; } },
+    { case: 'union-missing-mapping', base: 'paged-union-page', expect: /显式声明/, mutate: d => { delete d.dataSources.opinions.source.members.contract.projection.approver; } },
+    { case: 'union-incompatible-unit', base: 'paged-union-page', expect: /单位/, mutate: d => { d.dataSources.contract.fields['contract-decisionCount'].unit = '万元'; } },
+    { case: 'union-null-required', base: 'paged-union-page', expect: /可空性/, mutate: d => { d.dataSources.opinions.fields.missingNote.nullable = false; } },
+    { case: 'union-source-window', base: 'paged-union-page', expect: /业务分页窗口/, mutate: d => { d.dataSources.contract.source.query.body.dsl_list[0].order.limit = 10; } },
+    { case: 'union-invalid-key', base: 'paged-union-page', expect: /来源内行键/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKey = 'contract-decisionCount'; } },
+    { case: 'union-source-navigation-field', base: 'paged-union-page', expect: /来源导航/, mutate: d => { d.sections[0].components[0].props.columns[0].navigateBySource.field = 'missing'; } }
+  ] },
   { id:'paged-join',description:'6.22 组合表全局视图与普通查询定义引用', valid:['paged-join-page','table-number-range-page'],cases:[
     {case:'table-number-range-before-6.22',base:'table-number-range-page',expect:/由 6.22 引入/,mutate:d=>{d.schemaVersion='6.21';}},
     {case:'paged-join-initial-predicate-in',base:'paged-join-page',expect:/默认视图/,mutate:d=>{d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:0,view:{pageIndex:0,pageSize:3,sort:[{field:'bidding-amount',direction:'desc'}],predicates:[{field:'rep-office-name',op:'in',values:['上海',1]}]}};}},

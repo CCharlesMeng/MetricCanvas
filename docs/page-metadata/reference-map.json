@@ -116,7 +116,9 @@
         "querySource",
         "embeddedInitialRows",
         "pagedJoinSource",
-        "pagedJoinDataSource"
+        "pagedJoinDataSource",
+        "pagedUnionSource",
+        "pagedUnionDataSource"
       ],
       "keywords": [
         "data-sources",
@@ -126,19 +128,24 @@
         "query-dashboard",
         "paged-join-page",
         "paged-join-fixed-rank-page",
-        "query-numeric-tolerance"
+        "query-numeric-tolerance",
+        "paged-union-page",
+        "paged-union-branches"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/data-source.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/paged-union.ts",
+        "packages/page/src/validate-paged-union.ts"
       ],
       "rules": [
         "query-initial-rows-normalize",
         "inline-rows-contract",
         "captured-at-valid",
         "pagination-initial-rows",
-        "paged-join"
+        "paged-join",
+        "paged-union"
       ]
     },
     "fields.md": {
@@ -770,7 +777,9 @@
         "table-row-expansion-none",
         "table-row-number-page",
         "table-scalar-fallback-page",
-        "table-pinned-summary-page"
+        "table-pinned-summary-page",
+        "paged-union-page",
+        "paged-union-branches"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -794,7 +803,8 @@
         "paged-join",
         "table-search-options",
         "table-row-expansion",
-        "table-pinned-top"
+        "table-pinned-top",
+        "paged-union"
       ]
     },
     "components/mapChart.md": {
@@ -1621,7 +1631,23 @@
     "#/definitions/cellFallbacks": "按快照行下标和页面字段id保存原始标量展示证据。",
     "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw": "有限原始标量；只用于原文展示和往返，不作为有效业务值。",
     "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason": "标量失配的脱值原因分类。",
-    "#/definitions/pagedJoinSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。"
+    "#/definitions/pagedJoinSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。",
+    "#/definitions/pagedUnionSource/properties/ordering": "全局排序声明与交互可排序字段集合。",
+    "#/definitions/pagedUnionSource/properties/ordering/properties/default/items/properties/direction": "按原始值升序或降序，缺值始终排尾。",
+    "#/definitions/pagedUnionSource/properties/ordering/properties/sortableFields": "允许交互全局排序的最终投影字段。",
+    "#/definitions/pagedUnionSource/properties/ordering/properties/nulls": "各来源使用相同比较规则，null 升降序始终排末尾；不相容时报错。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/view": "采集时的规范化已提交视图；组合 initial 必须匹配默认第一页。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/pageIndex": "从零开始的页码。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/sort": "优先级顺序排列的全局排序数组；空数组恢复组合默认排序。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/sort/items/properties/direction": "按原始值升序或降序，缺值始终排尾。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates": "最终字段上的 AND 条件；会话条件不写回定义；默认 initial 必须为空。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values": "显式选择集合，保留字符串或数值类型。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/search": "已提交文本搜索；首版组合搜索使用有界完整关联，草稿不进入。",
+    "#/definitions/pagedUnionSource/properties/sourceField": "最终来源标识字段；由成员 ID 生成的非空 string 维度。",
+    "#/definitions/pagedUnionSource/properties/members": "至少两个普通查询来源，逐行保留全部记录；来源 ID 不随显示名变化。",
+    "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection": "覆盖全部非身份输出列；每列显式映射字段、常量或 null。",
+    "#/definitions/tableColumn/properties/navigateBySource": "按行来源维度选择导航目标；未配置的来源显示普通文本。",
+    "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1904,7 +1930,8 @@
     "showConstants": "成功空结果时允许显示具备必要上下文的常量；不伪造类别和地域。",
     "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason=\"TYPE_MISMATCH\"": "原始标量与声明类型不符，有效值保持缺失。",
     "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason=\"INVALID_NUMERIC_VALUE\"": "数值度量不能归一化为有限数字，原始标量仅供展示。",
-    "#/properties/schemaVersion=\"6.60\"": "表格原文展示证据与独立查询置顶行。"
+    "#/properties/schemaVersion=\"6.60\"": "表格原文展示证据与独立查询置顶行。",
+    "6.61": "当前协议版本，支持分页合并源与按行来源导航。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2020,6 +2047,36 @@
       "rule": "filter-group",
       "reason": "独立固定筛选按钮组首批仅用于Dashboard正文或组合卡；共享组件Schema的详情分支由语义校验拒绝。",
       "source": "packages/page/src/filter-group.ts"
+    },
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0": {
+      "case": "union-initial-predicate-in",
+      "rule": "paged-union",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/0": {
+      "case": "union-initial-predicate-in",
+      "rule": "paged-union",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/1": {
+      "case": "union-initial-predicate-in",
+      "rule": "paged-union",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/1": {
+      "case": "union-initial-predicate-numeric",
+      "rule": "paged-union",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/2": {
+      "case": "union-initial-predicate-date",
+      "rule": "paged-union",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
     }
   },
   "authoringTopics": {
@@ -2328,6 +2385,28 @@
         "独立查询置顶行（6.60）"
       ],
       "dependencies": []
+    },
+    "data.pagedUnion": {
+      "module": "data-sources",
+      "title": "多来源逐行合并与整体排序",
+      "roots": [
+        "#/definitions/pagedUnionSource"
+      ],
+      "headings": [
+        "分页合并源 pagedUnion（6.61）"
+      ],
+      "dependencies": []
+    },
+    "table.source-navigation": {
+      "module": "table",
+      "title": "按行来源选择导航目标",
+      "roots": [
+        "#/definitions/tableColumn/properties/navigateBySource"
+      ],
+      "headings": [
+        "多来源整体排序与来源导航（6.61）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2349,7 +2428,8 @@
     "data-sources.md": [
       "查询异常与结果总数",
       "查阅方式",
-      "多查询组合源 pagedJoin（6.22）"
+      "多查询组合源 pagedJoin（6.22）",
+      "分页合并源 pagedUnion（6.61）"
     ],
     "fields.md": [
       "DQE 直接输出的数值作为度量（6.56）",
@@ -2435,6 +2515,7 @@
       "常量取值（6.59）"
     ],
     "components/table.md": [
+      "决策意见明细合成预览",
       "单元格点击与筛选联动",
       "渲染外观与变体",
       "右上角搜索与 Excel 导出（6.21）",
@@ -2446,7 +2527,8 @@
       "自动序号列（6.48）",
       "详情表格的浮层宽度",
       "标量原文展示与本地尾排（6.60）",
-      "独立查询置顶行（6.60）"
+      "独立查询置顶行（6.60）",
+      "多来源整体排序与来源导航（6.61）"
     ],
     "components/mapChart.md": [
       "查阅方式",

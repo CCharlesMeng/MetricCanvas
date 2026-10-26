@@ -45,3 +45,43 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 6.44查询子表格引用的专属query源从首屏取数中排除；展开后在父行独立作用域中执行。分页、搜索和排序仅改变该实例的生效查询，不改变页面数据源定义、主页面快照或全页筛选。详见[行内子表格](components/table.md#row-expansion)。
 
 6.59 的表格置顶行复用独立普通 query 源，显式 complete 且不使用查询窗口；不改变 main 的明细行域或 pagedJoin 语义。数据网关结果、缓存及计算快照同步保留 cellFallbacks 展示证据，普通查询回填 initial 时恢复原始标量；字段仍按有效类型值参与计算和结果绑定。完整声明见[表格置顶行](components/table.md#table-pinned-top)。
+
+<a id="paged-union"></a>
+
+## 分页合并源 pagedUnion（6.61）
+
+`pagedUnion` 引用两个或更多页内普通查询页面数据源，将各来源字段显式投影到同一份结果字段契约，逐行合并后整体排序、计数和查询分页。内容相同的记录照常保留，不聚合、不去重。Table 只绑定该合并源的 `data.main`，并由一张单槽查询分页表独占。
+
+`source.rowKey` 和 `source.sourceField` 分别命名最终行键与来源标识；两者声明为非空 string 维度且不得重名。`members` 的键是稳定来源 ID。每个成员引用已有查询定义，声明非空 string/number 维度 `rowKey`；来源内唯一性由上游保证，运行时检查已读取范围，重复或缺失时报错。最终行键是来源 ID 与原始行键的结构化编码，来源标识无需展示。
+
+每个成员的 `projection` 必须覆盖所有非身份输出字段；每项恰好声明 `{ "field": "成员页面字段" }` 或 `{ "value": "常量" }`，缺字段显式写 `{ "value": null }`。类型、角色、单位、币种和可空性必须兼容；比例刻度由上游契约统一，不换算货币、重算比例或执行表达式。外部响应字段仍由成员的 `queryField` 归一化。首期只合并标量字段；成员无 compute、resultBindings、业务 TopN/分页窗口及嵌套组合。普通成员可供独立组件消费，合并视图不会覆盖成员快照。
+
+```json
+{
+  "type": "pagedUnion",
+  "rowKey": "rowKey",
+  "sourceField": "memberId",
+  "members": {
+    "contract": { "source": "contract", "rowKey": "contract-id", "projection": {
+      "name": { "field": "contract-name" }, "amount": { "field": "contract-amount" }, "kind": { "value": "合同" }
+    } },
+    "commercial": { "source": "commercial", "rowKey": "commercial-id", "projection": {
+      "name": { "field": "project-title" }, "amount": { "value": null }, "kind": { "value": "商务" }
+    } }
+  },
+  "ordering": { "default": [{ "field": "amount", "direction": "desc" }], "sortableFields": ["amount", "name"], "nulls": "last" },
+  "pagination": { "pageSize": 20 }
+}
+```
+
+该片段是 `source`，需要配套结果字段契约与成员查询；完整合法示例为 `paged-union-page`，可运行验收页为 `multi-source-table`。
+
+`ordering.default` 使用最终页面字段，作用于两个来源的全部匹配记录；首屏表头同步显示，移除用户排序恢复默认。各源先应用映射后的同一排序并追加来源内行键升序，再由统一运行时按业务排序、来源 ID 升序、原始行键升序归并。null 升降序均排末尾。来源必须提供相同的比较语义（含字符串排序规则）、稳定有序流、准确匹配总数；运行时发现已读取序列不相容会失败，不能通过重排当前批次修复上游排序。
+
+搜索与筛选先作用完整匹配范围，再计数与分页。同列多选为 OR，不同条件为 AND；多字段搜索为字段间 OR，并与筛选条件取 AND。常量命中搜索时该来源无需再按搜索过滤；常量不满足筛选或搜索时可排除整个来源。null 不命中普通值筛选或文本搜索。候选值合并各参与来源的完整匹配域并去重，仅移除当前候选列条件；不会去重数据记录。首期沿用既有候选值协议，不新增“仅缺失值”选项。任一来源不支持所需候选接口时明确返回不可用。每来源及跨源候选最多 10000 项，超限报错；包含搜索依赖集成应用已验证的 `encodeSearch`，默认 DQE 不自动获得该能力。
+
+冷跳深页需要扫描全局前缀，使用最多 4 个视图检查点、每源 200 行缓冲；普通请求池最多缓存 256 个成功结果并淘汰旧项。一次浏览最多扫描 100000 行，读取最多 60 秒，超限明确失败。刷新、排序、筛选、页大小或权限上下文变化不会复用不相容进度。计数变化清除本轮进度并最多重试一次；页码越界按本轮总数纠正。任一参与来源失败，整轮失败，不展示半份结果。数据按实时 offset 浏览，多次请求不提供事务快照，同总数内容变化可能无法检测。
+
+完整导出冻结已提交视图，按全局顺序取得全部匹配记录，重复记录保留；沿用 10000 行/60 秒限制，超限、截断、重复行键及来源失败均不给部分文件。`initial` 与 pagedJoin 使用相同的最终字段行与默认第一页视图结构，成员 initial 不能冒充合并输入全集。
+
+可运行 `multi-source-table` 使用两个合成普通分页端点，覆盖异字段、来源常量、null、默认整体排序、搜索、候选筛选、分页、Excel 导出与来源详情导航。静态校验、模拟网关与浏览器不证明真实 DQE 已满足上述能力。
