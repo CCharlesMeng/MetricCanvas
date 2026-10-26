@@ -125,13 +125,14 @@ const introducedAt: Record<string, number> = {
   "tab-container-analysis-stack": 0,
   "dashboard-toolbar-compact-read-only": 0,
   "composite-card-metric-grid": 0,
+  "conditional-table-columns": 62,
   "conditional-presentation": 35
 };
 describe('5.x 的兼容读取与 6.x 版本边界', () => {
   it('当前主版本全部原有能力从 0 起算', () => {
     expect(PAGE_SCHEMA_MAJOR).toBe(6);
-    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2', '5.3', '5.4', '6.5', ...Array.from({length:versionPolicy.minor - 10}, (_, index) => `6.${index + 11}`)]);
-    expect(versionPolicy.current).toBe(`6.${versionPolicy.minor}`);
+    expect(supportedVersions()).toEqual(['5.0','5.1','5.2','5.3','5.4','6.5',...Array.from({length:Math.max(...Object.values(introducedAt))-10},(_,i)=>`6.${i+11}`)]);
+    expect(versionPolicy.current).toBe(`6.${Math.max(...Object.values(introducedAt))}`);
     for (const [id, definition] of Object.entries(pageCapabilities)) expect(definition.minor).toBe(introducedAt[id]);
     expect(requiredMinorVersion({params:[{id:'x'}],layoutForm:'dashboard'})).toBe(0);
   });

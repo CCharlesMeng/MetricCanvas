@@ -6,8 +6,10 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
     dispose?.();
     dispose = undefined;
     if (!active) return;
-    const table = root.querySelector('table')!;
-    const scroll = root.querySelector<HTMLElement>('.scroll')!;
+    const targetTable = root.querySelector('table');
+    const targetScroll = root.querySelector<HTMLElement>('.scroll');
+    if(!targetTable || !targetScroll)return;
+    const table=targetTable,scroll=targetScroll;
     const win = root.ownerDocument.defaultView!;
     let frame = 0;
     const observed = new Set<Element>();

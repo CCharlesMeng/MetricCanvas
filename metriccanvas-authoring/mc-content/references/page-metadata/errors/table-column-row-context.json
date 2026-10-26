@@ -1,0 +1,34 @@
+{
+  "case": "table-column-row-context",
+  "invariant": "table-column-visibility",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件引用了不存在的来源、非法筛选部分或缺少行上下文",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "visibleWhen": {
+                    "row": "name",
+                    "op": "isNotNull"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

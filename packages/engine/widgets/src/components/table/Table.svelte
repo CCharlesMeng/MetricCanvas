@@ -11,6 +11,8 @@
   import { currentTimeValue } from '@metriccanvas/page/internal';
   let dateMaximum = $state(currentTimeValue('date'));
   let dateError = $state('');
+  import { Empty } from '@metriccanvas/ui';
+  import TableHeading from './header/TableHeading.svelte';
   import TableToolbar from './TableToolbar.svelte';
   import TableControlIcon from './TableControlIcon.svelte';
   import { tableFilterPopover } from './filter-popover';
@@ -341,7 +343,7 @@
 
 <div
   bind:this={root}
-  use:tableGeometry={props.variant !== 'reportCompact' && !staticExport}
+  use:tableGeometry={props.variant !== 'reportCompact' && !staticExport && leaves.length>0}
   class:os-theme={props.variant !== 'reportCompact'}
   class:fit-container={props.fit === 'container'}
   class:row-content={nested}
@@ -357,18 +359,17 @@
   style:--table-content-min-width={`${columnWidthTotal}px`}
   style:--table-fit-min-width={`${fitMinWidth}px`}
 >
-  {#if props.title || props.subtitle || (interactive && !staticExport && props.toolbar)}
-    <div class="table-heading">
-      {#if props.title}<h3>{props.title}</h3>{/if}
-      {#if props.subtitle}
-        <div class="subtitle"><span aria-hidden="true">*</span>{props.subtitle}</div>
-      {/if}
+  <TableHeading title={props.title} subtitle={props.subtitle} showTools={interactive && !staticExport && !!props.toolbar && leaves.length>0}>
+    {#snippet tools()}
       {#if interactive && !staticExport && props.toolbar}
         <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={toolbarEnabled?.export??true} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}
           ondraft={onsearchdraft} {onsearch} {onexport} oncancel={oncancelexport} />
       {/if}
-    </div>
-  {/if}
+    {/snippet}
+  </TableHeading>
+  {#if leaves.length===0}
+    <Empty message="当前条件下无可见列" />
+  {:else}
   <div
     class:content-frame={props.variant === 'reportCompact'}
     class:scroll={props.variant !== 'reportCompact'}
@@ -733,6 +734,7 @@
       {/if}
     </div>
   {/if}
+  {/if}
 </div>
 
 <style>
@@ -772,33 +774,6 @@
     flex: none;
     overflow: auto;
     border: 0;
-  }
-  .table-heading {
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 30px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 12px;
-  }
-  h3 {
-    margin: 0;
-    color: var(--mc-card-title-color, #121e3b);
-    font-size: var(--mc-card-title-font-size, 20px);
-    font-weight: var(--mc-card-title-font-weight, 600);
-    line-height: var(--mc-card-title-line-height, 30px);
-  }
-  .subtitle {
-    color: #595959;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 22px;
-    white-space: nowrap;
-  }
-  .subtitle span {
-    margin-right: 4px;
-    color: #f21e1e;
   }
   /* 固定表头 + 表体滚动:thead sticky,滚动发生在容器上(纵横双向) */
   .scroll {
@@ -1297,11 +1272,11 @@
     border-radius: 0;
     font-size: 14px;
   }
-  .report-compact > .table-heading {
+  .report-compact > :global(.table-heading) {
     min-height: 30px;
     margin-bottom: 8px;
   }
-  .report-compact h3 {
+  .report-compact :global(.table-heading h3) {
     font-size: var(--mc-font-size-report-level-4, 18px);
     font-weight: 400;
     line-height: 30px;
@@ -1492,12 +1467,12 @@
     border-radius: 16px;
     font-size: 14px;
   }
-  .forecast-matrix > .table-heading {
+  .forecast-matrix > :global(.table-heading) {
     min-height: 24px;
     flex: 0 0 24px;
     margin: 0;
   }
-  .forecast-matrix > .table-heading h3 {
+  .forecast-matrix > :global(.table-heading h3) {
     color: #191919;
     font-size: 16px;
     font-weight: 500;
@@ -1747,7 +1722,7 @@
 
   .row-content { padding:0; border-radius:0; background:#fff; flex:none; height:auto; }
   .row-content > .scroll { height:auto; flex:none; border:0; }
-  .row-content .table-heading { margin:0 0 12px; }
+  .row-content :global(.table-heading) { margin:0 0 12px; }
   .table-widget.os-theme > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > .expand-column { width:40px; min-width:40px; padding:0; text-align:center; }
   .row-expand-button { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:0; background:transparent; color:inherit; cursor:pointer; }
   .row-expand-button:focus-visible { outline:2px solid #1476ff; outline-offset:-2px; }

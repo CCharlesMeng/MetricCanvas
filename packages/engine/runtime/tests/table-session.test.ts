@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest';
-import {createTableSession} from '../src/table-session';
-import { normalizeHeaderDraft } from '../../runtime-ui/src/table-controller';
+import {createTableSession} from '../src/table/session';
+import { normalizeHeaderDraft } from '../../runtime-ui/src/table/controller';
 it('commits once, resets pages on conditions and isolates stale correction',()=>{
  const changes:unknown[]=[];const table=createTableSession({pageIndex:0,pageSize:3,sort:[],predicates:[]},view=>changes.push(view));
  table.setPage(2);const old=table.generation;table.setSort([{field:'rate',direction:'desc'}]);expect(table.snapshot().pageIndex).toBe(0);

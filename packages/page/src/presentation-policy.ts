@@ -1,3 +1,5 @@
+import {expandedColumnFilterIds} from './table/condition-scope';
+import {visitTableColumns} from './table/columns';
 import {queryFilterIds} from './amount-filter';
 import { conditionDepth, conditionLeaves, conditionTestTypeError, type ConditionValue } from './condition';
 import type { Condition } from './schema/condition';
@@ -29,14 +31,13 @@ export function presentationPolicies(page: Page): PolicySite[] {
     if(node.type==='compositeCard') node.props.components.forEach((child,i)=>component(child,`${path}/props/components/${i}`));
     if(node.type==='table') {
       if(node.props.rowVisibleWhen) add({visibleWhen:node.props.rowVisibleWhen},`${path}/props/row`,fields);
-      function columns(items: any[],p:string) { items.forEach((col,i)=>{
-        if(col.kind==='group') columns(col.children,`${p}/${i}/children`);
-        else {
-          for(const key of ['navigate','openDetail','selection']) add(col[key],`${p}/${i}/${key}`,fields);
-          for(const [id, target] of Object.entries(col.navigateBySource?.cases ?? {})) add(target as PolicyNode,`${p}/${i}/navigateBySource/cases/${id}`,fields);
+      visitTableColumns(node.props.columns,`${path}/props/columns`,(col,p)=>{
+        add(col,p);
+        if(col.kind!=='group'){
+          for(const key of ['navigate','openDetail','selection'] as const)add(col[key],`${p}/${key}`,fields);
+          for(const [id,target] of Object.entries(col.navigateBySource?.cases??{}))add(target,`${p}/navigateBySource/cases/${id}`,fields);
         }
-      }); }
-      columns(node.props.columns,`${path}/props/columns`);
+      });
       for(const key of ['search','export']) add(props.toolbar?.[key],`${path}/props/toolbar/${key}`);
     }
   }
@@ -68,7 +69,7 @@ function filterSample(page:Page,leaf:Extract<Condition,{filter:string}>):Conditi
 export function presentationPolicyErrors(page: Page): TypedError[] {
   const errors:TypedError[]=[];
   const policies=presentationPolicies(page);
-  const consumedFilters=new Set(policies.flatMap(site=>[site.node.visibleWhen,site.node.enabledWhen].flatMap(condition=>condition?conditionLeaves(condition).flatMap(leaf=>'filter' in leaf?[leaf.filter]:[]):[])));
+  const consumedFilters=new Set([...expandedColumnFilterIds(page),...policies.flatMap(site=>[site.node.visibleWhen,site.node.enabledWhen].flatMap(condition=>condition?conditionLeaves(condition).flatMap(leaf=>'filter' in leaf?[leaf.filter]:[]):[]))]);
   for(const site of policies){
     const action=site.node as PolicyNode & {writeFilter?:string;field?:unknown;value?:string;level?:string};
     if(action.writeFilter){
@@ -123,7 +124,7 @@ export function presentationPolicyErrors(page: Page): TypedError[] {
 import { walkPageComponents } from './component-walk';
 
 export function filterHasPresentationConsumer(page:Page,id:string):boolean {
- return presentationPolicies(page).some(site=>[site.node.visibleWhen,site.node.enabledWhen].some(condition=>condition&&conditionLeaves(condition).some(leaf=>'filter' in leaf&&leaf.filter===id)));
+ return expandedColumnFilterIds(page).has(id)||presentationPolicies(page).some(site=>[site.node.visibleWhen,site.node.enabledWhen].some(condition=>condition&&conditionLeaves(condition).some(leaf=>'filter' in leaf&&leaf.filter===id)));
 }
 export function filterHasObservableConsumer(page:Page,id:string):boolean {
  return filterHasPresentationConsumer(page,id)||Object.values(page.dataSources).some(source=>source.source.type==='query'&&queryFilterIds(source.source.query).includes(id));

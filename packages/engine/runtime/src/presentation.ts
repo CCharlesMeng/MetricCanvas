@@ -1,3 +1,4 @@
+import {tableColumnPresentation} from './table/column-presentation';
 import { evaluateCondition, type ConditionContext, type ConditionResult, type Condition, type Component, type Page, type PageSection, type TableComponent, type Row, type PolicyNode } from '@metriccanvas/page/internal';
 export interface PresentationGate { eligible: boolean; enabled: boolean; reason?: string }
 const allowed:PresentationGate={eligible:true,enabled:true};
@@ -14,6 +15,15 @@ function interactionGate(node:PolicyNode,context:ConditionContext,parent?:Presen
  return nested?policyGate(nested,context,own):own;
 }
 function reason(result:ConditionResult){return result.reason ?? (result.status==='deny'?'CONDITION_FALSE':undefined);}
+function table(page:Page,node:TableComponent,context:ConditionContext,gate:PresentationGate):TableComponent {
+ const projected=tableColumnPresentation(page,node,context).component;
+ const toolbar=projected.props.toolbar;
+ if(!toolbar)return projected;
+ return {...projected,props:{...projected.props,toolbar:{
+  ...(toolbar.search&&policyGate(toolbar.search,context,gate).eligible?{search:toolbar.search}:{}),
+  ...(toolbar.export&&policyGate(toolbar.export,context,gate).eligible?{export:toolbar.export}:{})
+ }}};
+}
 /** Pure presentation projection. Original Page and source graph remain immutable. */
 export function compilePresentation(page:Page) {
   return {
@@ -39,13 +49,7 @@ export function compilePresentation(page:Page) {
           return [{...tab,components:child?[child as typeof tab.component]:[]}];
         })}};
         if(node.type==='compositeCard')return {...node,props:{...node.props,components:node.props.components.flatMap(child=>component(child,gate)??[]) as typeof node.props.components}};
-        if(node.type==='table'&&node.props.toolbar){
-          const toolbar=node.props.toolbar;
-          return {...node,props:{...node.props,toolbar:{
-            ...(toolbar.search&&policyGate(toolbar.search,context,gate).eligible?{search:toolbar.search}:{}),
-            ...(toolbar.export&&policyGate(toolbar.export,context,gate).eligible?{export:toolbar.export}:{})
-          }}};
-        }
+        if(node.type==='table')return table(page,node,context,gate);
         if(node.type==='text'&&node.props.parts)return {...node,props:{...node.props,body:node.props.parts.filter(part=>policyGate(part,context,gate).eligible).map(part=>part.text).join('')}};
         return node;
       }

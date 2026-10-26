@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.61",
+  "schemaVersion": "6.62",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.width"
@@ -12,6 +12,27 @@
         "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。"
       ],
       "rules": [
+        {
+          "id": "table-column-visibility",
+          "description": "列显隐条件与版本下限",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-old-version",
+            "table-column-row-context"
+          ]
+        },
+        {
+          "id": "table-column-search-fields",
+          "description": "列搜索须关联主、次或徽标字段",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-unowned-search"
+          ]
+        },
         {
           "id": "table-pinned-top",
           "description": "独立完整查询置顶，明确字段及行域归属",
@@ -249,7 +270,8 @@
         "references/page-metadata/examples/table-scalar-fallback-page.json",
         "references/page-metadata/examples/table-pinned-summary-page.json",
         "references/page-metadata/examples/paged-union-page.json",
-        "references/page-metadata/examples/paged-union-branches.json"
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/table-column-visibility.json"
       ]
     }
   ],
@@ -270,7 +292,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.61",
+        "$id": "https://metriccanvas/page/v6.62",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -306,6 +328,7 @@
         ],
         "properties": {
           "pinnedTop": "#/definitions/tableColumn/properties/pinnedTop",
+          "visibleWhen": "#/definitions/tableColumn/properties/visibleWhen",
           "kind": "#/definitions/tableColumn/properties/kind",
           "field": "#/definitions/tableColumn/properties/field",
           "secondaryField": "#/definitions/tableColumn/properties/secondaryField",

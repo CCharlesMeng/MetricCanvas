@@ -1,6 +1,6 @@
 # 条件显隐与动作资格
 
-6.35起，使用visibleWhen控制节点展示，使用enabledWhen控制动作执行；条件写在其控制的节点，未声明时沿用原行为。分区、组件、筛选器、分区组、Tab和正文片段使用同一条件。父级隐藏覆盖后代，子项全隐藏不反推父级；标题、容器和原布局占位保留。需要整块隐藏时把条件写在父级。
+6.35起，使用visibleWhen控制节点展示，使用enabledWhen控制动作执行；条件写在其控制的节点，未声明时沿用原行为。分区、组件、筛选器、分区组、Tab和正文片段使用同一条件。父级隐藏覆盖后代，子项全隐藏不反推父级；6.62 的表格列组作为表头结构节点，无可见叶子时不生成空表头，详见[列显隐](components/table.md#table-column-visibility)。标题、容器和原布局占位保留。需要整块隐藏时把条件写在父级。
 
 ```json
 {"visibleWhen":{"filter":"organization","part":"level","op":"ne","value":"department"}}
@@ -25,7 +25,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 验收入口：[层级联动](examples/page-visibility-region-linkage.json)、[外部事实Sim](examples/page-visibility-inputs.json)。示例使用明确的本地演示输入；内联数据与Sim事实不能替代真实CloudIOC/DQE联调。
 
 
-页面协议 6.61。结构真源为本册[schema.json](schema.json)，SHA256 `4c59f431d4af3e0561590734831d09c7d8886f5f612f4866d8ec2af8a447f130`。字段表自动生成；可选不等于有默认值。
+页面协议 6.62。结构真源为本册[schema.json](schema.json)，SHA256 `ee1b549ffa88f6bbe75c2d1909fed0cbca6cdafe48bd328cc85d78027336b2ac`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -972,8 +972,8 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/1/visibleWhen/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/4/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/6/value`。
-- `#/definitions/condition/anyOf/5`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/3/components/0/props/columns/0/navigate/enabledWhen`。
-- `#/definitions/condition/anyOf/5/properties/values/items/anyOf/0`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/3/components/0/props/columns/0/navigate/enabledWhen/values/0`。
+- `#/definitions/condition/anyOf/5`：[合法完整页面](examples/table-column-visibility.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/visibleWhen`。
+- `#/definitions/condition/anyOf/5/properties/values/items/anyOf/0`：[合法完整页面](examples/table-column-visibility.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/visibleWhen/values/0`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/7/values/0`。
 - `#/definitions/condition/anyOf/6`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/8`。

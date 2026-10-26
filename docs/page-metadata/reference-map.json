@@ -779,13 +779,14 @@
         "table-scalar-fallback-page",
         "table-pinned-summary-page",
         "paged-union-page",
-        "paged-union-branches"
+        "paged-union-branches",
+        "table-column-visibility"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
         "packages/embed/tests/browser/embed.spec.ts",
-        "packages/page/src/row-expansion.ts",
-        "packages/page/src/validate-row-expansion.ts"
+        "packages/page/src/table/expansion.ts",
+        "packages/page/src/table/validate-expansion.ts"
       ],
       "rules": [
         "table-row-key",
@@ -804,7 +805,9 @@
         "table-search-options",
         "table-row-expansion",
         "table-pinned-top",
-        "paged-union"
+        "paged-union",
+        "table-column-visibility",
+        "table-column-search-fields"
       ]
     },
     "components/mapChart.md": {
@@ -1647,7 +1650,9 @@
     "#/definitions/pagedUnionSource/properties/members": "至少两个普通查询来源，逐行保留全部记录；来源 ID 不随显示名变化。",
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection": "覆盖全部非身份输出列；每列显式映射字段、常量或 null。",
     "#/definitions/tableColumn/properties/navigateBySource": "按行来源维度选择导航目标；未配置的来源显示普通文本。",
-    "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。"
+    "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。",
+    "#/definitions/tableColumn/properties/visibleWhen": "6.62 列展示条件，不支持 row；隐藏后退出搜索并清理用户列操作。",
+    "#/definitions/tableColumnGroup/properties/visibleWhen": "6.62 列组条件，隐藏覆盖后代，无可见叶子不生成表头。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1931,7 +1936,8 @@
     "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason=\"TYPE_MISMATCH\"": "原始标量与声明类型不符，有效值保持缺失。",
     "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason=\"INVALID_NUMERIC_VALUE\"": "数值度量不能归一化为有限数字，原始标量仅供展示。",
     "#/properties/schemaVersion=\"6.60\"": "表格原文展示证据与独立查询置顶行。",
-    "6.61": "当前协议版本，支持分页合并源与按行来源导航。"
+    "6.61": "当前协议版本，支持分页合并源与按行来源导航。",
+    "6.62": "新增字段列与分组列展示条件、可见字段搜索、用户视图调和及冻结导出；旧表格规则保持。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2407,6 +2413,18 @@
         "多来源整体排序与来源导航（6.61）"
       ],
       "dependencies": []
+    },
+    "table.visibility": {
+      "module": "table",
+      "title": "列条件显隐与状态、搜索、导出",
+      "roots": [
+        "#/definitions/tableColumn/properties/visibleWhen",
+        "#/definitions/tableColumnGroup/properties/visibleWhen"
+      ],
+      "headings": [
+        "列条件显隐（6.62）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2516,6 +2534,7 @@
     ],
     "components/table.md": [
       "决策意见明细合成预览",
+      "列条件显隐（6.62）",
       "单元格点击与筛选联动",
       "渲染外观与变体",
       "右上角搜索与 Excel 导出（6.21）",

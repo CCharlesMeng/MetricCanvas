@@ -544,3 +544,4 @@ DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/qu
 - [图表配置项常量取值](capabilities/chart/README.md#图表配置项常量取值)：全部图表、仪表、图表级空态与无数据源场景。
 
 多来源逐行合并、同列异字段映射和整体默认排序：[`multi-source-table`](capabilities/table/README.md#多来源字段映射与整体排序)，使用产品 `pagedUnion` 与本地模拟分页接口。
+表格列条件显隐：见[表格能力目录](capabilities/table/README.md#顶部筛选联动列显隐)，包含 Dashboard、私有作用域与 Report 导出三个入口。

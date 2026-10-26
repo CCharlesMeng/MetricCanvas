@@ -314,3 +314,13 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order.by`；初始�
 7. 访问 `/pages/multi-source-table?sourceFailure=commercial`：任一参与来源失败，整表报错，不展示合同半份记录。非法投影、单位冲突、缺失行键和旧协议版本有产品契约反例；取消、总数变化重试、缓存检查点和大规模按需源由行为测试补充。
 
 验收记录：[paged-union](../../../docs/evidence/paged-union/acceptance.md)。模拟、真实浏览器、静态协议及真实 DQE 分层报告；本页不证明真实服务具有稳定排序、NULL 规则、搜索编码、准确计数或候选接口。
+
+## 顶部筛选联动列显隐
+
+- `/pages/table-column-visibility`：Dashboard，四种表格变体共用内联合成记录，无需 DQE。顶部“列范围”在完整列、仅客户、全部隐藏间切换。先搜索“华南”或在第二表按项目精确搜索，再切换，观察搜索范围/选项、组表头、页码及 Excel；全部隐藏保留标题和专用提示。
+- `/pages/table-column-visibility-scopes`：内联合成数据，先展开父行，再切换全部隐藏并恢复，确认子表保持收起；仅客户时再次展开只显示产品列，点击客户查看详情表，Tab 内表格沿用相同列条件。
+- `/pages/table-column-visibility-report`：Report 专属验收，顶端筛选切为仅客户后导出 PDF/PNG；开始后切回完整列，文件保持导出开始时列范围。已有行内子表导出限制未解除。
+
+启动：`pnpm dev:playground`；按控制台端口打开上述页面。自动浏览器验收直接读取对应页面，不替换筛选配置：`COLUMN_VISIBILITY_BASE_URL=http://127.0.0.1:5197 node apps/playground/tests/table-column-visibility-browser.mjs`，静态导出另运行同目录 `table-column-export-browser.mjs`。源码规则、边界与说明见[表格协议](../../../docs/page-metadata/components/table.md#table-column-visibility)。
+
+浏览器/inline 和模拟网关集成测试均不证明真实 DQE、Relay、业务事实或权限接入已验收。

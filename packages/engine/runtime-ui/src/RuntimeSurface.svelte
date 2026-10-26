@@ -19,13 +19,12 @@
   import {filterInputIssue} from '../../runtime/src/navigation-inputs';
   import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
   import { candidateScopeKey } from '../../runtime/src/dimension-values';
-  import { createTableController } from './table-controller';
+  import { createTableController } from './table/controller';
   import { createExportController } from './export-controller';
   import { type TableHeaderFilters, type TableQueryView, hasQueryFieldMapping } from '@metriccanvas/page/internal';
-  import { applyTableSearch, remoteTableSearch } from './table-search';
-  import { prepareTableExport } from './table-export';
-  import { downloadTableWorkbook } from './table-workbook';
-  import { tablePagination } from './table-pagination';
+  import { applyTableSearch, remoteTableSearch } from './table/search';
+  import { exportVisibleTable } from './table/export/task';
+  import { tablePagination } from './table/pagination';
   import { tick, untrack, setContext, onDestroy } from 'svelte';
   const rowScopeInstanceId = $props.id();
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
@@ -127,7 +126,7 @@
     dimensionValueOf
   } from './filters/cascade';
   import { hasVisibleFilters } from './filters/filter-bar';
-  import { changedFilters, resetFilteredTablePages, sortTableRows, filterTableRowsByHeaders } from './table-state';
+  import { changedFilters, resetFilteredTablePages, sortTableRows, filterTableRowsByHeaders } from './table/state';
   import { applySearchFilters } from './filters/inline-search';
   import { hostRenderSnapshot, renderableDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
@@ -281,6 +280,10 @@
   const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
   const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot})??null);
   setContext(PRESENTATION_CONTEXT,()=>presentation);
+  $effect(()=>{
+    void presentation;
+    if(pageState.phase==='ready'){const page=pageState.page;untrack(()=>{stream?.syncPresentation?.();syncTableState(page);});}
+  });
   let refreshPeriodFacts:((snapshot:DisplaySnapshot|undefined)=>void)|undefined;
   function clearDisplaySnapshot(){displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
   let permissionRevision:string|undefined;
@@ -653,11 +656,8 @@
 
   function syncTableState(loaded: Page) {
     if (!tableController) return;
-    tableController.syncCandidates();
-    const tables=flattenPageComponents({sections:loaded.sections}).filter((c): c is TableComponent => c.type==='table');
-    tableViews=Object.fromEntries(tables.map(c=>[c.id,tableController!.render(c)]));
-    appliedTableHeaderFilters=Object.fromEntries(tables.map(c=>[c.id,tableController!.headers(c)]));
-    tablePageSizes=Object.fromEntries(tables.map(c=>[c.id,tableController!.view(c).pageSize]));
+    const captured=tableController.captureTables(loaded.sections);
+    tableViews=captured.views;appliedTableHeaderFilters=captured.headers;tablePageSizes=captured.pageSizes;
     tableRevision+=1;
   }
   function sourceBlocked(page: Page, sourceId: string): boolean {
@@ -668,15 +668,12 @@
   }
   async function exportTable(component: TableComponent) {
     if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export||!actionAllowed(component,component.props.toolbar.export))return;
-    const frozen=JSON.parse(JSON.stringify(component)) as TableComponent;
-    const input={page:pageState.page,component:frozen,queries:stream.captureQueries(),gateway:activeGateway,
-      program:stream.getSourceProgram(),views:stream.captureViews(),
-      state:{now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
-    try { await exportController.run(component.id,async controller=>{
-      if (sourceBlocked(input.page,component.data.main)) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出该表');
-      const data=await prepareTableExport({...input,controller}); controller.signal.throwIfAborted();
-      await downloadTableWorkbook(frozen,data,controller.signal);
-    }); } catch { /* Task feedback is projected by exportController. */ }
+    tableController?.syncColumns(component);
+    const projected=tableController?.project(component)??component;
+    if(!projected.props.columns.length)return;
+    await exportVisibleTable({page:pageState.page,component:projected,stream,gateway:activeGateway,controller:exportController,
+      blocked:sourceBlocked(pageState.page,component.data.main),
+      state:{now:new Date(),displaySnapshot,filterRevision,currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}});
   }
 
   function tableSelectedCell(component: TableComponent): TableSelectedCell | undefined {
@@ -1177,6 +1174,7 @@
   }
 
   function tableInteractionGate(component:TableComponent,row:Row,column:TableColumn){
+    if(tableController?.columnEligible(component,column)===false)return {eligible:false,enabled:false};
     const target = tableColumnNavigation(column, row);
     if (column.navigateBySource && !target) return { eligible: false, enabled: false };
     const node=column.selection??target??column.openDetail;
@@ -1193,7 +1191,7 @@
     if (component.type !== 'table') return undefined;
     void tableRevision;
     return tableController?.binding(component,{
-      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, instanceId: rowScopeInstanceId } : undefined,
+      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, displaySnapshot, filterRevision, instanceId: rowScopeInstanceId } : undefined,
       onexport: () => { void exportTable(component); },
       oncancelexport: () => exportController.cancel(component.id),
       exporting: tableExportStates[component.id]?.busy,

@@ -1,3 +1,4 @@
+import {columnInvariants} from './table/column-conformance';
 /**
  * 页面校验 conformance 向量的定义（ADR-0062）。
  *
@@ -54,6 +55,7 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  ...columnInvariants,
   {
     id:'query-cell-display-evidence',description:'原文证据只对应真实失配的空标量单元格',valid:['table-paged-fallback-page'],cases:[
       {case:'display-evidence-version',base:'table-paged-fallback-page',expect:/由 6.60 引入/,mutate:d=>{d.schemaVersion='6.59';}},

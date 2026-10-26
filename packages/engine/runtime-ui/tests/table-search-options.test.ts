@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
 import { parsePage } from '@metriccanvas/page';
 import type { TableComponent } from '@metriccanvas/page/internal';
-import { createTableController } from '../src/table-controller';
-import { prepareTableExport } from '../src/table-export';
+import { createTableController } from '../src/table/controller';
+import { prepareTableExport } from '../src/table/export/prepare';
 import { orchestrate, type PageDataSnapshots } from '../../runtime/src/orchestrator';
 
 function fixture() {

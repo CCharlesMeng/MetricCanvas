@@ -1,6 +1,27 @@
 {
   "invariants": [
     {
+      "id": "table-column-visibility",
+      "description": "列显隐条件与版本下限",
+      "valid": [
+        "table-column-visibility"
+      ],
+      "invalid": [
+        "table-column-old-version",
+        "table-column-row-context"
+      ]
+    },
+    {
+      "id": "table-column-search-fields",
+      "description": "列搜索须关联主、次或徽标字段",
+      "valid": [
+        "table-column-visibility"
+      ],
+      "invalid": [
+        "table-column-unowned-search"
+      ]
+    },
+    {
       "id": "query-cell-display-evidence",
       "description": "原文证据只对应真实失配的空标量单元格",
       "valid": [

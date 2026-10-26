@@ -10,6 +10,7 @@ import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,Table
 export interface TableRenderBinding {
   failureNotice?: string;
   expansion?: { page: import('@metriccanvas/page').Page; gateway: import('../../runtime/src').RuntimeDataGateway;
+    displaySnapshot?: import('@metriccanvas/page/internal').DisplaySnapshot; filterRevision?: number;
     filters: import('../../runtime/src').FilterValues; params: import('../../runtime/src').PageParamValues; instanceId: string };
   searchDraft?: string;
   searchOption?: string;
@@ -23,7 +24,7 @@ export interface TableRenderBinding {
   view: TableViewState;
   sortReset?:readonly TableSortRule[];
   selectedCell?: TableSelectedCell;
-  columnCandidates?: Record<string, import('../../runtime/src/column-candidates').ColumnCandidatesSnapshot>;
+  columnCandidates?: Record<string, import('../../runtime/src/table/column-candidates').ColumnCandidatesSnapshot>;
   oncandidateopen?: (field: string, open: boolean) => void;
   oncandidatesearch?: (field: string, query: string) => void;
   oncandidatemore?: (field: string) => void;

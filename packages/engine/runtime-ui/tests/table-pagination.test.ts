@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import type { TableComponent } from '@metriccanvas/page/internal';
-import { tablePagination } from '../src/table-pagination';
+import { tablePagination } from '../src/table/pagination';
 
 const table: TableComponent = { id: 't', type: 'table', layout: { span: 12 }, data: { main: 'rows' }, props: { columns: [{ field: 'n' }] } };
 it('makes every row reachable for an unpaged 714-row table', () => {

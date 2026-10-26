@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 61,
-  "current": "6.61",
+  "minor": 62,
+  "current": "6.62",
   "capabilities": {
     "query-cell-display-evidence": {
       "minor": 60,
@@ -21,6 +21,11 @@
     "paged-union": {
       "minor": 61,
       "description": "多来源字段投影、逐行合并与整体排序分页",
+      "legacyReadable": false
+    },
+    "conditional-table-columns": {
+      "minor": 62,
+      "description": "表格字段列及分组列条件显隐",
       "legacyReadable": false
     },
     "query-dimension-measures": {
@@ -681,6 +686,7 @@
     "6.58",
     "6.59",
     "6.60",
-    "6.61"
+    "6.61",
+    "6.62"
   ]
 }

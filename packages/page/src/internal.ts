@@ -52,8 +52,8 @@ export * from './query-dependencies';
 export * from './query-result-where';
 
 export * from './paged-join';
-export * from './table-query-view';
-export * from './table-search';
+export * from './table/query-view';
+export * from './table/search';
 export * from './data-source-references';
 export * from './period-filter';
 export { filterGroupOptions } from './filter-group';
@@ -77,7 +77,7 @@ export type { Condition, ConditionScalar } from './schema/condition';
 export * from './presentation-policy';
 export * from './presentation-edit';
 export * from './presentation-operation';
-export * from './row-expansion';
+export * from './table/expansion';
 
 export * from './query-selection';
 export * from './dqe-object';
@@ -88,3 +88,5 @@ export * from './component-value';
 export * from './table-pinned';
 
 export type { PagedUnionDataSource, PagedUnionSource, PagedUnionMember } from './paged-union';
+
+export * from './table/columns';

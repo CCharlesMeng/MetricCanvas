@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { createColumnCandidatesSession } from '../src/column-candidates';
+import { createColumnCandidatesSession } from '../src/table/column-candidates';
 import type { ColumnCandidatesPage } from '@metriccanvas/data-execution';
 it('ignores old successes and failures when an adapter ignores abort, and keeps search separate', async () => {
   const calls: { resolve: (page: ColumnCandidatesPage) => void; reject: (cause: unknown) => void; search: string }[] = [];

@@ -10,6 +10,29 @@ columns区分普通字段列和kind:group递归列，分组列children保持层�
 
 后端占比原值按约定刻度展示，不根据其他列重算；该模拟源从 0—1 转成既有 percent 格式所需的 0—100。页面未声明新的默认排序或合并源协议；JSON 单独加载不提供两个来源的执行能力，初始列头方向也沿现有行为。此场景用于交互与有序归并预览，不证明真实 DQE 已支持相同排序、空值位置或计数能力。
 
+
+<a id="table-column-visibility"></a>
+
+## 列条件显隐（6.62）
+
+字段列及递归 `kind: "group"` 列组可就地声明 `visibleWhen`，复用[展示条件](../conditions.md)，读取本作用域筛选状态、已有权限结果或业务事实，不允许引用当前行。未声明列条件的表格保留原有搜索及状态规则；普通列上的 `selection.visibleWhen` 等仅控制入口，不会启用本能力。
+
+```json
+{"field":"amount","title":"合同金额","visibleWhen":{"filter":"business-type","part":"values","op":"containsAny","values":["contract"]}}
+```
+
+示意中的筛选器必须已声明。父组隐藏覆盖后代，无可见叶子的列组不生成空表头；其他业务容器仍遵守子项不反推父级。零业务列保留表格标题，显示“当前条件下无可见列”，不生成序号、展开入口或表体，不开放表格操作和该表 Excel 导出；页面静态导出保留此状态。条件等待或错误同样不展示列。
+
+隐藏列清除其用户排序、表头条件、草稿与候选交互；重新显示不恢复这些操作。其他列的状态与查询定义中的业务条件、默认排序保留。单纯列显隐不重置分页；有效操作或搜索范围变化时回第一页。隐藏不删结果字段、不自动停查，也不代替数据权限。
+
+启用列条件的表格，工具栏搜索字段必须属于声明列的 main 槽主/次/徽标字段。搜索实际范围为声明字段与当前可见字段的交集；同字段仍属于其他可见列时继续可搜。多字段搜索保留有效关键词，字段隐藏或重显导致范围变化时重算；已清空关键词不恢复。静态搜索选项随列裁剪，当前项失效则清空关键词/草稿并选择首个可用项，不自动将旧词提交到新字段；没有可搜字段则清除搜索并隐藏搜索框。
+
+本能力覆盖各表格变体、Tab/组合卡内表格、详情及行内子表，使用各自作用域输入。父表零列时释放全部展开实例并取消/隔离在途请求，恢复后默认收起。已有子表导出限制不因此解除。涉及远程排序、表头筛选或搜索的新能力表格必须独占查询页面数据源；inline 和无分页窗口的 complete 结果仍可共享、分别持有表格状态。
+
+Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列和已提交状态；不导出隐藏字段，复合列只展开可见列的次字段/徽标。权限修订变化仍按已有规则停止旧实例及导出。
+
+可观察入口：`/pages/table-column-visibility`（四种表格外观、搜索与 Excel）、`/pages/table-column-visibility-scopes`（Tab、详情、展开子表）、`/pages/table-column-visibility-report`（PDF/PNG）。均为内联合成数据；远程状态调和由集成测试覆盖，不作为真实 DQE/Relay 验收。
+
 ## 单元格点击与筛选联动
 
 交互态的 `selection` 选择列和 `link: true` 链接列均以下划线提示可点击，覆盖普通、`forecastMatrix`、`embedded` 和 `reportCompact` 变体；普通数据列不加下划线。选择列不额外添加蓝色背景，选中后保持普通文字颜色，不加蓝色边框；显式业务颜色照常生效，键盘焦点框跟随文字颜色。静态导出不呈现点击控件。
@@ -210,7 +233,7 @@ Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑
 完整示例 `paged-union-page`，浏览器场景 `/pages/multi-source-table` 及 `/pages/multi-source-contract-detail`、`/pages/multi-source-commercial-detail`。演示来源为本地合成分页接口，入口与验收步骤见表格示例说明。
 
 
-页面协议 6.61。结构真源为本册[schema.json](../schema.json)，SHA256 `4c59f431d4af3e0561590734831d09c7d8886f5f612f4866d8ec2af8a447f130`。字段表自动生成；可选不等于有默认值。
+页面协议 6.62。结构真源为本册[schema.json](../schema.json)，SHA256 `ee1b549ffa88f6bbe75c2d1909fed0cbca6cdafe48bd328cc85d78027336b2ac`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -950,6 +973,26 @@ Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/badgeF
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/fieldBinding | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableColumn.visibleWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 6.62 列展示条件，不支持 row；隐藏后退出搜索并清理用户列操作。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6b696e64"></a>
 
@@ -2209,6 +2252,26 @@ Schema位置：`#/definitions/tableColumnGroup`。
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["kind","id","title","children"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e47726f75702f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableColumnGroup.visibleWhen`
+
+Schema位置：`#/definitions/tableColumnGroup/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 6.62 列组条件，隐藏覆盖后代，无可见叶子不生成表头。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e47726f75702f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableColumnGroup.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumnGroup/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e47726f75702f70726f706572746965732f6b696e64"></a>
 
 ### `@tableColumnGroup.kind`
@@ -2998,6 +3061,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `table-row-expansion`：6.44单层子表格的作用域、只读及查询分页约束。反例：[row-expansion-before-6.44](../errors/row-expansion-before-6.44.json)、[row-expansion-missing-parent-key](../errors/row-expansion-missing-parent-key.json)、[row-expansion-query-local-page](../errors/row-expansion-query-local-page.json)、[row-expansion-unbound-parent](../errors/row-expansion-unbound-parent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-pinned-top`：独立完整查询置顶，明确字段及行域归属。反例：[pinned-top-version](../errors/pinned-top-version.json)、[pinned-top-main](../errors/pinned-top-main.json)、[pinned-top-window](../errors/pinned-top-window.json)、[pinned-top-unknown-field](../errors/pinned-top-unknown-field.json)、[pinned-top-incomplete](../errors/pinned-top-incomplete.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `paged-union`：多来源逐行合并、显式字段投影与全局视图。反例：[union-initial-predicate-date](../errors/union-initial-predicate-date.json)、[union-initial-predicate-numeric](../errors/union-initial-predicate-numeric.json)、[union-initial-predicate-in](../errors/union-initial-predicate-in.json)、[union-before-6.61](../errors/union-before-6.61.json)、[union-missing-source](../errors/union-missing-source.json)、[union-missing-mapping](../errors/union-missing-mapping.json)、[union-incompatible-unit](../errors/union-incompatible-unit.json)、[union-null-required](../errors/union-null-required.json)、[union-source-window](../errors/union-source-window.json)、[union-invalid-key](../errors/union-invalid-key.json)、[union-source-navigation-field](../errors/union-source-navigation-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `table-column-visibility`：列显隐条件与版本下限。反例：[table-column-old-version](../errors/table-column-old-version.json)、[table-column-row-context](../errors/table-column-row-context.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `table-column-search-fields`：列搜索须关联主、次或徽标字段。反例：[table-column-unowned-search](../errors/table-column-unowned-search.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -3021,6 +3086,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-pinned-summary-page](../examples/table-pinned-summary-page.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-union-page](../examples/paged-union-page.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-union-branches](../examples/paged-union-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [table-column-visibility](../examples/table-column-visibility.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

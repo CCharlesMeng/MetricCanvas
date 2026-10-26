@@ -1,0 +1,504 @@
+{
+  "case": "table-column-old-version",
+  "invariant": "table-column-visibility",
+  "input": {
+    "schemaVersion": "6.59",
+    "id": "table-column-visibility",
+    "layout": "dashboard",
+    "meta": {
+      "title": "表格列显隐（内联合成数据）"
+    },
+    "filters": [
+      {
+        "id": "columns",
+        "type": "dimension",
+        "dimension": "column-mode",
+        "label": "列范围",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "options": [
+          {
+            "value": "full",
+            "label": "完整列"
+          },
+          {
+            "value": "summary",
+            "label": "仅客户"
+          },
+          {
+            "value": "none",
+            "label": "全部隐藏"
+          }
+        ],
+        "default": [
+          "full"
+        ]
+      }
+    ],
+    "dataSources": {
+      "records": {
+        "fields": {
+          "id": {
+            "type": "string",
+            "role": "dimension",
+            "label": "编号"
+          },
+          "name": {
+            "type": "string",
+            "role": "dimension",
+            "label": "客户"
+          },
+          "project": {
+            "type": "string",
+            "role": "dimension",
+            "label": "项目"
+          },
+          "owner": {
+            "type": "string",
+            "role": "dimension",
+            "label": "负责人"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "label": "金额"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "id": "a",
+              "name": "华南客户",
+              "project": "甲项目",
+              "owner": "张三",
+              "amount": 300
+            },
+            {
+              "id": "b",
+              "name": "北方客户",
+              "project": "华南项目",
+              "owner": "李四",
+              "amount": 100
+            },
+            {
+              "id": "c",
+              "name": "华南二部",
+              "project": "乙项目",
+              "owner": "王五",
+              "amount": 200
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "visibility-0",
+        "components": [
+          {
+            "id": "column-table-0",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "基础表：多字段搜索",
+              "rowKey": "id",
+              "rowNumber": {},
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "secondaryField": "owner",
+                  "sortable": true,
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "fixed": "left",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full",
+                      "summary"
+                    ]
+                  }
+                },
+                {
+                  "kind": "group",
+                  "id": "project-group",
+                  "title": "项目资料",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "field": "project",
+                      "title": "项目",
+                      "sortable": true
+                    },
+                    {
+                      "field": "amount",
+                      "title": "金额",
+                      "sortable": true,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2,
+                "numbered": true
+              },
+              "toolbar": {
+                "search": {
+                  "fields": [
+                    "name",
+                    "project",
+                    "owner"
+                  ],
+                  "placeholder": "搜索客户、项目或负责人"
+                },
+                "export": {
+                  "format": "xlsx",
+                  "filename": "可见列"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "visibility-1",
+        "components": [
+          {
+            "id": "column-table-1",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "内嵌表：搜索字段选择",
+              "rowKey": "id",
+              "rowNumber": {},
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "secondaryField": "owner",
+                  "sortable": true,
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "fixed": "left",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full",
+                      "summary"
+                    ]
+                  }
+                },
+                {
+                  "kind": "group",
+                  "id": "project-group",
+                  "title": "项目资料",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "field": "project",
+                      "title": "项目",
+                      "sortable": true
+                    },
+                    {
+                      "field": "amount",
+                      "title": "金额",
+                      "sortable": true,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2,
+                "numbered": true
+              },
+              "toolbar": {
+                "search": {
+                  "options": [
+                    {
+                      "value": "name",
+                      "label": "客户",
+                      "field": "name"
+                    },
+                    {
+                      "value": "project",
+                      "label": "项目",
+                      "field": "project"
+                    }
+                  ],
+                  "defaultValue": "project"
+                },
+                "export": {
+                  "format": "xlsx",
+                  "filename": "可见列"
+                }
+              },
+              "variant": "embedded"
+            }
+          }
+        ]
+      },
+      {
+        "id": "visibility-2",
+        "components": [
+          {
+            "id": "column-table-2",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "预测矩阵外观",
+              "rowKey": "id",
+              "rowNumber": {},
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "secondaryField": "owner",
+                  "sortable": true,
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "fixed": "left",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full",
+                      "summary"
+                    ]
+                  }
+                },
+                {
+                  "kind": "group",
+                  "id": "project-group",
+                  "title": "项目资料",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "field": "project",
+                      "title": "项目",
+                      "sortable": true
+                    },
+                    {
+                      "field": "amount",
+                      "title": "金额",
+                      "sortable": true,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2,
+                "numbered": true
+              },
+              "toolbar": {
+                "search": {
+                  "fields": [
+                    "name",
+                    "project",
+                    "owner"
+                  ],
+                  "placeholder": "搜索客户、项目或负责人"
+                },
+                "export": {
+                  "format": "xlsx",
+                  "filename": "可见列"
+                }
+              },
+              "variant": "forecastMatrix"
+            }
+          }
+        ]
+      },
+      {
+        "id": "visibility-3",
+        "components": [
+          {
+            "id": "column-table-3",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "紧凑表外观",
+              "rowKey": "id",
+              "rowNumber": {},
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "secondaryField": "owner",
+                  "sortable": true,
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "fixed": "left",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full",
+                      "summary"
+                    ]
+                  }
+                },
+                {
+                  "kind": "group",
+                  "id": "project-group",
+                  "title": "项目资料",
+                  "visibleWhen": {
+                    "filter": "columns",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "full"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "field": "project",
+                      "title": "项目",
+                      "sortable": true
+                    },
+                    {
+                      "field": "amount",
+                      "title": "金额",
+                      "sortable": true,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2,
+                "numbered": true
+              },
+              "toolbar": {
+                "search": {
+                  "fields": [
+                    "name",
+                    "project",
+                    "owner"
+                  ],
+                  "placeholder": "搜索客户、项目或负责人"
+                },
+                "export": {
+                  "format": "xlsx",
+                  "filename": "可见列"
+                }
+              },
+              "variant": "reportCompact"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/columns/0/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/columns/1/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/2/components/0/props/columns/0/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/2/components/0/props/columns/1/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/3/components/0/props/columns/0/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/3/components/0/props/columns/1/visibleWhen",
+      "message": "表格字段列及分组列条件显隐 由 6.62 引入，文档声明的是 6.59"
+    }
+  ]
+}

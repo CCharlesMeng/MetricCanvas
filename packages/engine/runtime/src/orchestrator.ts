@@ -1,3 +1,4 @@
+import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents,queryFilterIds} from '@metriccanvas/page/internal';
 import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize } from '@metriccanvas/data-execution/runtime';
@@ -6,12 +7,13 @@ import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Pa
 import { executionSourceKey } from './execution';
 import { filterBlockedIds, initialFilterValues, type FilterState, type FilterValues } from './filter-state';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
-import { createTableSession, type TableSession } from './table-session';
+import { createTableSession, type TableSession } from './table/session';
 
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
 export type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
+  syncPresentation?(): void;
   setActiveTabs(selections: TabSelections): void;
   captureRawSnapshots(): ReadonlyMap<string, DataSnapshot>;
   captureQueries(): ReadonlyMap<string, EffectiveQuery>;
@@ -55,6 +57,8 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       const source = page.dataSources[id];
       if (source?.source.type !== 'inline') tables.set(id, createTableSession(defaultSourceView(page, id, compiled.limits.get(id)), () => refetch(new Set([id]))));
     }
+    const reconcileColumns=()=>reconcileTableSources(page,tables,{declarations:page.filters??[],filters:values,displaySnapshot:timeContext.displayInputs?.(),filterRevision:timeContext.filterRevision?.()});
+    reconcileColumns();
     const matched = new Set<string>();
     // Initial candidate loading may hide an otherwise valid initial snapshot.
     // Keep it only until the first release; later invalidation must fetch fresh data.
@@ -88,6 +92,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     }
     function refetch(changed: Set<string>, firstRead = false, releaseInitial = false) {
       if (disposed || !changed.size) return;
+      changed=new Set([...changed,...reconcileColumns()]);
       const targets = new Set([...(firstRead ? changed : affectedSourceIds(page.dataSources, changed, false))].filter(id => ids.has(id) && demand().has(id)));
       if(!firstRead&&!releaseInitial)for(const id of targets)pendingInitial.delete(id);
       for (const id of targets) tokens.set(id, (tokens.get(id) ?? 0) + 1);
@@ -131,11 +136,12 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       for (const id of new Set([...blocked,...nextBlocked])) if (blocked.has(id) !== nextBlocked.has(id)) changed.add(id);
       blocked = nextBlocked;
       values = next;
-      const targets = new Set([...ids].filter(id => [...conditionSourceIds(page, id)].some(key => {
+      let targets = new Set([...ids].filter(id => [...conditionSourceIds(page, id)].some(key => {
         const source = page.dataSources[key];
         return source?.source.type === 'query' && queryFilterIds(source.source.query).some(id => changed.has(id));
       })));
       for(const component of flattenPageComponents(page))if(component.type==='table'&&fieldSelectionIds(component.props).some(id=>changed.has(id))){tables.get(component.data.main)?.resetPresentation();targets.add(component.data.main);}
+      targets=new Set([...targets,...reconcileColumns()]);
       for (const id of affectedSourceIds(page.dataSources, targets, false)) {
         tables.get(id)?.resetPage();
         if (!ids.has(id) || page.dataSources[id]?.source.type === 'inline') continue;
@@ -148,6 +154,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     });
     refetch(new Set([...demand()].filter(id => !matched.has(id) && raw.get(id)?.status === 'loading')), true);
     return {
+      syncPresentation() { const changed=reconcileColumns();if(changed.size)refetch(changed); },
       activate() { refetch(new Set([...demand()].filter(id => raw.get(id)?.status === 'loading')), true); },
       refresh: (id: string) => refetch(new Set([id])),
       program, tables, views, year, current: () => snapshots,
@@ -159,6 +166,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     };
   }
   return {
+    syncPresentation() { active?.syncPresentation(); },
     setActiveTabs(next) { selections = next; active?.activate(); },
     subscribe(run) { subscribers.add(run); active ??= start(); notify(run, active.current()); return () => { subscribers.delete(run); if (!subscribers.size) { active?.dispose(); active = undefined; } }; },
     captureRawSnapshots: () => active?.raw() ?? new Map(),

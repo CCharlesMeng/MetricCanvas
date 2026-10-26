@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.61",
+  "schemaVersion": "6.62",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-cfd0b82d"
@@ -13,6 +13,27 @@
         "## 渲染外观与变体\n\n普通 Table、`variant: \"forecastMatrix\"` 与 `variant: \"embedded\"` 的网格采用 TinyVue OS 浅色样式：默认单层表头 40px、14px 字号与 21px 文字行高、灰色表头和短列分隔线；表体基础高度 48px、上下 12px 与左右 16px 内边距，长内容可撑高。多级粘性表头与固定列按实际渲染尺寸定位。固定列总宽超过表内可视宽度时，临时取消横向固定，所有列通过表内滚动访问；空间恢复后自动恢复固定。排序、筛选、搜索、分页和导出范围沿用已有契约。\n\n`forecastMatrix` 保留预测矩阵的容器和对齐；`embedded` 保留内嵌区域高度与容器内滚动，长文本可换行并完整访问。`reportCompact` 保持既有紧凑报表外观，不参与此次网格样式调整。行列结构、合并关系、显式值颜色与业务格式不会因皮肤改变而重写。\n\n可观察示例：`table-tiny-os` 同页提供三种纳入的表格、保留的 `reportCompact`、多级表头与固定列，使用内联合成数据。维度候选值端口未注入时如实显示不可用；数值和日期筛选、搜索、分页及 Excel 导出可直接操作。静态导出沿用完整内容展开，隐藏滚动边界阴影与交互控件。"
       ],
       "rules": [
+        {
+          "id": "table-column-visibility",
+          "description": "列显隐条件与版本下限",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-old-version",
+            "table-column-row-context"
+          ]
+        },
+        {
+          "id": "table-column-search-fields",
+          "description": "列搜索须关联主、次或徽标字段",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-unowned-search"
+          ]
+        },
         {
           "id": "table-pinned-top",
           "description": "独立完整查询置顶，明确字段及行域归属",
@@ -250,7 +271,8 @@
         "references/page-metadata/examples/table-scalar-fallback-page.json",
         "references/page-metadata/examples/table-pinned-summary-page.json",
         "references/page-metadata/examples/paged-union-page.json",
-        "references/page-metadata/examples/paged-union-branches.json"
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/table-column-visibility.json"
       ]
     }
   ],

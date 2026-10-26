@@ -39,6 +39,7 @@ export interface TablePinnedCell {
 
 export interface TableColumn {
   pinnedTop?: TablePinnedCell;
+  visibleWhen?: import('../condition').Condition;
   kind?: 'field';
   field: FieldBinding;
   secondaryField?: FieldBinding;
@@ -65,6 +66,7 @@ export interface TableColumn {
 }
 
 export interface TableColumnGroup {
+  visibleWhen?: import('../condition').Condition;
   kind: 'group';
   id: string;
   title: string;
@@ -88,6 +90,7 @@ const tableCellSelectionZ: z.ZodType<TableCellSelection> = z
 const tableColumnZ: z.ZodType<TableColumn> = z
   .object({
     pinnedTop: z.object({ field: fieldBindingZ, secondaryField: fieldBindingZ.optional(), badgeField: fieldBindingZ.optional() }).strict().optional(),
+    ...visibilityShape,
     kind: z.literal('field').optional(),
     field: fieldBindingZ,
     secondaryField: fieldBindingZ.optional(),
@@ -114,6 +117,7 @@ const tableColumnZ: z.ZodType<TableColumn> = z
 const tableColumnGroupZ: z.ZodType<TableColumnGroup> = z.lazy(() =>
   z
     .object({
+      ...visibilityShape,
       kind: z.literal('group'),
       id: idZ,
       title: nonEmptyTextValueZ,

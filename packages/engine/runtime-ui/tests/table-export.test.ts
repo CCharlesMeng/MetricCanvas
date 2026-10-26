@@ -3,9 +3,9 @@ import { expect, it } from 'vitest';
 import ExcelJS from 'exceljs';
 import { parsePage } from '@metriccanvas/page';
 import type { EffectiveQuery, TableComponent } from '@metriccanvas/page/internal';
-import { encodeTableWorkbook } from '../src/table-workbook';
-import { prepareTableExport } from '../src/table-export';
-import { searchTableRows } from '../src/table-search';
+import { encodeTableWorkbook } from '../src/table/export/workbook';
+import { prepareTableExport } from '../src/table/export/prepare';
+import { searchTableRows } from '../src/table/search';
 import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
 
 it('matches case-insensitive literal text across fields before pagination', () => {

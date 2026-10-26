@@ -3,7 +3,7 @@ import fixture from '../../../../pages/capabilities/table/table-column-candidate
 import { parsePage } from '@metriccanvas/page';
 import { orchestrate } from '../../runtime/src/orchestrator';
 import type { FilterValue } from '@metriccanvas/data-execution/runtime';
-import { createTableController } from '../src/table-controller';
+import { createTableController } from '../src/table/controller';
 
 it('refreshes only affected candidates and isolates same-source table state', async () => {
   const parsed = parsePage(fixture); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));

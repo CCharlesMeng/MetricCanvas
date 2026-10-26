@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { cellFallbacksZ, fieldsZ, fieldNameZ, idZ, fieldValueZ } from './primitives';
-import { tableSortZ, tableQueryViewZ } from '../table-query-view';
+import { tableSortZ, tableQueryViewZ } from '../table/query-view';
 
 export const pagedJoinSourceZ = z.object({
   type: z.literal('pagedJoin'), rowKey: fieldNameZ, domainMember: idZ,

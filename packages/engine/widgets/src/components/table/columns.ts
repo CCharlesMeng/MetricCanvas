@@ -1,5 +1,6 @@
 import {
   fieldName,
+  tableColumnLeaves,
   type FieldDefinition,
   type TableColumn,
   type TableColumnNode
@@ -45,8 +46,7 @@ export function buildTableColumnLayout(
   columns: TableColumnNode[],
   fields: Record<string, FieldDefinition> = {}
 ): TableColumnLayout {
-  const leaves: TableColumn[] = [];
-  collectLeaves(columns, leaves);
+  const leaves = tableColumnLeaves(columns);
 
   const depth = columns.reduce((max, column) => Math.max(max, renderDepth(column)), 0);
   if (depth === 0) return { leaves, headerRows: [] };
@@ -57,13 +57,6 @@ export function buildTableColumnLayout(
   );
 
   return { leaves, headerRows };
-}
-
-function collectLeaves(nodes: TableColumnNode[], leaves: TableColumn[]): void {
-  for (const node of nodes) {
-    if (node.kind === 'group') collectLeaves(node.children, leaves);
-    else leaves.push(node);
-  }
 }
 
 function renderDepth(node: TableColumnNode): number {

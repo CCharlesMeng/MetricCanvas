@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.61",
+  "schemaVersion": "6.62",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-1f2915eb"
@@ -13,6 +13,27 @@
         "## 列筛选候选值\n\n已有和新建表格的 filterable: {mode: \"select\"} 统一枚举本表全部匹配结果中该列实际出现的值，无 candidates.scope 开关。保留固定业务条件、页面筛选、权限、查询结果绑定、已提交表格搜索和其他列表头条件，仅排除当前列自身表头条件。同字段的页面条件与表头条件取交集，空交集不发送无约束请求。\n\n候选按需加载，拥有独立搜索和分页；默认每页50项。候选搜索不改变表格搜索、页码或已提交条件。翻动本表展示页或改变展示排序不改变候选范围；上游查询窗口作为绑定输入改变时，仍按业务输入变化重取。候选状态按表格和列隔离；相同生效请求可共享执行资源。\n\n多选筛选弹层按内容自适应宽度，通常介于160—360px，窄屏以视口留白为界；搜索框随弹层伸缩，超长候选换行。无需页面宽度配置。数值和日期区间筛选保留原有宽度。\n\n稳定值保留字符串/数字原始类型，显示名独立。null 不进入首批候选，空字符串不等于 null。失配已选值保持勾选并可移除；完整候选已证实无匹配时标注“已选，当前条件下无匹配”，候选搜索或未加载的后续页不会被误判为失配。\n\ninline 和已声明完整且未截断的 query 从完整行集枚举；计算产出只在完整结果上读取。pagedJoin 按最终组合行域枚举，保留已有完整关联上限（最多1000行），不使用成员字典代替。本表业务 TopN 和上游有限窗口不被自动扩大，当前页也不会冒充完整候选。\n\n普通远程 query 需要数据网关实现可选 fetchColumnCandidates。内置 DQE 适配器只有在可信部署配置 encodeColumnCandidates 后才执行原查询结果去重；编码器必须保持模型、原业务粒度、条件和业务窗口，提供映射后的稳定值字段、可选显示名字段，以及准确的去重 totalCount。不配置时显示“候选值能力不可用”；不会默认删掉指标、直查维度字典或拉全表。候选请求与主数据共用并发和取消资源。新增端口缺席不影响主查询，页面顶部维度筛选器继续沿用既有维度／筛选候选端口（fetchDimensionValues、fetchFilterCandidates），不改为列候选。\n\n沿用现有 NO_PERMISSION 等非成功码带非空数据的消费规则，随后独立检查字段、分页长度、去重总数及续页重复；HTTP和信封失败仍按现有规则处理。数据可消费不表示候选已经完整。\n\n可观察示例：table-column-candidates（pages/capabilities/table/table-column-candidates.json），在 Playground 的 /pages/table-column-candidates 打开。使用64行内联合成数据，演示跨页候选、继续加载、搜索、多列联动、数字编码与两表隔离。远程编码通过合成网关契约测试；真实 DQE/Relay 尚待外部服务核验。产品决策与兼容例外见 ADR-0114。"
       ],
       "rules": [
+        {
+          "id": "table-column-visibility",
+          "description": "列显隐条件与版本下限",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-old-version",
+            "table-column-row-context"
+          ]
+        },
+        {
+          "id": "table-column-search-fields",
+          "description": "列搜索须关联主、次或徽标字段",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-unowned-search"
+          ]
+        },
         {
           "id": "table-pinned-top",
           "description": "独立完整查询置顶，明确字段及行域归属",
@@ -250,7 +271,8 @@
         "references/page-metadata/examples/table-scalar-fallback-page.json",
         "references/page-metadata/examples/table-pinned-summary-page.json",
         "references/page-metadata/examples/paged-union-page.json",
-        "references/page-metadata/examples/paged-union-branches.json"
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/table-column-visibility.json"
       ]
     }
   ],

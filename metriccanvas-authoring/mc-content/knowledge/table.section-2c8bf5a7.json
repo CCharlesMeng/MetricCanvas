@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.61",
+  "schemaVersion": "6.62",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-2c8bf5a7"
@@ -13,6 +13,27 @@
         "## 数值范围和组合表（6.22）\n\n`filterable: { mode: \"numberRange\" }` 只用于 number/money 度量。控件保存字符串草稿，提交后转换为可缺省的数值 from/to，端点包含；非有限数、反向区间和输入中的 `-` 不改变已提交视图。金额按元、百分数按结果字段原始刻度比较。清空移除条件。\n\n绑定 pagedJoin 时使用单个 `data.main`、稳定业务 `props.rowKey` 和 `pagination: {mode:\"query\"}`；可点击排序列必须在组合 `ordering.sortableFields` 中。排序、筛选、搜索和页码均由 TableSession 持有，呈现层只显示和发事件。切换排序或条件回到第一页。组合搜索在有界完整最终行集上求值，导出使用同一已提交条件。\n\n`multi-query-table` 仿真验收场景中，金额下限 150000000 匹配 3 行，再加召开率下限 85 后匹配 1 行；这是跨源 AND 后的总数。清空条件后搜索天津返回 1 行，清空搜索后导出应含全部 8 行。输入 `-` 等非法草稿时保留已提交条件，导出与屏幕按相同条件求值。\n\n两张表分别展示「序号」和「预签金额排名」。序号随当前顺序变化；固定排名是数据源投影字段，切换召开率排序后仍跟随同一代表处，第一页可显示 1、4、2，第二页显示 5、6、3。召开率下限 85 时固定排名为 1、4，搜索天津时固定排名为 8；导出保留相同业务名次。两张表使用不同组合源，互不改变排序、筛选或页码。\n\n6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。\n\n<a id=\"row-expansion\"></a>"
       ],
       "rules": [
+        {
+          "id": "table-column-visibility",
+          "description": "列显隐条件与版本下限",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-old-version",
+            "table-column-row-context"
+          ]
+        },
+        {
+          "id": "table-column-search-fields",
+          "description": "列搜索须关联主、次或徽标字段",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-unowned-search"
+          ]
+        },
         {
           "id": "table-pinned-top",
           "description": "独立完整查询置顶，明确字段及行域归属",
@@ -250,7 +271,8 @@
         "references/page-metadata/examples/table-scalar-fallback-page.json",
         "references/page-metadata/examples/table-pinned-summary-page.json",
         "references/page-metadata/examples/paged-union-page.json",
-        "references/page-metadata/examples/paged-union-branches.json"
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/table-column-visibility.json"
       ]
     }
   ],

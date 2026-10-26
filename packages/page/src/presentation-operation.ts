@@ -15,7 +15,7 @@ export function applyPresentationOperation(document:unknown,operation:Presentati
   const node=presentationTarget(next,operation.target);
   if(!node)return invalid('条件目标不存在或定位不唯一');
   if(!['visibleWhen','enabledWhen'].includes(operation.field))return invalid('条件字段非法');
-  if(operation.target.kind==='row'&&operation.field!=='visibleWhen')return invalid('行条件不支持禁用');
+  if(['row','tableColumn'].includes(operation.target.kind)&&operation.field!=='visibleWhen')return invalid(operation.target.kind==='row'?'行条件不支持禁用':'列条件不支持禁用');
   const field=operation.target.kind==='row'?'rowVisibleWhen':operation.field;
   if(operation.condition===null)delete node[field];else node[field]=operation.condition;
  }else if(operation.type==='add_button'){

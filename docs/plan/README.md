@@ -7,6 +7,7 @@
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
 | 表格原文容错与独立置顶行 | Schema 6.61 本地验收完成，按范围交付 | [主计划](2026-10-26-table-tolerance-and-pinned-row.md)：标量原文证据、本地尾排、独立汇总及导出 |
+| 表格列条件显隐 | 本仓实现与本地验收完成；Git交付、真实接入另验 | [主计划](2026-10-26-table-column-visibility.md)、[实施与验收](../evidence/table-column-visibility/result.md)：Schema 6.62，统一列投影/会话调和与 table 职责目录，3091 测试、Chrome及冻结导出通过；历史大文件和超限债务单列 |
 | Playground 目录与数据联动改进 | P0–P5 首轮实施及本地关键链路验收完成；下载回执等专项保留；Git 交付按授权跳过 CI | [整体改进计划](2026-10-24-playground-information-architecture.md)、[实施结果](../evidence/playground-information-architecture/result.md)：19 类组件目录、六阶段数据主线、21 个场景、当前文档试改；旧页面地址保留 |
 | MC 内容包完整性与 Schema 同步构建 | MC 补全已交付；Relay 实施待验 | [接续交接](2026-10-24-layout-standards/relay-delivery-handoff.md) → [接入实施任务书](2026-10-24-layout-standards/relay-integration-execution.md)；[完整性主计划](2026-10-24-layout-standards/mc-content-completeness-plan.md)：当前包与配套公共源码已复验，完整 authoring 分发回读修复随本轮交付，Git/CI 以交付回执为准；Relay 通道、权限及部署另验 |
 | 表格默认排序与决策意见明细合并分页 | 6.61 pagedUnion、整体默认排序与本地验收完成；真实接入待验 | [实施主计划](2026-10-23-paged-union-table.md)、[页面入口](../../pages/capabilities/table/README.md#决策意见明细)、[合成样例](paged-union-table/example-input.json)：现行实现见 [验收](../evidence/paged-union/acceptance.md)；整体默认排序归合并源，导出隔离超时用例复验通过，真实 DQE/Relay 另验 |

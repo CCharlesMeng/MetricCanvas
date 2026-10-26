@@ -7,8 +7,9 @@ import { createSourceProgram, initialFilterValues } from '@metriccanvas/data-exe
 import { executeTableEnhancements } from '../../../../tools/dqe-sim/src/table-enhancements';
 import { projectTableRows, tableRowColumn, alignedCellText } from '../../widgets/src/components/table/rows';
 import { hostRenderSnapshot } from '../src/widget-host-state';
-import { encodeTableWorkbook } from '../src/table-workbook';
-import { prepareTableExport } from '../src/table-export';
+import { encodeTableWorkbook } from '../src/table/export/workbook';
+import { tableColumnPresentation } from '../../runtime/src/table/column-presentation';
+import { prepareTableExport } from '../src/table/export/prepare';
 
 function setup() {
   const parsed = parsePage({ ...fixture, schemaVersion: versionPolicy.current });
@@ -67,6 +68,14 @@ it('does not gate body on optional pinned loading/errors and leaves its sequence
   expect(sheet.getCell('A2').value).toBeNull();
   expect(sheet.getCell('B2').value).toBe('中国区');
   expect(sheet.getCell('A3').value).toBe(1);
+  component.props.columns[1].visibleWhen = { permission: 'finance' };
+  const visible = tableColumnPresentation(page, component, { declarations: page.filters ?? [], filters: initialFilterValues(page.filters ?? []) }).component;
+  const projectedBytes = await encodeTableWorkbook(visible, data, new AbortController().signal);
+  const projectedBook = new ExcelJS.Workbook(); await projectedBook.xlsx.load(projectedBytes.buffer);
+  const projectedSheet = projectedBook.worksheets[0];
+  expect(projectedSheet.getRow(1).values).toEqual([undefined, '序号', '地区', '完成金额', '完成率']);
+  expect(projectedSheet.getCell('B2').value).toBe('中国区');
+  expect(projectedSheet.getCell('C2').value).toBe(800);
   data.china.snapshot.rows.push({ ...data.china.snapshot.rows[0] });
   expect(projectTableRows(data, component.props)).toHaveLength(1);
 });

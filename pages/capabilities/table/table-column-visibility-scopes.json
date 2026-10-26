@@ -1,0 +1,478 @@
+{
+  "schemaVersion": "6.62",
+  "id": "table-column-visibility-scopes",
+  "layout": "dashboard",
+  "meta": {
+    "title": "列显隐：Tab、详情与行内子表（合成数据）"
+  },
+  "filters": [
+    {
+      "id": "columns",
+      "type": "dimension",
+      "dimension": "column-mode",
+      "label": "列范围",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "full",
+          "label": "完整列"
+        },
+        {
+          "value": "summary",
+          "label": "仅客户"
+        },
+        {
+          "value": "none",
+          "label": "全部隐藏"
+        }
+      ],
+      "default": [
+        "full"
+      ]
+    }
+  ],
+  "dataSources": {
+    "records": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "编号"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户"
+        },
+        "project": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目"
+        },
+        "owner": {
+          "type": "string",
+          "role": "dimension",
+          "label": "负责人"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额"
+        },
+        "orders": {
+          "type": "recordList",
+          "role": "detail",
+          "items": {
+            "fields": {
+              "id": {
+                "type": "string",
+                "role": "dimension"
+              },
+              "product": {
+                "type": "string",
+                "role": "dimension"
+              },
+              "amount": {
+                "type": "number",
+                "role": "measure"
+              }
+            }
+          }
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "a",
+            "name": "华南客户",
+            "project": "甲项目",
+            "owner": "张三",
+            "amount": 300,
+            "orders": [
+              {
+                "id": "a1",
+                "product": "服务A",
+                "amount": 1
+              },
+              {
+                "id": "a2",
+                "product": "服务B",
+                "amount": 2
+              }
+            ]
+          },
+          {
+            "id": "b",
+            "name": "北方客户",
+            "project": "华南项目",
+            "owner": "李四",
+            "amount": 100,
+            "orders": [
+              {
+                "id": "b1",
+                "product": "服务A",
+                "amount": 1
+              },
+              {
+                "id": "b2",
+                "product": "服务B",
+                "amount": 2
+              }
+            ]
+          },
+          {
+            "id": "c",
+            "name": "华南二部",
+            "project": "乙项目",
+            "owner": "王五",
+            "amount": 200,
+            "orders": [
+              {
+                "id": "c1",
+                "product": "服务A",
+                "amount": 1
+              },
+              {
+                "id": "c2",
+                "product": "服务B",
+                "amount": 2
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "scope-main",
+      "components": [
+        {
+          "id": "scope-parent",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "展开与详情入口",
+            "rowKey": "id",
+            "rowNumber": {},
+            "columns": [
+              {
+                "field": "name",
+                "title": "客户",
+                "secondaryField": "owner",
+                "sortable": true,
+                "filterable": {
+                  "mode": "select"
+                },
+                "fixed": "left",
+                "visibleWhen": {
+                  "filter": "columns",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "full",
+                    "summary"
+                  ]
+                },
+                "link": true,
+                "openDetail": {
+                  "surface": "drawer",
+                  "view": "column-detail"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "project-group",
+                "title": "项目资料",
+                "visibleWhen": {
+                  "filter": "columns",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "full"
+                  ]
+                },
+                "children": [
+                  {
+                    "field": "project",
+                    "title": "项目",
+                    "sortable": true
+                  },
+                  {
+                    "field": "amount",
+                    "title": "金额",
+                    "sortable": true,
+                    "filterable": {
+                      "mode": "numberRange"
+                    }
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2,
+              "numbered": true
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name",
+                  "project",
+                  "owner"
+                ],
+                "placeholder": "搜索客户、项目或负责人"
+              }
+            },
+            "rowExpansion": {
+              "data": {
+                "type": "recordList",
+                "field": "orders"
+              },
+              "table": {
+                "title": "订单子表",
+                "rowKey": "id",
+                "columns": [
+                  {
+                    "field": "product",
+                    "title": "产品",
+                    "visibleWhen": {
+                      "filter": "columns",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "full",
+                        "summary"
+                      ]
+                    }
+                  },
+                  {
+                    "field": "amount",
+                    "title": "子表金额",
+                    "visibleWhen": {
+                      "filter": "columns",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "full"
+                      ]
+                    }
+                  }
+                ],
+                "toolbar": {
+                  "search": {
+                    "fields": [
+                      "product"
+                    ]
+                  }
+                },
+                "pagination": {
+                  "mode": "local",
+                  "pageSize": 1,
+                  "numbered": true
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "scope-tab",
+      "components": [
+        {
+          "id": "column-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "tabs": [
+              {
+                "id": "one",
+                "label": "表格",
+                "component": {
+                  "id": "column-tab-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "records"
+                  },
+                  "props": {
+                    "title": "Tab 内表格",
+                    "rowKey": "id",
+                    "rowNumber": {},
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "客户",
+                        "secondaryField": "owner",
+                        "sortable": true,
+                        "filterable": {
+                          "mode": "select"
+                        },
+                        "fixed": "left",
+                        "visibleWhen": {
+                          "filter": "columns",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "full",
+                            "summary"
+                          ]
+                        }
+                      },
+                      {
+                        "kind": "group",
+                        "id": "project-group",
+                        "title": "项目资料",
+                        "visibleWhen": {
+                          "filter": "columns",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "full"
+                          ]
+                        },
+                        "children": [
+                          {
+                            "field": "project",
+                            "title": "项目",
+                            "sortable": true
+                          },
+                          {
+                            "field": "amount",
+                            "title": "金额",
+                            "sortable": true,
+                            "filterable": {
+                              "mode": "numberRange"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "local",
+                      "pageSize": 2,
+                      "numbered": true
+                    },
+                    "toolbar": {
+                      "search": {
+                        "fields": [
+                          "name",
+                          "project",
+                          "owner"
+                        ],
+                        "placeholder": "搜索客户、项目或负责人"
+                      },
+                      "export": {
+                        "format": "xlsx",
+                        "filename": "可见列"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "detailViews": [
+    {
+      "id": "column-detail",
+      "mode": "snapshot",
+      "components": [
+        {
+          "id": "column-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "详情表的可见列",
+            "rowKey": "id",
+            "rowNumber": {},
+            "columns": [
+              {
+                "field": "name",
+                "title": "客户",
+                "secondaryField": "owner",
+                "sortable": true,
+                "fixed": "left",
+                "visibleWhen": {
+                  "filter": "columns",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "full",
+                    "summary"
+                  ]
+                }
+              },
+              {
+                "kind": "group",
+                "id": "project-group",
+                "title": "项目资料",
+                "visibleWhen": {
+                  "filter": "columns",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "full"
+                  ]
+                },
+                "children": [
+                  {
+                    "field": "project",
+                    "title": "项目",
+                    "sortable": true
+                  },
+                  {
+                    "field": "amount",
+                    "title": "金额",
+                    "sortable": true
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2,
+              "numbered": true
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name",
+                  "project",
+                  "owner"
+                ],
+                "placeholder": "搜索客户、项目或负责人"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "可见列"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -5,9 +5,9 @@
   import {compilePresentation} from '../../runtime/src/presentation';
   import {PRESENTATION_CONTEXT} from './presentation-context';
   import type {DisplaySnapshot,FilterValues} from '../../runtime/src';
-  import {detailExportData} from './table-export';
-  import {downloadTableWorkbook} from './table-workbook';
-  import {createTableController} from './table-controller';
+  import {detailExportData} from './table/export/prepare';
+  import {downloadTableWorkbook} from './table/export/workbook';
+  import {createTableController} from './table/controller';
   import {createExportController} from './export-controller';
   import type {Page} from '@metriccanvas/page';
   import {resolveDataSourceFields,type Component,type DataSnapshot,type TableComponent,type Row} from '@metriccanvas/page/internal';
@@ -24,7 +24,8 @@
   let revision=$state(0);
   let exports=$state<Record<string,{busy:boolean;error?:string}>>({});
   // Detail scope is complete/local; it shares the same state owner and pure rules.
-  const controller=untrack(()=>createTableController(page,()=>null,()=>revision+=1));
+  const controller=untrack(()=>createTableController(page,()=>null,()=>revision+=1,()=>filters,()=>({displayInputs:displaySnapshot,filterRevision})));
+  $effect(()=>{void filters;void displaySnapshot;void filterRevision;untrack(()=>{for(const component of components)if(component.type==='table')controller.syncColumns(component);revision+=1;});});
   const exportController=createExportController(next=>exports=next);
   onDestroy(()=>{controller.dispose();exportController.reset();});
   function searchedRows(component:TableComponent,rows:Row[]){void revision;return controller.present(component,presentation.rows(component,rows),true).rows;}
@@ -33,7 +34,10 @@
   }
   async function exportTable(component:TableComponent){
     if(!toolbarEnabled(component,'export'))return;
-    const frozen=JSON.parse(JSON.stringify(component)) as TableComponent;
+    controller.syncColumns(component);
+    const projected=controller.project(component);
+    if(!projected.props.columns.length)return;
+    const frozen=JSON.parse(JSON.stringify(projected)) as TableComponent;
     try{
       await exportController.run(component.id,async task=>{
         const data=detailExportData(page,frozen,snapshots);

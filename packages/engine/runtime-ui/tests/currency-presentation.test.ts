@@ -3,9 +3,9 @@ import {expect,it} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
 import {projectFieldSelections,type TableComponent} from '@metriccanvas/page/internal';
 import {initialFilterValues} from '../../runtime/src/filter-state';
-import {createTableController} from '../src/table-controller';
-import {prepareTableExport} from '../src/table-export';
-import {encodeTableWorkbook} from '../src/table-workbook';
+import {createTableController} from '../src/table/controller';
+import {prepareTableExport} from '../src/table/export/prepare';
+import {encodeTableWorkbook} from '../src/table/export/workbook';
 import ExcelJS from 'exceljs';
 function fixture(){const parsed=parsePage(JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json','utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed));return parsed.page;}
 it('clears old table sort, headers and search on a presentation-only currency change',()=>{

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.61",
-  "schemaSha256": "4c59f431d4af3e0561590734831d09c7d8886f5f612f4866d8ec2af8a447f130",
+  "schemaVersion": "6.62",
+  "schemaSha256": "ee1b549ffa88f6bbe75c2d1909fed0cbca6cdafe48bd328cc85d78027336b2ac",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -648,7 +648,8 @@
         "table-scalar-fallback-page",
         "table-pinned-summary-page",
         "paged-union-page",
-        "paged-union-branches"
+        "paged-union-branches",
+        "table-column-visibility"
       ],
       "rules": [
         "table-row-key",
@@ -667,7 +668,9 @@
         "table-search-options",
         "table-row-expansion",
         "table-pinned-top",
-        "paged-union"
+        "paged-union",
+        "table-column-visibility",
+        "table-column-search-fields"
       ]
     },
     "components/mapChart.md": {
@@ -1141,7 +1144,8 @@
         "6.58",
         "6.59",
         "6.60",
-        "6.61"
+        "6.61",
+        "6.62"
       ]
     },
     {
@@ -12056,6 +12060,19 @@
       "ref": "#/definitions/fieldBinding"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/visibleWhen",
+      "path": "@tableColumn.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/kind",
       "path": "@tableColumn.kind",
       "required": "本分支可选",
@@ -12824,6 +12841,19 @@
       "path": "@tableColumnGroup",
       "required": "类型/分支",
       "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumnGroup/properties/visibleWhen",
+      "path": "@tableColumnGroup.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumnGroup/properties/visibleWhen/allOf/0",
+      "path": "@tableColumnGroup.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tableColumnGroup/properties/kind",
@@ -17938,14 +17968,14 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/5",
       "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/3/components/0/props/columns/0/navigate/enabledWhen"
+      "file": "examples/table-column-visibility.json",
+      "pointer": "#/sections/0/components/0/props/columns/0/visibleWhen"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
       "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/3/components/0/props/columns/0/navigate/enabledWhen/values/0"
+      "file": "examples/table-column-visibility.json",
+      "pointer": "#/sections/0/components/0/props/columns/0/visibleWhen/values/0"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
@@ -19184,5 +19214,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "f61b89dee792b96fe0fba67275ef914266a38df766043dbd95532b676a2d30cd"
+  "semanticSourceDigest": "09d2acd5ce23ff8189e0d999e1aea113ab6ff6fd96d7a3c255377fcbfa75dab6"
 }

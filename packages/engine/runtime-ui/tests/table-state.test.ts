@@ -4,7 +4,7 @@ import { applySearchFilters } from '../src/filters/inline-search';
 import type { Page } from '@metriccanvas/page';
 import type { FilterValues } from '../../runtime/src';
 import type { TableViewState } from '../../widgets/src/components/table/view-state';
-import { resetFilteredTablePages, sortTableRows, filterTableRowsByHeaders } from '../src/table-state';
+import { resetFilteredTablePages, sortTableRows, filterTableRowsByHeaders } from '../src/table/state';
 
 const view: TableViewState = {
   pageIndex: 2, sort: [{ field: 'amount', direction: 'desc' }],

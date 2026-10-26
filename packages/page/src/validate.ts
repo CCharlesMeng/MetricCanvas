@@ -2,13 +2,15 @@ import { attachInitialFallbacks } from './cell-fallback';
 import { tablePinnedErrors, tableAlignedSlots } from './table-pinned';
 
 import { pagedUnionErrors } from './validate-paged-union';
+import {columnScopeErrors} from './table/condition-scope';
+import {tableSearchErrors,conditionalTableNeedsOwner} from './table/validation';
 import { aiSummaryErrors, aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
 import { aiSummaryPositionErrors } from './ai-summary-region';
 import { chartConstantInputErrors, chartConstantErrors } from './chart-value-validation';
 import { valueSourceBinding, type ComponentValueSource } from './component-value';
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
-import { rowExpansionErrors } from './validate-row-expansion';
+import { rowExpansionErrors } from './table/validate-expansion';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
 import { metricBeforeErrors } from './metric-before';
 import {ordinaryQuery} from './time-mode';
@@ -177,7 +179,7 @@ export function parsePage(
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
-  const errors:TypedError[]=[...presentationPolicyErrors(page),...filterGroupErrors(page)];
+  const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...filterGroupErrors(page)];
   try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant),...navigationErrors(variant),...urlInputErrors(variant));}
   catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   attachInitialFallbacks(page, materialized.initialFallbacks, materialized.initialWarnings);
@@ -1640,25 +1642,6 @@ function componentErrors(
 
   }
 
-  function checkTableSearch(component: Extract<Component, { type: 'table' }>): void {
-    const search = component.props.toolbar?.search;
-    if (search) {
-      const source = page.dataSources[component.data.main];
-      const fields = source ? resolveDataSourceFields(source) : {};
-      const base = `${componentPath}/props/toolbar/search`;
-      const targets = 'fields' in search ? search.fields.map((id, index) => ({ id, path: `${base}/fields/${index}` })) : search.options.map((option, index) => ({ id: option.field, path: `${base}/options/${index}/field` }));
-      if ('fields' in search && new Set(search.fields).size !== search.fields.length) errors.push(schemaError(`${base}/fields`, '搜索字段不得重复'));
-      if ('options' in search) {
-        if (new Set(search.options.map(option => option.value)).size !== search.options.length) errors.push(schemaError(`${base}/options`, '搜索选项值不得重复'));
-        if (search.defaultValue !== undefined && !search.options.some(option => option.value === search.defaultValue)) errors.push(schemaError(`${base}/defaultValue`, '默认搜索选项必须存在'));
-      }
-      targets.forEach(({ id, path }) => {
-        const field = fields[id];
-        if (!field || field.type !== 'string') errors.push(schemaError(path, '搜索必须引用 main 数据槽中的文本标量字段'));
-        if (source?.source.type === 'query' && source.source.resultScope !== 'complete' && (!source.fields[id] || !hasQueryFieldMapping(source.fields[id]))) errors.push(schemaError(path, '查询搜索字段必须具有 queryField 映射'));
-      });
-    }
-  }
   function checkTable(component: Extract<Component, { type: 'table' }>): void {
     function checkNumberRangeColumn(column: Exclude<TableColumnNode, { kind: 'group' }>, path: string): void {
       if (column.filterable?.mode !== 'numberRange') return;
@@ -1681,7 +1664,7 @@ function componentErrors(
       });
       visit(component.props.columns, `${componentPath}/props/columns`);
     }
-    checkTableSearch(component);
+    errors.push(...tableSearchErrors(page,component,componentPath));
     errors.push(...tableDataErrors(page, component, componentPath));
     errors.push(...tablePresentationErrors(page, component, componentPath));
     errors.push(
@@ -2030,7 +2013,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
         )
       );
     }
-    if (querySearchNeedsOwner(component, source)) queryTables.push({ sourceId, componentPath, reason: '查询搜索' });
+    if (querySearchNeedsOwner(component, source)||conditionalTableNeedsOwner(component,source)) queryTables.push({ sourceId, componentPath, reason: '查询搜索' });
     if (pagination?.mode !== 'query') return;
     if ((source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')) { queryTables.push({ sourceId, componentPath }); return; }
     if (source?.source.type !== 'query') {

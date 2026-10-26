@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.61",
+  "currentWriter": "6.62",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -520,6 +520,63 @@
           "id": "table-column-link",
           "minor": 0,
           "description": "表格列声明为行点击导航入口(ADR-0049)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-column-visibility.json",
+      "requiredVersion": "6.62",
+      "capabilities": [
+        {
+          "id": "conditional-table-columns",
+          "minor": 62,
+          "description": "表格字段列及分组列条件显隐"
+        },
+        {
+          "id": "table-row-ordinal-column",
+          "minor": 48,
+          "description": "表格独立序号列，排序筛选后重编号且跨页连续"
+        },
+        {
+          "id": "table-search-options",
+          "minor": 42,
+          "description": "表格静态搜索选项与单文本字段等值匹配"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "paged-join",
+          "minor": 22,
+          "description": "多查询组合表格与数值表头范围"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "project-detail-restoration-variants",
+          "minor": 0,
+          "description": "项目详情页还原专用的组件呈现档"
+        },
+        {
+          "id": "table-embedded",
+          "minor": 0,
+          "description": "表格嵌入式密度与底部渐隐"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

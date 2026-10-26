@@ -6,10 +6,10 @@ import { resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValues } from '../../runtime/src';
 import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
 import type { TableViewState, TableHeaderFilterValue } from '../../widgets/src/components/table/view-state';
-import { applyTableSearch } from './table-search';
+import { applyTableSearch } from './table/search';
 import { applySearchFilters } from './filters/inline-search';
 import { filterMapRows, isHierarchyDeclaration, resolveMapBasemap } from './map-hierarchy';
-import { sortTableRows, filterTableRowsByHeaders } from './table-state';
+import { sortTableRows, filterTableRowsByHeaders } from './table/state';
 import { renderableDataSnapshot, hostRenderSnapshot } from './widget-host-state';
 import type { AiSummarySnapshot } from './ai-summary';
 

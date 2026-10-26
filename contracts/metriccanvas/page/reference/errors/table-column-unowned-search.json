@@ -1,0 +1,33 @@
+{
+  "case": "table-column-unowned-search",
+  "invariant": "table-column-search-fields",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "启用列显隐时搜索字段必须属于已声明列的主字段、次字段或徽标字段",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/search/fields/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "toolbar": {
+                "search": {
+                  "fields": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-column-unowned-search.json"
+}

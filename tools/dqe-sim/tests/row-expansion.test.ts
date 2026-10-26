@@ -3,7 +3,7 @@ import { expect, it } from 'vitest';
 import { parsePage } from '../../../packages/page/src';
 import type { Row, TableComponent } from '../../../packages/page/src/internal';
 import { createDqeGateway } from '../../../packages/engine/data-gateway/src/dqe';
-import { createRowExpansionController } from '../../../packages/engine/runtime/src/row-expansion';
+import { createRowExpansionController } from '../../../packages/engine/runtime/src/table/expansion';
 import { createDqeSimServer, DQE_EXECUTE_PATH } from '../src/server';
 import { executeRowExpansion } from '../src/row-expansion';
 

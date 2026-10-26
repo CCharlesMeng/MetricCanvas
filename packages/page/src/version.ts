@@ -1,3 +1,4 @@
+import { columnConditionPaths } from './table/columns';
 import { isObjectDqeItem } from './dqe-object';
 import {chartOptionScopes} from './chart-option';
 import type { TypedError } from './errors';
@@ -20,7 +21,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 61;
+const CURRENT_MINOR = 62;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -53,6 +54,7 @@ export const pageCapabilities = {
   },
   'table-source-navigation': { minor: 61, legacyReadable: false, description: '表格按行来源选择导航', usedAt: document => componentPaths(document, c => c.type === 'table' && sourceNavigationUsed(props(c)?.columns)) },
   'paged-union': { minor: 61, legacyReadable: false, description: '多来源字段投影、逐行合并与整体排序分页', usedAt: document => dataSourcePaths(document, data => record(data.source)?.type === 'pagedUnion') },
+  'conditional-table-columns': {minor:62, legacyReadable:false, description:'表格字段列及分组列条件显隐', usedAt:columnConditionPaths},
   'query-dimension-measures': {
     minor: 56, legacyReadable: false, description: 'DQE output_dims 数值输出显式声明页面度量',
     usedAt: document => dataSourcePaths(document, hasNumericDimensionMeasure)

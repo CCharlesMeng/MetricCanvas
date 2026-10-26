@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parsePage, type Page } from '@metriccanvas/page';
 import type { TableComponent, EffectiveQuery, Row } from '@metriccanvas/page/internal';
-import { createRowExpansionController } from '../src/row-expansion';
+import { createRowExpansionController } from '../src/table/expansion';
 import { orchestrate } from '../src/orchestrator';
 import { initialQuerySourceIds } from '../../../data-execution/src/source-scope';
 

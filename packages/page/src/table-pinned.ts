@@ -1,5 +1,7 @@
+import {tableColumnLeaves as tableLeafColumns} from './table/columns';
+export {tableColumnLeaves as tableLeafColumns} from './table/columns';
 import { fieldBindingLeaves, fieldName, type FieldBinding, type FieldDefinition } from './field';
-import type { Page, TableComponent, TableColumn, TableColumnNode } from './page';
+import type { Page, TableComponent, TableColumn } from './page';
 import { resolveDataSourceFields } from './data-source';
 import { conditionSourceIds } from './data-source-references';
 import { queryLeaves } from './query-selection';
@@ -7,9 +9,6 @@ import type { TypedError } from './errors';
 
 export function tableAlignedSlots(table: TableComponent): [string, string][] {
   return Object.entries(table.data).filter(([slot]) => slot !== table.props.pinnedTop?.data);
-}
-export function tableLeafColumns(nodes: readonly TableColumnNode[]): TableColumn[] {
-  return nodes.flatMap(node => node.kind === 'group' ? tableLeafColumns(node.children) : [node]);
 }
 function bindingDefinition(page: Page, table: TableComponent, binding: FieldBinding): FieldDefinition | undefined {
   const slot = typeof binding === 'string' ? 'main' : 'data' in binding ? binding.data : '';

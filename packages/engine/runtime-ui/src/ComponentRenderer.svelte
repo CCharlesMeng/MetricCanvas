@@ -19,7 +19,7 @@
   import { selectedTab, tabChildren, type TabContainerComponent } from '@metriccanvas/page/internal';
   const tabSelection = getContext<TabSelectionContext | undefined>(TAB_SELECTION_CONTEXT);
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
-  import ExpandableTable from './ExpandableTable.svelte';
+  import ExpandableTable from './table/views/ExpandableTable.svelte';
   import ReportHeaderView from './ReportHeaderView.svelte';
   import { isChartComponent, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
@@ -222,6 +222,8 @@
       {/snippet}
     </CompositeCard>
   {/if}
+{:else if component.type === 'table' && component.props.columns.length===0}
+  <Table data={tableData} props={component.props} interactive={false} view={{pageIndex:0,sort:[],headerFilters:{}}} />
 {:else if component.type === 'table' && table?.expansion && !exportMode}
   <ExpandableTable {component} data={tableData} binding={table} {snapshot} />
 {:else}
