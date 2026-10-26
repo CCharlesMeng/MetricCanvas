@@ -6,6 +6,9 @@ import {
   componentIdZ,
   componentLayoutZ,
   fieldBindingZ,
+  nonEmptyTextValueZ,
+  scalarZ,
+  valueFormatPresetZ,
   mainDataZ,
   textValueZ
 } from '../primitives';
@@ -126,7 +129,27 @@ componentCatalogRegistry.add(lineChartComponentZ, {
   defaultSpan: 8
 });
 
+const pieLegendColumnPresentation = {
+  unit: textValueZ.optional().meta({ description: '仅在非缺失值后以一个空格追加的单位；缺省不追加，不改变计算值' }),
+  align: z.enum(['left', 'center', 'right']).optional().meta({ description: '本列列头与数据共同对齐；缺省保持数值列右对齐' })
+};
+
+const pieLegendColumnZ = z.union([
+  z.object({ label: nonEmptyTextValueZ, field: fieldBindingZ, ...pieLegendColumnPresentation }).strict(),
+  z.object({ label: nonEmptyTextValueZ, value: z.literal('percentage'), format: valueFormatPresetZ.optional(), ...pieLegendColumnPresentation }).strict()
+]).meta({ id: 'pieLegendColumn' });
+
+const pieLegendZ = z.object({
+  type: z.literal('table'),
+  position: z.enum(['left', 'right']).optional(),
+  categoryLabel: textValueZ.optional(),
+  columns: z.array(pieLegendColumnZ).min(1)
+}).strict().meta({ id: 'pieLegend' });
+
 const piePropsShape = {
+  sort: z.enum(['asc', 'desc']).optional(),
+  categoryOrder: z.array(scalarZ).min(1).optional(),
+  legend: pieLegendZ.optional(),
   title: textValueZ.optional(),
   emptyBehavior: chartEmptyBehaviorZ.optional(),
   echartsOption: chartOptionZ.optional(),

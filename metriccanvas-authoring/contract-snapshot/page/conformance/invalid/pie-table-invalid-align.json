@@ -1,0 +1,1548 @@
+{
+  "case": "pie-table-invalid-align",
+  "invariant": "pie-table-legend",
+  "input": {
+    "schemaVersion": "6.64",
+    "id": "pie-table-legend",
+    "layout": "dashboard",
+    "meta": {
+      "title": "饼图表格式图例 · 合成数据"
+    },
+    "iocHeader": {
+      "identity": {
+        "title": "框架执行概况"
+      },
+      "note": "全部为合成演示数据；图例按区间固定，数量变化不重排。",
+      "presentation": {
+        "layout": "inline",
+        "collapse": "none"
+      }
+    },
+    "dataSources": {
+      "bands": {
+        "fields": {
+          "band": {
+            "type": "string",
+            "role": "dimension",
+            "label": "执行率区间"
+          },
+          "customers": {
+            "type": "number",
+            "role": "measure",
+            "label": "客户数量",
+            "unit": "家",
+            "nullable": true
+          },
+          "share": {
+            "type": "number",
+            "role": "measure",
+            "label": "占比",
+            "defaultFormat": "percent-1",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "band": "0–25%",
+              "customers": 96,
+              "share": 24
+            },
+            {
+              "band": "25–50%",
+              "customers": 184,
+              "share": 46
+            },
+            {
+              "band": "50–75%",
+              "customers": 72,
+              "share": 18
+            },
+            {
+              "band": "75–125%",
+              "customers": 48,
+              "share": 12
+            }
+          ]
+        }
+      },
+      "changed": {
+        "fields": {
+          "band": {
+            "type": "string",
+            "role": "dimension",
+            "label": "执行率区间"
+          },
+          "customers": {
+            "type": "number",
+            "role": "measure",
+            "label": "客户数量",
+            "unit": "家",
+            "nullable": true
+          },
+          "share": {
+            "type": "number",
+            "role": "measure",
+            "label": "占比",
+            "defaultFormat": "percent-1",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "band": "75–125%",
+              "customers": 80,
+              "share": 20
+            },
+            {
+              "band": "50–75%",
+              "customers": 90,
+              "share": 22.5
+            },
+            {
+              "band": "25–50%",
+              "customers": 20,
+              "share": 5
+            },
+            {
+              "band": "0–25%",
+              "customers": 210,
+              "share": 52.5
+            }
+          ]
+        }
+      },
+      "missing": {
+        "fields": {
+          "band": {
+            "type": "string",
+            "role": "dimension",
+            "label": "执行率区间"
+          },
+          "customers": {
+            "type": "number",
+            "role": "measure",
+            "label": "客户数量",
+            "unit": "家",
+            "nullable": true
+          },
+          "share": {
+            "type": "number",
+            "role": "measure",
+            "label": "占比",
+            "defaultFormat": "percent-1",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "band": "缺失数量",
+              "customers": null,
+              "share": null
+            },
+            {
+              "band": "真实零",
+              "customers": 0,
+              "share": 0
+            },
+            {
+              "band": "有效",
+              "customers": 12,
+              "share": 100
+            }
+          ]
+        }
+      },
+      "all-zero": {
+        "fields": {
+          "band": {
+            "type": "string",
+            "role": "dimension",
+            "label": "执行率区间"
+          },
+          "customers": {
+            "type": "number",
+            "role": "measure",
+            "label": "客户数量",
+            "unit": "家",
+            "nullable": true
+          },
+          "share": {
+            "type": "number",
+            "role": "measure",
+            "label": "占比",
+            "defaultFormat": "percent-1",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "band": "零客户",
+              "customers": 0,
+              "share": 0
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "default",
+        "components": [
+          {
+            "id": "stable",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "框架执行率分布区间的客户数及占比",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers",
+                    "unit": "家",
+                    "align": "justify"
+                  },
+                  {
+                    "label": "占比",
+                    "field": {
+                      "data": "main",
+                      "field": "share",
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      },
+      {
+        "id": "unit-align",
+        "components": [
+          {
+            "id": "unit-align",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "列呈现：客户数量居中，占比左对齐",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers",
+                    "unit": "家",
+                    "align": "center"
+                  },
+                  {
+                    "label": "占比",
+                    "field": {
+                      "data": "main",
+                      "field": "share",
+                      "format": "percent-1"
+                    },
+                    "align": "left"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      },
+      {
+        "id": "changed",
+        "components": [
+          {
+            "id": "changed-values",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "changed"
+            },
+            "props": {
+              "title": "数量变化及反向输入，仍保持区间顺序",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers",
+                    "unit": "家",
+                    "align": "left"
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage",
+                    "format": "percent-1",
+                    "align": "right"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%",
+              "categoryOrder": [
+                "0–25%",
+                "25–50%",
+                "50–75%",
+                "75–125%"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "narrow",
+        "components": [
+          {
+            "id": "narrow-table-legend",
+            "type": "pieChart",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "窄卡片：图例移到下方",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers"
+                  },
+                  {
+                    "label": "占比",
+                    "field": {
+                      "data": "main",
+                      "field": "share",
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      },
+      {
+        "id": "left",
+        "components": [
+          {
+            "id": "left-pie",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "左侧图例 · 自动计算占比",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "left",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers"
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage",
+                    "format": "percent-1"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "sorting",
+        "components": [
+          {
+            "id": "descending",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "显式数量降序",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers"
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage",
+                    "format": "percent-1"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%",
+              "sort": "desc"
+            }
+          },
+          {
+            "id": "ascending",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "显式数量升序",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers"
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage",
+                    "format": "percent-1"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%",
+              "sort": "asc"
+            }
+          }
+        ]
+      },
+      {
+        "id": "custom",
+        "components": [
+          {
+            "id": "custom-order",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "自定义顺序 · 未列出的类别接在末尾",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers"
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage",
+                    "format": "percent-1"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%",
+              "categoryOrder": [
+                "50–75%",
+                "0–25%"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "edge",
+        "components": [
+          {
+            "id": "missing-values",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "missing"
+            },
+            "props": {
+              "title": "缺失数量不展示，真实零保留",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers"
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage",
+                    "format": "percent-1"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%"
+            }
+          },
+          {
+            "id": "zero-total",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "all-zero"
+            },
+            "props": {
+              "title": "合计为零时，占比显示缺失值",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "label": "客户数量",
+                    "field": "customers"
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage",
+                    "format": "percent-1"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "modal",
+                    "titleField": "band",
+                    "fields": [
+                      {
+                        "label": "区间",
+                        "field": "band"
+                      },
+                      {
+                        "label": "客户数量",
+                        "field": "customers"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/align",
+      "message": "取值不在允许范围:[\"left\",\"center\",\"right\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/field",
+      "message": "存在未定义字段 field(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/align",
+      "message": "取值不在允许范围:[\"left\",\"center\",\"right\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "must NOT be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/align",
+      "message": "取值不在允许范围:[\"left\",\"center\",\"right\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/field",
+      "message": "存在未定义字段 field(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/align",
+      "message": "取值不在允许范围:[\"left\",\"center\",\"right\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/bands",
+      "message": "缺少必填字段 bands"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/type",
+      "message": "存在未定义字段 type(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/position",
+      "message": "存在未定义字段 position(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "must NOT be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/bands",
+      "message": "缺少必填字段 bands"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/type",
+      "message": "存在未定义字段 type(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/position",
+      "message": "存在未定义字段 position(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "must NOT be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/components",
+      "message": "缺少必填字段 components"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterId",
+      "message": "缺少必填字段 filterId"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/options",
+      "message": "缺少必填字段 options"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions",
+      "message": "存在未定义字段 actions(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

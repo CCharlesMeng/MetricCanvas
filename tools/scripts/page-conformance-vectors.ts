@@ -55,6 +55,14 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'pie-table-legend', description:'6.64表格式图例、固定类别与显式数值排序', valid:['pie-table-legend'], cases:[
+    {case:'pie-table-invalid-align', base:'pie-table-legend', expect:/取值不在允许范围/, mutate:d=>{firstComponent(d).props.legend.columns[0].align='justify';}},
+    {case:'pie-table-before-version', base:'pie-table-legend', expect:/由 6.64 引入/, mutate:d=>{d.schemaVersion='6.63';}},
+    {case:'pie-table-order-conflict', base:'pie-table-legend', expect:/categoryOrder 与 sort/, mutate:d=>{firstComponent(d).props.sort='desc';firstComponent(d).props.categoryOrder=['0–25%'];}},
+    {case:'pie-table-order-duplicate', base:'pie-table-legend', expect:/类别顺序不得重复/, mutate:d=>{firstComponent(d).props.categoryOrder=['0–25%','0–25%'];}},
+    {case:'pie-table-compact-ring', base:'pie-table-legend', expect:/compactRing/, mutate:d=>{firstComponent(d).props.variant='compactRing';}},
+    {case:'pie-table-native-legend', base:'pie-table-legend', expect:/ECharts legend/, mutate:d=>{firstComponent(d).props.echartsOption={legend:{show:true}};}}
+  ]},
   ...columnInvariants,
   {
     id:'query-cell-display-evidence',description:'原文证据只对应真实失配的空标量单元格',valid:['table-paged-fallback-page'],cases:[

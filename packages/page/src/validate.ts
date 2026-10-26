@@ -1638,6 +1638,13 @@ function componentErrors(
   function checkPieChart(component: Extract<Component, { type: 'pieChart' }>): void {
     check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
     checkValue(component.props, `${componentPath}/props`, 'valueField', 'measure');
+    component.props.legend?.columns.forEach((column, index) => {
+      if ('field' in column) check(column.field, `${componentPath}/props/legend/columns/${index}/field`, 'measure');
+    });
+    if (component.props.sort && component.props.categoryOrder) errors.push(schemaError(`${componentPath}/props/categoryOrder`, 'categoryOrder 与 sort 不得同时声明'));
+    if (component.props.categoryOrder && new Set(component.props.categoryOrder.map(value => JSON.stringify(value))).size !== component.props.categoryOrder.length) errors.push(schemaError(`${componentPath}/props/categoryOrder`, '类别顺序不得重复'));
+    if (component.props.legend && component.props.variant === 'compactRing') errors.push(schemaError(`${componentPath}/props/legend`, '表格式图例不能与 compactRing 同时声明'));
+    if (component.props.legend && component.props.echartsOption?.legend !== undefined) errors.push(schemaError(`${componentPath}/props/echartsOption/legend`, '表格式图例由组件管理，不得再声明 ECharts legend'));
     errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
 
   }

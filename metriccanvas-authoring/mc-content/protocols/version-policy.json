@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 63,
-  "current": "6.63",
+  "minor": 64,
+  "current": "6.64",
   "capabilities": {
+    "pie-table-legend": {
+      "minor": 64,
+      "description": "饼图表格式图例、显式数值排序与类别顺序",
+      "legacyReadable": false
+    },
     "composite-filter-toolbar": {
       "minor": 63,
       "description": "组合卡内左侧按钮与右侧多个下拉的筛选工具栏",
@@ -693,6 +698,7 @@
     "6.60",
     "6.61",
     "6.62",
-    "6.63"
+    "6.63",
+    "6.64"
   ]
 }

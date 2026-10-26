@@ -30,6 +30,7 @@ pages/
 主题说明：
 
 - 旧页面升级后继续开发：[步骤与边界](capabilities/layout/README.md#旧页面升级后继续开发)、[实际页面](capabilities/layout/schema-upgrade-demo.json)。
+- 饼图表格式图例与固定类别顺序：[图表场景](capabilities/chart/README.md)，入口 `/pages/pie-table-legend`。
 
 - IOC 公共页头：[专题场景](capabilities/ioc-header/scenarios/README.md)、[业务确认](capabilities/ioc-header/business/README.md)、[选择回执](capabilities/ioc-header/selection/README.md)。
 

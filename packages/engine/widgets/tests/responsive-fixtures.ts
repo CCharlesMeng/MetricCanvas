@@ -40,7 +40,7 @@ export const responsiveFixtures = {
   },
   barChart: { behavior: 'fluid', variants: ['default', 'reportForecast'] },
   lineChart: { behavior: 'fluid', variants: ['default'] },
-  pieChart: { behavior: 'fluid', variants: ['default', 'compactRing'] },
+  pieChart: { behavior: 'reflow', variants: ['default', 'compactRing'] },
   table: {
     behavior: 'scroll-owner',
     variants: ['default', 'reportCompact', 'embedded', 'forecastMatrix']
@@ -95,6 +95,7 @@ type MissingVariants = {
 const allSchemaVariantsAreRegistered: MissingVariants extends never ? true : never = true;
 
 export const responsiveQueryContracts = [
+  'pie-table-legend-flow',
   'composite-project-norms-height',
   'key-value-detail-norm-three-columns',
   'key-value-detail-norm-two-columns',

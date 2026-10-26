@@ -4,10 +4,11 @@ import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue } from '../../shared/value-format';
+import { pieRows, pieCategoryDomain } from './presentation';
+export { pieRows } from './presentation';
 import { formatterValue } from '../../shared/chart-option';
 import {
   categoricalColor,
-  categoryDomain,
   type ColorList
 } from '../../shared/chart-palette';
 
@@ -26,11 +27,11 @@ export function pieOption(
   const rows = pieRows(data, props);
   const category = resolveField(props.categoryField, data);
   const value = resolveComponentValue(props, data, props.emptyBehavior);
-  const showLabelLine = props.labelLine ?? true;
+  const showLabelLine = props.labelLine ?? !props.legend;
   const compactRing = props.variant === 'compactRing';
   const names = rows.map((row) => formatValue(row[category.field], category.format, category.missingText));
   // Keep the full category domain so a missing sector never shifts colors shared with other views.
-  const domain = categoryDomain(data.main.snapshot.rows.map(row => formatValue(row[category.field], category.format, category.missingText)));
+  const domain = pieCategoryDomain(data, props);
   return {
     tooltip: {
       trigger: 'item',
@@ -66,10 +67,4 @@ export function pieOption(
       }
     ]
   };
-}
-
-/** One projection for sectors and click identities: missing numbers do not shift original-row selection. */
-export function pieRows(data: MainDataSlots, props: PieChartProps) {
-  const value = resolveComponentValue(props, data, props.emptyBehavior);
-  return data.main.snapshot.rows.filter(row => finiteNumber(value.read(row)) !== undefined);
 }

@@ -1,0 +1,725 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "packages/engine/widgets/src/components/category-breakdown/rows.ts",
+      "functions": [
+        {
+          "name": "columnValue",
+          "qualifiedName": "columnValue",
+          "line": 37,
+          "endLine": 40,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "categoryBreakdownView",
+          "qualifiedName": "categoryBreakdownView",
+          "line": 50,
+          "endLine": 91,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 5
+        },
+        {
+          "name": "<anonymous@58:37>",
+          "qualifiedName": "categoryBreakdownView/<anonymous@58:37>",
+          "line": 58,
+          "endLine": 62,
+          "selfCC": 1,
+          "optionalChains": 2,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:31>",
+          "qualifiedName": "categoryBreakdownView/<anonymous@64:31>",
+          "line": 64,
+          "endLine": 65,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@75:26>",
+          "qualifiedName": "categoryBreakdownView/<anonymous@75:26>",
+          "line": 75,
+          "endLine": 75,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@76:20>",
+          "qualifiedName": "categoryBreakdownView/<anonymous@76:20>",
+          "line": 76,
+          "endLine": 89,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@85:29>",
+          "qualifiedName": "categoryBreakdownView/<anonymous@76:20>/<anonymous@85:29>",
+          "line": 85,
+          "endLine": 86,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/widgets/src/components/pie-chart/presentation.ts",
+      "functions": [
+        {
+          "name": "pieRows",
+          "qualifiedName": "pieRows",
+          "line": 7,
+          "endLine": 14,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@9:47>",
+          "qualifiedName": "pieRows/<anonymous@9:47>",
+          "line": 9,
+          "endLine": 9,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@13:20>",
+          "qualifiedName": "pieRows/<anonymous@13:20>",
+          "line": 13,
+          "endLine": 13,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "categoryOrderedRows",
+          "qualifiedName": "categoryOrderedRows",
+          "line": 16,
+          "endLine": 21,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@18:50>",
+          "qualifiedName": "categoryOrderedRows/<anonymous@18:50>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rank",
+          "qualifiedName": "categoryOrderedRows/rank",
+          "line": 19,
+          "endLine": 19,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@20:20>",
+          "qualifiedName": "categoryOrderedRows/<anonymous@20:20>",
+          "line": 20,
+          "endLine": 20,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pieCategoryDomain",
+          "qualifiedName": "pieCategoryDomain",
+          "line": 24,
+          "endLine": 28,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@26:82>",
+          "qualifiedName": "pieCategoryDomain/<anonymous@26:82>",
+          "line": 26,
+          "endLine": 26,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@27:36>",
+          "qualifiedName": "pieCategoryDomain/<anonymous@27:36>",
+          "line": 27,
+          "endLine": 27,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "projectedDefinition",
+          "qualifiedName": "projectedDefinition",
+          "line": 38,
+          "endLine": 44,
+          "selfCC": 4,
+          "optionalChains": 1,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "projectColumn",
+          "qualifiedName": "projectColumn",
+          "line": 46,
+          "endLine": 60,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "read",
+          "qualifiedName": "projectColumn/read",
+          "line": 52,
+          "endLine": 52,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "read",
+          "qualifiedName": "projectColumn/read",
+          "line": 58,
+          "endLine": 58,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pieLegendData",
+          "qualifiedName": "pieLegendData",
+          "line": 63,
+          "endLine": 91,
+          "selfCC": 3,
+          "optionalChains": 3,
+          "subtreeCC": 5,
+          "nestedFunctions": 7
+        },
+        {
+          "name": "<anonymous@67:29>",
+          "qualifiedName": "pieLegendData/<anonymous@67:29>",
+          "line": 67,
+          "endLine": 67,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@68:53>",
+          "qualifiedName": "pieLegendData/<anonymous@68:53>",
+          "line": 68,
+          "endLine": 68,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@72:19>",
+          "qualifiedName": "pieLegendData/<anonymous@72:19>",
+          "line": 72,
+          "endLine": 72,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@75:55>",
+          "qualifiedName": "pieLegendData/<anonymous@75:55>",
+          "line": 75,
+          "endLine": 78,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@77:41>",
+          "qualifiedName": "pieLegendData/<anonymous@75:55>/<anonymous@77:41>",
+          "line": 77,
+          "endLine": 77,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@84:26>",
+          "qualifiedName": "pieLegendData/<anonymous@84:26>",
+          "line": 84,
+          "endLine": 87,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@89:56>",
+          "qualifiedName": "pieLegendData/<anonymous@89:56>",
+          "line": 89,
+          "endLine": 89,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/widgets/tests/pie-table-legend.test.ts",
+      "functions": [
+        {
+          "name": "table",
+          "qualifiedName": "table",
+          "line": 26,
+          "endLine": 29,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@31:30>",
+          "qualifiedName": "<anonymous@31:30>",
+          "line": 31,
+          "endLine": 109,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 15
+        },
+        {
+          "name": "<anonymous@32:96>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@32:96>",
+          "line": 32,
+          "endLine": 45,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@47:89>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@47:89>",
+          "line": 47,
+          "endLine": 59,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@61:106>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@61:106>",
+          "line": 61,
+          "endLine": 67,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@63:37>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@61:106>/<anonymous@63:37>",
+          "line": 63,
+          "endLine": 63,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:58>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@61:106>/<anonymous@64:58>",
+          "line": 64,
+          "endLine": 64,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@65:57>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@61:106>/<anonymous@65:57>",
+          "line": 65,
+          "endLine": 65,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@69:89>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@69:89>",
+          "line": 69,
+          "endLine": 76,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@74:44>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@69:89>/<anonymous@74:44>",
+          "line": 74,
+          "endLine": 74,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@75:39>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@69:89>/<anonymous@75:39>",
+          "line": 75,
+          "endLine": 75,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@78:105>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@78:105>",
+          "line": 78,
+          "endLine": 83,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@82:55>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@78:105>/<anonymous@82:55>",
+          "line": 82,
+          "endLine": 82,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@82:94>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@78:105>/<anonymous@82:94>",
+          "line": 82,
+          "endLine": 82,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@85:103>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@85:103>",
+          "line": 85,
+          "endLine": 93,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@95:104>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@95:104>",
+          "line": 95,
+          "endLine": 101,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@103:98>",
+          "qualifiedName": "<anonymous@31:30>/<anonymous@103:98>",
+          "line": 103,
+          "endLine": 108,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/page/tests/pie-table-legend.test.ts",
+      "functions": [
+        {
+          "name": "document",
+          "qualifiedName": "document",
+          "line": 6,
+          "endLine": 8,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@10:39>",
+          "qualifiedName": "<anonymous@10:39>",
+          "line": 10,
+          "endLine": 51,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 9
+        },
+        {
+          "name": "<anonymous@11:84>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@11:84>",
+          "line": 11,
+          "endLine": 21,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@23:87>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@23:87>",
+          "line": 23,
+          "endLine": 29,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@28:32>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@23:87>/<anonymous@28:32>",
+          "line": 28,
+          "endLine": 28,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@31:80>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@31:80>",
+          "line": 31,
+          "endLine": 40,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@38:24>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@31:80>/<anonymous@38:24>",
+          "line": 38,
+          "endLine": 38,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@39:26>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@31:80>/<anonymous@39:26>",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@42:66>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@42:66>",
+          "line": 42,
+          "endLine": 50,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@48:24>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@42:66>/<anonymous@48:24>",
+          "line": 48,
+          "endLine": 48,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@49:24>",
+          "qualifiedName": "<anonymous@10:39>/<anonymous@42:66>/<anonymous@49:24>",
+          "line": 49,
+          "endLine": 49,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "functions": [
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 58,
+          "endLine": 58,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 59,
+          "endLine": 59,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 60,
+          "endLine": 60,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 61,
+          "endLine": 61,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 62,
+          "endLine": 62,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 63,
+          "endLine": 63,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 66,
+          "endLine": 66,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/page/src/schema/components/charts.ts",
+      "functions": [
+        {
+          "name": "<anonymous@18:56>",
+          "qualifiedName": "<anonymous@18:56>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "extracted:pie-unit-align-svelte-0.ts",
+      "functions": [
+        {
+          "name": "<anonymous@30:39>",
+          "qualifiedName": "<anonymous@30:39>",
+          "line": 30,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "extracted:pie-unit-align-svelte-1.ts",
+      "functions": []
+    },
+    {
+      "file": "extracted:pie-unit-align-template.ts",
+      "functions": [
+        {
+          "name": "<anonymous@1:18>",
+          "qualifiedName": "<anonymous@1:18>",
+          "line": 1,
+          "endLine": 1,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ],
+  "before": {
+    "categoryBreakdownView": 5,
+    "pieLegendData": 3
+  },
+  "note": "All affected script/template functions extracted separately; unit-align extends the unpublished 6.52 feature batch."
+}

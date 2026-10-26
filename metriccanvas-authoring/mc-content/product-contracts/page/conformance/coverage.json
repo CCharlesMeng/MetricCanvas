@@ -1,6 +1,21 @@
 {
   "invariants": [
     {
+      "id": "pie-table-legend",
+      "description": "6.64表格式图例、固定类别与显式数值排序",
+      "valid": [
+        "pie-table-legend"
+      ],
+      "invalid": [
+        "pie-table-invalid-align",
+        "pie-table-before-version",
+        "pie-table-order-conflict",
+        "pie-table-order-duplicate",
+        "pie-table-compact-ring",
+        "pie-table-native-legend"
+      ]
+    },
+    {
       "id": "table-column-visibility",
       "description": "列显隐条件与版本下限",
       "valid": [

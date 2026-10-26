@@ -726,7 +726,9 @@
     "components/pieChart.md": {
       "title": "饼图 pieChart",
       "definitions": [
-        "pieChartComponent"
+        "pieChartComponent",
+        "pieLegend",
+        "pieLegendColumn"
       ],
       "keywords": [
         "components/pieChart",
@@ -735,11 +737,14 @@
       "examples": [
         "composite-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "pie-table-legend"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/widgets/src/components/pie-chart/presentation.ts",
+        "packages/engine/widgets/src/components/pie-chart/PieChart.svelte"
       ],
       "rules": [
         "schema-structure",
@@ -1654,7 +1659,12 @@
     "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。",
     "#/definitions/tableColumn/properties/visibleWhen": "6.62 列展示条件，不支持 row；隐藏后退出搜索并清理用户列操作。",
     "#/definitions/tableColumnGroup/properties/visibleWhen": "6.62 列组条件，隐藏覆盖后代，无可见叶子不生成表头。",
-    "#/definitions/compositeCardComponent/properties/props/properties/filterLayout": "6.63显式工具栏：开头连续filterGroup按align组成左右两组；右组紧凑排列并整体贴右，窄屏回流，其余内容沿用栅格。"
+    "#/definitions/compositeCardComponent/properties/props/properties/filterLayout": "6.63显式工具栏：开头连续filterGroup按align组成左右两组；右组紧凑排列并整体贴右，窄屏回流，其余内容沿用栅格。",
+    "#/definitions/pieLegend/properties/position": "表格式图例位置，默认right；绘图区不足620px时移至下方。",
+    "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/sort": "显式按扇区数值升序或降序，同值稳定；默认不排序，不得与categoryOrder并用。",
+    "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/sort": "显式按扇区数值升序或降序，同值稳定；默认不排序，不得与categoryOrder并用。",
+    "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/categoryOrder": "按类别原始标量声明固定顺序并预留色位；未声明类别保留输入顺序接到末尾。",
+    "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/categoryOrder": "按类别原始标量声明固定顺序并预留色位；未声明类别保留输入顺序接到末尾。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1940,7 +1950,9 @@
     "#/properties/schemaVersion=\"6.60\"": "表格原文展示证据与独立查询置顶行。",
     "6.61": "当前协议版本，支持分页合并源与按行来源导航。",
     "6.62": "新增字段列与分组列展示条件、可见字段搜索、用户视图调和及冻结导出；旧表格规则保持。",
-    "#/properties/schemaVersion=\"6.63\"": "组合卡显式筛选工具栏：左侧按钮组与右侧紧凑多下拉。"
+    "#/properties/schemaVersion=\"6.63\"": "组合卡显式筛选工具栏：左侧按钮组与右侧紧凑多下拉。",
+    "center": "本列列头与数据单元格水平居中。",
+    "6.64": "饼图表格式图例、显式数值排序与固定类别顺序，默认保留输入行序。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2532,6 +2544,7 @@
       "常量取值（6.59）"
     ],
     "components/pieChart.md": [
+      "表格式图例与顺序（6.64）",
       "查阅方式",
       "常量取值（6.59）"
     ],

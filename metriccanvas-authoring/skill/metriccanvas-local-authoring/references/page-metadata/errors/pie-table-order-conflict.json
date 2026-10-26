@@ -1,0 +1,29 @@
+{
+  "case": "pie-table-order-conflict",
+  "invariant": "pie-table-legend",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "categoryOrder 与 sort 不得同时声明",
+      "paths": [
+        "/sections/0/components/0/props/categoryOrder"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "categoryOrder": [
+                "0–25%"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

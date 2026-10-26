@@ -1,0 +1,30 @@
+{
+  "case": "pie-table-order-duplicate",
+  "invariant": "pie-table-legend",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "类别顺序不得重复",
+      "paths": [
+        "/sections/0/components/0/props/categoryOrder"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "categoryOrder": [
+                "0–25%",
+                "0–25%"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

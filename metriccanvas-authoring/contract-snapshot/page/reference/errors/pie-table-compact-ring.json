@@ -1,0 +1,38 @@
+{
+  "case": "pie-table-compact-ring",
+  "invariant": "pie-table-legend",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格式图例不能与 compactRing 同时声明",
+      "paths": [
+        "/sections/0/components/0/props/legend"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "legend": {
+                "type": "table",
+                "position": "right",
+                "columns": [
+                  {
+                    "…": "共3个键"
+                  },
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/pie-table-compact-ring.json"
+}

@@ -21,7 +21,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 63;
+const CURRENT_MINOR = 64;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -45,6 +45,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'pie-table-legend': {
+    minor: 64, legacyReadable: false, description: '饼图表格式图例、显式数值排序与类别顺序',
+    usedAt: document => componentPaths(document, c => c.type === 'pieChart' && ['legend', 'sort', 'categoryOrder'].some(key => has(props(c), key)))
+  },
   'composite-filter-toolbar': {minor:63,legacyReadable:false,description:'组合卡内左侧按钮与右侧多个下拉的筛选工具栏',usedAt:document=>componentPaths(document,c=>c.type==='compositeCard'&&props(c)?.filterLayout==='toolbar')},
   'query-cell-display-evidence': { minor: 60, legacyReadable: false, description: '查询快照原文展示证据',
     usedAt: document => dataSourcePaths(document, source => has(record(record(source.source)?.initial), 'cellFallbacks'))

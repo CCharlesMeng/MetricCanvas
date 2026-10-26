@@ -32,7 +32,7 @@
   "knowledge": "pieChart.overview",
   "reference": "references/page-metadata/components/pieChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.63",
+  "currentWriter": "6.64",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/composite-page.json",
@@ -196,6 +196,38 @@
           "id": "gauge-component",
           "minor": 0,
           "description": "gauge 仪表组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/pie-table-legend.json",
+      "requiredVersion": "6.64",
+      "capabilities": [
+        {
+          "id": "pie-table-legend",
+          "minor": 64,
+          "description": "饼图表格式图例、显式数值排序与类别顺序"
+        },
+        {
+          "id": "unified-page-header",
+          "minor": 41,
+          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
+        },
+        {
+          "id": "ioc-header",
+          "minor": 36,
+          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
+        },
+        {
+          "id": "open-detail-action",
+          "minor": 10,
+          "description": "组件点击在页内打开详情浮层"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

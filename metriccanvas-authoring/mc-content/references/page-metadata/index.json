@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.63",
-  "schemaSha256": "28ea3f3ecadfc9f159412a62ca43463c70033c67206aeade47f4291c11ed4114",
+  "schemaVersion": "6.64",
+  "schemaSha256": "c0aed5e15e699271f4d50813b2e3e140123929c16bdb9b72e11a6555d12d669f",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -599,7 +599,9 @@
     "components/pieChart.md": {
       "title": "饼图 pieChart",
       "definitions": [
-        "pieChartComponent"
+        "pieChartComponent",
+        "pieLegend",
+        "pieLegendColumn"
       ],
       "keywords": [
         "components/pieChart",
@@ -608,7 +610,8 @@
       "examples": [
         "composite-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "pie-table-legend"
       ],
       "rules": [
         "schema-structure",
@@ -1147,7 +1150,8 @@
         "6.60",
         "6.61",
         "6.62",
-        "6.63"
+        "6.63",
+        "6.64"
       ]
     },
     {
@@ -11328,6 +11332,217 @@
       "module": "components/pieChart.md"
     },
     {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/sort",
+      "path": "@pieChartComponent.props · anyOf[0].sort",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/categoryOrder",
+      "path": "@pieChartComponent.props · anyOf[0].categoryOrder",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/categoryOrder/items",
+      "path": "@pieChartComponent.props · anyOf[0].categoryOrder[]",
+      "required": "每个数组项",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/scalar"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/legend",
+      "path": "@pieChartComponent.props · anyOf[0].legend",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/legend/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[0].legend · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/pieLegend"
+    },
+    {
+      "pointer": "#/definitions/pieLegend",
+      "path": "@pieLegend",
+      "required": "类型/分支",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegend/properties/type",
+      "path": "@pieLegend.type",
+      "required": "本分支必填",
+      "module": "components/pieChart.md",
+      "const": "table"
+    },
+    {
+      "pointer": "#/definitions/pieLegend/properties/position",
+      "path": "@pieLegend.position",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "left",
+        "right"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieLegend/properties/categoryLabel",
+      "path": "@pieLegend.categoryLabel",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegend/properties/categoryLabel/allOf/0",
+      "path": "@pieLegend.categoryLabel · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/pieLegend/properties/columns",
+      "path": "@pieLegend.columns",
+      "required": "本分支必填",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegend/properties/columns/items",
+      "path": "@pieLegend.columns[]",
+      "required": "每个数组项",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/pieLegendColumn"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn",
+      "path": "@pieLegendColumn",
+      "required": "类型/分支",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0",
+      "path": "@pieLegendColumn · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0/properties/label",
+      "path": "@pieLegendColumn · anyOf[0].label",
+      "required": "本分支必填",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0/properties/field",
+      "path": "@pieLegendColumn · anyOf[0].field",
+      "required": "本分支必填",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0/properties/unit",
+      "path": "@pieLegendColumn · anyOf[0].unit",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0/properties/unit/allOf/0",
+      "path": "@pieLegendColumn · anyOf[0].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0/properties/align",
+      "path": "@pieLegendColumn · anyOf[0].align",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/1",
+      "path": "@pieLegendColumn · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/1/properties/label",
+      "path": "@pieLegendColumn · anyOf[1].label",
+      "required": "本分支必填",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/1/properties/value",
+      "path": "@pieLegendColumn · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "components/pieChart.md",
+      "const": "percentage"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/1/properties/format",
+      "path": "@pieLegendColumn · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/1/properties/unit",
+      "path": "@pieLegendColumn · anyOf[1].unit",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/1/properties/unit/allOf/0",
+      "path": "@pieLegendColumn · anyOf[1].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/1/properties/align",
+      "path": "@pieLegendColumn · anyOf[1].align",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ]
+    },
+    {
       "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/title",
       "path": "@pieChartComponent.props · anyOf[0].title",
       "required": "本分支可选",
@@ -11498,6 +11713,42 @@
       "path": "@pieChartComponent.props · anyOf[1].missingText",
       "required": "本分支可选",
       "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/sort",
+      "path": "@pieChartComponent.props · anyOf[1].sort",
+      "required": "本分支可选",
+      "module": "components/pieChart.md",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/categoryOrder",
+      "path": "@pieChartComponent.props · anyOf[1].categoryOrder",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/categoryOrder/items",
+      "path": "@pieChartComponent.props · anyOf[1].categoryOrder[]",
+      "required": "每个数组项",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/scalar"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/legend",
+      "path": "@pieChartComponent.props · anyOf[1].legend",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/legend/allOf/0",
+      "path": "@pieChartComponent.props · anyOf[1].legend · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/pieLegend"
     },
     {
       "pointer": "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/title",
@@ -18491,6 +18742,18 @@
       "pointer": "#/detailViews/0/components/4/props"
     },
     {
+      "schemaPointer": "#/definitions/pieLegendColumn/anyOf/0",
+      "module": "components/pieChart.md",
+      "file": "examples/pie-table-legend.json",
+      "pointer": "#/sections/0/components/0/props/legend/columns/0"
+    },
+    {
+      "schemaPointer": "#/definitions/pieLegendColumn/anyOf/1",
+      "module": "components/pieChart.md",
+      "file": "examples/pie-table-legend.json",
+      "pointer": "#/sections/2/components/0/props/legend/columns/1"
+    },
+    {
       "schemaPointer": "#/definitions/pieChartComponent/properties/props/anyOf/1",
       "module": "components/pieChart.md",
       "file": "examples/component-pieChart.json",
@@ -19223,5 +19486,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "ca191657f36c4a2733ae688607da370fbc3d02711eeef8ff52b45ede8f75892e"
+  "semanticSourceDigest": "140e70733d8513f92b5005ecfe7beaf3b98bebe08b20a48957c7e27ea89de83d"
 }

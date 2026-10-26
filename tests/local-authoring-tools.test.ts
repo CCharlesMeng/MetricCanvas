@@ -60,6 +60,19 @@ describe('按需协议知识',()=>{
 });
 
 describe('页面用数和指标材料',()=>{
+  it('嵌套图例与表格同名时仍识别真实组件及其字段',()=>{
+    const fixture=JSON.parse(readFileSync('pages/capabilities/chart/pie-table-legend.json','utf8'));
+    const component=fixture.sections[0].components[0];
+    const category=component.props.categoryField;
+    const value=component.props.valueField;
+    component.type='table';
+    component.props={columns:[{field:category},{field:value}]};
+    fixture.sections=[{id:'table',components:[component]}];
+    const scan=scanPageData(fixture,model.schema);
+    expect(scan.diagnostics).toEqual([]);
+    expect(scan.uses.filter(use=>use.kind==='field').map(use=>use.field)).toEqual([category,value]);
+  });
+
   it('合流后的独立筛选按钮组可查阅，卡内与正文绑定均被发现',()=>{
     const result=knowledgeSelection(model,['filterGroup.core']) as any;
     expect(result.semantics[0].blocks.join('\n')).toContain('旧图表 `props.filter` 已移除');

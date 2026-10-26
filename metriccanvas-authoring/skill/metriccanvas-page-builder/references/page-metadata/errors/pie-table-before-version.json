@@ -1,0 +1,286 @@
+{
+  "case": "pie-table-before-version",
+  "invariant": "pie-table-legend",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "饼图表格式图例、显式数值排序与类别顺序 由 6.64 引入，文档声明的是 6.63",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/1/components/0",
+        "/sections/2/components/0",
+        "/sections/3/components/0",
+        "/sections/4/components/0",
+        "/sections/5/components/0",
+        "/sections/5/components/1",
+        "/sections/6/components/0",
+        "/sections/7/components/0",
+        "/sections/7/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "stable",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "框架执行率分布区间的客户数及占比",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "unit-align",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "列呈现：客户数量居中，占比左对齐",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "changed-values",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "changed"
+            },
+            "props": {
+              "title": "数量变化及反向输入，仍保持区间顺序",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%",
+              "categoryOrder": [
+                "…（共4项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "narrow-table-legend",
+            "type": "pieChart",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "窄卡片：图例移到下方",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "left-pie",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "左侧图例 · 自动计算占比",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "descending",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "显式数量降序",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%",
+              "sort": "desc"
+            }
+          },
+          {
+            "id": "ascending",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "显式数量升序",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%",
+              "sort": "asc"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "custom-order",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bands"
+            },
+            "props": {
+              "title": "自定义顺序 · 未列出的类别接在末尾",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%",
+              "categoryOrder": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "missing-values",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "missing"
+            },
+            "props": {
+              "title": "缺失数量不展示，真实零保留",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%"
+            }
+          },
+          {
+            "id": "zero-total",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "all-zero"
+            },
+            "props": {
+              "title": "合计为零时，占比显示缺失值",
+              "categoryField": "band",
+              "valueField": "customers",
+              "legend": {
+                "…": "共3个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ],
+              "ring": "46%"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/pie-table-before-version.json"
+}

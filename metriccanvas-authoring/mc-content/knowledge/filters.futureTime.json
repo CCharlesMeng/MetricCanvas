@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.63",
+  "schemaVersion": "6.64",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.futureTime"
@@ -346,7 +346,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.63",
+        "$id": "https://metriccanvas/page/v6.64",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

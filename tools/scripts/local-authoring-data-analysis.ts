@@ -102,7 +102,7 @@ export function scanPageData(page:Json,schema:Json):{uses:DataUse[];diagnostics:
   });
   walkDocumentComponents(page,(component,path)=>{
     const context={componentId:String(component.id ?? ''),componentType:String(component.type ?? ''),label:typeof (component.props as Json)?.title==='string'?(component.props as Json).title:String(component.id ?? '')};
-    const definition=Object.values(schema.definitions).find((node:any)=>node.properties?.type?.const===component.type) as Json|undefined;
+    const definition=Object.values(schema.definitions).find((node:any)=>node.properties?.id && node.properties?.props && node.properties?.type?.const===component.type) as Json|undefined;
     if(!definition) {diagnostics.push({path,type:'UNKNOWN_COMPONENT',componentType:component.type});return;}
     const local={...component,props:{...(component.props as Json)}};
     // Child components are walked separately with their own data slots.

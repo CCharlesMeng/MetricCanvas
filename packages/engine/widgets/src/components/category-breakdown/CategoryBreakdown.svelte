@@ -2,8 +2,8 @@
 <script lang="ts">
   import type { CategoryBreakdownProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
-  import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
-  import { categoryBreakdownView } from './rows';
+  import { CATEGORICAL_PALETTE_PROPERTY, readColorList, type ColorList } from '../../shared/chart-palette';
+  import { categoryBreakdownView, type CategoryColumnPresentation } from './rows';
 
   /**
    * 分类明细(纯渲染):按类别逐行、按度量逐列的紧凑明细,带列头。
@@ -16,15 +16,19 @@
   interface Props {
     data: MainDataSlots;
     props: CategoryBreakdownProps;
+    /** Internal composition only: share the pie's category domain and effective palette. */
+    paletteOverride?: ColorList;
+    swatchDomain?: readonly string[];
+    columnPresentation?: readonly CategoryColumnPresentation[];
   }
 
-  let { data, props }: Props = $props();
+  let { data, props, paletteOverride, swatchDomain, columnPresentation }: Props = $props();
 
   /* 类别配色从自身容器的计算样式读(与饼图同一个装置,见 shared/chart-palette.ts)。
      报表形态不定义这个属性,读到空串即色板缺席,色点因此不着色。 */
   let host = $state<HTMLElement | null>(null);
-  const palette = $derived(readColorList(host, CATEGORICAL_PALETTE_PROPERTY));
-  const view = $derived(categoryBreakdownView(data, props, palette));
+  const palette = $derived(paletteOverride ?? readColorList(host, CATEGORICAL_PALETTE_PROPERTY));
+  const view = $derived(categoryBreakdownView(data, props, palette, swatchDomain, columnPresentation));
 </script>
 
 <div
@@ -45,7 +49,7 @@
           <th scope="col" class="category">{view.categoryLabel}</th>
         {/if}
         {#each view.columns as column, columnIndex (columnIndex)}
-          <th scope="col" class="measure">{column}</th>
+          <th scope="col" class="measure" style:text-align={columnPresentation?.[columnIndex]?.align}>{column}</th>
         {/each}
       </tr>
     </thead>
@@ -64,7 +68,7 @@
             </span>
           </th>
           {#each row.values as value, valueIndex (valueIndex)}
-            <td class="measure">{value}</td>
+            <td class="measure" style:text-align={columnPresentation?.[valueIndex]?.align}>{value}</td>
           {/each}
         </tr>
       {/each}

@@ -1,7 +1,7 @@
-import type { CategoryBreakdownProps } from '@metriccanvas/page/internal';
-import type { MainDataSlots } from '../../shared/component-data';
+import type { CategoryBreakdownProps, FieldValue } from '@metriccanvas/page/internal';
+import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
-import { formatValue } from '../../shared/value-format';
+import { formatValue, hasDisplayValue } from '../../shared/value-format';
 import {
   categoricalColor,
   categoryDomain,
@@ -28,6 +28,17 @@ export interface CategoryBreakdownView {
   rows: CategoryBreakdownRow[];
 }
 
+/** Private composition options; these do not extend the standalone categoryBreakdown protocol. */
+export interface CategoryColumnPresentation {
+  unit?: string;
+  align?: 'left' | 'center' | 'right';
+}
+
+function columnValue(value: FieldValue | undefined, resolved: ResolvedField, unit?: string): string {
+  const text = formatValue(value, resolved.format, resolved.missingText);
+  return unit && hasDisplayValue(value) ? `${text} ${unit}` : text;
+}
+
 /**
  * 主数据槽 → 分类明细的行列投影。行序即数据槽行序,本函数不排序也不截断。
  *
@@ -39,18 +50,21 @@ export interface CategoryBreakdownView {
 export function categoryBreakdownView(
   data: MainDataSlots,
   props: CategoryBreakdownProps,
-  palette?: ColorList
+  palette?: ColorList,
+  swatchDomain?: readonly string[],
+  columnPresentation?: readonly CategoryColumnPresentation[]
 ): CategoryBreakdownView {
   const category = resolveField(props.categoryField, data);
-  const columns = props.columns.map((column) => ({
+  const columns = props.columns.map((column, index) => ({
     label: column.label,
+    unit: columnPresentation?.[index]?.unit,
     resolved: resolveField(column.field, data)
   }));
   const rows = data.main.snapshot.rows;
   const categories = rows.map((row) =>
     formatValue(row[category.field], category.format, category.missingText)
   );
-  const domain = categoryDomain(categories);
+  const domain = swatchDomain ?? categoryDomain(categories);
   const categoryLabel =
     props.categoryLabel === false
       ? undefined
@@ -69,7 +83,7 @@ export function categoryBreakdownView(
         category: name,
         ...(swatch ? { swatch } : {}),
         values: columns.map((column) =>
-          formatValue(row[column.resolved.field], column.resolved.format, column.resolved.missingText)
+          columnValue(row[column.resolved.field], column.resolved, column.unit)
         )
       };
     })

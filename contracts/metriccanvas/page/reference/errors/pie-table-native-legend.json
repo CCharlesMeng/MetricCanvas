@@ -1,0 +1,31 @@
+{
+  "case": "pie-table-native-legend",
+  "invariant": "pie-table-legend",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格式图例由组件管理，不得再声明 ECharts legend",
+      "paths": [
+        "/sections/0/components/0/props/echartsOption/legend"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "echartsOption": {
+                "legend": {
+                  "show": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/pie-table-native-legend.json"
+}
