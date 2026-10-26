@@ -61,6 +61,7 @@ export function sourceFacts(document: unknown): SourceFact[] {
 }
 
 export function componentConfiguration(document: unknown, focus: string): unknown {
+  if (focus === 'iocHeader') return record(document).iocHeader;
   const components = documentComponents(document);
   if (!focus) return document;
   return components.filter(component => component.type === focus);

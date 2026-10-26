@@ -1,7 +1,8 @@
-import { componentCatalog, parsePage } from '@metriccanvas/page';
+import { parsePage } from '@metriccanvas/page';
 import { documentLayoutForm, flattenPageComponents, pageListEntry } from '@metriccanvas/page/internal';
+import { playgroundComponents } from '../../scenarios/components';
 
-export const pageComponentTypes = componentCatalog.map(entry => ({ id: entry.type, title: entry.label }));
+export const pageComponentTypes = playgroundComponents.map(entry => ({ id: entry.type, title: entry.label }));
 
 export interface PlaygroundPageEntry {
   id: string;
@@ -23,7 +24,8 @@ export function pageEntry(raw: unknown, fallbackId: string): PlaygroundPageEntry
   const parsed = parsePage(raw);
   if (parsed.ok) return {
     ...pageListEntry(parsed.page), layoutForm,
-    componentTypes: [...new Set(flattenPageComponents(parsed.page).map(component => component.type))],
+    componentTypes: [...new Set(flattenPageComponents(parsed.page).map(component => component.type)),
+      ...(parsed.page.iocHeader ? ['iocHeader'] : [])],
     dataKind: Object.values(parsed.page.dataSources).some(source => source.source.type !== 'inline') ? 'query' : 'inline'
   };
 

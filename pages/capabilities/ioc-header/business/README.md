@@ -258,9 +258,11 @@ IOC页头 · 缺配置与局部查询门禁；批量交互验收，合成输入�
 
 入口：`/pages/ioc-header-demo`；[页面 JSON](ioc-header-demo.json)。
 
+Playground 查找：组件 → IOC 页头 → IOC Header · 经营概览，目录入口 `/catalog/components/iocHeader`。与“数据与联动”的页级筛选场景复用同一页面；全部文件的组件类型也支持“IOC 页头”。IOC 页头配置读取根级 `iocHeader`，不新增正文组件类型。
+
 启动：`pnpm dev:playground`。
 
-重点国代、全球/地区部/代表处、客户分类和年季月/近一年，联动指标卡、趋势图与Tab明细。
+页头依次为：返回（带 `?back=1`）、标题、重点国代、时间（年／季／月／近一年）、Region（全球／地区部／代表处）、客户分类，联动指标卡、趋势图与Tab明细。
 
 内置合成演示数据
 

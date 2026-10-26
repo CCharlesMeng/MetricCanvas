@@ -1,6 +1,6 @@
-import { componentCatalog } from '@metriccanvas/page';
+import type { PlaygroundComponentType } from './components';
 
-export type ComponentType = typeof componentCatalog[number]['type'];
+export type ComponentType = PlaygroundComponentType;
 export type DataTopic = 'sources' | 'conditions' | 'relationships' | 'interactions' | 'results' | 'output';
 export type LayoutTopic = 'dashboard' | 'report' | 'sections' | 'containers';
 export interface Scene {
@@ -31,7 +31,7 @@ export const scenes: readonly Scene[] = [
     pages: ['table-row-expansion-inline', 'table-row-expansion-query'], question: '父行怎样关联子记录？不同父行的分页和查询是否独立？' },
   { id: 'multiple-sources', title: '多查询组合与全局结果', owner: 'data/relationships', components: ['table'], topics: ['relationships', 'results'],
     pages: ['multi-query-table', 'decision-opinion-details', 'multi-source-table'], question: '按键补列与逐行拼接有什么区别，排序和分页覆盖哪份结果？' },
-  { id: 'ioc-header', title: '页面级筛选与 IOC 页头', owner: 'data/conditions', components: [], topics: ['conditions', 'sources'],
+  { id: 'ioc-header', title: '页面级筛选与 IOC 页头', owner: 'components/iocHeader', components: ['iocHeader'], topics: ['conditions', 'sources'],
     pages: ['ioc-header-demo', 'ioc-header-business', 'ioc-header-models', 'ioc-header-groups', 'ioc-header-incentives', 'ioc-header-currency', 'ioc-header-months', 'ioc-header-unconfigured', 'ioc-header-standard', 'ioc-header-dense', 'ioc-header-detail', 'ioc-header-time', 'ioc-header-inputs', 'ioc-header-selection'],
     question: '页面级条件如何影响业务查询，候选缺失时哪些查询等待？' },
   { id: 'time-conditions', title: '期间、候选与可信数据期', owner: 'data/conditions', components: [], topics: ['conditions'],

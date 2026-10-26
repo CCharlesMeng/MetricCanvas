@@ -32,7 +32,7 @@ pages/
 - 旧页面升级后继续开发：[步骤与边界](capabilities/layout/README.md#旧页面升级后继续开发)、[实际页面](capabilities/layout/schema-upgrade-demo.json)。
 - 饼图表格式图例与固定类别顺序：[图表场景](capabilities/chart/README.md)，入口 `/pages/pie-table-legend`。
 
-- IOC 公共页头：[专题场景](capabilities/ioc-header/scenarios/README.md)、[业务确认](capabilities/ioc-header/business/README.md)、[选择回执](capabilities/ioc-header/selection/README.md)。
+- IOC 公共页头：组件目录 `/catalog/components/iocHeader`；[专题场景](capabilities/ioc-header/scenarios/README.md)、[业务确认](capabilities/ioc-header/business/README.md)、[选择回执](capabilities/ioc-header/selection/README.md)。
 
 - [business/dashboard/ioc/opportunity](business/dashboard/ioc/opportunity/README.md)
 - [business/dashboard/ioc/project](business/dashboard/ioc/project/README.md)
@@ -524,7 +524,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 - 默认入口：`/pages/ioc-header-demo`；`/pages/ioc-header-demo?back=1` 由展示宿主显式提供“返回目录”的可信上下文，显示左侧小箭头。无来源直接进入时隐藏箭头。
 - 启动：`pnpm dev:playground`，不需要 DQE Sim 或 IOC 服务。布局显式为 Dashboard，复用正式 IOC Header、筛选、指标卡、Tab 表格及图表。
-- 页头仅包含标题、重点国代、Region（单个下拉框内的全球／地区部／代表处树形单选，无外置层级按钮）、客户分类标签多选、年／季／月／近一年。期间默认 2026 年；近一年沿正式期间规则取当前月之前的 12 个完整月。
+- 页头依次为标题、重点国代、时间（年／季／月／近一年）、Region（单个下拉框内的全球／地区部／代表处树形单选，无外置层级按钮）、客户分类标签多选。期间默认 2026 年；近一年沿正式期间规则取当前月之前的 12 个完整月。
 - Header组件自带16px底部外间距。正文：四张白底指标卡（现有组合卡 + compactStack，指标名在上、数值在下）、经营趋势、地区部／代表处 Tab 明细。趋势左上按钮切签约额／收入，仅重算趋势；右上已有 Select 切柱状图／折线图，保持当前页头条件及活动明细 Tab。
 - 操作预期：选择中国地区部后明细只含中国；勾重点后只含北京，上海与重点的交集为空；取消重点后恢复上海。客户分类支持搜索、多选和逐项移除。年／季／月改变聚合窗口，近一年显示 12 个完整月。
 - 数据及边界：2024—2026 月度合成事实、3 个地区部及 6 个代表处；金额样例单位为万元，赢单率为汇总赢单数／汇总机会点数，不平均区域百分比。样例重点标志和客户分类不代表生产 IOC 的业务规则。JSON 使用 `query` 是为了演示正式筛选绑定，仅由本地 `RuntimeDataGateway` 求值，不发送网络查询。

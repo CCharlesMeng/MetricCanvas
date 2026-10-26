@@ -43,6 +43,9 @@ describe('页面目录：文件与文档是唯一输入', () => {
     const project = pages.find(page => page.id === 'ioc-project-overview')!;
     expect(project.dataKind).toBe('query');
     expect(project.componentTypes).toContain('table');
+    expect(project.componentTypes).toContain('iocHeader');
+    expect(filterPageDirectory(groups, 'ioc-header-demo', 'dashboard', 'iocHeader', 'query')
+      .flatMap(group => group.pages).map(page => page.id)).toEqual(['ioc-header-demo']);
     const matches = filterPageDirectory(groups, 'multi-query-table', 'dashboard', 'table', 'query', 'capabilities/table')
       .flatMap(group => group.pages);
     expect(matches.map(page => page.id)).toEqual(['multi-query-table']);

@@ -2,7 +2,6 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { Input, Select, Tabs } from '@metriccanvas/ui';
-  import { componentCatalog } from '@metriccanvas/page';
   import { pageRepository } from './services';
   import { rememberDirectoryHref } from './directory-return';
   import { dimensions, directoryTopics, directoryLocation, belongsTo, availableScenes, scenesForTopic, searchScenes, resolveScene, sceneRelations, sceneHomeHref, sceneBreadcrumb, catalogHref, type Dimension } from './scenario-directory';
@@ -107,7 +106,7 @@
         {/if}
       </div>
     </div>
-    <footer>{componentCatalog.length} 类组件 · {available.length} 个推荐场景 · {pages.length} 份页面文档。原页面地址继续可用。</footer>
+    <footer>{directoryTopics('components').length} 类组件 · {available.length} 个推荐场景 · {pages.length} 份页面文档。原页面地址继续可用。</footer>
   {:catch error}<p role="alert">推荐目录加载失败：{String(error)}</p>{/await}
 </main>
 

@@ -1,4 +1,4 @@
-import { componentCatalog } from '@metriccanvas/page';
+import { playgroundComponents } from '../../scenarios/components';
 import { scenes, pageSearchInputs, type Scene } from '../../scenarios/catalog';
 import { dataFeatures } from '../../scenarios/data-features';
 import type { PlaygroundPageEntry } from './page-entry';
@@ -25,7 +25,7 @@ export const layoutTopics = [
 export function directoryTopics(dimension: Dimension) {
   if (dimension === 'data') return dataTopics;
   if (dimension === 'layouts') return layoutTopics;
-  return componentCatalog.map(item => ({ id: item.type, title: item.label, description: item.purpose }));
+  return playgroundComponents.map(item => ({ id: item.type, title: item.label, description: item.purpose }));
 }
 
 export function directoryLocation(dimension?: string, topic?: string) {
@@ -58,7 +58,7 @@ export function scenesForTopic(available: Scene[], pages: PlaygroundPageEntry[],
 }
 
 function sceneSearchText(scene: Scene, pages: PlaygroundPageEntry[]): string {
-  const components = componentCatalog.filter(item => scene.components.includes(item.type));
+  const components = playgroundComponents.filter(item => scene.components.includes(item.type));
   const documents = pages.filter(page => scene.pages.includes(page.id));
   return [scene.title, scene.question, ...scene.topics.map(id => dataTopics.find(topic => topic.id === id)?.title),
     ...components.flatMap(item => [item.type, item.label, ...item.aliases]),
@@ -102,7 +102,7 @@ export function resolveScene(available: Scene[], sceneId: string | null, pageId:
 
 export function sceneRelations(scene: Scene, pageId?: string, exampleSearch?: string) {
   return [
-    ...scene.components.map(id => ({ title: componentCatalog.find(item => item.type === id)!.label, href: catalogHref('components', id, scene.id, pageId, exampleSearch) })),
+    ...scene.components.map(id => ({ title: playgroundComponents.find(item => item.type === id)!.label, href: catalogHref('components', id, scene.id, pageId, exampleSearch) })),
     ...dataFeatures.filter(feature => feature.examples.some(reference => reference.scene === scene.id && (!pageId || reference.pages.includes(pageId))))
       .map(feature => ({ title: feature.title, href: catalogHref('data', feature.topic, scene.id, pageId, exampleSearch, feature.id) }))
   ];

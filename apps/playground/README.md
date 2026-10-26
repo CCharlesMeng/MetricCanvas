@@ -58,6 +58,8 @@ Windows 首次使用还需：
 
 ### IOC 公共页头
 
+组件目录提供“IOC 页头”入口 `/catalog/components/iocHeader`，默认展示 `ioc-header-demo` 经营概览；与数据入口复用原场景，不复制页面。全部文件的组件类型筛选也支持“IOC 页头”，只识别文档中显式声明的根级 `iocHeader`；配置区展示对应根声明，正文组件协议保持原有类型。
+
 现有专题入口 `/ioc-header` 与能力一览继续保留。15 个专题场景由 `pages/capabilities/ioc-header/scenarios/` 的实际页面发现，标题和说明取自页面文档；操作步骤和接入边界见同目录 README.md。`?topic=time&scene=time-modes` 可直达场景，`?view=capabilities` 打开能力索引。
 
 预览适配器仅在对应演示目录接入合成数据与候选；IOC 业务确认演示位于 `ioc-header/business/`，选择回执演示位于 `ioc-header/selection/`。这不影响普通业务文件夹的自动发现，真实接入仍需网关、授权候选与可信期间事实。
