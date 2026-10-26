@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import type { Component } from '@metriccanvas/page/internal';
 import { configuredTitles, drawingCount, presentationFixtures, scalarPage } from './presentation-fixtures';
 
@@ -26,7 +27,7 @@ for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as
       page.on('pageerror', error => errors.push(error.message));
       const failures: string[] = [];
       const fixtures = presentationFixtures(layout);
-      expect(fixtures).toHaveLength(layout === 'report' ? 54 : 52);
+      expect(fixtures).toHaveLength(layout === 'report' ? 55 : 53);
       for (const fixture of fixtures) await test.step(fixture.name, async () => {
         const document = { ...fixture.document, layout, sections: fixture.document.sections.map(section => ({ ...section, container })) };
         await show(page, document);
@@ -55,6 +56,40 @@ for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as
       expect(failures).toEqual([]);
     });
   }
+}
+
+for (const width of [1440, 390]) {
+  test(`${width}: primary metric detail rows retain styles and row-owned height`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/examples/inline.html');
+    const document = JSON.parse(readFileSync(new URL('../../../../pages/capabilities/layout/metric-card-primary-detail.json', import.meta.url), 'utf8'));
+    await show(page, document);
+    const cards = await page.locator('.primary-detail').evaluateAll(elements => elements.slice(0, 4).map(element => {
+      const rect = element.getBoundingClientRect();
+      return { height: rect.height, top: rect.top, rows: element.querySelectorAll('.metric-panel .metric-row').length };
+    }));
+    expect(cards.map(card => card.rows)).toEqual([0, 1, 3, 6]);
+    if (width === 1440) {
+      const heights = cards.map(card => card.height);
+      expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(1);
+      expect(new Set(cards.map(card => card.top)).size).toBe(1);
+    } else {
+      for (let index = 1; index < cards.length; index++) {
+        expect(cards[index]!.top).toBeGreaterThan(cards[index - 1]!.top);
+        expect(cards[index]!.height).toBeGreaterThan(cards[index - 1]!.height);
+      }
+    }
+    const detail = page.locator('.primary-detail > .metric-panel .metric-row').first();
+    await expect(detail).toHaveCSS('margin-top', '8px');
+    await expect(detail.locator('.row-label')).toHaveCSS('font-size', '14px');
+    await expect(detail.locator('.row-label')).toHaveCSS('line-height', '20px');
+    await expect(detail.locator('.row-label')).toHaveCSS('color', 'rgba(0, 0, 0, 0.5)');
+    await expect(detail.locator('.row-value')).toHaveCSS('font-size', '14px');
+    await expect(detail.locator('.row-value')).toHaveCSS('line-height', '17px');
+    await expect(detail.locator('.row-value')).toHaveCSS('color', 'rgba(0, 0, 0, 0.8)');
+    await expect(detail.locator('.row-value')).toHaveCSS('text-decoration-line', 'underline');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  });
 }
 
 test('all header metadata, metric panels/progress and repeated configured items render', async ({ page }) => {
