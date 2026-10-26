@@ -3,6 +3,7 @@ import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import {
   DqeGatewayError,
   createDqeGateway,
+  createInMemoryDqeDiagnostics,
   effectiveDqeItem
 } from '../src/dqe';
 
@@ -447,7 +448,9 @@ describe('DQE 数据网关', () => {
   });
 
   it('nullable=false 的数值维度保留 null 并返回聚合告警', async () => {
+    const diagnostics = createInMemoryDqeDiagnostics();
     const gateway = createDqeGateway({
+      diagnostics,
       fetchImpl: (async () =>
         new Response(
           JSON.stringify({
@@ -486,6 +489,11 @@ describe('DQE 数据网关', () => {
       expectedType: 'number',
       count: 1
     }]);
+    expect(result.cellFallbacks).toBeUndefined();
+    expect(diagnostics.records()[0]).toMatchObject({
+      status: 'success',
+      warnings: [expect.objectContaining({ fieldId: 'na-customer-count', code: 'SCALAR_NULL_NOT_ALLOWED', count: 1 })]
+    });
   });
 
 });

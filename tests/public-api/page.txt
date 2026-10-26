@@ -40,6 +40,7 @@ CategoryBreakdownColumn
 CategoryBreakdownComponent
 CategoryBreakdownProps
 CategoryLabels
+CellFallbacks
 ChartComponent
 ChartOption
 ChartSeries
@@ -177,6 +178,9 @@ PageSection
 PagedJoinDataSource
 PagedJoinMember
 PagedJoinSource
+PagedUnionDataSource
+PagedUnionMember
+PagedUnionSource
 ParamResolutionIssue
 ParameterProgramRequest
 PeriodMode
@@ -228,11 +232,13 @@ ReportHeaderProps
 ResolvePageParamsResult
 ResolvedFieldDefinition
 Row
+RowCellFallbacks
 RowContractIssue
 RowContractValidationResult
 RowExpansion
 RowKind
 RowKindMark
+ScalarDisplayFallback
 ScalarFieldDefinition
 ScalarFieldType
 ScalarFieldValue
@@ -299,6 +305,7 @@ appliedAmountRange
 applyFilterTextValues
 applyPresentationOperation
 assertNoQueryParamReferences
+attachInitialFallbacks
 availabilityInitial
 barForecastBoundaryIssues
 bindingOwnedDqeBody
@@ -326,6 +333,8 @@ conditionDepth
 conditionLeaves
 conditionSourceIds
 conditionTestTypeError
+copyFieldFallback
+copyRowFallbacks
 currentTimeValue
 dataSourceMode
 daysInGregorianMonth
@@ -376,6 +385,7 @@ initializeQueryParams
 isBoundedResultSource
 isChartComponent
 isChartOptionError
+isCombinedDataSource
 isConditionValue
 isDataComponent
 isDqeQueryDefinition
@@ -421,6 +431,7 @@ parsePage
 periodFact
 periodRangeLabel
 periodSelectionFromRange
+pinnedSnapshotError
 presentationPolicies
 presentationPolicyErrors
 presentationTarget
@@ -428,6 +439,7 @@ presentationTargets
 projectComponentFields
 projectFieldSelections
 projectQueries
+projectSnapshotRows
 queryErrorDisposition
 queryFilterIds
 queryLeaves
@@ -452,7 +464,9 @@ resolvePeriodSelection
 resolveRelativeTime
 resolveTextValues
 resolveTimeWindow
+restoreCellFallbacks
 resultSourceIds
+rowCellFallback
 rowExpansionColumns
 rowExpansionPage
 rowExpansionQuerySources
@@ -467,12 +481,18 @@ selectedTab
 selectionAssignments
 setObjectFieldValues
 setObjectTimeRange
+setRowCellFallbacks
+snapshotCellFallbacks
 stableRowQuery
 staticFieldBinding
 supportedVersions
 tabChildren
 tabSearch
+tableAlignedSlots
+tableColumnNavigation
 tableHeaders
+tableLeafColumns
+tablePinnedErrors
 tablePredicateZ
 tablePredicates
 tableQueryViewZ
