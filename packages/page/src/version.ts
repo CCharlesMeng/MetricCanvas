@@ -45,7 +45,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
-  'pie-table-legend': {
+  'pie-legend-table': {
     minor: 64, legacyReadable: false, description: '饼图表格式图例、显式数值排序与类别顺序',
     usedAt: document => componentPaths(document, c => c.type === 'pieChart' && ['legend', 'sort', 'categoryOrder'].some(key => has(props(c), key)))
   },
