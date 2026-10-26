@@ -88,6 +88,23 @@ test('official geometry, neutral tag colors, icons and panel rows',async({page})
  await expect(page.getByRole('option',{name:'选项 A',exact:true})).toHaveCSS('height','32px');
 });
 
+for (const shadow of [false, true]) test(`compact single dropdown follows trigger width; shadow=${shadow}`, async ({page}) => {
+ if (shadow) await page.goto('/tests/browser/index.html?selection&shadow');
+ await page.setViewportSize({width:390,height:720});
+ const trigger = page.getByRole('button', {name:'短选项单选',exact:true});
+ await trigger.click();
+ const popup = page.getByRole('dialog', {name:'短选项单选候选'});
+ await expect(popup).toBeVisible();
+ const anchor = (await trigger.boundingBox())!;
+ const panel = (await popup.boundingBox())!;
+ expect(panel.width).toBeCloseTo(anchor.width, 0);
+ expect(panel.x).toBeCloseTo(anchor.x, 0);
+ expect(panel.x + panel.width).toBeLessThanOrEqual(382);
+ await expect(page.getByRole('option', {name:'全部区域',exact:true})).toHaveCSS('padding-left', '16px');
+ await popup.press('Escape');
+ await expect(trigger).toBeFocused();
+});
+
 for(const shadow of [false,true]) test(`tree inset is16px and inert ancestors close; shadow=${shadow}`,async({page})=>{
  if(shadow) await page.goto('/tests/browser/index.html?selection&shadow');
  await page.getByRole('checkbox',{name:'禁用父节点',exact:true}).check();

@@ -137,7 +137,7 @@
     {/if}
   </div>
   <div bind:this={popup} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
-    style:left="{left}px" style:top="{top}px" style:min-width="{Math.max(width, 240)}px"
+    style:left="{left}px" style:top="{top}px" style:min-width="{Math.max(width, searchable || tree || multiple ? 240 : 0)}px"
     ontoggle={() => {open = popup.matches(':popover-open');}} onkeydown={popupKeys}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>

@@ -477,5 +477,897 @@
         "metric_equation_other": 64
       }
     ]
+  },
+  {
+    "output_dims": [
+      "toolbar_parallel_month"
+    ],
+    "output_metrics": [
+      "toolbar_parallel_value"
+    ],
+    "filterableDims": [
+      "toolbar_parallel_metric",
+      "toolbar_parallel_region",
+      "toolbar_parallel_channel"
+    ],
+    "rows": [
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 224,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 134,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 90,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 250,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 150,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 100,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 255,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 153,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 102,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 293,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 176,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 117,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 328,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 197,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 131,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 360,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 216,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 144,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 128,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 77,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 51,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 142,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 85,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 57,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 136,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 82,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 54,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 165,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 99,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 66,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 182,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 109,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 73,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 198,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 119,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 79,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 96,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 58,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 38,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 108,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 65,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 43,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 119,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 71,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 48,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 128,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 77,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 51,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 146,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 88,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 58,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 162,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 97,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 65,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 738,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 443,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 295,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 820,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 492,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 328,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 840,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 504,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 336,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 948,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 569,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 379,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 1068,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 641,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 427,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 1165,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 699,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_value": 466,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 420,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 252,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 168,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 465,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 279,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 186,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 448,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 269,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 179,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 532,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 319,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 213,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 590,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 354,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 236,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 640,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 384,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_value": 256,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 318,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 191,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "1月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 127,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 355,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 213,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "2月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 142,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 392,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 235,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "3月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 157,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 416,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 250,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "4月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 166,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 478,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 287,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "5月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 191,
+        "toolbar_parallel_channel": "partner"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 525,
+        "toolbar_parallel_channel": "all"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 315,
+        "toolbar_parallel_channel": "direct"
+      },
+      {
+        "toolbar_parallel_month": "6月",
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_value": 210,
+        "toolbar_parallel_channel": "partner"
+      }
+    ]
+  },
+  {
+    "output_dims": [],
+    "output_metrics": [
+      "toolbar_parallel_total"
+    ],
+    "filterableDims": [
+      "toolbar_parallel_metric",
+      "toolbar_parallel_region",
+      "toolbar_parallel_channel"
+    ],
+    "rows": [
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_channel": "all",
+        "toolbar_parallel_total": 1710
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_channel": "direct",
+        "toolbar_parallel_total": 1026
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_channel": "partner",
+        "toolbar_parallel_total": 684
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_channel": "all",
+        "toolbar_parallel_total": 951
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_channel": "direct",
+        "toolbar_parallel_total": 571
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_channel": "partner",
+        "toolbar_parallel_total": 380
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_channel": "all",
+        "toolbar_parallel_total": 759
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_channel": "direct",
+        "toolbar_parallel_total": 456
+      },
+      {
+        "toolbar_parallel_metric": "revenue",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_channel": "partner",
+        "toolbar_parallel_total": 303
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_channel": "all",
+        "toolbar_parallel_total": 5579
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_channel": "direct",
+        "toolbar_parallel_total": 3348
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "all",
+        "toolbar_parallel_channel": "partner",
+        "toolbar_parallel_total": 2231
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_channel": "all",
+        "toolbar_parallel_total": 3095
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_channel": "direct",
+        "toolbar_parallel_total": 1857
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "east",
+        "toolbar_parallel_channel": "partner",
+        "toolbar_parallel_total": 1238
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_channel": "all",
+        "toolbar_parallel_total": 2484
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_channel": "direct",
+        "toolbar_parallel_total": 1491
+      },
+      {
+        "toolbar_parallel_metric": "orders",
+        "toolbar_parallel_region": "south",
+        "toolbar_parallel_channel": "partner",
+        "toolbar_parallel_total": 993
+      }
+    ]
   }
 ]

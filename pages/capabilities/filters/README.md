@@ -72,6 +72,29 @@
 
 关联：[chart-local-filter-page](../chart/chart-local-filter-page.json)。
 
+## 左侧按钮组与右侧双下拉
+
+入口：`/pages/filter-group-parallel-selects`；[页面 JSON](filter-group-parallel-selects.json)。目录：数据与联动 → 条件驱动查询 → 局部筛选与查询订阅 → 左侧按钮组与右侧双下拉（合成演示）。
+
+启动：`pnpm dev:dqe`，或 `pnpm dev:playground` 与 `pnpm sim:dqe`。夹具更新后需重启本地 DQE Sim。
+
+合成演示
+
+交互取数需本地仿真
+
+组合卡显式 `filterLayout:"toolbar"`，左侧营业收入/订单量按钮组，右侧区域和渠道两个下拉；右组按 12px 间距紧凑排列并贴齐卡内容右边界。三个条件共同绑定趋势和合计查询。
+
+1. 默认营业收入、全部区域、全部渠道，合计 1,710 万元。宽屏按钮靠左，两个下拉整体靠右，随卡宽变化仍保持组内间距。
+2. 区域选华东，合计 951 万元；渠道选直营，合计 571 万元；左侧切订单量，保留华东和直营，合计 1,857 笔。
+3. 刷新恢复全部三项条件；独立页 `?metric=orders&region=east&channel=direct` 显示 1,857。非法或重复值回退各自默认项。
+4. 窄屏右组先整体换行并继续居右，不把按钮和两个下拉挤成三等份；组内放不下时可再次换行。Escape 关闭弹层后返回触发框。
+
+关键声明：`sections[].components[].props.filterLayout`, `filterGroup.props.align`, `filters`, `dataSources.*.source.query.filterBindings`。
+
+关联：[filter-group-page](filter-group-page.json)。
+
+渠道为独立合成数据集，直营约占 60%，合作伙伴为剩余部分；按每月取整后汇总，保持每月与总计闭合。`all` 是显式汇总成员。页面校验、浏览器与本地 Sim 不代表真实 DQE、Relay 或生产接入验收。
+
 ## 独立筛选：指标卡、一控多与条件显隐
 
 入口：`/pages/filter-group-state-page`；[页面 JSON](filter-group-state-page.json)。

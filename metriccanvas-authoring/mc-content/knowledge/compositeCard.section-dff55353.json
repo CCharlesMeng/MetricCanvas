@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "6.63",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "compositeCard.section-dff55353"
+  ],
+  "semantics": [
+    {
+      "module": "compositeCard",
+      "reference": "references/page-metadata/components/compositeCard.md",
+      "blocks": [
+        "# 组合卡 compositeCard\n\n把若干组件框进一张卡,并让这张卡作为一个组件进 12 列栅格横向并排。适用于需要若干张白卡横向并排,每张卡自带卡壳、可选标题与卡内分隔、要装的这组组件本身就是一个内容分区时改用 section.container: \"card\"、卡内是多张表格互斥切换时改用 Tab 容器。数据形状：不绑定页面数据源；每个子组件自己声明数据槽与字段绑定。\n\nmetricGrid、compactSummary、analysisStack等变体决定卡内结构；子组件仅使用各变体允许的类型与布局。组合卡拥有完整子树，删除时依赖清理由创作工具负责。\n\nDashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px黑色10%透明度实线外框，内部指标保持无框；无需新增页面字段。示例：[`tab-mixed-content`](../examples/tab-mixed-content.json)。\n\n纯指标内容使用现有 `variant: \"metricGrid\"`，按内容自适应高度；默认组合卡仍保留280px最小高度，`compact` / `projectNorms` 沿用各自高度约束。示例中的指标组合使用 `metricGrid`，避免撑高同一行的普通指标卡。",
+        "## 筛选工具栏（6.63）\n\n`props.filterLayout:\"toolbar\"` 将开头连续的 filterGroup 排入卡顶工具栏：align:left（默认）靠左，align:right 作为一个紧凑组整体居右，组内间距 12px；短选项下拉使用现有 160px 控件宽度。宽度不足时先让右组整体换行，组内仅在自身也容纳不下时换行，保持右对齐。此时这些筛选组件的 span 不分配工具栏内部比例；它们仍分别拥有 filterId、候选、状态和查询绑定。遇到第一个非 filterGroup 后结束提取，其后所有组件仍沿用原栅格顺序、span 与分隔线。没有显式声明时保持原布局。\n\n示例 `/pages/filter-group-parallel-selects`：左侧一个指标按钮组，右侧区域、渠道两个下拉；内容为趋势图与合计。只读和导出复用原筛选组件的禁用与选中标签投影。"
+      ],
+      "rules": [
+        {
+          "id": "composite-card-pure-container",
+          "description": "组合卡是纯容器：不声明 data / actions、至少一个子组件、不嵌套容器、子组件在白名单内",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "composite-card-with-data",
+            "composite-card-with-actions",
+            "composite-card-empty",
+            "composite-card-nested-container",
+            "composite-card-child-not-whitelisted"
+          ]
+        },
+        {
+          "id": "ai-summary-regions",
+          "description": "AI 总结可进入组合卡，显式总结所属区域且位于区域或页面正文顶部",
+          "valid": [
+            "report-ai-summary-regions"
+          ],
+          "invalid": [
+            "ai-summary-region-version",
+            "ai-summary-region-mixed-scope",
+            "ai-summary-region-not-top",
+            "ai-summary-page-not-top",
+            "ai-summary-region-not-full-width"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/composite-page.json",
+        "references/page-metadata/examples/report-ai-summary-regions.json",
+        "references/page-metadata/examples/filter-group-parallel-selects.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -48,6 +48,7 @@
   import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
   import FilterGroup from './dashboard/FilterGroup.svelte';
+  import { compositeFilterToolbar } from './dashboard/filter-toolbar';
   import TableToolbar from '../../widgets/src/components/table/TableToolbar.svelte';
   import { componentDataNotices } from './component-render';
   import {
@@ -209,6 +210,7 @@
     </TabContainer>
   {:else if component.type === 'compositeCard'}
     <CompositeCard
+      toolbar={compositeFilterToolbar(component)}
       title={'title' in component.props ? component.props.title : undefined}
       titleIcon={component.props.titleIcon}
       variant={component.props.variant}

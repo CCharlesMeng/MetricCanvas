@@ -87,7 +87,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 可运行 `multi-source-table` 使用两个合成普通分页端点，覆盖异字段、来源常量、null、默认整体排序、搜索、候选筛选、分页、Excel 导出与来源详情导航。静态校验、模拟网关与浏览器不证明真实 DQE 已满足上述能力。
 
 
-页面协议 6.62。结构真源为本册[schema.json](schema.json)，SHA256 `ee1b549ffa88f6bbe75c2d1909fed0cbca6cdafe48bd328cc85d78027336b2ac`。字段表自动生成；可选不等于有默认值。
+页面协议 6.63。结构真源为本册[schema.json](schema.json)，SHA256 `28ea3f3ecadfc9f159412a62ca43463c70033c67206aeade47f4291c11ed4114`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

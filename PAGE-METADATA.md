@@ -12,6 +12,8 @@
 
 6.41 将通用 DashboardToolbar 的呈现能力并入 IocHeader，只保留一个页头实现。新页面使用 `iocHeader`，旧 `dashboardToolbar` 只作兼容读取；布局、更多筛选、只读和说明见[唯一页头](docs/page-metadata/page.md#唯一页头641)。仅选年份使用共享 `periodModes:["year"]`，见[现有期间页面](pages/capabilities/filters/dashboard-period-filter.json)。 Header组件默认自带16px底部外间距，声明和兼容边界见同一页头模块。
 
+6.63 为组合卡增加 `filterLayout:"toolbar"`：左侧按钮组与右侧多个下拉在同一工具栏排列，右组整体贴右且按内容宽度紧凑排列，窄屏整组回流。示例 `/pages/filter-group-parallel-selects`；声明与边界见[组合卡](docs/page-metadata/components/compositeCard.md#筛选工具栏663)。普通栅格与已有单下拉弹层修复保持。
+
 6.47 为独立 `filterGroup` 增加 `display:"select"` 与 `align:"right"`，支持图表卡左侧按钮、右侧下拉共享查询筛选。入口 `/pages/filter-group-page`，声明与状态规则见[独立筛选](docs/page-metadata/components/filterGroup.md)。
 
 6.46 补齐 `selection:{mode:"multiple",required:true}` 的非空多选：保持离散集合并拒绝清空，单选仍至多一个。七主题 IOC 合成验收入口为 `/ioc-header-review`；完整声明、主线迁移及证据边界见[筛选声明](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646)。

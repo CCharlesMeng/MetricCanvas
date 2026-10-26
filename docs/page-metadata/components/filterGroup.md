@@ -35,6 +35,12 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 
 图表卡中的两个控件各占 `layout.span:6`，图表占 12；右侧使用 `{"filterId":"region","display":"select","align":"right","options":[{"label":"全部区域","value":"all"},{"label":"华东","value":"east"},{"label":"华南","value":"south"}]}`。两个筛选器分别绑定 queryField，组合条件由查询消费。示例的 `all` 是合成数据集显式提供的全区域汇总行，不代表通用的“不过滤”值，也不能把该业务值移植到真实查询。
 
+多个下拉需要与左侧按钮组形成同一条工具栏时，在组合卡声明 `props.filterLayout:"toolbar"`（6.63）。开头连续的 filterGroup 被排成一条独立工具栏；未声明 align 或 align:left 的控件进入左组，align:right 的控件进入右组。两组之间吸收剩余空间，右组内按内容宽度和固定 12px 间距排列，最后一个下拉贴齐卡内容右边界。空间不足时右组整体换行并继续居右，极窄时组内也可换行；不按各子项 span 比例分摊控件宽度。后续图表和指标仍走原 12 列栅格。
+
+一个 filterGroup 仍只绑定一个 filterId，三个控件分别通过 filterBindings 影响查询。未启用工具栏的组合卡保持原栅格与 align 语义。完整示例 `/pages/filter-group-parallel-selects` 为左侧营业收入/订单量按钮、右侧区域和渠道两个下拉，趋势和合计同时消费三项条件，并保留 URL 恢复。渠道数据为独立合成夹具，不修改原按钮加单下拉示例的数据。
+
+固定单选下拉没有搜索框，弹层最小宽度跟随触发框，短选项与触发框等宽；长选项可按内容扩展，但受视口边界约束。现有选项行高、内边距、圆角和阴影保持；搜索、多选与树形选择面板继续保留其最小展开空间。这是共享控件的呈现修复，不增加页面字段或 Schema 版本。
+
 按钮切换指标仍是显式筛选：合成数据有 `toolbar_metric` 维度，图表和合计查询都绑定它以及区域维度；不同指标的单位和内容分别通过集中 `visibleWhen` 选择。运行时不替换查询字段、不执行脚本。原型链接 `/prototypes/chart-filter-toolbar` 重定向到正式示例。
 
 指标卡分区可复用相同声明：section.container:card、section.title、span:12 的 filterGroup、连续 Before 指标卡依次组成白底无边框区域；标题和筛选均靠左，筛选在标题下方。示例 `/pages/metric-card-equation` 的 all/east/south 是合成汇总数据中的显式区域值，all 不代表通用的清除查询条件。

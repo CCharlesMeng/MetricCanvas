@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 62,
-  "current": "6.62",
+  "minor": 63,
+  "current": "6.63",
   "capabilities": {
+    "composite-filter-toolbar": {
+      "minor": 63,
+      "description": "组合卡内左侧按钮与右侧多个下拉的筛选工具栏",
+      "legacyReadable": false
+    },
     "query-cell-display-evidence": {
       "minor": 60,
       "description": "查询快照原文展示证据",
@@ -687,6 +692,7 @@
     "6.59",
     "6.60",
     "6.61",
-    "6.62"
+    "6.62",
+    "6.63"
   ]
 }

@@ -9,5 +9,6 @@ const options=$derived([{value:'CN',label:'中国地区部',disabled:parentDisab
 <label>候选状态<select bind:value={status}><option value="">正常</option><option>候选项加载中…</option><option>无候选项</option><option>候选项不可用</option><option>候选项加载失败(UNKNOWN)</option></select></label>
 <div class="field"><Selection label="区域" tree {options} value={values} {multiple} {searchable} {disabled} treeSelection={policy} clearable statusText={status || undefined} onchange={next=>{values=next;calls++;}}/></div>
 <button onclick={()=>values=['SZ','BJ','DE','UNKNOWN-LONG-CODE']}>装载多标签</button><output aria-label="值">{JSON.stringify(values)}</output><output aria-label="变更次数">{calls}</output>
-<div class="field"><Select label="普通单选" options={[{value:'A',label:'选项 A'},{value:'B',label:'选项 B'}]}/></div></main>
-<style>main{font:14px Arial;padding:24px;display:grid;gap:16px;max-width:500px}.field{width:240px;max-width:100%}</style>
+<div class="field"><Select label="普通单选" options={[{value:'A',label:'选项 A'},{value:'B',label:'选项 B'}]}/></div>
+<div class="field compact"><Selection label="短选项单选" options={[{value:'all',label:'全部区域'},{value:'east',label:'华东'},{value:'south',label:'华南'}]} value={['all']} multiple={false} searchable={false} required/></div></main>
+<style>main{font:14px Arial;padding:24px;display:grid;gap:16px;max-width:500px}.field{width:240px;max-width:100%}.field.compact{width:160px;justify-self:end}</style>

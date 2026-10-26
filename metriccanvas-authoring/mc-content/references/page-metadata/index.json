@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.62",
-  "schemaSha256": "ee1b549ffa88f6bbe75c2d1909fed0cbca6cdafe48bd328cc85d78027336b2ac",
+  "schemaVersion": "6.63",
+  "schemaSha256": "28ea3f3ecadfc9f159412a62ca43463c70033c67206aeade47f4291c11ed4114",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -772,7 +772,8 @@
       ],
       "examples": [
         "composite-page",
-        "report-ai-summary-regions"
+        "report-ai-summary-regions",
+        "filter-group-parallel-selects"
       ],
       "rules": [
         "composite-card-pure-container",
@@ -1145,7 +1146,8 @@
         "6.59",
         "6.60",
         "6.61",
-        "6.62"
+        "6.62",
+        "6.63"
       ]
     },
     {
@@ -14932,6 +14934,13 @@
       ]
     },
     {
+      "pointer": "#/definitions/compositeCardComponent/properties/props/properties/filterLayout",
+      "path": "@compositeCardComponent.props.filterLayout",
+      "required": "本分支可选",
+      "module": "components/compositeCard.md",
+      "const": "toolbar"
+    },
+    {
       "pointer": "#/definitions/compositeCardComponent/properties/props/properties/dividers",
       "path": "@compositeCardComponent.props.dividers",
       "required": "本分支可选",
@@ -19214,5 +19223,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "09d2acd5ce23ff8189e0d999e1aea113ab6ff6fd96d7a3c255377fcbfa75dab6"
+  "semanticSourceDigest": "ca191657f36c4a2733ae688607da370fbc3d02711eeef8ff52b45ede8f75892e"
 }

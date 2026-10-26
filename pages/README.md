@@ -501,6 +501,8 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ### 图表卡内左侧按钮与右侧下拉（6.47）
 
+左侧按钮组、右侧双下拉版本见 [filter-group-parallel-selects.json](capabilities/filters/filter-group-parallel-selects.json)，入口 `/pages/filter-group-parallel-selects`，也可在条件驱动查询的“局部筛选与查询订阅”中选择。显式 `filterLayout:"toolbar"` 保证两个下拉紧凑排列并整体贴右，区域、渠道与指标共同筛选趋势和合计；操作与合成数据边界见[筛选示例说明](capabilities/filters/README.md)。
+
 - 页面：[filter-group-page.json](capabilities/filters/filter-group-page.json)，入口 `/pages/filter-group-page`；替换原独立筛选示例的主入口，原型入口 `/prototypes/chart-filter-toolbar` 自动转入本页。原显隐与指标卡场景移至 `/pages/filter-group-state-page`。
 - 启动 `pnpm dev:dqe` 与 `pnpm dev:playground`，使用 DQE Sim 合成数据。既有筛选器演示服务重启后加载新增夹具；不需要业务服务或真实权限。
 - 左上在营业收入／订单量间切换，右上在全部区域／华东／华南间选择。两个控件共同过滤图表和合计查询；宽屏左右对齐，窄屏按组合卡布局换行。

@@ -18,8 +18,14 @@ Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px�
 
 6.58 增加 aiSummary 子组件（Report 限制仍适用）；摘要必须在卡内内容最前并占满 12 列，可显式 scope: "container" 总结本卡关联数据。正文、生成、缓存和导出复用同一 aiSummary；文字不进入分析输入。其他准入及嵌套规则不变。示例：[`report-ai-summary-regions`](../examples/report-ai-summary-regions.json)。
 
+## 筛选工具栏（6.63）
 
-页面协议 6.62。结构真源为本册[schema.json](../schema.json)，SHA256 `ee1b549ffa88f6bbe75c2d1909fed0cbca6cdafe48bd328cc85d78027336b2ac`。字段表自动生成；可选不等于有默认值。
+`props.filterLayout:"toolbar"` 将开头连续的 filterGroup 排入卡顶工具栏：align:left（默认）靠左，align:right 作为一个紧凑组整体居右，组内间距 12px；短选项下拉使用现有 160px 控件宽度。宽度不足时先让右组整体换行，组内仅在自身也容纳不下时换行，保持右对齐。此时这些筛选组件的 span 不分配工具栏内部比例；它们仍分别拥有 filterId、候选、状态和查询绑定。遇到第一个非 filterGroup 后结束提取，其后所有组件仍沿用原栅格顺序、span 与分隔线。没有显式声明时保持原布局。
+
+示例 `/pages/filter-group-parallel-selects`：左侧一个指标按钮组，右侧区域、渠道两个下拉；内容为趋势图与合计。只读和导出复用原筛选组件的禁用与选中标签投影。
+
+
+页面协议 6.63。结构真源为本册[schema.json](../schema.json)，SHA256 `28ea3f3ecadfc9f159412a62ca43463c70033c67206aeade47f4291c11ed4114`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -148,6 +154,20 @@ Schema位置：`#/definitions/compositeCardComponent/properties/props/properties
 | "compact" | 时间点去掉分隔符后送出，例如 202604。 |
 | "projectNorms" | 项目规范呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
 | "metricGrid" | 指标网格呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f7369746543617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c7465724c61796f7574"></a>
+
+### `@compositeCardComponent.props.filterLayout`
+
+Schema位置：`#/definitions/compositeCardComponent/properties/props/properties/filterLayout`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="toolbar" | Schema未设默认；装配/运行时默认见语义说明 | 6.63显式工具栏：开头连续filterGroup按align组成左右两组；右组紧凑排列并整体贴右，窄屏回流，其余内容沿用栅格。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "toolbar" | 用于选择@compositeCardComponent.props.filterLayout分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f7369746543617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6469766964657273"></a>
 
@@ -302,6 +322,7 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/9`。目标：[#/definiti
 - [metricGrid](../examples/component-compositeCard-metricGrid.json)：独立完整页面，保留必要语义依赖。
 - [composite-page](../examples/composite-page.json)：完整合法页面；查询仅为静态契约证据。
 - [report-ai-summary-regions](../examples/report-ai-summary-regions.json)：完整合法页面；查询仅为静态契约证据。
+- [filter-group-parallel-selects](../examples/filter-group-parallel-selects.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-compositeCard.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

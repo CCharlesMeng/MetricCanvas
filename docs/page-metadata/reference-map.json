@@ -925,7 +925,8 @@
       ],
       "examples": [
         "composite-page",
-        "report-ai-summary-regions"
+        "report-ai-summary-regions",
+        "filter-group-parallel-selects"
       ],
       "sources": [
         "packages/page/src/schema/components/composite-card.ts",
@@ -1652,7 +1653,8 @@
     "#/definitions/tableColumn/properties/navigateBySource": "按行来源维度选择导航目标；未配置的来源显示普通文本。",
     "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。",
     "#/definitions/tableColumn/properties/visibleWhen": "6.62 列展示条件，不支持 row；隐藏后退出搜索并清理用户列操作。",
-    "#/definitions/tableColumnGroup/properties/visibleWhen": "6.62 列组条件，隐藏覆盖后代，无可见叶子不生成表头。"
+    "#/definitions/tableColumnGroup/properties/visibleWhen": "6.62 列组条件，隐藏覆盖后代，无可见叶子不生成表头。",
+    "#/definitions/compositeCardComponent/properties/props/properties/filterLayout": "6.63显式工具栏：开头连续filterGroup按align组成左右两组；右组紧凑排列并整体贴右，窄屏回流，其余内容沿用栅格。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1937,7 +1939,8 @@
     "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason=\"INVALID_NUMERIC_VALUE\"": "数值度量不能归一化为有限数字，原始标量仅供展示。",
     "#/properties/schemaVersion=\"6.60\"": "表格原文展示证据与独立查询置顶行。",
     "6.61": "当前协议版本，支持分页合并源与按行来源导航。",
-    "6.62": "新增字段列与分组列展示条件、可见字段搜索、用户视图调和及冻结导出；旧表格规则保持。"
+    "6.62": "新增字段列与分组列展示条件、可见字段搜索、用户视图调和及冻结导出；旧表格规则保持。",
+    "#/properties/schemaVersion=\"6.63\"": "组合卡显式筛选工具栏：左侧按钮组与右侧紧凑多下拉。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2562,7 +2565,8 @@
       "URL 初始化页签（6.33）"
     ],
     "components/compositeCard.md": [
-      "查阅方式"
+      "查阅方式",
+      "筛选工具栏（6.63）"
     ],
     "components/rankingCard.md": [
       "查阅方式"

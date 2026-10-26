@@ -26,6 +26,8 @@
     variant?: 'compact' | 'projectNorms' | 'metricGrid';
     /** 子组件声明的 `layout.span`,数组顺序即自动流顺序。 */
     spans: readonly number[];
+    /** Runtime projects leading controls to intrinsic-width alignment groups. */
+    toolbar?: {left: number[]; right: number[]; count: number};
     /** Layout-owned drawing space; absent entries retain intrinsic sizing. */
     minHeights?: readonly number[];
     /** 相邻子组件之间是否分隔;位置由自动流落位派生,不由声明给出。 */
@@ -34,9 +36,10 @@
     children: Snippet<[number]>;
   }
 
-  let { title, titleIcon, variant, spans, minHeights, dividers, children }: Props = $props();
+  let { title, titleIcon, variant, spans, toolbar, minHeights, dividers, children }: Props = $props();
 
-  const slots = $derived(compositeCardFlow(spans));
+  const contentOffset = $derived(toolbar?.count ?? 0);
+  const slots = $derived(compositeCardFlow(spans.slice(contentOffset)));
   const hasMinHeights = $derived(minHeights?.some(height => height > 0) ?? false);
 </script>
 
@@ -52,6 +55,16 @@
     {#if titleIcon}<img src={titleIcons[titleIcon]} alt="" aria-hidden="true" />{/if}
     <span>{title}</span>
   </h3>{/if}
+  {#if toolbar && contentOffset > 0}
+    <div class="filter-toolbar" role="group" aria-label="局部筛选工具栏">
+      {#if toolbar.left.length}<div class="toolbar-start">
+        {#each toolbar.left as index}<div class="toolbar-item">{@render children(index)}</div>{/each}
+      </div>{/if}
+      {#if toolbar.right.length}<div class="toolbar-end">
+        {#each toolbar.right as index}<div class="toolbar-item">{@render children(index)}</div>{/each}
+      </div>{/if}
+    </div>
+  {/if}
   <div class:with-dividers={dividers === true} class="composite-grid">
     {#each slots as slot, index}
       <div
@@ -60,16 +73,20 @@
         class:bleed-start={slot.precededInRow}
         class:bleed-end={slot.followedInRow}
         class="composite-slot"
-        style:min-height={minHeights?.[index] ? `${minHeights[index]}px` : undefined}
+        style:min-height={minHeights?.[index + contentOffset] ? `${minHeights[index + contentOffset]}px` : undefined}
         style={`grid-column: span ${slot.span};`}
       >
-        {@render children(index)}
+        {@render children(index + contentOffset)}
       </div>
     {/each}
   </div>
 </div>
 
 <style>
+  .filter-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; min-width:0; width:100%; }
+  .toolbar-start, .toolbar-end { display:flex; flex-wrap:wrap; align-items:center; gap:12px; min-width:0; max-width:100%; }
+  .toolbar-end { margin-left:auto; justify-content:flex-end; }
+  .toolbar-item { display:flex; min-width:0; max-width:100%; }
   .composite-card {
     /* 卡内行距与列距同取卡壳自己的间距:分隔线画在它的中线上,
        所以线位与间距是同一个量,不能各写一份。 */

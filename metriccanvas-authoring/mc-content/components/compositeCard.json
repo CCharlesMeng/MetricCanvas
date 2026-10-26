@@ -29,7 +29,7 @@
   "knowledge": "compositeCard.overview",
   "reference": "references/page-metadata/components/compositeCard.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.62",
+  "currentWriter": "6.63",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/composite-page.json",
@@ -181,6 +181,48 @@
           "id": "tab-container-multi-table",
           "minor": 0,
           "description": "Tab item 按顺序承载非空表格列表"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/filter-group-parallel-selects.json",
+      "requiredVersion": "6.63",
+      "capabilities": [
+        {
+          "id": "composite-filter-toolbar",
+          "minor": 63,
+          "description": "组合卡内左侧按钮与右侧多个下拉的筛选工具栏"
+        },
+        {
+          "id": "filter-group-presentation",
+          "minor": 47,
+          "description": "独立固定单选筛选的下拉呈现与左右对齐"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

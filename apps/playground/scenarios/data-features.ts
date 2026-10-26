@@ -35,7 +35,7 @@ export const dataFeatures: readonly DataFeature[] = [
   { id: 'currency-range', topic: 'conditions', title: '币种与金额范围', description: '切换币种后重选金额范围，比较查询基本单位与显示单位。',
     examples: [{ scene: 'business-conditions', pages: ['ioc-header-currency-demo'] }, { scene: 'ioc-header', pages: ['ioc-header-currency'] }] },
   { id: 'local-query-filter', topic: 'conditions', title: '局部筛选与查询订阅', description: '筛选只更新显式订阅的查询，其他来源保持不变。',
-    examples: [{ scene: 'local-filter', pages: ['filter-group-page', 'filter-group-state-page'] }, { scene: 'charts', pages: ['chart-local-filter-page'] }, { scene: 'containers', pages: ['tab-mixed-content-report'] }] },
+    examples: [{ scene: 'local-filter', pages: ['filter-group-page', 'filter-group-parallel-selects', 'filter-group-state-page'] }, { scene: 'charts', pages: ['chart-local-filter-page'] }, { scene: 'containers', pages: ['tab-mixed-content-report'] }] },
   { id: 'shared-source', topic: 'relationships', title: '共享数据源', description: '多个组件消费同一份记录或查询结果，观察共同刷新。',
     examples: [{ scene: 'foundations', pages: ['component-foundations'] }, { scene: 'local-filter', pages: ['query-mode-chart-demo'] }, { scene: 'export', pages: ['table-toolbar-demo'] }] },
   { id: 'keyed-join', topic: 'relationships', title: '按键补列', description: '通过关联键组合多个查询的列，再进行全局结果处理。',

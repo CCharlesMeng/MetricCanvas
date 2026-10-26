@@ -43,7 +43,7 @@ export const scenes: readonly Scene[] = [
   { id: 'report-time', title: '报告页头与时间联动', owner: 'components/reportHeader', components: ['reportHeader'], topics: ['conditions', 'sources'], layouts: ['report'],
     pages: ['report-date-filter-example', 'dashboard-period-filter'], question: '报告标题和查询怎样消费同一份已应用时间？' },
   { id: 'local-filter', title: '局部筛选驱动多个消费者', owner: 'data/conditions', components: ['filterGroup', 'compositeCard', 'lineChart', 'metricCard', 'table'], topics: ['conditions', 'interactions', 'relationships'],
-    pages: ['filter-group-page', 'filter-group-state-page', 'query-mode-chart-demo'],
+    pages: ['filter-group-page', 'filter-group-parallel-selects', 'filter-group-state-page', 'query-mode-chart-demo'],
     question: '局部条件怎样影响图表和指标，未订阅的来源为什么保持不变？' },
   { id: 'visibility', title: '条件显隐与操作资格', owner: 'data/conditions', components: ['button'], topics: ['conditions', 'interactions'],
     pages: ['page-visibility-region-linkage', 'page-visibility-inputs', 'page-visibility-report'], question: '条件如何控制显示和操作，权限事实未就绪时会发生什么？' },
