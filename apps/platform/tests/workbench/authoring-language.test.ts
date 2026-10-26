@@ -113,9 +113,13 @@ it('rejects old first notification after cancel â†’ authoritative not-applied â†
   const f = await setup(); const oldRun = f.language.start('old'); await flush();
   const old = await f.deliver('zzzz'); f.language.cancel(); await f.resolve({ status: 'unknown', operations: [] }); await oldRun;
   await f.language.lookup();
-  const newRun = f.language.start('new'); await flush();
-  f.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: old.draftId } })); await flush();
-  expect(f.coordinator.snapshot().ref).toEqual(base); expect(f.language.snapshot().message).toContain('RESPONSE_MISMATCH');
+  const originalPrepare = f.port.prepare!;
+  f.port.prepare = vi.fn(async (request, signal) => { await new Promise(resolve => setTimeout(resolve, 15)); return originalPrepare(request, signal); });
+  const newRun = f.language.start('new');
+  await vi.waitFor(() => expect(f.port.run).toHaveBeenCalledTimes(2));
+  f.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: old.draftId } }));
+  await vi.waitFor(() => expect(f.language.snapshot().message).toContain('RESPONSE_MISMATCH'));
+  expect(f.coordinator.snapshot().ref).toEqual(base);
   await f.resolve(await f.deliver('aaaa')); await newRun; await flush(); expect(f.language.snapshot().phase).toBe('saved');
 });
 it('isolates changed identity before and after an in-flight exact read', async () => {
