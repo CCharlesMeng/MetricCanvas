@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.59",
-  "schemaSha256": "604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0",
+  "schemaVersion": "6.60",
+  "schemaSha256": "42ab238060ebcf4d08a3ecd245c31d47ac6d3f27655476e11409c6f8ae72251e",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -236,7 +236,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "a89267ac4ef4d5fb8aac2421a341679e20b096deaac16709cb2a21c42a944015"
+      "sha256": "9794a444a39c3a625b79d1a1fa653cb518c1df70beaaad6a889f7261aa6e59e1"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -276,7 +276,7 @@
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
-      "sha256": "5301319ad655b5c87dd7ba15225cc9b16249ab38f5bd8c42037b2c41c6467514"
+      "sha256": "59749656cffbcca0eeb6576a6014017339436b9d281c34c4f76287d1e151b176"
     },
     {
       "file": "packages/page/src/text-value.ts",
@@ -316,7 +316,7 @@
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
-      "sha256": "22620d0d77dbc157b22476a6c1ddc94af2e2565e3816ab0ccb6228d61ea82dcb"
+      "sha256": "028456bd434429d982f20e59a38103a1185c54a338e223cc2e3d793261171992"
     },
     {
       "file": "packages/page/src/validate-query-results.ts",
@@ -324,11 +324,11 @@
     },
     {
       "file": "packages/page/src/validate-row-expansion.ts",
-      "sha256": "84cdc391cd454bb9652259c30234b903ccc0c98dcdab285583824244cd88d1be"
+      "sha256": "d1f168bb3dab4162c37625e22d8660ff1bd736db5c4eae9d275d7884476ea946"
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "e1d3b2235d5dc60248ff6713dc839fcb45437b3636ada8480304259d7ab7fea3"
+      "sha256": "3f77ea852e6c1ef46caa49ecca85612f33f1fedf334e6404055cc7984eb45926"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -336,7 +336,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "877bf5699d0af89e7b7fb3ec770831c466a9aa0e22e0f78e3702de6ffa7421d9"
+      "sha256": "8990158bd48924698ac12bdcf88cb5bd2fcabbeb0d61ab182e9aa73d612a0ac7"
     }
   ],
   "modules": {
@@ -498,7 +498,8 @@
         "queryRecordListField",
         "groupedQueryFields",
         "groupedDimensionQueryFieldGroup",
-        "groupedMeasureQueryFieldGroup"
+        "groupedMeasureQueryFieldGroup",
+        "cellFallbacks"
       ],
       "keywords": [
         "fields",
@@ -508,7 +509,8 @@
         "grouped-fields-page",
         "reference-branches-page",
         "query-numeric-tolerance",
-        "stored-count-measures"
+        "stored-count-measures",
+        "table-paged-fallback-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1106,7 +1108,9 @@
         "table-row-expansion-query",
         "table-row-expansion-inputs",
         "table-row-expansion-none",
-        "table-row-number-page"
+        "table-row-number-page",
+        "table-scalar-fallback-page",
+        "table-pinned-summary-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -1129,7 +1133,8 @@
         "table-toolbar-search",
         "paged-join",
         "table-search-options",
-        "table-row-expansion"
+        "table-row-expansion",
+        "table-pinned-top"
       ]
     },
     "components/mapChart.md": {
@@ -1677,7 +1682,8 @@
         "6.56",
         "6.57",
         "6.58",
-        "6.59"
+        "6.59",
+        "6.60"
       ]
     },
     {
@@ -6224,6 +6230,83 @@
       "path": "@pagedJoinSource.initial.rows[] · propertyNames",
       "required": "条件结构",
       "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/initial/properties/cellFallbacks",
+      "path": "@pagedJoinSource.initial.cellFallbacks",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/initial/properties/cellFallbacks/allOf/0",
+      "path": "@pagedJoinSource.initial.cellFallbacks · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md",
+      "ref": "#/definitions/cellFallbacks"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks",
+      "path": "@cellFallbacks",
+      "required": "类型/分支",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties",
+      "path": "@cellFallbacks{key}",
+      "required": "动态键的值",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties",
+      "path": "@cellFallbacks{key}{key}",
+      "required": "动态键的值",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw",
+      "path": "@cellFallbacks{key}{key}.raw",
+      "required": "本分支必填",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/0",
+      "path": "@cellFallbacks{key}{key}.raw · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/1",
+      "path": "@cellFallbacks{key}{key}.raw · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/2",
+      "path": "@cellFallbacks{key}{key}.raw · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason",
+      "path": "@cellFallbacks{key}{key}.reason",
+      "required": "本分支必填",
+      "module": "fields.md",
+      "enum": [
+        "TYPE_MISMATCH",
+        "INVALID_NUMERIC_VALUE"
+      ]
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/additionalProperties/propertyNames",
+      "path": "@cellFallbacks{key} · propertyNames",
+      "required": "条件结构",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/cellFallbacks/propertyNames",
+      "path": "@cellFallbacks · propertyNames",
+      "required": "条件结构",
+      "module": "fields.md"
     },
     {
       "pointer": "#/definitions/pagedJoinSource/properties/initial/properties/totalCount",
@@ -11944,6 +12027,18 @@
       "const": "left"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/pinnedTop",
+      "path": "@tableComponent.props.pinnedTop",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/data",
+      "path": "@tableComponent.props.pinnedTop.data",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/rowKey",
       "path": "@tableComponent.props.rowKey",
       "required": "本分支可选",
@@ -12002,6 +12097,45 @@
       "path": "@tableColumn",
       "required": "类型/分支",
       "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop",
+      "path": "@tableColumn.pinnedTop",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/field",
+      "path": "@tableColumn.pinnedTop.field",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField",
+      "path": "@tableColumn.pinnedTop.secondaryField",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField/allOf/0",
+      "path": "@tableColumn.pinnedTop.secondaryField · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/badgeField",
+      "path": "@tableColumn.pinnedTop.badgeField",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/badgeField/allOf/0",
+      "path": "@tableColumn.pinnedTop.badgeField · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/fieldBinding"
     },
     {
       "pointer": "#/definitions/tableColumn/properties/kind",
@@ -17552,6 +17686,24 @@
       "module": "data-sources.md",
       "file": "examples/paged-join-page.json",
       "pointer": "#/dataSources/office-overview"
+    },
+    {
+      "schemaPointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/0",
+      "module": "fields.md",
+      "file": "examples/table-paged-fallback-page.json",
+      "pointer": "#/dataSources/office-overview/source/initial/cellFallbacks/0/bidding-amount/raw"
+    },
+    {
+      "schemaPointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/1",
+      "module": "fields.md",
+      "file": "examples/table-paged-fallback-page.json",
+      "pointer": "#/dataSources/office-overview/source/initial/cellFallbacks/0/rep-office-name/raw"
+    },
+    {
+      "schemaPointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/2",
+      "module": "fields.md",
+      "file": "examples/table-paged-fallback-page.json",
+      "pointer": "#/dataSources/office-overview/source/initial/cellFallbacks/0/region-dept-name/raw"
     },
     {
       "schemaPointer": "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0",

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import fixture from '../../../pages/capabilities/query/query-numeric-tolerance.json';
 import joinFixture from '../../page/fixtures/contract-valid/paged-join-page.json';
 import { parsePage, versionPolicy, type PageDocument } from '@metriccanvas/page';
-import type { DataSnapshot, EffectiveQuery } from '@metriccanvas/page/internal';
+import { rowCellFallback, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
 import { createDqeGateway, createInMemoryDqeDiagnostics } from '../src/dqe';
 import { createPageDataExecutor } from '../src';
 import { createSourceProgram, initialFilterValues } from '../src/runtime';
@@ -86,6 +86,7 @@ describe('完整页面的查询数值容错', () => {
     expect(parsePage(output).errors).toEqual([]);
     const reopened = await read(JSON.parse(JSON.stringify(output)), true, transport);
     expect(reopened.rows.map(row => row.value)).toEqual(expected);
+    expect(rowCellFallback(reopened.rows[1], 'value')?.raw).toBe('--');
     expect(transport.requests()).toBe(1);
     const summed = applyComputation([{ op: 'grandTotal', measures: ['value'], rowKind: { field: 'kind', value: 'total' }, label: { field: 'sample', value: '合计' } }], reopened.rows);
     expect(summed.at(-1)?.value).toBe(18.5);

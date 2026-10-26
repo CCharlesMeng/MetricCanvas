@@ -376,3 +376,9 @@ export const metricDataZ = z
     target: idZ.optional()
   })
   .meta({ id: 'metricData' });
+
+/** Serializable display evidence for already-normalized pagedJoin initial snapshots. */
+export const cellFallbacksZ = z.record(z.string().regex(/^(0|[1-9]\d*)$/), z.record(fieldNameZ, z.object({
+  raw: z.union([z.string(), z.number(), z.boolean()]),
+  reason: z.enum(['TYPE_MISMATCH', 'INVALID_NUMERIC_VALUE'])
+}).strict())).meta({ id: 'cellFallbacks' });

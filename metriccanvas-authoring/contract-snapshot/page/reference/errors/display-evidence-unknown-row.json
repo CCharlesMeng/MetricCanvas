@@ -1,0 +1,42 @@
+{
+  "case": "display-evidence-unknown-row",
+  "invariant": "query-cell-display-evidence",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "原文证据必须对应有效行中真实失配的空标量单元格",
+      "paths": [
+        "/dataSources/office-overview/source/initial/cellFallbacks/9/rep-office-name",
+        "/dataSources/office-overview/source/initial/cellFallbacks/9/region-dept-name",
+        "/dataSources/office-overview/source/initial/cellFallbacks/9/bidding-amount"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "initial": {
+            "cellFallbacks": {
+              "9": {
+                "rep-office-name": {
+                  "raw": 123,
+                  "reason": "TYPE_MISMATCH"
+                },
+                "region-dept-name": {
+                  "raw": true,
+                  "reason": "TYPE_MISMATCH"
+                },
+                "bidding-amount": {
+                  "raw": "待确认",
+                  "reason": "INVALID_NUMERIC_VALUE"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/display-evidence-unknown-row.json"
+}

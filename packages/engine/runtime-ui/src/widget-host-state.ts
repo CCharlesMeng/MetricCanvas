@@ -58,7 +58,7 @@ export function hostRenderSnapshot(
   component: Component,
   slots: ReadonlyMap<string, DataSnapshot>
 ): DataSnapshot {
-  const values = Object.keys(component.data ?? {}).map(
+  const values = Object.keys(component.data ?? {}).filter(slot => component.type !== 'table' || slot !== component.props.pinnedTop?.data).map(
     (slot) => slots.get(slot) ?? ({ status: 'loading' } as const)
   );
   const error = values.find(

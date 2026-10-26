@@ -1,0 +1,29 @@
+{
+  "case": "pinned-top-incomplete",
+  "invariant": "table-pinned-top",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "置顶行需要完整的普通 query 数据源",
+      "paths": [
+        "/sections/0/components/0/props/pinnedTop"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pinnedTop": {
+                "data": "china"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.59",
+  "schemaVersion": "6.60",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-8044e7e5"
@@ -13,6 +13,20 @@
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。"
       ],
       "rules": [
+        {
+          "id": "table-pinned-top",
+          "description": "独立完整查询置顶，明确字段及行域归属",
+          "valid": [
+            "table-pinned-summary-page"
+          ],
+          "invalid": [
+            "pinned-top-version",
+            "pinned-top-main",
+            "pinned-top-window",
+            "pinned-top-unknown-field",
+            "pinned-top-incomplete"
+          ]
+        },
         {
           "id": "table-row-expansion",
           "description": "6.44单层子表格的作用域、只读及查询分页约束",
@@ -211,7 +225,9 @@
         "references/page-metadata/examples/table-row-expansion-query.json",
         "references/page-metadata/examples/table-row-expansion-inputs.json",
         "references/page-metadata/examples/table-row-expansion-none.json",
-        "references/page-metadata/examples/table-row-number-page.json"
+        "references/page-metadata/examples/table-row-number-page.json",
+        "references/page-metadata/examples/table-scalar-fallback-page.json",
+        "references/page-metadata/examples/table-pinned-summary-page.json"
       ]
     }
   ],

@@ -31,7 +31,14 @@ export interface TableCellSelection {
   writes: Record<string, TableSelectionWrite>;
 }
 
+export interface TablePinnedCell {
+  field: FieldBinding;
+  secondaryField?: FieldBinding;
+  badgeField?: FieldBinding;
+}
+
 export interface TableColumn {
+  pinnedTop?: TablePinnedCell;
   kind?: 'field';
   field: FieldBinding;
   secondaryField?: FieldBinding;
@@ -79,6 +86,7 @@ const tableCellSelectionZ: z.ZodType<TableCellSelection> = z
 
 const tableColumnZ: z.ZodType<TableColumn> = z
   .object({
+    pinnedTop: z.object({ field: fieldBindingZ, secondaryField: fieldBindingZ.optional(), badgeField: fieldBindingZ.optional() }).strict().optional(),
     kind: z.literal('field').optional(),
     field: fieldBindingZ,
     secondaryField: fieldBindingZ.optional(),
@@ -199,6 +207,7 @@ export const tableComponentZ = z
         compoundCellLayout: z.literal('inline').optional(),
         /** 呈现列：不占用页面字段；按当前行集顺序从 1 开始，分页连续。 */
         rowNumber: rowNumberZ.optional(),
+        pinnedTop: z.object({ data: idZ }).strict().optional(),
         rowKey: fieldNameZ.optional(),
         /**
          * 行类别字段（ADR-0049）：取值来自计算阶段折叠算子写入的闭集，

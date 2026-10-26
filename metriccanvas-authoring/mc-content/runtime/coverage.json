@@ -588,6 +588,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-paged-fallback-page.json",
+      "target": "product-contracts/page/conformance/valid/table-paged-fallback-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/table-pinned-summary-page.json",
+      "target": "product-contracts/page/conformance/valid/table-pinned-summary-page.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-row-expansion-inline.json",
       "target": "product-contracts/page/conformance/valid/table-row-expansion-inline.json",
       "scope": "exact product contract"
@@ -610,6 +620,11 @@
     {
       "source": "product:page/conformance/valid/table-row-number-page.json",
       "target": "product-contracts/page/conformance/valid/table-row-number-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/table-scalar-fallback-page.json",
+      "target": "product-contracts/page/conformance/valid/table-scalar-fallback-page.json",
       "scope": "exact product contract"
     },
     {
@@ -745,6 +760,51 @@
     {
       "source": "product:page/conformance/parameter-extraction.json",
       "target": "product-contracts/page/conformance/parameter-extraction.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/display-evidence-version.json",
+      "target": "product-contracts/page/conformance/invalid/display-evidence-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/display-evidence-valid-cell.json",
+      "target": "product-contracts/page/conformance/invalid/display-evidence-valid-cell.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/display-evidence-unknown-row.json",
+      "target": "product-contracts/page/conformance/invalid/display-evidence-unknown-row.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/display-evidence-valid-number.json",
+      "target": "product-contracts/page/conformance/invalid/display-evidence-valid-number.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/pinned-top-version.json",
+      "target": "product-contracts/page/conformance/invalid/pinned-top-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/pinned-top-main.json",
+      "target": "product-contracts/page/conformance/invalid/pinned-top-main.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/pinned-top-window.json",
+      "target": "product-contracts/page/conformance/invalid/pinned-top-window.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/pinned-top-unknown-field.json",
+      "target": "product-contracts/page/conformance/invalid/pinned-top-unknown-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/pinned-top-incomplete.json",
+      "target": "product-contracts/page/conformance/invalid/pinned-top-incomplete.json",
       "scope": "exact product contract"
     },
     {
@@ -1878,18 +1938,18 @@
       "scope": "exact product contract"
     },
     {
-      "source": "product:page/conformance/invalid/initial-row-null-not-allowed.json",
-      "target": "product-contracts/page/conformance/invalid/initial-row-null-not-allowed.json",
+      "source": "product:page/conformance/invalid/initial-row-scalar-object.json",
+      "target": "product-contracts/page/conformance/invalid/initial-row-scalar-object.json",
       "scope": "exact product contract"
     },
     {
-      "source": "product:page/conformance/invalid/initial-row-type-mismatch.json",
-      "target": "product-contracts/page/conformance/invalid/initial-row-type-mismatch.json",
+      "source": "product:page/conformance/invalid/initial-row-scalar-array.json",
+      "target": "product-contracts/page/conformance/invalid/initial-row-scalar-array.json",
       "scope": "exact product contract"
     },
     {
-      "source": "product:page/conformance/invalid/initial-row-date-invalid.json",
-      "target": "product-contracts/page/conformance/invalid/initial-row-date-invalid.json",
+      "source": "product:page/conformance/invalid/initial-row-date-object.json",
+      "target": "product-contracts/page/conformance/invalid/initial-row-date-object.json",
       "scope": "exact product contract"
     },
     {
@@ -3015,6 +3075,51 @@
     {
       "source": "product:page/reference/examples/component-filterGroup.json",
       "target": "references/page-metadata/examples/component-filterGroup.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/display-evidence-version.json",
+      "target": "references/page-metadata/errors/display-evidence-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/display-evidence-valid-cell.json",
+      "target": "references/page-metadata/errors/display-evidence-valid-cell.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/display-evidence-unknown-row.json",
+      "target": "references/page-metadata/errors/display-evidence-unknown-row.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/display-evidence-valid-number.json",
+      "target": "references/page-metadata/errors/display-evidence-valid-number.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/pinned-top-version.json",
+      "target": "references/page-metadata/errors/pinned-top-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/pinned-top-main.json",
+      "target": "references/page-metadata/errors/pinned-top-main.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/pinned-top-window.json",
+      "target": "references/page-metadata/errors/pinned-top-window.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/pinned-top-unknown-field.json",
+      "target": "references/page-metadata/errors/pinned-top-unknown-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/pinned-top-incomplete.json",
+      "target": "references/page-metadata/errors/pinned-top-incomplete.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -4148,18 +4253,18 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
-      "source": "product:page/reference/errors/initial-row-null-not-allowed.json",
-      "target": "references/page-metadata/errors/initial-row-null-not-allowed.json",
+      "source": "product:page/reference/errors/initial-row-scalar-object.json",
+      "target": "references/page-metadata/errors/initial-row-scalar-object.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
-      "source": "product:page/reference/errors/initial-row-type-mismatch.json",
-      "target": "references/page-metadata/errors/initial-row-type-mismatch.json",
+      "source": "product:page/reference/errors/initial-row-scalar-array.json",
+      "target": "references/page-metadata/errors/initial-row-scalar-array.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
-      "source": "product:page/reference/errors/initial-row-date-invalid.json",
-      "target": "references/page-metadata/errors/initial-row-date-invalid.json",
+      "source": "product:page/reference/errors/initial-row-date-object.json",
+      "target": "references/page-metadata/errors/initial-row-date-object.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -5188,6 +5293,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-paged-fallback-page.json",
+      "target": "references/page-metadata/examples/table-paged-fallback-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/fields.md",
       "target": "references/page-metadata/fields.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -5550,6 +5660,16 @@
     {
       "source": "product:page/reference/examples/table-row-number-page.json",
       "target": "references/page-metadata/examples/table-row-number-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/table-scalar-fallback-page.json",
+      "target": "references/page-metadata/examples/table-scalar-fallback-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/table-pinned-summary-page.json",
+      "target": "references/page-metadata/examples/table-pinned-summary-page.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -5969,11 +6089,11 @@
     }
   ],
   "counts": {
-    "product": 1162,
+    "product": 1186,
     "authoring": 31,
     "modules": 33,
-    "topics": 162,
-    "nodes": 2178,
+    "topics": 166,
+    "nodes": 2198,
     "tools": 9,
     "components": 19
   },

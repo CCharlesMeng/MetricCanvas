@@ -1,3 +1,4 @@
+import { copyRowFallbacks, copyFieldFallback } from '@metriccanvas/page/internal';
 import type { DataRow, JoinAggregateOperator } from '@metriccanvas/page/internal';
 
 /** 仅包含脱值原因；不得将组合键值和输入行写进错误。 */
@@ -39,12 +40,14 @@ export function joinAggregate(
       }
       if (!Number.isFinite(total)) throw new ComputationError('关联聚合数值溢出');
       result[binding.output] = seen ? total : null;
+      if (binding.aggregate === 'unique') copyFieldFallback(group[0], binding.field, result, binding.output);
     }
     values.set(id, result);
   }
-  return rows.map(row => ({
-    ...row,
-    ...(values.get(key(row, operator.keys.map(k => k.local))) ??
-      Object.fromEntries(operator.values.map(binding => [binding.output, null])))
-  }));
+  return rows.map(row => {
+    const joined = values.get(key(row, operator.keys.map(k => k.local)));
+    const output = copyRowFallbacks(row, { ...row, ...(joined ?? Object.fromEntries(operator.values.map(binding => [binding.output, null]))) });
+    for (const binding of operator.values) copyFieldFallback(joined, binding.output, output, binding.output);
+    return output;
+  });
 }

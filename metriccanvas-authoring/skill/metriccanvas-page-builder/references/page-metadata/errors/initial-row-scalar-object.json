@@ -1,0 +1,31 @@
+{
+  "case": "initial-row-scalar-object",
+  "invariant": "query-initial-rows-normalize",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 字段 region 不符合页面字段 region 的类型 string",
+      "paths": [
+        "/dataSources/orders/source/initial/rows/0/region"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "region": {
+                  "value": "region"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/initial-row-scalar-object.json"
+}

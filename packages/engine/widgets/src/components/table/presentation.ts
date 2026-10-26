@@ -19,6 +19,7 @@ export function tableRowTier(
   row: AlignedTableRow,
   rowKindField: string | undefined
 ): TableRowTier {
+  if (row.kind === 'pinnedTop') return 'total';
   if (rowKindField === undefined) return 'detail';
   const value = row.main[rowKindField];
   return typeof value === 'string' && RECOGNIZED.has(value)
@@ -43,6 +44,7 @@ export function mergeSpans(
   let anchor = -1;
   let previous: FieldValue | undefined;
   rows.forEach((row, index) => {
+    if (row.kind === 'pinnedTop') { anchor = -1; previous = undefined; return; }
     const value = row.main[field];
     if (value == null) {
       anchor = -1;

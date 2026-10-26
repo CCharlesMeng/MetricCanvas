@@ -158,7 +158,8 @@
         "queryRecordListField",
         "groupedQueryFields",
         "groupedDimensionQueryFieldGroup",
-        "groupedMeasureQueryFieldGroup"
+        "groupedMeasureQueryFieldGroup",
+        "cellFallbacks"
       ],
       "keywords": [
         "fields",
@@ -168,7 +169,8 @@
         "grouped-fields-page",
         "reference-branches-page",
         "query-numeric-tolerance",
-        "stored-count-measures"
+        "stored-count-measures",
+        "table-paged-fallback-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -766,7 +768,9 @@
         "table-row-expansion-query",
         "table-row-expansion-inputs",
         "table-row-expansion-none",
-        "table-row-number-page"
+        "table-row-number-page",
+        "table-scalar-fallback-page",
+        "table-pinned-summary-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -789,7 +793,8 @@
         "table-toolbar-search",
         "paged-join",
         "table-search-options",
-        "table-row-expansion"
+        "table-row-expansion",
+        "table-pinned-top"
       ]
     },
     "components/mapChart.md": {
@@ -1606,7 +1611,17 @@
     "fieldMappings": "6.57：queryModes各case的页面字段id到原始响应字段映射；不发送给DQE；全部case完整声明，根fields不再声明queryField。",
     "emptyBehavior": "图表级空数据策略；只作用于成功空结果，不把错误或加载中当成空结果。",
     "missingText": "当前取值缺失时显示的文字，不生成业务值。",
-    "axis": "显式柱线系列使用 primary 或 secondary 坐标轴。"
+    "axis": "显式柱线系列使用 primary 或 secondary 坐标轴。",
+    "#/definitions/tableComponent/properties/props/properties/pinnedTop": "独立完整查询置顶行，最多一行，不占明细分页和序号。",
+    "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/data": "置顶行消费的命名数据槽，不能是main或同一个明细源。",
+    "#/definitions/tableColumn/properties/pinnedTop": "该叶子列的置顶字段绑定；省略则留空，不继承明细值。",
+    "#/definitions/tableColumn/properties/pinnedTop/properties/field": "置顶槽的显式主字段绑定。",
+    "#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField": "置顶槽的可选次字段，不隐式继承明细次字段。",
+    "#/definitions/tableColumn/properties/pinnedTop/properties/badgeField": "置顶槽的可选徽标字段。",
+    "#/definitions/cellFallbacks": "按快照行下标和页面字段id保存原始标量展示证据。",
+    "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw": "有限原始标量；只用于原文展示和往返，不作为有效业务值。",
+    "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason": "标量失配的脱值原因分类。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1886,7 +1901,10 @@
     "6.58": "AI Summary 组合卡准入、显式所在区域和顶部结构约束。",
     "6.59": "图表配置项支持字段或常量取值，图表级空态及独立常量仪表。",
     "default": "沿用原有空数据呈现；空数据源不显示常量数值。",
-    "showConstants": "成功空结果时允许显示具备必要上下文的常量；不伪造类别和地域。"
+    "showConstants": "成功空结果时允许显示具备必要上下文的常量；不伪造类别和地域。",
+    "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason=\"TYPE_MISMATCH\"": "原始标量与声明类型不符，有效值保持缺失。",
+    "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason=\"INVALID_NUMERIC_VALUE\"": "数值度量不能归一化为有限数字，原始标量仅供展示。",
+    "#/properties/schemaVersion=\"6.60\"": "表格原文展示证据与独立查询置顶行。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2298,6 +2316,18 @@
         "图表配置项常量取值（6.59）"
       ],
       "dependencies": []
+    },
+    "table.pinnedTop": {
+      "module": "table",
+      "title": "表格独立查询置顶行",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/pinnedTop",
+        "#/definitions/tableColumn/properties/pinnedTop"
+      ],
+      "headings": [
+        "独立查询置顶行（6.60）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2324,7 +2354,8 @@
     "fields.md": [
       "DQE 直接输出的数值作为度量（6.56）",
       "查询数值度量的容错",
-      "查阅方式"
+      "查阅方式",
+      "查询标量的原文展示证据（6.60）"
     ],
     "queries-and-bindings.md": [
       "查阅方式",
@@ -2413,7 +2444,9 @@
       "行内子表格（6.44）",
       "列筛选候选值",
       "自动序号列（6.48）",
-      "详情表格的浮层宽度"
+      "详情表格的浮层宽度",
+      "标量原文展示与本地尾排（6.60）",
+      "独立查询置顶行（6.60）"
     ],
     "components/mapChart.md": [
       "查阅方式",

@@ -18,7 +18,7 @@ export function reusableInitialSnapshot(source: DataSource, view?: TableQueryVie
     if (!view || canonicalizeJson(source.source.initial!.view) !== canonicalizeJson(view)) return undefined;
   } else if (view && changedInitialView(view)) return undefined;
   if ((windowed || source.source.type === 'pagedJoin') && view && initial.totalCount !== undefined && initial.rows.length !== Math.min(view.pageSize, initial.totalCount)) return undefined;
-  return rawSnapshot(initial.rows, initial.totalCount);
+  return rawSnapshot(initial.rows, initial.totalCount, initial.cellFallbacks);
 }
 export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, limit?: number, diagnostics?: QueryDiagnosticContext & { pagination?: EffectiveQuery['pagination'] }): DataSnapshot {
   if (snapshot.status === 'error' || snapshot.status === 'loading' || source.source.type !== 'query') return snapshot;
@@ -144,4 +144,18 @@ function assertExportCompleteness(paged: boolean, expected: number | undefined, 
 
 function incompleteObjectSource(source: DataSource, count: number, total: number | undefined): boolean {
   return source.source.type==='query' && source.source.resultScope==='complete' && total!==undefined && count!==total && queryLeaves(source.source.query).some(query=>isObjectDqeItem(query.body.dsl_list[0]));
+}
+
+const reportedInitialWarnings = new WeakSet<object>();
+export function reportInitialWarnings(source: DataSource, diagnostics: QueryDiagnosticContext): void {
+  if (source.source.type !== 'query') return;
+  const initial = source.source.initial;
+  if (!initial?.warnings?.length || reportedInitialWarnings.has(initial)) return;
+  reportedInitialWarnings.add(initial);
+  console.warn('[MetricCanvas][QUERY_VALUE_FALLBACK] 初始查询标量异常；保留可用数据', { ...diagnostics, warnings: initial.warnings });
+}
+
+export function reportInitialSnapshotWarnings(source: DataSource, snapshot: DataSnapshot | undefined, diagnostics: QueryDiagnosticContext): void {
+  if (source.source.type !== 'query' || snapshot?.status !== 'ready') return;
+  if (snapshot.rows[0] === source.source.initial?.rows[0]) reportInitialWarnings(source, diagnostics);
 }

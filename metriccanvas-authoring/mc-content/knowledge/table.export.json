@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.59",
+  "schemaVersion": "6.60",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.export"
@@ -14,6 +14,20 @@
         "## 静态搜索选项（6.42）\n\n需要在输入框前选择搜索字段时，使用与旧 `fields/placeholder` 分支互斥的静态选项：\n\n```json\n{\n  \"search\": {\n    \"options\": [\n      { \"value\": \"code\", \"label\": \"项目编码\", \"field\": \"code\", \"placeholder\": \"请输入完整项目编码\" },\n      { \"value\": \"name\", \"label\": \"项目名称\", \"field\": \"name\", \"placeholder\": \"请输入完整项目名称\" }\n    ],\n    \"defaultValue\": \"name\"\n  }\n}\n```\n\n选项为页面文档中的静态枚举，不请求候选值接口。每项声明唯一 `value`、显示 `label`、一个 `main` 槽文本字段 `field` 及可选 `placeholder`；1—64项。省略 `defaultValue` 时选第一项，显式默认值必须存在。所有选项均校验字段类型；普通非完整查询还必须具备查询字段映射。原来的 `fields/placeholder` 配置继续采用字面量包含及多字段 OR。\n\n新分支只做单字段精确匹配；关键词提交时去除首尾空白，编码保留前导零，`%`、`_` 按原文匹配。输入仍由 Enter 或搜索按钮提交；切换选项保留当前输入并立即搜索，placeholder 同步切换。清空输入立即移除搜索条件，但保留当前选项。提交回到第一页，保留排序、页面筛选和表头筛选；搜索与既有条件按 AND 组合。选中项和输入草稿按表格实例隔离；导出冻结已提交的字段、匹配方式和关键词，未提交输入不改变导出。\n\n普通查询的等值搜索由网关追加 `filter.dims` 单值条件，不替换同字段既有条件，不依赖包含搜索编码器。空关键词不产生条件。本地完整结果及组合表在完整行域上精确比较，不对输入或数据做大小写转换；真实 DQE 使用服务原生等值规则。当前本地仿真采用区分大小写比较，真实服务的大小写、重复维度条件 AND 及分页总数一致性仍须实测确认，不能以本地结果宣称实服务验收。\n\n完整示例为 `table-search-options-page`，页面试验场入口 `/pages/table-search-options-demo`；并列展示本地等值搜索、DQE 仿真等值搜索及旧包含搜索。"
       ],
       "rules": [
+        {
+          "id": "table-pinned-top",
+          "description": "独立完整查询置顶，明确字段及行域归属",
+          "valid": [
+            "table-pinned-summary-page"
+          ],
+          "invalid": [
+            "pinned-top-version",
+            "pinned-top-main",
+            "pinned-top-window",
+            "pinned-top-unknown-field",
+            "pinned-top-incomplete"
+          ]
+        },
         {
           "id": "table-row-expansion",
           "description": "6.44单层子表格的作用域、只读及查询分页约束",
@@ -212,7 +226,9 @@
         "references/page-metadata/examples/table-row-expansion-query.json",
         "references/page-metadata/examples/table-row-expansion-inputs.json",
         "references/page-metadata/examples/table-row-expansion-none.json",
-        "references/page-metadata/examples/table-row-number-page.json"
+        "references/page-metadata/examples/table-row-number-page.json",
+        "references/page-metadata/examples/table-scalar-fallback-page.json",
+        "references/page-metadata/examples/table-pinned-summary-page.json"
       ]
     }
   ],
@@ -233,7 +249,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.59",
+        "$id": "https://metriccanvas/page/v6.60",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -303,6 +319,7 @@
           "bottomFade": "#/definitions/tableComponent/properties/props/properties/bottomFade",
           "compoundCellLayout": "#/definitions/tableComponent/properties/props/properties/compoundCellLayout",
           "rowNumber": "#/definitions/tableComponent/properties/props/properties/rowNumber",
+          "pinnedTop": "#/definitions/tableComponent/properties/props/properties/pinnedTop",
           "rowKey": "#/definitions/tableComponent/properties/props/properties/rowKey",
           "rowKindField": "#/definitions/tableComponent/properties/props/properties/rowKindField",
           "mergeBy": "#/definitions/tableComponent/properties/props/properties/mergeBy",

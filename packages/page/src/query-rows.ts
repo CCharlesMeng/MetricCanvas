@@ -11,6 +11,7 @@ import {
   type FieldContractIssue
 } from './result-field-contract';
 import type { Row } from './snapshot';
+import { setRowCellFallbacks, snapshotCellFallbacks, type CellFallbacks, type RowCellFallbacks } from './cell-fallback';
 
 /**
  * 查询结果归一化的问题契约:查询字段映射问题以 DQE 输出字段名定位,
@@ -41,7 +42,8 @@ export type QueryRowNormalizationIssue =
 
 /** 按字段和原因计数，不保留原始值、数据行或每行告警。 */
 export interface QueryRowNormalizationWarning {
-  code: 'INVALID_NUMERIC_VALUE' | 'NUMERIC_NULL_NOT_ALLOWED';
+  code: 'INVALID_NUMERIC_VALUE' | 'NUMERIC_NULL_NOT_ALLOWED' | 'SCALAR_TYPE_MISMATCH' | 'SCALAR_NULL_NOT_ALLOWED';
+  expectedType?: QueryFieldDefinition['type'];
   fieldId: string;
   queryField: string;
   itemFieldId?: string;
@@ -50,14 +52,14 @@ export interface QueryRowNormalizationWarning {
 }
 
 export type QueryRowsNormalizationResult =
-  | { ok: true; rows: Row[]; issues: []; warnings?: QueryRowNormalizationWarning[] }
+  | { ok: true; rows: Row[]; issues: []; warnings?: QueryRowNormalizationWarning[]; cellFallbacks?: CellFallbacks }
   | { ok: false; issues: QueryRowNormalizationIssue[] };
 
 /**
  * 使用查询字段映射把 DQE 原始结果归一化为稳定页面字段。
  * PageDocument 的内嵌初始行与数据网关的动态响应共用此纯计算接缝;
- * 数值度量先转为有限数字或 null，再按查询结果契约校验。
- * 维度、字段集合、明细结构与日期时间规则仍委托结果字段契约校验 Module。
+ * 标量先按结果字段契约归一化；可降级的失配值以 null 加独立展示证据传递。
+ * 字段集合、明细结构与安全规则仍委托结果字段契约校验 Module。
  */
 export function normalizeQueryRows(
   value: unknown,
@@ -72,23 +74,7 @@ export function normalizeQueryRows(
   const contracts = Object.fromEntries(Object.entries(fieldMappings).map(([id, field]) => [id, queryResultFieldContract(field)]));
   const warnings = new Map<string, QueryRowNormalizationWarning>();
   const numericValue = (value: unknown, field: QueryFieldDefinition,
-    context: Omit<QueryRowNormalizationWarning, 'code' | 'count'>): unknown => {
-    if (field.role !== 'measure' || (field.type !== 'number' && field.type !== 'money')) return value;
-    if (typeof value === 'number' && Number.isFinite(value)) return value;
-    // 不接受 Number('')、布尔、十六进制、千分位与百分号的隐式转换。
-    if (typeof value === 'string' && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(value.trim())) {
-      const parsed = Number(value);
-      if (Number.isFinite(parsed)) return parsed;
-    }
-    if (value !== null || field.nullable === false) {
-      const code = value === null ? 'NUMERIC_NULL_NOT_ALLOWED' : 'INVALID_NUMERIC_VALUE';
-      const key = JSON.stringify([context.fieldId, context.itemFieldId, code]);
-      const warning = warnings.get(key);
-      if (warning) warning.count++;
-      else warnings.set(key, { ...context, code, count: 1 });
-    }
-    return null;
-  };
+    context: WarningContext): unknown => normalizeNumeric(value, field, context, warnings);
   value.forEach((rawRow, rowIndex) => {
     if (!isRecord(rawRow)) {
       issues.push({ code: 'ROW_NOT_OBJECT', rowIndex });
@@ -96,6 +82,7 @@ export function normalizeQueryRows(
     }
 
     const row: Row = {};
+    const fallbacks: RowCellFallbacks = {};
     for (const [fieldId, mapping] of Object.entries(fieldMappings)) {
       // 计算阶段产出字段不来自外部响应,归一化阶段跳过;它们由算子写入。
       if (!hasQueryFieldMapping(mapping)) continue;
@@ -113,7 +100,7 @@ export function normalizeQueryRows(
       const mapped =
         mapping.type === 'recordList'
           ? mapDetailItems(rawRow[mapping.queryField], mapping, rowIndex, fieldId, numericValue)
-          : { value: numericValue(rawRow[mapping.queryField], mapping, { fieldId, queryField: mapping.queryField }), issues: [], misses: NO_MISSES };
+          : { value: normalizeScalar(rawRow[mapping.queryField], mapping, { fieldId, queryField: mapping.queryField }, warnings, fallbacks), issues: [], misses: NO_MISSES };
       issues.push(...mapped.issues);
 
       const violations = fieldContractViolations(mapped.value, contracts[fieldId]).filter(
@@ -130,11 +117,12 @@ export function normalizeQueryRows(
         )
       );
     }
+    setRowCellFallbacks(row, fallbacks);
     rows.push(row);
   });
 
   return issues.length === 0
-    ? { ok: true, rows, issues: [], ...(warnings.size ? { warnings: [...warnings.values()] } : {}) }
+    ? { ok: true, rows, issues: [], ...snapshotCellFallbacks(rows), ...(warnings.size ? { warnings: [...warnings.values()] } : {}) }
     : { ok: false, issues };
 }
 
@@ -205,4 +193,50 @@ function withQueryFields(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+type WarningContext = Omit<QueryRowNormalizationWarning, 'code' | 'count'>;
+type Warnings = Map<string, QueryRowNormalizationWarning>;
+function addWarning(warnings: Warnings, code: QueryRowNormalizationWarning['code'], context: WarningContext): void {
+  const key = JSON.stringify([context.fieldId, context.itemFieldId, code]);
+  const warning = warnings.get(key);
+  if (warning) warning.count++;
+  else warnings.set(key, { ...context, code, count: 1 });
+}
+function isNumericMeasure(field: QueryFieldDefinition): boolean {
+  return field.role === 'measure' && (field.type === 'number' || field.type === 'money');
+}
+function finiteNumeric(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value !== 'string' || !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(value.trim())) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+function normalizeNumeric(value: unknown, field: QueryFieldDefinition, context: WarningContext, warnings: Warnings): unknown {
+  if (!isNumericMeasure(field)) return value;
+  const numeric = finiteNumeric(value);
+  if (numeric !== undefined) return numeric;
+  if (value !== null || field.nullable === false) addWarning(warnings, value === null ? 'NUMERIC_NULL_NOT_ALLOWED' : 'INVALID_NUMERIC_VALUE', context);
+  return null;
+}
+function displayScalar(value: unknown): value is string | number | boolean {
+  return typeof value === 'string' || typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value));
+}
+function normalizeScalar(value: unknown, field: QueryFieldDefinition, context: WarningContext, warnings: Warnings, fallbacks: RowCellFallbacks): unknown {
+  if (field.type === 'recordList' || field.type === 'semanticHtml') return value;
+  const normalized = normalizeNumeric(value, field, context, warnings);
+  if (isNumericMeasure(field)) {
+    if (normalized === null && displayScalar(value)) fallbacks[context.fieldId] = { raw: value, reason: 'INVALID_NUMERIC_VALUE' };
+    return normalized;
+  }
+  const violations = fieldContractViolations(value, field);
+  if (!violations.length) return value;
+  if (value == null || (typeof value === 'number' && !Number.isFinite(value))) {
+    addWarning(warnings, 'SCALAR_NULL_NOT_ALLOWED', { ...context, expectedType: field.type });
+    return null;
+  }
+  if (!displayScalar(value)) return value;
+  fallbacks[context.fieldId] = { raw: value, reason: 'TYPE_MISMATCH' };
+  addWarning(warnings, 'SCALAR_TYPE_MISMATCH', { ...context, expectedType: field.type });
+  return null;
 }

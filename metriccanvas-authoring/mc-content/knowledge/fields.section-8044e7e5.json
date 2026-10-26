@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.59",
+  "schemaVersion": "6.60",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "fields.section-8044e7e5"
@@ -136,7 +136,8 @@
         "references/page-metadata/examples/grouped-fields-page.json",
         "references/page-metadata/examples/reference-branches-page.json",
         "references/page-metadata/examples/query-numeric-tolerance.json",
-        "references/page-metadata/examples/stored-count-measures.json"
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/table-paged-fallback-page.json"
       ]
     }
   ],

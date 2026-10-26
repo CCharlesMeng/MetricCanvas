@@ -4,6 +4,7 @@ export interface DataGatewayResult {
   rows: Row[];
   totalCount?: number;
   warnings?: QueryRowNormalizationWarning[];
+  cellFallbacks?: import('@metriccanvas/page/internal').CellFallbacks;
 }
 
 /**

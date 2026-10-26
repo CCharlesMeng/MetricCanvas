@@ -13,6 +13,7 @@ export * from './query-error';
 export * from './query-rows';
 export * from './result-field-contract';
 export * from './snapshot';
+export * from './cell-fallback';
 export * from './canonical-json';
 export * from './compute';
 export * from './bar-forecast-boundary';
@@ -84,3 +85,4 @@ export * from './dqe-object';
 export * from './ai-summary';
 
 export * from './component-value';
+export * from './table-pinned';

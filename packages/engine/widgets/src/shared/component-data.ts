@@ -14,6 +14,7 @@ export type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
 export interface ComponentDataSlot {
   /** Original source state, preserved before the rendering projection erases empty/error. */
   sourceStatus?: DataSnapshot['status'];
+  diagnostics?: { componentId?: string; sourceId?: string; snapshot: DataSnapshot };
   snapshot: ReadyDataSnapshot;
   fields: Record<string, ResolvedFieldDefinition>;
 }

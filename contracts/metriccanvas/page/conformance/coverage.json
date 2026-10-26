@@ -1,6 +1,33 @@
 {
   "invariants": [
     {
+      "id": "query-cell-display-evidence",
+      "description": "原文证据只对应真实失配的空标量单元格",
+      "valid": [
+        "table-paged-fallback-page"
+      ],
+      "invalid": [
+        "display-evidence-version",
+        "display-evidence-valid-cell",
+        "display-evidence-unknown-row",
+        "display-evidence-valid-number"
+      ]
+    },
+    {
+      "id": "table-pinned-top",
+      "description": "独立完整查询置顶，明确字段及行域归属",
+      "valid": [
+        "table-pinned-summary-page"
+      ],
+      "invalid": [
+        "pinned-top-version",
+        "pinned-top-main",
+        "pinned-top-window",
+        "pinned-top-unknown-field",
+        "pinned-top-incomplete"
+      ]
+    },
+    {
       "id": "query-dimension-measures",
       "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
       "valid": [
@@ -754,6 +781,7 @@
       "id": "query-initial-rows-normalize",
       "description": "DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验",
       "valid": [
+        "table-scalar-fallback-page",
         "filters-page",
         "compute-page",
         "grouped-fields-page",
@@ -763,9 +791,9 @@
       ],
       "invalid": [
         "initial-row-missing-query-field",
-        "initial-row-null-not-allowed",
-        "initial-row-type-mismatch",
-        "initial-row-date-invalid",
+        "initial-row-scalar-object",
+        "initial-row-scalar-array",
+        "initial-row-date-object",
         "initial-row-semantic-html-too-large",
         "initial-row-detail-missing-query-field",
         "initial-row-detail-null-not-allowed",

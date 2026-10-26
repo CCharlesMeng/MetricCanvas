@@ -3,6 +3,7 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import { projectSnapshotRows, snapshotCellFallbacks, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
@@ -1050,7 +1051,7 @@
   ): NamedDataSlots {
     const data: NamedDataSlots = {};
     for (const [slot, sourceId] of Object.entries(component.data ?? {})) {
-      const snapshot = snapshotsBySlot.get(slot);
+      const snapshot = prepareSlotSnapshot(component, slot, sourceId, snapshotsBySlot.get(slot));
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
       const fields = resolveDataSourceFields(source);
@@ -1080,9 +1081,25 @@
           };
         }
       }
-      data[slot] = { snapshot: visible, fields, sourceStatus: snapshot.status };
+      data[slot] = { snapshot: visible, fields, sourceStatus: snapshot.status, diagnostics: { componentId: component.id, sourceId, snapshot } };
     }
     return data;
+  }
+
+  function prepareSlotSnapshot(component: Component, slot: string, sourceId: string, snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
+    if (!snapshot) return;
+    if (component.type === 'table' && slot === component.props.pinnedTop?.data && pinnedSnapshotError(snapshot)) {
+      reportPinnedIssue(component, sourceId, snapshot);
+      return;
+    }
+    if (snapshot.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
+    return snapshot;
+  }
+  const reportedPinned = new WeakSet<object>();
+  function reportPinnedIssue(component: TableComponent, sourceId: string, snapshot: DataSnapshot): void {
+    if (reportedPinned.has(snapshot)) return;
+    reportedPinned.add(snapshot);
+    console.warn('[MetricCanvas][TABLE_PINNED_RESULT_INVALID] 置顶结果不可用', { componentId: component.id, dataSourceIds: [sourceId], reason: pinnedSnapshotError(snapshot) });
   }
 
   function visibleTableRows(component: TableComponent): Row[] {
@@ -1100,9 +1117,10 @@
     if (resolvedTablePagination(component)?.mode === 'query') return snapshot;
     const pagination = resolvedTablePagination(component,snapshot);
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    if (remoteTableSearch(source)) return { ...snapshot, rows: presentation?.rows(component,snapshot.rows) ?? snapshot.rows };
+    if (remoteTableSearch(source)) return projectSnapshotRows(snapshot, presentation?.rows(component,snapshot.rows) ?? snapshot.rows);
     const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
-    return {status:'ready',rows:tableController?.present(component,rows,pagination?.mode!=='local').rows??rows};
+    const presented = tableController?.present(component,rows,pagination?.mode!=='local').rows??rows;
+    return {status:'ready',rows:presented,...snapshotCellFallbacks(presented)};
   }
   function filteredTableRows(component: TableComponent,snapshot: Extract<DataSnapshot,{status:'ready'}>):Row[] {
     void tableRevision;

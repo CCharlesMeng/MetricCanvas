@@ -1,0 +1,29 @@
+{
+  "case": "pinned-top-window",
+  "invariant": "table-pinned-top",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "置顶查询不能使用 limit 或 offset 截断结果",
+      "paths": [
+        "/sections/0/components/0/props/pinnedTop"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pinnedTop": {
+                "data": "china"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/pinned-top-window.json"
+}

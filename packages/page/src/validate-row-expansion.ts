@@ -1,3 +1,4 @@
+import { tableAlignedSlots } from './table-pinned';
 import { dqeDefaultSort, isObjectDqeItem } from './dqe-object';
 import { ordinaryQuery } from './time-mode';
 import type { Page, TableComponent } from './page';
@@ -24,7 +25,7 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
     const fields = page.dataSources[component.data.main] ? resolveDataSourceFields(page.dataSources[component.data.main]!) : {};
     const key = component.props.rowKey && fields[component.props.rowKey];
     if (!key || key.role !== 'dimension' || !['string', 'number'].includes(key.type)) errors.push(error(`${componentPath}/props/rowKey`, '子表格父表要求稳定的 string/number 维度行键'));
-    if (Object.keys(component.data).length !== 1 || component.props.mergeBy) errors.push(error(path, '子表格父表仅支持单一 main 数据槽，不能同时跨行合并'));
+    if (tableAlignedSlots(component).length !== 1 || component.props.mergeBy) errors.push(error(path, '子表格父表仅支持单一 main 数据槽，不能同时跨行合并'));
     if (componentPath.startsWith('/detailViews/')) errors.push(error(path, '详情浮层内暂不支持行内子表格'));
     if (component.props.toolbar?.export) errors.push(error(path, '子表格导出范围待确认，暂不启用该父表导出'));
     const source = page.dataSources[component.data.main];

@@ -1,3 +1,4 @@
+import { restoreCellFallbacks, snapshotCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
 import { compilePresentation, projectPresentationRows } from '../../runtime/src/presentation';
 import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
 import type { Page, Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
@@ -40,7 +41,7 @@ export function exportComponentData(state:ExportRenderState,component:Component)
   const data:NamedDataSlots={};
   for(const [slot,id] of Object.entries(component.data??{})) {
     const source=state.page.dataSources[id];
-    const snapshot=state.snapshots.get(id);
+    const snapshot=exportSlotSnapshot(component,slot,state.snapshots.get(id));
     if(!source||!snapshot) continue;
     const fields=resolveDataSourceFields(source);
     const ready=renderableDataSnapshot(snapshot); if(!ready)continue;
@@ -56,7 +57,7 @@ export function exportComponentData(state:ExportRenderState,component:Component)
       const declaration=state.page.filters?.find(f=>f.id===component.props.hierarchyFilter);
       if(isHierarchyDeclaration(declaration))rows=filterMapRows(rows,component.props,declaration,state.filters.get(declaration.id));
     }
-    data[slot]={fields,sourceStatus:snapshot.status,snapshot:{status:'ready',rows}};
+    data[slot]={fields,sourceStatus:snapshot.status,snapshot:{status:'ready',rows,...snapshotCellFallbacks(rows)},diagnostics:{componentId:component.id,sourceId:id,snapshot}};
   }
   return data;
 }
@@ -65,4 +66,11 @@ export function exportComponentMap(state:ExportRenderState,component:Component):
   if(component.type!=='mapChart')return;
   const declaration=state.page.filters?.find(f=>f.id===component.props.hierarchyFilter);
   return resolveMapBasemap(component.props,isHierarchyDeclaration(declaration)?declaration:undefined,state.filters.get(declaration?.id??''));
+}
+
+function exportSlotSnapshot(component: Component, slot: string, snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
+  if (!snapshot) return;
+  if (component.type === 'table' && slot === component.props.pinnedTop?.data && pinnedSnapshotError(snapshot)) return;
+  if (snapshot.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
+  return snapshot;
 }

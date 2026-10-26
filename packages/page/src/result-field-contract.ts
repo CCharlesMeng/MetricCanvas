@@ -11,8 +11,8 @@ import { MAX_DETAIL_RECORDS, MAX_SEMANTIC_HTML_LENGTH } from './field';
  * 结果字段契约校验 Module:字段类型、nullable 语义、日期时间规则与
  * 明细约束的唯一实现。页面的 inline 数据校验(validate.ts)与
  * 查询结果归一化(query-rows.ts,服务内嵌初始行与数据网关)都引用
- * 这里。查询数值度量先归一化并投影到允许缺失的查询结果契约，
- * inline 与其他字段仍使用原契约；两条路径不得各自维护类型判断。
+ * 这里。查询顶层标量先归一化并投影到允许缺失的查询结果契约，
+ * inline 与明细非数值项仍使用原契约；两条路径共用类型判断。
  *
  * 校验错误只携带行号、字段名、错误分类与预期类型,不回显业务字段值。
  */
@@ -57,14 +57,14 @@ export type RowContractValidationResult =
   | { ok: true; issues: [] }
   | { ok: false; issues: RowContractIssue[] };
 
-/** 查询返回的数值度量允许缺失；维度、inline 与文档字面量仍使用原契约。 */
+/** 查询顶层标量允许缺失；嵌套明细仅保留既有数值度量例外。 */
 export function queryResultFieldContract<Field extends FieldDefinition>(field: Field): Field {
-  if (field.role === 'measure' && (field.type === 'number' || field.type === 'money')) {
+  if (field.type !== 'recordList' && field.type !== 'semanticHtml') {
     return { ...field, nullable: true };
   }
   if (field.type === 'recordList') {
     return { ...field, items: { fields: Object.fromEntries(
-      Object.entries(field.items.fields).map(([id, item]) => [id, queryResultFieldContract(item)])
+      Object.entries(field.items.fields).map(([id, item]) => [id, item.role === 'measure' && (item.type === 'number' || item.type === 'money') ? { ...item, nullable: true } : item])
     ) } };
   }
   return field;

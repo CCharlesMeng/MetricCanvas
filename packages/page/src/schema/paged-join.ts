@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { fieldsZ, fieldNameZ, idZ, fieldValueZ } from './primitives';
+import { cellFallbacksZ, fieldsZ, fieldNameZ, idZ, fieldValueZ } from './primitives';
 import { tableSortZ, tableQueryViewZ } from '../table-query-view';
 
 export const pagedJoinSourceZ = z.object({
@@ -13,6 +13,6 @@ export const pagedJoinSourceZ = z.object({
   fallback: z.object({ maxRows: z.int().min(1).max(1000) }).strict(),
   onMissing: z.literal('null'), ordinalField: fieldNameZ.optional(),
   initial: z.object({ capturedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/), rows: z.array(z.record(z.string(), fieldValueZ)),
-    totalCount: z.int().min(0), view: tableQueryViewZ }).strict().optional()
+    cellFallbacks: cellFallbacksZ.optional(), totalCount: z.int().min(0), view: tableQueryViewZ }).strict().optional()
 }).strict().meta({ id: 'pagedJoinSource' });
 export const pagedJoinDataSourceZ = z.object({ fields: fieldsZ, source: pagedJoinSourceZ }).strict().meta({ id: 'pagedJoinDataSource' });

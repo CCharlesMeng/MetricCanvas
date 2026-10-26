@@ -1,5 +1,8 @@
 # 页面文档结构与书写原则
 
+**独立置顶汇总行：** [ADR-0120](../0120-table-scalar-fallback-and-independent-pinned-row.md) 新增 6.60 的组件及列级 pinnedTop，最多一行且每页显示，无序号、不计明细总数，汇总失败不阻断明细但阻止完整 Excel 导出；现有 rowKindField 和 grandTotal 不变。
+
+
 > 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。
 
 6.18进一步补齐 `number-2-signed` 与 `number-grouped-signed`，全部 `number` 格式都有对应的带符号版本，各自保留原精度与千分位策略，统一按展示结果判断符号、正负颜色及变化箭头（[ADR-0103](../0103-signed-numbers-use-displayed-polarity.md)）。

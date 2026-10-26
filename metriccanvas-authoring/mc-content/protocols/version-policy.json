@@ -1,8 +1,18 @@
 {
   "major": 6,
-  "minor": 59,
-  "current": "6.59",
+  "minor": 60,
+  "current": "6.60",
   "capabilities": {
+    "query-cell-display-evidence": {
+      "minor": 60,
+      "description": "查询快照原文展示证据",
+      "legacyReadable": false
+    },
+    "table-pinned-top": {
+      "minor": 60,
+      "description": "表格独立查询置顶行",
+      "legacyReadable": false
+    },
     "query-dimension-measures": {
       "minor": 56,
       "description": "DQE output_dims 数值输出显式声明页面度量",
@@ -659,6 +669,7 @@
     "6.56",
     "6.57",
     "6.58",
-    "6.59"
+    "6.59",
+    "6.60"
   ]
 }

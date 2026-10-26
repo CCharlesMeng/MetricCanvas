@@ -1,3 +1,5 @@
+import { attachInitialFallbacks } from './cell-fallback';
+import { tablePinnedErrors, tableAlignedSlots } from './table-pinned';
 import { aiSummaryErrors, aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
 import { aiSummaryPositionErrors } from './ai-summary-region';
 import { chartConstantInputErrors, chartConstantErrors } from './chart-value-validation';
@@ -176,6 +178,7 @@ export function parsePage(
   const errors:TypedError[]=[...presentationPolicyErrors(page),...filterGroupErrors(page)];
   try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant),...navigationErrors(variant),...urlInputErrors(variant));}
   catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
+  attachInitialFallbacks(page, materialized.initialFallbacks, materialized.initialWarnings);
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
@@ -1891,8 +1894,8 @@ function tableDataErrors(
   component: Extract<Component, { type: 'table' }>,
   componentPath: string
 ): TypedError[] {
-  const slots = Object.entries(component.data);
-  if (slots.length <= 1) return [];
+  const slots = tableAlignedSlots(component);
+  if (slots.length <= 1) return tablePinnedErrors(page, component, componentPath);
   const rowKey = component.props.rowKey;
   if (!rowKey) {
     return [
@@ -1903,7 +1906,7 @@ function tableDataErrors(
     ];
   }
 
-  const errors: TypedError[] = [];
+  const errors: TypedError[] = tablePinnedErrors(page, component, componentPath);
   let expectedType: FieldDefinition['type'] | undefined;
   for (const [slot, sourceId] of slots) {
     const source = page.dataSources[sourceId];

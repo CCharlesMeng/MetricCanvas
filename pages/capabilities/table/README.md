@@ -290,3 +290,11 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order.by`；初始�
 3. “正常值”行保留原有选择、导航和详情行为。
 
 浏览器回归：`pnpm --filter playground exec playwright test table-missing-cell-actions.browser.ts --workers=1`，覆盖四种变体。只证明本地渲染与交互，不代表真实 DQE 或 Relay 验收。
+
+## 原文容错和独立汇总
+
+- `/pages/table-value-tolerance`：合成初始行，时间组合串、字符串字段返回数字和异常数值按原文展示；导出检查文本及合法数字类型。
+- `/pages/table-missing-sort`：点击数值或文本表头切换升降序，空白、横杠始终排最后，0和有效文本不被误判。
+- `/pages/table-pinned-summary`：需要本地 DQE Sim。每页显示独立中国区汇总，无序号、总数只计地区；翻页及选择地区不改变汇总，切换产品或月份更新两源。汇总场景可选零行、多行、查询失败，后两项仍显示明细但不能完整导出Excel。示例没有真实授权能力，不能作为真实服务权限验收。
+
+隔离端口启动示例：`DQE_SIM_PORT=18229 pnpm sim:dqe`；`DQE_SIM_PORT=18229 pnpm --filter playground exec vite dev --port 5180 --host 127.0.0.1`。浏览器回归：`PLAYGROUND_BASE_URL=http://127.0.0.1:5180 node apps/playground/tests/table-enhancements-browser.mjs`。

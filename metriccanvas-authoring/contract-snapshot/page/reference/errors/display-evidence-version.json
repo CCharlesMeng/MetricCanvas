@@ -1,0 +1,74 @@
+{
+  "case": "display-evidence-version",
+  "invariant": "query-cell-display-evidence",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询快照原文展示证据 由 6.60 引入，文档声明的是 6.59",
+      "paths": [
+        "/dataSources/office-overview"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "fields": {
+          "rank": {
+            "…": "共5个键"
+          },
+          "rep-office-code": {
+            "…": "共4个键"
+          },
+          "rep-office-name": {
+            "…": "共4个键"
+          },
+          "region-dept-name": {
+            "…": "共4个键"
+          },
+          "bidding-amount": {
+            "…": "共7个键"
+          },
+          "support-rate": {
+            "…": "共6个键"
+          },
+          "analysis-meeting-rate": {
+            "…": "共6个键"
+          },
+          "current-month-new-signed-amount": {
+            "…": "共7个键"
+          },
+          "project-initiation-rate": {
+            "…": "共6个键"
+          }
+        },
+        "source": {
+          "type": "pagedJoin",
+          "rowKey": "rep-office-code",
+          "domainMember": "directory",
+          "members": {
+            "…": "共6个键"
+          },
+          "projection": {
+            "…": "共8个键"
+          },
+          "ordering": {
+            "…": "共3个键"
+          },
+          "pagination": {
+            "…": "共1个键"
+          },
+          "fallback": {
+            "…": "共1个键"
+          },
+          "onMissing": "null",
+          "ordinalField": "rank",
+          "initial": {
+            "…": "共5个键"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/display-evidence-version.json"
+}

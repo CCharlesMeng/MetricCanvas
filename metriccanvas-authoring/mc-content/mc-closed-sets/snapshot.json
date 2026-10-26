@@ -1041,6 +1041,54 @@
                     }
                   }
                 },
+                "cellFallbacks": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9]\\d*)$"
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                        },
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "raw": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "boolean"
+                                }
+                              ]
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "TYPE_MISMATCH",
+                                "INVALID_NUMERIC_VALUE"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "raw",
+                            "reason"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    }
+                  ]
+                },
                 "totalCount": {
                   "type": "integer",
                   "minimum": 0,

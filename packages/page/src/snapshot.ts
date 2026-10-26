@@ -1,5 +1,6 @@
 import type { FieldValue } from './field';
 import type { QueryError } from './query-error';
+import type { CellFallbacks } from './cell-fallback';
 
 export type Row = Record<string, FieldValue>;
 
@@ -10,6 +11,6 @@ export type Row = Record<string, FieldValue>;
  */
 export type DataSnapshot =
   | { status: 'loading' }
-  | { status: 'ready'; rows: Row[]; totalCount?: number }
+  | { status: 'ready'; rows: Row[]; totalCount?: number; cellFallbacks?: CellFallbacks }
   | { status: 'empty'; totalCount?: number }
   | { status: 'error'; error: QueryError };

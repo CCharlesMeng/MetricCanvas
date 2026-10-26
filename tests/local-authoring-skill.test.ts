@@ -158,7 +158,7 @@ describe('独立本地创作 Skill', () => {
     expect(() => pagePattern(source, JSON.stringify(page))).toThrow('Invalid pattern source');
   });
 
-  it('查询数值容错示例可在仓外独立校验，维度和缺字段仍被拒绝', async () => {
+  it('查询标量容错可在仓外独立校验，结构和缺字段仍被拒绝', async () => {
     const sourcePage = files.get('references/page-metadata/examples/query-numeric-tolerance.json');
     expect(sourcePage).toBeDefined();
     const page = JSON.parse(sourcePage!);
@@ -171,9 +171,22 @@ describe('独立本地创作 Skill', () => {
     expect(run([target]).status).toBe(0);
     page.dataSources.samples.source.initial.rows[0]['容错样例'] = null;
     await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(0);
+    page.dataSources.samples.source.initial.rows[0]['容错样例'] = { invalid: true };
+    await writeFile(target, JSON.stringify(page));
     expect(run([target]).status).toBe(1);
     page.dataSources.samples.source.initial.rows[0]['容错样例'] = '正常';
     delete page.dataSources.samples.source.initial.rows[0]['容错数值'];
+    await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(1);
+  });
+
+  it('仓外支持独立置顶槽，并拒绝将明细主槽作为汇总', async () => {
+    const page = JSON.parse(files.get('references/page-metadata/examples/table-pinned-summary-page.json')!);
+    const target = path.join(isolated, page.id + '.json');
+    await writeFile(target, JSON.stringify(page));
+    expect(run(['--expected-layout', 'dashboard', target]).status).toBe(0);
+    page.sections[0].components[0].props.pinnedTop.data = 'main';
     await writeFile(target, JSON.stringify(page));
     expect(run([target]).status).toBe(1);
   });

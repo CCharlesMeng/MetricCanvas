@@ -171,7 +171,36 @@ Excel完整导出按导出行集从1编号，并保留多级表头；报告静�
 完整合成场景：`/pages/table-detail-overlay`；操作与预期结果见 `pages/README.md`。该场景不证明真实 DQE/Relay 取数。
 
 
-页面协议 6.59。结构真源为本册[schema.json](../schema.json)，SHA256 `604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0`。字段表自动生成；可选不等于有默认值。
+## 标量原文展示与本地尾排（6.60）
+
+查询返回的标量与字段类型或当前绑定格式不符时，表格保留原始标量的 String 展示并按字段、原因聚合控制台告警，不阻断其他单元格。时间组合字符串不截断、不去除首尾空白，数值字段的非数字文本也保留原文；真正 null、undefined 和非有限数字保持缺失占位。结构化字段的结构与安全校验不放宽。inline 数据及文档字面量继续严格校验。
+
+查询归一化保留有效类型值和独立原文证据。计算、行键、动作、候选及查询输入消费有效类型值，原文不能被提升为可信业务键或查询条件；图表和指标卡沿用有效值及缺失规则。异常标量展示消费者为表格及其导出；嵌套 recordList 项保持既有数值容错，不新增项级原文协议。
+
+本地排序按有效值、非空降级文本、缺失值三个组比较，升降序都保持组的先后；方向只影响组内排序。null、undefined、非有限数字、空串、纯空格及首尾空白去除后仅由一个或多个 -、–、— 组成的文本均属于末组。0、false、负数、A-01 保持有效；多键排序继续后续键，最终相等时保留输入顺序。远程排序采用上游结果，不对当前窗口重排。
+
+Excel 原文单元格明确写入文本，不再猜测为日期或数值；合法数字保留数值类型。示例 `/pages/table-value-tolerance` 和 `/pages/table-missing-sort` 使用合成初始行及本地 DQE Sim。
+
+<a id="table-pinned-top"></a>
+
+## 独立查询置顶行（6.60）
+
+props.pinnedTop 指定一个独立命名槽，叶子列的 pinnedTop 通过 field、secondaryField、badgeField 绑定该槽中的字段，字段绑定仍使用现有 FieldBinding。组件声明例为 data:{main:"regions",china:"summary"}、props.pinnedTop:{data:"china"}；列例为 {field:"actual",pinnedTop:{field:{data:"china",field:"summary-actual"}}}。指定的是槽名而非数据源 id。
+
+置顶槽引用普通 query 页面数据源并声明 source.resultScope:"complete"。结果完整返回零行或一行，不得使用 limit/offset 截断，不得依赖该表明细源。列绑定只消费指定置顶槽，类型、角色、币种及单位需与对应明细字段一致。其他多槽仍按既有 rowKey 对齐；置顶槽本身不要求 rowKey，也不增加只有 main 的表格的行键要求。普通字段不得反向使用置顶槽作为对齐源。
+
+每页在表头后显示一次汇总，不纵向吸顶，不占明细页大小、totalCount 或序号；序号及展开格留空。置顶字段格式依次取置顶绑定显式 format、同列对应明细的最终 format、置顶字段 defaultFormat。未绑定的格子留空，次字段和徽标不继承明细内容。复用现有列宽、对齐、固定列及单元格样式；不继承选择、导航、详情、展开或 mergeBy 合并动作。
+
+汇总只消费自身查询明确绑定的共同条件。地区选择、表内搜索、列表头条件和分页不隐式传给它；示例中的时间、产品绑定两源，地区只绑定明细。两源始终保留当前用户权限，不能通过省略页面筛选扩大权限；汇总值与业务标签由指标表的区域取数逻辑返回，前端不从明细补算。
+
+汇总加载不阻塞明细；完整零行不生成汇总；失败、总数不一致或多行时保留明细并记录诊断，不复用旧值。共同业务条件改变时旧汇总失效，迟到响应不能回写。明细零行但汇总成功时可仅显示汇总，明细 totalCount 仍为零。
+
+Excel 表头后写一次汇总，无序号，然后导出全部匹配明细。汇总无记录可以导出，汇总失败或行数不合法则整个表格导出失败；输出总数据行仍受10000行及60秒准备限制。PDF/PNG 使用同一投影，成功汇总在展开后的表格中仅出现一次，保留报告既有部分失败策略。首版不扩展行内子表的声明；已有详情限制继续生效。
+
+完整场景 `/pages/table-pinned-summary` 使用两个独立的 DQE Sim 查询，支持地区、共同时间和产品条件，以及零行、多行、失败场景；不能据此宣称真实 DQE 权限及汇总口径已经验收。
+
+
+页面协议 6.60。结构真源为本册[schema.json](../schema.json)，SHA256 `42ab238060ebcf4d08a3ecd245c31d47ac6d3f27655476e11409c6f8ae72251e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -737,6 +766,26 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/rowNumb
 |---|---|
 | "left" | 左对齐或左侧固定，由字段位置决定。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70696e6e6564546f70"></a>
+
+### `@tableComponent.props.pinnedTop`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/pinnedTop`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["data"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 独立完整查询置顶行，最多一行，不占明细分页和序号。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f64617461"></a>
+
+### `@tableComponent.props.pinnedTop.data`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/data`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 置顶行消费的命名数据槽，不能是main或同一个明细源。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774b6579"></a>
 
 ### `@tableComponent.props.rowKey`
@@ -831,6 +880,66 @@ Schema位置：`#/definitions/tableColumn`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f70"></a>
+
+### `@tableColumn.pinnedTop`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 该叶子列的置顶字段绑定；省略则留空，不继承明细值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f6669656c64"></a>
+
+### `@tableColumn.pinnedTop.field`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/field`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 置顶槽的显式主字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f7365636f6e646172794669656c64"></a>
+
+### `@tableColumn.pinnedTop.secondaryField`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 置顶槽的可选次字段，不隐式继承明细次字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f7365636f6e646172794669656c642f616c6c4f662f30"></a>
+
+### `@tableColumn.pinnedTop.secondaryField · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField/allOf/0`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldBinding | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f62616467654669656c64"></a>
+
+### `@tableColumn.pinnedTop.badgeField`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/badgeField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 置顶槽的可选徽标字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f62616467654669656c642f616c6c4f662f30"></a>
+
+### `@tableColumn.pinnedTop.badgeField · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/badgeField/allOf/0`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldBinding | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6b696e64"></a>
 
@@ -2613,6 +2722,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `paged-join`：6.22 组合表全局视图与普通查询定义引用。反例：[table-number-range-before-6.22](../errors/table-number-range-before-6.22.json)、[paged-join-initial-predicate-in](../errors/paged-join-initial-predicate-in.json)、[paged-join-initial-predicate-numeric](../errors/paged-join-initial-predicate-numeric.json)、[paged-join-initial-predicate-date](../errors/paged-join-initial-predicate-date.json)、[paged-join-before-6.22](../errors/paged-join-before-6.22.json)、[paged-join-unknown-member](../errors/paged-join-unknown-member.json)、[paged-join-invalid-key](../errors/paged-join-invalid-key.json)、[paged-join-invalid-projection](../errors/paged-join-invalid-projection.json)、[paged-join-member-topn](../errors/paged-join-member-topn.json)、[paged-join-shared-root](../errors/paged-join-shared-root.json)、[paged-join-invalid-initial](../errors/paged-join-invalid-initial.json)、[table-number-range-non-numeric](../errors/table-number-range-non-numeric.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-search-options`：6.42 静态搜索选项唯一、默认项有效且每项引用文本字段。反例：[table-search-options-before-6.42](../errors/table-search-options-before-6.42.json)、[table-search-options-duplicate](../errors/table-search-options-duplicate.json)、[table-search-options-default-missing](../errors/table-search-options-default-missing.json)、[table-search-options-nontext](../errors/table-search-options-nontext.json)、[table-search-options-unmapped](../errors/table-search-options-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-expansion`：6.44单层子表格的作用域、只读及查询分页约束。反例：[row-expansion-before-6.44](../errors/row-expansion-before-6.44.json)、[row-expansion-missing-parent-key](../errors/row-expansion-missing-parent-key.json)、[row-expansion-query-local-page](../errors/row-expansion-query-local-page.json)、[row-expansion-unbound-parent](../errors/row-expansion-unbound-parent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `table-pinned-top`：独立完整查询置顶，明确字段及行域归属。反例：[pinned-top-version](../errors/pinned-top-version.json)、[pinned-top-main](../errors/pinned-top-main.json)、[pinned-top-window](../errors/pinned-top-window.json)、[pinned-top-unknown-field](../errors/pinned-top-unknown-field.json)、[pinned-top-incomplete](../errors/pinned-top-incomplete.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2632,6 +2742,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-row-expansion-inputs](../examples/table-row-expansion-inputs.json)：完整合法页面；查询仅为静态契约证据。
 - [table-row-expansion-none](../examples/table-row-expansion-none.json)：完整合法页面；查询仅为静态契约证据。
 - [table-row-number-page](../examples/table-row-number-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-scalar-fallback-page](../examples/table-scalar-fallback-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-pinned-summary-page](../examples/table-pinned-summary-page.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

@@ -1,0 +1,29 @@
+{
+  "case": "pinned-top-version",
+  "invariant": "table-pinned-top",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格独立查询置顶行 由 6.60 引入，文档声明的是 6.59",
+      "paths": [
+        "/sections/0/components/0/props/pinnedTop"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pinnedTop": {
+                "data": "china"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/pinned-top-version.json"
+}

@@ -29,7 +29,7 @@
     semanticHtmlFieldPresentation
   } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import { alignTableRows, alignedFieldValue } from './rows';
+  import { projectTableRows, tableRowColumn, alignedCellText, alignedFieldValue } from './rows';
   import { mergeSpans, tableRowTier } from './presentation';
   import { buildTableColumnLayout, shouldWrapTableHeaders } from './columns';
   import type {
@@ -124,7 +124,7 @@
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
   const wrapHeaders = $derived(shouldWrapTableHeaders(props.fit, leaves.length));
-  const rows = $derived(alignTableRows(data, props.rowKey));
+  const rows = $derived(projectTableRows(data, props));
   const rowTiers = $derived(rows.map((row) => tableRowTier(row, props.rowKindField)));
   /** 首列合并:相邻同值折成一个单元格,rowSpan 为 0 的行不渲染该列。 */
   const rowSpans = $derived(mergeSpans(rows, props.mergeBy));
@@ -510,7 +510,7 @@
       </thead>
       <tbody>
         {#each rows as row, i (expandable && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
-          <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={rowTiers[i] === 'total'}>
+          <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={row.kind !== 'pinnedTop' && rowTiers[i] === 'total'} data-pinned-top={row.kind === 'pinnedTop' ? '' : undefined}>
             {#if expandable}
               <td class="expand-column fixed" data-column-index="0" style="left:0">
                 {#if rowTiers[i] !== 'subtotal' && rowTiers[i] !== 'total' && validExpansionKeys.has(expansion!.key(row.main) ?? '')}
@@ -521,11 +521,12 @@
               </td>
             {/if}
             {#if props.rowNumber}
-              <td class:fixed={props.rowNumber.fixed === 'left'} data-row-number data-column-index={expandable ? 1 : 0} style={rowNumberStyle}>{rowNumberOffset + i + 1}</td>
+              <td class:fixed={props.rowNumber.fixed === 'left'} data-row-number data-column-index={expandable ? 1 : 0} style={rowNumberStyle}>{row.kind === 'pinnedTop' ? '' : rowNumberOffset + (row.bodyIndex ?? i) + 1}</td>
             {/if}
-            {#each leaves as column, columnIndex (columnField(column))}
+            {#each leaves as bodyColumn, columnIndex (columnField(bodyColumn))}
+              {@const column = tableRowColumn(bodyColumn, row, data)}
               <!-- 合并列上被并入上方单元格的行不渲染该列 -->
-              {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
+              {#if row.kind === 'pinnedTop' || columnField(bodyColumn) !== mergedColumnField || rowSpans[i] !== 0}
                 {@const resolved = resolveField(column.field, data)}
                 {@const rawValue = alignedFieldValue(column.field, data, row)}
                 {@const hasValue = hasDisplayValue(rawValue)}
@@ -538,38 +539,38 @@
                 {#snippet supplementaryFields()}
                   {#if column.secondaryField}
                     {@const secondary = resolveField(column.secondaryField, data)}
-                    <small>{formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format, secondary.missingText)}</small>
+                    <small>{alignedCellText(column.secondaryField, data, row)}</small>
                   {/if}
                   {#if column.badgeField}
                     {@const badge = resolveField(column.badgeField, data)}
-                    <small class="cell-badge">{formatValue(alignedFieldValue(column.badgeField, data, row), badge.format, badge.missingText)}</small>
+                    <small class="cell-badge">{alignedCellText(column.badgeField, data, row)}</small>
                   {/if}
                 {/snippet}
-                {@const actionGate=interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
+                {@const actionGate=row.kind === 'pinnedTop' ? {eligible:false,enabled:false} : interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
                 <td
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   class:emphasized={column.emphasis === 'strong'}
                   class:selectable={Boolean(hasValue && column.selection && interactive && actionGate.eligible)}
                   class:linkable={Boolean(hasValue && column.link && interactive && !column.selection && actionGate.eligible)}
-                  class:selected={isSelected(i, column)}
+                  class:selected={row.kind !== 'pinnedTop' && isSelected(row.bodyIndex ?? i, column)}
                   class:danger={isDanger(column, rawValue)}
                   class:negative={semanticPresentation === undefined && color === 'red'}
                   class:positive={semanticPresentation === undefined && color === 'green'}
                   class:explicit-color={column.colorRule !== undefined}
-                  data-column-field={columnField(column)}
+                  data-column-field={columnField(bodyColumn)}
                   data-column-index={columnIndex + leadingColumnCount}
-                  rowspan={columnField(column) === mergedColumnField ? rowSpans[i] : undefined}
-                  style={cellStyle(column)}
+                  rowspan={row.kind !== 'pinnedTop' && columnField(bodyColumn) === mergedColumnField ? rowSpans[i] : undefined}
+                  style={cellStyle(bodyColumn)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
                   {#if hasValue && column.selection && interactive && actionGate.eligible}
                     <button
                       type="button"
                       class="selectable-cell"
-                      aria-pressed={isSelected(i, column)}
+                      aria-pressed={isSelected(row.bodyIndex ?? i, column)}
                       disabled={!actionGate.enabled}
-                      onclick={() => oncellselect?.({ rowIndex: i, column, row:row.main })}
+                      onclick={() => oncellselect?.({ rowIndex: row.bodyIndex ?? i, column, row:row.main })}
                     >
                       <span class="cell-stack">
                         {#if semanticPresentation}
@@ -580,7 +581,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
+                          <span class="cell-primary-value">{alignedCellText(column.field, data, row)}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -598,7 +599,7 @@
                           event.currentTarget.click();
                         }
                       }}
-                      onclick={(event) => {if(actionGate.enabled)onlink?.({ rowIndex: i, column, row: row.main }, event);else event.preventDefault();}}
+                      onclick={(event) => {if(actionGate.enabled)onlink?.({ rowIndex: row.bodyIndex ?? i, column, row: row.main }, event);else event.preventDefault();}}
                     >
                       <span class="cell-stack">
                         {#if semanticPresentation}
@@ -609,7 +610,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
+                          <span class="cell-primary-value">{alignedCellText(column.field, data, row)}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -620,9 +621,9 @@
                       <span
                         aria-hidden="true"
                         class="rate-bar"
-                        style={`width: ${rateBarWidth(column, rawValue)}%;`}
+                        style={`width: ${rateBarWidth(bodyColumn, rawValue)}%;`}
                       ></span>
-                      <span class="cell-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
+                      <span class="cell-value">{alignedCellText(column.field, data, row)}</span>
                     </span>
                     {@render supplementaryFields()}
                     </div>
@@ -636,7 +637,7 @@
                           inline
                         />
                       {:else}
-                        <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
+                        <span class="cell-primary-value">{alignedCellText(column.field, data, row)}</span>
                       {/if}
                       {@render supplementaryFields()}
                     </div>
@@ -934,6 +935,9 @@
     background: #eef3ff;
     color: #08359e;
     font-weight: 700;
+  }
+  tbody tr[data-pinned-top] td {
+    font-weight: 600;
   }
   tbody td.positive {
     color: var(--mc-color-positive, #52c41a);

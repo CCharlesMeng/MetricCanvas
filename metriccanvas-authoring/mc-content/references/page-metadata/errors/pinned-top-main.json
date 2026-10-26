@@ -1,0 +1,83 @@
+{
+  "case": "pinned-top-main",
+  "invariant": "table-pinned-top",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "置顶字段必须引用已声明的置顶槽及有效字段",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/pinnedTop/field",
+        "/sections/0/components/0/props/columns/1/pinnedTop/field",
+        "/sections/0/components/0/props/columns/2/pinnedTop/field",
+        "/sections/0/components/0/props/columns/3/pinnedTop/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "置顶行必须引用独立的非 main 数据槽",
+      "paths": [
+        "/sections/0/components/0/props/pinnedTop"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询分页表格必须独占页面数据源 regions，当前引用 2 次",
+      "paths": [
+        "/sections/0/components/0/data/main"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "pinnedTop": {
+                    "field": {
+                      "data": "china",
+                      "field": "scope-name"
+                    }
+                  }
+                },
+                {
+                  "pinnedTop": {
+                    "field": {
+                      "data": "china",
+                      "field": "summary-target"
+                    }
+                  }
+                },
+                {
+                  "pinnedTop": {
+                    "field": {
+                      "data": "china",
+                      "field": "summary-actual"
+                    }
+                  }
+                },
+                {
+                  "pinnedTop": {
+                    "field": {
+                      "data": "china",
+                      "field": "summary-rate"
+                    }
+                  }
+                }
+              ],
+              "pinnedTop": {
+                "data": "china"
+              }
+            },
+            "data": {
+              "main": "regions"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

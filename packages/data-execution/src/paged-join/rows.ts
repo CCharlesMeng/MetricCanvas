@@ -1,3 +1,4 @@
+import { restoreCellFallbacks, copyRowFallbacks, copyFieldFallback } from '@metriccanvas/page/internal';
 import { queryResultFieldContract, validateContractRows, type FieldDefinition, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
 import type { PagedJoinPlan } from './plan';
 export const rowFailure = (message: string) => Object.assign(new Error(message), { code: 'DQE_ROW_CONTRACT_ERROR' });
@@ -8,6 +9,7 @@ export function memberRows(plan: PagedJoinPlan, id: string, result: DataSnapshot
   if (result.status === 'error') throw Object.assign(new Error(result.error.message), { code: result.error.code });
   if (result.status === 'loading') throw rowFailure('成员结果尚未完成');
   const rows = result.status === 'ready' ? result.rows : [], total = result.totalCount;
+  if (result.status === 'ready') restoreCellFallbacks(rows, result.cellFallbacks);
   assertMemberRange(rows.length, total, plan.source.source.fallback.maxRows, window);
   if (!validateContractRows(rows, queryResultFields(plan.members.get(id)!.fields)).ok) throw rowFailure('成员结果违反原始字段契约');
   const member = plan.source.source.members[id], type = plan.members.get(id)!.fields[member.key.field].type;
@@ -25,7 +27,11 @@ export function projectRows(plan: PagedJoinPlan, keys: readonly (string | number
   const rows = keys.map(key => {
     if (!domain.has(key)) throw rowFailure('选页编码不在业务行域');
     const row: Row = {};
-    for (const [field, projection] of Object.entries(plan.source.source.projection)) row[field] = members.get(projection.member)?.get(key)?.[projection.field] ?? null;
+    for (const [field, projection] of Object.entries(plan.source.source.projection)) {
+      const source = members.get(projection.member)?.get(key);
+      row[field] = source?.[projection.field] ?? null;
+      copyFieldFallback(source, projection.field, row, field);
+    }
     if (plan.source.source.ordinalField) row[plan.source.source.ordinalField] = 0;
     return row;
   });
@@ -34,7 +40,7 @@ export function projectRows(plan: PagedJoinPlan, keys: readonly (string | number
 }
 export function ordinalRows(plan: PagedJoinPlan, rows: Row[], offset: number): Row[] {
   const ordinal = plan.source.source.ordinalField;
-  return ordinal ? rows.map((row, index) => ({ ...row, [ordinal]: offset + index + 1 })) : rows;
+  return ordinal ? rows.map((row, index) => copyRowFallbacks(row, { ...row, [ordinal]: offset + index + 1 })) : rows;
 }
 
 function assertMemberRange(count: number, total: number | undefined, maxRows: number, window?: { offset: number; limit: number }): void {

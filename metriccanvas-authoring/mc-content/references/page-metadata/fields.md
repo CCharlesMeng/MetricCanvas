@@ -38,9 +38,9 @@ DQE 的输出位置与页面的结果字段角色分别声明。`output_dims` �
 
 该规则同样作用于查询内嵌初始行与嵌套明细中的数值度量，动态返回和首屏一致。数值度量即使声明 `nullable: false`，实际缺失也只记录非阻断告警；此声明在查询结果上表示数据预期，不再保证运行时一定非空。已有可空字段的正常 `null` 不告警。数据网关返回可选的 `warnings`，并在查询诊断中按字段及原因汇总数量；不记录原始值或数据行。
 
-数值维度（例如关联键）、其他类型、缺少映射字段、非对象行及明细结构/数量上限保持严格校验；`inline` 数据和文档字面量仍按原结果字段契约严格验证。组合表格成员和投影复验允许查询数值度量的 `null`，行键继续严格校验。
+6.60 起，查询顶层标量失配采用下节展示证据规则；缺少映射字段、非对象行及明细结构/数量上限保持严格校验；`inline` 数据和文档字面量仍按原结果字段契约严格验证。组合表格成员和投影复验允许查询数值度量的 `null`，行键继续严格校验。
 
-表格和指标卡沿用字段绑定的 `missingText`（通常为 `—`），折线和柱图保留缺口，饼图略过缺失值，指标卡进度环显示缺失占位符且不附百分号。计算沿用各算子已声明的缺失值规则，不额外补零；允许忽略缺失的合计可能只覆盖有效值，不能视为完整数据。验收完整示例 `query-numeric-tolerance` 包含八种合成输入及派生完成率，不代表真实 DQE 或业务口径验真。
+没有原文展示证据时，表格和指标卡沿用字段绑定的 `missingText`（通常为 `—`），折线和柱图保留缺口，饼图略过缺失值，指标卡进度环显示缺失占位符且不附百分号。计算沿用各算子已声明的缺失值规则，不额外补零；允许忽略缺失的合计可能只覆盖有效值，不能视为完整数据。验收完整示例 `query-numeric-tolerance` 包含八种合成输入及派生完成率，不代表真实 DQE 或业务口径验真。
 
 query支持平铺和按角色分组的文档字段写法，normalize保持原始文档，运行时解析才展平。一个DQE输出应唯一映射到页面字段；派生字段不带queryField，必须由compute产出。
 
@@ -53,7 +53,16 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 嵌套明细字段可通过6.32的`table.props.rowExpansion.data:{type:"recordList",field:"..."}`被显式消费为子表格；字段契约仍为一层、每父行最多100项，子表列直接引用items.fields中的页面字段id。
 
 
-页面协议 6.59。结构真源为本册[schema.json](schema.json)，SHA256 `604b2736717c2d89f7812e30b7ec39ea65ff96ee57dc229cb824096b98dc11d0`。字段表自动生成；可选不等于有默认值。
+## 查询标量的原文展示证据（6.60）
+
+查询顶层 string、number、money、boolean、date、datetime 标量值失配时，可展示的原始有限标量独立保留为 cellFallbacks；有效值通道取 null。表格按 String(raw) 展示原文并告警，计算、查询输入、行键和其他组件仍使用有效类型值。合法数值字符串继续采用既有数值归一化规则，非数字文本不参与计算。
+
+真正空值及非有限数字继续缺失处理，不显示字符串 null 或 NaN；非标量对象不走通用 String。nullable:false 在查询顶层标量上表示非空预期，实际缺失告警；inline、字面量、嵌套明细非数值项及结构规则保持严格。数值维度失配可在表格展示，但关联和结果绑定仍会因有效键缺失而拒绝执行，不能删掉输入条件后改查全量。
+
+ready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。
+
+
+页面协议 6.60。结构真源为本册[schema.json](schema.json)，SHA256 `42ab238060ebcf4d08a3ecd245c31d47ac6d3f27655476e11409c6f8ae72251e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1559,6 +1568,111 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 |---|---|---|---|---|
 | 开放JSON | 独立分支（不合并required） | required=["measures"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b73"></a>
+
+### `@cellFallbacks`
+
+Schema位置：`#/definitions/cellFallbacks`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | propertyNames={"type":"string","pattern":"^(0&#124;[1-9]\\d*)$"} | Schema未设默认；装配/运行时默认见语义说明 | 按快照行下标和页面字段id保存原始标量展示证据。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@cellFallbacks{key}`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 动态键的值 | propertyNames={"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_-]*$"} | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f706572746965732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@cellFallbacks{key}{key}`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 动态键的值 | required=["raw","reason"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f706572746965732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f726177"></a>
+
+### `@cellFallbacks{key}{key}.raw`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 有限原始标量；只用于原文展示和往返，不作为有效业务值。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f706572746965732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f7261772f616e794f662f30"></a>
+
+### `@cellFallbacks{key}{key}.raw · anyOf[0]`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f706572746965732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f7261772f616e794f662f31"></a>
+
+### `@cellFallbacks{key}{key}.raw · anyOf[1]`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f706572746965732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f7261772f616e794f662f32"></a>
+
+### `@cellFallbacks{key}{key}.raw · anyOf[2]`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f706572746965732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f726561736f6e"></a>
+
+### `@cellFallbacks{key}{key}.reason`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/reason`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["TYPE_MISMATCH","INVALID_NUMERIC_VALUE"] | Schema未设默认；装配/运行时默认见语义说明 | 标量失配的脱值原因分类。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "TYPE_MISMATCH" | 原始标量与声明类型不符，有效值保持缺失。 |
+| "INVALID_NUMERIC_VALUE" | 数值度量不能归一化为有限数字，原始标量仅供展示。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f6164646974696f6e616c50726f706572746965732f70726f70657274794e616d6573"></a>
+
+### `@cellFallbacks{key} · propertyNames`
+
+Schema位置：`#/definitions/cellFallbacks/additionalProperties/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63656c6c46616c6c6261636b732f70726f70657274794e616d6573"></a>
+
+### `@cellFallbacks · propertyNames`
+
+Schema位置：`#/definitions/cellFallbacks/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^(0&#124;[1-9]\\d*)$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `grouped-query-fields-unique`：按角色分组的查询字段在维度组与度量组之间不得重名。反例：[grouped-field-duplicate](errors/grouped-field-duplicate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1576,6 +1690,7 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [query-numeric-tolerance](examples/query-numeric-tolerance.json)：完整合法页面；查询仅为静态契约证据。
 - [stored-count-measures](examples/stored-count-measures.json)：完整合法页面；查询仅为静态契约证据。
+- [table-paged-fallback-page](examples/table-paged-fallback-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
@@ -1600,3 +1715,6 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields/measures/revenue`。
 - `#/definitions/groupedQueryFields/anyOf/0`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields`。
 - `#/definitions/groupedQueryFields/anyOf/1`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields`。
+- `#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/0`：[合法完整页面](examples/table-paged-fallback-page.json)，JSON Pointer `#/dataSources/office-overview/source/initial/cellFallbacks/0/bidding-amount/raw`。
+- `#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/1`：[合法完整页面](examples/table-paged-fallback-page.json)，JSON Pointer `#/dataSources/office-overview/source/initial/cellFallbacks/0/rep-office-name/raw`。
+- `#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/2`：[合法完整页面](examples/table-paged-fallback-page.json)，JSON Pointer `#/dataSources/office-overview/source/initial/cellFallbacks/0/region-dept-name/raw`。

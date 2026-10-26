@@ -1,9 +1,10 @@
 import type { FieldBinding, TableComponent, TableColumnNode, ValueFormatPreset } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
 import { resolveField } from '../../widgets/src/shared/component-data';
-import { alignTableRows, alignedFieldValue } from '../../widgets/src/components/table/rows';
+import { projectTableRows, tableRowColumn, alignedFallback, alignedFieldValue } from '../../widgets/src/components/table/rows';
 import { buildTableColumnLayout } from '../../widgets/src/components/table/columns';
-import { formatValue } from '../../widgets/src/shared/value-format';
+import { compatibleTableFormat, formatTableCell } from '../../widgets/src/components/table/cell-presentation';
+import { formatValue, hasDisplayValue } from '../../widgets/src/shared/value-format';
 
 export function tableExportFilename(component: TableComponent): string {
   const name = component.props.toolbar?.export?.filename || component.props.title || '表格数据';
@@ -45,10 +46,10 @@ export async function encodeTableWorkbook(component: TableComponent, data: Named
   const project = (nodes: TableColumnNode[]): TableColumnNode[] => nodes.map(node => {
     if (node.kind === 'group') return { ...node, children: project(node.children) };
     const label = title(node.field, node.title);
-    const extras = [node.secondaryField, node.badgeField].filter((field): field is FieldBinding => field !== undefined);
+    const extras = (['secondaryField', 'badgeField'] as const).flatMap(key => node[key] ? [{ field: node[key], pinned: node.pinnedTop?.[key] }] : []);
     if (!extras.length) return { ...node, title: label };
     return { kind: 'group', id: `export-${groupIndex++}`, title: label,
-      children: [{ ...node, title: title(node.field) }, ...extras.map(field => ({ field, title: title(field) }))] };
+      children: [{ ...node, title: title(node.field) }, ...extras.map(({field,pinned}) => ({ field, title: title(field), ...(pinned ? { pinnedTop: {field:pinned} } : {}) }))] };
   });
   const layout = buildTableColumnLayout(project(component.props.columns));
   const leadingColumns = component.props.rowNumber ? 1 : 0;
@@ -72,15 +73,19 @@ export async function encodeTableWorkbook(component: TableComponent, data: Named
     cell.alignment = { vertical: 'middle', horizontal: 'center' };
     if (headerCount > 1) sheet.mergeCells(1, 1, headerCount, 1);
   }
-  const rows = alignTableRows(data, component.props.rowKey);
+  const rows = projectTableRows(data, component.props);
   rows.forEach((row, index) => {
     signal.throwIfAborted();
-    if (leadingColumns) sheet.getCell(headerCount + index + 1, 1).value = index + 1;
-    layout.leaves.forEach((column, columnIndex) => {
+    if (leadingColumns) sheet.getCell(headerCount + index + 1, 1).value = row.kind === 'pinnedTop' ? null : (row.bodyIndex ?? index) + 1;
+    layout.leaves.forEach((bodyColumn, columnIndex) => {
+      const column = tableRowColumn(bodyColumn, row, data);
       const resolved = resolveField(column.field, data);
       const value = alignedFieldValue(column.field, data, row);
       const cell = sheet.getCell(headerCount + index + 1, columnIndex + 1 + leadingColumns);
-      if (value == null) { cell.value = resolved.missingText ?? null; return; }
+      const fallback = alignedFallback(column.field, data, row);
+      if (fallback) { cell.value = String(fallback.raw); return; }
+      if (!hasDisplayValue(value)) { cell.value = resolved.missingText ?? null; return; }
+      if (resolved.format && !compatibleTableFormat(value, resolved.format)) { cell.value = formatTableCell(value, resolved.format); return; }
       if (typeof value === 'number') {
         cell.value = value; cell.numFmt = numberFormat(value, resolved.format);
       } else if (typeof value === 'boolean') cell.value = value;

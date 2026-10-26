@@ -1,3 +1,4 @@
+import { copyRowFallbacks, copyFieldFallback } from '@metriccanvas/page/internal';
 import { timeFill, type ComputationContext } from './time-fill';
 import { joinAggregate, ComputationError } from './join-aggregate';
 import type {
@@ -44,20 +45,20 @@ function applyOperator(operator: Exclude<ComputeOperator, { op: 'joinAggregate' 
         const values = operator.fields.map(field => numeric(row[field]));
         const missing = values.some(value => value === undefined);
         const present = values.filter((value): value is number => value !== undefined);
-        return { ...row, [operator.output]: !present.length || (missing && operator.onMissing === 'null')
-          ? null : finiteOrNull(present.reduce((sum, value) => sum + value, 0)) };
+        return copyRowFallbacks(row, { ...row, [operator.output]: !present.length || (missing && operator.onMissing === 'null')
+          ? null : finiteOrNull(present.reduce((sum, value) => sum + value, 0)) });
       });
     case 'cagr':
       return rows.map(row => {
         const beginning = numeric(row[operator.beginning]);
         const ending = numeric(row[operator.ending]);
         const periods = numeric(row[operator.periods]);
-        return { ...row, [operator.output]: beginning === undefined || beginning <= 0 ||
+        return copyRowFallbacks(row, { ...row, [operator.output]: beginning === undefined || beginning <= 0 ||
           ending === undefined || ending < 0 || periods === undefined || periods <= 0
-          ? null : finiteOrNull((Math.pow(ending / beginning, 1 / periods) - 1) * (operator.scale ?? 1)) };
+          ? null : finiteOrNull((Math.pow(ending / beginning, 1 / periods) - 1) * (operator.scale ?? 1)) });
       });
     case 'ratio':
-      return rows.map((row) => ({
+      return rows.map((row) => copyRowFallbacks(row, {
         ...row,
         [operator.output]: ratio(
           numeric(row[operator.numerator]),
@@ -70,11 +71,11 @@ function applyOperator(operator: Exclude<ComputeOperator, { op: 'joinAggregate' 
       return rows.map((row) => {
         const minuend = numeric(row[operator.minuend]);
         const subtrahend = numeric(row[operator.subtrahend]);
-        return {
+        return copyRowFallbacks(row, {
           ...row,
           [operator.output]:
             minuend === undefined || subtrahend === undefined ? null : finiteOrNull(minuend - subtrahend)
-        };
+        });
       });
     case 'groupSubtotal':
       return groupSubtotal(operator, rows);
@@ -183,25 +184,24 @@ function pivot(operator: PivotOperator, rows: DataRow[]): DataRow[] {
     const result: DataRow = {};
     for (const field of keyFields) {
       result[field] = (group[0]?.[field] ?? null) as ScalarFieldValue;
+      copyFieldFallback(group[0], field, result, field);
     }
     for (const column of operator.columns) {
-      result[column.output] = firstMatchingCategory(column.categories, operator, group, column.valueField ?? operator.valueField);
+      const match = firstCategoryRow(column.categories, operator, group);
+      const field = column.valueField ?? operator.valueField;
+      result[column.output] = (match?.[field] ?? null) as ScalarFieldValue;
+      copyFieldFallback(match, field, result, column.output);
     }
     return result;
   });
 }
 
-function firstMatchingCategory(
-  categories: readonly string[],
-  operator: PivotOperator,
-  group: DataRow[],
-  valueField: string
-): ScalarFieldValue {
+function firstCategoryRow(categories: readonly string[], operator: PivotOperator, group: DataRow[]): DataRow | undefined {
   for (const category of categories) {
-    const match = group.find((row) => row[operator.categoryField] === category);
-    if (match) return (match[valueField] ?? null) as ScalarFieldValue;
+    const match = group.find(row => row[operator.categoryField] === category);
+    if (match) return match;
   }
-  return null;
+  return undefined;
 }
 
 /**
@@ -209,7 +209,7 @@ function firstMatchingCategory(
  * 缺席会让「契约里有、行里没有」这类差异只能靠肉眼发现。明细行取空。
  */
 function withRowKind(row: DataRow, field: string): DataRow {
-  return row[field] === undefined ? { ...row, [field]: null } : row;
+  return row[field] === undefined ? copyRowFallbacks(row, { ...row, [field]: null }) : row;
 }
 
 /** 折叠求和跳过缺失；整组缺失默认取空，仅显式zero策略返回0。 */
@@ -266,5 +266,10 @@ function selectField(operator: Extract<ComputeOperator, { op: 'selectField' }>, 
   if (selected.length > 1) throw new ComputationError('字段模式仅允许单选');
   const mode = selected[0] ?? operator.defaultMode;
   if (!Object.hasOwn(operator.cases, mode)) throw new ComputationError('字段模式不在声明的闭集内');
-  return rows.map(row => ({ ...row, [operator.output]: row[operator.cases[mode]] ?? null }));
+  return rows.map(row => {
+    const field = operator.cases[mode];
+    const output = copyRowFallbacks(row, { ...row, [operator.output]: row[field] ?? null });
+    copyFieldFallback(row, field, output, operator.output);
+    return output;
+  });
 }

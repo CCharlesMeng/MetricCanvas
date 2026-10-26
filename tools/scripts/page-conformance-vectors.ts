@@ -55,6 +55,24 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id:'query-cell-display-evidence',description:'原文证据只对应真实失配的空标量单元格',valid:['table-paged-fallback-page'],cases:[
+      {case:'display-evidence-version',base:'table-paged-fallback-page',expect:/由 6.60 引入/,mutate:d=>{d.schemaVersion='6.59';}},
+      {case:'display-evidence-valid-cell',base:'table-paged-fallback-page',expect:/原文证据/,mutate:d=>{d.dataSources['office-overview'].source.initial.rows[0]['bidding-amount']=100;}},
+      {case:'display-evidence-unknown-row',base:'table-paged-fallback-page',expect:/原文证据/,mutate:d=>{const i=d.dataSources['office-overview'].source.initial;i.cellFallbacks['9']=i.cellFallbacks['0'];}},
+      {case:'display-evidence-valid-number',base:'table-paged-fallback-page',expect:/原文证据/,mutate:d=>{d.dataSources['office-overview'].source.initial.cellFallbacks['0']['bidding-amount'].raw='123';}}
+    ]
+  },
+  {
+    id: 'table-pinned-top', description: '独立完整查询置顶，明确字段及行域归属', valid: ['table-pinned-summary-page'],
+    cases: [
+      {case:'pinned-top-version',base:'table-pinned-summary-page',expect:/由 6.60 引入/,mutate:d=>{d.schemaVersion='6.59';}},
+      {case:'pinned-top-main',base:'table-pinned-summary-page',expect:/独立/,mutate:d=>{firstComponent(d).data.china='regions';}},
+      {case:'pinned-top-window',base:'table-pinned-summary-page',expect:/limit|offset/,mutate:d=>{d.dataSources.summary.source.query.body.dsl_list[0].order={limit:1};}},
+      {case:'pinned-top-unknown-field',base:'table-pinned-summary-page',expect:/有效字段/,mutate:d=>{firstComponent(d).props.columns[0].pinnedTop.field.field='unknown';}},
+      {case:'pinned-top-incomplete',base:'table-pinned-summary-page',expect:/完整/,mutate:d=>{delete d.dataSources.summary.source.resultScope;}}
+    ]
+  },
+  {
     id: 'query-dimension-measures',
     description: '6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度',
     valid: ['stored-count-measures'],
@@ -710,7 +728,7 @@ export const invariants: InvariantDefinition[] = [
   {
     id: 'query-initial-rows-normalize',
     description: 'DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验',
-    valid: ['filters-page', 'compute-page', 'grouped-fields-page', 'map-page', 'forecast-page', 'query-numeric-tolerance'],
+    valid: ['table-scalar-fallback-page', 'filters-page', 'compute-page', 'grouped-fields-page', 'map-page', 'forecast-page', 'query-numeric-tolerance'],
     cases: [
       {
         case: 'initial-row-missing-query-field',
@@ -721,27 +739,27 @@ export const invariants: InvariantDefinition[] = [
         }
       },
       {
-        case: 'initial-row-null-not-allowed',
-        base: 'filters-page',
-        expect: /DQE 字段 region 为 null，页面字段 region 声明 nullable=false/,
-        mutate: (document) => {
-          document.dataSources.orders.source.initial.rows[0].region = null;
-        }
-      },
-      {
-        case: 'initial-row-type-mismatch',
+        case: 'initial-row-scalar-object',
         base: 'filters-page',
         expect: /DQE 字段 region 不符合页面字段 region 的类型 string/,
         mutate: (document) => {
-          document.dataSources.orders.source.initial.rows[0].region = 120;
+          document.dataSources.orders.source.initial.rows[0].region = { value: 'region' };
         }
       },
       {
-        case: 'initial-row-date-invalid',
+        case: 'initial-row-scalar-array',
+        base: 'filters-page',
+        expect: /DQE 字段 region 不符合页面字段 region 的类型 string/,
+        mutate: (document) => {
+          document.dataSources.orders.source.initial.rows[0].region = ['region'];
+        }
+      },
+      {
+        case: 'initial-row-date-object',
         base: 'filters-page',
         expect: /DQE 字段 stat_date 不符合页面字段 stat-date 的类型 date/,
         mutate: (document) => {
-          document.dataSources.orders.source.initial.rows[0].stat_date = '2026-02-30';
+          document.dataSources.orders.source.initial.rows[0].stat_date = { date: '2026-02-30' };
         }
       },
       {

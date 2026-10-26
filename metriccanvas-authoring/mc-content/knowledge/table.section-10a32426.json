@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.59",
+  "schemaVersion": "6.60",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-10a32426"
@@ -13,6 +13,20 @@
         "## 单元格点击与筛选联动\n\n交互态的 `selection` 选择列和 `link: true` 链接列均以下划线提示可点击，覆盖普通、`forecastMatrix`、`embedded` 和 `reportCompact` 变体；普通数据列不加下划线。选择列不额外添加蓝色背景，选中后保持普通文字颜色，不加蓝色边框；显式业务颜色照常生效，键盘焦点框跟随文字颜色。静态导出不呈现点击控件。\n\n当主字段原始值为 `null`、`undefined` 或非有限数字时，单元格呈现默认 `—` 或绑定的 `missingText`，不生成选择按钮、导航链接或详情入口，也不显示下划线或进入键盘焦点顺序。按原始值判定，不比较展示文案；真实的 `0`、`false`、空字符串或恰好等于缺省文案的文本不因此禁用。次字段或徽标有值不能使缺失的主字段恢复可点击。该规则覆盖全部表格变体，保留现有动作资格与启用条件。可观察示例：`table-missing-cell-actions`，使用内联合成数据，无需 DQE。\n\n选择列的 `selection.writes` 以**页面筛选器 id** 为键，以当前行的**页面字段 id** 或固定值为输入。例如：\n\n```json\n{\n  \"field\": \"region-dept-name\",\n  \"title\": \"区域\",\n  \"width\": 150,\n  \"fixed\": \"left\",\n  \"selection\": {\n    \"writes\": { \"region\": { \"field\": \"region-dept-name\" } }\n  }\n}\n```\n\n页面须声明 `id: \"region\"`、`type: \"dimension\"` 的筛选器；点击将当前行原始取值转为字符串写入其单选状态，不使用格式化文案。空值不写入，多目标写入一次完成。再次点击同一取值保持选中，不自动清空；`fixed` 和 `width` 只影响呈现，不影响写入。\n\n选择动作沿用组件动作资格；当前协议允许 `inline` 入口写入会产生可观察结果的筛选，例如联动下游查询。维度筛选值还须通过显式 `options` 或可信动态候选确认，候选未就绪时相关查询等待。选择列写入筛选状态，不直接筛选其他表格；下游查询必须显式声明 `source.query.filterBindings.region: { \"target\": \"dimension\", \"queryField\": \"region_dept_name\" }`。这里 `region_dept_name` 是真实 DQE 字段，不能从页面字段 id 猜测。不订阅该筛选的查询不重跑，`inline` 行也不会因此自动过滤。\n\n可观察示例：`table-cell-selection` 使用 DQE Sim 合成数据，点击“华南地区部”后，下表仅显示“深圳代表处”；上表不订阅该筛选，保留全部入口。浏览器回归同时覆盖四种变体下划线、键盘选择、重复点击、未绑定下游及内联入口联动查询的行为，不代表真实 DQE 验收。"
       ],
       "rules": [
+        {
+          "id": "table-pinned-top",
+          "description": "独立完整查询置顶，明确字段及行域归属",
+          "valid": [
+            "table-pinned-summary-page"
+          ],
+          "invalid": [
+            "pinned-top-version",
+            "pinned-top-main",
+            "pinned-top-window",
+            "pinned-top-unknown-field",
+            "pinned-top-incomplete"
+          ]
+        },
         {
           "id": "table-row-expansion",
           "description": "6.44单层子表格的作用域、只读及查询分页约束",
@@ -211,7 +225,9 @@
         "references/page-metadata/examples/table-row-expansion-query.json",
         "references/page-metadata/examples/table-row-expansion-inputs.json",
         "references/page-metadata/examples/table-row-expansion-none.json",
-        "references/page-metadata/examples/table-row-number-page.json"
+        "references/page-metadata/examples/table-row-number-page.json",
+        "references/page-metadata/examples/table-scalar-fallback-page.json",
+        "references/page-metadata/examples/table-pinned-summary-page.json"
       ]
     }
   ],

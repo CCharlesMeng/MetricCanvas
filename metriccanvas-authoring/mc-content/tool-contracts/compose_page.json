@@ -1047,6 +1047,54 @@
                       },
                       "type": "array"
                     },
+                    "cellFallbacks": {
+                      "allOf": [
+                        {
+                          "additionalProperties": {
+                            "additionalProperties": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "raw": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "boolean"
+                                    }
+                                  ]
+                                },
+                                "reason": {
+                                  "enum": [
+                                    "TYPE_MISMATCH",
+                                    "INVALID_NUMERIC_VALUE"
+                                  ],
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "raw",
+                                "reason"
+                              ],
+                              "type": "object"
+                            },
+                            "propertyNames": {
+                              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                              "type": "string"
+                            },
+                            "type": "object"
+                          },
+                          "propertyNames": {
+                            "pattern": "^(0|[1-9]\\d*)$",
+                            "type": "string"
+                          },
+                          "type": "object"
+                        }
+                      ]
+                    },
                     "totalCount": {
                       "maximum": 9007199254740991,
                       "minimum": 0,
@@ -2297,6 +2345,54 @@
                     "type": "object"
                   },
                   "type": "array"
+                },
+                "cellFallbacks": {
+                  "allOf": [
+                    {
+                      "additionalProperties": {
+                        "additionalProperties": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "raw": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "boolean"
+                                }
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                "TYPE_MISMATCH",
+                                "INVALID_NUMERIC_VALUE"
+                              ],
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "raw",
+                            "reason"
+                          ],
+                          "type": "object"
+                        },
+                        "propertyNames": {
+                          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                          "type": "string"
+                        },
+                        "type": "object"
+                      },
+                      "propertyNames": {
+                        "pattern": "^(0|[1-9]\\d*)$",
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  ]
                 },
                 "totalCount": {
                   "maximum": 9007199254740991,

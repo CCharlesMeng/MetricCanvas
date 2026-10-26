@@ -135,10 +135,11 @@ export async function executeQuery(
     const combined = intersectQueryFilters(query);
     if (!combined) return { status: 'empty', totalCount: 0 };
     const result = await gateway.fetchData(combined, diagnosticContext, signal);
+    if (result.warnings?.length) console.warn('[MetricCanvas][QUERY_VALUE_FALLBACK] 查询标量异常；保留可用数据', { ...diagnosticContext, warnings: result.warnings });
     if (query.pagination && result.totalCount === undefined) {
       throw Object.assign(new Error('查询分页结果缺少 totalCount'), { code:'DQE_ROW_CONTRACT_ERROR' });
     }
-    return rawSnapshot(result.rows, result.totalCount);
+    return rawSnapshot(result.rows, result.totalCount, result.cellFallbacks);
   } catch (cause) {
     return { status: 'error', error: preservedQueryError(cause) };
   }

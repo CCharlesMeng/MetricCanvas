@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { projectSnapshotRows } from '@metriccanvas/page/internal';
   import {onDestroy,untrack,setContext} from 'svelte';
   import {compilePresentation} from '../../runtime/src/presentation';
   import {PRESENTATION_CONTEXT} from './presentation-context';
@@ -36,7 +37,8 @@
     try{
       await exportController.run(component.id,async task=>{
         const data=detailExportData(page,frozen,snapshots);
-        data.main!.snapshot.rows=structuredClone(searchedRows(component,data.main!.snapshot.rows));
+        const snapshot=data.main!.snapshot;
+        data.main!.snapshot=structuredClone(projectSnapshotRows(snapshot,searchedRows(component,snapshot.rows)));
         await downloadTableWorkbook(frozen,data,task.signal);
       });
     }catch{/* Export task feedback is projected by the common controller. */}
@@ -47,7 +49,11 @@
     for(const [slot,id] of Object.entries(component.data??{})){
       const snapshot=snapshots.get(id);if(!snapshot)continue;
       let ready=renderableDataSnapshot(snapshot);if(!ready)continue;
-      if(component.type==='table'&&slot==='main')ready={...ready,rows:controller.present(component,presentation.rows(component,ready.rows),component.props.pagination?.mode!=='local').rows};
+      if(component.type==='table'&&slot==='main'){
+        ready=projectSnapshotRows(ready,ready.rows);
+        const rows=controller.present(component,presentation.rows(component,ready.rows),component.props.pagination?.mode!=='local').rows;
+        ready=projectSnapshotRows(ready,rows);
+      }
       result[slot]={snapshot:ready,fields:resolveDataSourceFields(page.dataSources[id])};
     }return result;
   }

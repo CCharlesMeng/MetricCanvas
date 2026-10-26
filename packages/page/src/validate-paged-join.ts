@@ -1,3 +1,4 @@
+import { cellFallbackErrors } from './validate-cell-fallbacks';
 import { aiSummaryRelatedData } from './ai-summary';
 import {ordinaryQuery} from './time-mode';
 import {queryFilterIds} from './amount-filter';
@@ -168,6 +169,7 @@ function initialErrors(data: PagedJoinDataSource, path: string, error: ErrorRepo
   if (initial.view.pageIndex !== 0 || initial.view.pageSize !== source.pagination.pageSize || JSON.stringify(initial.view.sort) !== JSON.stringify(source.ordering.default) || initial.view.predicates.length || initial.view.search?.query.trim()) error(`${path}/source/initial/view`, '组合初始行必须匹配默认视图');
   const fields = Object.fromEntries(Object.entries(data.fields).map(([id, field]) => [id, queryResultFieldContract(field)]));
   if (initial.rows.length !== Math.min(initial.totalCount, source.pagination.pageSize) || !validateContractRows(initial.rows, fields).ok) error(`${path}/source/initial/rows`, '组合初始行必须符合最终字段契约及完整第一页');
+  cellFallbackErrors(initial.rows, data.fields, initial.cellFallbacks, `${path}/source/initial/cellFallbacks`).forEach(issue => error(issue.path, issue.message));
   const keys = initial.rows.map(row => row[source.rowKey]);
   if (keys.some(v => v == null || (typeof v === 'string' && !v.trim())) || new Set(keys).size !== keys.length) error(`${path}/source/initial/rows`, '组合初始行键必须唯一非空');
 }

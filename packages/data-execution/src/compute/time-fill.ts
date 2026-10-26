@@ -1,3 +1,4 @@
+import { copyRowFallbacks } from '@metriccanvas/page/internal';
 import type { DataRow, TimeFillOperator } from '@metriccanvas/page/internal';
 import { ComputationError } from './join-aggregate';
 
@@ -62,6 +63,7 @@ export function timeFill(operator: TimeFillOperator, rows: readonly DataRow[], c
   const blank = Object.fromEntries([...new Set([...operator.measures, ...rows.flatMap(row => Object.keys(row))])].map(field => [field, null]));
   return [...groups.values()].flatMap(group => Array.from({ length: to - from + 1 }, (_, offset) => {
     const index = from + offset;
-    return { ...(group.periods.get(index) ?? blank), ...group.keys, [operator.timeField]: format(index) };
+    const source = group.periods.get(index) ?? blank;
+    return copyRowFallbacks(source, { ...source, ...group.keys, [operator.timeField]: format(index) });
   }));
 }

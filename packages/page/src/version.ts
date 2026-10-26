@@ -20,7 +20,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 59;
+const CURRENT_MINOR = 60;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -44,6 +44,13 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'query-cell-display-evidence': { minor: 60, legacyReadable: false, description: '查询快照原文展示证据',
+    usedAt: document => dataSourcePaths(document, source => has(record(record(source.source)?.initial), 'cellFallbacks'))
+  },
+  'table-pinned-top': {
+    minor: 60, legacyReadable: false, description: '表格独立查询置顶行',
+    usedAt: document => componentPaths(document, component => component.type === 'table' && has(props(component), 'pinnedTop')).map(path => path + '/props/pinnedTop')
+  },
   'query-dimension-measures': {
     minor: 56, legacyReadable: false, description: 'DQE output_dims 数值输出显式声明页面度量',
     usedAt: document => dataSourcePaths(document, hasNumericDimensionMeasure)

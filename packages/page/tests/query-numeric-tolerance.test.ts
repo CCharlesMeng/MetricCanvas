@@ -17,7 +17,7 @@ describe('查询数值度量容错', () => {
     expect(result).toHaveProperty('warnings', expect.arrayContaining([
       expect.objectContaining({ fieldId: 'value', queryField: '数值', count: expect.any(Number) })
     ]));
-    expect(JSON.stringify(result)).not.toContain('bad');
+    expect(JSON.stringify(result.warnings)).not.toContain('bad');
   });
 
   it('可空数值的正常 null 不告警；十进制、科学计数法转为有限数字', () => {
@@ -47,12 +47,12 @@ describe('查询数值度量容错', () => {
     }
   });
 
-  it('缺字段、数值维度、非数值类型与 inline 数据继续严格校验', () => {
+  it('缺字段与 inline 继续严格；标量失配保留展示证据而不提升类型', () => {
     expect(normalizeQueryRows([{}], { value: number }).ok).toBe(false);
     for (const value of ['--', '12', null]) {
-      expect(normalizeQueryRows([{ 数值: value }], { value: { ...number, role: 'dimension' } }).ok).toBe(false);
+      expect(normalizeQueryRows([{ 数值: value }], { value: { ...number, role: 'dimension' } })).toMatchObject({ok:true,rows:[{value:null}]});
     }
-    expect(normalizeQueryRows([{ 数值: 12 }], { value: { queryField: '数值', type: 'string', role: 'dimension' } }).ok).toBe(false);
+    expect(normalizeQueryRows([{ 数值: 12 }], { value: { queryField: '数值', type: 'string', role: 'dimension' } })).toMatchObject({ok:true,rows:[{value:null}],cellFallbacks:{0:{value:{raw:12}}}});
     for (const value of ['--', '12', null]) expect(validateContractRows([{ value }], { value: number }).ok).toBe(false);
   });
 });

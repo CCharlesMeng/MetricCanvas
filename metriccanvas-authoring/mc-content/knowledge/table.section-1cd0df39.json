@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.59",
+  "schemaVersion": "6.60",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-1cd0df39"
@@ -13,6 +13,20 @@
         "## 详情表格的浮层宽度\n\n`openDetail.view` 引用的详情视图只要包含 `table`，运行时自动使用宽版浮层；不新增页面宽度字段。从操作列、指标卡等任意入口打开同一视图，规则相同。居中弹窗与右侧抽屉的外框宽度均为 `min(容器宽度 × 90%, 1440px, 容器宽度 − 32px)`；弹窗居中，抽屉保持右侧展开。容器指运行时宿主的可用宽度，不读取浏览器窗口宽度。\n\n宽度按声明的组件类型判定，加载、空结果及错误时保持一致。仅字段详情或不含表格的详情视图沿用原宽度。列放不下时在表格内部横向滚动，保留列宽与字号。宽版弹窗上下至少留16px，抽屉继续占满容器高度。\n\n完整合成场景：`/pages/table-detail-overlay`；操作与预期结果见 `pages/README.md`。该场景不证明真实 DQE/Relay 取数。"
       ],
       "rules": [
+        {
+          "id": "table-pinned-top",
+          "description": "独立完整查询置顶，明确字段及行域归属",
+          "valid": [
+            "table-pinned-summary-page"
+          ],
+          "invalid": [
+            "pinned-top-version",
+            "pinned-top-main",
+            "pinned-top-window",
+            "pinned-top-unknown-field",
+            "pinned-top-incomplete"
+          ]
+        },
         {
           "id": "table-row-expansion",
           "description": "6.44单层子表格的作用域、只读及查询分页约束",
@@ -211,7 +225,9 @@
         "references/page-metadata/examples/table-row-expansion-query.json",
         "references/page-metadata/examples/table-row-expansion-inputs.json",
         "references/page-metadata/examples/table-row-expansion-none.json",
-        "references/page-metadata/examples/table-row-number-page.json"
+        "references/page-metadata/examples/table-row-number-page.json",
+        "references/page-metadata/examples/table-scalar-fallback-page.json",
+        "references/page-metadata/examples/table-pinned-summary-page.json"
       ]
     }
   ],

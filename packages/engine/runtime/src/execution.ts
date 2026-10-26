@@ -149,7 +149,7 @@ function successfulSnapshot(page: ExecutionPage, id: string, item: Record<string
   const normalized = normalizeQueryRows(item.rows, mappings);
   if (!normalized.ok) return { status: 'error', error: { code: normalized.issues.some(i => i.code.includes('MISSING')) ? 'DQE_FIELD_MAPPING_ERROR' : 'DQE_ROW_CONTRACT_ERROR', message: '执行结果不符合字段契约' } };
   const total = item.totalCount === undefined ? {} : { totalCount: Number(item.totalCount) };
-  return normalized.rows.length ? { status: 'ready', rows: normalized.rows, ...total } : { status: 'empty', ...total };
+  return normalized.rows.length ? { status: 'ready', rows: normalized.rows, ...(normalized.cellFallbacks ? { cellFallbacks: normalized.cellFallbacks } : {}), ...total } : { status: 'empty', ...total };
 }
 
 function failedSnapshot(item: Record<string, unknown>): DataSnapshot {

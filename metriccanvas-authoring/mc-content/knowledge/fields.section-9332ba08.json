@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.59",
+  "schemaVersion": "6.60",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "fields.section-9332ba08"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/fields.md",
       "blocks": [
         "# 结果字段契约\n\n页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。\n\n<a id=\"dqe-output-measures\"></a>",
-        "## 查询数值度量的容错\n\n查询结果中 `role: measure` 且 `type: number` 或 `money` 的单元格统一归一化为有限数字或 `null`。有限数字（包括真实零和负数）原样保留；非空十进制及科学计数法字符串转换成有限数字；`\"--\"`、空串、非数字字符串、布尔、对象、数组及非有限数字转为 `null`。不解析千分位、百分号或十六进制，不把缺失值转为零。无效单元格保留所在行，其他字段和行继续渲染。\n\n该规则同样作用于查询内嵌初始行与嵌套明细中的数值度量，动态返回和首屏一致。数值度量即使声明 `nullable: false`，实际缺失也只记录非阻断告警；此声明在查询结果上表示数据预期，不再保证运行时一定非空。已有可空字段的正常 `null` 不告警。数据网关返回可选的 `warnings`，并在查询诊断中按字段及原因汇总数量；不记录原始值或数据行。\n\n数值维度（例如关联键）、其他类型、缺少映射字段、非对象行及明细结构/数量上限保持严格校验；`inline` 数据和文档字面量仍按原结果字段契约严格验证。组合表格成员和投影复验允许查询数值度量的 `null`，行键继续严格校验。\n\n表格和指标卡沿用字段绑定的 `missingText`（通常为 `—`），折线和柱图保留缺口，饼图略过缺失值，指标卡进度环显示缺失占位符且不附百分号。计算沿用各算子已声明的缺失值规则，不额外补零；允许忽略缺失的合计可能只覆盖有效值，不能视为完整数据。验收完整示例 `query-numeric-tolerance` 包含八种合成输入及派生完成率，不代表真实 DQE 或业务口径验真。\n\nquery支持平铺和按角色分组的文档字段写法，normalize保持原始文档，运行时解析才展平。一个DQE输出应唯一映射到页面字段；派生字段不带queryField，必须由compute产出。\n\nrecordList使用显式items.fields约束每条嵌套记录，限制在已支持的明细呈现。collapsible:true是小计/合计的显式授权，不能从measure角色推断可加总。格式只影响显示，不修改原数值。"
+        "## 查询数值度量的容错\n\n查询结果中 `role: measure` 且 `type: number` 或 `money` 的单元格统一归一化为有限数字或 `null`。有限数字（包括真实零和负数）原样保留；非空十进制及科学计数法字符串转换成有限数字；`\"--\"`、空串、非数字字符串、布尔、对象、数组及非有限数字转为 `null`。不解析千分位、百分号或十六进制，不把缺失值转为零。无效单元格保留所在行，其他字段和行继续渲染。\n\n该规则同样作用于查询内嵌初始行与嵌套明细中的数值度量，动态返回和首屏一致。数值度量即使声明 `nullable: false`，实际缺失也只记录非阻断告警；此声明在查询结果上表示数据预期，不再保证运行时一定非空。已有可空字段的正常 `null` 不告警。数据网关返回可选的 `warnings`，并在查询诊断中按字段及原因汇总数量；不记录原始值或数据行。\n\n6.60 起，查询顶层标量失配采用下节展示证据规则；缺少映射字段、非对象行及明细结构/数量上限保持严格校验；`inline` 数据和文档字面量仍按原结果字段契约严格验证。组合表格成员和投影复验允许查询数值度量的 `null`，行键继续严格校验。\n\n没有原文展示证据时，表格和指标卡沿用字段绑定的 `missingText`（通常为 `—`），折线和柱图保留缺口，饼图略过缺失值，指标卡进度环显示缺失占位符且不附百分号。计算沿用各算子已声明的缺失值规则，不额外补零；允许忽略缺失的合计可能只覆盖有效值，不能视为完整数据。验收完整示例 `query-numeric-tolerance` 包含八种合成输入及派生完成率，不代表真实 DQE 或业务口径验真。\n\nquery支持平铺和按角色分组的文档字段写法，normalize保持原始文档，运行时解析才展平。一个DQE输出应唯一映射到页面字段；派生字段不带queryField，必须由compute产出。\n\nrecordList使用显式items.fields约束每条嵌套记录，限制在已支持的明细呈现。collapsible:true是小计/合计的显式授权，不能从measure角色推断可加总。格式只影响显示，不修改原数值。"
       ],
       "rules": [
         {
@@ -136,7 +136,8 @@
         "references/page-metadata/examples/grouped-fields-page.json",
         "references/page-metadata/examples/reference-branches-page.json",
         "references/page-metadata/examples/query-numeric-tolerance.json",
-        "references/page-metadata/examples/stored-count-measures.json"
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/table-paged-fallback-page.json"
       ]
     }
   ],

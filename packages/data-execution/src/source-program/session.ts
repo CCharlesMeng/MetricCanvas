@@ -1,3 +1,4 @@
+import { snapshotCellFallbacks } from '@metriccanvas/page/internal';
 import { isObjectDqeItem } from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from '../intersect-filters';
 import {selectQuerySource,requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
@@ -20,7 +21,7 @@ import { rawSnapshot } from '../snapshots';
 import { queryRowsFromPageRows } from '../query-rows';
 import { computedSnapshots } from '../compute/snapshots';
 import { compileSources, executionSourceIds } from './compiler';
-import { reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError } from './range-policy';
+import { reportInitialSnapshotWarnings, reportInitialWarnings, reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError } from './range-policy';
 import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
 
@@ -75,8 +76,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   function freezeReadRequest(input: SourceRead, signals: AbortSignal[]) {
     return { ...input, now: input.now ?? config.now ?? config.clock?.() ?? new Date(), conditions: structuredClone(new Map(input.conditions)), views: input.views && structuredClone(new Map(input.views)), signal: AbortSignal.any(signals) };
   }
-  function sourceReadScope(freshness: SourceRead['freshness'], inputs: DisplayInputsSnapshot | undefined, revision: number | undefined): string {
-    const nextScope = inputs ? `context:${canonicalizeJson([inputs, revision ?? null])}` : 'session';
+  function sourceReadScope(freshness: SourceRead['freshness'], inputs: DisplayInputsSnapshot | undefined): string {
+    const nextScope = inputs ? `context:${canonicalizeJson(inputs)}` : 'session';
     if (nextScope !== contextScope) { runner.forgetScope(contextScope); contextScope = nextScope; }
     return freshness === 'refresh' ? `fresh:${++batch}` : nextScope;
   }
@@ -95,6 +96,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const view = request.views?.get(id) ?? defaultSourceView(page, id, compiled.limits.get(id));
         const contradictory = candidates.trusted(id, request.conditions) && source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: config.now ?? config.clock?.() ?? new Date(), filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
         const initial = contradictory ? { status: 'empty' as const, totalCount: 0 } : candidates.trusted(id, request.conditions) && defaultConditions(id, request.conditions) ? reusableInitialSnapshot(source, view, compiled.limits.has(id)) : source.source.type === 'inline' ? rawSnapshot(source.source.rows) : undefined;
+        reportInitialSnapshotWarnings(source, initial, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] });
         snapshots.set(id, initial ? checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }) : { status: 'loading' });
       } return snapshots;
     },
@@ -118,7 +120,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const request = freezeReadRequest(input, signals);
       const frozenInputs = request.displayInputs ?? config.displayInputs?.(); const frozenRevision = request.filterRevision ?? config.filterRevision?.();
       const candidates = createCandidateValidator(page, config.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: request.now });
-      const scope = sourceReadScope(request.freshness, frozenInputs, frozenRevision);
+      const scope = sourceReadScope(request.freshness, frozenInputs);
       try {
         const ids = executionSourceIds(page, request.roots);
         const sources = new Map(compiled.sources);
@@ -166,7 +168,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const view = views.get(id) ?? defaultSourceView(page, id, limits.get(id));
           if (contradictorySource(source)) { raw.set(id, { status: 'empty', totalCount: 0 }); return; }
           const initial = availableInitial(id, source, view);
-          if (initial) { raw.set(id, initial); return; }
+          if (initial) { reportInitialWarnings(source, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }); raw.set(id, initial); return; }
           const dependencies = queryResultDependencies(source);
           const missing = dependencies.filter(id => !raw.has(id));
           if (missing.length) await Promise.all(missing.map(run));
@@ -265,7 +267,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         function captureJoinedResult(id: string, source: PagedJoinDataSource, view: TableQueryView, plan: ReturnType<typeof compilePagedJoin>, result: Awaited<ReturnType<typeof executePagedJoin>>): void {
           const applied = result.viewCorrection ?? plan.view;
           if (canonicalizeJson(applied) !== canonicalizeJson(view)) corrections.set(id, applied);
-          if (defaultJoinedView(id, source, applied) && (result.snapshot.status === 'ready' || result.snapshot.status === 'empty')) initials.set(id, { capturedAt: new Date().toISOString(), rows: result.snapshot.status === 'ready' ? result.snapshot.rows : [], totalCount: result.snapshot.totalCount!, view: result.viewCorrection ?? { ...view, sort: plan.view.sort } });
+          if (defaultJoinedView(id, source, applied) && (result.snapshot.status === 'ready' || result.snapshot.status === 'empty')) initials.set(id, { capturedAt: new Date().toISOString(), rows: result.snapshot.status === 'ready' ? result.snapshot.rows : [], ...(result.snapshot.status === 'ready' ? snapshotCellFallbacks(result.snapshot.rows) : {}), totalCount: result.snapshot.totalCount!, view: result.viewCorrection ?? { ...view, sort: plan.view.sort } });
         }
         function defaultJoinedView(id: string, source: PagedJoinDataSource, applied: TableQueryView): boolean {
           return request.purpose !== 'complete' && defaultConditions(id, request.conditions, false) && applied.pageIndex === 0 && applied.pageSize === source.source.pagination.pageSize && !applied.predicates.length && !applied.search?.query.trim() && canonicalizeJson(applied.sort) === canonicalizeJson(source.source.ordering.default);

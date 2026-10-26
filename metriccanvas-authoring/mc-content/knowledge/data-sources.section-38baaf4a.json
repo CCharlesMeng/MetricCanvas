@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.59",
+  "schemaVersion": "6.60",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data-sources.section-38baaf4a"
@@ -39,6 +39,7 @@
           "id": "query-initial-rows-normalize",
           "description": "DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验",
           "valid": [
+            "table-scalar-fallback-page",
             "filters-page",
             "compute-page",
             "grouped-fields-page",
@@ -48,9 +49,9 @@
           ],
           "invalid": [
             "initial-row-missing-query-field",
-            "initial-row-null-not-allowed",
-            "initial-row-type-mismatch",
-            "initial-row-date-invalid",
+            "initial-row-scalar-object",
+            "initial-row-scalar-array",
+            "initial-row-date-object",
             "initial-row-semantic-html-too-large",
             "initial-row-detail-missing-query-field",
             "initial-row-detail-null-not-allowed",

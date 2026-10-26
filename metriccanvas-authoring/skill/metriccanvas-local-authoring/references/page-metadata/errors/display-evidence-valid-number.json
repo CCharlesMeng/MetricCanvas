@@ -1,0 +1,32 @@
+{
+  "case": "display-evidence-valid-number",
+  "invariant": "query-cell-display-evidence",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "原文证据必须对应有效行中真实失配的空标量单元格",
+      "paths": [
+        "/dataSources/office-overview/source/initial/cellFallbacks/0/bidding-amount"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "initial": {
+            "cellFallbacks": {
+              "0": {
+                "bidding-amount": {
+                  "raw": "123",
+                  "reason": "INVALID_NUMERIC_VALUE"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

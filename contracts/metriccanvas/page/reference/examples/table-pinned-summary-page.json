@@ -1,0 +1,357 @@
+{
+  "schemaVersion": "6.60",
+  "id": "table-pinned-summary-page",
+  "layout": "dashboard",
+  "meta": {
+    "title": "中国区独立汇总置顶",
+    "description": "全部使用合成数据，仅验收本仓协议与运行时行为。"
+  },
+  "dataSources": {
+    "regions": {
+      "fields": {
+        "region-id": {
+          "queryField": "region_code",
+          "type": "string",
+          "role": "dimension"
+        },
+        "region-name": {
+          "queryField": "region_name",
+          "type": "string",
+          "role": "dimension"
+        },
+        "target": {
+          "queryField": "regional_target",
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY"
+        },
+        "actual": {
+          "queryField": "regional_actual",
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY"
+        },
+        "rate": {
+          "queryField": "regional_rate",
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region_code",
+                  "region_name"
+                ],
+                "output_metrics": [
+                  "regional_target",
+                  "regional_actual",
+                  "regional_rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 2
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "product": {
+              "target": "dimension",
+              "queryField": "product_code"
+            },
+            "region": {
+              "target": "dimension",
+              "queryField": "region_code"
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "fields": {
+        "scope-name": {
+          "queryField": "summary_scope",
+          "type": "string",
+          "role": "dimension"
+        },
+        "summary-target": {
+          "queryField": "summary_target",
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY"
+        },
+        "summary-actual": {
+          "queryField": "summary_actual",
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY"
+        },
+        "summary-rate": {
+          "queryField": "summary_rate",
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "summary_scope"
+                ],
+                "output_metrics": [
+                  "summary_target",
+                  "summary_actual",
+                  "summary_rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "product": {
+              "target": "dimension",
+              "queryField": "product_code"
+            },
+            "summary-mode": {
+              "target": "dimension",
+              "queryField": "summary_mode"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "title": "中国区独立汇总置顶",
+      "components": [
+        {
+          "id": "regional-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "regions",
+            "china": "summary"
+          },
+          "props": {
+            "title": "地区明细与独立中国区汇总",
+            "rowKey": "region-id",
+            "rowNumber": {},
+            "pinnedTop": {
+              "data": "china"
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "地区与中国区"
+              }
+            },
+            "columns": [
+              {
+                "field": "region-name",
+                "title": "地区",
+                "fixed": "left",
+                "pinnedTop": {
+                  "field": {
+                    "data": "china",
+                    "field": "scope-name"
+                  }
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "target",
+                  "format": "cny-adaptive"
+                },
+                "title": "目标金额",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "china",
+                    "field": "summary-target"
+                  }
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "actual",
+                  "format": "cny-adaptive"
+                },
+                "title": "完成金额",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "china",
+                    "field": "summary-actual"
+                  }
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "rate",
+                  "format": "percent-1"
+                },
+                "title": "完成率",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "china",
+                    "field": "summary-rate"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "label": "统计月份",
+      "precision": "month",
+      "required": true,
+      "default": {
+        "from": "2026-09",
+        "to": "2026-09"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "region_code",
+      "label": "地区",
+      "selection": {
+        "mode": "single"
+      },
+      "options": [
+        {
+          "value": "region-1",
+          "label": "华东地区部"
+        },
+        {
+          "value": "region-2",
+          "label": "华南地区部"
+        },
+        {
+          "value": "region-3",
+          "label": "华北地区部"
+        },
+        {
+          "value": "region-4",
+          "label": "西南地区部"
+        },
+        {
+          "value": "region-5",
+          "label": "西北地区部"
+        },
+        {
+          "value": "region-6",
+          "label": "东北地区部"
+        }
+      ]
+    },
+    {
+      "id": "product",
+      "type": "dimension",
+      "dimension": "product_code",
+      "label": "产品",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "default": [
+        "standard"
+      ],
+      "options": [
+        {
+          "value": "standard",
+          "label": "标准产品"
+        },
+        {
+          "value": "premium",
+          "label": "高级产品"
+        }
+      ]
+    },
+    {
+      "id": "summary-mode",
+      "type": "dimension",
+      "dimension": "summary_mode",
+      "label": "汇总场景",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "default": [
+        "ready"
+      ],
+      "options": [
+        {
+          "value": "ready",
+          "label": "正常"
+        },
+        {
+          "value": "empty",
+          "label": "零行"
+        },
+        {
+          "value": "multiple",
+          "label": "多行"
+        },
+        {
+          "value": "error",
+          "label": "查询失败"
+        }
+      ]
+    }
+  ]
+}

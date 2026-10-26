@@ -1,9 +1,11 @@
 import { chartValueControls, applyChartValueEdit, type ChartValueTarget } from './chart-value-edit';
+import { pinnedTableControl, editPinnedTable } from './table-pinned-edit';
 import {applyPresentationOperation,presentationTarget,presentationTargets,type PresentationTarget} from '@metriccanvas/page/internal';
 import { versionPolicy, parsePage } from '@metriccanvas/page';
 import { projectCanvasDraft, type CanvasAuthoringDraft, type ComponentLocator, type DocumentEditResult } from './document-edit';
 type PropertyName = 'filterIds' | 'subtitle' | 'badge' | 'tags' | 'showTrendArrows' | 'horizontal' | 'stacked' | 'rounded' | 'showSegmentLabels' | 'showStackTotalLabels' | 'smooth' | 'areaGradient' | 'showPointLabels' | 'hideYAxis' | 'ring' | 'labelLine' | 'fit';
 export type PropertyTarget = ChartValueTarget
+  | {kind:'table-pinned'}
   | {kind:'presentation';target:PresentationTarget;field:'visibleWhen'|'enabledWhen'}
   | { kind: 'property'; name: PropertyName }
   | { kind: 'metric-before'; field: 'text' | 'gap' }
@@ -46,6 +48,7 @@ export function propertyControls(draft: CanvasAuthoringDraft | null, locator: Co
     for (const field of ['label', 'context', 'unit'] as const) controls.push({ id: `${rows}-${index}-${field}`, label: `${rows === 'rows' ? '主' : '次'}指标 ${index + 1} ${{ label: '行说明', context: '上下文', unit: '单位' }[field]}`, kind: 'text', target: { kind: 'metric-row', rows, index, field }, value: object(row)?.[field] });
   });
   if (type === 'table') {
+    controls.push(pinnedTableControl(component));
     const visit = (columns: unknown, prefix: number[] = []) => {
       if (!Array.isArray(columns)) return;
       columns.forEach((column, index) => {
@@ -121,8 +124,9 @@ function editExistingProperty(draft: CanvasAuthoringDraft, locator: ComponentLoc
   const next = JSON.parse(JSON.stringify(draft.canvasDocument)) as Record<string, unknown>;
   const component = componentOf(next, locator), props = object(component?.props), type = String(component?.type);
   if (!props || !names[type]) return invalidProperty();
-  if (edit.kind === 'metric-before') return editMetricBefore(next, type, component, edit);
-  if (edit.kind === 'report-export') return editReportExport(next, type, props, edit);
+  const special = editSpecialProperty(next, component, props, type, edit);
+  if (special) return special;
+
   const resolved = propertyTarget(type, props, edit);
   if (!resolved) return invalidProperty();
   const { target, key } = resolved;
@@ -135,7 +139,7 @@ function editExistingProperty(draft: CanvasAuthoringDraft, locator: ComponentLoc
   return projectCanvasDraft(next);
 }
 
-function propertyTarget(type: string, props: Record<string, unknown>, edit: Exclude<PropertyEdit, { kind: 'report-export' }>): ResolvedProperty | null {
+function propertyTarget(type: string, props: Record<string, unknown>, edit: PropertyEdit): ResolvedProperty | null {
   switch (edit.kind) {
     case 'property': return names[type].includes(edit.name) ? { target: props, key: edit.name } : null;
     case 'series-label': {
@@ -221,4 +225,11 @@ function editMetricBefore(next: Record<string, unknown>, type: string, component
   }
   next.schemaVersion = versionPolicy.current;
   return projectCanvasDraft(next);
+}
+
+function editSpecialProperty(document: Record<string, unknown>, component: Record<string, unknown> | null, props: Record<string, unknown>, type: string, edit: PropertyEdit): DocumentEditResult | undefined {
+  if (edit.kind === 'table-pinned') return editPinnedTable(document, component, edit.value);
+  if (edit.kind === 'metric-before') return editMetricBefore(document, type, component, edit);
+  if (edit.kind === 'report-export') return editReportExport(document, type, props, edit);
+  return undefined;
 }

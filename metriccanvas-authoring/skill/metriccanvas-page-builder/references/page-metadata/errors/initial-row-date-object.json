@@ -1,0 +1,31 @@
+{
+  "case": "initial-row-date-object",
+  "invariant": "query-initial-rows-normalize",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 字段 stat_date 不符合页面字段 stat-date 的类型 date",
+      "paths": [
+        "/dataSources/orders/source/initial/rows/0/stat_date"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "stat_date": {
+                  "date": "2026-02-30"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/initial-row-date-object.json"
+}

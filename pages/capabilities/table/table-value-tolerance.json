@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "6.60",
+  "id": "table-value-tolerance",
+  "layout": "dashboard",
+  "meta": {
+    "title": "表格异常标量原文展示",
+    "description": "全部使用合成数据，仅验收本仓协议与运行时行为。"
+  },
+  "dataSources": {
+    "samples": {
+      "fields": {
+        "sample": {
+          "queryField": "展示样例",
+          "type": "string",
+          "role": "dimension"
+        },
+        "date": {
+          "queryField": "展示时间",
+          "type": "date",
+          "role": "dimension"
+        },
+        "text": {
+          "queryField": "展示文本",
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "queryField": "展示数值",
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "展示样例",
+                  "展示时间",
+                  "展示文本"
+                ],
+                "output_metrics": [
+                  "展示数值"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-26T00:00:00Z",
+          "rows": [
+            {
+              "展示样例": "正常",
+              "展示时间": "2026-10-01",
+              "展示文本": "0012",
+              "展示数值": 10
+            },
+            {
+              "展示样例": "组合时间",
+              "展示时间": "2026-09 ~ 2026-10",
+              "展示文本": 123,
+              "展示数值": "待确认"
+            },
+            {
+              "展示样例": "横杠",
+              "展示时间": "--",
+              "展示文本": "--",
+              "展示数值": "--"
+            },
+            {
+              "展示样例": "空串",
+              "展示时间": null,
+              "展示文本": "",
+              "展示数值": ""
+            },
+            {
+              "展示样例": "空白",
+              "展示时间": null,
+              "展示文本": "  ",
+              "展示数值": " "
+            },
+            {
+              "展示样例": "零值",
+              "展示时间": "2026-09-01",
+              "展示文本": false,
+              "展示数值": 0
+            },
+            {
+              "展示样例": "负数",
+              "展示时间": "2026-08-01",
+              "展示文本": "A-01",
+              "展示数值": -3
+            },
+            {
+              "展示样例": "长横杠",
+              "展示时间": null,
+              "展示文本": "——",
+              "展示数值": " —–- "
+            }
+          ],
+          "totalCount": 8
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "title": "表格异常标量原文展示",
+      "components": [
+        {
+          "id": "records",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "rowNumber": {},
+            "pagination": {
+              "mode": "local",
+              "pageSize": 3
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx"
+              }
+            },
+            "title": "原文容错",
+            "columns": [
+              {
+                "field": "sample",
+                "title": "样例"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "date",
+                  "format": "date"
+                },
+                "title": "时间"
+              },
+              {
+                "field": "text",
+                "title": "字符串字段"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-1"
+                },
+                "title": "数值",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "6.60",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "fields.section-30c69934"
+  ],
+  "semantics": [
+    {
+      "module": "fields",
+      "reference": "references/page-metadata/fields.md",
+      "blocks": [
+        "# 结果字段契约\n\n页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。\n\n<a id=\"dqe-output-measures\"></a>",
+        "## 查询标量的原文展示证据（6.60）\n\n查询顶层 string、number、money、boolean、date、datetime 标量值失配时，可展示的原始有限标量独立保留为 cellFallbacks；有效值通道取 null。表格按 String(raw) 展示原文并告警，计算、查询输入、行键和其他组件仍使用有效类型值。合法数值字符串继续采用既有数值归一化规则，非数字文本不参与计算。\n\n真正空值及非有限数字继续缺失处理，不显示字符串 null 或 NaN；非标量对象不走通用 String。nullable:false 在查询顶层标量上表示非空预期，实际缺失告警；inline、字面量、嵌套明细非数值项及结构规则保持严格。数值维度失配可在表格展示，但关联和结果绑定仍会因有效键缺失而拒绝执行，不能删掉输入条件后改查全量。\n\nready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。"
+      ],
+      "rules": [
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "grouped-query-fields-unique",
+          "description": "按角色分组的查询字段在维度组与度量组之间不得重名",
+          "valid": [
+            "grouped-fields-page"
+          ],
+          "invalid": [
+            "grouped-field-duplicate"
+          ]
+        },
+        {
+          "id": "grouped-query-field-label-not-id",
+          "description": "分组查询字段的 label 与字段 id 相同时应省略",
+          "valid": [
+            "grouped-fields-page"
+          ],
+          "invalid": [
+            "grouped-field-label-equals-id"
+          ]
+        },
+        {
+          "id": "inline-rows-contract",
+          "description": "inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "compute-page",
+            "params-page",
+            "composite-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "inline-row-undeclared-field",
+            "inline-row-missing-field",
+            "inline-row-null-not-allowed",
+            "inline-row-type-mismatch",
+            "inline-row-date-invalid",
+            "inline-row-datetime-invalid",
+            "inline-row-semantic-html-type",
+            "inline-row-detail-undeclared-field",
+            "inline-row-detail-missing-field",
+            "inline-row-detail-null-not-allowed",
+            "inline-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "detail-item-object",
+          "description": "嵌套明细的每一项必须是对象；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
+          "valid": [
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "initial-row-detail-item-not-object",
+            "inline-row-detail-item-not-object"
+          ]
+        },
+        {
+          "id": "detail-list-max-items",
+          "description": "嵌套明细最多 100 项；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
+          "valid": [
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "initial-row-detail-list-too-large",
+            "inline-row-detail-list-too-large"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "detail-field-consumption",
+          "description": "嵌套明细字段只能由显式支持 detail 的组件属性消费",
+          "valid": [
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "detail-field-in-generic-binding",
+            "record-list-in-table-column"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/grouped-fields-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/query-numeric-tolerance.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/table-paged-fallback-page.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

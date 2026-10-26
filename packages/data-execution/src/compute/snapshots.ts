@@ -1,3 +1,4 @@
+import { restoreCellFallbacks, snapshotCellFallbacks } from '@metriccanvas/page/internal';
 import { checkOrdinaryRange } from '../source-program/range-policy';
 import type { ComputationContext } from './time-fill';
 import { computeDependencies, type DataSource, type DataSnapshot, type DataRow } from '@metriccanvas/page/internal';
@@ -18,7 +19,7 @@ export function computedSnapshots(
     if (known) return known;
     if (visiting.has(id)) return fail('页面数据源计算依赖成环');
     const source = sources.get(id);
-    const snapshot = raw.get(id);
+    const snapshot = restoreSnapshot(raw.get(id));
     if (!source || !snapshot) return fail('页面数据源计算依赖不存在');
     visiting.add(id);
     let computed: DataSnapshot = snapshot;
@@ -43,7 +44,7 @@ export function computedSnapshots(
           const output = applyComputation(source.compute ?? [], rows, dependencies, context);
           const changesCount = (source.compute ?? []).some(op => op.op === 'timeFill');
           const total = changesCount ? { totalCount: output.length } : snapshot.totalCount === undefined ? {} : { totalCount: snapshot.totalCount };
-          computed = output.length ? { status: 'ready', rows: output, ...total } : { status: 'empty', ...total };
+          computed = output.length ? { status: 'ready', rows: output, ...snapshotCellFallbacks(output), ...total } : { status: 'empty', ...total };
         } catch (cause) {
           computed = fail(cause instanceof ComputationError ? cause.message : '页面数据源计算失败');
         }
@@ -55,4 +56,9 @@ export function computedSnapshots(
   }
   for (const id of sources.keys()) visit(id);
   return result;
+}
+
+function restoreSnapshot(snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
+  if (snapshot?.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
+  return snapshot;
 }

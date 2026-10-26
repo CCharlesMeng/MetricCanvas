@@ -1,3 +1,4 @@
+import type { CellFallbacks } from './cell-fallback';
 import type {
   QueryDataSourceFieldDefinition,
   QueryFieldDefinition,
@@ -22,6 +23,8 @@ import {
 export interface MaterializedPageDocument {
   document: unknown;
   errors: TypedError[];
+  initialFallbacks?: Record<string, CellFallbacks>;
+  initialWarnings?: Record<string, import('./query-rows').QueryRowNormalizationWarning[]>;
 }
 
 /**
@@ -47,6 +50,8 @@ export function materializePageDocument(
   ) as Record<string, unknown>;
   removeAbsentMetricBefore(document);
   const errors: TypedError[] = [];
+  const initialFallbacks: Record<string, CellFallbacks> = {};
+  const initialWarnings: Record<string, import('./query-rows').QueryRowNormalizationWarning[]> = {};
 
   if (!isRecord(document.dataSources)) return { document, errors };
 
@@ -92,6 +97,8 @@ export function materializePageDocument(
     const normalized = normalizeQueryRows(initial.rows, fields);
     if (normalized.ok) {
       initial.rows = normalized.rows;
+      if (normalized.cellFallbacks) initialFallbacks[sourceId] = normalized.cellFallbacks;
+      if (normalized.warnings?.length) initialWarnings[sourceId] = normalized.warnings;
     } else {
       errors.push(
         ...normalized.issues.map((issue) => queryRowIssueError(sourceId, issue))
@@ -99,7 +106,7 @@ export function materializePageDocument(
     }
   }
 
-  return { document, errors };
+  return { document, errors, initialFallbacks, initialWarnings };
 }
 
 function queryRowIssueError(

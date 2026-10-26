@@ -103,7 +103,7 @@ const scalarRules: Array<{
 
 describe('结果字段契约:标量类型规则(表驱动,两条路径同一实现)', () => {
   it.each(scalarRules)(
-    '$type 的接受与拒绝在 inline 与查询结果路径完全一致',
+    '$type 的inline 严格验证，查询标量可降级保留展示',
     ({ type, accepted, rejected }) => {
       const field: FieldDefinition = { type, role: 'dimension', nullable: false };
       for (const value of accepted) {
@@ -114,16 +114,15 @@ describe('结果字段契约:标量类型规则(表驱动,两条路径同一实�
       for (const value of rejected) {
         const [inline, query] = bothVerdicts(field, value);
         expect(inline).toEqual({ ok: false, codes: ['TYPE_MISMATCH'] });
-        expect(query).toEqual({ ok: false, codes: ['TYPE_MISMATCH'] });
+        expect(query).toEqual(value !== null && typeof value === 'object' ? { ok: false, codes: ['TYPE_MISMATCH'] } : { ok: true, codes: [] });
       }
     }
   );
 
   it.each(scalarRules)('$type 的 nullable 语义在两条路径一致', ({ type }) => {
     const rejecting: FieldDefinition = { type, role: 'dimension', nullable: false };
-    for (const verdict of bothVerdicts(rejecting, null)) {
-      expect(verdict).toEqual({ ok: false, codes: ['NULL_NOT_ALLOWED'] });
-    }
+    expect(inlineVerdict(rejecting, null)).toEqual({ ok: false, codes: ['NULL_NOT_ALLOWED'] });
+    expect(queryVerdict(rejecting, null)).toEqual({ ok: true, codes: [] });
 
     const allowing: FieldDefinition = { type, role: 'dimension', nullable: true };
     const defaulted: FieldDefinition = { type, role: 'dimension' };
@@ -282,7 +281,7 @@ describe('结果字段契约:错误只报告行号、字段名与错误分类', 
   });
 
   it('查询结果路径的结构化失败不回显业务字段值', () => {
-    const result = normalizeQueryRows([{ 金额: sentinel }], {
+    const result = normalizeQueryRows([{ 金额: { raw: sentinel } }], {
       amount: {
         queryField: '金额',
         type: 'number',

@@ -1,17 +1,31 @@
-import { tablePredicates, type Row, type TableQueryView, type TablePredicate, type TableHeaderFilters, type TableSortRule } from '@metriccanvas/page/internal';
+import { rowCellFallback, tablePredicates, type Row, type TableQueryView, type TablePredicate, type TableHeaderFilters, type TableSortRule } from '@metriccanvas/page/internal';
 
-/** Raw comparisons; null and non-finite values sort last in either direction. */
+/** Empty groups stay last independently of direction; ties retain stable input order. */
 export function sortTableRows(rows: readonly Row[], rules: readonly TableSortRule[]): Row[] {
-  const missing = (value: unknown) => value == null || (typeof value === 'number' && !Number.isFinite(value));
   return [...rows].sort((left, right) => {
     for (const rule of rules) {
-      const a = left[rule.field], b = right[rule.field];
-      if (missing(a) || missing(b)) { if (missing(a) !== missing(b)) return missing(a) ? 1 : -1; continue; }
-      const comparison = a! < b! ? -1 : a! > b! ? 1 : 0;
-      if (comparison) return rule.direction === 'desc' ? -comparison : comparison;
+      const compared = compareTableCells(left, right, rule);
+      if (compared) return compared;
     }
     return 0;
   });
+}
+function emptySortValue(value: unknown): boolean {
+  if (value == null) return true;
+  if (typeof value === 'number') return !Number.isFinite(value);
+  return typeof value === 'string' && /^(?:[-–—]+)?$/.test(value.trim());
+}
+function sortCell(row: Row, field: string) {
+  const fallback = rowCellFallback(row, field);
+  const value = fallback ? String(fallback.raw) : row[field];
+  return { value, group: emptySortValue(value) ? 2 : fallback ? 1 : 0 };
+}
+function compareTableCells(left: Row, right: Row, rule: TableSortRule): number {
+  const a = sortCell(left, rule.field), b = sortCell(right, rule.field);
+  if (a.group !== b.group) return a.group - b.group;
+  if (a.group === 2) return 0;
+  const comparison = a.value! < b.value! ? -1 : a.value! > b.value! ? 1 : 0;
+  return rule.direction === 'desc' ? -comparison : comparison;
 }
 export function filterTableRows(rows: readonly Row[], predicates: readonly TablePredicate[]): Row[] {
   return rows.filter(row => predicates.every(p => {

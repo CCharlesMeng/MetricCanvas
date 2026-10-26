@@ -807,7 +807,7 @@ function ensureRecord(parent: JsonObject, key: string): JsonObject {
 
 function normalizeRows(value: unknown, query: EffectiveQuery): DataGatewayResult {
   const normalized = normalizeQueryRows(value, query.fieldMappings);
-  if (normalized.ok) return { rows: normalized.rows, ...(normalized.warnings ? { warnings: normalized.warnings } : {}) };
+  if (normalized.ok) return { rows: normalized.rows, ...(normalized.cellFallbacks ? { cellFallbacks: normalized.cellFallbacks } : {}), ...(normalized.warnings ? { warnings: normalized.warnings } : {}) };
   throw gatewayNormalizationError(normalized.issues[0]!);
 }
 
