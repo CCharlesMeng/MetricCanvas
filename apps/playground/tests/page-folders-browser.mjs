@@ -21,7 +21,7 @@ const facts = {};
 const folder = page.getByLabel('文件夹路径', { exact: true });
 
 try {
-  await page.goto(base);
+  await page.goto(`${base}/files`);
   await expect(page.locator('.page-card')).toHaveCount(total);
   await folder.selectOption('business/report');
   await expect(page.locator('.page-card')).toHaveCount(subtreeCount('business/report'));

@@ -21,7 +21,7 @@ async function reset() {
 }
 
 try {
-  await page.goto(base);
+  await page.goto(`${base}/files`);
   await expect(page.locator('.page-card')).toHaveCount(ids.length);
   await page.screenshot({ path: path.join(output, 'directory-desktop.png'), fullPage: true });
   await page.getByLabel('组件类型', { exact: true }).selectOption('table');
@@ -67,7 +67,7 @@ try {
   facts.download = true;
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(base);
+  await page.goto(`${base}/files`);
   await reset();
   await expect(page.locator('.page-card')).toHaveCount(ids.length);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

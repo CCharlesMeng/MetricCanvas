@@ -4,6 +4,10 @@
 
 **先读这条:本仓「加一个页面」多数情况下不动路由。** 看板页面是数据(`pages/*.json`),不是路由;只有当你要加一类**新的宿主界面**(比如又一个预览器)时才动下面这些。判据见 `PATTERN-ROUTE-2`。
 
+2026-10-24 目录更新：首页和 `/catalog/[dimension]/[topic]` 共用 `ScenarioCatalog`，按组件、数据与联动、布局呈现推荐场景。原文件夹目录位于 `/files`，普通页面仍由 `pages/**/*.json` 自动发现。`scene`、`example`、`q`、`layout`、`feature` 与 `exampleSearch` 是开发工具导航参数；最后一项封装被演示页面的查询串，运行时只在内嵌页面消费自己的参数与筛选。原始 `/pages/<id>` 与 `/preview` 保持可用。下表关于三个界面全集的历史描述以本段为准。
+
+推荐场景在 `apps/playground/scenarios/` 引用真实页面，组件清单由产品能力目录生成。查看器的目录回退记录由 `directory-return.ts` 持有，文件目录原有筛选和滚动快照继续使用。数据入口在 `scenarios/data-features.ts` 维护功能到演示的精确引用，以页面实际布局形态过滤；功能、布局筛选与搜索不写入运行文档。内嵌跨页流程通过同源且匹配当前 iframe 的位置通知更新所选变体和说明，不改产品导航端口。
+
 ## 路由机制
 
 <!-- 覆盖:apps/playground/src/routes/、apps/playground/svelte.config.js、apps/playground/vite.config.ts、packages/engine/runtime-ui/src/types.ts、packages/engine/runtime/src/(2026-08-24)。apps/platform/src/routes/ 只做了目录清点,未逐文件确认 -->

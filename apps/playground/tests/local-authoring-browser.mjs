@@ -31,7 +31,7 @@ try {
     await page.screenshot({path:path.join(output,`page-${width}.png`),fullPage:true});
     receipts.push({width,amount:'4,200.0万',rate:'42.0%',rows:await table.locator('tbody tr').count()});
   }
-  await page.setViewportSize({width:1280,height:850});await page.goto(base);
+  await page.setViewportSize({width:1280,height:850});await page.goto(`${base}/files`);
   await page.getByRole('searchbox',{name:'搜索页面',exact:true}).fill('local-authoring-knowledge-demo');
   await expect(page.locator(`.page-card[href="/pages/${document.id}"]`)).toBeVisible();
   expect(errors).toEqual([]);

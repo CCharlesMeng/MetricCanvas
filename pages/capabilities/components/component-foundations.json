@@ -1,0 +1,301 @@
+{
+  "schemaVersion": "6.51",
+  "id": "component-foundations",
+  "layout": "dashboard",
+  "meta": {
+    "title": "基础组件与共享内联数据",
+    "description": "六类组件使用两份显式内联合成数据，演示单行信息与多行分类结果；无需额外服务，不代表真实业务口径。"
+  },
+  "dataSources": {
+    "regions": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "签约数量"
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "label": "变化"
+        },
+        "description": {
+          "type": "string",
+          "role": "dimension",
+          "label": "说明"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "华东示范区",
+            "value": 72,
+            "change": 8,
+            "description": "内联合成数据，增长来自本示例设定。"
+          },
+          {
+            "name": "华南示范区",
+            "value": 45,
+            "change": -3,
+            "description": "内联合成数据，按给定顺序展示。"
+          },
+          {
+            "name": "华北示范区",
+            "value": 30,
+            "change": 2,
+            "description": "本示例不执行真实查询。"
+          }
+        ]
+      }
+    },
+    "single": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "签约数量"
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "label": "变化"
+        },
+        "description": {
+          "type": "string",
+          "role": "dimension",
+          "label": "说明"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "华东示范区",
+            "value": 72,
+            "change": 8,
+            "description": "内联合成数据，增长来自本示例设定。"
+          }
+        ]
+      }
+    }
+  },
+  "sectionAnchors": [
+    {
+      "sectionId": "gauge",
+      "label": "完成率仪表"
+    },
+    {
+      "sectionId": "ranking-card",
+      "label": "排行卡"
+    },
+    {
+      "sectionId": "ranking-detail-card",
+      "label": "详细排行卡"
+    },
+    {
+      "sectionId": "key-value-panel",
+      "label": "信息面板"
+    },
+    {
+      "sectionId": "category-breakdown",
+      "label": "分类明细"
+    },
+    {
+      "sectionId": "field-text",
+      "label": "字段长文本"
+    }
+  ],
+  "sections": [
+    {
+      "id": "gauge",
+      "title": "完成率仪表",
+      "components": [
+        {
+          "id": "gauge-example",
+          "type": "gauge",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "single"
+          },
+          "props": {
+            "title": "目标完成率（合成）",
+            "valueField": {
+              "data": "main",
+              "field": "value"
+            },
+            "min": 0,
+            "max": 100,
+            "unit": "%",
+            "label": "72%"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ranking-card",
+      "title": "排行卡",
+      "components": [
+        {
+          "id": "ranking-card-example",
+          "type": "rankingCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "regions"
+          },
+          "props": {
+            "title": "区域签约数量排行",
+            "nameField": {
+              "data": "main",
+              "field": "name"
+            },
+            "valueField": {
+              "data": "main",
+              "field": "value"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ranking-detail-card",
+      "title": "详细排行卡",
+      "components": [
+        {
+          "id": "ranking-detail-card-example",
+          "type": "rankingDetailCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "regions"
+          },
+          "props": {
+            "title": "区域数量与说明",
+            "nameField": {
+              "data": "main",
+              "field": "name"
+            },
+            "valueField": {
+              "data": "main",
+              "field": "value"
+            },
+            "changeField": {
+              "data": "main",
+              "field": "change"
+            },
+            "descriptionField": {
+              "data": "main",
+              "field": "description"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "key-value-panel",
+      "title": "信息面板",
+      "components": [
+        {
+          "id": "key-value-panel-example",
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "single"
+          },
+          "props": {
+            "title": "区域基本信息",
+            "columns": 1,
+            "items": [
+              {
+                "label": "区域",
+                "field": {
+                  "data": "main",
+                  "field": "name"
+                }
+              },
+              {
+                "label": "签约数量",
+                "field": {
+                  "data": "main",
+                  "field": "value"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "category-breakdown",
+      "title": "分类明细",
+      "components": [
+        {
+          "id": "category-breakdown-example",
+          "type": "categoryBreakdown",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "regions"
+          },
+          "props": {
+            "title": "区域分类明细",
+            "categoryField": {
+              "data": "main",
+              "field": "name"
+            },
+            "columns": [
+              {
+                "label": "签约数量",
+                "field": {
+                  "data": "main",
+                  "field": "value"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "field-text",
+      "title": "字段长文本",
+      "components": [
+        {
+          "id": "field-text-example",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "single"
+          },
+          "props": {
+            "title": "来自字段的说明",
+            "field": {
+              "data": "main",
+              "field": "description"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

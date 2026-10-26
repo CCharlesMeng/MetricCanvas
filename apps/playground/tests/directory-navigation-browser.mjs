@@ -13,7 +13,7 @@ page.on('pageerror', (error) => errors.push(error.message));
 const facts = {};
 
 async function expectFilters(query, layout = 'Dashboard') {
-  await expect(page).toHaveURL(`${base}/`);
+  await expect(page).toHaveURL(`${base}/files`);
   await expect(page.getByRole('searchbox', { name: '搜索页面', exact: true })).toHaveValue(query);
   await expect(page.getByRole('navigation', { name: '布局形态' }).getByRole('button', { name: new RegExp(`^${layout}`) })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByLabel('组件类型', { exact: true })).toHaveValue('table');
@@ -32,7 +32,7 @@ async function openCard(id) {
 }
 
 try {
-  await page.goto(base);
+  await page.goto(`${base}/files`);
   await page.getByLabel('组件类型', { exact: true }).selectOption('table');
   await page.getByRole('button', { name: /^Dashboard/ }).click();
   await page.getByLabel('数据来源', { exact: true }).selectOption('inline');
@@ -112,7 +112,7 @@ try {
     Object.defineProperty(window, 'sessionStorage', { get() { throw new Error('storage blocked'); } });
   });
   blocked.on('pageerror', (error) => errors.push(error.message));
-  await blocked.goto(base);
+  await blocked.goto(`${base}/files`);
   await blocked.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('table-detail-overlay');
   await blocked.locator('.page-card[href="/pages/table-detail-overlay"]').click();
   await blocked.getByRole('link', { name: '← 页面目录' }).click();

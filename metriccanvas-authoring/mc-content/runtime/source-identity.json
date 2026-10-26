@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "4e4d58163086e401183f3653cadf642097afb5da4ac00ecbba4096fc40843e7e",
+  "sha256": "a5cc618b08afbd792768fe08fdbe16e93ed219a93bf57e07b53b3005c77bfa51",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -1652,7 +1652,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "81310177a437445edc1c9aee1ef555507a5f9b892a96944742d7d9b7655ac9f5"
+      "sha256": "25583ddea217cb46ffab65b9394bd5575d67e802cfef285e458bdf21d07579d5"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -1761,6 +1761,14 @@
     {
       "file": "pages/capabilities/chart/region-map.json",
       "sha256": "c5821dbe6a094e1fdf61592d4cb4e3ec754abf6173092ff18fa96292c10dab65"
+    },
+    {
+      "file": "pages/capabilities/components/README.md",
+      "sha256": "c3d036b710cf53c308639f3086406c50fdc277dd22ae4675984fe79048192eee"
+    },
+    {
+      "file": "pages/capabilities/components/component-foundations.json",
+      "sha256": "9c3aa9a3ee2359b0176eae2f1965b747f6e6a6b123bac339cdffc4b843fc39b6"
     },
     {
       "file": "pages/capabilities/export/README.md",

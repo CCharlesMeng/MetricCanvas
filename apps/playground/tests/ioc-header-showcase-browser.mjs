@@ -15,7 +15,7 @@ const facts = { scenarios: [], capabilityItems: 0, filtering: false, catalogRetu
 async function fits(target = page) { expect(await target.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); }
 
 try {
-  await page.goto(`${base}/`);
+  await page.goto(`${base}/files`);
   await page.getByLabel('文件夹路径').selectOption('capabilities/ioc-header/scenarios');
   await expect(page.locator('.page-card')).toHaveCount(15);
   await page.goto(`${base}/ioc-header?scene=time-modes`);
