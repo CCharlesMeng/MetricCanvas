@@ -2,6 +2,21 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 主指标与多行次级指标
+
+入口：`/pages/metric-card-primary-detail`；[页面 JSON](metric-card-primary-detail.json)。
+
+启动：`pnpm dev:playground`，无需URL参数或额外服务；仅内联合成数据。
+
+1. 第一行四卡依次为0、1、3、6行次级指标。主指标名称与大数字靠上对齐，四张卡的外框底边一致，短卡在底部留白。
+2. 次级指标每行上方8px，名称14px/20px、黑色50%，数值14px/17px、黑色80%且带下划线，字体为PingFang SC（系统无该字体时使用sans-serif）。
+3. 缩小至390px宽，卡片逐张堆叠并恢复自然高度；长名称允许换行，无横向溢出。边界卡保留真实0，空值显示缺失占位。
+4. 点击“已回款（可点击查看明细）”的数值，打开既有明细弹窗并显示960万元；键盘Tab/Enter亦可激活。其他下划线数值是普通文本。
+5. 非法声明可复现：将第一张卡的`rows[0]`复制为第二个主指标，校验拒绝并定位`/sections/0/components/0/props/rows`；将版本改成6.64，校验指出6.65能力下限。
+
+仅验证页面协议、正式运行时布局与既有明细入口，不证明真实DQE、Relay或线上部署。
+
+
 ## MC 内容包：布局与版本检查
 
 入口：`/pages/mc-content-layout-demo`；[实际页面](mc-content-layout-demo.json)。运行 `pnpm dev:playground`；无 URL 参数和 DQE 依赖。页面由 `tools/scripts/mc-content-fixtures.py` 调用真实本地 MC 接口生成，数据为合成诊断。

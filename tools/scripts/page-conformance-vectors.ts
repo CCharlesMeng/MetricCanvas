@@ -55,6 +55,24 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {
+    id: 'metric-card-primary-detail',
+    description: '主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约',
+    valid: ['metric-card-primary-detail'],
+    cases: [
+      { case: 'metric-primary-multiple', base: 'metric-card-primary-detail', expect: /必须且只能声明一个主指标/, mutate: document => {
+        const rows = firstComponent(document).props.rows;
+        rows.push(structuredClone(rows[0]));
+      } },
+      { case: 'metric-primary-version', base: 'metric-card-primary-detail', expect: /由 6.65 引入/, mutate: document => { document.schemaVersion = '6.64'; } },
+      { case: 'metric-secondary-field', base: 'metric-card-primary-detail', expect: /unknown/, mutate: document => {
+        firstComponent(document, 0, 1).props.secondaryRows[0].valueField.field = 'unknown';
+      } },
+      { case: 'metric-secondary-link', base: 'metric-card-primary-detail', expect: /链接必须至少声明/, mutate: document => {
+        delete firstComponent(document, 1, 1).props.actions;
+      } }
+    ]
+  },
   {id:'pie-table-legend', description:'6.64表格式图例、固定类别与显式数值排序', valid:['pie-table-legend'], cases:[
     {case:'pie-table-invalid-align', base:'pie-table-legend', expect:/取值不在允许范围/, mutate:d=>{firstComponent(d).props.legend.columns[0].align='justify';}},
     {case:'pie-table-before-version', base:'pie-table-legend', expect:/由 6.64 引入/, mutate:d=>{d.schemaVersion='6.63';}},

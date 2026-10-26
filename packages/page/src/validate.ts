@@ -13,6 +13,7 @@ import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './table/validate-expansion';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
 import { metricBeforeErrors } from './metric-before';
+import { metricCardShapeErrors } from './metric-card';
 import {ordinaryQuery} from './time-mode';
 import {timeExtensionErrors} from './time-extension-validation';
 import {pageSelectionVariants} from './selection-variants';
@@ -1514,6 +1515,7 @@ function componentErrors(
   }
 
   function checkMetricCard(component: Extract<Component, { type: 'metricCard' }>): void {
+    errors.push(...metricCardShapeErrors(component.props, componentPath));
     {
       const hasNavigateAction = component.props.actions?.some(
         (action) => 'navigate' in action || 'openDetail' in action

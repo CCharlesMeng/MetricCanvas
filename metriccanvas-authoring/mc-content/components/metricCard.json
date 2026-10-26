@@ -33,7 +33,7 @@
   "knowledge": "metricCard.overview",
   "reference": "references/page-metadata/components/metricCard.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.64",
+  "currentWriter": "6.65",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/inline-report.json",
@@ -60,6 +60,38 @@
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/metric-card-primary-detail.json",
+      "requiredVersion": "6.65",
+      "capabilities": [
+        {
+          "id": "metric-primary-details",
+          "minor": 65,
+          "description": "单一主指标与多行小字号次级指标，同排卡片等高"
+        },
+        {
+          "id": "detail-views",
+          "minor": 12,
+          "description": "复用图表和表格的单层受控详情视图"
+        },
+        {
+          "id": "open-detail-action",
+          "minor": 10,
+          "description": "组件点击在页内打开详情浮层"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "metric-row-link",
+          "minor": 0,
+          "description": "指标行的显式非空值导航入口"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

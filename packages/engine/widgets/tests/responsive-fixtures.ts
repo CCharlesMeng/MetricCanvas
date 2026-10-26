@@ -35,7 +35,8 @@ export const responsiveFixtures = {
       'compactSummary',
       'dualSummary',
       'compactStrip',
-      'compactStack'
+      'compactStack',
+      'primaryDetail'
     ]
   },
   barChart: { behavior: 'fluid', variants: ['default', 'reportForecast'] },

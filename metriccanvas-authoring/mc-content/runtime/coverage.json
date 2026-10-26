@@ -293,6 +293,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/metric-card-primary-detail.json",
+      "target": "product-contracts/page/conformance/valid/metric-card-primary-detail.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/million-formats-page.json",
       "target": "product-contracts/page/conformance/valid/million-formats-page.json",
       "scope": "exact product contract"
@@ -785,6 +790,26 @@
     {
       "source": "product:page/conformance/parameter-extraction.json",
       "target": "product-contracts/page/conformance/parameter-extraction.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-primary-multiple.json",
+      "target": "product-contracts/page/conformance/invalid/metric-primary-multiple.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-primary-version.json",
+      "target": "product-contracts/page/conformance/invalid/metric-primary-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-secondary-field.json",
+      "target": "product-contracts/page/conformance/invalid/metric-secondary-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-secondary-link.json",
+      "target": "product-contracts/page/conformance/invalid/metric-secondary-link.json",
       "scope": "exact product contract"
     },
     {
@@ -2973,6 +2998,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/component-metricCard-primaryDetail.json",
+      "target": "references/page-metadata/examples/component-metricCard-primaryDetail.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/component-barChart.json",
       "target": "references/page-metadata/examples/component-barChart.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -3200,6 +3230,26 @@
     {
       "source": "product:page/reference/examples/component-filterGroup.json",
       "target": "references/page-metadata/examples/component-filterGroup.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-primary-multiple.json",
+      "target": "references/page-metadata/errors/metric-primary-multiple.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-primary-version.json",
+      "target": "references/page-metadata/errors/metric-primary-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-secondary-field.json",
+      "target": "references/page-metadata/errors/metric-secondary-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-secondary-link.json",
+      "target": "references/page-metadata/errors/metric-secondary-link.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -5823,6 +5873,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/metric-card-primary-detail.json",
+      "target": "references/page-metadata/examples/metric-card-primary-detail.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/metricCard.md",
       "target": "references/page-metadata/components/metricCard.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6339,10 +6394,10 @@
     }
   ],
   "counts": {
-    "product": 1236,
+    "product": 1247,
     "authoring": 31,
     "modules": 33,
-    "topics": 177,
+    "topics": 178,
     "nodes": 2331,
     "tools": 9,
     "components": 19

@@ -1,6 +1,19 @@
 {
   "invariants": [
     {
+      "id": "metric-card-primary-detail",
+      "description": "主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约",
+      "valid": [
+        "metric-card-primary-detail"
+      ],
+      "invalid": [
+        "metric-primary-multiple",
+        "metric-primary-version",
+        "metric-secondary-field",
+        "metric-secondary-link"
+      ]
+    },
+    {
       "id": "pie-table-legend",
       "description": "6.64表格式图例、固定类别与显式数值排序",
       "valid": [

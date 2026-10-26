@@ -6,7 +6,7 @@
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.64**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53、6.54、6.55、6.56、6.57、6.58、6.59、6.60、6.61、6.62、6.63和6.64；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.64**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.65、6.54、6.55、6.56、6.57、6.58、6.59、6.60、6.61、6.62、6.63和6.64；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -286,6 +286,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 7.4 `metricCard` → [模块参考](contracts/metriccanvas/page/reference/components/metricCard.md)。
 
+6.65 新增 `variant: "primaryDetail"`：`rows` 恰好一个主指标，`secondaryRows` 为零到多行14px次级指标（指标名＋带下划线的指标值，每行上方8px）；同一栅格视觉行内卡面随最高内容等高，窄屏逐卡自然高度。字段和点击行为复用原有协议，见[指标卡语义](docs/page-metadata/components/metricCard.md)与[主次指标示例](pages/capabilities/layout/metric-card-primary-detail.json)。
+
 6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；整组自动拉宽至所占列宽，以 1px 灰边、16px 圆角白底区域包裹，每张小卡保留独立白底灰边，文字双侧 gap 固定；完整场景见 [指标卡连接排布](pages/capabilities/layout/metric-card-equation.json)。
 
 <a id="75-图表组件"></a>
@@ -350,7 +352,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 <a id="711-aisummary"></a>
 
-7.11 `aiSummary`（独立摘要完整复用 SDT 渐变背景、白框、浅紫内容区；6.56：组合卡内摘要、显式 scope: container 与顶部结构约束；6.51：Report 双模式、区域范围、异步调用与会话缓存；6.52：数据源 ID 直接引用；6.53：正式命名 relatedDataSources；6.54：非空 body 直接展示，否则根据提示词和范围生成，无需 mode） → [模块参考](contracts/metriccanvas/page/reference/components/aiSummary.md)。
+7.11 `aiSummary`（独立摘要完整复用 SDT 渐变背景、白框、浅紫内容区；6.56：组合卡内摘要、显式 scope: container 与顶部结构约束；6.51：Report 双模式、区域范围、异步调用与会话缓存；6.52：数据源 ID 直接引用；6.65：正式命名 relatedDataSources；6.54：非空 body 直接展示，否则根据提示词和范围生成，无需 mode） → [模块参考](contracts/metriccanvas/page/reference/components/aiSummary.md)。
 
 <a id="8-数据槽字段绑定与有限交互"></a>
 

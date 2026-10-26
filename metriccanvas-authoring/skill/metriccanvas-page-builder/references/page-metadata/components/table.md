@@ -233,7 +233,7 @@ Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑
 完整示例 `paged-union-page`，浏览器场景 `/pages/multi-source-table` 及 `/pages/multi-source-contract-detail`、`/pages/multi-source-commercial-detail`。演示来源为本地合成分页接口，入口与验收步骤见表格示例说明。
 
 
-页面协议 6.64。结构真源为本册[schema.json](../schema.json)，SHA256 `c0aed5e15e699271f4d50813b2e3e140123929c16bdb9b72e11a6555d12d669f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.65。结构真源为本册[schema.json](../schema.json)，SHA256 `87cac0ae10799837aec7d9b594ddc4ca5d1e717efe37b59951937da47745c8a3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -3121,7 +3121,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/2/props/toolbar/search`。
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1`：[合法完整页面](../examples/table-search-options-page.json)，JSON Pointer `#/sections/0/components/0/props/toolbar/search`。
-- `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-table.json)，JSON Pointer `#/sections/0/components/0/props/columns/0`。
+- `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/detailViews/0/components/0/props/columns/0`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/city`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/7/components/0/props/columns/0/openDetail`。

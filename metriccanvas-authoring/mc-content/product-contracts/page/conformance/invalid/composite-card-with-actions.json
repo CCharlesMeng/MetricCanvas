@@ -407,7 +407,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/1/props/variant",
-      "message": "取值不在允许范围:[\"summary\",\"activityProgress\",\"compactSummary\",\"dualSummary\",\"compactStrip\",\"compactStack\"]"
+      "message": "取值不在允许范围:[\"summary\",\"activityProgress\",\"compactSummary\",\"dualSummary\",\"compactStrip\",\"compactStack\",\"primaryDetail\"]"
     },
     {
       "type": "SCHEMA_ERROR",

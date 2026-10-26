@@ -74,7 +74,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 MC 内容投影与本地创作知识由同一产品参考生成。完整性诊断场景为 `mc-content-layout-demo`；内容身份、页面版本与实际部署身份分别核对。旧文件的可读性、能力下限、可迁移性和人工语义处理项分别返回，不能仅提升 schemaVersion 绕过迁移。
 
 
-页面协议 6.64。结构真源为本册[schema.json](schema.json)，SHA256 `c0aed5e15e699271f4d50813b2e3e140123929c16bdb9b72e11a6555d12d669f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.65。结构真源为本册[schema.json](schema.json)，SHA256 `87cac0ae10799837aec7d9b594ddc4ca5d1e717efe37b59951937da47745c8a3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -96,7 +96,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58","6.59","6.60","6.61","6.62","6.63","6.64"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58","6.59","6.60","6.61","6.62","6.63","6.64","6.65"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -160,6 +160,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.62" | 新增字段列与分组列展示条件、可见字段搜索、用户视图调和及冻结导出；旧表格规则保持。 |
 | "6.63" | 组合卡显式筛选工具栏：左侧按钮组与右侧紧凑多下拉。 |
 | "6.64" | 饼图表格式图例、显式数值排序与固定类别顺序，默认保留输入行序。 |
+| "6.65" | 新增主指标与多行次级指标卡；既有指标卡呈现保持。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -1396,7 +1397,7 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/detailViews/items/properties/components/items/oneOf/2`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/2`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/3`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/3`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/4`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/4`。
-- `#/properties/detailViews/items/properties/components/items/oneOf/5`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/detailViews/0/components/0`。
+- `#/properties/detailViews/items/properties/components/items/oneOf/5`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/detailViews/0/components/0`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/6`：[语义拒绝反例](errors/detail-component-reject-mapchart.json)：详情的展示闭集拒绝 mapChart；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
 - `#/properties/detailViews/items/properties/components/items/oneOf/7`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/5`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/8`：[语义拒绝反例](errors/detail-component-reject-tabcontainer.json)：详情的展示闭集拒绝 tabContainer；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。

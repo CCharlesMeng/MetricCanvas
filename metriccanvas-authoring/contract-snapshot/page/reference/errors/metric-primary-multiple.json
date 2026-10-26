@@ -1,0 +1,42 @@
+{
+  "case": "metric-primary-multiple",
+  "invariant": "metric-card-primary-detail",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "primaryDetail 指标卡必须且只能声明一个主指标；次级指标放入 secondaryRows",
+      "paths": [
+        "/sections/0/components/0/props/rows"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "…": "共3个键"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "…": "共3个键"
+                  },
+                  "unit": "万元"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/metric-primary-multiple.json"
+}

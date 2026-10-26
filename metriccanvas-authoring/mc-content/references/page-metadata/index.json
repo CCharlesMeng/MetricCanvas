@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.64",
-  "schemaSha256": "c0aed5e15e699271f4d50813b2e3e140123929c16bdb9b72e11a6555d12d669f",
+  "schemaVersion": "6.65",
+  "schemaSha256": "87cac0ae10799837aec7d9b594ddc4ca5d1e717efe37b59951937da47745c8a3",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -541,7 +541,8 @@
       ],
       "examples": [
         "inline-report",
-        "metric-card-equation"
+        "metric-card-equation",
+        "metric-card-primary-detail"
       ],
       "rules": [
         "schema-structure",
@@ -549,7 +550,8 @@
         "field-binding-resolves",
         "field-binding-role",
         "field-binding-match",
-        "metric-card-before"
+        "metric-card-before",
+        "metric-card-primary-detail"
       ]
     },
     "components/barChart.md": {
@@ -1151,7 +1153,8 @@
         "6.61",
         "6.62",
         "6.63",
-        "6.64"
+        "6.64",
+        "6.65"
       ]
     },
     {
@@ -9240,7 +9243,8 @@
         "compactSummary",
         "dualSummary",
         "compactStrip",
-        "compactStack"
+        "compactStack",
+        "primaryDetail"
       ]
     },
     {
@@ -17095,6 +17099,12 @@
       "pointer": "#/sections/0/components/0"
     },
     {
+      "type": "metricCard",
+      "variant": "primaryDetail",
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/sections/0/components/0"
+    },
+    {
       "type": "barChart",
       "file": "examples/component-barChart.json",
       "pointer": "#/sections/0/components/0"
@@ -17676,8 +17686,8 @@
     {
       "schemaPointer": "#/definitions/scalar/anyOf/3",
       "module": "fields.md",
-      "file": "examples/component-fieldText.json",
-      "pointer": "#/dataSources/notes/source/rows/0/at"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/dataSources/metrics/source/rows/0/missing"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
@@ -18522,8 +18532,8 @@
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/inline-report.json",
-      "pointer": "#/sections/0/components/1/props/rows/0/valueField"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
     },
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
@@ -18774,7 +18784,7 @@
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/5",
       "module": "page.md",
-      "file": "examples/detail-views.json",
+      "file": "examples/component-metricCard-primaryDetail.json",
       "pointer": "#/detailViews/0/components/0"
     },
     {
@@ -18792,8 +18802,8 @@
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/0",
       "module": "components/table.md",
-      "file": "examples/component-table.json",
-      "pointer": "#/sections/0/components/0/props/columns/0"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/detailViews/0/components/0/props/columns/0"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0",
@@ -19486,5 +19496,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "3ab156c4bd7d0b03fc67df9f29face3d90707770c37a066651206cdddab30b7b"
+  "semanticSourceDigest": "e7653eab0c28a561ca8b8cee0c848da160f3947979139318993b919b2e4705bc"
 }

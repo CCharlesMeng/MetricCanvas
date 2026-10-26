@@ -1,0 +1,71 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "functions": [
+    {
+      "function": "metricCardShapeErrors",
+      "before": null,
+      "after": 3
+    },
+    {
+      "function": "componentErrors/checkMetricCard",
+      "before": 5,
+      "after": 5
+    },
+    {
+      "function": "componentErrors",
+      "before": 4,
+      "after": 4
+    },
+    {
+      "function": "primary detail capability usedAt",
+      "before": null,
+      "after": 1
+    },
+    {
+      "function": "primary detail capability predicate",
+      "before": null,
+      "after": 2
+    },
+    {
+      "function": "new conformance mutate callbacks",
+      "before": null,
+      "after": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "function": "all new test callbacks",
+      "after": [
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "function": "version test callbacks (file maximum)",
+      "before": 3,
+      "after": 3
+    },
+    {
+      "function": "responsive contract test callbacks (file maximum)",
+      "before": 2,
+      "after": 2
+    }
+  ],
+  "svelte": "Only a variant class and CSS were added; script functions and template branch structure unchanged.",
+  "unchangedDebt": "Other existing functions with CC > 15 were not modified."
+}

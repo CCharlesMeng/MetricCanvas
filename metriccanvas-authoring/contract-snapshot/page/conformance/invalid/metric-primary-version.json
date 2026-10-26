@@ -1,0 +1,438 @@
+{
+  "case": "metric-primary-version",
+  "invariant": "metric-card-primary-detail",
+  "input": {
+    "schemaVersion": "6.64",
+    "id": "metric-card-primary-detail",
+    "layout": "dashboard",
+    "meta": {
+      "title": "指标卡｜主指标与多行次级指标",
+      "description": "仅内联合成数据。比较0/1/3/6行次级指标，同排卡片自然等高；下方覆盖零、缺失、长名称与显式链接。"
+    },
+    "dataSources": {
+      "metrics": {
+        "fields": {
+          "revenue": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "paid": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "pending": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "target": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "forecast": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "refund": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "zero": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "missing": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "revenue": 1280,
+              "paid": 960,
+              "pending": 320,
+              "target": 1500,
+              "forecast": 1420,
+              "refund": 12,
+              "zero": 0,
+              "missing": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "same-row",
+        "title": "一个主指标 + 多行小指标（依次为 0、1、3、6 行）",
+        "container": "plain",
+        "components": [
+          {
+            "id": "details-0",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "field": "revenue",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ]
+            }
+          },
+          {
+            "id": "details-1",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "field": "revenue",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "已回款",
+                  "valueField": {
+                    "field": "paid",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ]
+            }
+          },
+          {
+            "id": "details-3",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "field": "revenue",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "已回款",
+                  "valueField": {
+                    "field": "paid",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "待回款",
+                  "valueField": {
+                    "field": "pending",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "年度目标",
+                  "valueField": {
+                    "field": "target",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ]
+            }
+          },
+          {
+            "id": "details-6",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "field": "revenue",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "已回款",
+                  "valueField": {
+                    "field": "paid",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "待回款",
+                  "valueField": {
+                    "field": "pending",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "年度目标",
+                  "valueField": {
+                    "field": "target",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "年度预测",
+                  "valueField": {
+                    "field": "forecast",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "退款金额",
+                  "valueField": {
+                    "field": "refund",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "其他收入",
+                  "valueField": {
+                    "field": "zero",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "edge-cases",
+        "title": "边界：真实零、缺失值、长名称、显式链接",
+        "container": "plain",
+        "components": [
+          {
+            "id": "detail-edge",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "field": "revenue",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "真实零值",
+                  "valueField": {
+                    "field": "zero",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "暂无数据",
+                  "valueField": {
+                    "field": "missing",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                },
+                {
+                  "label": "本年度已确认且待支付的业务收入金额（长指标名称）",
+                  "valueField": {
+                    "field": "pending",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ]
+            }
+          },
+          {
+            "id": "detail-link",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": {
+                    "field": "revenue",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元"
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "已回款（可点击查看明细）",
+                  "valueField": {
+                    "field": "paid",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "unit": "万元",
+                  "link": true
+                }
+              ],
+              "actions": [
+                {
+                  "openDetail": {
+                    "view": "payment-detail",
+                    "surface": "modal"
+                  },
+                  "on": "click"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "detailViews": [
+      {
+        "id": "payment-detail",
+        "mode": "snapshot",
+        "components": [
+          {
+            "id": "payment-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "paid",
+                  "title": "已回款（万元）"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "单一主指标与多行小字号次级指标，同排卡片等高 由 6.65 引入，文档声明的是 6.64"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1",
+      "message": "单一主指标与多行小字号次级指标，同排卡片等高 由 6.65 引入，文档声明的是 6.64"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/2",
+      "message": "单一主指标与多行小字号次级指标，同排卡片等高 由 6.65 引入，文档声明的是 6.64"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3",
+      "message": "单一主指标与多行小字号次级指标，同排卡片等高 由 6.65 引入，文档声明的是 6.64"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0",
+      "message": "单一主指标与多行小字号次级指标，同排卡片等高 由 6.65 引入，文档声明的是 6.64"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/1",
+      "message": "单一主指标与多行小字号次级指标，同排卡片等高 由 6.65 引入，文档声明的是 6.64"
+    }
+  ]
+}

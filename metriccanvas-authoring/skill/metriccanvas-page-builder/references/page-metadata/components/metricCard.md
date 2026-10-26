@@ -4,6 +4,18 @@
 
 数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。
 
+## 主指标与多行次级指标 6.65
+
+`props.variant: "primaryDetail"` 表达一张卡内的一个主指标和零到多行次级指标。`rows` 必须恰好一行，名称在上、大数值在下；`secondaryRows` 按声明顺序在其下逐行呈现，每行是指标名及指标值，不设数量上限。不需要次级指标时省略 `secondaryRows`，不能写空数组。它们是独立字段绑定，不能把次级指标塞进表示变化信息的 `changes`。
+
+每一行次级指标的上方间距为8 CSS px（首行距主指标8px，其后行距上一行8px），水平名称与数值间距8px。字体为 `"PingFang SC", sans-serif`、normal、400、14px、字距0、左对齐；指标名为 `rgba(0,0,0,0.5)`、行高20px，指标值及单位为 `rgba(0,0,0,0.8)`、行高17px、下划线。长名称允许换行，零值和缺失值继续沿用字段格式及缺失占位规则。
+
+同一栅格视觉行内的卡片按最高卡片的自然内容高度拉伸，短卡底部保留空白；无固定卡高、行数截断或补齐空行。窄屏堆叠后各卡恢复自然内容高度，下一行不与上一行取同一最大值。卡面复用现有白底、浅灰边和16px圆角。
+
+下划线是该形态的视觉样式。只有显式声明 `row.link: true` 且有合法的 `navigate` / `openDetail` 动作，指标值才成为可聚焦、可点击的入口；普通次级指标仍为文本。`valueField`、单位、格式、数据槽与筛选联动均复用现有绑定协议。`secondaryRows` 在其他形态中保持既有呈现。
+
+验收入口：`/pages/metric-card-primary-detail`，完整页面为 `pages/capabilities/layout/metric-card-primary-detail.json`；仅内联合成数据，覆盖0/1/3/6行等高、长名称、零、缺失值与显式链接。该场景不证明真实DQE/Relay接入。
+
 Dashboard 白底内容容器（Tab、`container: "card"` / `"panel"` 分区）中的指标卡自动使用 1px、黑色10%透明度的实线边框和16px圆角，与连接指标卡同样保留独立卡面；无需新增页面字段。灰底画布保持既有呈现，Report保留原有边框。普通卡的外框包住完整内容，紧凑型卡的每个指标面板分别带框；组合卡只绘制外层边框，内部指标不重复套框。可观察场景：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
 <a id="metric-card-before"></a>
 
@@ -26,7 +38,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.64。结构真源为本册[schema.json](../schema.json)，SHA256 `c0aed5e15e699271f4d50813b2e3e140123929c16bdb9b72e11a6555d12d669f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.65。结构真源为本册[schema.json](../schema.json)，SHA256 `87cac0ae10799837aec7d9b594ddc4ca5d1e717efe37b59951937da47745c8a3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -230,7 +242,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/va
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["summary","activityProgress","compactSummary","dualSummary","compactStrip","compactStack"] | Schema未设默认；装配/运行时默认见语义说明 | 此组件支持的受控呈现变体，不能跨类型复用枚举。 |
+| "string" | 本分支可选 | enum=["summary","activityProgress","compactSummary","dualSummary","compactStrip","compactStack","primaryDetail"] | Schema未设默认；装配/运行时默认见语义说明 | 此组件支持的受控呈现变体，不能跨类型复用枚举。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -240,6 +252,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/va
 | "dualSummary" | 双摘要呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
 | "compactStrip" | 紧凑横条呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
 | "compactStack" | 紧凑纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
+| "primaryDetail" | 一个主指标与多行小字号次级指标；同排卡片自然等高，次级值带下划线但点击仍需显式link和动作。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e646172795469746c65"></a>
 
@@ -738,6 +751,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - `field-binding-role`：字段绑定的角色符合组件属性要求。反例：[field-binding-role-mismatch](../errors/field-binding-role-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-match`：行匹配字段必须是 dimension，匹配值符合其类型。反例：[match-field-unknown](../errors/match-field-unknown.json)、[match-field-not-dimension](../errors/match-field-not-dimension.json)、[match-value-type-mismatch](../errors/match-value-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-card-before`：6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度。反例：[metric-before-version](../errors/metric-before-version.json)、[metric-before-report](../errors/metric-before-report.json)、[metric-before-tracks](../errors/metric-before-tracks.json)、[metric-before-span](../errors/metric-before-span.json)、[metric-before-empty](../errors/metric-before-empty.json)、[metric-before-gap](../errors/metric-before-gap.json)、[metric-before-nested](../errors/metric-before-nested.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-card-primary-detail`：主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约。反例：[metric-primary-multiple](../errors/metric-primary-multiple.json)、[metric-primary-version](../errors/metric-primary-version.json)、[metric-secondary-field](../errors/metric-secondary-field.json)、[metric-secondary-link](../errors/metric-secondary-link.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -748,8 +762,10 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - [dualSummary](../examples/component-metricCard-dualSummary.json)：独立完整页面，保留必要语义依赖。
 - [compactStrip](../examples/component-metricCard-compactStrip.json)：独立完整页面，保留必要语义依赖。
 - [compactStack](../examples/component-metricCard-compactStack.json)：独立完整页面，保留必要语义依赖。
+- [primaryDetail](../examples/component-metricCard-primaryDetail.json)：独立完整页面，保留必要语义依赖。
 - [inline-report](../examples/inline-report.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-equation](../examples/metric-card-equation.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-primary-detail](../examples/metric-card-primary-detail.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-metricCard.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

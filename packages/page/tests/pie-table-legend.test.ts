@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { validate } from '../src/validate';
-import { requiredMinorVersion, versionPolicy } from '../src/version';
+import { requiredMinorVersion } from '../src/version';
 
 function document() {
   return JSON.parse(readFileSync(new URL('../../../pages/capabilities/chart/pie-table-legend.json', import.meta.url), 'utf8'));
@@ -23,7 +23,7 @@ describe('pie table legend contract', () => {
   it('validates the real Playground declaration and requires its capability version', () => {
     const page = document();
     expect(validate(page)).toEqual([]);
-    expect(requiredMinorVersion(page)).toBe(versionPolicy.minor);
+    expect(requiredMinorVersion(page)).toBe(64);
     page.schemaVersion = '6.63';
     expect(validate(page).some(error => error.type === 'SCHEMA_ERROR')).toBe(true);
   });

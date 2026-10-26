@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.64",
+  "schemaVersion": "6.65",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "metricCard.title"
@@ -9,9 +9,22 @@
       "module": "metricCard",
       "reference": "references/page-metadata/components/metricCard.md",
       "blocks": [
-        "# 指标卡 metricCard\n\n突出一个或少量核心指标的当前值、变化值与可选完成率。适用于总额、数量、完成率、KPI、核心指标、年度活动进展。数据形状：单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric。\n\n数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。\n\nDashboard 白底内容容器（Tab、`container: \"card\"` / `\"panel\"` 分区）中的指标卡自动使用 1px、黑色10%透明度的实线边框和16px圆角，与连接指标卡同样保留独立卡面；无需新增页面字段。灰底画布保持既有呈现，Report保留原有边框。普通卡的外框包住完整内容，紧凑型卡的每个指标面板分别带框；组合卡只绘制外层边框，内部指标不重复套框。可观察场景：[`tab-mixed-content`](../examples/tab-mixed-content.json)。\n<a id=\"metric-card-before\"></a>"
+        "# 指标卡 metricCard\n\n突出一个或少量核心指标的当前值、变化值与可选完成率。适用于总额、数量、完成率、KPI、核心指标、年度活动进展。数据形状：单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric。\n\n数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。"
       ],
       "rules": [
+        {
+          "id": "metric-card-primary-detail",
+          "description": "主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约",
+          "valid": [
+            "metric-card-primary-detail"
+          ],
+          "invalid": [
+            "metric-primary-multiple",
+            "metric-primary-version",
+            "metric-secondary-field",
+            "metric-secondary-link"
+          ]
+        },
         {
           "id": "metric-card-before",
           "description": "6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度",
@@ -128,7 +141,8 @@
       ],
       "examples": [
         "references/page-metadata/examples/inline-report.json",
-        "references/page-metadata/examples/metric-card-equation.json"
+        "references/page-metadata/examples/metric-card-equation.json",
+        "references/page-metadata/examples/metric-card-primary-detail.json"
       ]
     }
   ],
@@ -149,7 +163,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.64",
+        "$id": "https://metriccanvas/page/v6.65",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

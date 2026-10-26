@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "6.65",
+  "id": "metric-card-primary-detail",
+  "layout": "dashboard",
+  "dataSources": {
+    "metrics": {
+      "fields": {
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "paid": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "pending": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "target": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "forecast": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "refund": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "zero": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "missing": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "revenue": 1280,
+            "paid": 960,
+            "pending": 320,
+            "target": 1500,
+            "forecast": 1420,
+            "refund": 12,
+            "zero": 0,
+            "missing": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "details-0",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "metrics"
+          },
+          "props": {
+            "variant": "primaryDetail",
+            "rows": [
+              {
+                "label": "销售收入",
+                "valueField": {
+                  "field": "revenue",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "detailViews": [
+    {
+      "id": "payment-detail",
+      "mode": "snapshot",
+      "components": [
+        {
+          "id": "payment-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "metrics"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "paid",
+                "title": "已回款（万元）"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

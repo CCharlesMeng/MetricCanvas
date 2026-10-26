@@ -67,7 +67,8 @@ export const metricCardComponentZ = z
             'compactSummary',
             'dualSummary',
             'compactStrip',
-            'compactStack'
+            'compactStack',
+            'primaryDetail'
           ])
           .optional(),
         secondaryTitle: nonEmptyTextValueZ.optional(),

@@ -1,0 +1,145 @@
+{
+  "case": "metric-primary-version",
+  "invariant": "metric-card-primary-detail",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "单一主指标与多行小字号次级指标，同排卡片等高 由 6.65 引入，文档声明的是 6.64",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/0/components/1",
+        "/sections/0/components/2",
+        "/sections/0/components/3",
+        "/sections/1/components/0",
+        "/sections/1/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "details-0",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ]
+            }
+          },
+          {
+            "id": "details-1",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ],
+              "secondaryRows": [
+                "…（共1项）"
+              ]
+            }
+          },
+          {
+            "id": "details-3",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ],
+              "secondaryRows": [
+                "…（共3项）"
+              ]
+            }
+          },
+          {
+            "id": "details-6",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ],
+              "secondaryRows": [
+                "…（共6项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "detail-edge",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ],
+              "secondaryRows": [
+                "…（共3项）"
+              ]
+            }
+          },
+          {
+            "id": "detail-link",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ],
+              "secondaryRows": [
+                "…（共1项）"
+              ],
+              "actions": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

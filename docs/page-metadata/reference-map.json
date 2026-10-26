@@ -654,7 +654,8 @@
       ],
       "examples": [
         "inline-report",
-        "metric-card-equation"
+        "metric-card-equation",
+        "metric-card-primary-detail"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
@@ -667,7 +668,8 @@
         "field-binding-resolves",
         "field-binding-role",
         "field-binding-match",
-        "metric-card-before"
+        "metric-card-before",
+        "metric-card-primary-detail"
       ]
     },
     "components/barChart.md": {
@@ -1952,7 +1954,9 @@
     "6.62": "新增字段列与分组列展示条件、可见字段搜索、用户视图调和及冻结导出；旧表格规则保持。",
     "#/properties/schemaVersion=\"6.63\"": "组合卡显式筛选工具栏：左侧按钮组与右侧紧凑多下拉。",
     "center": "本列列头与数据单元格水平居中。",
-    "6.64": "饼图表格式图例、显式数值排序与固定类别顺序，默认保留输入行序。"
+    "6.64": "饼图表格式图例、显式数值排序与固定类别顺序，默认保留输入行序。",
+    "primaryDetail": "一个主指标与多行小字号次级指标；同排卡片自然等高，次级值带下划线但点击仍需显式link和动作。",
+    "6.65": "新增主指标与多行次级指标卡；既有指标卡呈现保持。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2244,7 +2248,9 @@
       "roots": [
         "#/definitions/metricCardComponent"
       ],
-      "headings": [],
+      "headings": [
+        "主指标与多行次级指标 6.65"
+      ],
       "dependencies": []
     },
     "metricCard.title": {
@@ -2532,6 +2538,7 @@
       "查阅方式"
     ],
     "components/metricCard.md": [
+      "主指标与多行次级指标 6.65",
       "前置连接文字 6.34",
       "查阅方式"
     ],

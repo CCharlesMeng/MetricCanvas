@@ -133,6 +133,7 @@
   class:dual-summary={props.variant === 'dualSummary'}
   class:compact-strip={props.variant === 'compactStrip'}
   class:compact-stack={props.variant === 'compactStack'}
+  class:primary-detail={props.variant === 'primaryDetail'}
   class:two-column-panels={props.variant === 'dualSummary' && props.panelLayout === 'twoColumn'}
   class="metric-card"
 >
@@ -179,10 +180,72 @@
     gap: 0.45rem;
     height: 100%;
   }
-  .metric-card:not(.compact-summary):not(.dual-summary):not(.compact-strip):not(.compact-stack) {
+  .metric-card:not(.compact-summary):not(.dual-summary):not(.compact-strip):not(.compact-stack):not(.primary-detail) {
     padding: var(--mc-metric-card-padding, 0);
     border: var(--mc-metric-card-border, 0);
     border-radius: var(--mc-metric-card-radius, 0);
+  }
+  .primary-detail {
+    flex: 1;
+    justify-content: flex-start;
+    gap: 0;
+    background: var(--mc-metric-panel-surface, var(--mc-color-surface, #fff));
+    padding: var(--mc-metric-panel-padding, 20px);
+    border: var(--mc-metric-panel-border-width, 1px) solid var(--mc-metric-panel-border-color, rgb(0 0 0 / 0.1));
+    border-radius: var(--mc-metric-panel-radius, 16px);
+  }
+  .primary-detail > .metric-content .metric-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .primary-detail > .metric-content .row-value {
+    font-size: 28px;
+    line-height: 34px;
+  }
+  .primary-detail > .metric-panel {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  .primary-detail > .metric-panel .metric-values {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .primary-detail > .metric-panel .metric-row {
+    display: flex;
+    min-height: 0;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 8px;
+    font-family: "PingFang SC", sans-serif;
+    font-style: normal;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-align: left;
+  }
+  .primary-detail > .metric-panel .row-label {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    line-height: 20px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .primary-detail > .metric-panel .value-line {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .primary-detail > .metric-panel .row-value,
+  .primary-detail > .metric-panel .unit {
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17px;
+    text-decoration-line: underline;
   }
   .metric-content {
     display: flex;

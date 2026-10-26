@@ -142,6 +142,8 @@ pages/
 
 ### 指标卡与文字混排、内容导航
 
+主指标下方的多行小指标与同排等高：[主指标与多行次级指标](capabilities/layout/metric-card-primary-detail.json)，入口 `/pages/metric-card-primary-detail`；仅内联合成数据，无需外部服务。操作和预期见[布局场景说明](capabilities/layout/README.md#主指标与多行次级指标)。
+
 - [metric-card-equation](capabilities/layout/metric-card-equation.json)，入口 `/pages/metric-card-equation`：白底无边框分区内依次展示标题、左对齐筛选与 Before 四卡；DQE Sim 提供合成区域联动，第二组为静态对照。符号只表达展示关系。
 - [ioc-content-navigation](capabilities/navigation/ioc-content-navigation.json)，入口 `/pages/ioc-content-navigation`：内联合成数据，无需额外服务。在分区 A 翻页，切到 B 再返回 A，检查局部状态保留。它是匿名导航样例，不是 IOC 来源页面。
 

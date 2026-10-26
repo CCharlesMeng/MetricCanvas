@@ -4,6 +4,18 @@
 
 数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。
 
+## 主指标与多行次级指标 6.65
+
+`props.variant: "primaryDetail"` 表达一张卡内的一个主指标和零到多行次级指标。`rows` 必须恰好一行，名称在上、大数值在下；`secondaryRows` 按声明顺序在其下逐行呈现，每行是指标名及指标值，不设数量上限。不需要次级指标时省略 `secondaryRows`，不能写空数组。它们是独立字段绑定，不能把次级指标塞进表示变化信息的 `changes`。
+
+每一行次级指标的上方间距为8 CSS px（首行距主指标8px，其后行距上一行8px），水平名称与数值间距8px。字体为 `"PingFang SC", sans-serif`、normal、400、14px、字距0、左对齐；指标名为 `rgba(0,0,0,0.5)`、行高20px，指标值及单位为 `rgba(0,0,0,0.8)`、行高17px、下划线。长名称允许换行，零值和缺失值继续沿用字段格式及缺失占位规则。
+
+同一栅格视觉行内的卡片按最高卡片的自然内容高度拉伸，短卡底部保留空白；无固定卡高、行数截断或补齐空行。窄屏堆叠后各卡恢复自然内容高度，下一行不与上一行取同一最大值。卡面复用现有白底、浅灰边和16px圆角。
+
+下划线是该形态的视觉样式。只有显式声明 `row.link: true` 且有合法的 `navigate` / `openDetail` 动作，指标值才成为可聚焦、可点击的入口；普通次级指标仍为文本。`valueField`、单位、格式、数据槽与筛选联动均复用现有绑定协议。`secondaryRows` 在其他形态中保持既有呈现。
+
+验收入口：`/pages/metric-card-primary-detail`，完整页面为 `pages/capabilities/layout/metric-card-primary-detail.json`；仅内联合成数据，覆盖0/1/3/6行等高、长名称、零、缺失值与显式链接。该场景不证明真实DQE/Relay接入。
+
 Dashboard 白底内容容器（Tab、`container: "card"` / `"panel"` 分区）中的指标卡自动使用 1px、黑色10%透明度的实线边框和16px圆角，与连接指标卡同样保留独立卡面；无需新增页面字段。灰底画布保持既有呈现，Report保留原有边框。普通卡的外框包住完整内容，紧凑型卡的每个指标面板分别带框；组合卡只绘制外层边框，内部指标不重复套框。可观察场景：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
 <a id="metric-card-before"></a>
 
