@@ -42,7 +42,16 @@ export const sectionColumnTracksZ = z
     description: '内容分区的受控列轨权重；缺省为 12 条等权列'
   });
 
-export const sectionZ = z
+// Keep the exact Zod shape while referencing the component union by its declared type.
+type SectionShape = typeof visibilityShape & {
+  id: typeof idZ;
+  title: z.ZodOptional<typeof nonEmptyTextValueZ>;
+  container: z.ZodOptional<typeof sectionContainerZ>;
+  columnTracks: z.ZodOptional<typeof sectionColumnTracksZ>;
+  components: z.ZodArray<typeof componentZ>;
+};
+
+export const sectionZ: z.ZodObject<SectionShape, z.core.$strict> = z
   .object({
     id: idZ,
     ...visibilityShape,

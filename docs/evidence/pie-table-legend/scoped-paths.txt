@@ -70,6 +70,7 @@ docs/evidence/mc-content-layout/diagnostics.json
 docs/evidence/mc-content-layout/usage-report.json
 docs/evidence/pie-table-legend/acceptance.md
 docs/evidence/pie-table-legend/complexity.json
+docs/evidence/pie-table-legend/declaration-repair.md
 docs/evidence/pie-table-legend/desktop.jpg
 docs/evidence/pie-table-legend/main-browser.jpg
 docs/evidence/pie-table-legend/main-complexity.json
@@ -1088,7 +1089,9 @@ packages/engine/widgets/src/components/pie-chart/presentation.ts
 packages/engine/widgets/tests/pie-table-legend.test.ts
 packages/engine/widgets/tests/responsive-fixtures.ts
 packages/page/fixtures/contract-valid/pie-table-legend.json
+packages/page/src/schema/component.ts
 packages/page/src/schema/components/charts.ts
+packages/page/src/schema/page.ts
 packages/page/src/validate.ts
 packages/page/src/version.ts
 packages/page/tests/pie-table-legend.test.ts

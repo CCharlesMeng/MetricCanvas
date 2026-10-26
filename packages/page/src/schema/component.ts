@@ -22,7 +22,27 @@ import { aiSummaryComponentZ } from './components/ai-summary';
  * 也是 `componentCatalog` 目录的枚举顺序——三者曾经手写三遍，
  * 现在都从这一个判别联合派生。
  */
-export const componentSchemas = [
+export const componentSchemas: readonly [
+  typeof reportHeaderComponentZ,
+  typeof metricCardComponentZ,
+  typeof barChartComponentZ,
+  typeof lineChartComponentZ,
+  typeof pieChartComponentZ,
+  typeof tableComponentZ,
+  typeof mapChartComponentZ,
+  typeof gaugeComponentZ,
+  typeof tabContainerComponentZ,
+  typeof compositeCardComponentZ,
+  typeof rankingCardComponentZ,
+  typeof rankingDetailCardComponentZ,
+  typeof keyValuePanelComponentZ,
+  typeof categoryBreakdownComponentZ,
+  typeof fieldTextComponentZ,
+  typeof textComponentZ,
+  typeof aiSummaryComponentZ,
+  typeof buttonComponentZ,
+  typeof filterGroupComponentZ,
+] = [
   reportHeaderComponentZ,
   metricCardComponentZ,
   barChartComponentZ,
@@ -44,7 +64,8 @@ export const componentSchemas = [
   filterGroupComponentZ
 ] as const;
 
-export const componentZ = z.discriminatedUnion('type', componentSchemas);
+// Preserve the exact component tuple without expanding every nested schema in package declarations.
+export const componentZ: z.ZodDiscriminatedUnion<typeof componentSchemas, 'type'> = z.discriminatedUnion('type', componentSchemas);
 
 export {
   filterGroupComponentZ,
