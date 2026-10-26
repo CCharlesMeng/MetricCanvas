@@ -88,3 +88,5 @@ node apps/platform/tests/workbench/chart-value-browser.mjs /tmp/metriccanvas-cha
 按当前 `.gitignore` 的验收产物政策，仓库仅交付本结论和决策依据。原始日志、测量 JSON、截图及 PDF 保存在 `/Users/moon/.codex/artifacts/chart-constant-values-2026-10-26/`；这些本地产物不作为远端消费者的必需输入。
 
 公共 API 快照只增加 internal 子路径的 `ComponentValueSource` 和 `valueSourceBinding`；主入口保持不变。全量回归（排除单独执行的五个创作测试文件）覆盖 334 文件、2880 项；一次主干已有的保护异步时序测试在并发负载下失败，独立重跑该文件 55 项通过，未修改其实现或等待预算。
+
+主干自带的 MC 诊断及 business-report / usage-report 页面由 `tools/scripts/mc-content-fixtures.py` 重新生成，保持 6.59 和实际 162 个知识主题一致；三个已有机器回执仍是该 CI 检查的必需输入，同步更新而不手工改写。MC 内容包 30 项 Python 测试通过。
