@@ -4,6 +4,8 @@
 
 - [决策意见明细](capabilities/table/README.md#决策意见明细)：合同与商务分页模拟源、默认降序、全局排序、类型筛选和任意页跳转；直接入口 `/pages/decision-opinion-details`，无需额外服务。
 
+- [双轴刻度对齐](capabilities/chart/README.md#双轴刻度对齐与单套网格线)：双轴柱图、折线图、柱线混合图和单轴对照；入口 `/pages/dual-axis-alignment`，使用内联合成数据。
+
 ## 目录组织
 
 页面试验场首页提供「组件、数据与联动、布局」三个入口。每类组件都有独立目录 `/catalog/components/<type>`；数据能力按取数、条件、关联、交互、结果范围和跨页输出组织。同一推荐场景在多个目录中复用，集中展示操作、数据关系、配置和当前文档试改。全部文件在 `/files`，业务示例和临时评测可从首页次级入口进入。基础数据消费组件见[共享内联数据场景](capabilities/components/README.md)。

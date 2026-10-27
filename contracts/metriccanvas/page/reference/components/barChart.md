@@ -14,6 +14,14 @@
 
 可观察场景：`/pages/bar-width-defaults`，使用内联合成数据，覆盖上述变体及显式32px覆盖的对照。
 
+## 双轴刻度与网格线
+
+`dualAxis: true` 的双数值轴默认以主轴为基准，副轴通过 ECharts `alignTicks` 对齐刻度位置，只由主轴绘制网格线；两侧轴标签、字段展示格式和单位继续保留。柱图、折线图和柱线混合图采用同一策略，单轴沿用原默认行为。
+
+自动对齐可能扩展副轴显示范围，不修改原始数据。已有 `props.echartsOption` 显式配置仍按高级扩展规则覆盖默认值；显式固定 `min`、`max`、`interval` 或关闭 `alignTicks` 时，刻度受该配置约束，不承诺继续自动对齐。
+
+可观察场景：`/pages/dual-axis-alignment`，使用内联合成数据，包含双轴柱图、双轴折线图、柱线混合图与单轴对照；默认仅一套水平网格线，左右刻度位于相同高度。本次只调整呈现默认值，不新增页面字段或协议版本。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
@@ -679,6 +687,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - [stored-count-measures](../examples/stored-count-measures.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-values-page](../examples/chart-constant-values-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-branches](../examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [dual-axis-alignment](../examples/dual-axis-alignment.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-barChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "88a963afeb88a84df145536d1d75bb7e380b3143ca491ca9fa3f14dee13c72d9",
+  "sha256": "29675fd48c7b9698e3ca276d93fc0f43f9b136cde9229c438bc356e372df66d2",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -28,7 +28,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "8237b3be585c6ee0bd47f7216f95869fa2ba9a4eebc68dacc83f161ccb9cd381"
+      "sha256": "45d4c7c143014643b1b70e6dd201ec9441a51ddf84a4c3e9409591e5d8a6d3c5"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -60,7 +60,7 @@
     },
     {
       "file": "docs/page-metadata/components/lineChart.md",
-      "sha256": "ad1c5a18e2c4fb0e2d8417f1243be6f23eed261d6624eb52234fc9f275fee9b8"
+      "sha256": "9f7d1e9d665091abb8f781f95d20af156017e64c127a3fce0918fec8213aed6c"
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "4c57751cb7c877e05fb0d5d346b7b88f7cb83480ecc164a7d34a263cec4cc3af"
+      "sha256": "349df8fca60c569a01a1bf6a4980342d8f1cd63b378b20b7a7d6a2cc775c464a"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -749,6 +749,10 @@
     {
       "file": "packages/page/fixtures/contract-valid/dimension-selection-page.json",
       "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
     },
     {
       "file": "packages/page/fixtures/contract-valid/explicit-presentation-page.json",
@@ -1760,7 +1764,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "fe159d29561cbc79975fc84646dda4a3a7ad831cc0cf6c3676cbc75b8815ec76"
+      "sha256": "9014bd5351f8827d4fd5fcca01cdaef075c4b5458ad60d7971b9dd303ba09532"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -1856,7 +1860,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "f9b8a13cb5f53d58d9692a280e9e73f5ac9a7b53243f1f39ebd5124faf383d5a"
+      "sha256": "9f116fecb904b69549e55a93c1359f87bdbdfc8d1da699b8bd7f8ec77f59add9"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
@@ -1873,6 +1877,10 @@
     {
       "file": "pages/capabilities/chart/chart-local-filter-page.json",
       "sha256": "7d7b4a80dcf3a6c870d5a0fe158034a622b943ce60a899a526d11d08a8208f8c"
+    },
+    {
+      "file": "pages/capabilities/chart/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
     },
     {
       "file": "pages/capabilities/chart/pie-table-legend.json",

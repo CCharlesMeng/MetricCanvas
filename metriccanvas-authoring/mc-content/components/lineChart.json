@@ -109,6 +109,38 @@
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/dual-axis-alignment.json",
+      "requiredVersion": "6.41",
+      "capabilities": [
+        {
+          "id": "unified-page-header",
+          "minor": 41,
+          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
+        },
+        {
+          "id": "chart-echarts-option",
+          "minor": 32,
+          "description": "柱状图、折线图、饼图高级 ECharts 呈现扩展"
+        },
+        {
+          "id": "ioc-header",
+          "minor": 36,
+          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
+        },
+        {
+          "id": "mixed-chart-series",
+          "minor": 12,
+          "description": "柱线混合系列与显式坐标轴"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
     }
   ],
   "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."

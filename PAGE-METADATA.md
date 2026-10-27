@@ -24,6 +24,8 @@
 
 6.56 允许 DQE `output_dims` 中的现成计数或金额显式映射为页面数值度量，直接用于图表系列；不改写查询或自动聚合。声明与限制见[结果字段角色](docs/page-metadata/fields.md#dqe-output-measures)，验收入口 `/pages/stored-count-measures`。
 
+双数值轴默认对齐主副轴刻度且仅主轴绘制网格线，保留两侧标签、格式与单位；显式高级配置仍生效。见[双轴呈现](docs/page-metadata/components/barChart.md#双轴刻度与网格线)，验收入口 `/pages/dual-axis-alignment`。
+
 ## 从需求到页面
 
 本地创作可先用页面 JSON 和指标说明 MD 识别组件用数、指标候选、取数条件与缺口；已有页面的局部呈现修改只查所涉属性，不要求重新读取全部数据协议。工具与证据分层见[本地 Skill 维护](docs/agents/local-authoring-skill-maintenance.md)，可观察页面见[指标匹配与字段呈现](pages/capabilities/layout/local-authoring-knowledge-demo.json)。匹配报告和查询候选是创作期产物，不新增页面字段，不等于真实查询已验证。 局部接数可按组件读取相关数据源及共享消费者，最终仍校验完整页面；已有可信绑定不要求重做全页指标报告。操作与范围边界见[局部接数示例](pages/capabilities/layout/README.md#局部接数共享指标与独立内容)。

@@ -1043,7 +1043,8 @@
         "forecast-page",
         "stored-count-measures",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "dual-axis-alignment"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -1068,7 +1069,8 @@
       "examples": [
         "mixed-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "dual-axis-alignment"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -19370,8 +19372,8 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/0",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/1/props/echartsOption/grid/top"
+      "file": "examples/dual-axis-alignment.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/xAxis/name"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/1",
@@ -19400,8 +19402,8 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/5",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/1/props/echartsOption/grid"
+      "file": "examples/dual-axis-alignment.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/xAxis"
     },
     {
       "schemaPointer": "#/definitions/barChartSeries/anyOf/0",

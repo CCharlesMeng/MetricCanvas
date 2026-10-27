@@ -31,9 +31,14 @@ export function dualOrSingleAxis(
   formats: Array<ValueFormatPreset | undefined> = []
 ) {
   if (dualAxis && metricCount > 1) {
-    return [formattedValueAxis(formats.slice(0, 1), hideAxis), formattedValueAxis(formats.slice(1), hideAxis)];
+    return [formattedValueAxis(formats.slice(0, 1), hideAxis), alignedSecondaryAxis(formattedValueAxis(formats.slice(1), hideAxis))];
   }
   return formattedValueAxis(formats, hideAxis);
+}
+
+/** 副数值轴跟随主轴刻度，只由主轴绘制网格线。保留轴格式与单位。 */
+export function alignedSecondaryAxis<T extends object>(axis: T) {
+  return { ...axis, alignTicks: true, splitLine: { show: false } };
 }
 
 /** All numeric chart branches share the same format consensus and hidden-axis policy. */

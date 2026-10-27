@@ -24,7 +24,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "ffeec495a18e64e7640ed30df8514c4b3f84961fbb9a9e037b4fbef113473f90"
+      "sha256": "6e1fa8f1a8769a599c1596ba42191fe93247f142ece54a9f0023a9f1dc6c9457"
     },
     {
       "file": "contract-snapshot/authoring/publication-conformance.json",
@@ -44,7 +44,7 @@
     },
     {
       "file": "contract-snapshot/manifest.json",
-      "sha256": "d8845488ef87fe72500db5e6b2d20867faf0b2aa9964650b91b6e2df036dcd91"
+      "sha256": "7f0a3bba81f09d7c01a667004c142ed707da51036ab68a9135f86207e9c46806"
     },
     {
       "file": "contract-snapshot/page/component-catalog.json",
@@ -1883,6 +1883,10 @@
       "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
     },
     {
+      "file": "contract-snapshot/page/conformance/valid/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
+    },
+    {
       "file": "contract-snapshot/page/conformance/valid/explicit-presentation-page.json",
       "sha256": "a5f6bd58a9e277b0e2f323d68b42f5b5ff4e81f5cb1e542cad259737a25da635"
     },
@@ -2392,7 +2396,7 @@
     },
     {
       "file": "contract-snapshot/page/reference/chart-option.md",
-      "sha256": "1efc90b667c77f5c39d9e3e6b18ed0325bb739d7b8b2352584c926548ad7b15d"
+      "sha256": "82c312a0629befb2dc6586e799fd8cdff50d4daa34abed0d03d4d015c4d79032"
     },
     {
       "file": "contract-snapshot/page/reference/components/aiSummary.md",
@@ -2400,7 +2404,7 @@
     },
     {
       "file": "contract-snapshot/page/reference/components/barChart.md",
-      "sha256": "a20d0186fe28b3c349d71e5ead7b93be06fa2d44a3a5158e8eba55e9dfca5e85"
+      "sha256": "0baf7b0ca688d03b7d4d6cb2ef16a99d097b9b86fb85b3bc20b2f1904ae9d062"
     },
     {
       "file": "contract-snapshot/page/reference/components/button.md",
@@ -2432,7 +2436,7 @@
     },
     {
       "file": "contract-snapshot/page/reference/components/lineChart.md",
-      "sha256": "17c9e739b67cef7d4647aaace5a3e0220bc8e3e368d370efccb3815272f8519b"
+      "sha256": "c3bb265e7baae4c61924dd5402b7721e5a6000192813dfc5d2942849e8d65c14"
     },
     {
       "file": "contract-snapshot/page/reference/components/mapChart.md",
@@ -4511,6 +4515,10 @@
       "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
     },
     {
+      "file": "contract-snapshot/page/reference/examples/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
+    },
+    {
       "file": "contract-snapshot/page/reference/examples/explicit-presentation-page.json",
       "sha256": "a5f6bd58a9e277b0e2f323d68b42f5b5ff4e81f5cb1e542cad259737a25da635"
     },
@@ -4976,7 +4984,7 @@
     },
     {
       "file": "contract-snapshot/page/reference/index.json",
-      "sha256": "61d3f69a8e7eb85fdb1f980c442763117e9e315eef4e89add9669000fd22c17f"
+      "sha256": "d9766f81d5ffa60855d36478b0ee4f5d737ac6acb6b25ec436f2fc34fac4dfa1"
     },
     {
       "file": "contract-snapshot/page/reference/page.md",
@@ -5436,7 +5444,7 @@
     },
     {
       "file": "mc-content/components/barChart.json",
-      "sha256": "0ea105d7db9f93fd28fff1ce1d15dd11cbc6088aa534ce494dc50496a377b638"
+      "sha256": "36279de0f9092c961ac676c009f86b26758625419b9a9297ebc65ef0c8029272"
     },
     {
       "file": "mc-content/components/button.json",
@@ -5468,7 +5476,7 @@
     },
     {
       "file": "mc-content/components/lineChart.json",
-      "sha256": "8bc96003c8c0a165168530ac812c00a0070bc5312bbdf87874216acd27e5c9f0"
+      "sha256": "0fa2964bddd5c43954ac1cfee133a2145312dc45233da9e504c4adb11d9fce8c"
     },
     {
       "file": "mc-content/components/mapChart.json",
@@ -6864,7 +6872,7 @@
     },
     {
       "file": "mc-content/index.json",
-      "sha256": "b8651c5de4d43b40fb2017ff6047f7f79a2ad070fecf369ec770ca031f15c853"
+      "sha256": "b0f90c98e3e8dbf2e75ae388fe009fc4e9058052e446d28c0d1e1ab1ea3c0a16"
     },
     {
       "file": "mc-content/knowledge/actions-and-navigation.overview.json",
@@ -6920,19 +6928,23 @@
     },
     {
       "file": "mc-content/knowledge/barChart.overview.json",
-      "sha256": "a732697ba267ab8e16062f3e67dcff2fc5c8f68dacaf076b27b22fd09b5c77f8"
+      "sha256": "641ecddb536d4ee78d114d099b94fcb7834fd481e3bcc041f9bb43d2731f2946"
+    },
+    {
+      "file": "mc-content/knowledge/barChart.section-7d689b6b.json",
+      "sha256": "bfd8aeef510953b00c7e4d830676eeb6d9094518646203d8143ff02ce584312d"
     },
     {
       "file": "mc-content/knowledge/barChart.section-8044e7e5.json",
-      "sha256": "c6f88368bb09f959d3868e0fa539776cc6e85e57d68f9847ca10d043c8afd669"
+      "sha256": "dbc89a54bcdc9390e97a849a4634ef31c399674b06716d3f7a5a2ab6ed9e82a9"
     },
     {
       "file": "mc-content/knowledge/barChart.section-d18f7294.json",
-      "sha256": "bbec6201683956c3d1295e88a977ab9b40bb3c65144dd616c6ea369289e9b843"
+      "sha256": "7ece09ea15278a3fc5439063392e806c5080df1b17ed63a39bb57ba983560191"
     },
     {
       "file": "mc-content/knowledge/barChart.section-f780c2e8.json",
-      "sha256": "4384a3bad031c502a7a62498a0b67fd7f229893aa5e85e9b3104edde61e53239"
+      "sha256": "c9574218bb516f3f0273892463eeca728f65af70aa3cae7400c36f3723f2c05f"
     },
     {
       "file": "mc-content/knowledge/button.overview.json",
@@ -7216,15 +7228,19 @@
     },
     {
       "file": "mc-content/knowledge/lineChart.overview.json",
-      "sha256": "39d600d278f39ea9c3db5d6f36bdb905654e14a07d4670d1a30e455095580db4"
+      "sha256": "41caf2ffc11887cbe521daecc8efdaf64048b373240e1148ad1decd48e110971"
+    },
+    {
+      "file": "mc-content/knowledge/lineChart.section-7d689b6b.json",
+      "sha256": "7fc11baa37f4b22b7497bddd4fb9f9290fbb0728e4e0a39596ded8d392d1c6ae"
     },
     {
       "file": "mc-content/knowledge/lineChart.section-8044e7e5.json",
-      "sha256": "cb72a31ba50ae45e85ae80d24a3c16624dfbbfa104fca8f70d23710ded4bf94e"
+      "sha256": "c9e511583ae21c11add3afd52180c7cfdd48bf423e831664d507a438d4816275"
     },
     {
       "file": "mc-content/knowledge/lineChart.section-f780c2e8.json",
-      "sha256": "bd975d332c5139b385efbb5bbe532bed070ccb42a2272953679c872bc9730ac4"
+      "sha256": "b2a46fa9b67002ca85f60fcff4f9e3883cbfaf44bf36ea7db372e619bac09bcc"
     },
     {
       "file": "mc-content/knowledge/mapChart.overview.json",
@@ -7632,7 +7648,7 @@
     },
     {
       "file": "mc-content/mc-content.version.json",
-      "sha256": "b26989b6c26f31f9d7c7465d2dae9c76b07eeb7bcdfc7f745943c6d12ed2aa3d"
+      "sha256": "55a8070785ba33c9b994f2ffbf9e4050dcb1fab9bb74d4fbfcd5d0496084862c"
     },
     {
       "file": "mc-content/product-contracts/authoring/publication-conformance.json",
@@ -7652,7 +7668,7 @@
     },
     {
       "file": "mc-content/product-contracts/manifest.json",
-      "sha256": "d8845488ef87fe72500db5e6b2d20867faf0b2aa9964650b91b6e2df036dcd91"
+      "sha256": "7f0a3bba81f09d7c01a667004c142ed707da51036ab68a9135f86207e9c46806"
     },
     {
       "file": "mc-content/product-contracts/page/component-catalog.json",
@@ -9491,6 +9507,10 @@
       "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
     },
     {
+      "file": "mc-content/product-contracts/page/conformance/valid/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
+    },
+    {
       "file": "mc-content/product-contracts/page/conformance/valid/explicit-presentation-page.json",
       "sha256": "a5f6bd58a9e277b0e2f323d68b42f5b5ff4e81f5cb1e542cad259737a25da635"
     },
@@ -10036,7 +10056,7 @@
     },
     {
       "file": "mc-content/references/authoring-knowledge/model.json",
-      "sha256": "8751506c1e14926250e54253d40d96e1c003cb2449d3d782919d44fb7acd70bb"
+      "sha256": "551b516ae45bbdd6381afe4ed333e022f3edccde099f0704a48ca386a2a70239"
     },
     {
       "file": "mc-content/references/page-metadata/actions-and-navigation.md",
@@ -10044,7 +10064,7 @@
     },
     {
       "file": "mc-content/references/page-metadata/chart-option.md",
-      "sha256": "2cc10481e17a1cd461bac0135545757a223da92fa4e7d0642392db0f111b70b5"
+      "sha256": "c47a24fff1f6e68cfa9a9613d737d23ca99f14ee428df847f28335041598aa34"
     },
     {
       "file": "mc-content/references/page-metadata/components/aiSummary.md",
@@ -10052,7 +10072,7 @@
     },
     {
       "file": "mc-content/references/page-metadata/components/barChart.md",
-      "sha256": "e546870f047d600829b3b75edc919c56302bedd8f55157da01b37dca67e75c38"
+      "sha256": "c1251deebf2a213859a029ecf3ccea7bdaf1ecc2308d138e9025e99a0ef51c9f"
     },
     {
       "file": "mc-content/references/page-metadata/components/button.md",
@@ -10084,7 +10104,7 @@
     },
     {
       "file": "mc-content/references/page-metadata/components/lineChart.md",
-      "sha256": "8a61ddbee8d2ef216818c16641a9ef3f4c8bd15d97b9ca1c8460d13fb860a3f4"
+      "sha256": "c7548a0f7b59897f5c1bb965d8723c4ec4dcde513ef32d437810363e4d23dc6d"
     },
     {
       "file": "mc-content/references/page-metadata/components/mapChart.md",
@@ -12163,6 +12183,10 @@
       "sha256": "88561404db786b63675e25af1db6e7815a235f2c64067e0adaed6c03d30c8046"
     },
     {
+      "file": "mc-content/references/page-metadata/examples/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
+    },
+    {
       "file": "mc-content/references/page-metadata/examples/explicit-presentation-page.json",
       "sha256": "3ea42af02028745f9031c31095b507e56f6f41ceaeb702fd48dfab8c212b51e7"
     },
@@ -12628,7 +12652,7 @@
     },
     {
       "file": "mc-content/references/page-metadata/index.json",
-      "sha256": "9cc5b77797b969002f4b3ece4e01955fd0284fc20de71d0af10210af386f8049"
+      "sha256": "e87428c2a81f95aadcf95e14c4bd09e9ff67994d912bd42158e3494e384941f9"
     },
     {
       "file": "mc-content/references/page-metadata/page.md",
@@ -12668,11 +12692,11 @@
     },
     {
       "file": "mc-content/runtime/contract-alignment.json",
-      "sha256": "3a33036179789cc4bd05f5797d31aa8d57ba27ea516234ae676b754686048fc3"
+      "sha256": "e2d87e187e6d45055644a33864569090254f8292587cb0c10ba5cf3197cc26ca"
     },
     {
       "file": "mc-content/runtime/coverage.json",
-      "sha256": "0237474a26c27ee88de5b83d58f37d44e8dcdf885cbe1f7f713e57f761938d3a"
+      "sha256": "78482d9cba2320610815afc3c8eeca9e47e1476a9a33e7ece4f965353cc3d65d"
     },
     {
       "file": "mc-content/runtime/delivery.md",
@@ -12716,7 +12740,7 @@
     },
     {
       "file": "mc-content/runtime/source-identity.json",
-      "sha256": "3ada5bcd3b763dad730585124b1bca43c6b490f66db9108a03f19b58f99c6648"
+      "sha256": "dcdb5e90de55725e77ceb4ecfd99f7270f8a42477ac82e5f6e587001e7481602"
     },
     {
       "file": "mc-content/runtime/tool-behavior.md",
@@ -12872,7 +12896,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/authoring-knowledge/model.json",
-      "sha256": "8751506c1e14926250e54253d40d96e1c003cb2449d3d782919d44fb7acd70bb"
+      "sha256": "551b516ae45bbdd6381afe4ed333e022f3edccde099f0704a48ca386a2a70239"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/component-recipes.md",
@@ -12892,7 +12916,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/knowledge.json",
-      "sha256": "859ec14b792fa50b40e771fa79dda1af85b26243d33d16c4b58bd48b7ebcc516"
+      "sha256": "c7581469520082f9bbd7e92b0d3fa6c143bd3f118ff9bdf47a90ea8ea66f3ff3"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/local-workflow.md",
@@ -12928,7 +12952,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/chart-option.md",
-      "sha256": "2cc10481e17a1cd461bac0135545757a223da92fa4e7d0642392db0f111b70b5"
+      "sha256": "c47a24fff1f6e68cfa9a9613d737d23ca99f14ee428df847f28335041598aa34"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/components/aiSummary.md",
@@ -12936,7 +12960,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/components/barChart.md",
-      "sha256": "e546870f047d600829b3b75edc919c56302bedd8f55157da01b37dca67e75c38"
+      "sha256": "c1251deebf2a213859a029ecf3ccea7bdaf1ecc2308d138e9025e99a0ef51c9f"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/components/button.md",
@@ -12968,7 +12992,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/components/lineChart.md",
-      "sha256": "8a61ddbee8d2ef216818c16641a9ef3f4c8bd15d97b9ca1c8460d13fb860a3f4"
+      "sha256": "c7548a0f7b59897f5c1bb965d8723c4ec4dcde513ef32d437810363e4d23dc6d"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/components/mapChart.md",
@@ -15047,6 +15071,10 @@
       "sha256": "88561404db786b63675e25af1db6e7815a235f2c64067e0adaed6c03d30c8046"
     },
     {
+      "file": "skill/metriccanvas-local-authoring/references/page-metadata/examples/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
+    },
+    {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/examples/explicit-presentation-page.json",
       "sha256": "3ea42af02028745f9031c31095b507e56f6f41ceaeb702fd48dfab8c212b51e7"
     },
@@ -15512,7 +15540,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/index.json",
-      "sha256": "9cc5b77797b969002f4b3ece4e01955fd0284fc20de71d0af10210af386f8049"
+      "sha256": "e87428c2a81f95aadcf95e14c4bd09e9ff67994d912bd42158e3494e384941f9"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/page.md",
@@ -15624,7 +15652,7 @@
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/chart-option.md",
-      "sha256": "1efc90b667c77f5c39d9e3e6b18ed0325bb739d7b8b2352584c926548ad7b15d"
+      "sha256": "82c312a0629befb2dc6586e799fd8cdff50d4daa34abed0d03d4d015c4d79032"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/components/aiSummary.md",
@@ -15632,7 +15660,7 @@
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/components/barChart.md",
-      "sha256": "a20d0186fe28b3c349d71e5ead7b93be06fa2d44a3a5158e8eba55e9dfca5e85"
+      "sha256": "0baf7b0ca688d03b7d4d6cb2ef16a99d097b9b86fb85b3bc20b2f1904ae9d062"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/components/button.md",
@@ -15664,7 +15692,7 @@
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/components/lineChart.md",
-      "sha256": "17c9e739b67cef7d4647aaace5a3e0220bc8e3e368d370efccb3815272f8519b"
+      "sha256": "c3bb265e7baae4c61924dd5402b7721e5a6000192813dfc5d2942849e8d65c14"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/components/mapChart.md",
@@ -17743,6 +17771,10 @@
       "sha256": "88561404db786b63675e25af1db6e7815a235f2c64067e0adaed6c03d30c8046"
     },
     {
+      "file": "skill/metriccanvas-page-builder/references/page-metadata/examples/dual-axis-alignment.json",
+      "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
+    },
+    {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/examples/explicit-presentation-page.json",
       "sha256": "3ea42af02028745f9031c31095b507e56f6f41ceaeb702fd48dfab8c212b51e7"
     },
@@ -18208,7 +18240,7 @@
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/index.json",
-      "sha256": "61d3f69a8e7eb85fdb1f980c442763117e9e315eef4e89add9669000fd22c17f"
+      "sha256": "d9766f81d5ffa60855d36478b0ee4f5d737ac6acb6b25ec436f2fc34fac4dfa1"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/page.md",

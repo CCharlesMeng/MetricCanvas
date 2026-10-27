@@ -687,7 +687,8 @@
         "forecast-page",
         "stored-count-measures",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "dual-axis-alignment"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -712,7 +713,8 @@
       "examples": [
         "mixed-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "dual-axis-alignment"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -2555,10 +2557,12 @@
     ],
     "components/barChart.md": [
       "默认柱宽",
+      "双轴刻度与网格线",
       "查阅方式",
       "常量取值（6.59）"
     ],
     "components/lineChart.md": [
+      "双轴刻度与网格线",
       "查阅方式",
       "常量取值（6.59）"
     ],

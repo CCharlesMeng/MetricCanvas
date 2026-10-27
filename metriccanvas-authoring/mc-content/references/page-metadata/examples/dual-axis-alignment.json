@@ -1,0 +1,172 @@
+{
+  "schemaVersion": "6.66",
+  "id": "dual-axis-alignment",
+  "layout": "dashboard",
+  "meta": {
+    "title": "双轴刻度对齐"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "双轴刻度对齐 · 内联合成数据"
+    },
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "actual": {
+          "type": "number",
+          "role": "measure",
+          "unit": "件"
+        },
+        "previous": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%",
+          "defaultFormat": "percent-0"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "一月",
+            "actual": 120,
+            "previous": 38
+          },
+          {
+            "month": "二月",
+            "actual": 160,
+            "previous": 87
+          },
+          {
+            "month": "三月",
+            "actual": 140,
+            "previous": 61
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "charts",
+      "container": "plain",
+      "components": [
+        {
+          "id": "dual-bars",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "数量"
+              },
+              {
+                "field": "previous",
+                "label": "完成率"
+              }
+            ],
+            "dualAxis": true,
+            "title": "双轴柱图"
+          }
+        },
+        {
+          "id": "dual-lines",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "series": [
+              {
+                "field": "actual",
+                "label": "数量"
+              },
+              {
+                "field": "previous",
+                "label": "完成率"
+              }
+            ],
+            "dualAxis": true,
+            "title": "双轴折线图",
+            "xField": "month",
+            "echartsOption": {
+              "xAxis": {
+                "name": ""
+              }
+            }
+          }
+        },
+        {
+          "id": "dual-mixed",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "数量",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "field": "previous",
+                "label": "完成率",
+                "kind": "line",
+                "axis": "secondary"
+              }
+            ],
+            "dualAxis": true,
+            "title": "双轴柱线混合图"
+          }
+        },
+        {
+          "id": "single-axis",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "数量",
+                "kind": "bar",
+                "axis": "primary"
+              }
+            ],
+            "title": "单轴对照"
+          }
+        }
+      ]
+    }
+  ]
+}

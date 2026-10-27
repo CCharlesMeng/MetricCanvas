@@ -4,7 +4,7 @@ import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue } from '../../shared/chart-option';
+import { CHART_PALETTE, GRID, alignedSecondaryAxis, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
@@ -291,7 +291,7 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
     color: [...(palette ?? CHART_PALETTE)], grid: GRID,
     legend: { top: 0, left: 0 }, tooltip: { trigger: 'axis', confine: true },
     xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)), ...categoryLabelOption(props.categoryLabels, props.showValueLabels) },
-    yAxis: props.dualAxis ? [axis('primary'), axis('secondary')] : axis('primary'),
+    yAxis: props.dualAxis ? [axis('primary'), alignedSecondaryAxis(axis('secondary'))] : axis('primary'),
     series: props.series.map(series => {
       const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
