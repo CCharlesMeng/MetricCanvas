@@ -5,10 +5,11 @@ export interface FilterConditionChoice {
   value: string;
   label: string;
   filter: string;
-  part: 'values' | 'value' | 'from' | 'to';
+  part: 'values' | 'value' | 'from' | 'to' | 'mode';
+  mode?: string;
   collection: boolean;
 }
-export interface ConditionFilter {id: string; label?: unknown; type: string}
+export interface ConditionFilter {id: string; label?: unknown; type: string; display?: string; periodModes?: string[]}
 
 /** Basic controls only emit existing empty/nonempty tests; other conditions stay intact. */
 export function filterConditionChoices(filters: readonly ConditionFilter[]): FilterConditionChoice[] {
@@ -16,20 +17,27 @@ export function filterConditionChoices(filters: readonly ConditionFilter[]): Fil
     const label = typeof filter.label === 'string' ? filter.label : filter.id;
     const parts = filter.type === 'timeRange' ? ['from', 'to'] as const
       : filter.type === 'timePoint' ? ['value'] as const : ['values'] as const;
-    return parts.map(part => ({value: `${filter.id}:${part}`, filter: filter.id, part,
+    const choices:FilterConditionChoice[]=parts.map(part => ({value: `${filter.id}:${part}`, filter: filter.id, part,
       label: part === 'from' ? `${label} · 开始` : part === 'to' ? `${label} · 结束` : label,
       collection: part === 'values'}));
+    return [...choices,...periodConditionChoices(filter,label)];
   });
+}
+function periodConditionChoices(filter:ConditionFilter,label:string):FilterConditionChoice[]{
+  if(filter.type!=='timeRange'||filter.display!=='period')return [];
+  const labels:Record<string,string>={year:'年',quarter:'季度',month:'月',last12Months:'近一年'};
+  return (filter.periodModes??Object.keys(labels)).map(mode=>({value:`${filter.id}:mode:${mode}`,filter:filter.id,part:'mode',mode,collection:false,label:`${label} · 选择${labels[mode]}`}));
 }
 
 export function basicFilterCondition(choice: FilterConditionChoice, selected: boolean): Condition {
+  if(choice.mode)return {filter:choice.filter,part:'mode',op:selected?'eq':'ne',value:choice.mode};
   const op = choice.collection ? (selected ? 'isNotEmpty' : 'isEmpty') : (selected ? 'isNotNull' : 'isNull');
   return {filter: choice.filter, part: choice.part, op};
 }
 
 export function basicConditionSelection(condition: Condition | undefined, choices: FilterConditionChoice[]) {
   if (!condition || !('filter' in condition)) return null;
-  const choice = choices.find(item => item.filter === condition.filter && item.part === condition.part);
+  const choice = choices.find(item => item.filter === condition.filter && item.part === condition.part && (!item.mode || ('value' in condition&&item.mode===condition.value)));
   if (!choice) return null;
   for (const selected of [true, false]) {
     const expected=basicFilterCondition(choice, selected);
@@ -60,7 +68,7 @@ function conditionSubject(condition: Extract<Condition, {op: string}>, filters: 
   if ('row' in condition) return `当前行「${condition.row}」`;
   const filter = filters.find(item => item.id === condition.filter);
   const label = typeof filter?.label === 'string' ? filter.label : condition.filter;
-  const part = {level:'层级', values:'', value:'', from:'开始', to:'结束'}[condition.part];
+  const part = {level:'层级', values:'', value:'', from:'开始', to:'结束', mode:'期间模式'}[condition.part];
   return part ? `${label} · ${part}` : label;
 }
 

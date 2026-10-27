@@ -33,7 +33,7 @@
 货币字段选择同样只消费页面协议拥有的字段绑定；不透明`echartsOption`内部的`byFilter`等同名键不声明IOC能力、不参与选择器依赖，也不被运行时货币投影改写。
 
 
-页面协议 6.66。结构真源为本册[schema.json](schema.json)，SHA256 `e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.67。结构真源为本册[schema.json](schema.json)，SHA256 `bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -1,4 +1,5 @@
 import {bindingOwnedDqeBody} from '@metriccanvas/page/internal';
+import {resolvePeriodQuery} from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from './intersect-filters';
 import {selectQuerySource,requiresTimeValidation,timeFilterBoundaryError} from '@metriccanvas/page/internal';
 import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssue, bindingQueryField, hasQueryFieldMapping, timePointPredicateValue, resolveTimeWindow, type FilterDeclaration, type QueryDataSource, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
@@ -89,6 +90,11 @@ function bindingPredicates(binding: FilterBinding, value: FilterValue | undefine
 }
 
 function timePredicates(binding: Extract<FilterBinding, { target: 'time' }>, value: FilterValue | undefined): Predicates {
+  if (binding.periodPolicy) {
+    if (value?.type !== 'timeRange' || !value.selection) throw Object.assign(new Error('期间策略需要已应用的期间选择'), {code:'DQE_QUERY_REJECTED'});
+    const resolved = resolvePeriodQuery({...value, selection:value.selection}, binding.periodPolicy);
+    return [{target:'time', period:resolved.period, value:{from:resolved.from,to:resolved.to}}];
+  }
   const target = binding.queryField ? { queryField: binding.queryField, valueFormat: binding.valueFormat } : {};
   if (value?.type === 'timeRange') return [{ target: 'time', ...target, value: { from: value.from, to: value.to } }];
   if (binding.window && value?.type === 'timePoint') {

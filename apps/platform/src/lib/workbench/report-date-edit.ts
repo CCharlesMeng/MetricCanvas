@@ -1,24 +1,32 @@
+import { editDateQueryBindings, inferredPeriodPolicy, periodBindable, queryTime, type EditableDateBinding } from './report-date-bindings';
 import { parsePage, versionPolicy } from '@metriccanvas/page';
 import { flattenPageComponents, type FilterDeclaration, type DqeFilterBinding, type TimeWindow } from '@metriccanvas/page/internal';
 import { projectCanvasDraft, type CanvasAuthoringDraft, type ComponentLocator, type DocumentEditResult } from './document-edit';
 export interface ReportDateEdit {
   filterId: string;
   declaration?: Extract<FilterDeclaration,{type:'timePoint'|'timeRange'}>;
-  bindings?: Array<{dataSourceId:string;binding:DqeFilterBinding}>;
+  bindings?: EditableDateBinding[];
   remove?: boolean;
 }
 export interface DateBindingChoice { id:string;dataSourceId:string;label:string;binding:DqeFilterBinding }
-export function dateBindingChoices(draft:CanvasAuthoringDraft,granularity:'month'|'date',range:boolean,window:TimeWindow):DateBindingChoice[] {
+export function dateBindingChoices(draft:CanvasAuthoringDraft,granularity:'month'|'date',range:boolean,window:TimeWindow,period=false):DateBindingChoice[] {
   const parsed=parsePage(draft.pageDocument);if(!parsed.ok)return [];
-  return Object.entries(parsed.page.dataSources).flatMap(([id,source])=>{
-    if(source.source.type!=='query'||source.source.query.timeModes||!source.source.query.body)return [];
-    const choices:DateBindingChoice[]=[];
-    const raw=source.source.query.body.dsl_list[0].filter;
-    const time=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw.time:undefined;
-    if(time&&typeof time==='object'&&!Array.isArray(time)&&time.period===(granularity==='month'?'month':'day')) choices.push({id:`${id}:time`,dataSourceId:id,label:`${id} · 查询时间`,binding:range?{target:'time'}:{target:'time',window}});
-    if(!range)for(const field of Object.values(source.fields)) if('queryField' in field&&typeof field.queryField==='string'&&field.role==='dimension') choices.push({id:`${id}:${field.queryField}`,dataSourceId:id,label:`${id} · ${field.queryField}`,binding:{target:'timePoint',queryField:field.queryField,valueFormat:'iso'}});
+  return Object.entries(parsed.page.dataSources).flatMap(([id,source])=>dateSourceChoices(id,source,granularity,range,window,period));
+}
+function dateSourceChoices(id:string,source:import('@metriccanvas/page/internal').DataSource,granularity:'month'|'date',range:boolean,window:TimeWindow,period:boolean):DateBindingChoice[]{
+    if(source.source.type!=='query')return [];
+    const query=source.source.query;
+    if(period)return periodChoices(id,query);
+    if(query.timeModes||!query.body)return [];
+    const choices:DateBindingChoice[]=[],time=queryTime(query);
+    if(time?.period===(granularity==='month'?'month':'day'))choices.push({id:`${id}:time`,dataSourceId:id,label:`${id} · 查询时间`,binding:range?{target:'time'}:{target:'time',window}});
+    if(!range)for(const field of Object.values(source.fields))if('queryField' in field&&typeof field.queryField==='string'&&field.role==='dimension')choices.push({id:`${id}:${field.queryField}`,dataSourceId:id,label:`${id} · ${field.queryField}`,binding:{target:'timePoint',queryField:field.queryField,valueFormat:'iso'}});
     return choices;
-  });
+}
+function periodChoices(id:string,query:import('@metriccanvas/page/internal').DqeQueryDefinition):DateBindingChoice[]{
+  if(!periodBindable(query))return [];
+  const periodPolicy=inferredPeriodPolicy(query);
+  return [{id:`${id}:time`,dataSourceId:id,label:`${id} · 查询时间`,binding:{target:'time',...(periodPolicy?{periodPolicy}:{})}}];
 }
 /** Atomic manual configuration; the same Page contract rejects mismatched precision/ownership. */
 export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocator|null,edit:ReportDateEdit):DocumentEditResult {
@@ -29,7 +37,7 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
   if(locator && header?.type!=='reportHeader')return {ok:false,message:'请选择报告页头'};
   const existing=(document.filters??[]).find((f:FilterDeclaration)=>f.id===edit.filterId);
   if(existing&&!['timePoint','timeRange'].includes(existing.type))return {ok:false,message:'筛选器 ID 已被其他类型占用'};
-  if(Object.values(parsed.page.dataSources).some(source=>source.source.type==='query'&&source.source.query.timeModes&&(source.source.query.timeModes.filterId===edit.filterId||edit.bindings?.some(binding=>binding.dataSourceId===Object.keys(parsed.page.dataSources).find(id=>parsed.page.dataSources[id]===source)))))return {ok:false,message:'时间模式需通过原子时间程序配置同步修改全部查询case'};
+  if(Object.values(parsed.page.dataSources).some(source=>source.source.type==='query'&&source.source.query.timeModes?.filterId===edit.filterId))return {ok:false,message:'时间模式需通过原子时间程序配置同步修改全部查询case'};
   document.schemaVersion=versionPolicy.current;
   if(edit.remove) {
     document.filters=(document.filters??[]).filter((f:FilterDeclaration)=>f.id!==edit.filterId);
@@ -55,16 +63,8 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
   }
   for(const [id,source] of Object.entries(document.dataSources) as [string,any][]) {
     if(source.source.type!=='query')continue;
-    const query=source.source.query;
-    const binding=edit.remove?undefined:edit.bindings?.find(b=>b.dataSourceId===id)?.binding;
-    if(binding) {
-      (query.filterBindings??={})[edit.filterId]=binding;
-      const filter=query.body.dsl_list[0].filter;
-      if(binding.target==='time'&&filter?.time) {delete filter.time.start;delete filter.time.end;}
-      if(binding.target==='timePoint'&&Array.isArray(filter?.dims))filter.dims=filter.dims.filter((dim:any)=>dim.dim_name!==binding.queryField);
-      delete source.source.initial;
-    }
-    else if(query.filterBindings) {if(query.filterBindings[edit.filterId])delete source.source.initial;delete query.filterBindings[edit.filterId];if(!Object.keys(query.filterBindings).length)delete query.filterBindings;}
+    const binding=edit.remove?undefined:edit.bindings?.find(b=>b.dataSourceId===id);
+    if(editDateQueryBindings(source.source.query,edit.filterId,binding))delete source.source.initial;
 
   }
   if(existing && 'initialParam' in existing && existing.initialParam)pruneOwnedTimeParam(document,existing.initialParam);

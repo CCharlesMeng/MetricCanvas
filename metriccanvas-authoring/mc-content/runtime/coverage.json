@@ -383,6 +383,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/period-query-branches.json",
+      "target": "product-contracts/page/conformance/valid/period-query-branches.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/period-query-columns-demo.json",
+      "target": "product-contracts/page/conformance/valid/period-query-columns-demo.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/pie-table-legend.json",
       "target": "product-contracts/page/conformance/valid/pie-table-legend.json",
       "scope": "exact product contract"
@@ -5653,6 +5663,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/period-query-columns-demo.json",
+      "target": "references/page-metadata/examples/period-query-columns-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/period-query-branches.json",
+      "target": "references/page-metadata/examples/period-query-branches.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/queries-and-bindings.md",
       "target": "references/page-metadata/queries-and-bindings.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6414,11 +6434,11 @@
     }
   ],
   "counts": {
-    "product": 1251,
+    "product": 1255,
     "authoring": 31,
     "modules": 33,
-    "topics": 181,
-    "nodes": 2343,
+    "topics": 185,
+    "nodes": 2359,
     "tools": 9,
     "components": 19
   },

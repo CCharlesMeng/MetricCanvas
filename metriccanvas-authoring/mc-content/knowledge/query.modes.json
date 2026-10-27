@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.67",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "query.core",
@@ -10,7 +10,8 @@
       "module": "queries-and-bindings",
       "reference": "references/page-metadata/queries-and-bindings.md",
       "blocks": [
-        "# 查询定义与显式绑定\n\n6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。\n\n当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。\n\n未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。\n\n6.13 的 filterBindings `{target:\"time\",window:...}` 引用 timePoint，窗口使用明确的 period/yearToDate/monthToDate/lastN 等声明，保留查询 period/is_aggregate。没有 window 的 time 目标仍引用 timeRange。查询时间只能有一个筛选来源；窗口精度不隐式转换，绑定不得与固定起止/参数引用并存。",
+        "# 查询定义与显式绑定",
+        "## 查询独立期间策略\n\n6.67 起，指标查询的时间绑定可声明 `periodPolicy`，消费 `display:\"period\"` 筛选器的已应用选择。固定粒度写 `{target:\"time\",periodPolicy:{kind:\"fixed\",period:\"month\"}}`；按所选周期写 `{target:\"time\",periodPolicy:{kind:\"selection\",supportedPeriods:[\"month\",\"year\"]}}`。支持粒度由作者按已确认的数据能力声明，不由控件推断；不支持时拒绝查询，不回退。\n\n新策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。缺少策略的旧绑定保持原有精度配对和编码。\n\n固定按日、月、年分别生成 YYYY-MM-DD、YYYY-MM、YYYY。选年固定月覆盖十二个月；选月固定日覆盖完整自然月。固定年可扩大到所选窗口涉及的完整自然年，工作台预览明确标记扩大；它不计算年度得分。按选择时，年使用 year、月使用 month，近一年默认 month；近一年使用已应用的前十二个完整月窗口，不在请求或导出时重新取当前时间。直接季度 DQE 编码尚未确认，按选择遇到季度明确拒绝；季度选择仍可由固定日/月策略覆盖整季，不隐式改写策略。\n\n工作台逐查询配置并预览实际粒度与期间。新绑定从原查询可确认的一致 period 预选固定策略，缺少或分支不一致时要求选择。旧绑定显示“保留旧协议”，主动选择新策略才转换该查询全部静态分支，保留指标、维度、fieldMappings 和 is_aggregate；同一筛选器允许新旧查询并存。整个编辑先校验再应用，失败保留原稿。此能力不自动求和、平均、切换指标或查询路线。\n\n验收入口：`period-query-columns-demo`，同时展示固定日/月查询与按期间模式切换表格列；数据性质及操作见页面目录 README。\n\n6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。\n\n当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。\n\n未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。\n\n6.13 的 filterBindings `{target:\"time\",window:...}` 引用 timePoint，窗口使用明确的 period/yearToDate/monthToDate/lastN 等声明，保留查询 period/is_aggregate。没有 window 的 time 目标仍引用 timeRange。查询时间只能有一个筛选来源；窗口精度不隐式转换，绑定不得与固定起止/参数引用并存。",
         "## 6.50 固定单选查询分支\n\n一个页面数据源表示一份稳定结果，不等于一张物理表。`queryModes` 允许按普通维度筛选的固定单选值选择不同完整 DQE 查询；各查询提交不同业务指标，数据网关提交生效查询；真实指标到表的路由须由实际 DQE 环境确认。页面不增加数据库地址、物理表推断、自由 SQL 或渲染期查询生成。\n\n```json\n{\n  \"language\": \"dqe\",\n  \"queryModes\": {\n    \"filterId\": \"business\",\n    \"cases\": {\n      \"contracts\": {\n        \"body\": {\"dsl_list\": [{\"output_dims\": [\"月份\"], \"output_metrics\": [\"签约金额\"], \"filter\": {\"dims\": [], \"metrics\": []}, \"order\": {}}]},\n        \"filterBindings\": {\"region\": {\"target\": \"dimension\", \"queryField\": \"签约区域\"}},\n        \"fieldMappings\": {\"month\":\"月份\", \"amount\":\"签约金额\"}\n      },\n      \"opportunities\": {\n        \"body\": {\"dsl_list\": [{\"output_dims\": [\"月份\"], \"output_metrics\": [\"商机金额\"], \"filter\": {\"dims\": [], \"metrics\": []}, \"order\": {}}]},\n        \"filterBindings\": {\"region\": {\"target\": \"dimension\", \"queryField\": \"商机区域\"}},\n        \"fieldMappings\": {\"month\":\"月份\", \"amount\":\"商机金额\"}\n      }\n    }\n  }\n}\n```\n\n这是查询定义片段；完整页面还声明 `business` 和 `region` 筛选器、固定选项、结果字段与组件。`business` 必须由固定单选 `filterGroup` 提供选项，或声明 `options` 及 `selection:{mode:\"single\",required:true}`。case 键与全部可用选项全等，不允许缺项、额外项、首项回退、动态候选、多选、空选或自由条件匹配。`queryModes`、`timeModes` 和根 `body` 三选一；模式查询不声明根 `filterBindings/paramBindings`，各 case 显式声明完整 `body/filterBindings`。首版不嵌套时间模式；普通时间筛选仍可在 case 内绑定。选择器不能同时作为本 case 的 DQE 谓词。\n\n从 6.57 起，case 可用 `fieldMappings` 显式声明“页面字段 id → 本分支原始响应字段名”。上例的根 `fields` 声明 `month` 和 `amount` 的类型/角色/货币/单位，不声明 `queryField`；每个 case 都须完整映射全部外部结果字段，不映射计算产出或未知字段。选择 case 时同时解析请求与响应映射，映射不发送给 DQE。不同原始列名由页面归一化为同一稳定字段，不要求 DQE 重命名普通指标。普通指标使用名称字符串；仅公式列使用显式 `{formula,alias}`，`{name,alias}` 被拒绝。旧版无 `fieldMappings` 的分支保留根 `fields.queryField`，要求各 case 的原始输出一致。不能混用这两种映射位置；使用分支映射的查询拒绝缺少分支证明的 initial。类型、角色、货币、单位和行粒度保持一致。物理来源与业务口径由创作期分别验证；静态字段校验不证明两条真实查询的业务可比性。不能把人民币与美元、金额与数量或明细与汇总共用一个结果字段冒充一致；此类需求拆分独立契约与呈现。\n\n统一运行时先按已应用筛选选择 case，再编译该 case 的普通筛选与参数引用。只执行当前 case，同一选择器可控制多个数据源，所有结果消费者共享数据快照；分支选择本身计入查询依赖，不需要虚构 DQE 维度。case 外不声明受控组件列表。所有静态 case 都参与校验、参数引用、依赖分析；候选门禁只核验当前分支实际消费的筛选及祖先，未激活分支的候选未就绪不阻断当前分支；时间模式、查询模式与字段选择共用4096组合上限。\n\n浏览器、SourceProgram 与公共 Node 执行共用选择实现；本场景覆盖屏幕请求、冻结分支的完整读取和取消/迟到响应。分页及组合查询的兼容性按本批专项回归报告，不把共用代码当作真实 DQE 验收。缓存按实际生效查询及筛选条件隔离；取消和迟到结果保护沿用统一查询执行。没有分支上下文证明的 initial、seeds 和执行快照不直接复用；捕获查询须与冻结条件的分支相符，导出固定捕获的分支与区域，不在导出过程中跟随屏幕切换。运行期非法选择阻断相关查询，不改查其他表。URL 非法值仍按既有固定筛选控件规则恢复默认。\n\n验收：`query-mode-chart-demo`，Dashboard 一张折线图、合计卡和共享结果明细表；签约与商机由 DQE Sim 的两组独立固定数据提供；指标名、区域名、月份粒度、人民币单位及无维度求和均为样例约定，未验证真实数据目录/物理表路由或聚合语义。切换口径与区域应改变实际请求中的业务指标、区域目标字段和图表数值。演示数据与真实 DQE/Relay、数据库权限及业务数值验真分开报告。"
       ],
       "rules": [
@@ -117,7 +118,9 @@
         "references/page-metadata/examples/query-modes-page.json",
         "references/page-metadata/examples/query-mode-binding-branches-page.json",
         "references/page-metadata/examples/object-query-page.json",
-        "references/page-metadata/examples/stored-count-measures.json"
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/period-query-columns-demo.json",
+        "references/page-metadata/examples/period-query-branches.json"
       ]
     }
   ],
@@ -138,7 +141,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.66",
+        "$id": "https://metriccanvas/page/v6.67",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

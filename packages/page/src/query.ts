@@ -83,7 +83,7 @@ export type DqeNumberRangeFilterBinding = {
 
 export type DqeFilterBinding =
   | DqeDimensionFilterBinding
-  | ({ target: 'time'; window?: TimeWindow } & ObjectTimeTarget)
+  | ({ target: 'time'; window?: TimeWindow; periodPolicy?: import('./period-query').PeriodQueryPolicy } & ObjectTimeTarget)
   | DqeTimePointFilterBinding
   | DqeBooleanFilterBinding
   | DqeNumberRangeFilterBinding;
@@ -225,6 +225,7 @@ export interface DqeEffectiveQuery {
         queryField?: string;
         valueFormat?: import('./dqe-object').ObjectTimeFormat;
         value: TimeRangeValue;
+        period?: import('./period-query').QueryPeriod;
       }
     | {
         target: 'metricRange';

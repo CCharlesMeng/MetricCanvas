@@ -1,5 +1,7 @@
 # 条件显隐与动作资格
 
+6.67 增加期间模式读取：`{filter:"statistics-period",part:"mode",op:"eq",value:"year"}` 只引用 display=period 的时间范围筛选器，读取已应用 selection.mode（year/quarter/month/last12Months），可用 eq/ne/in/notIn 等既有标量条件组合。条件编辑基础表单可直接选择“统计期间 · 选择年/季度/月/近一年”。字段列、分组列、组件等共享同一条件解析，不为时间列新增专用规则。未应用期间时等待，错误与等待不会被 not 反转成允许。示例：`period-query-columns-demo`。
+
 6.35起，使用visibleWhen控制节点展示，使用enabledWhen控制动作执行；条件写在其控制的节点，未声明时沿用原行为。分区、组件、筛选器、分区组、Tab和正文片段使用同一条件。父级隐藏覆盖后代，子项全隐藏不反推父级；6.62 的表格列组作为表头结构节点，无可见叶子时不生成空表头，详见[列显隐](components/table.md#table-column-visibility)。标题、容器和原布局占位保留。需要整块隐藏时把条件写在父级。
 
 ```json

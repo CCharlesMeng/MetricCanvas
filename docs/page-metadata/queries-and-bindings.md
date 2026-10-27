@@ -1,5 +1,17 @@
 # 查询定义与显式绑定
 
+## 查询独立期间策略
+
+6.67 起，指标查询的时间绑定可声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","year"]}}`。支持粒度由作者按已确认的数据能力声明，不由控件推断；不支持时拒绝查询，不回退。
+
+新策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。缺少策略的旧绑定保持原有精度配对和编码。
+
+固定按日、月、年分别生成 YYYY-MM-DD、YYYY-MM、YYYY。选年固定月覆盖十二个月；选月固定日覆盖完整自然月。固定年可扩大到所选窗口涉及的完整自然年，工作台预览明确标记扩大；它不计算年度得分。按选择时，年使用 year、月使用 month，近一年默认 month；近一年使用已应用的前十二个完整月窗口，不在请求或导出时重新取当前时间。直接季度 DQE 编码尚未确认，按选择遇到季度明确拒绝；季度选择仍可由固定日/月策略覆盖整季，不隐式改写策略。
+
+工作台逐查询配置并预览实际粒度与期间。新绑定从原查询可确认的一致 period 预选固定策略，缺少或分支不一致时要求选择。旧绑定显示“保留旧协议”，主动选择新策略才转换该查询全部静态分支，保留指标、维度、fieldMappings 和 is_aggregate；同一筛选器允许新旧查询并存。整个编辑先校验再应用，失败保留原稿。此能力不自动求和、平均、切换指标或查询路线。
+
+验收入口：`period-query-columns-demo`，同时展示固定日/月查询与按期间模式切换表格列；数据性质及操作见页面目录 README。
+
 6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。
 
 当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。

@@ -205,3 +205,16 @@
 同一 Chart 的组件 id、`data.main`、字段绑定不变。页面可在目录的“筛选”主题中发现。缺少 case、映射缺失/越界、普通指标伪别名、旧版本、未知选择、多值及旧捕获查询由契约夹具与执行测试覆盖，迟到/失败由运行时测试覆盖。
 
 证据范围：本地页面协议、HTTP仿真、浏览器请求及呈现；不代表真实数据库、DQE、Relay或业务口径验收。
+
+## 查询独立期间策略与时间列显隐
+
+入口：`/pages/period-query-columns-demo`；[页面 JSON](period-query-columns-demo.json)。
+
+启动：`pnpm dev:playground` 与 `pnpm sim:dqe`。页面使用静态合成得分和 DQE Sim 合成 Tokens 数据；年/季/月得分是独立示例值，不由月度数据聚合生成。
+
+1. 默认月模式仅显示月度得分及其分组表头，两个查询分别发送 day 和 month。
+2. 切“年”“季”“近一年”，观察对应得分列替换，其他分组表头消失；同一选择仍由日/月查询独立解析。近一年排除当前月，URL 保存模式，重开 URL 后保持列集合。
+3. 在月度列排序后切年，再切回月，原用户排序不复活；导出 XLSX 只含当前模式可见列。
+4. 查询体保留 is_aggregate，不写 period/start/end；协议测试覆盖固定年扩大范围、按选择的能力拒绝、未应用选择、非法混写与旧声明兼容。工作台验收入口 `apps/platform/tests/browser/report-date-editor.html?dashboard`，逐查询主动迁移、选择固定策略或按选择策略，预览实际请求期间。
+
+自动浏览器入口：`node apps/playground/tests/period-query-policy-browser.mjs <证据目录>`，默认页面试验场端口 5198、编辑器端口 5199，支持 PERIOD_POLICY_BASE_URL / PERIOD_EDITOR_BASE_URL。真实 DQE/Relay 未验收；直接季度编码尚未确认，季度可显式固定日/月覆盖整季。

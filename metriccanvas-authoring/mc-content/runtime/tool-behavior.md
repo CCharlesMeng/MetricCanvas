@@ -1,6 +1,6 @@
 # 工具与部署契约
 
-本 Skill 使用 `metriccanvas-platform-content`，部署接口标识 `platformProtocolVersion=2.0`；页面输出遵循 Schema 6.66。模型以实际 list_tools 返回的 JSON Schema 为参数真源。
+本 Skill 使用 `metriccanvas-platform-content`，部署接口标识 `platformProtocolVersion=2.0`；页面输出遵循 Schema 6.67。模型以实际 list_tools 返回的 JSON Schema 为参数真源。
 
 | 工具 | 输入与行为 |
 |---|---|

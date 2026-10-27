@@ -1,5 +1,7 @@
 # 页面参数：维度、时间与页内筛选
 
+6.67 期间查询策略不新增页面参数：`initialParam` 仍只初始化期间选择，后续查询由当前已应用 selection 与每个绑定的 periodPolicy 决定。新策略禁止同时使用查询体时间参数引用；旧参数/窗口绑定保持行为。URL 恢复期间模式后，查询与列显隐消费同一已应用状态；导出不重新锚定近一年。详见[查询独立期间策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)。
+
 <a id="页面参数维度与时间的现行方案"></a>
 
 本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.41**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。

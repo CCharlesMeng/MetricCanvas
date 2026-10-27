@@ -1,5 +1,11 @@
 # 筛选声明与运行状态
 
+## 期间选择与查询消费
+
+6.67 的新期间查询绑定读取已应用的 selection 和窗口：组件表达 year/quarter/month/last12Months，查询各自声明 periodPolicy。筛选器 precision 在旧绑定上保留原意；它不决定新策略的粒度。同一个期间可以同时驱动日趋势与月度数据。交互、URL恢复、公历/未来边界仍由现有筛选状态流程管理；取消草稿不改变已应用选择。
+
+展示条件可通过 `{filter:"statistics-period",part:"mode",op:"eq",value:"quarter"}` 读取期间模式。它来自 selection.mode，不是查询策略转换后的 period，也不是控件尚未应用的草稿。新旧期间筛选声明均可被读取；未应用时条件等待，不能经 not 转成允许。示例：`period-query-columns-demo`。
+
 六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。
 
 ## 时间选择的默认上限
@@ -13,6 +19,8 @@ Dashboard 的年、季、月按所选自然期间判断：当前年／当前季�
 页面试验场统一入口：`report-date-filter-example` 覆盖单月、月份范围、日期、日期范围和精确时间范围；`dashboard-period-filter` 展示统一页头仅选年份；完整年／季／月／近一年保留于期间契约夹具。合成数据与控件验收不证明真实 DQE 接入。
 
 ## Dashboard 期间选择（6.27）
+
+6.67 新绑定由查询 periodPolicy 决定粒度，旧绑定继续按原 precision 配对；同一选择可驱动不同查询粒度。具体策略见 query.period-policy 主题。
 
 `timeRange` 可声明 `display: "period"`，在 Dashboard 通用顶部 FilterBar 中作为一个筛选器显示「年／季／月／近一年」。省略 display 仍为原有范围编辑器。`precision` 只允许 month/date，分别决定实际范围编码，不改变查询的 period/is_aggregate。季度输入显示「2026 年 Q4」，四个面板选项为 Q1—Q4。
 
@@ -140,7 +148,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。
 
 
-页面协议 6.66。结构真源为本册[schema.json](schema.json)，SHA256 `e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.67。结构真源为本册[schema.json](schema.json)，SHA256 `bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2730,6 +2738,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [ioc-header-models](examples/ioc-header-models.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-header-months](examples/ioc-header-months.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-header-unconfigured](examples/ioc-header-unconfigured.json)：完整合法页面；查询仅为静态契约证据。
+- [period-query-columns-demo](examples/period-query-columns-demo.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

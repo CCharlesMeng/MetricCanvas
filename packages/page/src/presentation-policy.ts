@@ -61,11 +61,19 @@ function sampleForField(field: FieldDefinition): ConditionValue | undefined {
 }
 function filterSample(page:Page,leaf:Extract<Condition,{filter:string}>):ConditionValue|undefined {
   const f=page.filters?.find(f=>f.id===leaf.filter);if(!f)return undefined;
-  if(leaf.part==='level')return f.type==='dimension' && f.hierarchy ? '' : undefined;
-  if(leaf.part==='values')return f.type==='dimension' ? [''] : undefined;
-  if(leaf.part==='from'||leaf.part==='to')return f.type==='timeRange' ? '' : f.type==='numberRange' ? 0 : undefined;
+  return declaredFilterSample(f,leaf.part);
+}
+function declaredFilterSample(f:NonNullable<Page['filters']>[number],part:Extract<Condition,{filter:string}>['part']):ConditionValue|undefined {
+  if(part==='mode')return f.type==='timeRange' && f.display==='period' ? '' : undefined;
+  if(part==='level')return f.type==='dimension' && f.hierarchy ? '' : undefined;
+  if(part==='values')return f.type==='dimension' ? [''] : undefined;
+  if(part==='from'||part==='to')return rangeFilterSample(f);
   if(f.type==='boolean')return false;
   return f.type==='timePoint'||f.type==='search' ? '' : undefined;
+}
+function rangeFilterSample(f:NonNullable<Page['filters']>[number]):ConditionValue|undefined {
+  if(f.type==='timeRange')return '';
+  return f.type==='numberRange'?0:undefined;
 }
 export function presentationPolicyErrors(page: Page): TypedError[] {
   const errors:TypedError[]=[];
@@ -91,7 +99,7 @@ export function presentationPolicyErrors(page: Page): TypedError[] {
       if('permission' in leaf||'fact' in leaf)continue;
       const sample='filter' in leaf?filterSample(page,leaf):site.fields?.[leaf.row] ? sampleForField(site.fields[leaf.row]!) : undefined;
       if(sample===undefined){fail(path,'条件引用了不存在的来源、非法筛选部分或缺少行上下文');continue;}
-      if(conditionTestTypeError(leaf,sample))fail(path,'条件操作或字面量与来源类型不匹配');
+      policyLeafTypeErrors(leaf,sample,path,fail);
       if('filter' in leaf && leaf.part==='level' && ('value' in leaf || 'values' in leaf)){
         const f=page.filters?.find(f=>f.id===leaf.filter);
         const values='values' in leaf?leaf.values:[leaf.value];
@@ -121,6 +129,16 @@ export function presentationPolicyErrors(page: Page): TypedError[] {
   // Reuse the canonical component traversal, including snapshot/query details.
   walkPageComponents(page,checkComponent);
   return errors;
+}
+function invalidPeriodModeLiteral(leaf:ReturnType<typeof conditionLeaves>[number]):boolean {
+  if(!('filter' in leaf)||leaf.part!=='mode')return false;
+  const values='values' in leaf?leaf.values:'value' in leaf?[leaf.value]:[];
+  return values.some(value=>!['year','quarter','month','last12Months'].includes(String(value)));
+}
+function policyLeafTypeErrors(leaf:ReturnType<typeof conditionLeaves>[number],sample:ConditionValue,path:string,fail:(path:string,message:string)=>void):void {
+  if('permission' in leaf)return;
+  if(conditionTestTypeError(leaf,sample))fail(path,'条件操作或字面量与来源类型不匹配');
+  if(invalidPeriodModeLiteral(leaf))fail(path,'条件引用了未知期间模式');
 }
 import { walkPageComponents } from './component-walk';
 

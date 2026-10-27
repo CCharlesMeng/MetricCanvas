@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.67",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-68726eb3"
@@ -9,7 +9,7 @@
       "module": "filters",
       "reference": "references/page-metadata/filters.md",
       "blocks": [
-        "# 筛选声明与运行状态\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。",
+        "# 筛选声明与运行状态",
         "## 金额范围（6.38）\n\nnumberRange可声明constraints的min/max（基本单位）和bounds:strict（双边from必须小于to）。单边允许；普通旧范围仍允许相等。全部是无端点的显式清空，不是无限大数字；拒绝负数约束冲突、NaN/Infinity及比例溢出。\n\nunits为`{filterId,cases:{RMB:{currency:\"CNY\",label:\"万元\",scale:10000},USD:{currency:\"USD\",label:\"万美元\",scale:10000}}}`，控制筛选必须为required单选options并穷尽有效枚举。scale为正安全整数。必须用clearOnChangeOf引用该币种，换币与清金额在同一事务；自动清空沿用等待用户显式确认的门禁。\n\npresets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位，确定时乘一次scale。default、URL、restore、执行回执和FilterValue已经是基本单位，查询绑定不再次换算。新面板有草稿/取消/确定，预设只修改草稿；切币种、只读或页头折叠会关闭旧草稿。币种尚未选择时金额等待选择，不隐式按人民币处理。\n\n范围绑定互斥metric与metricByFilter：`{target:\"numberRange\",metricByFilter:{filterId:\"currency\",cases:{RMB:\"ioc_amount_base_cny\",USD:\"ioc_amount_base_usd\"}}}`。每个case必须指向该源显式queryField映射的money字段，并与units同case货币相符。币种是查询隐式依赖，即使没有独立currency绑定也参与重查、默认初始数据复用与执行门禁。SourceProgram在seed/initial复用前校验范围和控制币种。\n\n验收页[ioc-header-currency-demo](examples/currency-selection-page.json)使用两种独立静态货币字段、本地合成HTTP与已有XLSX出口。没有真实USD或汇率证据，不声称生产换币可用，不做前端汇率换算。"
       ],
       "rules": [
@@ -325,7 +325,8 @@
         "references/page-metadata/examples/ioc-header-incentives.json",
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
-        "references/page-metadata/examples/ioc-header-unconfigured.json"
+        "references/page-metadata/examples/ioc-header-unconfigured.json",
+        "references/page-metadata/examples/period-query-columns-demo.json"
       ]
     }
   ],

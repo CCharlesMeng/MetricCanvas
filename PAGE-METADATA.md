@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期）与展示条件 `part:"mode"`。新策略独占时间粒度和起止，旧绑定保持行为；表格字段列及分组列复用 `visibleWhen` 读取已应用的期间模式。声明、映射与兼容规则见[查询独立期间策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)、[期间选择](docs/page-metadata/filters.md#期间选择与查询消费)，验收页为 `period-query-columns-demo`。
+
 饼图 `pieChart`（6.64：左右表格式图例、可选列单位及对齐、默认保留输入顺序、显式排序与固定类别顺序；场景 `/pages/pie-table-legend`） → [模块参考](contracts/metriccanvas/page/reference/components/pieChart.md)。
 
 表格自 6.62 起在字段列和分组列上声明 `visibleWhen`，搜索、用户列操作与冻结导出随可见列同步；旧表格保持原规则。见[列条件显隐](docs/page-metadata/components/table.md#table-column-visibility)。

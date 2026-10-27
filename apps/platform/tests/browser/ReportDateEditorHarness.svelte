@@ -13,6 +13,7 @@
   function editDate(edit:ReportDateEdit) {const result=editReportDate(draft,locator,edit);if(!result.ok){error=result.message;return;}draft=result.draft;error='';}
   const gateway:RuntimeDataGateway={async fetchData(query){const offset=query.pagination?.offset??0;const limit=query.pagination?.limit??53;return {rows:Array.from({length:Math.min(limit,53-offset)},(_,i)=>({entry:`项目 ${i+offset+1}`,amount:i+offset+1})),totalCount:53};}};
 </script>
+<pre hidden data-testid="page-document">{JSON.stringify(draft.pageDocument)}</pre>
 <main>
   <aside><h1>人工日期配置验收</h1><p>正式属性面板、编辑纯函数及运行时；本地合成数据。</p>
     <ReportDateProperties {draft} {locator} onEdit={editDate}/>

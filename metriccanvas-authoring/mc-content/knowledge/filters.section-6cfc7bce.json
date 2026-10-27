@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.67",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-6cfc7bce"
@@ -9,7 +9,7 @@
       "module": "filters",
       "reference": "references/page-metadata/filters.md",
       "blocks": [
-        "# 筛选声明与运行状态\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。",
+        "# 筛选声明与运行状态",
         "## 时间点下限（6.24）\n\n`timePoint.min` 是可选的包含式下限，month 使用真实公历 `YYYY-MM`，date 使用 `YYYY-MM-DD`；未声明则保留原有无业务下限行为。timeRange 边界保持原有规则。`min` 与筛选粒度不匹配、日历无效或 default 早于 min 时拒绝页面；initialParam 实际值越界时拒绝初始化，不截断或伪造实际输入。\n\n共享日期选择器禁用更早的年/月/日期，手工提交越界草稿显示错误并保留已应用值。筛选状态绑定页面声明后，write/writeMany 同样拒绝越界、粒度不符及必选筛选的清空。URL 初始化忽略非法/越界值，使用页面合法默认值；必选有下限筛选在 fromURL 恢复时保留当前合法值或默认值。执行回执中的越界筛选拒绝接收。下限约束筛选值，不裁剪由该值派生的查询窗口。\n\n完整协议示例 `time-point-min-page` 同时覆盖月份和日期下限；业务页面 `business-sdt-report-monthly` 使用 `min: \"2020-06\"`，全部呈现查询与报告主标题、统计月份联动，3个趋势窗口含所选月共6个月。原页摘要是明确标记的2026年10月固定摘要，不作为切月后的分析结论。业务查询接入与真实数据另行验收。\n\n<a id=\"禁止未来时间625\"></a>"
       ],
       "rules": [
@@ -325,7 +325,8 @@
         "references/page-metadata/examples/ioc-header-incentives.json",
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
-        "references/page-metadata/examples/ioc-header-unconfigured.json"
+        "references/page-metadata/examples/ioc-header-unconfigured.json",
+        "references/page-metadata/examples/period-query-columns-demo.json"
       ]
     }
   ],

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.67",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-659e5fe6"
@@ -9,7 +9,7 @@
       "module": "filters",
       "reference": "references/page-metadata/filters.md",
       "blocks": [
-        "# 筛选声明与运行状态\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。",
+        "# 筛选声明与运行状态",
         "## 独立筛选按钮组\n\n固定单选选项由独立 `filterGroup` 组件声明（6.47 支持按钮或下拉及左右对齐），筛选状态仍归页面 filters，查询范围仍归 filterBindings。一个控件可以控制多个查询及其组件消费者，并复用统一 visibleWhen 策略。完整声明、显隐与状态语义、限制、旧图表声明迁移和验收场景见[筛选按钮组](components/filterGroup.md)。\n\n原图表 `props.filter` 已移除；原锚点保留为本文档跳转入口，不代表旧协议继续可读。"
       ],
       "rules": [
@@ -325,7 +325,8 @@
         "references/page-metadata/examples/ioc-header-incentives.json",
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
-        "references/page-metadata/examples/ioc-header-unconfigured.json"
+        "references/page-metadata/examples/ioc-header-unconfigured.json",
+        "references/page-metadata/examples/period-query-columns-demo.json"
       ]
     }
   ],

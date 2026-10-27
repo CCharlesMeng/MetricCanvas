@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.67",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-978d773b"
@@ -9,7 +9,7 @@
       "module": "filters",
       "reference": "references/page-metadata/filters.md",
       "blocks": [
-        "# 筛选声明与运行状态\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。",
+        "# 筛选声明与运行状态",
         "## 下拉搜索与普通树（6.43）\n\n`dimension.selection`沿用对象`{mode:\"single\"|\"multiple\",required?,allBehavior?}`；不可写字符串。所有维度下拉默认本地搜索，`searchable:false`关闭。名称、稳定代码及完整祖先路径参与过滤，搜索和展开不提交筛选。\n\n`treeSelection:\"level\"`继续使用6.37的显式层级树、`hierarchy`和候选`parent:{level,value}`，仅当前层级候选可选；不改变其必选、权限、回执或联动校验。普通同维树另有`descendants`（父选后代，默认存量行为）、`independent`（父子独立）、`leaf`（仅叶子）三种规则；仅用于`display:\"tree\"`。普通树候选可提供`parentValue`，引用同一完整批次内的稳定value；重复、缺失父或循环显示层级错误。未提供父关系保留旧`/`路径约定，不从显示名生成业务代码。\n\n单选值替换后关闭；多选保持32px单行标签并横向滚动。未知已选值保留代码，可移除；required仍恰好一个，不提供清空。树内容左侧16px、带框加减号及浅灰连接线使用冻结OpenTiny样式。\n\n验收场景：[ioc-header-selection](examples/dimension-selection-page.json)，仅本地合成候选与表格查询；不代表真实服务验收。\n\n\n<a id=\"ioc-业务批量场景与必选多选646\"></a>"
       ],
       "rules": [
@@ -325,7 +325,8 @@
         "references/page-metadata/examples/ioc-header-incentives.json",
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
-        "references/page-metadata/examples/ioc-header-unconfigured.json"
+        "references/page-metadata/examples/ioc-header-unconfigured.json",
+        "references/page-metadata/examples/period-query-columns-demo.json"
       ]
     }
   ],

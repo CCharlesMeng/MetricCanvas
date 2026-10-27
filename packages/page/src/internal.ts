@@ -56,6 +56,7 @@ export * from './table/query-view';
 export * from './table/search';
 export * from './data-source-references';
 export * from './period-filter';
+export * from './period-query';
 export { filterGroupOptions } from './filter-group';
 
 export { currentTimeValue, timeFilterBoundaryError } from './time-filter-boundary';

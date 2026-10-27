@@ -1,0 +1,2497 @@
+{
+  "schemaVersion": "6.67",
+  "id": "contract-maturity-score",
+  "layout": "dashboard",
+  "iocHeader": {
+    "identity": {
+      "title": "成熟度得分"
+    },
+    "filterIds": [
+      "key-rep-only",
+      "mtime",
+      "region"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none",
+      "density": "compact"
+    },
+    "note": "合成演示数据；统计期间仅联动KPI与表格列的显示，尚未接入真实时间查询。"
+  },
+  "meta": {
+    "title": "成熟度得分",
+    "description": "保留输入的合成示例数据，使用期间模式条件同步切换KPI卡片和两张表的期间列组。需要包含period-mode条件读取的开发中运行时；切换具体日期不重新取数。"
+  },
+  "filters": [
+    {
+      "id": "key-rep-only",
+      "type": "boolean",
+      "label": "仅看重点国代",
+      "default": false
+    },
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "emptyLabel": "区域",
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "geo-pc-code",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "geo"
+    },
+    {
+      "id": "region-scope",
+      "type": "dimension",
+      "dimension": "region-scope",
+      "label": "区域范围",
+      "default": [
+        "china"
+      ]
+    }
+  ],
+  "dataSources": {
+    "kpi-metrics": {
+      "fields": {
+        "monthly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "月度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-monthly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一月度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "monthly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "月度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "monthly-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "环比",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "quarterly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "季度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-quarterly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一季度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "quarterly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "季度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "quarterly-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "环比",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "yearly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "年度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-yearly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一年度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "yearly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "年度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "yearly-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "环比",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "last12m-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "近一年得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-last12m-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一年得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "last12m-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "近一年平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "last12m-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "环比",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "monthly-score": 76.5,
+            "previous-monthly-score": 63.7,
+            "monthly-avg-score": 71.2,
+            "monthly-change": 12.8,
+            "quarterly-score": 74.9,
+            "previous-quarterly-score": 66.2,
+            "quarterly-avg-score": 70.6,
+            "quarterly-change": 8.7,
+            "yearly-score": 72.4,
+            "previous-yearly-score": 65.8,
+            "yearly-avg-score": 69.1,
+            "yearly-change": 6.6,
+            "last12m-score": 71.8,
+            "previous-last12m-score": 64.9,
+            "last12m-avg-score": 68.4,
+            "last12m-change": 6.9
+          }
+        ]
+      }
+    },
+    "region-dept-scores": {
+      "fields": {
+        "no": {
+          "type": "number",
+          "role": "dimension",
+          "label": "序号"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "monthly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "月度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-monthly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一月度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "monthly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "月度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "quarterly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "季度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-quarterly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一季度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "quarterly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "季度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "yearly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "年度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-yearly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一年度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "yearly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "年度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "last12m-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "近一年得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-last12m-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一年得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "last12m-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "近一年平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "auth-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "授权规则（10分）",
+          "defaultFormat": "number-1"
+        },
+        "business-result-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "业务结果指标（50分）",
+          "defaultFormat": "number-1"
+        },
+        "standard-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "行权规范（10分）",
+          "defaultFormat": "number-1"
+        },
+        "efficiency-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "行权效率（10分）",
+          "defaultFormat": "number-1"
+        },
+        "review-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "主动审视（扣分项）",
+          "defaultFormat": "number-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "no": 1,
+            "region-dept-name": "XX地区部",
+            "auth-score": 9.0,
+            "business-result-score": 38.5,
+            "standard-score": 8.0,
+            "efficiency-score": 7.0,
+            "review-score": 14.0,
+            "monthly-score": 76.5,
+            "previous-monthly-score": 63.7,
+            "monthly-avg-score": 71.2,
+            "quarterly-score": 74.9,
+            "previous-quarterly-score": 66.2,
+            "quarterly-avg-score": 70.6,
+            "yearly-score": 72.4,
+            "previous-yearly-score": 65.8,
+            "yearly-avg-score": 69.1,
+            "last12m-score": 71.8,
+            "previous-last12m-score": 64.9,
+            "last12m-avg-score": 68.4
+          },
+          {
+            "no": 2,
+            "region-dept-name": "XX地区部",
+            "auth-score": 8.5,
+            "business-result-score": 36.0,
+            "standard-score": 8.0,
+            "efficiency-score": 6.5,
+            "review-score": 15.0,
+            "monthly-score": 76.0,
+            "previous-monthly-score": 63.400000000000006,
+            "monthly-avg-score": 70.8,
+            "quarterly-score": 74.4,
+            "previous-quarterly-score": 65.9,
+            "quarterly-avg-score": 70.19999999999999,
+            "yearly-score": 71.9,
+            "previous-yearly-score": 65.5,
+            "yearly-avg-score": 68.69999999999999,
+            "last12m-score": 71.3,
+            "previous-last12m-score": 64.60000000000001,
+            "last12m-avg-score": 68.0
+          },
+          {
+            "no": 3,
+            "region-dept-name": "XX地区部",
+            "auth-score": 8.0,
+            "business-result-score": 34.0,
+            "standard-score": 7.5,
+            "efficiency-score": 6.0,
+            "review-score": 16.0,
+            "monthly-score": 75.5,
+            "previous-monthly-score": 63.1,
+            "monthly-avg-score": 70.4,
+            "quarterly-score": 73.9,
+            "previous-quarterly-score": 65.60000000000001,
+            "quarterly-avg-score": 69.8,
+            "yearly-score": 71.4,
+            "previous-yearly-score": 65.2,
+            "yearly-avg-score": 68.3,
+            "last12m-score": 70.8,
+            "previous-last12m-score": 64.30000000000001,
+            "last12m-avg-score": 67.60000000000001
+          },
+          {
+            "no": 4,
+            "region-dept-name": "XX地区部",
+            "auth-score": 7.5,
+            "business-result-score": 32.0,
+            "standard-score": 7.0,
+            "efficiency-score": 6.0,
+            "review-score": 18.0,
+            "monthly-score": 75.0,
+            "previous-monthly-score": 62.800000000000004,
+            "monthly-avg-score": 70.0,
+            "quarterly-score": 73.4,
+            "previous-quarterly-score": 65.3,
+            "quarterly-avg-score": 69.39999999999999,
+            "yearly-score": 70.9,
+            "previous-yearly-score": 64.89999999999999,
+            "yearly-avg-score": 67.89999999999999,
+            "last12m-score": 70.3,
+            "previous-last12m-score": 64.0,
+            "last12m-avg-score": 67.2
+          },
+          {
+            "no": 5,
+            "region-dept-name": "XX地区部",
+            "auth-score": 7.0,
+            "business-result-score": 30.0,
+            "standard-score": 6.5,
+            "efficiency-score": 5.5,
+            "review-score": 19.0,
+            "monthly-score": 74.5,
+            "previous-monthly-score": 62.5,
+            "monthly-avg-score": 69.60000000000001,
+            "quarterly-score": 72.9,
+            "previous-quarterly-score": 65.0,
+            "quarterly-avg-score": 69.0,
+            "yearly-score": 70.4,
+            "previous-yearly-score": 64.6,
+            "yearly-avg-score": 67.5,
+            "last12m-score": 69.8,
+            "previous-last12m-score": 63.7,
+            "last12m-avg-score": 66.80000000000001
+          }
+        ]
+      }
+    },
+    "rep-office-scores": {
+      "fields": {
+        "no": {
+          "type": "number",
+          "role": "dimension",
+          "label": "序号"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "monthly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "月度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-monthly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一月度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "monthly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "月度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "quarterly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "季度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-quarterly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一季度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "quarterly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "季度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "yearly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "年度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-yearly-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一年度得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "yearly-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "年度平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "last12m-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "近一年得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "previous-last12m-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "上一年得分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "last12m-avg-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "近一年平均分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "auth-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "授权规则（10分）",
+          "defaultFormat": "number-1"
+        },
+        "business-result-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "业务结果指标（50分）",
+          "defaultFormat": "number-1"
+        },
+        "standard-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "行权规范（10分）",
+          "defaultFormat": "number-1"
+        },
+        "efficiency-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "行权效率（10分）",
+          "defaultFormat": "number-1"
+        },
+        "review-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "主动审视（扣分项）",
+          "defaultFormat": "number-1"
+        },
+        "evaluation-details": {
+          "type": "recordList",
+          "role": "detail",
+          "label": "评估项明细",
+          "items": {
+            "fields": {
+              "evaluation-item": {
+                "type": "string",
+                "role": "dimension",
+                "label": "评估项"
+              },
+              "score": {
+                "type": "number",
+                "role": "measure",
+                "label": "得分"
+              },
+              "full-score": {
+                "type": "number",
+                "role": "measure",
+                "label": "满分"
+              }
+            }
+          }
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "no": 1,
+            "rep-office-name": "北京代表处",
+            "auth-score": 9.0,
+            "business-result-score": 40.0,
+            "standard-score": 8.5,
+            "efficiency-score": 8.0,
+            "review-score": 23.2,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 9.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 40.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 8.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 8.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 23.2,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 76.5,
+            "previous-monthly-score": 63.7,
+            "monthly-avg-score": 71.2,
+            "quarterly-score": 74.9,
+            "previous-quarterly-score": 66.2,
+            "quarterly-avg-score": 70.6,
+            "yearly-score": 72.4,
+            "previous-yearly-score": 65.8,
+            "yearly-avg-score": 69.1,
+            "last12m-score": 71.8,
+            "previous-last12m-score": 64.9,
+            "last12m-avg-score": 68.4
+          },
+          {
+            "no": 2,
+            "rep-office-name": "上海代表处",
+            "auth-score": 8.5,
+            "business-result-score": 38.0,
+            "standard-score": 8.0,
+            "efficiency-score": 7.5,
+            "review-score": 22.5,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 8.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 38.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 8.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 7.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 22.5,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 76.0,
+            "previous-monthly-score": 63.400000000000006,
+            "monthly-avg-score": 70.8,
+            "quarterly-score": 74.4,
+            "previous-quarterly-score": 65.9,
+            "quarterly-avg-score": 70.19999999999999,
+            "yearly-score": 71.9,
+            "previous-yearly-score": 65.5,
+            "yearly-avg-score": 68.69999999999999,
+            "last12m-score": 71.3,
+            "previous-last12m-score": 64.60000000000001,
+            "last12m-avg-score": 68.0
+          },
+          {
+            "no": 3,
+            "rep-office-name": "深圳代表处",
+            "auth-score": 9.5,
+            "business-result-score": 44.0,
+            "standard-score": 9.0,
+            "efficiency-score": 8.5,
+            "review-score": 17.4,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 9.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 44.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 9.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 8.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 17.4,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 75.5,
+            "previous-monthly-score": 63.1,
+            "monthly-avg-score": 70.4,
+            "quarterly-score": 73.9,
+            "previous-quarterly-score": 65.60000000000001,
+            "quarterly-avg-score": 69.8,
+            "yearly-score": 71.4,
+            "previous-yearly-score": 65.2,
+            "yearly-avg-score": 68.3,
+            "last12m-score": 70.8,
+            "previous-last12m-score": 64.30000000000001,
+            "last12m-avg-score": 67.60000000000001
+          },
+          {
+            "no": 4,
+            "rep-office-name": "广州代表处",
+            "auth-score": 9.0,
+            "business-result-score": 42.0,
+            "standard-score": 8.5,
+            "efficiency-score": 8.0,
+            "review-score": 19.5,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 9.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 42.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 8.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 8.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 19.5,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 75.0,
+            "previous-monthly-score": 62.800000000000004,
+            "monthly-avg-score": 70.0,
+            "quarterly-score": 73.4,
+            "previous-quarterly-score": 65.3,
+            "quarterly-avg-score": 69.39999999999999,
+            "yearly-score": 70.9,
+            "previous-yearly-score": 64.89999999999999,
+            "yearly-avg-score": 67.89999999999999,
+            "last12m-score": 70.3,
+            "previous-last12m-score": 64.0,
+            "last12m-avg-score": 67.2
+          },
+          {
+            "no": 5,
+            "rep-office-name": "成都代表处",
+            "auth-score": 6.0,
+            "business-result-score": 26.0,
+            "standard-score": 6.5,
+            "efficiency-score": 5.5,
+            "review-score": 24.3,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 6.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 26.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 6.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 5.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 24.3,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 74.5,
+            "previous-monthly-score": 62.5,
+            "monthly-avg-score": 69.60000000000001,
+            "quarterly-score": 72.9,
+            "previous-quarterly-score": 65.0,
+            "quarterly-avg-score": 69.0,
+            "yearly-score": 70.4,
+            "previous-yearly-score": 64.6,
+            "yearly-avg-score": 67.5,
+            "last12m-score": 69.8,
+            "previous-last12m-score": 63.7,
+            "last12m-avg-score": 66.80000000000001
+          },
+          {
+            "no": 6,
+            "rep-office-name": "西安代表处",
+            "auth-score": 5.5,
+            "business-result-score": 24.0,
+            "standard-score": 6.0,
+            "efficiency-score": 5.0,
+            "review-score": 25.4,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 5.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 24.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 6.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 5.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 25.4,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 74.0,
+            "previous-monthly-score": 62.2,
+            "monthly-avg-score": 69.2,
+            "quarterly-score": 72.4,
+            "previous-quarterly-score": 64.7,
+            "quarterly-avg-score": 68.6,
+            "yearly-score": 69.9,
+            "previous-yearly-score": 64.3,
+            "yearly-avg-score": 67.1,
+            "last12m-score": 69.3,
+            "previous-last12m-score": 63.400000000000006,
+            "last12m-avg-score": 66.4
+          },
+          {
+            "no": 7,
+            "rep-office-name": "武汉代表处",
+            "auth-score": 7.0,
+            "business-result-score": 31.0,
+            "standard-score": 7.0,
+            "efficiency-score": 6.0,
+            "review-score": 22.5,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 7.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 31.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 7.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 6.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 22.5,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 73.5,
+            "previous-monthly-score": 61.900000000000006,
+            "monthly-avg-score": 68.8,
+            "quarterly-score": 71.9,
+            "previous-quarterly-score": 64.4,
+            "quarterly-avg-score": 68.19999999999999,
+            "yearly-score": 69.4,
+            "previous-yearly-score": 64.0,
+            "yearly-avg-score": 66.69999999999999,
+            "last12m-score": 68.8,
+            "previous-last12m-score": 63.10000000000001,
+            "last12m-avg-score": 66.0
+          },
+          {
+            "no": 8,
+            "rep-office-name": "南京代表处",
+            "auth-score": 8.0,
+            "business-result-score": 34.0,
+            "standard-score": 7.5,
+            "efficiency-score": 7.0,
+            "review-score": 20.2,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 8.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 34.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 7.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 7.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 20.2,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 73.0,
+            "previous-monthly-score": 61.6,
+            "monthly-avg-score": 68.4,
+            "quarterly-score": 71.4,
+            "previous-quarterly-score": 64.10000000000001,
+            "quarterly-avg-score": 67.8,
+            "yearly-score": 68.9,
+            "previous-yearly-score": 63.699999999999996,
+            "yearly-avg-score": 66.3,
+            "last12m-score": 68.3,
+            "previous-last12m-score": 62.800000000000004,
+            "last12m-avg-score": 65.60000000000001
+          },
+          {
+            "no": 9,
+            "rep-office-name": "杭州代表处",
+            "auth-score": 6.5,
+            "business-result-score": 28.0,
+            "standard-score": 6.5,
+            "efficiency-score": 5.5,
+            "review-score": 23.6,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 6.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 28.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 6.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 5.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 23.6,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 72.5,
+            "previous-monthly-score": 61.300000000000004,
+            "monthly-avg-score": 68.0,
+            "quarterly-score": 70.9,
+            "previous-quarterly-score": 63.800000000000004,
+            "quarterly-avg-score": 67.39999999999999,
+            "yearly-score": 68.4,
+            "previous-yearly-score": 63.4,
+            "yearly-avg-score": 65.89999999999999,
+            "last12m-score": 67.8,
+            "previous-last12m-score": 62.50000000000001,
+            "last12m-avg-score": 65.2
+          },
+          {
+            "no": 10,
+            "rep-office-name": "重庆代表处",
+            "auth-score": 7.5,
+            "business-result-score": 32.0,
+            "standard-score": 7.0,
+            "efficiency-score": 6.5,
+            "review-score": 21.8,
+            "evaluation-details": [
+              {
+                "evaluation-item": "授权规则",
+                "score": 7.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "业务结果指标",
+                "score": 32.0,
+                "full-score": 50
+              },
+              {
+                "evaluation-item": "行权规范",
+                "score": 7.0,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "行权效率",
+                "score": 6.5,
+                "full-score": 10
+              },
+              {
+                "evaluation-item": "主动审视（扣分项）",
+                "score": 21.8,
+                "full-score": 0
+              }
+            ],
+            "monthly-score": 72.0,
+            "previous-monthly-score": 61.0,
+            "monthly-avg-score": 67.60000000000001,
+            "quarterly-score": 70.4,
+            "previous-quarterly-score": 63.5,
+            "quarterly-avg-score": 67.0,
+            "yearly-score": 67.9,
+            "previous-yearly-score": 63.099999999999994,
+            "yearly-avg-score": 65.5,
+            "last12m-score": 67.3,
+            "previous-last12m-score": 62.2,
+            "last12m-avg-score": 64.80000000000001
+          }
+        ]
+      }
+    },
+    "region-score-chart": {
+      "fields": {
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "rep_office_name"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "maturity_score",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "target-score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "target_score",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "floor-score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "floor_score",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "region-scope": {
+              "target": "dimension",
+              "queryField": "region_scope"
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_name"
+                ],
+                "output_metrics": [
+                  "maturity_score",
+                  "target_score",
+                  "floor_score"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "evaluation-item-scores": {
+      "fields": {
+        "no": {
+          "type": "number",
+          "role": "dimension",
+          "label": "序号"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "total-score": {
+          "type": "number",
+          "role": "measure",
+          "label": "总分",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "auth-sales-regulation": {
+          "type": "number",
+          "role": "measure",
+          "label": "销售决策管理规定/转授权文件/有任命",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "auth-net-discount": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "auth-framework-exec": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "biz-decision-closure": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务条件决策闭环率",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "biz-contract-closure": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同决策条件闭环率",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "biz-key-clause": {
+          "type": "number",
+          "role": "measure",
+          "label": "关键条款签署质(重大/高)",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "biz-forbidden-clause": {
+          "type": "number",
+          "role": "measure",
+          "label": "禁止类条款签署率",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "biz-contract-renewal": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同续签率",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        },
+        "biz-decision-validity": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策意见有效性",
+          "unit": "分",
+          "defaultFormat": "number-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "no": 1,
+            "rep-office-name": "北京代表处",
+            "total-score": 82.3,
+            "auth-sales-regulation": 9.0,
+            "auth-net-discount": 8.5,
+            "auth-framework-exec": 8.0,
+            "biz-decision-closure": 9.0,
+            "biz-contract-closure": 8.5,
+            "biz-key-clause": 9.0,
+            "biz-forbidden-clause": 8.5,
+            "biz-contract-renewal": 9.0,
+            "biz-decision-validity": 8.5
+          },
+          {
+            "no": 2,
+            "rep-office-name": "上海代表处",
+            "total-score": 79.5,
+            "auth-sales-regulation": 8.5,
+            "auth-net-discount": 8.0,
+            "auth-framework-exec": 7.5,
+            "biz-decision-closure": 8.5,
+            "biz-contract-closure": 8.0,
+            "biz-key-clause": 8.5,
+            "biz-forbidden-clause": 8.0,
+            "biz-contract-renewal": 8.5,
+            "biz-decision-validity": 8.0
+          },
+          {
+            "no": 3,
+            "rep-office-name": "深圳代表处",
+            "total-score": 88.6,
+            "auth-sales-regulation": 9.5,
+            "auth-net-discount": 9.0,
+            "auth-framework-exec": 9.0,
+            "biz-decision-closure": 9.5,
+            "biz-contract-closure": 9.0,
+            "biz-key-clause": 9.5,
+            "biz-forbidden-clause": 9.0,
+            "biz-contract-renewal": 9.5,
+            "biz-decision-validity": 9.0
+          },
+          {
+            "no": 4,
+            "rep-office-name": "广州代表处",
+            "total-score": 84.0,
+            "auth-sales-regulation": 9.0,
+            "auth-net-discount": 8.5,
+            "auth-framework-exec": 8.5,
+            "biz-decision-closure": 9.0,
+            "biz-contract-closure": 8.5,
+            "biz-key-clause": 9.0,
+            "biz-forbidden-clause": 8.5,
+            "biz-contract-renewal": 9.0,
+            "biz-decision-validity": 8.5
+          },
+          {
+            "no": 5,
+            "rep-office-name": "成都代表处",
+            "total-score": 58.2,
+            "auth-sales-regulation": 6.0,
+            "auth-net-discount": 5.5,
+            "auth-framework-exec": 5.0,
+            "biz-decision-closure": 6.0,
+            "biz-contract-closure": 5.5,
+            "biz-key-clause": 6.0,
+            "biz-forbidden-clause": 5.5,
+            "biz-contract-renewal": 6.0,
+            "biz-decision-validity": 5.5
+          },
+          {
+            "no": 6,
+            "rep-office-name": "西安代表处",
+            "total-score": 52.6,
+            "auth-sales-regulation": 5.5,
+            "auth-net-discount": 5.0,
+            "auth-framework-exec": 4.5,
+            "biz-decision-closure": 5.5,
+            "biz-contract-closure": 5.0,
+            "biz-key-clause": 5.5,
+            "biz-forbidden-clause": 5.0,
+            "biz-contract-renewal": 5.5,
+            "biz-decision-validity": 5.0
+          },
+          {
+            "no": 7,
+            "rep-office-name": "武汉代表处",
+            "total-score": 64.5,
+            "auth-sales-regulation": 7.0,
+            "auth-net-discount": 6.5,
+            "auth-framework-exec": 6.0,
+            "biz-decision-closure": 7.0,
+            "biz-contract-closure": 6.5,
+            "biz-key-clause": 7.0,
+            "biz-forbidden-clause": 6.5,
+            "biz-contract-renewal": 7.0,
+            "biz-decision-validity": 6.5
+          },
+          {
+            "no": 8,
+            "rep-office-name": "南京代表处",
+            "total-score": 71.3,
+            "auth-sales-regulation": 8.0,
+            "auth-net-discount": 7.5,
+            "auth-framework-exec": 7.0,
+            "biz-decision-closure": 8.0,
+            "biz-contract-closure": 7.5,
+            "biz-key-clause": 8.0,
+            "biz-forbidden-clause": 7.5,
+            "biz-contract-renewal": 8.0,
+            "biz-decision-validity": 7.5
+          },
+          {
+            "no": 9,
+            "rep-office-name": "杭州代表处",
+            "total-score": 60.8,
+            "auth-sales-regulation": 6.5,
+            "auth-net-discount": 6.0,
+            "auth-framework-exec": 5.5,
+            "biz-decision-closure": 6.5,
+            "biz-contract-closure": 6.0,
+            "biz-key-clause": 6.5,
+            "biz-forbidden-clause": 6.0,
+            "biz-contract-renewal": 6.5,
+            "biz-decision-validity": 6.0
+          },
+          {
+            "no": 10,
+            "rep-office-name": "重庆代表处",
+            "total-score": 67.7,
+            "auth-sales-regulation": 7.5,
+            "auth-net-discount": 7.0,
+            "auth-framework-exec": 6.5,
+            "biz-decision-closure": 7.5,
+            "biz-contract-closure": 7.0,
+            "biz-key-clause": 7.5,
+            "biz-forbidden-clause": 7.0,
+            "biz-contract-renewal": 7.5,
+            "biz-decision-validity": 7.0
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "notice",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-scope-notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "注：不含混合云（HCS）的数据",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kpi",
+      "container": "card",
+      "title": "成熟度得分总览",
+      "components": [
+        {
+          "id": "monthly-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "月度得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "monthly-score",
+                  "format": "number-1"
+                },
+                "unit": "分",
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "monthly-change",
+                      "format": "number-1"
+                    },
+                    "unit": "分",
+                    "tone": "positive"
+                  }
+                ]
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "month"
+          }
+        },
+        {
+          "id": "previous-monthly-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "上一月度得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "previous-monthly-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "month"
+          }
+        },
+        {
+          "id": "monthly-avg-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "月度平均分",
+                "valueField": {
+                  "data": "main",
+                  "field": "monthly-avg-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "month"
+          }
+        },
+        {
+          "id": "quarterly-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "季度得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "quarterly-score",
+                  "format": "number-1"
+                },
+                "unit": "分",
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "quarterly-change",
+                      "format": "number-1"
+                    },
+                    "unit": "分",
+                    "tone": "positive"
+                  }
+                ]
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "quarter"
+          }
+        },
+        {
+          "id": "previous-quarterly-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "上一季度得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "previous-quarterly-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "quarter"
+          }
+        },
+        {
+          "id": "quarterly-avg-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "季度平均分",
+                "valueField": {
+                  "data": "main",
+                  "field": "quarterly-avg-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "quarter"
+          }
+        },
+        {
+          "id": "yearly-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "年度得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "yearly-score",
+                  "format": "number-1"
+                },
+                "unit": "分",
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "yearly-change",
+                      "format": "number-1"
+                    },
+                    "unit": "分",
+                    "tone": "positive"
+                  }
+                ]
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "year"
+          }
+        },
+        {
+          "id": "previous-yearly-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "上一年度得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "previous-yearly-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "year"
+          }
+        },
+        {
+          "id": "yearly-avg-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "年度平均分",
+                "valueField": {
+                  "data": "main",
+                  "field": "yearly-avg-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "year"
+          }
+        },
+        {
+          "id": "last12m-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "近一年得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "last12m-score",
+                  "format": "number-1"
+                },
+                "unit": "分",
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "last12m-change",
+                      "format": "number-1"
+                    },
+                    "unit": "分",
+                    "tone": "positive"
+                  }
+                ]
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "last12Months"
+          }
+        },
+        {
+          "id": "previous-last12m-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "上一年得分",
+                "valueField": {
+                  "data": "main",
+                  "field": "previous-last12m-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "last12Months"
+          }
+        },
+        {
+          "id": "last12m-avg-score-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "近一年平均分",
+                "valueField": {
+                  "data": "main",
+                  "field": "last12m-avg-score",
+                  "format": "number-1"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "mtime",
+            "part": "mode",
+            "op": "eq",
+            "value": "last12Months"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-dept",
+      "container": "card",
+      "components": [
+        {
+          "id": "region-dept-score-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-dept-scores"
+          },
+          "props": {
+            "title": "地区部成熟度得分情况",
+            "fit": "container",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "地区部成熟度得分"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "no",
+                "title": "序号",
+                "width": 60,
+                "fixed": "left",
+                "align": "left"
+              },
+              {
+                "field": "region-dept-name",
+                "title": "区域",
+                "width": 140,
+                "fixed": "left",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/region-dept-maturity-score?region.level=region-dept",
+                  "query": {
+                    "mtime": {
+                      "source": "filter",
+                      "id": "mtime"
+                    },
+                    "region": {
+                      "source": "row",
+                      "field": "region-dept-name"
+                    }
+                  }
+                }
+              },
+              {
+                "kind": "group",
+                "id": "monthly-group",
+                "title": "月度",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "monthly-score",
+                    "title": "月度得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-monthly-score",
+                    "title": "上一月度得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "monthly-avg-score",
+                    "title": "月度平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "month"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "quarterly-group",
+                "title": "季度",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "quarterly-score",
+                    "title": "季度得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-quarterly-score",
+                    "title": "上一季度得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "quarterly-avg-score",
+                    "title": "季度平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "quarter"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "yearly-group",
+                "title": "年度",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "yearly-score",
+                    "title": "年度得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-yearly-score",
+                    "title": "上一年度得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "yearly-avg-score",
+                    "title": "年度平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "year"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "last12m-group",
+                "title": "近一年",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "last12m-score",
+                    "title": "近一年得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-last12m-score",
+                    "title": "上一年得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "last12m-avg-score",
+                    "title": "近一年平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "last12Months"
+                }
+              },
+              {
+                "field": "auth-score",
+                "title": "授权规则（10分）",
+                "width": 140,
+                "sortable": true
+              },
+              {
+                "field": "business-result-score",
+                "title": "业务结果指标（50分）",
+                "width": 170,
+                "sortable": true
+              },
+              {
+                "field": "standard-score",
+                "title": "行权规范（10分）",
+                "width": 140,
+                "sortable": true
+              },
+              {
+                "field": "efficiency-score",
+                "title": "行权效率（10分）",
+                "width": 140,
+                "sortable": true
+              },
+              {
+                "field": "review-score",
+                "title": "主动审视（扣分项）",
+                "width": 150,
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rep-office",
+      "container": "card",
+      "components": [
+        {
+          "id": "rep-office-score-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rep-office-scores"
+          },
+          "props": {
+            "title": "代表处成熟度得分情况",
+            "rowKey": "rep-office-name",
+            "fit": "container",
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "rep-office-name"
+                ],
+                "placeholder": "输入代表处搜索"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "no",
+                "title": "序号",
+                "width": 60,
+                "fixed": "left",
+                "align": "left"
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 140,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "monthly-group",
+                "title": "月度",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "monthly-score",
+                    "title": "月度得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-monthly-score",
+                    "title": "上一月度得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "monthly-avg-score",
+                    "title": "月度平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "month"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "quarterly-group",
+                "title": "季度",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "quarterly-score",
+                    "title": "季度得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-quarterly-score",
+                    "title": "上一季度得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "quarterly-avg-score",
+                    "title": "季度平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "quarter"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "yearly-group",
+                "title": "年度",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "yearly-score",
+                    "title": "年度得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-yearly-score",
+                    "title": "上一年度得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "yearly-avg-score",
+                    "title": "年度平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "year"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "last12m-group",
+                "title": "近一年",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "last12m-score",
+                    "title": "近一年得分",
+                    "width": 110,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "previous-last12m-score",
+                    "title": "上一年得分",
+                    "width": 130,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "last12m-avg-score",
+                    "title": "近一年平均分",
+                    "width": 150,
+                    "sortable": true
+                  }
+                ],
+                "visibleWhen": {
+                  "filter": "mtime",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "last12Months"
+                }
+              },
+              {
+                "field": "auth-score",
+                "title": "授权规则（10分）",
+                "width": 140,
+                "sortable": true
+              },
+              {
+                "field": "business-result-score",
+                "title": "业务结果指标（50分）",
+                "width": 170,
+                "sortable": true
+              },
+              {
+                "field": "standard-score",
+                "title": "行权规范（10分）",
+                "width": 140,
+                "sortable": true
+              },
+              {
+                "field": "efficiency-score",
+                "title": "行权效率（10分）",
+                "width": 140,
+                "sortable": true
+              },
+              {
+                "field": "review-score",
+                "title": "主动审视（扣分项）",
+                "width": 150,
+                "sortable": true
+              }
+            ],
+            "rowExpansion": {
+              "mode": "multiple",
+              "data": {
+                "type": "recordList",
+                "field": "evaluation-details"
+              },
+              "table": {
+                "rowKey": "evaluation-item",
+                "columns": [
+                  {
+                    "field": "evaluation-item",
+                    "title": "评估项",
+                    "width": 180
+                  },
+                  {
+                    "field": "score",
+                    "title": "得分",
+                    "width": 120,
+                    "sortable": true
+                  },
+                  {
+                    "field": "full-score",
+                    "title": "满分",
+                    "width": 100
+                  }
+                ],
+                "pagination": {
+                  "mode": "local",
+                  "pageSize": 10,
+                  "numbered": true
+                },
+                "title": "评估项明细"
+              }
+            }
+          }
+        },
+        {
+          "id": "region-score-group",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "region-scope-filter",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "filterId": "region-scope",
+                  "options": [
+                    {
+                      "label": "中国区",
+                      "value": "china"
+                    },
+                    {
+                      "label": "海外",
+                      "value": "oversea"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "region-score-chart",
+                "type": "barChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "region-score-chart"
+                },
+                "props": {
+                  "title": "各区域得分情况",
+                  "categoryField": "rep-office-name",
+                  "series": [
+                    {
+                      "field": {
+                        "data": "main",
+                        "field": "score"
+                      },
+                      "label": "得分",
+                      "kind": "bar",
+                      "axis": "primary"
+                    },
+                    {
+                      "field": {
+                        "data": "main",
+                        "field": "target-score"
+                      },
+                      "label": "目标值",
+                      "kind": "line",
+                      "axis": "primary"
+                    },
+                    {
+                      "field": {
+                        "data": "main",
+                        "field": "floor-score"
+                      },
+                      "label": "底线值",
+                      "kind": "line",
+                      "axis": "primary"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "evaluation-items",
+      "container": "card",
+      "components": [
+        {
+          "id": "evaluation-item-score-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "evaluation-item-scores"
+          },
+          "props": {
+            "title": "各评估项得分情况",
+            "fit": "container",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "各评估项得分情况"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "no",
+                "title": "序号",
+                "width": 60,
+                "fixed": "left",
+                "align": "left"
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 140,
+                "fixed": "left"
+              },
+              {
+                "field": "total-score",
+                "title": "总分",
+                "width": 100,
+                "sortable": true
+              },
+              {
+                "kind": "group",
+                "id": "auth-rule-group",
+                "title": "授权规则（10分）",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "auth-sales-regulation",
+                    "title": "销售决策管理规定/转授权文件/有任命",
+                    "width": 200,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "auth-net-discount",
+                    "title": "净商务折扣",
+                    "width": 120,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "auth-framework-exec",
+                    "title": "框架执行率",
+                    "width": 120,
+                    "sortable": true
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "business-result-group",
+                "title": "业务结果指标（50分）",
+                "children": [
+                  {
+                    "kind": "field",
+                    "field": "biz-decision-closure",
+                    "title": "商务条件决策闭环率",
+                    "width": 160,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "biz-contract-closure",
+                    "title": "合同决策条件闭环率",
+                    "width": 160,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "biz-key-clause",
+                    "title": "关键条款签署质(重大/高)",
+                    "width": 180,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "biz-forbidden-clause",
+                    "title": "禁止类条款签署率",
+                    "width": 150,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "biz-contract-renewal",
+                    "title": "合同续签率",
+                    "width": 120,
+                    "sortable": true
+                  },
+                  {
+                    "kind": "field",
+                    "field": "biz-decision-validity",
+                    "title": "决策意见有效性",
+                    "width": 140,
+                    "sortable": true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { QUERY_PERIODS } from '../period-query';
 import { pagedUnionDataSourceZ } from './paged-union';
 import { pagedJoinDataSourceZ } from './paged-join';
 import { MAX_QUERY_RESULT_VALUES } from '../query-result-limits';
@@ -54,7 +55,7 @@ export const queryResultWhereZ: z.ZodType<QueryResultWhere> = z.lazy(() => z.uni
   z.object({ field: fieldNameZ, op: z.enum(['isNull', 'isNotNull']) }).strict()
 ])).meta({ id: 'queryResultWhere' });
 
-const filterBindingsZ=z
+function filterBindingsSchema(includePeriodPolicy:boolean){return z
       .record(
         idZ,
         z
@@ -71,7 +72,10 @@ const filterBindingsZ=z
                   .meta({ minProperties: 2 })
               })
               .strict(),
-            z.object({ target: z.literal('time'), window: timeWindowZ.optional(), queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional() }).strict(),
+            z.object({ target: z.literal('time'), window: timeWindowZ.optional(), queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional(), ...(includePeriodPolicy?{periodPolicy: z.union([
+              z.object({kind:z.literal('fixed'),period:z.enum(QUERY_PERIODS).describe('固定消费期间的查询粒度；年允许扩大到完整自然年')}).strict(),
+              z.object({kind:z.literal('selection'),supportedPeriods:z.array(z.enum(QUERY_PERIODS)).min(1).meta({uniqueItems:true}).describe('作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退')}).strict()
+            ]).describe('独立消费已应用的期间选择，独占查询 period/start/end；旧绑定未声明时保留原行为').optional()}: {}) }).strict(),
             // 非维度筛选器的三支谓词(ADR-0085)。
             z
               .object({
@@ -93,12 +97,14 @@ const filterBindingsZ=z
               .strict()
           ])
       );
+}
+const filterBindingsZ=filterBindingsSchema(true);
 
 const queryCasesZ = z.object({
   filterId: idZ,
   cases: z.record(z.string().min(1), z.object({
     body: z.object({dsl_list: z.array(dslItemZ).length(1)}).strict(),
-    filterBindings: filterBindingsZ
+    filterBindings: filterBindingsSchema(false)
   }).strict()).meta({minProperties: 1})
 }).strict();
 

@@ -1,5 +1,17 @@
 # 查询定义与显式绑定
 
+## 查询独立期间策略
+
+6.67 起，指标查询的时间绑定可声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","year"]}}`。支持粒度由作者按已确认的数据能力声明，不由控件推断；不支持时拒绝查询，不回退。
+
+新策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。缺少策略的旧绑定保持原有精度配对和编码。
+
+固定按日、月、年分别生成 YYYY-MM-DD、YYYY-MM、YYYY。选年固定月覆盖十二个月；选月固定日覆盖完整自然月。固定年可扩大到所选窗口涉及的完整自然年，工作台预览明确标记扩大；它不计算年度得分。按选择时，年使用 year、月使用 month，近一年默认 month；近一年使用已应用的前十二个完整月窗口，不在请求或导出时重新取当前时间。直接季度 DQE 编码尚未确认，按选择遇到季度明确拒绝；季度选择仍可由固定日/月策略覆盖整季，不隐式改写策略。
+
+工作台逐查询配置并预览实际粒度与期间。新绑定从原查询可确认的一致 period 预选固定策略，缺少或分支不一致时要求选择。旧绑定显示“保留旧协议”，主动选择新策略才转换该查询全部静态分支，保留指标、维度、fieldMappings 和 is_aggregate；同一筛选器允许新旧查询并存。整个编辑先校验再应用，失败保留原稿。此能力不自动求和、平均、切换指标或查询路线。
+
+验收入口：`period-query-columns-demo`，同时展示固定日/月查询与按期间模式切换表格列；数据性质及操作见页面目录 README。
+
 6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。
 
 当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。
@@ -205,7 +217,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。
 
 
-页面协议 6.66。结构真源为本册[schema.json](schema.json)，SHA256 `e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.67。结构真源为本册[schema.json](schema.json)，SHA256 `bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1010,6 +1022,106 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 | "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
 | "compact" | 时间点去掉分隔符后送出，例如 202604。 |
 | "datetime" | 带时间部分的日期时间字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c696379"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 独立消费已应用的期间选择，独占查询 period/start/end；旧绑定未声明时保留原行为 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f30"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0]`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind","period"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f302f70726f706572746965732f6b696e64"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].kind`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="fixed" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "fixed" | 用于选择@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].kind分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f302f70726f706572746965732f706572696f64"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].period`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/period`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 固定消费期间的查询粒度；年允许扩大到完整自然年 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "year" | 年粒度。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f31"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1]`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind","supportedPeriods"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f312f70726f706572746965732f6b696e64"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].kind`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="selection" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "selection" | 用于选择@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].kind分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f312f70726f706572746965732f737570706f72746564506572696f6473"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f312f70726f706572746965732f737570706f72746564506572696f64732f6974656d73"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods[]`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "year" | 年粒度。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
 
@@ -1991,6 +2103,106 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 | "compact" | 时间点去掉分隔符后送出，例如 202604。 |
 | "datetime" | 带时间部分的日期时间字段。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c696379"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 独立消费已应用的期间选择，独占查询 period/start/end；旧绑定未声明时保留原行为 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f30"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind","period"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f302f70726f706572746965732f6b696e64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].kind`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="fixed" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "fixed" | 用于选择@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].kind分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f302f70726f706572746965732f706572696f64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].period`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/period`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 固定消费期间的查询粒度；年允许扩大到完整自然年 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "year" | 年粒度。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f31"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind","supportedPeriods"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f312f70726f706572746965732f6b696e64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].kind`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="selection" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "selection" | 用于选择@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].kind分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f312f70726f706572746965732f737570706f72746564506572696f6473"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f312f70726f706572746965732f737570706f72746564506572696f64732f6974656d73"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods[]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "year" | 年粒度。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
 
 ### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3]`
@@ -2273,6 +2485,8 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - [query-mode-binding-branches-page](examples/query-mode-binding-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [object-query-page](examples/object-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [stored-count-measures](examples/stored-count-measures.json)：完整合法页面；查询仅为静态契约证据。
+- [period-query-columns-demo](examples/period-query-columns-demo.json)：完整合法页面；查询仅为静态契约证据。
+- [period-query-branches](examples/period-query-branches.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -2306,6 +2520,8 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/component-filterGroup.json)，JSON Pointer `#/dataSources/map-data/source/query/filterBindings/map-region`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/dataSources/opportunity-list/source/query/filterBindings/region`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/report-date-filters-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/period-filter`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/dataSources/query-day/source/query/filterBindings/statistics-period/periodPolicy`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1`：[合法完整页面](examples/period-query-branches.json)，JSON Pointer `#/dataSources/query-month/source/query/filterBindings/statistics-period/periodPolicy`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/dataSources/bound/source/query/filterBindings/month`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/4`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/dataSources/opportunity-list/source/query/filterBindings/key-office`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/dataSources/opportunity-list/source/query/filterBindings/bidding-amount`。
@@ -2318,6 +2534,8 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/query-modes-page.json)，JSON Pointer `#/dataSources/amount-trend/source/query/queryModes/cases/contracts/filterBindings/region`。
 - `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/closed`。
 - `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/period`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0`：[合法完整页面](examples/period-query-branches.json)，JSON Pointer `#/dataSources/query-day/source/query/queryModes/cases/fixed/filterBindings/statistics-period/periodPolicy`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1`：[合法完整页面](examples/period-query-branches.json)，JSON Pointer `#/dataSources/query-day/source/query/queryModes/cases/following/filterBindings/statistics-period/periodPolicy`。
 - `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/point`。
 - `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/flag`。
 - `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/amount`。

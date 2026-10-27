@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.66",
-  "schemaSha256": "e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7",
+  "schemaVersion": "6.67",
+  "schemaSha256": "bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -100,7 +100,7 @@
     },
     {
       "file": "packages/page/src/condition.ts",
-      "sha256": "f3776da3440021550d0c0bd519213db2c3cbdecefdaceb3407db1070759bb4af"
+      "sha256": "034c79b20c27339e9c4d42965286fcf88739326b6f387db5b7daae99c97469e8"
     },
     {
       "file": "packages/page/src/dqe-object.ts",
@@ -152,7 +152,7 @@
     },
     {
       "file": "packages/page/src/presentation-policy.ts",
-      "sha256": "306a6bb7444436d841fb1d46bf647ed9fa86cb554587d4eb47b8fa99282825d6"
+      "sha256": "8d70a9f90106bafcf27b0ebefe17835456ecac5ea4448b74c37b6ccd45f9c2ec"
     },
     {
       "file": "packages/page/src/query-output-measures.ts",
@@ -164,11 +164,11 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "847e710fa5a0195dd3a19f454c30aa793b0d4b1a279a3e49c8079c0cfb54dd7d"
+      "sha256": "ab17f29eed7e6c97da557aae8839a61423fa0c4a05ea86b74f0dd384759682ae"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "3c605ca1598e261d87fa7306cd151e47d2f11bdb78120db18a84d2036a0b2506"
+      "sha256": "9023dde14c796f0c7c7540f73d62f3f0258910f6c860edbfd2815a306abbb0e8"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -252,11 +252,11 @@
     },
     {
       "file": "packages/page/src/schema/condition.ts",
-      "sha256": "0258a11d34c8d3ce36c88d715b96270083643ad075745e27cdfbc12498a898e3"
+      "sha256": "927b689ad883ecdf09fbbbd66abe47d1faf9e7a21166ab0c40d4fb181ac35093"
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "1e0a74aba9af30d8af3ebf92b619a8ead5e0f65a4d568d2d856fd770fb4b4513"
+      "sha256": "746f0e40a0a70fa5d18efdeb7b465baa7a777bf6cc7118395f4e692c01debea0"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -587,7 +587,9 @@
         "query-modes-page",
         "query-mode-binding-branches-page",
         "object-query-page",
-        "stored-count-measures"
+        "stored-count-measures",
+        "period-query-columns-demo",
+        "period-query-branches"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -684,7 +686,8 @@
         "ioc-header-incentives",
         "ioc-header-models",
         "ioc-header-months",
-        "ioc-header-unconfigured"
+        "ioc-header-unconfigured",
+        "period-query-columns-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1523,7 +1526,8 @@
         "page-visibility-region-linkage",
         "page-visibility-inputs",
         "reference-conditions-page",
-        "page-visibility-report"
+        "page-visibility-report",
+        "period-query-columns-demo"
       ],
       "sources": [
         "packages/page/src/schema/condition.ts",
@@ -1729,7 +1733,8 @@
         "6.63",
         "6.64",
         "6.65",
-        "6.66"
+        "6.66",
+        "6.67"
       ]
     },
     {
@@ -5292,6 +5297,66 @@
       ]
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/kind",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].kind",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "fixed"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/period",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].period",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "day",
+        "month",
+        "year"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/kind",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].kind",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "selection"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods/items",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "day",
+        "month",
+        "year"
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3",
       "path": "@dqeQuery.filterBindings{key} · anyOf[3]",
       "required": "独立分支（不合并required）",
@@ -5867,6 +5932,66 @@
         "iso",
         "compact",
         "datetime"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/kind",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].kind",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "fixed"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0/properties/period",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[0].period",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "day",
+        "month",
+        "year"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/kind",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].kind",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "selection"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1/properties/supportedPeriods/items",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodPolicy · anyOf[1].supportedPeriods[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "day",
+        "month",
+        "year"
       ]
     },
     {
@@ -7370,7 +7495,8 @@
         "values",
         "value",
         "from",
-        "to"
+        "to",
+        "mode"
       ]
     },
     {
@@ -7429,7 +7555,8 @@
         "values",
         "value",
         "from",
-        "to"
+        "to",
+        "mode"
       ]
     },
     {
@@ -7496,7 +7623,8 @@
         "values",
         "value",
         "from",
-        "to"
+        "to",
+        "mode"
       ]
     },
     {
@@ -7539,7 +7667,8 @@
         "values",
         "value",
         "from",
-        "to"
+        "to",
+        "mode"
       ]
     },
     {
@@ -18620,6 +18749,18 @@
       "pointer": "#/dataSources/sales/source/query/filterBindings/period-filter"
     },
     {
+      "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/period-query-columns-demo.json",
+      "pointer": "#/dataSources/query-day/source/query/filterBindings/statistics-period/periodPolicy"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/period-query-branches.json",
+      "pointer": "#/dataSources/query-month/source/query/filterBindings/statistics-period/periodPolicy"
+    },
+    {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3",
       "module": "queries-and-bindings.md",
       "file": "examples/availability-page.json",
@@ -18690,6 +18831,18 @@
       "module": "queries-and-bindings.md",
       "file": "examples/query-mode-binding-branches-page.json",
       "pointer": "#/dataSources/main/source/query/queryModes/cases/a/filterBindings/period"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/period-query-branches.json",
+      "pointer": "#/dataSources/query-day/source/query/queryModes/cases/fixed/filterBindings/statistics-period/periodPolicy"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/period-query-branches.json",
+      "pointer": "#/dataSources/query-day/source/query/queryModes/cases/following/filterBindings/statistics-period/periodPolicy"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
@@ -18932,14 +19085,14 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/4",
       "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/1/visibleWhen"
+      "file": "examples/period-query-columns-demo.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/visibleWhen"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
       "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/1/visibleWhen/value"
+      "file": "examples/period-query-columns-demo.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/visibleWhen/value"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",

@@ -24,6 +24,7 @@ function merge(previous: Predicate | undefined, value: Predicate): Predicate | u
     return values.length ? { ...value, values } : undefined;
   }
   if (previous.target === 'time' && value.target === 'time') {
+    if(previous.period !== value.period) throw Object.assign(new Error('不能对不同查询粒度的期间取交集'), {code:'DQE_QUERY_REJECTED'});
     const bounds = stringBounds(previous.value, value.value);
     return bounds ? { ...value, value: { from: bounds.from!, to: bounds.to! } } : undefined;
   }

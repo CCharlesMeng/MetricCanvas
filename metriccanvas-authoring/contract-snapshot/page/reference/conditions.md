@@ -1,5 +1,7 @@
 # 条件显隐与动作资格
 
+6.67 增加期间模式读取：`{filter:"statistics-period",part:"mode",op:"eq",value:"year"}` 只引用 display=period 的时间范围筛选器，读取已应用 selection.mode（year/quarter/month/last12Months），可用 eq/ne/in/notIn 等既有标量条件组合。条件编辑基础表单可直接选择“统计期间 · 选择年/季度/月/近一年”。字段列、分组列、组件等共享同一条件解析，不为时间列新增专用规则。未应用期间时等待，错误与等待不会被 not 反转成允许。示例：`period-query-columns-demo`。
+
 6.35起，使用visibleWhen控制节点展示，使用enabledWhen控制动作执行；条件写在其控制的节点，未声明时沿用原行为。分区、组件、筛选器、分区组、Tab和正文片段使用同一条件。父级隐藏覆盖后代，子项全隐藏不反推父级；6.62 的表格列组作为表头结构节点，无可见叶子时不生成空表头，详见[列显隐](components/table.md#table-column-visibility)。标题、容器和原布局占位保留。需要整块隐藏时把条件写在父级。
 
 ```json
@@ -33,7 +35,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。
 
 
-页面协议 6.66。结构真源为本册[schema.json](schema.json)，SHA256 `e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.67。结构真源为本册[schema.json](schema.json)，SHA256 `bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -175,7 +177,7 @@ Schema位置：`#/definitions/condition/anyOf/4/properties/part`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["level","values","value","from","to"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+| "string" | 本分支必填 | enum=["level","values","value","from","to","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -184,6 +186,7 @@ Schema位置：`#/definitions/condition/anyOf/4/properties/part`。
 | "value" | 普通单值/多值输入部分。 |
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6e646974696f6e2f616e794f662f342f70726f706572746965732f6f70"></a>
 
@@ -268,7 +271,7 @@ Schema位置：`#/definitions/condition/anyOf/5/properties/part`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["level","values","value","from","to"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+| "string" | 本分支必填 | enum=["level","values","value","from","to","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -277,6 +280,7 @@ Schema位置：`#/definitions/condition/anyOf/5/properties/part`。
 | "value" | 普通单值/多值输入部分。 |
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6e646974696f6e2f616e794f662f352f70726f706572746965732f6f70"></a>
 
@@ -373,7 +377,7 @@ Schema位置：`#/definitions/condition/anyOf/6/properties/part`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["level","values","value","from","to"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+| "string" | 本分支必填 | enum=["level","values","value","from","to","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -382,6 +386,7 @@ Schema位置：`#/definitions/condition/anyOf/6/properties/part`。
 | "value" | 普通单值/多值输入部分。 |
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6e646974696f6e2f616e794f662f362f70726f706572746965732f6f70"></a>
 
@@ -438,7 +443,7 @@ Schema位置：`#/definitions/condition/anyOf/7/properties/part`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["level","values","value","from","to"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+| "string" | 本分支必填 | enum=["level","values","value","from","to","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -447,6 +452,7 @@ Schema位置：`#/definitions/condition/anyOf/7/properties/part`。
 | "value" | 普通单值/多值输入部分。 |
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6e646974696f6e2f616e794f662f372f70726f706572746965732f6f70"></a>
 
@@ -966,6 +972,7 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 - [page-visibility-inputs](examples/page-visibility-inputs.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-conditions-page](examples/reference-conditions-page.json)：完整合法页面；查询仅为静态契约证据。
 - [page-visibility-report](examples/page-visibility-report.json)：完整合法页面；查询仅为静态契约证据。
+- [period-query-columns-demo](examples/period-query-columns-demo.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/schema/condition.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/condition.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/presentation-policy.ts`（仓库路径，非分发依赖）。
@@ -976,8 +983,8 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 - `#/definitions/condition/anyOf/1`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/3/components/0/props/rowVisibleWhen`。
 - `#/definitions/condition/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/filters/0/visibleWhen`。
 - `#/definitions/condition/anyOf/3`：[合法完整页面](examples/page-visibility-inputs.json)，JSON Pointer `#/sections/1/visibleWhen`。
-- `#/definitions/condition/anyOf/4`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/1/visibleWhen`。
-- `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/1/visibleWhen/value`。
+- `#/definitions/condition/anyOf/4`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/visibleWhen`。
+- `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/visibleWhen/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/4/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/6/value`。
 - `#/definitions/condition/anyOf/5`：[合法完整页面](examples/table-column-visibility.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/visibleWhen`。

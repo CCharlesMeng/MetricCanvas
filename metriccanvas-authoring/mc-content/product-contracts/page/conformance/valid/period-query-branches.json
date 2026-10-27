@@ -1,0 +1,404 @@
+{
+  "schemaVersion": "6.67",
+  "id": "period-query-branches",
+  "layout": "dashboard",
+  "meta": {
+    "title": "期间策略与表格列显隐",
+    "description": "合成验收场景；得分列为独立静态值，不代表年季月聚合口径。两个查询分别按日和按月消费同一期间。"
+  },
+  "filters": [
+    {
+      "id": "statistics-period",
+      "type": "timeRange",
+      "display": "period",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month",
+        "value": "2026-10"
+      }
+    },
+    {
+      "id": "route",
+      "type": "dimension",
+      "dimension": "route",
+      "label": "查询分支",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "fixed",
+          "label": "固定月"
+        },
+        {
+          "value": "following",
+          "label": "按选择"
+        }
+      ],
+      "default": [
+        "fixed"
+      ]
+    }
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "期间策略与表格列显隐"
+    },
+    "filterIds": [
+      "statistics-period"
+    ],
+    "presentation": {
+      "layout": "inline"
+    }
+  },
+  "dataSources": {
+    "scores": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "name"
+        },
+        "annual": {
+          "type": "number",
+          "role": "measure",
+          "label": "annual"
+        },
+        "quarterly": {
+          "type": "number",
+          "role": "measure",
+          "label": "quarterly"
+        },
+        "monthly": {
+          "type": "number",
+          "role": "measure",
+          "label": "monthly"
+        },
+        "rolling": {
+          "type": "number",
+          "role": "measure",
+          "label": "rolling"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "合成地区甲",
+            "annual": 80,
+            "quarterly": 81,
+            "monthly": 82,
+            "rolling": 83
+          },
+          {
+            "name": "合成地区乙",
+            "annual": 90,
+            "quarterly": 91,
+            "monthly": 92,
+            "rolling": 93
+          }
+        ]
+      }
+    },
+    "query-day": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量",
+          "label": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "queryModes": {
+            "filterId": "route",
+            "cases": {
+              "fixed": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "区域"
+                      ],
+                      "output_metrics": [
+                        "Tokens消耗量"
+                      ],
+                      "filter": {
+                        "time": {
+                          "is_aggregate": true
+                        },
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {}
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "statistics-period": {
+                    "target": "time",
+                    "periodPolicy": {
+                      "kind": "fixed",
+                      "period": "month"
+                    }
+                  }
+                }
+              },
+              "following": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "区域"
+                      ],
+                      "output_metrics": [
+                        "Tokens消耗量"
+                      ],
+                      "filter": {
+                        "time": {
+                          "is_aggregate": true
+                        },
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {}
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "statistics-period": {
+                    "target": "time",
+                    "periodPolicy": {
+                      "kind": "selection",
+                      "supportedPeriods": [
+                        "month",
+                        "year"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "query-month": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量",
+          "label": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "statistics-period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "selection",
+                "supportedPeriods": [
+                  "month",
+                  "year"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "period-demo",
+      "components": [
+        {
+          "id": "score-columns",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "scores"
+          },
+          "props": {
+            "title": "按用户所选期间显示列（独立合成值）",
+            "rowKey": "name",
+            "columns": [
+              {
+                "field": "name",
+                "title": "地区",
+                "width": 140
+              },
+              {
+                "kind": "group",
+                "id": "annual-group",
+                "title": "年度得分分组",
+                "visibleWhen": {
+                  "filter": "statistics-period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "year"
+                },
+                "children": [
+                  {
+                    "field": "annual",
+                    "title": "年度得分",
+                    "sortable": true
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "quarterly-group",
+                "title": "季度得分分组",
+                "visibleWhen": {
+                  "filter": "statistics-period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "quarter"
+                },
+                "children": [
+                  {
+                    "field": "quarterly",
+                    "title": "季度得分",
+                    "sortable": true
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "monthly-group",
+                "title": "月度得分分组",
+                "visibleWhen": {
+                  "filter": "statistics-period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "month"
+                },
+                "children": [
+                  {
+                    "field": "monthly",
+                    "title": "月度得分",
+                    "sortable": true
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "rolling-group",
+                "title": "近一年得分分组",
+                "visibleWhen": {
+                  "filter": "statistics-period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "last12Months"
+                },
+                "children": [
+                  {
+                    "field": "rolling",
+                    "title": "近一年得分",
+                    "sortable": true
+                  }
+                ]
+              }
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "期间可见列"
+              }
+            }
+          }
+        },
+        {
+          "id": "query-day-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "query-day"
+          },
+          "props": {
+            "title": "固定按日查询（DQE Sim 合成数据）",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "amount",
+                "title": "Tokens消耗量"
+              }
+            ]
+          }
+        },
+        {
+          "id": "query-month-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "query-month"
+          },
+          "props": {
+            "title": "固定按月查询（DQE Sim 合成数据）",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "amount",
+                "title": "Tokens消耗量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -231,3 +231,7 @@ Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑
 链接列可声明 `navigateBySource: { field, cases }`：`field` 引用当前行的来源文本维度，`cases` 以来源值为键，每个值是普通导航目标（`href`、`query`、条件和目标参数校验）。它不能与 `navigate`、`openDetail` 或 `selection` 同时声明；配合 `link: true`，命中的来源使用对应目标并携带原始行字段，未配置的来源显示普通文本。来源身份字段可以不作为可见列。普通导航的 URL、权限与条件规则继续生效。
 
 完整示例 `paged-union-page`，浏览器场景 `/pages/multi-source-table` 及 `/pages/multi-source-contract-detail`、`/pages/multi-source-commercial-detail`。演示来源为本地合成分页接口，入口与验收步骤见表格示例说明。
+
+## 期间模式列显隐（6.67）
+
+6.67 起可在字段列或分组列的 `visibleWhen` 读取期间筛选模式，例如 `{filter:"statistics-period",part:"mode",op:"in",values:["year","quarter"]}`。显示由已应用 selection.mode 决定，与查询 periodPolicy 独立。既有列投影同步表头、搜索、用户排序/筛选清理与 XLSX/PDF/PNG 导出；隐藏不停止共享查询。示例：[期间模式与查询策略](../examples/period-query-columns-demo.json)。

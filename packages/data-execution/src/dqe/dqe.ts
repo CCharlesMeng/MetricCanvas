@@ -667,7 +667,7 @@ function encodedMetricItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfi
     } else if (filter.target === 'dimensionRange') {
       setDimensionRangeFilter(item, filter.queryField, filter.from, filter.to);
     } else {
-      setTimeFilter(item, filter.value.from, filter.value.to);
+      setTimeFilter(item, filter.value.from, filter.value.to, filter.period);
     }
   }
   if (!applyTableFilters(item, query.tableFilters)) throw new EmptyTableQuery();
@@ -774,7 +774,7 @@ function setMetricRangeFilter(
   filter.metrics = existing;
 }
 
-function setTimeFilter(item: JsonObject, start: string, end: string): void {
+function setTimeFilter(item: JsonObject, start: string, end: string, period?: import('@metriccanvas/page/internal').QueryPeriod): void {
   const filter = ensureRecord(item, 'filter');
   if (!isRecord(filter.time)) {
     throw new DqeGatewayError(
@@ -782,7 +782,7 @@ function setTimeFilter(item: JsonObject, start: string, end: string): void {
       'time 筛选绑定要求原始 DQE 声明 filter.time，以保留 period/is_aggregate'
     );
   }
-  filter.time = { ...filter.time, start, end };
+  filter.time = { ...filter.time, ...(period ? {period} : {}), start, end };
 }
 
 function ensureRecord(parent: JsonObject, key: string): JsonObject {

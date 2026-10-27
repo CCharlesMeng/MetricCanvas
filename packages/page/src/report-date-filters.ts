@@ -107,6 +107,10 @@ function hasFixedTime(config: Record<string, unknown>): boolean {
 }
 
 function boundDateFilterErrors(binding: TimeBinding, declaration: FilterDeclaration | undefined, config: Record<string, unknown> | undefined, path: string, error: ErrorReporter): void {
+  if (binding.periodPolicy) {
+    periodPolicyErrors(binding, declaration, config, path, error);
+    return;
+  }
   if (declaration?.type === 'timeRange' && declaration.display === 'period') {
     if (!config || config.period !== (declaration.precision === 'month' ? 'month' : 'day')) error(path, '期间筛选需要精度匹配的查询时间配置');
     if (config && hasFixedTime(config)) error(path, '期间筛选不能另有固定时间来源');
@@ -114,6 +118,13 @@ function boundDateFilterErrors(binding: TimeBinding, declaration: FilterDeclarat
   if (binding.window && declaration?.type === 'timePoint') {
     windowBindingErrors(binding.window, declaration, config, path, error);
   } else if (declaration?.type === 'timeRange' && declaration.precision === 'month' && config?.period !== 'month') error(path, '月份范围需要查询 period=month');
+}
+
+function periodPolicyErrors(binding: TimeBinding, declaration: FilterDeclaration | undefined, config: Record<string, unknown> | undefined, path: string, error: ErrorReporter): void {
+  if (declaration?.type !== 'timeRange' || declaration.display !== 'period') error(path, '期间策略只能消费 display=period 的期间选择');
+  if (binding.window || binding.queryField || binding.valueFormat) error(path, '期间策略不能与时间窗口或对象时间字段混用');
+  if (!config) error(path, '期间策略需要保留显式 filter.time 配置');
+  if (config && ('period' in config || 'window' in config || hasFixedTime(config))) error(path, '期间策略独占 period/start/end，查询体不能重复声明时间来源');
 }
 
 function windowBindingErrors(window: NonNullable<TimeBinding['window']>, declaration: Extract<DateFilter, { type: 'timePoint' }>, config: Record<string, unknown> | undefined, path: string, error: ErrorReporter): void {
@@ -131,5 +142,6 @@ function periodModeErrors(filter: RangeFilter, path: string, error: ErrorReporte
 }
 
 function objectDateFilterErrors(binding: TimeBinding, declaration: FilterDeclaration | undefined, path: string, error: ErrorReporter): void {
+  if(binding.periodPolicy) error(path, '对象查询不支持指标期间策略');
   if(binding.window && declaration?.type==='timePoint' && !timeWindowCompatible(declaration.granularity,binding.window)) error(path,'时间窗口单位与筛选器精度不相容');
 }

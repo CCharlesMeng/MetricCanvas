@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.67",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.period"
@@ -9,8 +9,8 @@
       "module": "filters",
       "reference": "references/page-metadata/filters.md",
       "blocks": [
-        "# 筛选声明与运行状态\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。",
-        "## Dashboard 期间选择（6.27）\n\n`timeRange` 可声明 `display: \"period\"`，在 Dashboard 通用顶部 FilterBar 中作为一个筛选器显示「年／季／月／近一年」。省略 display 仍为原有范围编辑器。`precision` 只允许 month/date，分别决定实际范围编码，不改变查询的 period/is_aggregate。季度输入显示「2026 年 Q4」，四个面板选项为 Q1—Q4。\n\n6.41 可声明 `periodModes:[\"year\"]`，搭配 `default:{\"mode\":\"year\"}` 只显示年份选择框。`periodModes` 是 year／quarter／month／last12Months 的非空不重复列表，省略保持四种模式；单模式隐藏切换栏，默认与参数初始化模式必须在列表内。URL、初值、程序写入共用模式限制，不允许的模式保留已应用值。自然年仍为完整 01-01 至 12-31，当前年可选、未来年禁止。它属于共享期间筛选，不属于某个页头；不要与 `display:\"modes\"` 的日/月/ISO周对象列表混用。完整页面复用 `dashboard-period-filter`，不新增年份演示页。\n\n默认选择使用 `default: {mode:\"month\"}`（当前月），也可写 `{mode:\"year\",value:\"2026\"}`、`{mode:\"quarter\",value:\"2026-Q4\"}`、`{mode:\"month\",value:\"2026-10\"}` 或 `{mode:\"last12Months\"}`。年季月省略 value 时按本次初始化的当前日期选择完整自然期间。近一年固定取当前月之前十二个完整月份；2026-10 显示 `25年10月~26年9月`，date 查询为 2025-10-01 至 2026-09-30，month 查询为 2025-10 至 2026-09；右侧只有只读文本，不提供截止月份输入。\n\n初始化、显式重新选择近一年共用期间解析；长驻页面不定时刷新，导出使用已应用快照。切回年季月保留会话内历史锚点。URL 的 value 分量编码 `month:2026-10`、`quarter:2026-Q4`、`year:2026` 或 `last12Months`，使用显式 `urlParams.value` 或筛选器 ID；恢复近一年时重新物化范围，非法选择不覆盖已有合法状态。导航可显式传筛选 value 分量保留模式，也可用 from/to 将实际范围传给普通日期输入。\n\n参数初始化改用互斥的 `initialParam` 与 `initialMode:\"year\"|\"quarter\"|\"month\"`，实际参数区间必须完整覆盖声明的自然期间；选择变化不反写页面参数。相对选择不提取成固定参数。新形态仅用于 Dashboard 顶部筛选，不用于报告页头、datetime 或图表独立筛选。查询使用现有 `{target:\"time\"}` 绑定，不能同时保存固定 start/end/param。\n\n页面试验场的统一入口为 `dashboard-period-filter`（日期精度）。月份精度、更多筛选和只读变体仅作为完整契约夹具及本册示例保留，不再重复注册演示页面，见下方生成的完整示例入口。它们声明合成验收查询；实际 DQE 数据和部署验收另行报告。\n\n维度display选择select、tabs或tree；层级维度显式声明层级和初始层；6.11起层级维度与timePoint筛选器也可用initialParam取页面参数作初值。时间范围支持绝对from/to和受控相对时间；timePoint限定month/date粒度。numberRange允许单边界，两边空视为无条件；search为普通文本。\n\nurlParams仅映射该类允许的value/from/to/level键，不能与本页其它参数或筛选输入冲突。候选值来自受控数据能力，业务维度值不是协议枚举。\n\n6.13 的 timeRange.precision=month 使用 YYYY-MM 两端；date 使用 YYYY-MM-DD，datetime 保留 YYYY-MM-DDTHH:mm。timeRange.initialParam 与 default 互斥，接受精度匹配的必需 times 参数；timePoint 仅接受单点 times。required 日期筛选器保留已应用值，完整合法的输入才提交；页头引用只改变位置。"
+        "# 筛选声明与运行状态",
+        "## Dashboard 期间选择（6.27）\n\n6.67 新绑定由查询 periodPolicy 决定粒度，旧绑定继续按原 precision 配对；同一选择可驱动不同查询粒度。具体策略见 query.period-policy 主题。\n\n`timeRange` 可声明 `display: \"period\"`，在 Dashboard 通用顶部 FilterBar 中作为一个筛选器显示「年／季／月／近一年」。省略 display 仍为原有范围编辑器。`precision` 只允许 month/date，分别决定实际范围编码，不改变查询的 period/is_aggregate。季度输入显示「2026 年 Q4」，四个面板选项为 Q1—Q4。\n\n6.41 可声明 `periodModes:[\"year\"]`，搭配 `default:{\"mode\":\"year\"}` 只显示年份选择框。`periodModes` 是 year／quarter／month／last12Months 的非空不重复列表，省略保持四种模式；单模式隐藏切换栏，默认与参数初始化模式必须在列表内。URL、初值、程序写入共用模式限制，不允许的模式保留已应用值。自然年仍为完整 01-01 至 12-31，当前年可选、未来年禁止。它属于共享期间筛选，不属于某个页头；不要与 `display:\"modes\"` 的日/月/ISO周对象列表混用。完整页面复用 `dashboard-period-filter`，不新增年份演示页。\n\n默认选择使用 `default: {mode:\"month\"}`（当前月），也可写 `{mode:\"year\",value:\"2026\"}`、`{mode:\"quarter\",value:\"2026-Q4\"}`、`{mode:\"month\",value:\"2026-10\"}` 或 `{mode:\"last12Months\"}`。年季月省略 value 时按本次初始化的当前日期选择完整自然期间。近一年固定取当前月之前十二个完整月份；2026-10 显示 `25年10月~26年9月`，date 查询为 2025-10-01 至 2026-09-30，month 查询为 2025-10 至 2026-09；右侧只有只读文本，不提供截止月份输入。\n\n初始化、显式重新选择近一年共用期间解析；长驻页面不定时刷新，导出使用已应用快照。切回年季月保留会话内历史锚点。URL 的 value 分量编码 `month:2026-10`、`quarter:2026-Q4`、`year:2026` 或 `last12Months`，使用显式 `urlParams.value` 或筛选器 ID；恢复近一年时重新物化范围，非法选择不覆盖已有合法状态。导航可显式传筛选 value 分量保留模式，也可用 from/to 将实际范围传给普通日期输入。\n\n参数初始化改用互斥的 `initialParam` 与 `initialMode:\"year\"|\"quarter\"|\"month\"`，实际参数区间必须完整覆盖声明的自然期间；选择变化不反写页面参数。相对选择不提取成固定参数。新形态仅用于 Dashboard 顶部筛选，不用于报告页头、datetime 或图表独立筛选。查询使用现有 `{target:\"time\"}` 绑定，不能同时保存固定 start/end/param。\n\n页面试验场的统一入口为 `dashboard-period-filter`（日期精度）。月份精度、更多筛选和只读变体仅作为完整契约夹具及本册示例保留，不再重复注册演示页面，见下方生成的完整示例入口。它们声明合成验收查询；实际 DQE 数据和部署验收另行报告。\n\n维度display选择select、tabs或tree；层级维度显式声明层级和初始层；6.11起层级维度与timePoint筛选器也可用initialParam取页面参数作初值。时间范围支持绝对from/to和受控相对时间；timePoint限定month/date粒度。numberRange允许单边界，两边空视为无条件；search为普通文本。\n\nurlParams仅映射该类允许的value/from/to/level键，不能与本页其它参数或筛选输入冲突。候选值来自受控数据能力，业务维度值不是协议枚举。\n\n6.13 的 timeRange.precision=month 使用 YYYY-MM 两端；date 使用 YYYY-MM-DD，datetime 保留 YYYY-MM-DDTHH:mm。timeRange.initialParam 与 default 互斥，接受精度匹配的必需 times 参数；timePoint 仅接受单点 times。required 日期筛选器保留已应用值，完整合法的输入才提交；页头引用只改变位置。"
       ],
       "rules": [
         {
@@ -325,7 +325,8 @@
         "references/page-metadata/examples/ioc-header-incentives.json",
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
-        "references/page-metadata/examples/ioc-header-unconfigured.json"
+        "references/page-metadata/examples/ioc-header-unconfigured.json",
+        "references/page-metadata/examples/period-query-columns-demo.json"
       ]
     }
   ],
@@ -346,7 +347,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.66",
+        "$id": "https://metriccanvas/page/v6.67",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

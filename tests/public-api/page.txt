@@ -184,6 +184,7 @@ PagedUnionSource
 ParamResolutionIssue
 ParameterProgramRequest
 PeriodMode
+PeriodQueryPolicy
 PeriodRange
 PeriodSelection
 PieChartComponent
@@ -196,6 +197,7 @@ PresentationOperation
 PresentationTarget
 QUERY_ERROR_CODES
 QUERY_LANGUAGES
+QUERY_PERIODS
 QueryDataSource
 QueryDataSourceDocument
 QueryDataSourceFieldDefinition
@@ -205,6 +207,7 @@ QueryErrorDisposition
 QueryFieldDefinition
 QueryLanguage
 QueryMoneyFieldDefinition
+QueryPeriod
 QueryRecordListFieldDefinition
 QueryResultBinding
 QueryResultWhere
@@ -231,6 +234,7 @@ ReportHeaderComponent
 ReportHeaderProps
 ResolvePageParamsResult
 ResolvedFieldDefinition
+ResolvedPeriodQuery
 Row
 RowCellFallbacks
 RowContractIssue
@@ -466,6 +470,7 @@ resolveFilterTextValue
 resolveInlineQueryParams
 resolvePageParams
 resolveParamTextValues
+resolvePeriodQuery
 resolvePeriodSelection
 resolveRelativeTime
 resolveTextValues

@@ -231,7 +231,9 @@
         "query-modes-page",
         "query-mode-binding-branches-page",
         "object-query-page",
-        "stored-count-measures"
+        "stored-count-measures",
+        "period-query-columns-demo",
+        "period-query-branches"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -328,7 +330,8 @@
         "ioc-header-incentives",
         "ioc-header-models",
         "ioc-header-months",
-        "ioc-header-unconfigured"
+        "ioc-header-unconfigured",
+        "period-query-columns-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1167,7 +1170,8 @@
         "page-visibility-region-linkage",
         "page-visibility-inputs",
         "reference-conditions-page",
-        "page-visibility-report"
+        "page-visibility-report",
+        "period-query-columns-demo"
       ],
       "sources": [
         "packages/page/src/schema/condition.ts",
@@ -1967,7 +1971,8 @@
     "6.64": "饼图表格式图例、显式数值排序与固定类别顺序，默认保留输入行序。",
     "primaryDetail": "一个主指标与多行小字号次级指标；同排卡片自然等高，次级值带下划线但点击仍需显式link和动作。",
     "6.65": "新增主指标与多行次级指标卡；既有指标卡呈现保持。",
-    "6.66": "记录逐行保留、多对一补列、成员筛选适用性与有预算分批完整关联。"
+    "6.66": "记录逐行保留、多对一补列、成员筛选适用性与有预算分批完整关联。",
+    "6.67": "查询独立期间消费策略与已应用期间模式展示条件。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2195,7 +2200,9 @@
         "#/definitions/pageQuery",
         "#/definitions/dqeQuery"
       ],
-      "headings": [],
+      "headings": [
+        "查询独立期间策略"
+      ],
       "dependencies": []
     },
     "table.columns": {
@@ -2206,7 +2213,9 @@
         "#/definitions/tableColumn",
         "#/definitions/tableColumnGroup"
       ],
-      "headings": [],
+      "headings": [
+        "期间模式列显隐（6.67）"
+      ],
       "dependencies": []
     },
     "table.width": {
@@ -2291,7 +2300,8 @@
         "#/definitions/timePointFilter"
       ],
       "headings": [
-        "时间选择的默认上限"
+        "时间选择的默认上限",
+        "期间选择与查询消费"
       ],
       "dependencies": []
     },
@@ -2458,6 +2468,17 @@
         "列条件显隐（6.62）"
       ],
       "dependencies": []
+    },
+    "query.period-policy": {
+      "module": "queries-and-bindings",
+      "title": "查询独立期间策略与兼容迁移",
+      "roots": [
+        "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy"
+      ],
+      "headings": [
+        "查询独立期间策略"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2490,6 +2511,7 @@
       "查询标量的原文展示证据（6.60）"
     ],
     "queries-and-bindings.md": [
+      "查询独立期间策略",
       "查阅方式",
       "查询结果绑定 6.14",
       "查询输入行过滤 6.19",
@@ -2505,6 +2527,7 @@
       "多度量透视与有限主集合左关联 6.14"
     ],
     "filters.md": [
+      "期间选择与查询消费",
       "时间选择的默认上限",
       "Dashboard 期间选择（6.27）",
       "时间点下限（6.24）",
@@ -2586,7 +2609,8 @@
       "详情表格的浮层宽度",
       "标量原文展示与本地尾排（6.60）",
       "独立查询置顶行（6.60）",
-      "多来源整体排序与来源导航（6.61）"
+      "多来源整体排序与来源导航（6.61）",
+      "期间模式列显隐（6.67）"
     ],
     "components/mapChart.md": [
       "查阅方式",
