@@ -86,8 +86,24 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 可运行 `multi-source-table` 使用两个合成普通分页端点，覆盖异字段、来源常量、null、默认整体排序、搜索、候选筛选、分页、Excel 导出与来源详情导航。静态校验、模拟网关与浏览器不证明真实 DQE 已满足上述能力。
 
+## 审批记录与当前信息补列（6.66）
 
-页面协议 6.65。结构真源为本册[schema.json](schema.json)，SHA256 `87cac0ae10799837aec7d9b594ddc4ca5d1e717efe37b59951937da47745c8a3`。字段表自动生成；可选不等于有默认值。
+`pagedJoin.source.records` 显式启用记录模式，保留主表每条原始记录，成员 `key` 仅为关联键。旧页面不声明 `records`，继续使用原有一键一行、选页补列及最大1000行完整关联规则。
+
+记录模式配置 `batchSize`（1—1000）、`maxRows`（1—100000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—120000），不以调大旧 `fallback.maxRows` 解锁。执行器以固定的原始字段顺序分批读取主表，检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批查询补列表。主表重复关联键保留，补列表重复键、额外编码、截断、失败和超限整轮失败。无事务快照令牌，不能证明读取期间同总数的内容变化；既有单表分页和多字段排序仍须真实 DQE 验真。
+
+`rowKey` 与关联键分离：可投影主表真实唯一记录字段；若该字段不在 `projection`，必须声明非空string维度，由执行器按完整读取顺序生成快照内标识。该标识仅在此快照内稳定，不作为跨刷新业务ID；完全相同的两条记录仍保留两行。持久化第一页 initial 无法恢复完整内部快照，因此记录模式重新读取，不借第一页推断后续记录。
+
+`records.timeFilters` 显式声明本地时间筛选：键引用日或月精度 `timeRange`，`field` 引用主表的最终投影字段，`valueFormat` 声明 `iso`（YYYY-MM-DD）、`compact`（YYYYMMDD）或 `datetime`（YYYY-MM-DD HH:mm:ss）；返回值须符合声明格式和真实日历，非法值明确失败。`datetime` 对月份、日期展开为起日00:00:00、止日23:59:59，按来源本地日历比较，不做时区转换。主表查询不再声明相同筛选绑定；完整读取后先筛主表，再补列。筛选不伪造 `filter.time`，也不需要补列表存在统计期间字段；本地过滤意味着主表读取预算覆盖区域内所有被读取记录，而非仅期间内结果。
+
+成员 `notApplicableFilters` 仅用于记录模式的非主表成员，显式列出由其他成员消费、而自己不适用的筛选；不能与已消费筛选重叠、不能引用未知筛选。其余业务筛选仍须消费，成员自己的静态条件和权限条件保留。此声明不绕过权限，也不授予取数范围。
+
+完整关联成功后才对全部匹配审批记录执行搜索、表头筛选、稳定排序和当前页切片，`totalCount` 按记录数计算。同一 SourceProgram 保存一份有预算的完整快照；翻页、排序、搜索、表头条件复用它，区域、期间、上下文或显式刷新使其失效。表头候选使用该结果，保留其他条件，仅排除自身列条件；不受完整导出10000行限制。导出复用相同规则，仍遵守10000行/60秒限制，不能用部分扫描结果充当完整文件。
+
+示例及浏览器验收入口为 `/pages/record-join-demo`，来自 `pages/capabilities/table/record-join-demo.json`，使用1205条合成审批记录。`pages/business-rejection-details.json` 是业务配置；其真实DQE字段、数据粒度、区域语义、HCS排除和服务完整性仍需真实环境确认，不由示例通过证明。
+
+
+页面协议 6.66。结构真源为本册[schema.json](schema.json)，SHA256 `e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -597,6 +613,26 @@ Schema位置：`#/definitions/pagedJoinSource/properties/members/additionalPrope
 |---|---|---|---|---|
 | "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 经数据侧验真：覆盖相同行域、一键一行，且支持排序、总数和稳定键排序；不能从样本推断。 |
 
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6e6f744170706c696361626c6546696c74657273"></a>
+
+### `@pagedJoinSource.members{key}.notApplicableFilters`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/notApplicableFilters`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 仅记录模式非主表成员：显式声明其他成员消费、自己不适用的业务筛选，不得重叠或漏配。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6e6f744170706c696361626c6546696c746572732f6974656d73"></a>
+
+### `@pagedJoinSource.members{key}.notApplicableFilters[]`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/notApplicableFilters/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f6d656d626572732f70726f70657274794e616d6573"></a>
 
 ### `@pagedJoinSource.members · propertyNames`
@@ -809,6 +845,112 @@ Schema位置：`#/definitions/pagedJoinSource/properties/ordinalField`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 当前排序筛选下生成的数值行序号，不充当关联键。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f726473"></a>
+
+### `@pagedJoinSource.records`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["batchSize","maxRows","maxBytes","timeoutMs"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 显式启用逐条保留审批记录的多对一补列；行键独立于关联键。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f626174636853697a65"></a>
+
+### `@pagedJoinSource.records.batchSize`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/batchSize`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=1000 | Schema未设默认；装配/运行时默认见语义说明 | 每次单表分页及关联键集合的批次大小，1至1000。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f6d6178526f7773"></a>
+
+### `@pagedJoinSource.records.maxRows`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/maxRows`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=100000 | Schema未设默认；装配/运行时默认见语义说明 | 主表完整读取行数预算，最多100000，包含本地时间筛选前读取的记录。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f6d61784279746573"></a>
+
+### `@pagedJoinSource.records.maxBytes`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/maxBytes`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1024; maximum=134217728 | Schema未设默认；装配/运行时默认见语义说明 | 原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d656f75744d73"></a>
+
+### `@pagedJoinSource.records.timeoutMs`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/timeoutMs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=120000 | Schema未设默认；装配/运行时默认见语义说明 | 完整读取的超时预算，1至120000毫秒，取消和超时不保存部分快照。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d6546696c74657273"></a>
+
+### `@pagedJoinSource.records.timeFilters`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/timeFilters`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | propertyNames={"type":"string","pattern":"^[a-z0-9][a-z0-9-]*$"} | Schema未设默认；装配/运行时默认见语义说明 | 本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d6546696c746572732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@pagedJoinSource.records.timeFilters{key}`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/timeFilters/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 动态键的值 | required=["field","valueFormat"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d6546696c746572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6669656c64"></a>
+
+### `@pagedJoinSource.records.timeFilters{key}.field`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/timeFilters/additionalProperties/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d6546696c746572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f76616c7565466f726d6174"></a>
+
+### `@pagedJoinSource.records.timeFilters{key}.valueFormat`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/timeFilters/additionalProperties/properties/valueFormat`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["iso","compact","datetime"] | Schema未设默认；装配/运行时默认见语义说明 | 时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
+| "datetime" | 带时间部分的日期时间字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d6546696c746572732f70726f70657274794e616d6573"></a>
+
+### `@pagedJoinSource.records.timeFilters · propertyNames`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/timeFilters/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f696e697469616c"></a>
 
@@ -2004,6 +2146,7 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - [query-numeric-tolerance](examples/query-numeric-tolerance.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-union-page](examples/paged-union-page.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-union-branches](examples/paged-union-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [record-join-page](examples/record-join-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

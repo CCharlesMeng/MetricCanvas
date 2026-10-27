@@ -1,3 +1,4 @@
+import {memberFilterErrors,recordJoinErrors} from './validate-record-join';
 import { cellFallbackErrors } from './validate-cell-fallbacks';
 
 import type { PagedUnionDataSource, PagedUnionSource } from './paged-union';
@@ -27,6 +28,7 @@ export function pagedJoinErrors(page: Page): TypedError[] {
     const joined = data as PagedJoinDataSource;
     const path = `/dataSources/${ptr(id)}`;
     rowKeyErrors(joined, path, error);
+    recordJoinErrors(page,joined,path,error);
     memberErrors(page, joined, path, error);
     projectionErrors(page, joined, path, error);
     orderingErrors(joined, path, error);
@@ -59,7 +61,7 @@ function queryParams(query: DqeQueryDefinition): Set<string> {
 }
 
 function memberInputs(page: Page, source: PagedJoinSource): { bindings: Set<string>; params: Set<string> } {
-  const bindings = new Set<string>();
+  const bindings = new Set<string>(Object.keys(source.records?.timeFilters??{}));
   const params = new Set<string>();
   for (const member of Object.values(source.members)) {
     const ref = page.dataSources[member.source];
@@ -74,7 +76,8 @@ function memberInputs(page: Page, source: PagedJoinSource): { bindings: Set<stri
 function memberErrors(page: Page, data: PagedJoinDataSource, path: string, error: ErrorReporter): void {
   const source = data.source;
   const { bindings, params } = memberInputs(page, source);
-  const key = data.fields[source.rowKey];
+  const domain=source.members[source.domainMember];
+  const key=source.records&&domain?page.dataSources[domain.source]?.fields[domain.key.field]:data.fields[source.rowKey];
   for (const [name, member] of Object.entries(source.members)) {
     const mp = `${path}/source/members/${ptr(name)}`;
     const ref = page.dataSources[member.source];
@@ -84,7 +87,7 @@ function memberErrors(page: Page, data: PagedJoinDataSource, path: string, error
     if (!field || field.role !== 'dimension' || field.type !== key?.type || field.nullable !== false || !hasQueryFieldMapping(field)) error(`${mp}/key/field`, '成员键必须与业务行键类型一致且非空');
     if (!member.key.queryField.trim()) error(`${mp}/key/queryField`, '编码输入目标不能为空');
     for (const param of params) if (!queryParams(ref.source.query).has(param)) error(`${mp}/source`, '每个成员必须显式消费全部组合查询参数');
-    for (const filter of bindings) if (!ref.source.query.filterBindings?.[filter]) error(`${mp}/source`, '每个成员必须显式消费全部组合业务筛选');
+    memberFilterErrors(page,source,name,member,bindings,mp,error);
   }
 }
 
@@ -98,9 +101,10 @@ function projectionErrors(page: Page, data: PagedJoinDataSource, path: string, e
   const source = data.source;
   const domain = source.members[source.domainMember];
   const keyProjection = source.projection[source.rowKey];
-  if (!domain || keyProjection?.member !== source.domainMember || keyProjection?.field !== domain.key.field) error(`${path}/source/projection/${ptr(source.rowKey)}`, '行键投影必须来自业务行域成员键');
+  if (!source.records && (!domain || keyProjection?.member !== source.domainMember || keyProjection?.field !== domain.key.field)) error(`${path}/source/projection/${ptr(source.rowKey)}`, '行键投影必须来自业务行域成员键');
   for (const [fieldId, field] of Object.entries(data.fields)) {
     if ('queryField' in field) error(`${path}/fields/${ptr(fieldId)}`, '组合字段不得声明 queryField');
+    if(source.records&&fieldId===source.rowKey&&!source.projection[fieldId])continue;
     if (fieldId === source.ordinalField) {
       ordinalErrors(source, fieldId, field, path, error);
       continue;

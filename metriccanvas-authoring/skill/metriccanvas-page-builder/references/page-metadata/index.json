@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.65",
-  "schemaSha256": "87cac0ae10799837aec7d9b594ddc4ca5d1e717efe37b59951937da47745c8a3",
+  "schemaVersion": "6.66",
+  "schemaSha256": "e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -152,7 +152,7 @@
     },
     {
       "file": "packages/page/src/presentation-policy.ts",
-      "sha256": "c50aa0b0d0e5812f55be4337a9412daabea39c1b53b0632cad2a30129700eec9"
+      "sha256": "306a6bb7444436d841fb1d46bf647ed9fa86cb554587d4eb47b8fa99282825d6"
     },
     {
       "file": "packages/page/src/query-output-measures.ts",
@@ -332,7 +332,7 @@
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
-      "sha256": "c10e84f5f9d46d91f6e6c90dba0b2da8e0345905946a1337209e4a5f25bfca31"
+      "sha256": "4d0c8052bf8656fb37894a4f218b7ca8c4b4763bb59d26ea3c0069ead3c76369"
     },
     {
       "file": "packages/page/src/validate-paged-union.ts",
@@ -344,7 +344,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "d8581f5b77e2190c4c2127e406d0fc33026dbc1d1203dd6bc013cd537a12203f"
+      "sha256": "d4b6f30c82dc01cf58a8f016176ca7878c0bdc2f7242b15fcf945dfd74e554f7"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -486,7 +486,8 @@
         "paged-join-fixed-rank-page",
         "query-numeric-tolerance",
         "paged-union-page",
-        "paged-union-branches"
+        "paged-union-branches",
+        "record-join-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1725,7 +1726,8 @@
         "6.62",
         "6.63",
         "6.64",
-        "6.65"
+        "6.65",
+        "6.66"
       ]
     },
     {
@@ -6111,6 +6113,18 @@
       "module": "data-sources.md"
     },
     {
+      "pointer": "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/notApplicableFilters",
+      "path": "@pagedJoinSource.members{key}.notApplicableFilters",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/notApplicableFilters/items",
+      "path": "@pagedJoinSource.members{key}.notApplicableFilters[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
       "pointer": "#/definitions/pagedJoinSource/properties/members/propertyNames",
       "path": "@pagedJoinSource.members · propertyNames",
       "required": "条件结构",
@@ -6234,6 +6248,71 @@
       "pointer": "#/definitions/pagedJoinSource/properties/ordinalField",
       "path": "@pagedJoinSource.ordinalField",
       "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records",
+      "path": "@pagedJoinSource.records",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/batchSize",
+      "path": "@pagedJoinSource.records.batchSize",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/maxRows",
+      "path": "@pagedJoinSource.records.maxRows",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/maxBytes",
+      "path": "@pagedJoinSource.records.maxBytes",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs",
+      "path": "@pagedJoinSource.records.timeoutMs",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/timeFilters",
+      "path": "@pagedJoinSource.records.timeFilters",
+      "required": "本分支可选",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/timeFilters/additionalProperties",
+      "path": "@pagedJoinSource.records.timeFilters{key}",
+      "required": "动态键的值",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/timeFilters/additionalProperties/properties/field",
+      "path": "@pagedJoinSource.records.timeFilters{key}.field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/timeFilters/additionalProperties/properties/valueFormat",
+      "path": "@pagedJoinSource.records.timeFilters{key}.valueFormat",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records/properties/timeFilters/propertyNames",
+      "path": "@pagedJoinSource.records.timeFilters · propertyNames",
+      "required": "条件结构",
       "module": "data-sources.md"
     },
     {

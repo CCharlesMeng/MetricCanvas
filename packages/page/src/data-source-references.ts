@@ -1,3 +1,4 @@
+import {queryFilterIds} from './amount-filter';
 import type { DataSource, DataSources } from './data-source';
 import type { Page } from './page';
 import { computeDependencies } from './compute';
@@ -21,4 +22,10 @@ export function affectedSourceIds(sources: DataSources, changed: Iterable<string
     if ([...(includeCompute ? resultSourceIds(source) : queryResultDependencies(source)), ...definitionSourceIds(source)].includes(dependency)) ids.add(id);
   }
   return ids;
+}
+
+/** Filters consumed directly by a source, including local record-time predicates. */
+export function sourceFilterIds(source: DataSource | undefined): string[] {
+  if (source?.source.type === 'query') return queryFilterIds(source.source.query);
+  return source?.source.type === 'pagedJoin' ? Object.keys(source.source.records?.timeFilters ?? {}) : [];
 }

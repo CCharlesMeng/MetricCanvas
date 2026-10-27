@@ -21,7 +21,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 65;
+const CURRENT_MINOR = 66;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -45,6 +45,8 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'paged-join-records': {minor:66,legacyReadable:false,description:'审批记录逐行保留、成员筛选适用性和有界分批补列',
+    usedAt:document=>dataSourcePaths(document,data=>record(data.source)?.type==='pagedJoin'&&(has(record(data.source),'records')||Object.values(record(record(data.source)?.members)??{}).some(member=>has(record(member),'notApplicableFilters'))))},
   'metric-primary-details': {
     minor: 65, legacyReadable: false, description: '单一主指标与多行小字号次级指标，同排卡片等高',
     usedAt: document => componentPaths(document, component => component.type === 'metricCard' && props(component)?.variant === 'primaryDetail')

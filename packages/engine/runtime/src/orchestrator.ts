@@ -1,6 +1,6 @@
 import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext} from '@metriccanvas/page/internal';
-import {fieldSelectionIds,flattenPageComponents,queryFilterIds} from '@metriccanvas/page/internal';
+import {fieldSelectionIds,flattenPageComponents,sourceFilterIds} from '@metriccanvas/page/internal';
 import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
@@ -46,7 +46,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     let blocked = new Set(filterBlockedIds(filters));
     const gated = (id: string) => [...conditionSourceIds(page,id)].some(key => {
       const source = page.dataSources[key];
-      return source?.source.type === 'query' && queryFilterIds(source.source.query).some(filterId => blocked.has(filterId));
+      return sourceFilterIds(source).some(filterId => blocked.has(filterId));
     });
     let disposed = false, raw = new Map<string, DataSnapshot>();
     const year = new Date().getFullYear();
@@ -138,7 +138,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       values = next;
       let targets = new Set([...ids].filter(id => [...conditionSourceIds(page, id)].some(key => {
         const source = page.dataSources[key];
-        return source?.source.type === 'query' && queryFilterIds(source.source.query).some(id => changed.has(id));
+        return sourceFilterIds(source).some(id => changed.has(id));
       })));
       for(const component of flattenPageComponents(page))if(component.type==='table'&&fieldSelectionIds(component.props).some(id=>changed.has(id))){tables.get(component.data.main)?.resetPresentation();targets.add(component.data.main);}
       targets=new Set([...targets,...reconcileColumns()]);

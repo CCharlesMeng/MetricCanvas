@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.65",
+  "schemaVersion": "6.66",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data.pagedUnion"
@@ -136,7 +136,8 @@
         "references/page-metadata/examples/paged-join-fixed-rank-page.json",
         "references/page-metadata/examples/query-numeric-tolerance.json",
         "references/page-metadata/examples/paged-union-page.json",
-        "references/page-metadata/examples/paged-union-branches.json"
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/record-join-page.json"
       ]
     }
   ],
@@ -157,7 +158,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.65",
+        "$id": "https://metriccanvas/page/v6.66",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

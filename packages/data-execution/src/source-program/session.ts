@@ -1,3 +1,5 @@
+import {clearRecordJoinCache} from '../paged-join/records-reader';
+import {sourceFilterIds} from '@metriccanvas/page/internal';
 import { snapshotCellFallbacks } from '@metriccanvas/page/internal';
 import { createUnionReader } from '../paged-union/execute';
 import { compileUnion } from '../paged-union/plan';
@@ -66,7 +68,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   for (const filter of page.filters ?? []) try { for (const [id, value] of initialFilterValues([filter], defaultNow, defaultInputs, defaultRevision)) defaults.set(id, value); } catch {/* An unavailable dynamic default cannot override an explicit valid selection. */ }
   function defaultConditions(id: string, values: FilterValues, reuse = true): boolean {
     if(reuse&&[...conditionSourceIds(page,id)].some(key=>{const source=page.dataSources[key];return source?.source.type==='query'&&hasQuerySelection(source.source.query);}))return false;
-    const filters = new Set([...conditionSourceIds(page, id)].flatMap(key => { const source = page.dataSources[key]; return source?.source.type === 'query' ? queryFilterIds(source.source.query) : []; }));
+    const filters = new Set([...conditionSourceIds(page, id)].flatMap(key => { const source = page.dataSources[key]; return sourceFilterIds(source); }));
     return [...filters].every(id => {
       const filter = page.filters?.find(filter => filter.id === id);
       if (requiresFreshTime(filter, reuse) || dynamicPeriodDefault(filter)) return false;
@@ -82,8 +84,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   }
   function sourceReadScope(freshness: SourceRead['freshness'], inputs: DisplayInputsSnapshot | undefined): string {
     const nextScope = inputs ? `context:${canonicalizeJson(inputs)}` : 'session';
-    if (nextScope !== contextScope) { runner.forgetScope(contextScope); union.clear(); contextScope = nextScope; }
-    if (freshness === 'refresh') union.clear();
+    if (nextScope !== contextScope) { runner.forgetScope(contextScope); union.clear(); clearRecordJoinCache(runner); contextScope = nextScope; }
+    if (freshness === 'refresh') {union.clear(); clearRecordJoinCache(runner);}
     return freshness === 'refresh' ? `fresh:${++batch}` : nextScope;
   }
   function requiresFreshTime(filter: NonNullable<Page['filters']>[number] | undefined, reuse: boolean): boolean {
@@ -360,7 +362,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
       } finally { controller.abort(); if (request.freshness === 'refresh' || scope !== contextScope) runner.forgetScope(scope); }
     },
-    dispose() { union.clear(); runner.dispose(); }
+    dispose() { union.clear(); clearRecordJoinCache(runner); runner.dispose(); }
   };
   return program;
 }

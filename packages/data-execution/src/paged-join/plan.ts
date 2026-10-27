@@ -3,7 +3,7 @@ import type { FilterValues } from '../filter-values';
 import { composeEffectiveQuery } from '../effective-query';
 
 export type PagedJoinPlan = { page: Page; sourceId: string; source: PagedJoinDataSource; conditions: FilterValues;now?:Date;
-  view: TableQueryView; strategy:'selectPageThenFill'|'completeJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'; selection?: string; members: Map<string, QueryDataSource> };
+  view: TableQueryView; strategy:'selectPageThenFill'|'completeJoin'|'recordJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'|'records'; selection?: string; members: Map<string, QueryDataSource> };
 /** Dynamic execution order stays private; resultBindings are never rewritten. */
 export function compilePagedJoin(page: Page, sourceId: string, conditions: FilterValues, input: TableQueryView,now?:Date): PagedJoinPlan {
   const source = page.dataSources[sourceId] as PagedJoinDataSource;
@@ -15,6 +15,12 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
   if(view.predicates.some(predicate=>{const field=source.fields[predicate.field];return predicate.op==='gte'||predicate.op==='lte'?field.role!=='measure'||!['number','money'].includes(field.type):field.role!=='dimension';}))throw Object.assign(new Error('组合筛选与最终字段类型不相容'),{code:'DQE_QUERY_REJECTED'});
   if (view.search?.fields.some(field => !source.source.projection[field] || source.fields[field]?.type !== 'string')) throw Object.assign(new Error('组合搜索字段必须为已投影文本'), { code: 'DQE_QUERY_REJECTED' });
   const members = new Map(Object.entries(source.source.members).map(([id, member]) => [id, selectQuerySource(page.dataSources[member.source] as QueryDataSource,conditions)]));
+  if(source.source.records)return {now,page,sourceId,source,conditions,view,members,strategy:'recordJoin',reason:'records'};
+  const {selection,reason}=selectPageMember(page,source,members,conditions,view,now);
+  return {now,page,sourceId,source,conditions,view,selection,members,strategy:selection?'selectPageThenFill':'completeJoin',reason};
+}
+
+function selectPageMember(page:Page,source:PagedJoinDataSource,members:Map<string,QueryDataSource>,conditions:FilterValues,view:TableQueryView,now?:Date){
   const owners = new Set(view.sort.map(rule => source.source.projection[rule.field]?.member));
   let selection = owners.size === 1 ? [...owners][0] : undefined;
   let reason:PagedJoinPlan['reason']=selection?'single-owner':'multiple-owners';
@@ -39,7 +45,7 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
         filter?.dims?.some(v => controlled.has(v.dim_name ?? '')) || filter?.metrics?.some(v => controlled.has(v.metric_name ?? ''))) {selection = undefined;reason='predicate-target-conflict';}
     }
   }
-  return { now,page, sourceId, source, conditions, view, selection, members, strategy:selection?'selectPageThenFill':'completeJoin',reason };
+  return {selection,reason};
 }
 
 function planSearchReason(view:TableQueryView):PagedJoinPlan['reason'] {return view.search?.query.trim()?'search':'capability-or-field-contract';}

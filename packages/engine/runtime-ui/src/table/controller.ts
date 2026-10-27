@@ -1,7 +1,7 @@
 import {columnBindingKey,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
 import { tableColumnPresentation } from '../../../runtime/src/table/column-presentation';
-import { fieldSelectionIds, queryFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
+import { fieldSelectionIds, sourceFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
 import { createColumnCandidatesSession } from '../../../runtime/src/table/column-candidates';
 import type { TableRenderBinding } from '../component-render';
 import { evaluateTableView, defaultSourceView, type ColumnCandidatesRead } from '@metriccanvas/data-execution/runtime';
@@ -56,7 +56,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 const current = view(table), ids = conditionSourceIds(page, table.data.main), raw = stream()?.captureRawSnapshots();
                 const filterIds = new Set([...ids].flatMap(id => {
                     const source = page.dataSources[id];
-                    return [...(source?.source.type === 'query' ? queryFilterIds(source.source.query) : []),
+                    return [...(sourceFilterIds(source)),
                         ...(source?.compute ?? []).flatMap(op => op.op === 'selectField' ? [op.filter] : op.op === 'timeFill' && 'filter' in op.range ? [op.range.filter] : [])];
                 }));
                 const inputs = [...conditions()].filter(([id, value]) => filterIds.has(id) || value.type === 'search')
@@ -202,7 +202,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 return;
             const affected = [...conditionSourceIds(page, table.data.main)].some(id => {
                 const source = page.dataSources[id];
-                return (source?.source.type === 'query' && queryFilterIds(source.source.query).some(id => changedIds.has(id))) ||
+                return (sourceFilterIds(source).some(id => changedIds.has(id))) ||
                     source?.compute?.some(op => (op.op === 'selectField' && changedIds.has(op.filter)) || (op.op === 'timeFill' && 'filter' in op.range && changedIds.has(op.range.filter)));
             }) || page.filters?.some(f => f.type === 'search' && changedIds.has(f.id));
             if (affected)

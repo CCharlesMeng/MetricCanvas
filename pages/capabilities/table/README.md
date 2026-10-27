@@ -324,3 +324,11 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order.by`；初始�
 启动：`pnpm dev:playground`；按控制台端口打开上述页面。自动浏览器验收直接读取对应页面，不替换筛选配置：`COLUMN_VISIBILITY_BASE_URL=http://127.0.0.1:5197 node apps/playground/tests/table-column-visibility-browser.mjs`，静态导出另运行同目录 `table-column-export-browser.mjs`。源码规则、边界与说明见[表格协议](../../../docs/page-metadata/components/table.md#table-column-visibility)。
 
 浏览器/inline 和模拟网关集成测试均不证明真实 DQE、Relay、业务事实或权限接入已验收。
+
+## 审批记录关联与全局筛选
+
+入口：[record-join-demo](http://localhost:5187/pages/record-join-demo)，文件 `record-join-demo.json`。无需URL参数；在对应工作树执行 `pnpm --filter playground exec vite dev --port 5187`。使用当前预览Adapter的1205条合成审批记录，不访问真实DQE。
+
+默认2026-09，显示1205条；搜索 `BIZ-00001`，显示初审、复审两条及相同当前责任人；搜索 `BIZ-00000`，两条记录均保留，基本信息显示空值。生命状态候选同时包含“已关闭”“进行中”；仅选“进行中”显示601条，切换候选、排序及翻页都对完整范围生效。将起止期间均改成2026-08并按Enter提交，显示0条。恢复默认条件导出XLSX，包含1205条记录；添加 `?sourceFailure=true` 产生 `DQE_TRANSPORT_ERROR` 控制台诊断，表格沿用现有空态，不显示部分成功结果或成功总数。
+
+自动化直接读取业务页面配置，覆盖分批读取、重复商务ID、补列表重复键、取消、资源预算、搜索、候选和导出。证据见 `docs/evidence/paged-join-records/acceptance.md`；真实DQE字段、时间格式、区域及HCS业务约束仍未验真。

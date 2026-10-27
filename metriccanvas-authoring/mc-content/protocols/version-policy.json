@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 65,
-  "current": "6.65",
+  "minor": 66,
+  "current": "6.66",
   "capabilities": {
+    "paged-join-records": {
+      "minor": 66,
+      "description": "审批记录逐行保留、成员筛选适用性和有界分批补列",
+      "legacyReadable": false
+    },
     "metric-primary-details": {
       "minor": 65,
       "description": "单一主指标与多行小字号次级指标，同排卡片等高",
@@ -705,6 +710,7 @@
     "6.62",
     "6.63",
     "6.64",
-    "6.65"
+    "6.65",
+    "6.66"
   ]
 }

@@ -423,6 +423,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/record-join-page.json",
+      "target": "product-contracts/page/conformance/valid/record-join-page.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/reference-branches-page.json",
       "target": "product-contracts/page/conformance/valid/reference-branches-page.json",
       "scope": "exact product contract"
@@ -5563,6 +5568,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/record-join-page.json",
+      "target": "references/page-metadata/examples/record-join-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/data-sources.md",
       "target": "references/page-metadata/data-sources.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6394,11 +6404,11 @@
     }
   ],
   "counts": {
-    "product": 1247,
+    "product": 1249,
     "authoring": 31,
     "modules": 33,
-    "topics": 178,
-    "nodes": 2331,
+    "topics": 179,
+    "nodes": 2343,
     "tools": 9,
     "components": 19
   },

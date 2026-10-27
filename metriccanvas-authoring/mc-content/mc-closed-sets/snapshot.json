@@ -860,6 +860,13 @@
                   },
                   "canSelectPage": {
                     "type": "boolean"
+                  },
+                  "notApplicableFilters": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    }
                   }
                 },
                 "required": [
@@ -978,6 +985,67 @@
             "ordinalField": {
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "records": {
+              "type": "object",
+              "properties": {
+                "batchSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "maxRows": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000
+                },
+                "maxBytes": {
+                  "type": "integer",
+                  "minimum": 1024,
+                  "maximum": 134217728
+                },
+                "timeoutMs": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 120000
+                },
+                "timeFilters": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      },
+                      "valueFormat": {
+                        "type": "string",
+                        "enum": [
+                          "iso",
+                          "compact",
+                          "datetime"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "field",
+                      "valueFormat"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "batchSize",
+                "maxRows",
+                "maxBytes",
+                "timeoutMs"
+              ],
+              "additionalProperties": false
             },
             "initial": {
               "type": "object",

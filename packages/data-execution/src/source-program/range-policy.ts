@@ -1,5 +1,5 @@
 import {isObjectDqeItem,queryLeaves} from '@metriccanvas/page/internal';
-import { canonicalizeJson, declaredPaginationLimit, type DataSnapshot, type DataSource, type EffectiveQuery, type TableQueryView, type Row } from '@metriccanvas/page/internal';
+import { canonicalizeJson, declaredPaginationLimit, type DataSnapshot, type DataSource, type EffectiveQuery, type TableQueryView, type Row,type EmbeddedInitialRows } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { QueryDiagnosticContext } from '../ports';
 import { rawSnapshot } from '../snapshots';
@@ -12,12 +12,13 @@ export class SourceRangeError extends Error {
 }
 export function reusableInitialSnapshot(source: DataSource, view?: TableQueryView, windowed = false): DataSnapshot | undefined {
   if (source.source.type === 'inline') return rawSnapshot(source.source.rows);
+  if(source.source.type==='pagedJoin'&&source.source.records)return undefined;
   const initial = source.source.initial;
   if (!initial) return undefined;
   if ((source.source.type === 'pagedJoin' || source.source.type === 'pagedUnion')) {
     if (!view || canonicalizeJson(source.source.initial!.view) !== canonicalizeJson(view)) return undefined;
   } else if (view && changedInitialView(view)) return undefined;
-  if ((windowed || (source.source.type === 'pagedJoin' || source.source.type === 'pagedUnion')) && view && initial.totalCount !== undefined && initial.rows.length !== Math.min(view.pageSize, initial.totalCount)) return undefined;
+  if(incompleteInitialWindow(source,initial,view,windowed))return undefined;
   return rawSnapshot(initial.rows, initial.totalCount, initial.cellFallbacks);
 }
 export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, limit?: number, diagnostics?: QueryDiagnosticContext & { pagination?: EffectiveQuery['pagination'] }): DataSnapshot {
@@ -158,4 +159,9 @@ export function reportInitialWarnings(source: DataSource, diagnostics: QueryDiag
 export function reportInitialSnapshotWarnings(source: DataSource, snapshot: DataSnapshot | undefined, diagnostics: QueryDiagnosticContext): void {
   if (source.source.type !== 'query' || snapshot?.status !== 'ready') return;
   if (snapshot.rows[0] === source.source.initial?.rows[0]) reportInitialWarnings(source, diagnostics);
+}
+
+function incompleteInitialWindow(source:DataSource,initial:EmbeddedInitialRows,view:TableQueryView|undefined,windowed:boolean):boolean{
+  const combined=source.source.type==='pagedJoin'||source.source.type==='pagedUnion';
+  return !!((windowed||combined)&&view&&initial.totalCount!==undefined&&initial.rows.length!==Math.min(view.pageSize,initial.totalCount));
 }

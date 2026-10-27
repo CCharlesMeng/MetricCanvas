@@ -1,3 +1,4 @@
+import {sourceFilterIds} from './data-source-references';
 import { attachInitialFallbacks } from './cell-fallback';
 import { tablePinnedErrors, tableAlignedSlots } from './table-pinned';
 
@@ -438,7 +439,7 @@ function invariantErrors(page: Page): TypedError[] {
 
   }
   function sourceConsumesFilter(source: DataSource | undefined, id: string): boolean {
-    return !!((source?.source.type === 'query' && source.source.query.filterBindings?.[id]) || source?.compute?.some(op => (op.op === 'selectField' && op.filter === id) || (op.op === 'timeFill' && 'filter' in op.range && op.range.filter === id)));
+    return !!(sourceFilterIds(source).includes(id) || source?.compute?.some(op => (op.op === 'selectField' && op.filter === id) || (op.op === 'timeFill' && 'filter' in op.range && op.range.filter === id)));
   }
   function checkDetailComponent(component: Component, componentPath: string): void {
     if (componentIds.has(component.id)) errors.push(schemaError(`${componentPath}/id`, 'component id 重复'));

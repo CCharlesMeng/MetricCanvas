@@ -130,7 +130,8 @@
         "paged-join-fixed-rank-page",
         "query-numeric-tolerance",
         "paged-union-page",
-        "paged-union-branches"
+        "paged-union-branches",
+        "record-join-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1666,7 +1667,14 @@
     "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/sort": "显式按扇区数值升序或降序，同值稳定；默认不排序，不得与categoryOrder并用。",
     "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/sort": "显式按扇区数值升序或降序，同值稳定；默认不排序，不得与categoryOrder并用。",
     "#/definitions/pieChartComponent/properties/props/anyOf/0/properties/categoryOrder": "按类别原始标量声明固定顺序并预留色位；未声明类别保留输入顺序接到末尾。",
-    "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/categoryOrder": "按类别原始标量声明固定顺序并预留色位；未声明类别保留输入顺序接到末尾。"
+    "#/definitions/pieChartComponent/properties/props/anyOf/1/properties/categoryOrder": "按类别原始标量声明固定顺序并预留色位；未声明类别保留输入顺序接到末尾。",
+    "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/notApplicableFilters": "仅记录模式非主表成员：显式声明其他成员消费、自己不适用的业务筛选，不得重叠或漏配。",
+    "#/definitions/pagedJoinSource/properties/records": "显式启用逐条保留审批记录的多对一补列；行键独立于关联键。",
+    "#/definitions/pagedJoinSource/properties/records/properties/batchSize": "每次单表分页及关联键集合的批次大小，1至1000。",
+    "#/definitions/pagedJoinSource/properties/records/properties/maxRows": "主表完整读取行数预算，最多100000，包含本地时间筛选前读取的记录。",
+    "#/definitions/pagedJoinSource/properties/records/properties/maxBytes": "原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。",
+    "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs": "完整读取的超时预算，1至120000毫秒，取消和超时不保存部分快照。",
+    "#/definitions/pagedJoinSource/properties/records/properties/timeFilters": "本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1956,7 +1964,8 @@
     "center": "本列列头与数据单元格水平居中。",
     "6.64": "饼图表格式图例、显式数值排序与固定类别顺序，默认保留输入行序。",
     "primaryDetail": "一个主指标与多行小字号次级指标；同排卡片自然等高，次级值带下划线但点击仍需显式link和动作。",
-    "6.65": "新增主指标与多行次级指标卡；既有指标卡呈现保持。"
+    "6.65": "新增主指标与多行次级指标卡；既有指标卡呈现保持。",
+    "6.66": "记录逐行保留、多对一补列、成员筛选适用性与有预算分批完整关联。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2152,7 +2161,8 @@
         "#/definitions/pagedJoinSource"
       ],
       "headings": [
-        "多查询组合源 pagedJoin（6.22）"
+        "多查询组合源 pagedJoin（6.22）",
+        "审批记录与当前信息补列（6.66）"
       ],
       "dependencies": []
     },
@@ -2468,7 +2478,8 @@
       "查询异常与结果总数",
       "查阅方式",
       "多查询组合源 pagedJoin（6.22）",
-      "分页合并源 pagedUnion（6.61）"
+      "分页合并源 pagedUnion（6.61）",
+      "审批记录与当前信息补列（6.66）"
     ],
     "fields.md": [
       "DQE 直接输出的数值作为度量（6.56）",

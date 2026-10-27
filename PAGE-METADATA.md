@@ -487,3 +487,5 @@ MC 内容包随本协议同步生成，包含同源字段语义、规则、例�
 表格的异常标量保留原文并告警，本地升降序统一将空白及纯横杠排最后；有效类型值继续用于计算和交互。props.pinnedTop 声明独立完整查询槽，列级 pinnedTop 显式绑定汇总字段；每页首行展示、无序号、不占分页计数，汇总失败不阻塞明细但阻止完整 Excel 导出。声明和限制见[表格模块](docs/page-metadata/components/table.md)，结果证据见[字段契约](docs/page-metadata/fields.md)。可观察页面为 table-value-tolerance、table-missing-sort、table-pinned-summary，均为合成数据。
 
 6.61 新增 `pagedUnion` 分页合并源：按成员显式字段/常量/null 投影统一列，逐行保留全部记录，在完整匹配范围整体排序、搜索、筛选、计数、分页和导出；表格可按来源选择详情导航。声明、执行限制与真实接入边界见[数据源](docs/page-metadata/data-sources.md#paged-union)和[表格](docs/page-metadata/components/table.md#source-navigation)，验收页为 [multi-source-table.json](pages/capabilities/table/multi-source-table.json)。
+
+6.66 增量：`pagedJoin.records` 支持主表逐条审批记录与多对一当前信息补列、独立记录标识、本地审批期间筛选和有预算的分批完整关联；成员可显式声明不适用的业务筛选。旧组合源行为保持。配置与限制见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，合成验收入口 `/pages/record-join-demo`。

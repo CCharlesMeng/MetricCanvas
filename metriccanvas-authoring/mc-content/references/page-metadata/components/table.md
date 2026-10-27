@@ -233,7 +233,7 @@ Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑
 完整示例 `paged-union-page`，浏览器场景 `/pages/multi-source-table` 及 `/pages/multi-source-contract-detail`、`/pages/multi-source-commercial-detail`。演示来源为本地合成分页接口，入口与验收步骤见表格示例说明。
 
 
-页面协议 6.65。结构真源为本册[schema.json](../schema.json)，SHA256 `87cac0ae10799837aec7d9b594ddc4ca5d1e717efe37b59951937da47745c8a3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.66。结构真源为本册[schema.json](../schema.json)，SHA256 `e7f5230350505dabd870d3a3fc2bc89260da817a02f5494721017a894035cce7`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

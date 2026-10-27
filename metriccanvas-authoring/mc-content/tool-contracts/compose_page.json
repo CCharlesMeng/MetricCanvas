@@ -861,6 +861,13 @@
                       },
                       "canSelectPage": {
                         "type": "boolean"
+                      },
+                      "notApplicableFilters": {
+                        "items": {
+                          "pattern": "^[a-z0-9][a-z0-9-]*$",
+                          "type": "string"
+                        },
+                        "type": "array"
                       }
                     },
                     "required": [
@@ -984,6 +991,67 @@
                 "ordinalField": {
                   "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
                   "type": "string"
+                },
+                "records": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "batchSize": {
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "maxRows": {
+                      "maximum": 100000,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "maxBytes": {
+                      "maximum": 134217728,
+                      "minimum": 1024,
+                      "type": "integer"
+                    },
+                    "timeoutMs": {
+                      "maximum": 120000,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "timeFilters": {
+                      "additionalProperties": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "field": {
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                            "type": "string"
+                          },
+                          "valueFormat": {
+                            "enum": [
+                              "iso",
+                              "compact",
+                              "datetime"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "valueFormat"
+                        ],
+                        "type": "object"
+                      },
+                      "propertyNames": {
+                        "pattern": "^[a-z0-9][a-z0-9-]*$",
+                        "type": "string"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "batchSize",
+                    "maxRows",
+                    "maxBytes",
+                    "timeoutMs"
+                  ],
+                  "type": "object"
                 },
                 "initial": {
                   "additionalProperties": false,
@@ -2160,6 +2228,13 @@
                   },
                   "canSelectPage": {
                     "type": "boolean"
+                  },
+                  "notApplicableFilters": {
+                    "items": {
+                      "pattern": "^[a-z0-9][a-z0-9-]*$",
+                      "type": "string"
+                    },
+                    "type": "array"
                   }
                 },
                 "required": [
@@ -2283,6 +2358,67 @@
             "ordinalField": {
               "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
               "type": "string"
+            },
+            "records": {
+              "additionalProperties": false,
+              "properties": {
+                "batchSize": {
+                  "maximum": 1000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "maxRows": {
+                  "maximum": 100000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "maxBytes": {
+                  "maximum": 134217728,
+                  "minimum": 1024,
+                  "type": "integer"
+                },
+                "timeoutMs": {
+                  "maximum": 120000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "timeFilters": {
+                  "additionalProperties": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "field": {
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "valueFormat": {
+                        "enum": [
+                          "iso",
+                          "compact",
+                          "datetime"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "field",
+                      "valueFormat"
+                    ],
+                    "type": "object"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[a-z0-9][a-z0-9-]*$",
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              },
+              "required": [
+                "batchSize",
+                "maxRows",
+                "maxBytes",
+                "timeoutMs"
+              ],
+              "type": "object"
             },
             "initial": {
               "additionalProperties": false,

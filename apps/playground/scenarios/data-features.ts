@@ -39,7 +39,7 @@ export const dataFeatures: readonly DataFeature[] = [
   { id: 'shared-source', topic: 'relationships', title: '共享数据源', description: '多个组件消费同一份记录或查询结果，观察共同刷新。',
     examples: [{ scene: 'foundations', pages: ['component-foundations'] }, { scene: 'local-filter', pages: ['query-mode-chart-demo'] }, { scene: 'export', pages: ['table-toolbar-demo'] }] },
   { id: 'keyed-join', topic: 'relationships', title: '按键补列', description: '通过关联键组合多个查询的列，再进行全局结果处理。',
-    examples: [{ scene: 'multiple-sources', pages: ['multi-query-table'] }] },
+    examples: [{ scene: 'multiple-sources', pages: ['multi-query-table', 'record-join-demo'] }] },
   { id: 'ordered-merge', topic: 'relationships', title: '多来源有序合并', description: '用 pagedUnion 显式映射字段、保留重复记录，并整体排序、计数和分页；模拟接口验证。',
     examples: [{ scene: 'multiple-sources', pages: ['multi-source-table', 'decision-opinion-details'] }] },
   { id: 'result-cascade', topic: 'relationships', title: '查询结果驱动下游查询', description: '从当前查询窗口提取项目，再按独立条件查询评估明细。',

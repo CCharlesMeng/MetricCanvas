@@ -13,7 +13,7 @@
   import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
-  import {queryFilterIds} from '@metriccanvas/page/internal';
+  import {sourceFilterIds} from '@metriccanvas/page/internal';
   import {createCandidateGatewaySession} from '@metriccanvas/data-execution/runtime';
   let candidateSession:ReturnType<typeof createCandidateGatewaySession>|undefined;
   import {filterInputIssue} from '../../runtime/src/navigation-inputs';
@@ -663,7 +663,7 @@
   function sourceBlocked(page: Page, sourceId: string): boolean {
     return [...conditionSourceIds(page,sourceId)].some(id => {
       const source=page.dataSources[id];
-      return source?.source.type==='query' && queryFilterIds(source.source.query).some(id=>blockedFilters.includes(id));
+      return sourceFilterIds(source).some(id=>blockedFilters.includes(id));
     });
   }
   async function exportTable(component: TableComponent) {

@@ -1,5 +1,6 @@
+import {recordJoinReader} from './records-reader';
 import {isObjectDqeItem,queryLeaves} from '@metriccanvas/page/internal';
-import type { Row } from '@metriccanvas/page/internal';
+import type { Row,DataSnapshot } from '@metriccanvas/page/internal';
 import type { PagedJoinPlan } from './plan';
 import type { QueryRunner } from '../query-runner';
 import { executePagedJoin } from './execute';
@@ -8,6 +9,7 @@ import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-polic
 import { describeExportSource } from '../source-program/export-diagnostics';
 
 export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, allowPartial = false): Promise<Awaited<ReturnType<typeof executePagedJoin>>> {
+  if(plan.source.source.records)return recordJoinReader(runner).read(plan,scope,signal,true,true);
   if (!plan.selection) return executePagedJoin(plan, runner, scope, signal, true);
   const rows: Row[] = [], keys = new Set<unknown>();
   const canReturnPartial=partialAllowed(plan,allowPartial);
@@ -34,18 +36,8 @@ export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, 
       if (canReturnPartial && rows.length) return partial();
       throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出执行失败');
     }
-    const total = snapshot.totalCount;
-    if (total === undefined || (expected !== undefined && expected !== total) || result.viewCorrection) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出总数或窗口发生变化');
-    if (total > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
-    expected = total;
-    const chunk = snapshot.status === 'ready' ? snapshot.rows : [];
-    for (const row of chunk) {
-      const key = row[plan.source.source.rowKey];
-      if (keys.has(key)) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出出现重复业务键');
-      keys.add(key); rows.push(row);
-    }
-    if (rows.length === expected) return { snapshot: rawSnapshot(rows, expected) };
-    if (!chunk.length || rows.length > expected) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出提前结束或超出总数');
+    expected=appendExportChunk(plan,snapshot,expected,!!result.viewCorrection,keys,rows);
+    if(rows.length===expected)return {snapshot:rawSnapshot(rows,expected)};
   }
 }
 
@@ -54,3 +46,17 @@ function hasObjectMember(plan: PagedJoinPlan): boolean {
 }
 
 function partialAllowed(plan: PagedJoinPlan, requested: boolean): boolean { return requested && !hasObjectMember(plan); }
+
+function appendExportChunk(plan:PagedJoinPlan,snapshot:Extract<DataSnapshot,{status:'ready'|'empty'}>,expected:number|undefined,corrected:boolean,keys:Set<unknown>,rows:Row[]):number{
+  const total=snapshot.totalCount;
+  if(total===undefined||(expected!==undefined&&expected!==total)||corrected)throw new SourceRangeError('EXPORT_INCOMPLETE_DATA','组合导出总数或窗口发生变化');
+  if(total>EXPORT_MAX_ROWS)throw new SourceRangeError('EXPORT_ROW_LIMIT','导出单表超过 10000 行');
+  const chunk=snapshot.status==='ready'?snapshot.rows:[];
+  for(const row of chunk){
+    const key=row[plan.source.source.rowKey];
+    if(keys.has(key))throw new SourceRangeError('EXPORT_INCOMPLETE_DATA','组合导出出现重复业务键');
+    keys.add(key);rows.push(row);
+  }
+  if(rows.length!==total&&(!chunk.length||rows.length>total))throw new SourceRangeError('EXPORT_INCOMPLETE_DATA','组合导出提前结束或超出总数');
+  return total;
+}
