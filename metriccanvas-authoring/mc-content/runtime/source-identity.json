@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "0c5d5f4697f26410096818f3bcd70c577b8bd64ad6a205ba589b681909057928",
+  "sha256": "24d8503da8686402cc63db50af7ad7dcb8a40e80d4e956efc81a4991ea35ea09",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "1cb9944c0217b6f47cd453c30a1bff1a68d260aad7cdb8c7408333949ba98095"
+      "sha256": "a1b30cef8bfbae85effc0160e82ca6b38dcbc2b738d928375d699cd5971f688d"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
@@ -1304,7 +1304,7 @@
     },
     {
       "file": "packages/page/src/dqe-object.ts",
-      "sha256": "ab2a81aaca140c788fa3c20283bc2f2ee628d1751a2c6c1289aa94b2cb1df8ea"
+      "sha256": "2d7c3bbeff933f4cddbe3891996301f9f3a91cbda96345a1c8ea58d5301b4a22"
     },
     {
       "file": "packages/page/src/errors.ts",

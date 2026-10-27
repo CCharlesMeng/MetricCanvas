@@ -49,8 +49,9 @@ export function dqeDefaultSort(item: JsonObject): Array<{ queryField: string; di
   if (order.by !== undefined || order.orderByField !== undefined) throw new Error('DQE 不支持 order.by/orderByField；请使用 order_by_field/type 单字段排序');
   if (order.order_by_field === undefined && order.type === undefined) return [];
   if (typeof order.order_by_field !== 'string' || !order.order_by_field.trim()) throw new Error('DQE 默认排序字段无效');
-  if (order.type !== 'asc' && order.type !== 'desc') throw new Error('DQE 默认排序方向无效');
-  return [{ queryField: order.order_by_field, direction: order.type }];
+  const direction = typeof order.type === 'string' ? order.type.toLowerCase() : undefined;
+  if (direction !== 'asc' && direction !== 'desc') throw new Error('DQE 默认排序方向无效');
+  return [{ queryField: order.order_by_field, direction }];
 }
 
 /** An explicitly bound field belongs to page state even when the control is cleared. */

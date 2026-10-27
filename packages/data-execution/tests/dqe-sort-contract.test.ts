@@ -3,6 +3,10 @@ import { dqeDefaultSort, stableRowQuery, type EffectiveQuery } from '@metriccanv
 import { createDqeGateway, effectiveDqeItem } from '../src/dqe/dqe';
 import { parsePage } from '@metriccanvas/page';
 import fixture from '../../page/fixtures/contract-valid/paged-union-page.json';
+import sdtMonthly from '../../../pages/business/report/sdt/business-sdt-report-monthly.json';
+import sdtUltimate from '../../../pages/business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json';
+import { resolvePageParams } from '@metriccanvas/page';
+import { createPageDataExecutor } from '../src/execute';
 import { createUnionPreview } from '../../../apps/playground/fixtures/decision-opinion/union-gateway';
 import { createSourceProgram, defaultSourceView } from '../src/source-program/session';
 
@@ -54,6 +58,23 @@ describe('metric DQE ordering at the transport boundary', () => {
     expect(effectiveDqeItem(input).order).toEqual({ order_by_field: '商审审批人决策次数', type: 'desc', offset: 0, limit: 200 });
     delete input.sort;
     expect(effectiveDqeItem(input).order).toEqual({ order_by_field: '商务审批人', type: 'asc', offset: 0, limit: 200 });
+  });
+  it.each(['asc', 'ASC', 'desc', 'DESC'])('normalizes a saved %s direction at the wire boundary', direction => {
+    const input = query(); delete input.sort;
+    input.body.dsl_list[0].order = { order_by_field: '商审审批人决策次数', type: direction };
+    expect(effectiveDqeItem(input).order).toEqual({ order_by_field: '商审审批人决策次数', type: direction.toLowerCase(), offset: 0, limit: 200 });
+  });
+  it.each([{ document: sdtMonthly, count: 15 }, { document: sdtUltimate, count: 14 }])('executes all saved SDT queries with their real default ordering: $document.id', async ({ document, count }) => {
+    const resolved = resolvePageParams(document); if (!resolved.ok) throw Error('SDT fixture');
+    const requests: unknown[] = [];
+    const fetchImpl = vi.fn<typeof fetch>(async (_url, init) => {
+      const items = JSON.parse(String(init?.body)).dsl_list;
+      requests.push(...items);
+      return Response.json({ retCode: 'CBC.0000', results: items.map(() => ({ code: 'SUCCESS', data: [], total_count: 0 })) });
+    });
+    await createPageDataExecutor({ gateway: createDqeGateway({ fetchImpl }) }).execute(resolved.document);
+    expect(requests).toHaveLength(count);
+    expect(requests).toEqual(expect.arrayContaining([expect.objectContaining({ order: expect.objectContaining({ type: 'desc' }) })]));
   });
   it('does not invent a row-key secondary rule for query children', () => {
     expect(stableRowQuery(query(), 'name').sort).toEqual(query().sort);

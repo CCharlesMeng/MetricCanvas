@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-470233a50ec1655d",
-  "contentSha256": "470233a50ec1655d0e340c330d8df9e43f2c468ef4bf78a6ab8ea978f780331c",
+  "contentVersion": "1-abcf948f825a652d",
+  "contentSha256": "abcf948f825a652d4710b5b95f3b4ac64bea22cc1f982ab3ef02f5dc5783f66a",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -2065,7 +2065,7 @@
     },
     {
       "file": "knowledge/queries-and-bindings.section-95d0c2c2.json",
-      "sha256": "562f61c675996017c0bc46fd92482fcc0d57d8d1b4c735623b44c4d2eaae3055"
+      "sha256": "58b4078769cd528d6e3950d1fb0d4550f8187f827d5d4739ea4094755ccb40d5"
     },
     {
       "file": "knowledge/queries-and-bindings.section-b54a6550.json",
@@ -2353,7 +2353,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "88008ce5f7a26b48ee20ac1caa4acf1b08d805089f14ff53891d7fda4925f217"
+      "sha256": "eee360e1ba32d4963a6588f160ca56ed470fa678958b9852d3c4d71331815dd9"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -4741,7 +4741,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "98120565f0ce2bce9cb74309eef65e934fd2b7b795e177a7592f3caffcd893c4"
+      "sha256": "37656776c751f00e15b0abc59dea8f1ad1ebb3be4820fbc4aeb623b3f297f7c3"
     },
     {
       "file": "references/page-metadata/actions-and-navigation.md",
@@ -7337,7 +7337,7 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "80fe0bb8f91ff54e37b027af5e19809bd1e85352d0356e954ffe30db44556f9a"
+      "sha256": "91fab1e8abecb19f04cea14dd3f52da59c6dd5d7181bf56d17359571b59bc3a3"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -7349,7 +7349,7 @@
     },
     {
       "file": "references/page-metadata/queries-and-bindings.md",
-      "sha256": "4fe709929b470739c4f0ed5d9cee30bd6b1eaf7a7257d6c11945e142987cb76b"
+      "sha256": "d461780fafdbacbb99de947924722fa4f3831cccb56b4bb23de0e9d05b1b43de"
     },
     {
       "file": "references/page-metadata/README.md",
@@ -7377,7 +7377,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "7337aecdfe60e8138cb7e5e96aed7e302c8eda32fddea6426c5d82246196cbe1"
+      "sha256": "24912ac1c29f62465fead8d5aeb5acb29077c384d45e18732baf3ece3fb876c8"
     },
     {
       "file": "runtime/coverage.json",
@@ -7425,7 +7425,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "ed67700c5d3586def473f8c6dd161a6b70595c48723096c1f8355ef1015c2103"
+      "sha256": "4edc0fd4bc72c5613aad6f607db1c5f3313551ceac6dc09ba87d26602a8a95d5"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -7445,7 +7445,7 @@
     },
     {
       "file": "scripts/inspect-page.mjs",
-      "sha256": "7fda24d9eb5c9721caae779a1edde76e2c5284999617a6246c425bf922be3f81"
+      "sha256": "5e4780b2b4f019e340c4ed9cbf0cbc3b1b3dc305d7bea60faf9af9f4585641e9"
     },
     {
       "file": "scripts/inspect-page.mjs.LICENSES.md",
@@ -7485,7 +7485,7 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "21a9dff35bca94ee232a62de3e132779c2cf689aab00144b292cbd502c279817"
+      "sha256": "b152dd39a4e071686827522cbbe0873238e069902dcffbfd28bc85225e8619ce"
     },
     {
       "file": "scripts/upgrade-page.mjs.LICENSES.md",
@@ -7531,7 +7531,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "88008ce5f7a26b48ee20ac1caa4acf1b08d805089f14ff53891d7fda4925f217",
+    "productManifestSha256": "eee360e1ba32d4963a6588f160ca56ed470fa678958b9852d3c4d71331815dd9",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "86953b7d4aa235a4b8b4d67e1145be18f6be005550171a8ac93b223892d014f8",

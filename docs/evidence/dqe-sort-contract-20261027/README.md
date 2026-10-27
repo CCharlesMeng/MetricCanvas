@@ -50,7 +50,7 @@
 | --- | ---: | ---: |
 | encodedMetricItem | 13 | 11 |
 | metricOrder | 新增 | 7 |
-| dqeDefaultSort | 8 | 9 |
+| dqeDefaultSort | 8 | 10 |
 | encodeObjectQuery / defaultSort | 11 / 新增 | 11 / 2 |
 | compileMember / validateRowOrder | 4 / 5 | 3 / 5 |
 | compareMemberOrder | 4 | 删除 |
@@ -87,3 +87,9 @@ ADR索引检查被基线已有的 `docs/adr/topics/page-document-structure.md` �
 ## 交付 CI 派生回执补齐
 
 首次提交 cf87633ab3fa96bae2ce66883e97e41000a8ecf0 的 CI 已通过 local-authoring，MC 内容包测试30项及覆盖对账6项也通过，但 mc-content-fixtures.py --check 报 diagnostics.json 漂移。原因是本批重新生成 MC 后，三份已跟踪的诊断回执仍保留旧 contentSha256 / productManifestSha256。已用原生成器重建 diagnostics、business-report、usage-report 三份回执；页面内容与可执行代码无变化，无新函数或复杂度变化。原失败命令复测通过，并完成 MC 独立归档打包。后续 CI 结论以最终提交为准。
+
+## 交付浏览器兼容修复
+
+首次CI的兼容性回放有498/506通过：6项失败来自两份现有SDT页面的3个默认DESC排序在网关被误拒（每浏览器3项），另外2项来自子表格回归仍期待被移除的行键第二排序。已兼容ASC/DESC与asc/desc，发送归一为小写，未放宽非法by或多字段；子表格断言按单字段需求更新。新增4种方向回归及两份实际SDT页面的共享执行器回归（全部根查询分别15/14项，浏览器可见查询仍为14）。dqeDefaultSort按同口径8→10，新增测试回调最高6；浏览器测试仅改期望字面量，函数自身复杂度不变。文档、生成产物与MC诊断回执随本轮重建，最终远端CI单列报告。
+
+方向大小写兼容修正后，本地最终202文件1852项回归通过；page/data-execution/embed类型检查通过（Svelte0错误0警告）；authoring:contracts:check及MC诊断回执检查通过。没有用减少查询数或放宽非法多字段来修正浏览器用例。

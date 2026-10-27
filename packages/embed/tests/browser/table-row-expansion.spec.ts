@@ -105,7 +105,7 @@ test('query sort resets only its own window and retry keeps the failed target pa
   await child.locator('.sort-toggle').click();
   await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
   const calls = await page.evaluate(() => (window as unknown as { rowQueries: unknown[] }).rowQueries);
-  expect(calls.at(-1)).toMatchObject({ pagination: { offset: 0, limit: 10 }, sort: [{ queryField: 'row_product', direction: 'asc' }, { queryField: 'row_order_id', direction: 'asc' }] });
+  expect(calls.at(-1)).toMatchObject({ pagination: { offset: 0, limit: 10 }, sort: [{ queryField: 'row_product', direction: 'asc' }] });
   await page.evaluate(() => { (window as unknown as { rowFailNext: boolean }).rowFailNext = true; });
   await child.getByRole('button', { name: '2', exact: true }).click();
   await expect(child.getByText('明细暂不可用')).toBeVisible();
