@@ -39,6 +39,8 @@ Skill 验证按 [仓库约定](../../AGENTS.md#skill-验收范围) 只验收 loc
 
 先确认实际产品版本；混合工作区中在独立检出承接本次改动，再从该检出的产品真源生成。不能把其他任务未提交的 Schema 或组件知识散入安装包。
 
+交付前按安装副本维护说明中的[版本约定](../../metriccanvas-authoring/skill/metriccanvas-local-authoring/references/maintenance.md#版本约定)更新 `SKILL.md` 的 `metadata.version`，再生成并检查分发锁；仅修改仓库维护材料、不改变安装目录内容时无需升版。
+
 ```sh
 pnpm install --frozen-lockfile
 pnpm authoring:contracts
