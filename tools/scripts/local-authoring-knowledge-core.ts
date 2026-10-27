@@ -13,7 +13,10 @@ export interface AuthoringKnowledge {
 export const digest = (text: string) => createHash('sha256').update(text).digest('hex');
 
 export function encodeKnowledge(model: AuthoringKnowledge): string {
-  return JSON.stringify({encoding:'gzip-base64',data:gzipSync(JSON.stringify(model)).toString('base64')})+'\n';
+  const compressed=gzipSync(JSON.stringify(model));
+  // RFC 1952 OS=unknown keeps artifact hashes independent of the generator's OS.
+  compressed[9]=255;
+  return JSON.stringify({encoding:'gzip-base64',data:compressed.toString('base64')})+'\n';
 }
 
 export function decodeKnowledge(content: string): AuthoringKnowledge {

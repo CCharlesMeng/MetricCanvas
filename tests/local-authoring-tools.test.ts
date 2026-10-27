@@ -102,6 +102,18 @@ describe('局部读取保持共享消费者与完整验收边界',()=>{
 });
 
 describe('按需协议知识',()=>{
+  it('压缩知识使用与平台无关的 gzip 头，并兼容已有平台编码',()=>{
+    const content=encodeKnowledge(model),envelope=JSON.parse(content);
+    const compressed=Buffer.from(envelope.data,'base64');
+    expect(compressed[9]).toBe(255); // RFC 1952 OS=unknown; Darwin=19 and Unix=3 must not leak into artifact hashes.
+    expect(compressed.readUInt32LE(4)).toBe(0);
+    for(const os of [3,19,255]) {
+      const legacy=Buffer.from(compressed);legacy[9]=os;
+      const decoded=decodeKnowledge(JSON.stringify({...envelope,data:legacy.toString('base64')}));
+      expect(decoded).toEqual(model);
+      expect(encodeKnowledge(decoded)).toBe(content);
+    }
+  });
   it('压缩知识可无损还原，损坏的编码明确失败',()=>{
     expect(decodeKnowledge(encodeKnowledge(model))).toEqual(model);
     expect(()=>decodeKnowledge('{"encoding":"unknown","data":""}')).toThrow('Invalid knowledge encoding');
