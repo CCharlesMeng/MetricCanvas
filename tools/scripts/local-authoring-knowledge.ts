@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { atPointer, referenceNodes, type ReferenceMap } from './page-reference';
 
-import { digest, topicClosure, type AuthoringKnowledge } from './local-authoring-knowledge-core';
+import { digest, encodeKnowledge, topicClosure, type AuthoringKnowledge } from './local-authoring-knowledge-core';
 export { knowledgeSelection, topicClosure } from './local-authoring-knowledge-core';
 export type { AuthoringKnowledge } from './local-authoring-knowledge-core';
 type Json = Record<string, any>;
@@ -76,5 +76,5 @@ export async function localAuthoringKnowledge(root: string, reference: Map<strin
   baseTopics(model); configuredTopics(model,map);
   // Exercise the same dependency validation as the installed CLI at build time.
   for (const id of Object.keys(model.topics)) topicClosure(model,[id]);
-  return new Map([['references/authoring-knowledge/model.json',JSON.stringify(model)+'\n']]);
+  return new Map([['references/authoring-knowledge/model.json',encodeKnowledge(model)]]);
 }

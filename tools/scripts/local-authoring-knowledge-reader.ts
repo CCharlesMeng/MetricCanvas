@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { digest, knowledgeSelection, type AuthoringKnowledge } from './local-authoring-knowledge-core';
+import { decodeKnowledge, digest, knowledgeSelection } from './local-authoring-knowledge-core';
 
 function run(args:string[]):unknown {
   if(args.length===1 && args[0]==='--help') return {commands:['list --module <id>','show --topic <id> [--topic <id>] [--pointer <schema-pointer>]'],
@@ -11,7 +11,7 @@ function run(args:string[]):unknown {
   const manifest=JSON.parse(readFileSync(path.join(root,'references/knowledge.json'),'utf8'));
   const content=readFileSync(path.join(root,file),'utf8');
   if(manifest.files.find((item:{file:string})=>item.file===file)?.sha256!==digest(content)) throw new Error('Knowledge hash mismatch; replace the complete Skill');
-  const model=JSON.parse(content) as AuthoringKnowledge;
+  const model=decodeKnowledge(content);
   if(model.schemaVersion!==manifest.schemaVersion) throw new Error('Knowledge version mismatch');
   const [command,...rest]=args;
   if(command==='list' && rest.length===2 && rest[0]==='--module') {

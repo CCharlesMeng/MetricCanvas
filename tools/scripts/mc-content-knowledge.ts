@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { localPageReference, referenceProjection } from './local-authoring-projection';
 import { localAuthoringKnowledge } from './local-authoring-knowledge';
-import { knowledgeSelection, type AuthoringKnowledge } from './local-authoring-knowledge-core';
+import { decodeKnowledge, knowledgeSelection } from './local-authoring-knowledge-core';
 
 type Outputs = Map<string, string>;
 const json = (value: unknown) => JSON.stringify(value, null, 2) + '\n';
@@ -21,7 +21,7 @@ export async function addMcKnowledge(root: string, outputs: Outputs, product: Ou
     if (!parsed.ok) throw new Error(`Invalid scene example: ${scene}`);
     outputs.set(`examples/${scene}.json`, json(parsed.document));
   }
-  const model = JSON.parse(knowledge.get('references/authoring-knowledge/model.json')!) as AuthoringKnowledge;
+  const model = decodeKnowledge(knowledge.get('references/authoring-knowledge/model.json')!);
   for (const [id, topic] of Object.entries(model.topics)) {
     outputs.set(`knowledge/${id}.json`, json(knowledgeSelection(model, [id])));
   }

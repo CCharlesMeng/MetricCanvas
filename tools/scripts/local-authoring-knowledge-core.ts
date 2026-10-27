@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { gzipSync, gunzipSync } from 'node:zlib';
 
 type Json = Record<string, any>;
 export interface KnowledgeTopic {
@@ -10,6 +11,16 @@ export interface AuthoringKnowledge {
   nodes: Array<{pointer: string; path: string; module: string; required: string; note?: string; enums?: Record<string,string>}>;
 }
 export const digest = (text: string) => createHash('sha256').update(text).digest('hex');
+
+export function encodeKnowledge(model: AuthoringKnowledge): string {
+  return JSON.stringify({encoding:'gzip-base64',data:gzipSync(JSON.stringify(model)).toString('base64')})+'\n';
+}
+
+export function decodeKnowledge(content: string): AuthoringKnowledge {
+  const envelope = JSON.parse(content);
+  if (envelope.encoding !== 'gzip-base64' || typeof envelope.data !== 'string') throw new Error('Invalid knowledge encoding');
+  return JSON.parse(gunzipSync(Buffer.from(envelope.data,'base64')).toString('utf8')) as AuthoringKnowledge;
+}
 
 function atPointer(document: any, pointer: string): any {
   if (pointer === '#') return document;

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "d61d00564bf6ab8ae7e064be1f7f9fb85d13f76e0b9f0a8176b3914ac5a8be4e",
+  "sha256": "b36dcade6eeeb2bc0f746185e443b892f74bac0937715418eb52eda976d97e24",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -2452,15 +2452,15 @@
     },
     {
       "file": "tools/scripts/local-authoring-knowledge-core.ts",
-      "sha256": "33c721aba7c3e00d51d8f3b31a490088dd7b237a4a6f86f54838e0695de72fe1"
+      "sha256": "b17c4f7ba25e8aa13fa6bc4456427d4819487394bb97cb3df1c2a8eb324756e3"
     },
     {
       "file": "tools/scripts/local-authoring-knowledge-reader.ts",
-      "sha256": "4a3d6c2213d7b34a851b76ffd105c10710da6540d136d62671042dce9d509434"
+      "sha256": "0041893dec42addccb4a97e0070629eed66623e3292d1e4e501e4bcbb0ba7532"
     },
     {
       "file": "tools/scripts/local-authoring-knowledge.ts",
-      "sha256": "2497ed695e063bc8e10e023b8e28dd869e2773fa0622b1d50ebf1ce4b2a2c35c"
+      "sha256": "702b873da43778f277a1a8a056a5082001066ed27f5a6bfb9ab658adde1d547a"
     },
     {
       "file": "tools/scripts/local-authoring-overview-example.ts",
@@ -2492,7 +2492,7 @@
     },
     {
       "file": "tools/scripts/mc-content-coverage.ts",
-      "sha256": "ef7af301bce5908f6553f72e549409bc3704ae9c65c1ee2f93f97d6dae64d2b3"
+      "sha256": "c9e5aea5fc32ce2b94037de77c840d6916ef7713137d1d03fa1dee6e421df291"
     },
     {
       "file": "tools/scripts/mc-content-fixtures.py",
@@ -2500,11 +2500,11 @@
     },
     {
       "file": "tools/scripts/mc-content-knowledge-reader.ts",
-      "sha256": "7fda428797782dfe237d56453bb016c8813b1c98ba83ccef8aa4072fbb69dd3f"
+      "sha256": "19a0129dda56ba6208335d8afdd61abdbc558534a06b1783d0db12e114ee4082"
     },
     {
       "file": "tools/scripts/mc-content-knowledge.ts",
-      "sha256": "a49ae9f93fceb84f8e5315eb262a2e2215fc50843c1bebab6a05d3895409fe16"
+      "sha256": "8828fffa90bdff939b8e233e1bb7f0880a266b92ba12098df9c3b354403aae53"
     },
     {
       "file": "tools/scripts/mc-content-pack.py",

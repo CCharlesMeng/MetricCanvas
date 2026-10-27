@@ -1,5 +1,5 @@
 import { validateReferenceLinks } from './page-reference';
-import type { AuthoringKnowledge } from './local-authoring-knowledge-core';
+import { decodeKnowledge, type AuthoringKnowledge } from './local-authoring-knowledge-core';
 
 type Outputs = Map<string, string>;
 const required = (condition: unknown, message: string) => { if (!condition) throw new Error(`MC coverage: ${message}`); };
@@ -10,7 +10,8 @@ const parse = (outputs: Outputs, file: string): any => {
 
 export function checkMcCoverage(outputs: Outputs, product: Outputs, authoring: Outputs, raw: any, map: any): object {
   const index = parse(outputs, 'index.json');
-  const model = parse(outputs, 'references/authoring-knowledge/model.json') as AuthoringKnowledge;
+  required(outputs.has('references/authoring-knowledge/model.json'), 'missing references/authoring-knowledge/model.json');
+  const model = decodeKnowledge(outputs.get('references/authoring-knowledge/model.json')!);
   const entries: object[] = [];
   for (const file of product.keys()) {
     if (file.startsWith('page/reference/')) {

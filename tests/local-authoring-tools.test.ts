@@ -4,10 +4,11 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { scanPageData, markdownBlocks, findBlocks, draftAnalysis, checkAnalysis, hashBytes } from '../tools/scripts/local-authoring-data-analysis';
-import { knowledgeSelection, topicClosure, validateSemanticHeadings, type AuthoringKnowledge } from '../tools/scripts/local-authoring-knowledge';
+import { knowledgeSelection, topicClosure, validateSemanticHeadings } from '../tools/scripts/local-authoring-knowledge';
+import { decodeKnowledge, encodeKnowledge } from '../tools/scripts/local-authoring-knowledge-core';
 
 const source='metriccanvas-authoring/skill/metriccanvas-local-authoring';
-const model=JSON.parse(readFileSync(`${source}/references/authoring-knowledge/model.json`,'utf8')) as AuthoringKnowledge;
+const model=decodeKnowledge(readFileSync(`${source}/references/authoring-knowledge/model.json`,'utf8'));
 const page=JSON.parse(readFileSync('pages/capabilities/layout/local-authoring-knowledge-demo.json','utf8'));
 const md=readFileSync('tools/fixtures/local-authoring-data/metrics.md','utf8');
 const pageText=JSON.stringify(page);
@@ -17,6 +18,11 @@ beforeAll(()=>cpSync(source,path.join(isolated,'skill'),{recursive:true}));
 afterAll(()=>rmSync(isolated,{recursive:true,force:true}));
 
 describe('按需协议知识',()=>{
+  it('压缩知识可无损还原，损坏的编码明确失败',()=>{
+    expect(decodeKnowledge(encodeKnowledge(model))).toEqual(model);
+    expect(()=>decodeKnowledge('{"encoding":"unknown","data":""}')).toThrow('Invalid knowledge encoding');
+    expect(()=>decodeKnowledge('{"encoding":"gzip-base64","data":"broken"}')).toThrow();
+  });
   it('新增或重命名语义章节要求显式复核路由，而不是悄悄漏读',()=>{
     expect(()=>validateSemanticHeadings('x.md',['# X','## New\nrule'],[])).toThrow('page/reference/x.md');
     expect(()=>validateSemanticHeadings('x.md',['# X','## New\nrule'],['Old'])).toThrow('semantic headings changed');

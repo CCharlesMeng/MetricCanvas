@@ -25,6 +25,8 @@
 
 精确知识的生成树为 `references/authoring-knowledge/`；新增 `scripts/read-knowledge.mjs`、`scripts/analyze-data.mjs`，均接入清单、漂移检查和仓外测试。模型按任务读取 JSON 输出，不读取机器知识包或脚本全文。精确主题失效/过大时修复真源，不截断约束。语义章节保持单一原文，显式主题的标题选择器在更名时生成失败；全部章节自动成为可发现主题，新语义不静默丢弃。
 
+`model.json` 是 gzip/base64 编码的生成知识封装；读取器先校验封装哈希再解压，输出仍为原有按需知识 JSON。不要手工编辑封装或将压缩体积当作模型上下文及 token 节省。
+
 对比统计分别报告脚本输出 UTF-8 字节、实际工具读取、请求 input/cached/output 与修复轮次；确定性路由字节对比不能冒充实际 Agent token/费用节省。没有相同模型/编码器的逐请求证据时，实际收益保留未验收。默认只运行 local-authoring 相关检查，不追加其他 Skill 或真实 DS 专项验收。
 
 生成范围由导出器管理：references/page-metadata/、references/page-patterns/、references/map-regions.json、references/knowledge.json、assets/layouts/overview-map-led.json、scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md。其他文件归作者维护，重新生成必须保留。真源映射总表见[真源与派生链](../../metriccanvas-authoring/SOURCES.md)。
