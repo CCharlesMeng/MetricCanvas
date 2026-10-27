@@ -57,3 +57,15 @@ metriccanvas-ts-ast/1，TypeScript5.9.3；自身selfCC，全部修改函数和�
 ## 提交交付
 
 用户随后明确授权提交并push main。交付基线仍为5620b6f8；产品源码和验证输入未改变，复用上述已完成验收。原始日志、截图和测量已备份至本机 `/Users/moon/.codex/delivery-evidence/record-row-budget-20261027/`，不依赖临时工作树保存。交付路径清单为同目录delivery-paths.json。最终远端SHA和完整CI结论见本次交付回执，未以旧SHA的通过替代新提交CI。
+
+
+## CI修复补记
+
+提交9ee7e6ac的CI完整测试367文件中365通过，3311项通过、2失败、5跳过；第一处为本批示例数量选择误入通用路由，第二处为基线5620b6f8时间规范化与Sim旧紧凑格式的兼容缺口。`pnpm test apps/playground/tests/page-id-neutrality.test.ts tools/dqe-sim/tests/query-result-where.test.ts`在1.87秒内稳定复现两项；单独新增规范年月反例也先红后绿。
+
+修复将示例数量选择归夹具层；Sim兼容同一夹具月份的紧凑及规范形式，继续拒绝其他月份和错精度。完整原HTTP分页/排序/级联/导出回归保持。复杂度同口径：loadPage13→12，executeQueryResultWhere42→39（提取本次时间格式职责）；新增fixtureTime=3、rejectionPreviewRowCount=2，新增测试回调≤2。Sim存量函数39仍超15，本次只修等价月份接受与不改变顺序的前置判断，未扩大重构其整套分页/字段/结果校验。
+
+使用问题与Skill定位方法已回灌，Skill1.3.1；Schema仍为6.69，无新增协议字段或改变既有时间业务口径。最终提交与完整CI见交付回执。
+
+
+CI修复最终本地验证：原两个失败用例及新增等价/非法月份共10项通过；DQE Sim全目录、记录关联及页面id中立性20文件118项通过。扩大功能回归（排除单独验收过的authoring-export-isolation）366文件3288项通过、5项既有跳过。修复后的100001条浏览器完整关联/末尾搜索/分页/排序/失败场景通过；Sim与Playground类型检查通过，MC32项、内容覆盖、可见夹具和契约一致性通过。原始反例、网关编码差异、复杂度和最终日志已备份。

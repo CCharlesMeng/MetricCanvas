@@ -57,3 +57,10 @@
 ## 2026-10-27 用户要求取消行数限制
 
 用户明确要求取消记录关联行数预算。Schema6.69允许省略records.maxRows，省略后不比较主表totalCount和累计行数；旧页面显式值继续生效。商务驳回明细与合成演示已移除maxRows，保留字节、超时、取消、总数及窗口检查。真实DQE未访问，不承诺移除行数限制后不会触发其他资源限制。产品参考与local-authoring data-analysis同批更新，超过十万行场景见/pages/record-join-no-row-limit，最终验证见docs/evidence/record-row-budget/acceptance.md。
+
+
+## main交付CI补记
+
+9ee7e6ac的完整CI暴露两个本地定向范围外的失败：通用页面路由按正式示例id选择100001条，违反页面id中立性；分页级联Sim只接受202610，而共享网关将同一合法月份规范为2026-10。后者通过actual effectiveDqeItem确认原值SUCCESS、等价编码值DQE_SIM_UNSUPPORTED_QUERY，相关Sim与网关代码均未由行数预算提交修改。
+
+记录数量选择已归回Playground夹具模块；Sim仅增加该夹具月份的规范形式，其他月份及错精度继续拒绝。原两个用例与新增等价/非法月份回归共10项通过；不放宽产品时间校验、不改全局排序或分页。等价时间格式的定位方法补入local-authoring data-analysis，Skill修订为1.3.1。最终远端与CI以修复提交回执为准。

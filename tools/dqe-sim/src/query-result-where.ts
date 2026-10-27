@@ -12,7 +12,7 @@ export function executeQueryResultWhere(value: unknown): DqeSimItemResult | unde
   const main = same(value.output_dims, ['项目编号', '项目名称', '状态', '启用', '日期', '采集时间']) && same(value.output_metrics, ['金额', '时长']);
   const detail = same(value.output_dims, ['项目编号', '项目名称']) && same(value.output_metrics, ['得分', '金额']);
   if (!main && !detail) return undefined;
-  if (!record(value.filter) || !record(value.filter.time) || value.filter.time.period !== 'month' || value.filter.time.start !== fixture.month || value.filter.time.end !== fixture.month || !Array.isArray(value.filter.dims) || !Array.isArray(value.filter.metrics) || value.filter.metrics.length || !record(value.order)) return reject();
+  if (!record(value.filter) || !fixtureTime(value.filter.time) || !Array.isArray(value.filter.dims) || !Array.isArray(value.filter.metrics) || value.filter.metrics.length || !record(value.order)) return reject();
   const order = value.order;
   const allowed = main ? ['项目编号', '项目名称', '状态', '启用', '日期', '采集时间', '金额', '时长'] : ['项目编号', '项目名称', '金额', '得分'];
   if (Object.keys(order).some(key => !['order_by_field', 'type', 'limit', 'offset'].includes(key))) return reject();
@@ -38,4 +38,11 @@ export function executeQueryResultWhere(value: unknown): DqeSimItemResult | unde
     ...(['项目编号', '项目名称', '状态', '启用', '日期', '采集时间'].filter(name => main || ['项目编号', '项目名称'].includes(name)).map(name => ({ id: name, caption: name, data_type: 'STRING' as const, type: 'dimension' as const }))),
     ...(main ? ['金额', '时长'] : ['得分', '金额']).map(name => ({ id: name, caption: name, data_type: 'NUMBER' as const, type: 'metric' as const }))
   ], orders: [], limit: limit === undefined ? -1 : Number(limit), offset: limit === undefined ? -1 : Number(offset), sql: null } };
+}
+
+
+function fixtureTime(value:unknown):boolean {
+  if(!record(value)||value.period!=='month')return false;
+  const canonical=fixture.month.replace(/^(\d{4})(\d{2})$/,'$1-$2');
+  return [value.start,value.end].every(endpoint=>endpoint===fixture.month||endpoint===canonical);
 }

@@ -74,3 +74,17 @@ describe('query-result-where paged development page',()=>{
     expect(executeQueryResultWhere({output_dims:['项目编号','项目名称'],output_metrics:['得分','金额'],filter:{time:{period:'month',start:'202610',end:'202610'},dims:[{dim_name:'项目编号',dim_value_list:ids}],metrics:[]},order:{}})?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
   });
 });
+
+
+it.each(['202610','2026-10'])('accepts the fixture month in compact or canonical form: %s',month=>{
+  const source=document().dataSources.projects.source;if(source.type!=='query')throw Error('query');
+  const item=structuredClone(source.query.body!.dsl_list[0]);
+  item.filter={time:{period:'month',start:month,end:month},dims:[],metrics:[]};
+  expect(executeQueryResultWhere(item)).toMatchObject({code:'SUCCESS',total_count:80});
+});
+it.each(['202609','2026-09','2026-10-01'])('continues rejecting unsupported fixture periods: %s',month=>{
+  const source=document().dataSources.projects.source;if(source.type!=='query')throw Error('query');
+  const item=structuredClone(source.query.body!.dsl_list[0]);
+  item.filter={time:{period:'month',start:month,end:month},dims:[],metrics:[]};
+  expect(executeQueryResultWhere(item)?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
+});

@@ -88,3 +88,8 @@
 3. 最后表格故意声明 `month + 20260401/20260930`。控制台应显示 `[MetricCanvas][DQE_QUERY_REJECTED] TIME_VALUE_PRECISION_INVALID: filter.time.start`，不会向服务发出该请求。当前运行时将错误源投影成空行，表格显示“暂无数据”；这不代表业务空结果，必须结合诊断判定。刷新后行为相同。
 
 矩阵和两张卡由 `tools/scripts/authoring-contract-demo.py` 调用实际 Python 公共模块生成；TypeScript 测试读取本页非法查询，并复验浏览器筛选后的生效查询。生成命令：`PYTHONDONTWRITEBYTECODE=1 <Python解释器> tools/scripts/authoring-contract-demo.py`。证据不代表真实 Relay、IAM 或 DQE 年/月/日协议已联调。记录见 `docs/evidence/authoring-session-audit-20261027/implementation.md`。
+
+
+### 分页级联的等价月份格式
+
+`/pages/query-result-where-page`沿用既有DQE Sim场景：页面可保存紧凑年月202610，共享执行器的实际请求会规范为2026-10。仿真夹具接受这两个等价表示，仅接受该夹具月份；其他月份、日期精度值仍拒绝。原有按全部可排序列切换、全局排序后分页、结果行集合驱动下游查询和冻结窗口导出规则保持。验证由tools/dqe-sim/tests/query-result-where.test.ts经真实本地HTTP和共享运行时执行；不代表真实内网DQE格式验收。

@@ -12,3 +12,9 @@ export function pageExternalInputs(id: string | undefined) {
   if (id.startsWith('ioc-header-') && id.endsWith('-demo')) return 'ioc-header';
   return undefined;
 }
+
+
+/** Synthetic record volume is owned by the preview fixture, not the page route. */
+export function rejectionPreviewRowCount(id:string|undefined):number|undefined {
+  return id==='record-join-no-row-limit'?100001:undefined;
+}
