@@ -25,7 +25,7 @@ Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px�
 示例 `/pages/filter-group-parallel-selects`：左侧一个指标按钮组，右侧区域、渠道两个下拉；内容为趋势图与合计。只读和导出复用原筛选组件的禁用与选中标签投影。
 
 
-页面协议 6.68。结构真源为本册[schema.json](../schema.json)，SHA256 `8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66`。字段表自动生成；可选不等于有默认值。
+页面协议 6.69。结构真源为本册[schema.json](../schema.json)，SHA256 `67b52fc850dd593cca5491b8b3dd6f6dfabe1732eb4b06ee42093f3fb0062e6e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

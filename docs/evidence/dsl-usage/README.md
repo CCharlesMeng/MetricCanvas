@@ -10,7 +10,7 @@
 | [DSL-20261027-chart-independent-site](2026-10-27-chart-independent-site.md) | 修改 / 多图独立区域按钮 | 同一filterId共享状态、filterGroup重复、6.59输入与6.52校验器差异 | 输入及兼容运行时6.59；主工作区6.52 | 已回灌；真实DQE待验证 | local-authoring references/data-analysis.md 控件与查询对应关系、逐图请求隔离及版本先验 |
 
 | [DSL-20261027-partner-health-increment](2026-10-27-partner-health-increment.md) | 修改 / 伙伴健康度增量合并、多槽得分表 | queryModes相同、rowKey对齐、静态主行回退、辅助查询失败整表为空 | 输入6.58；本地页面/Skill6.52；合成浏览器 | 已回灌；业务待验证 | local-authoring references/data-analysis.md 候选与写回；保留本地主行集并核对实际请求 |
-| [DSL-20261027-rejection-record-budget](2026-10-27-rejection-record-budget.md) | 排错 / 审批记录关联 | DQE_QUERY_REJECTED、记录关联超过行数预算、limit=1、total_count | 工作区6.57；本地origin/main页面6.66；实际加载版本待核对 | 已定位，待修复及回灌 | records.maxRows；审批期间本地筛选不能降低读取预算 |
+| [DSL-20261027-rejection-record-budget](2026-10-27-rejection-record-budget.md) | 排错 / 审批记录关联 | DQE_QUERY_REJECTED、记录关联超过行数预算、limit=1、total_count | 工作区6.57；本地origin/main页面6.66；实际加载版本待核对 | 已回灌；6.69可省略行数预算，真实DQE待验证 | records.maxRows可选；字节与超时保持；审批期间下推 |
 | [DSL-20261027-paged-union-order-contract](2026-10-27-paged-union-order-contract.md) | 排错 / 分页合并 | DQE_ROW_CONTRACT_ERROR、来源排序与合并比较规则不一致、order.by、重复/空行键 | 输入6.61；诊断源码6.66；实际部署未知 | 待验证 | local-workflow 错误定位；真实服务排序与稳定键待修复 |
 
 ## 最小记录模板

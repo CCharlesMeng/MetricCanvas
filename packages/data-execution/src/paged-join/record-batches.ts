@@ -4,13 +4,14 @@ import {intersectQueryFilters} from '../intersect-filters';
 import type {PagedJoinPlan} from './plan';
 import {rowFailure} from './rows';
 export const recordLimit=(message:string)=>Object.assign(new Error(message),{code:'DQE_QUERY_REJECTED'});
-export interface RecordBudget {rows:number;bytes:number;maxRows:number;maxBytes:number;signal:AbortSignal}
+export interface RecordBudget {rows:number;bytes:number;maxRows?:number;maxBytes:number;signal:AbortSignal}
 
 export function chargeRows(budget:RecordBudget,rows:readonly Row[],domain:boolean):void{
   budget.signal.throwIfAborted();
   budget.bytes+=new TextEncoder().encode(JSON.stringify(rows)).byteLength;
   if(domain)budget.rows+=rows.length;
-  if(budget.rows>budget.maxRows||budget.bytes>budget.maxBytes)throw recordLimit('记录关联超过行数或字节预算，请缩小筛选范围');
+  if(budget.maxRows!==undefined&&budget.rows>budget.maxRows)throw recordLimit('记录关联超过行数预算，请缩小筛选范围');
+  if(budget.bytes>budget.maxBytes)throw recordLimit('记录关联超过字节预算，请缩小筛选范围');
 }
 function batchRows(result:Awaited<ReturnType<QueryRunner['run']>>,offset:number,limit:number,expected:number|undefined):{rows:Row[];total:number}{
   if(result.status==='error')throw Object.assign(new Error(result.error.message),{code:result.error.code});
@@ -36,7 +37,7 @@ export async function readRecordBatches(plan:PagedJoinPlan,id:string,query:Effec
     budget.signal.throwIfAborted();
     const batch=batchRows(result,rows.length,limit,expected);
     expected=batch.total;
-    if(domain&&expected>budget.maxRows)throw recordLimit('记录关联超过行数预算，请缩小筛选范围');
+    if(domain&&budget.maxRows!==undefined&&expected>budget.maxRows)throw recordLimit('记录关联超过行数预算，请缩小筛选范围');
     validateRecordRows(batch.rows,plan.members.get(id)!.fields);
     chargeRows(budget,batch.rows,domain);
     rows.push(...batch.rows);

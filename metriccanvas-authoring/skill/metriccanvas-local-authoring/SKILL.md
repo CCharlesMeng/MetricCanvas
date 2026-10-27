@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # 本地页面创作

@@ -1677,7 +1677,7 @@
     "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/notApplicableFilters": "仅记录模式非主表成员：显式声明其他成员消费、自己不适用的业务筛选，不得重叠或漏配。",
     "#/definitions/pagedJoinSource/properties/records": "显式启用逐条保留审批记录的多对一补列；行键独立于关联键。",
     "#/definitions/pagedJoinSource/properties/records/properties/batchSize": "每次单表分页及关联键集合的批次大小，1至1000。",
-    "#/definitions/pagedJoinSource/properties/records/properties/maxRows": "主表完整读取行数预算，最多100000，包含本地时间筛选前读取的记录。",
+    "#/definitions/pagedJoinSource/properties/records/properties/maxRows": "可选；6.69起省略表示不限制行数。显式值1至100000，限制本地时间筛选前的主表读取量；字节与超时保持。",
     "#/definitions/pagedJoinSource/properties/records/properties/maxBytes": "原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs": "完整读取的超时预算，1至120000毫秒，取消和超时不保存部分快照。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeFilters": "本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。"
@@ -1973,7 +1973,8 @@
     "6.65": "新增主指标与多行次级指标卡；既有指标卡呈现保持。",
     "6.66": "记录逐行保留、多对一补列、成员筛选适用性与有预算分批完整关联。",
     "6.67": "查询独立期间消费策略与已应用期间模式展示条件。",
-    "6.68": "普通DQE显式时间字段绑定，下推日/月范围并保留统计时间槽行为。"
+    "6.68": "普通DQE显式时间字段绑定，下推日/月范围并保留统计时间槽行为。",
+    "6.69": "记录关联可省略maxRows以取消行数限制；显式预算保持，字节、超时及完整性检查不变。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

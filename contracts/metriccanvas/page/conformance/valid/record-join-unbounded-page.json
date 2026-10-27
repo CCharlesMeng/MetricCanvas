@@ -1,0 +1,538 @@
+{
+  "schemaVersion": "6.69",
+  "id": "record-join-unbounded-page",
+  "layout": "dashboard",
+  "dashboardToolbar": {
+    "variant": "compact",
+    "note": "合成审批数据 · 100001 条 · 未设置行数上限"
+  },
+  "meta": {
+    "title": "审批记录关联：超过十万行",
+    "description": "合成数据：100001 条审批记录，不声明 records.maxRows；完整关联后全局搜索、排序和分页，保留字节与超时限制。"
+  },
+  "params": {
+    "display": [
+      {
+        "id": "reviewer-name",
+        "type": "string",
+        "required": false,
+        "value": "全部评审组织人",
+        "label": "评审组织人"
+      }
+    ]
+  },
+  "filters": [
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "label": "审批期间",
+      "precision": "month",
+      "required": true,
+      "default": {
+        "from": "2026-09",
+        "to": "2026-09"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "emptyLabel": "区域",
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "geo-pc-code",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "geo"
+    }
+  ],
+  "dataSources": {
+    "rejection-details": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务ID",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部",
+          "nullable": false
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编码",
+          "queryField": "商务编码",
+          "nullable": false
+        },
+        "biz-approve-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务审批通过时间",
+          "queryField": "审批完成时间",
+          "nullable": false
+        },
+        "approval-result": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批结果",
+          "queryField": "审批结果",
+          "nullable": false
+        },
+        "approval-opinion": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批意见",
+          "queryField": "审批意见",
+          "nullable": true
+        },
+        "review-organizer": {
+          "type": "string",
+          "role": "dimension",
+          "label": "评审组织人",
+          "queryField": "审批人姓名",
+          "nullable": false
+        },
+        "approval-stage": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批阶段",
+          "queryField": "阶段名称",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "商务ID",
+                  "地区部",
+                  "代表处",
+                  "商务编码",
+                  "审批完成时间",
+                  "审批结果",
+                  "审批意见",
+                  "审批人姓名",
+                  "阶段名称"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "mtime": {
+              "target": "time",
+              "queryField": "审批完成时间",
+              "valueFormat": "datetime"
+            }
+          }
+        }
+      }
+    },
+    "business-basic": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务ID",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "biz-owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务责任人",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "life-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生命状态",
+          "queryField": "商务状态",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "商务ID",
+                  "责任人名称",
+                  "商务状态"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rejection-overview": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务ID",
+          "nullable": false
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "nullable": false
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": false
+        },
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编码",
+          "nullable": false
+        },
+        "biz-approve-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务审批通过时间",
+          "nullable": false
+        },
+        "approval-result": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批结果",
+          "nullable": false
+        },
+        "approval-opinion": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批意见",
+          "nullable": true
+        },
+        "review-organizer": {
+          "type": "string",
+          "role": "dimension",
+          "label": "评审组织人",
+          "nullable": false
+        },
+        "approval-stage": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批阶段",
+          "nullable": false
+        },
+        "biz-owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务责任人",
+          "nullable": true
+        },
+        "life-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生命状态",
+          "nullable": true
+        },
+        "record-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批记录标识",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "record-id",
+        "domainMember": "rejection",
+        "members": {
+          "rejection": {
+            "source": "rejection-details",
+            "key": {
+              "field": "biz-id",
+              "queryField": "商务ID"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "business-basic",
+            "key": {
+              "field": "biz-id",
+              "queryField": "商务ID"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "mtime"
+            ]
+          }
+        },
+        "projection": {
+          "biz-id": {
+            "member": "rejection",
+            "field": "biz-id"
+          },
+          "region-dept-name": {
+            "member": "rejection",
+            "field": "region-dept-name"
+          },
+          "rep-office-name": {
+            "member": "rejection",
+            "field": "rep-office-name"
+          },
+          "biz-code": {
+            "member": "rejection",
+            "field": "biz-code"
+          },
+          "biz-approve-time": {
+            "member": "rejection",
+            "field": "biz-approve-time"
+          },
+          "approval-result": {
+            "member": "rejection",
+            "field": "approval-result"
+          },
+          "approval-opinion": {
+            "member": "rejection",
+            "field": "approval-opinion"
+          },
+          "review-organizer": {
+            "member": "rejection",
+            "field": "review-organizer"
+          },
+          "approval-stage": {
+            "member": "rejection",
+            "field": "approval-stage"
+          },
+          "biz-owner-name": {
+            "member": "basic",
+            "field": "biz-owner-name"
+          },
+          "life-status": {
+            "member": "basic",
+            "field": "life-status"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "biz-approve-time",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "biz-approve-time"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 10
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "onMissing": "null",
+        "records": {
+          "batchSize": 500,
+          "maxBytes": 134217728,
+          "timeoutMs": 60000
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "notice",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-scope-notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "本页为合成数据验收，不代表真实 DQE。BIZ-00000 缺少基本信息；BIZ-00001 有初审、复审两条记录。",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "container": "card",
+      "components": [
+        {
+          "id": "rejection-details-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rejection-overview"
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "param": "reviewer-name"
+                },
+                " - 商务驳回明细"
+              ]
+            },
+            "fit": "content",
+            "rowNumber": {
+              "title": "序号",
+              "width": 60,
+              "fixed": "left"
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "biz-code"
+                ],
+                "placeholder": "输入商务编码搜索"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "审批记录关联验收"
+              }
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "record-id",
+            "columns": [
+              {
+                "field": "region-dept-name",
+                "title": "地区部",
+                "width": 110,
+                "fixed": "left"
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 110
+              },
+              {
+                "field": "biz-code",
+                "title": "商务编码",
+                "width": 140,
+                "fixed": "left"
+              },
+              {
+                "field": "biz-owner-name",
+                "title": "商务责任人",
+                "width": 110
+              },
+              {
+                "field": "biz-approve-time",
+                "title": "商务审批通过时间",
+                "width": 160,
+                "sortable": true
+              },
+              {
+                "field": "life-status",
+                "title": "生命状态",
+                "width": 100,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "approval-result",
+                "title": "审批结果",
+                "width": 100,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "approval-opinion",
+                "title": "审批意见",
+                "width": 200
+              },
+              {
+                "field": "review-organizer",
+                "title": "评审组织人",
+                "width": 110
+              },
+              {
+                "field": "approval-stage",
+                "title": "审批阶段",
+                "width": 120,
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -8,7 +8,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.68**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.69**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -499,3 +499,5 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 6.68：普通DQE可将time绑定显式指定到维度字段，下推日/月范围，详见[查询时间字段](docs/page-metadata/queries-and-bindings.md#metric-field-time)。审批记录示例 `record-join-demo` 在预算检查前筛选；既有records.timeFilters仍为读取后本地筛选。
 
 查询时间的年/月/日精度、合法日历及起止顺序在创作与运行时执行前保持一致；合法紧凑格式等价规范化，粒度不匹配不截断。见[查询时间精度与执行前校验](docs/page-metadata/queries-and-bindings.md#查询时间精度与执行前校验)与 `/pages/authoring-contract-reliability` 验收页。历史页面的读取兼容性与执行时合法性分开报告。
+
+6.69：记录关联的 `records.maxRows` 可省略，省略即不限制读取行数；显式数值继续限制主表记录数。字节、超时、完整窗口和准确总数检查保持，详见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)。超过十万行的合成验收入口 `/pages/record-join-no-row-limit`。

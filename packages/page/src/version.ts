@@ -22,7 +22,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 68;
+const CURRENT_MINOR = 69;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -46,6 +46,8 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'paged-join-unbounded-rows': {minor:69,legacyReadable:false,description:'记录关联可省略行数预算，保留字节和超时限制',
+    usedAt:document=>dataSourcePaths(document,data=>unboundedRecordRows(data.source))},
   'period-query-policy': {minor:67,legacyReadable:false,description:'查询独立期间策略与期间模式展示条件',usedAt:periodCapabilityPaths},
   'metric-field-time-binding': {minor:68,legacyReadable:false,description:'普通 DQE 显式时间字段绑定下推维度范围条件',
     usedAt:document=>dataSourcePaths(document,data=>usesMetricFieldTime(data.source))},
@@ -1220,4 +1222,9 @@ function usesMetricFieldTime(source: unknown): boolean {
       return binding?.target==='time'&&has(binding,'queryField');
     });
   });
+}
+
+function unboundedRecordRows(source:unknown):boolean {
+  const config=record(source),limits=record(config?.records);
+  return config?.type==='pagedJoin' && !!limits && limits.maxRows===undefined;
 }

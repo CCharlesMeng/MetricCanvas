@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.68",
+  "schemaVersion": "6.69",
   "id": "record-join-demo",
   "layout": "dashboard",
   "dashboardToolbar": {
@@ -398,7 +398,6 @@
         "onMissing": "null",
         "records": {
           "batchSize": 500,
-          "maxRows": 100000,
           "maxBytes": 67108864,
           "timeoutMs": 60000
         }

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "69557d5ff964cbf703f8a41d6c8288f5be4780af1e6d899abeb0fd0b6130f33d",
+  "sha256": "38dea9dae32428e909d449d821c06ef20a86d8e7c5283470d69bd8459a336b68",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "e69c9f87c9fd144d0f3feea2b9beaa951ae22e26420c71363f92c28aaffdf789"
+      "sha256": "dcb115279684374b4607a1490569e7684062936a96f452c5e2f2e52fc4ce10cc"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "d77cb511aaffd3804110c69edd8c41c87b6e83b556c37ba7b55ac60527b1ead7"
+      "sha256": "52b930a789b340d7b26aa08c1ac8e1ae3bbee89ebabeb2ce9b69d7f6b2daa4cc"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1007,6 +1007,10 @@
       "sha256": "d08226d84dce60f25e2d63ccf9495c29388fdd6b9d14b2f0366794db243bc103"
     },
     {
+      "file": "packages/page/fixtures/contract-valid/record-join-unbounded-page.json",
+      "sha256": "c4f47b8a8b1ca5a03344ad15656bc9efcf95a4cef0c636b47f7fd20b6b54ff10"
+    },
+    {
       "file": "packages/page/fixtures/contract-valid/reference-branches-page.json",
       "sha256": "1a0135e3222560c323c4dab2ff777d396c5d59a995a7253c7cd97ac4306cf9df"
     },
@@ -1648,7 +1652,7 @@
     },
     {
       "file": "packages/page/src/schema/paged-join.ts",
-      "sha256": "5650a808cfa59ead216c5f7237147410eb8a087b23fe84c000b2c8424b767835"
+      "sha256": "53ec0e92c97c44194d33b28a15e6c7ab8f00ee387ad162e69fb0f47bb6238086"
     },
     {
       "file": "packages/page/src/schema/paged-union.ts",
@@ -1788,15 +1792,15 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "b496608d420a834de3f30f2b48060bdc0951c971e6b84c203a3a2eda219dc19e"
+      "sha256": "31190bc6ad9110d6abce25bf551d7c13a745bd71736c6b01d4c140351aacd222"
     },
     {
       "file": "pages/README.md",
-      "sha256": "e2db2fba012c1c73212710de5b7dbbb34a1d51584e6ce6601dfd4ff77e987f4e"
+      "sha256": "9745715f7c9926e4dd02053b5b8c1f1cc97a9a20bcfcb2a14b880af8a3f577d5"
     },
     {
       "file": "pages/business-rejection-details.json",
-      "sha256": "f5bfba5ea22ff8f9a93b2a835e6bc49cddc3a3628b655bb0face2eab1db3fcaa"
+      "sha256": "dd6a655180545fd1af600c984c04ef5f1a939aec492737e12bc1228db4265959"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -2144,15 +2148,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "7d6f966c9cc264d33793a63e32dfeb1fc5ff9f0a3dee7159a7703d60d22494fd"
+      "sha256": "652016067d5ea16f171a8daff395ec74a5525e2a71e544a51f9189b70b018fe1"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "f4d1e5c6ed03394925a25439e8d0ca671f63da70767d5954f95b8ff39a048b05"
+      "sha256": "826193f6b6b74d23979ee80789e5767a005b858abf0f5cd0b0dd45592ffc6f8c"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "10d5f1135e131ae565b72b3d2c44b79ef5c2d89c3dab276f78aa14c563bce1af"
+      "sha256": "e486c8f320fd71245378b9933e29ada7b0f8ec06087596ebe5ba26d3e86c962b"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2168,7 +2172,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "cea028cddbc1857bffbdf92886ff9747ac03f908e0ef868ec3febe0e6e55c633"
+      "sha256": "966c7928419dc8f503df9bca0e0952c0b20528a34b83706f833c4cb6447b55ac"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2220,7 +2224,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "deb8c7c51252a77c631e9a51d7782f949491aa69ae9b77f08c46fe5804155d12"
+      "sha256": "c0ac60015676f345d986274bfaec1299f5ebd4f256a52cf6fad78f35795f55cd"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2244,7 +2248,11 @@
     },
     {
       "file": "pages/capabilities/table/record-join-demo.json",
-      "sha256": "0844d75eafb7dbb75f48817a6e2753fed870c5787e718af763bdcec0da1914c6"
+      "sha256": "ebd7be6ebb9da3958b8fceb9f765fd61a506d6af01a29c30a8d8f38ab68b6e93"
+    },
+    {
+      "file": "pages/capabilities/table/record-join-no-row-limit.json",
+      "sha256": "018bc4cd725f7973ea3335cd2b42050d711fa929763a5ac789e4762a9e066740"
     },
     {
       "file": "pages/capabilities/table/sales-detail.json",

@@ -220,6 +220,7 @@ QuerySemanticHtmlFieldDefinition
 QuerySource
 QuerySourceDocument
 QueryStandardScalarFieldDefinition
+QueryTimeRangeError
 RankingCardComponent
 RankingCardProps
 RankingDetailCardComponent
@@ -428,6 +429,7 @@ modeRangeIssue
 navigationErrors
 normalizePageDocument
 normalizeQueryRows
+normalizeQueryTime
 numberRangeIssue
 objectDateBoundary
 objectOutputFields

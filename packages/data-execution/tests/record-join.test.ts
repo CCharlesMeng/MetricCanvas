@@ -130,3 +130,43 @@ function dateValue(value:string,format:'iso'|'compact'|'invalid'):string{
   if(format==='invalid')return '2026-09-99';
   return format==='compact'?value.slice(0,10).replaceAll('-',''):value.slice(0,10);
 }
+
+
+it('fully joins more than 100000 records without maxRows and searches the final record',async()=>{
+  const document=JSON.parse(fs.readFileSync(new URL('../../../pages/capabilities/table/record-join-no-row-limit.json',import.meta.url),'utf8'));
+  const result=parsePage(document);if(!result.ok)throw Error(JSON.stringify(result.errors));
+  const source=result.page.dataSources[root].source;
+  if(source.type!=='pagedJoin')throw Error('join');
+  expect(source.records!.maxRows).toBeUndefined();
+  const test=setup({rows:100001},result.page);
+  try{
+    const snapshot=await test.read({pageSize:10});
+    expect(snapshot).toMatchObject({status:'ready',totalCount:100001});
+    expect(rows(snapshot)).toHaveLength(10);
+    const count=test.calls.length;
+    const last=await test.read({search:{fields:['biz-code'],query:'BIZ-50000'}});
+    expect(last).toMatchObject({status:'ready',totalCount:1});
+    expect(rows(last)[0]).toMatchObject({'biz-code':'BIZ-50000','biz-owner-name':'测试责任人0'});
+    expect(test.calls).toHaveLength(count);
+  }finally{test.program.dispose();}
+},60000);
+
+it('continues past an upstream total of 1299225 when no row budget is declared',async()=>{
+  const page=parsed(),preview=createRejectionPreview({rows:500});
+  let mainBatches=0;
+  const gateway={async fetchData(query:Parameters<typeof preview.dataGateway.fetchData>[0]){
+    if('approval-stage' in query.fieldMappings){
+      mainBatches++;
+      if(mainBatches===2)throw Object.assign(new Error('合成上游在第二批失败'),{code:'DQE_TRANSPORT_ERROR'});
+      return {...await preview.dataGateway.fetchData(query),totalCount:1299225};
+    }
+    return preview.dataGateway.fetchData(query);
+  }};
+  const program=createSourceProgram(page,{gateway});
+  try{
+    let snapshot:DataSnapshot|undefined;
+    for await(const update of program.read({roots:[root],conditions:initialFilterValues(page.filters??[])}))snapshot=update.snapshot;
+    expect(mainBatches).toBe(2);
+    expect(snapshot).toMatchObject({status:'error',error:{code:'DQE_TRANSPORT_ERROR'}});
+  }finally{program.dispose();}
+});

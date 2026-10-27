@@ -237,7 +237,7 @@ Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑
 6.67 起可在字段列或分组列的 `visibleWhen` 读取期间筛选模式，例如 `{filter:"statistics-period",part:"mode",op:"in",values:["year","quarter"]}`。显示由已应用 selection.mode 决定，与查询 periodPolicy 独立。既有列投影同步表头、搜索、用户排序/筛选清理与 XLSX/PDF/PNG 导出；隐藏不停止共享查询。示例：[期间模式与查询策略](../examples/period-query-columns-demo.json)。
 
 
-页面协议 6.68。结构真源为本册[schema.json](../schema.json)，SHA256 `8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66`。字段表自动生成；可选不等于有默认值。
+页面协议 6.69。结构真源为本册[schema.json](../schema.json)，SHA256 `67b52fc850dd593cca5491b8b3dd6f6dfabe1732eb4b06ee42093f3fb0062e6e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

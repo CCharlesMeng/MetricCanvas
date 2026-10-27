@@ -344,3 +344,10 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 默认2026-09显示1205条；将审批期间起止均改为2026-08并提交，显示0条；改回9月恢复1205条。搜索BIZ-00001保留同一商务的两条审批，翻页保持全局序号。`?sourceFailure=true`模拟上游失败，不能发布部分成功。共享执行回归另覆盖“未过滤总数1299225、下推后12条”的请求边界，以及过滤后仍超预算的拒绝。
 
 浏览器合成适配器验证交互；真实HTTP编码由共享网关回归验证，二者均不证明真实DQE接受审批时间维度比较。业务页面为 `pages/business-rejection-details.json`；真实服务须返回过滤后的准确total_count。
+
+
+### 记录关联省略行数预算（6.69）
+
+入口 `/pages/record-join-no-row-limit`，使用完整页面 `record-join-no-row-limit.json`。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5202`；无需URL参数或真实DQE。现有合成Adapter提供100001条审批记录，页面不声明 `records.maxRows`，保留128 MiB和60秒限制。默认9月完整读取后显示100001条；搜索 `BIZ-50000` 能找到末尾的一条审批及当前责任人，证明全局查询未截在十万条。清空搜索、排序和翻页复用完整关联结果；8月为0条。添加 `?sourceFailure=true` 模拟上游失败，不能显示部分成功。完整导出仍有独立10000行限制。
+
+`business-rejection-details.json` 与 `record-join-demo.json` 也省略行数预算，保留各自字节和超时配置。旧页面显式 `maxRows` 继续执行；把它移除需同版6.69运行时和校验器。自动回归覆盖跨十万行关联及末尾搜索、显式行数拒绝、字节拒绝、超时、取消、截断及计数变化。本场景使用合成数据，不证明真实内网性能和最终业务查询成功。

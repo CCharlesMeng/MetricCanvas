@@ -1047,7 +1047,6 @@
                   },
                   "required": [
                     "batchSize",
-                    "maxRows",
                     "maxBytes",
                     "timeoutMs"
                   ],
@@ -2414,7 +2413,6 @@
               },
               "required": [
                 "batchSize",
-                "maxRows",
                 "maxBytes",
                 "timeoutMs"
               ],

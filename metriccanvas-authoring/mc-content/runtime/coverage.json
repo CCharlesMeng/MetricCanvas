@@ -443,6 +443,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/record-join-unbounded-page.json",
+      "target": "product-contracts/page/conformance/valid/record-join-unbounded-page.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/reference-branches-page.json",
       "target": "product-contracts/page/conformance/valid/reference-branches-page.json",
       "scope": "exact product contract"
@@ -6434,7 +6439,7 @@
     }
   ],
   "counts": {
-    "product": 1255,
+    "product": 1256,
     "authoring": 31,
     "modules": 33,
     "topics": 188,

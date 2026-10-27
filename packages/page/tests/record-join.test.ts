@@ -21,3 +21,21 @@ describe('record join protocol',()=>{
     expect(parsePage(page).ok).toBe(false);
   });
 });
+
+
+describe('optional record row budget',()=>{
+  it('requires 6.69 when maxRows is omitted and preserves explicit limits on old pages',()=>{
+    const page=structuredClone(original);
+    expect(parsePage(page).ok).toBe(true);
+    page.schemaVersion='6.68';
+    expect(parsePage(page).errors).toContainEqual(expect.objectContaining({type:'SCHEMA_ERROR',path:'/dataSources/rejection-overview',message:expect.stringContaining('6.69')}));
+    page.dataSources[root].source.records.maxRows=undefined;
+    expect(parsePage(page).ok).toBe(false);
+    page.dataSources[root].source.records.maxRows=100000;
+    expect(parsePage(page).ok).toBe(true);
+  });
+  it.each([null,0,-1,1.5,100001])('rejects invalid explicit row budget %s',maxRows=>{
+    const page=structuredClone(original);page.dataSources[root].source.records.maxRows=maxRows;
+    expect(parsePage(page).ok).toBe(false);
+  });
+});

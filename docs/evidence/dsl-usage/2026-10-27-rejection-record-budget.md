@@ -52,3 +52,8 @@
 ## 2026-10-27 正式集成补充
 
 期间模式与查询期间策略正式使用 Schema 6.67（B1提交0297ca393）；显式字段时间下推迁为6.68。旧开发副本的6.66/6.67仅记录历史，不代表内部实际已安装。集成中修复记录源自动多字段排序与main单字段DQE规则冲突，保留显式排序、缺省仅关联键排序。验证和发行状态见[本次集成记录](../local-capability-integration-20261027/b2.md)，真实内部服务仍待验。
+
+
+## 2026-10-27 用户要求取消行数限制
+
+用户明确要求取消记录关联行数预算。Schema6.69允许省略records.maxRows，省略后不比较主表totalCount和累计行数；旧页面显式值继续生效。商务驳回明细与合成演示已移除maxRows，保留字节、超时、取消、总数及窗口检查。真实DQE未访问，不承诺移除行数限制后不会触发其他资源限制。产品参考与local-authoring data-analysis同批更新，超过十万行场景见/pages/record-join-no-row-limit，最终验证见docs/evidence/record-row-budget/acceptance.md。

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVersions, versionErrors, versionPolicy } from '../src/version';
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
+  "paged-join-unbounded-rows": 69,
   "period-query-policy": 67,
   "metric-field-time-binding": 68,
   "paged-join-records": 66,

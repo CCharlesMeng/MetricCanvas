@@ -62,7 +62,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 ready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。
 
 
-页面协议 6.68。结构真源为本册[schema.json](schema.json)，SHA256 `8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66`。字段表自动生成；可选不等于有默认值。
+页面协议 6.69。结构真源为本册[schema.json](schema.json)，SHA256 `67b52fc850dd593cca5491b8b3dd6f6dfabe1732eb4b06ee42093f3fb0062e6e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

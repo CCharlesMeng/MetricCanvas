@@ -73,6 +73,6 @@ proposals 的键为原有页面数据源 id，值为完整声明；该源所有�
 
 ## 记录关联预算与期间筛选
 
-遇到“记录关联超过行数预算”时，先比较实际响应total_count与records.maxRows；limit仅限制单批大小。核对实际运行文档，而非仅看本地同名文件。records.timeFilters在完整读取后本地筛选，缩短它的期间不能降低读取预算。
+遇到“记录关联超过行数预算”时，若已声明records.maxRows，先比较实际响应total_count与该值；6.69起可省略maxRows以取消行数限制，既有显式值仍生效；limit仅限制单批大小。核对实际运行文档，而非仅看本地同名文件。records.timeFilters在完整读取后本地筛选，缩短它的期间不能降低读取预算。
 
-已确认时间字段可用于DQE维度范围时，6.68起在主表query.filterBindings声明target:time、queryField与valueFormat，移除同一筛选的本地timeFilters；补列表若不适用该期间，使用成员notApplicableFilters。检查实际请求出现指定时间字段的>=和<=，响应总数已按期间缩小。需要本地筛选的场景保持原声明与预算；不提高预算、截断行或删除记录模式来伪造成功。字段可输出、Sim和静态校验均不能替代真实服务谓词及总数验真。
+已确认时间字段可用于DQE维度范围时，6.68起在主表query.filterBindings声明target:time、queryField与valueFormat，移除同一筛选的本地timeFilters；补列表若不适用该期间，使用成员notApplicableFilters。检查实际请求出现指定时间字段的>=和<=，响应总数已按期间缩小。需要本地筛选的场景保持原声明；用户明确要求取消行数上限时，在6.69及以上页面移除records.maxRows，同步运行时和校验器，不填写Infinity或巨大占位数。保留maxBytes和timeoutMs；省略行数限制仍需完整读取、补列和全局处理，字节或超时失败不等于行数限制仍存在。不能截断行或删除记录模式来伪造成功。字段可输出、Sim和静态校验均不能替代真实服务谓词及总数验真。

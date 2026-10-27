@@ -103,7 +103,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: pageId === 'record-join-no-row-limit' ? 100001 : undefined, failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;

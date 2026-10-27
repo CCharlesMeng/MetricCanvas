@@ -112,7 +112,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "2301b4582a364faadccdd4d384cb9bca3c9027a8849ec5b5c3496fe35527f5be",
+      "contentSha256": "48b4905cfc3140a715e83b5141e3e706317e29ab2fb6f05dacc8a350102d6a4d",
       "templateRef": {
         "scene": "usage-report",
         "variant": "standard",
@@ -159,7 +159,7 @@
         "planSha256": "7065bba010e4b9900b289085bd614e29d0805e9bbf0147aa764f0c122054d70a"
       }
     },
-    "contentSha256": "2301b4582a364faadccdd4d384cb9bca3c9027a8849ec5b5c3496fe35527f5be",
+    "contentSha256": "48b4905cfc3140a715e83b5141e3e706317e29ab2fb6f05dacc8a350102d6a4d",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -172,18 +172,30 @@
     {
       "id": "primary",
       "status": "applied",
+      "component": {
+        "id": "primary",
+        "type": "metricCard"
+      },
       "issues": [],
       "adjustments": []
     },
     {
       "id": "trend",
       "status": "applied",
+      "component": {
+        "id": "trend",
+        "type": "lineChart"
+      },
       "issues": [],
       "adjustments": []
     },
     {
       "id": "detail-table",
       "status": "applied",
+      "component": {
+        "id": "detail-table",
+        "type": "table"
+      },
       "issues": [],
       "adjustments": []
     }
@@ -192,8 +204,8 @@
     "status": "ok",
     "gaps": [],
     "schema": {
-      "declaredVersion": "6.68",
-      "targetVersion": "6.68",
+      "declaredVersion": "6.69",
+      "targetVersion": "6.69",
       "readableVersions": [
         "5.0",
         "5.1",
@@ -258,7 +270,8 @@
         "6.65",
         "6.66",
         "6.67",
-        "6.68"
+        "6.68",
+        "6.69"
       ],
       "readable": true,
       "requiredVersion": "6.1",

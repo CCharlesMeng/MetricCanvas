@@ -17,6 +17,7 @@ it('rejects field-time bindings before 6.68',()=>{
 });
 it('retains explicit local-only record time filters at 6.66',()=>{
   const page=load();page.schemaVersion='6.66';
+  page.dataSources['rejection-overview'].source.records.maxRows=100000;
   delete page.dataSources['rejection-details'].source.query.filterBindings.mtime;
   page.dataSources['rejection-overview'].source.records.timeFilters={mtime:{field:'biz-approve-time',valueFormat:'datetime'}};
   expect(parsePage(page).errors).toEqual([]);
