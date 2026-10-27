@@ -69,3 +69,9 @@ metriccanvas-ts-ast/1，TypeScript5.9.3；自身selfCC，全部修改函数和�
 
 
 CI修复最终本地验证：原两个失败用例及新增等价/非法月份共10项通过；DQE Sim全目录、记录关联及页面id中立性20文件118项通过。扩大功能回归（排除单独验收过的authoring-export-isolation）366文件3288项通过、5项既有跳过。修复后的100001条浏览器完整关联/末尾搜索/分页/排序/失败场景通过；Sim与Playground类型检查通过，MC32项、内容覆盖、可见夹具和契约一致性通过。原始反例、网关编码差异、复杂度和最终日志已备份。
+
+
+旧CI兼容性最终506项中504通过，Chrome/Edge同一ISO周切换各失败1项。原生embed本地先复现切周空表，网关最小例确认合法week日期范围被新时间校验误拒。修复在normalizeMetricTime复用day日期精度校验并保留既有week传输值；公共normalizeQueryTime及query_data日/月/年闭集和共享17条向量保持。新增2条week网关合法日期和3条错精度回归，41项时间链路测试通过。normalizeMetricTime自身CC7→9，新增测试回调≤2；既有Sim39存量超限说明仍保留。7585bf28的CI已在确认该未覆盖失败后取消，最终交付以新的完整CI为准。
+
+
+ISO周补丁最终本地验证：366文件3293项通过、5项既有跳过（authoring-export-isolation沿用前述独立验收，远端CI仍完整运行）；原生embed完整ioc-time.spec.ts的15项Chrome浏览器检查通过，涵盖ISO周、URL、记忆、工作簿、事实门控与候选迟到。共享时间链路41项通过；data-execution类型检查与embed构建通过；产品契约、MC覆盖、32项MC及可见诊断夹具检查通过。同一交付批次Skill保持1.3.1，Schema保持6.69；最终以新提交完整CI为准。

@@ -46,3 +46,12 @@ it('executes the exact Playground rejection fixture before transport', async () 
     fieldMappings: source.fields, filterValues: []})).rejects.toMatchObject({code: 'DQE_QUERY_REJECTED'});
   expect(fetchImpl).not.toHaveBeenCalled();
 });
+
+
+it.each([['20261005','20261011'],['2026-10-05','2026-10-11']])('preserves the existing week transport period with calendar dates: %s to %s',(start,end)=>{
+  const request=query({period:'week',start,end});
+  expect(effectiveDqeItem(request).filter).toEqual({time:{period:'week',start:'2026-10-05',end:'2026-10-11'}});
+});
+it.each(['2026-W41','2026-10','2026-10-05T12:00'])('rejects unsupported week endpoint precision: %s',start=>{
+  expect(()=>effectiveDqeItem(query({period:'week',start,end:start}))).toThrow('TIME_VALUE_PRECISION_INVALID');
+});

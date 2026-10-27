@@ -64,3 +64,8 @@
 9ee7e6ac的完整CI暴露两个本地定向范围外的失败：通用页面路由按正式示例id选择100001条，违反页面id中立性；分页级联Sim只接受202610，而共享网关将同一合法月份规范为2026-10。后者通过actual effectiveDqeItem确认原值SUCCESS、等价编码值DQE_SIM_UNSUPPORTED_QUERY，相关Sim与网关代码均未由行数预算提交修改。
 
 记录数量选择已归回Playground夹具模块；Sim仅增加该夹具月份的规范形式，其他月份及错精度继续拒绝。原两个用例与新增等价/非法月份回归共10项通过；不放宽产品时间校验、不改全局排序或分页。等价时间格式的定位方法补入local-authoring data-analysis，Skill修订为1.3.1。最终远端与CI以修复提交回执为准。
+
+
+## ISO周兼容性补记
+
+同一旧CI的506项浏览器兼容性中504通过，Chrome/Edge各1项在切ISO周后变为空表；原生本地embed浏览器已稳定复现。最小网关反例对合法week日期范围抛TIME_GRANULARITY_UNSUPPORTED，而既有页面协议已声明timeModes.isoWeek传输period:week。修复只在原始页面DQE的最终时间编码处复用day日期校验，保留week传输值；创作query_data的year/month/day及17条共享精度向量保持，不扩展其粒度枚举。已补网关红绿回归与本地浏览器验收，定位方法回灌同批Skill1.3.1，Schema仍6.69。

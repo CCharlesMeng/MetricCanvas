@@ -685,7 +685,11 @@ function normalizeMetricTime(item: JsonObject): void {
   const time = item.filter.time;
   // A declaration without endpoints may be filled by a later applied filter.
   if (time.start === undefined && time.end === undefined) return;
-  try { item.filter.time = {...time, ...normalizeQueryTime(time)}; }
+  try {
+    // ISO-week page cases use calendar endpoints and retain their transport period.
+    const normalized=normalizeQueryTime(time.period==='week'?{...time,period:'day'}:time);
+    item.filter.time={...time,...normalized,period:time.period==='week'?'week':normalized.period};
+  }
   catch (error) {
     if (!(error instanceof QueryTimeRangeError)) throw error;
     throw new DqeGatewayError('DQE_QUERY_REJECTED', `${error.code}: filter.time.${error.field}`);

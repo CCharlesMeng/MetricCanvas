@@ -79,3 +79,6 @@ proposals 的键为原有页面数据源 id，值为完整声明；该源所有�
 
 
 共享网关会将合法紧凑年月规范为YYYY-MM；若DQE Sim返回DQE_SIM_UNSUPPORTED_QUERY，先比较网关实际请求与仿真夹具接受的等价时间格式，再判断业务字段或引擎错误。原始JSON中的紧凑值与实际请求不同不等于期间口径改变；不为迎合过期夹具修改业务查询。仿真通过仍不能代替真实服务验真。
+
+
+既有页面timeModes.isoWeek使用日期范围和静态period:week，与创作query_data的year/month/day粒度枚举独立。若切周后未发送请求，先查看共享网关的TIME_GRANULARITY_UNSUPPORTED等诊断；运行时应以日期精度校验范围并保留week传输语义，不能靠把页面week改成day规避错误。
