@@ -37,7 +37,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "35ff35787b8e4aa1193e8ff001c15c6d498cf1521507ac7f5c4caa9bd10a25b0",
+      "contentSha256": "6bc16ea78f30f175d1a2dc14545930e4e4891ffddce297a2b1c5be0959f824b4",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -57,7 +57,7 @@
         "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
       }
     },
-    "contentSha256": "35ff35787b8e4aa1193e8ff001c15c6d498cf1521507ac7f5c4caa9bd10a25b0",
+    "contentSha256": "6bc16ea78f30f175d1a2dc14545930e4e4891ffddce297a2b1c5be0959f824b4",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -112,7 +112,7 @@
     ],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "35ff35787b8e4aa1193e8ff001c15c6d498cf1521507ac7f5c4caa9bd10a25b0",
+      "contentSha256": "6bc16ea78f30f175d1a2dc14545930e4e4891ffddce297a2b1c5be0959f824b4",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -137,7 +137,7 @@
         "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
       }
     },
-    "contentSha256": "35ff35787b8e4aa1193e8ff001c15c6d498cf1521507ac7f5c4caa9bd10a25b0",
+    "contentSha256": "6bc16ea78f30f175d1a2dc14545930e4e4891ffddce297a2b1c5be0959f824b4",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -357,12 +357,12 @@
   },
   "evaluation": {
     "testedContent": {
-      "contentVersion": "1-35ff35787b8e4aa1",
-      "contentSha256": "35ff35787b8e4aa1193e8ff001c15c6d498cf1521507ac7f5c4caa9bd10a25b0",
+      "contentVersion": "1-6bc16ea78f30f175",
+      "contentSha256": "6bc16ea78f30f175d1a2dc14545930e4e4891ffddce297a2b1c5be0959f824b4",
       "alignedWith": {
         "productContractVersion": "1.0.0-rc.4",
         "productManifest": "contract-snapshot/manifest.json",
-        "productManifestSha256": "d8845488ef87fe72500db5e6b2d20867faf0b2aa9964650b91b6e2df036dcd91",
+        "productManifestSha256": "7f0a3bba81f09d7c01a667004c142ed707da51036ab68a9135f86207e9c46806",
         "authoringContractVersion": "0.3.1",
         "authoringManifest": "contracts/manifest.json",
         "authoringManifestSha256": "86953b7d4aa235a4b8b4d67e1145be18f6be005550171a8ac93b223892d014f8",
@@ -413,7 +413,7 @@
           "gaps": [],
           "inspectionSpec": {
             "formatVersion": 1,
-            "contentSha256": "35ff35787b8e4aa1193e8ff001c15c6d498cf1521507ac7f5c4caa9bd10a25b0",
+            "contentSha256": "6bc16ea78f30f175d1a2dc14545930e4e4891ffddce297a2b1c5be0959f824b4",
             "templateRef": {
               "scene": "business-report",
               "variant": "standard",
@@ -433,7 +433,7 @@
               "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
             }
           },
-          "contentSha256": "35ff35787b8e4aa1193e8ff001c15c6d498cf1521507ac7f5c4caa9bd10a25b0",
+          "contentSha256": "6bc16ea78f30f175d1a2dc14545930e4e4891ffddce297a2b1c5be0959f824b4",
           "deploymentAlignment": "not_run",
           "checkedVersionFields": [],
           "deploymentEvidence": {
@@ -462,10 +462,10 @@
     "truncated": false
   },
   "coverageCounts": {
-    "product": 1249,
+    "product": 1251,
     "authoring": 31,
     "modules": 33,
-    "topics": 179,
+    "topics": 181,
     "nodes": 2343,
     "tools": 9,
     "components": 19

@@ -49,3 +49,7 @@
 ## main 交付复验
 
 用户于 2026-10-27 授权提交并 push main。远端基线新增 b212b3caddff83b37e279b0213e655ab4f312570，仅修改另一批验收说明与公共 API 快照，与本次实现无交叠。交付复验使用正式 `pnpm test` 入口（包含 svelte-kit sync），完整远端提交与 exact-SHA CI 结论见本聊天交付回执。
+
+首次 CI（719ade26，run 40445807822）在 MC 诊断夹具检查失败：新增章节使知识主题数 179→181、产品参考文件数 1249→1251，但 `mc-content-layout-demo` 与诊断报告仍引用旧计数及内容哈希。使用既有 `tools/scripts/mc-content-fixtures.py` 重新生成演示与诊断夹具，并按真源生成 MC 来源身份、版本和分发锁；不手写计数或放宽检查。已完成的 local-authoring Skill 验证通过；旧失败工作流的未完成任务取消，最终提交重新等待完整 CI。
+
+补充提交前复跑失败步骤：MC 来源覆盖通过、Python MC 内容包测试 30 项通过、`pnpm test tests/mc-content-coverage.test.ts` 6 项通过、诊断夹具 --check 通过、独立归档打包通过。此补充仅更新生成夹具、来源哈希及交付说明，没有修改可执行分支，复杂度口径和结果保持不变。
