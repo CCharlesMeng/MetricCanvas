@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "6.65",
+  "id": "local-authoring-scoped-data-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "局部接数：共享指标与独立内容",
+    "description": "内联合成数据；两表共用同一闭环率口径，独立指标用于观察局部读取范围，不代表真实查询。"
+  },
+  "dataSources": {
+    "voice-closure": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%",
+          "label": "伙伴声音闭环率"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "东区",
+            "rate": 50
+          },
+          {
+            "region": "南区",
+            "rate": 0
+          },
+          {
+            "region": "北区",
+            "rate": 100
+          }
+        ]
+      }
+    },
+    "independent-summary": {
+      "fields": {
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "label": "独立指标"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "count": 999
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "voice",
+      "components": [
+        {
+          "id": "region-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "voice-closure"
+          },
+          "props": {
+            "title": "区域伙伴声音",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域",
+                "width": 160
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "rate",
+                  "format": "percent-1"
+                },
+                "title": "伙伴声音闭环率",
+                "width": 180,
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "review-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "voice-closure"
+          },
+          "props": {
+            "title": "闭环率复核",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域",
+                "width": 160
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "rate",
+                  "format": "percent-1"
+                },
+                "title": "伙伴声音闭环率",
+                "width": 180,
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "independent",
+      "components": [
+        {
+          "id": "other-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "independent-summary"
+          },
+          "props": {
+            "title": "独立内容",
+            "rows": [
+              {
+                "label": "独立指标",
+                "valueField": "count"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

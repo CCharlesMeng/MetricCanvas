@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { scanPageData, markdownBlocks, findBlocks, draftAnalysis, checkAnalysis, hashBytes } from '../tools/scripts/local-authoring-data-analysis';
+import { scopePageData } from '../tools/scripts/local-authoring-data-scope';
 import { knowledgeSelection, topicClosure, validateSemanticHeadings } from '../tools/scripts/local-authoring-knowledge';
 import { decodeKnowledge, encodeKnowledge } from '../tools/scripts/local-authoring-knowledge-core';
 
@@ -16,6 +17,89 @@ const isolated=mkdtempSync(path.join(tmpdir(),'local-authoring-tools-'));
 const run=(script:string,args:string[])=>spawnSync(process.execPath,[path.join(isolated,'skill/scripts',script+'.mjs'),...args],{cwd:tmpdir(),encoding:'utf8',timeout:10_000,env:{PATH:process.env.PATH}});
 beforeAll(()=>cpSync(source,path.join(isolated,'skill'),{recursive:true}));
 afterAll(()=>rmSync(isolated,{recursive:true,force:true}));
+
+const scopedPage=()=>JSON.parse(readFileSync('pages/capabilities/layout/local-authoring-scoped-data-demo.json','utf8'));
+const scopedScan=(document:any,ids:string[])=>scopePageData(document,scanPageData(document,model.schema),ids);
+
+describe('局部读取保持共享消费者与完整验收边界',()=>{
+  it('只读相关源及两表用数，剔除独立内容与所有数据行',()=>{
+    const document=scopedPage(),before=JSON.stringify(document),scan=scopedScan(document,['region-table']);
+    expect(Object.keys(scan.sources)).toEqual(['voice-closure']);
+    expect(scan.selectedComponents.map(c=>c.id)).toEqual(['region-table']);
+    expect(scan.consumers.map(c=>c.id)).toEqual(['region-table','review-table']);
+    expect(scan.uses.filter(use=>use.field==='rate').map(use=>use.componentId)).toEqual(['region-table','review-table']);
+    expect(JSON.stringify(scan)).not.toContain('东区');
+    expect(JSON.stringify(scan)).not.toContain('999');
+    expect(JSON.stringify(document)).toBe(before);
+  });
+  it('重复选择去重，容器选中其子项，保留祖先条件与全页诊断',()=>{
+    const document=scopedPage(),children=document.sections[0].components;
+    document.sections[0].components=[{id:'group',type:'compositeCard',visibleWhen:{filter:'region',op:'eq',value:'east'},props:{components:children}}];
+    document.sections[1].components[0].type='unknown';
+    document.filters=[{id:'region',type:'select',dimension:'region'}];
+    document.params=[{id:'year',value:2026}];
+    const scan=scopedScan(document,['group','group']);
+    expect(scan.selectedComponents.map(c=>c.id)).toEqual(['group','region-table','review-table']);
+    expect(scan.scope.requestedComponents).toEqual(['group']);
+    expect(scan.filters).toEqual(document.filters);
+    expect(scan.params).toEqual(document.params);
+    expect(scan.diagnostics.some(d=>d.type==='UNKNOWN_COMPONENT')).toBe(true);
+    expect(scopedScan(document,['region-table']).uses.some(use=>use.componentId==='group' && use.kind==='filter-reference')).toBe(true);
+  });
+  it('沿查询结果、计算和组合源引用展开，循环终止并保留缺失源诊断',()=>{
+    const document=scopedPage();
+    document.dataSources['voice-closure'].compute=[{op:'joinAggregate',source:'upstream'}];
+    document.dataSources.upstream={source:{type:'inline',rows:[{hidden:'secret'}]},fields:{}};
+    document.dataSources.dependent={fields:{},source:{type:'query',query:{resultBindings:[{source:'voice-closure'}],initial:[{hidden:'secret'}]}}};
+    document.dataSources.combined={fields:{},source:{type:'pagedJoin',members:{a:{source:'dependent'},b:{source:'missing'}}}};
+    document.dataSources.upstream.compute=[{op:'joinAggregate',source:'voice-closure'}];
+    const scan=scopedScan(document,['region-table']);
+    expect(scan.scope.sourceIds).toEqual(expect.arrayContaining(['voice-closure','upstream','dependent','combined','missing']));
+    expect(Object.keys(scan.sources)).not.toContain('independent-summary');
+    expect(scan.diagnostics).toContainEqual({type:'UNKNOWN_SOURCE',source:'missing'});
+    expect(JSON.stringify(scan)).not.toContain('secret');
+  });
+  it('静态组件不拉入无关源，详情视图中的共享消费者仍被找到',()=>{
+    const document=scopedPage();
+    document.sections.push({id:'notes',components:[{id:'note',type:'text',props:{content:'说明'}}]});
+    document.detailViews=[{id:'detail',components:[{...document.sections[0].components[1],id:'detail-table'}]}];
+    expect(Object.keys(scopedScan(document,['note']).sources)).toEqual([]);
+    expect(scopedScan(document,['region-table']).consumers.map(c=>c.id)).toContain('detail-table');
+    expect(scopedScan(document,['detail-table']).selectedComponents[0].path).toBe('/detailViews/0/components/0');
+  });
+  it('未知或重复组件身份明确失败，不能返回假成功的空范围',()=>{
+    const document=scopedPage();
+    expect(()=>scopedScan(document,['missing'])).toThrow('expected one component, found 0');
+    document.sections[0].components[1].id='region-table';
+    expect(()=>scopedScan(document,['region-table'])).toThrow('expected one component, found 2');
+  });
+  it('新增共享消费者携带其比较槽、祖先条件和其他引用的完整上下文',()=>{
+    const document=scopedPage();
+    const shared={id:'shared-card',type:'metricCard',data:{main:'voice-closure',compare:'independent-summary'},props:{rows:[
+      {label:'闭环率',valueField:'rate'},
+      {label:'比较',valueField:{data:'compare',field:'count'}}
+    ]}};
+    document.sections.push({id:'shared',components:[{id:'shared-parent',type:'compositeCard',visibleWhen:{filter:'region',op:'eq',value:'east'},props:{components:[shared]}}]});
+    const scan=scopedScan(document,['region-table']);
+    expect(Object.keys(scan.sources)).toEqual(['voice-closure','independent-summary']);
+    expect(scan.uses.some(use=>use.componentId==='shared-card' && use.slot==='compare' && use.field==='count')).toBe(true);
+    expect(scan.uses.some(use=>use.componentId==='shared-parent' && use.kind==='filter-reference')).toBe(true);
+    expect(scan.consumers.map(c=>c.id)).toContain('other-card');
+  });
+  it('仓外支持多组件扫描，报告命令拒绝范围参数，原文件保持不变',()=>{
+    const file=path.join(isolated,'scope.json'),content=JSON.stringify(scopedPage());
+    writeFileSync(file,content);
+    const result=run('analyze-data',['scan','--page',file,'--component','region-table','--component','review-table']);
+    expect(result.status,result.stderr).toBe(0);
+    expect(JSON.parse(result.stdout).selectedComponents.map((c:any)=>c.id)).toEqual(['region-table','review-table']);
+    for(const command of ['draft','check','prepare']) {
+      const rejected=run('analyze-data',[command,'--page',file,'--component','region-table']);
+      expect(rejected.status).toBe(2);
+      expect(rejected.stderr).toContain('full-page coverage');
+    }
+    expect(readFileSync(file,'utf8')).toBe(content);
+  });
+});
 
 describe('按需协议知识',()=>{
   it('压缩知识可无损还原，损坏的编码明确失败',()=>{

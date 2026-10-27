@@ -2,6 +2,8 @@
 
 仅在本次新增、修改或核对下列能力时读取命中的专题；已知主题时优先用 read-knowledge.mjs 精确查阅。完整模块用于深查，示例按实际采用的分支读取。
 
+按用户操作、数据逻辑或 debug 症状找入口时，先用[场景索引](scenario-index.md)；本页用于已明确能力后的协议深查。
+
 - 按筛选、层级、已有权限或业务事实控制显隐，以及条件按钮、表格行或文字片段：按本次修改的语义查[条件规则](page-metadata/conditions.md)。条件写在目标节点；子项全隐藏不自动收起父容器，需要整块隐藏时写父级条件。
 - 页面版本与已确认形态的布局：[页面](page-metadata/page.md)、[分区与布局](page-metadata/sections-and-layout.md)。
 - 概览页按本次修改的语义查[常见布局](overview-layouts.md)和[常用合法写法](component-recipes.md)；涉及地图再读[地图绑定](map-bindings.md)。按信息关系选择布局，示例数据不作为业务事实。

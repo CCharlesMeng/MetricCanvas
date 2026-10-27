@@ -222,3 +222,15 @@ Tab不允许页头或嵌套Tab；Report导出不补生成未访问的AI总结。
 `pnpm --filter playground exec playwright test mc-content.browser.ts --workers=1` 使用本目录的诊断页、经营/用量 Report 与 schema-upgrade-demo，验证 1440/390px、表头内排序按钮、合成数值 50 与 20→30，以及三地区原值/排序。当前诊断页新增知识、完整工具参数和独立覆盖分母三项，由实际 MC 查询生成。
 
 同一浏览器回归还直接读取 `tools/fixtures/local-authoring-upgrade/chart-filter.json`，调用产品升级实现，将迁移后的精确完整页放入 `/preview`；四类旧图表筛选转成组合卡 + filterGroup。网关调用现有本地 DQE Sim，点击“订单对比区域 → 海外”后验证新的订单请求确含 OVERSEAS，其他图表和对照图保留。该回放覆盖实际引擎查询/筛选链，数据为合成 Sim，不代表真实 DQE、权限、Relay 或保存验收。
+
+## 局部接数：共享指标与独立内容
+
+入口：`/pages/local-authoring-scoped-data-demo`；[页面 JSON](local-authoring-scoped-data-demo.json)。运行 `pnpm dev:playground`，无需 URL 参数或 DQE。两张表共用内联合成数据，独立指标使用另一页面数据源。
+
+1. 两张表均显示东区50.0%、南区0.0%、北区100.0%，独立指标为999。点击第一张表的闭环率列排序，确认南区移至首行，而第二张表仍按原顺序；零值保持0.0%。
+2. 从完整独立 Skill 运行 `node <skill-dir>/scripts/analyze-data.mjs scan --page <page.json> --component region-table`：selectedComponents 仅选中该表；consumers 包含两张表，sources 仅含 voice-closure，数据行不输出。选中 other-card 时只返回独立源；多个 --component 可合并读取。
+3. 共享源变更仍须核对两张表；读取范围不是校验范围。原组件通过回执路径定位，完整页面经 validate-page.mjs 校验。draft/check/prepare 保留全页报告覆盖，拒绝 --component。
+4. 运行 `node <skill-dir>/scripts/snapshot-attempt.mjs <page.json>`，省略输出目录得到系统临时目录内的快照；用返回 file 运行完整校验，用 `--check <folder>` 核对字节。快照不应放进被页面发现的目录；默认临时样本需要长期留证时归档到扫描范围外。
+5. 将 --component 改为不存在的 id，脚本应明确报错；使用坏 JSON 创建快照仍保存原字节，页面校验失败不覆盖该样本。
+
+本场景验证局部读取、已有运行时共享数据呈现和快照隔离；不证明真实 DQE、模型耗时、token 或线上发布。

@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto';
 import { walkDocumentComponents } from '../../packages/page/src/component-walk';
+import { materializePageDocument } from '../../packages/page/src/materialize';
 
 type Json=Record<string,any>;
 export const hashBytes=(content:string)=>createHash('sha256').update(content).digest('hex');
 export const pointerToken=(key:string)=>key.replaceAll('~','~0').replaceAll('/','~1');
 export interface DataUse {
   path:string; componentId:string; componentType:string; label:string; kind:string;
-  source?:string; slot?:string; field?:string; declaration?:Json;
+  source?:string; slot?:string; field?:string; recordListField?:string; declaration?:Json;
 }
 export interface DocumentBlock {id:string; heading:string; from:number; to:number; text:string}
 
@@ -92,6 +93,78 @@ function auxiliaryUses(value:any,path:string,context:Omit<DataUse,'path'|'kind'>
   }
 }
 
+function rowInputUses(input:Json,path:string,context:Omit<DataUse,'path'|'kind'>,uses:DataUse[],diagnostics:Json[]):void {
+  for(const [id,binding] of Object.entries(input.bindings ?? {}) as Array<[string,any]>) {
+    const location=`${path}/bindings/${pointerToken(id)}`;
+    if(binding?.source==='row' && typeof binding.field==='string') {
+      uses.push({...context,path:location,kind:'row-input',slot:'main',field:binding.field});
+    } else if(binding?.source==='filter') {
+      uses.push({...context,path:location,kind:'filter-reference',declaration:{filterId:binding.id}});
+    } else if(binding?.source==='param') {
+      uses.push({...context,path:location,kind:'param-reference',declaration:{paramId:binding.id}});
+    } else diagnostics.push({path:location,type:'INVALID_ROW_EXPANSION_BINDING'});
+  }
+  for(const [index,id] of (Array.isArray(input.filters)?input.filters:[]).entries()) {
+    uses.push({...context,path:`${path}/filters/${index}`,kind:'filter-reference',declaration:{filterId:id}});
+  }
+}
+
+function rowExpansionContext(input:Json,path:string,context:Omit<DataUse,'path'|'kind'>,uses:DataUse[],diagnostics:Json[]) {
+  if(input?.type==='query' && typeof input.source==='string') {
+    uses.push({...context,path:path+'/source',kind:'row-expansion-source',source:input.source});
+    rowInputUses(input,path,context,uses,diagnostics);
+    return {...context,source:input.source};
+  }
+  if(input?.type==='recordList' && typeof input.field==='string') {
+    uses.push({...context,path:path+'/field',kind:'field',slot:'main',field:input.field});
+    return {...context,recordListField:input.field};
+  }
+  diagnostics.push({path,type:'INVALID_ROW_EXPANSION_CONTEXT'});
+}
+
+function scanRowExpansion(component:Json,path:string,schema:Json,context:Omit<DataUse,'path'|'kind'>,uses:DataUse[],diagnostics:Json[]):void {
+  const expansion=component.props?.rowExpansion;
+  if(component.type!=='table' || !expansion) return;
+  const location=path+'/props/rowExpansion';
+  const child=rowExpansionContext(expansion.data,location+'/data',{...context,source:component.data?.main},uses,diagnostics);
+  if(!child) return;
+  const definition=schema.definitions?.rowExpansionTable;
+  if(!definition) {diagnostics.push({path:location,type:'UNSUPPORTED_ROW_EXPANSION_CONTEXT'});return;}
+  visitSchema(expansion.table,definition,schema,location+'/table',child,uses);
+  auxiliaryUses(expansion.table,location+'/table',child,uses);
+}
+
+function resolveComponentUses(component:Json,uses:DataUse[],diagnostics:Json[]):void {
+  for(const use of uses) {
+    if(use.kind==='invalid-field-binding') diagnostics.push({path:use.path,type:'INVALID_FIELD_BINDING'});
+    if(use.slot && !use.source) use.source=component.data?.[use.slot];
+    if(use.field && !use.source) diagnostics.push({path:use.path,type:'UNRESOLVED_DATA_SLOT',slot:use.slot});
+  }
+}
+
+function scanComponent(component:Json,path:string,schema:Json,uses:DataUse[],diagnostics:Json[]):void {
+  const context={componentId:String(component.id ?? ''),componentType:String(component.type ?? ''),label:typeof component.props?.title==='string'?component.props.title:String(component.id ?? '')};
+  const definition=Object.values(schema.definitions).find((node:any)=>node.properties?.id && node.properties?.props && node.properties?.type?.const===component.type) as Json|undefined;
+  if(!definition) {diagnostics.push({path,type:'UNKNOWN_COMPONENT',componentType:component.type});return;}
+  const local={...component,props:{...component.props}};
+  // Containers and row expansions have their own data contexts.
+  for(const key of ['components','tabs','rowExpansion']) delete local.props[key];
+  const before=uses.length;
+  visitSchema(local,definition,schema,path,context,uses);
+  auxiliaryUses(local,path,context,uses);
+  scanRowExpansion(component,path,schema,context,uses,diagnostics);
+  for(const [slot,source] of Object.entries(component.data ?? {})) {
+    uses.push({...context,path:`${path}/data/${pointerToken(slot)}`,kind:'data-slot',slot,source:String(source)});
+  }
+  if(uses.length===before) uses.push({...context,path,kind:'static-or-control'});
+  resolveComponentUses(component,uses.slice(before),diagnostics);
+}
+
+function useFieldContract(use:DataUse,sources:Json):Json|undefined {
+  const fields=sources[use.source ?? '']?.fields;
+  return (use.recordListField?fields?.[use.recordListField]?.items?.fields:fields)?.[use.field ?? ''];
+}
+
 export function scanPageData(page:Json,schema:Json):{uses:DataUse[];diagnostics:Json[];sources:Json;filters:unknown;params:unknown} {
   const uses:DataUse[]=[],diagnostics:Json[]=[];
   if(!Array.isArray(page.sections)) diagnostics.push({path:'/sections',type:'INVALID_PAGE_SHAPE'});
@@ -100,33 +173,21 @@ export function scanPageData(page:Json,schema:Json):{uses:DataUse[];diagnostics:
   (Array.isArray(page.sections)?page.sections:[]).forEach((section:Json,i:number)=>{
     for(const key of ['title','visibleWhen']) auxiliaryUses(section[key],`/sections/${i}/${key}`,pageContext,uses);
   });
-  walkDocumentComponents(page,(component,path)=>{
-    const context={componentId:String(component.id ?? ''),componentType:String(component.type ?? ''),label:typeof (component.props as Json)?.title==='string'?(component.props as Json).title:String(component.id ?? '')};
-    const definition=Object.values(schema.definitions).find((node:any)=>node.properties?.id && node.properties?.props && node.properties?.type?.const===component.type) as Json|undefined;
-    if(!definition) {diagnostics.push({path,type:'UNKNOWN_COMPONENT',componentType:component.type});return;}
-    const local={...component,props:{...(component.props as Json)}};
-    // Child components are walked separately with their own data slots.
-    for(const key of ['components','tabs']) delete local.props[key];
-    const before=uses.length;
-    visitSchema(local,definition,schema,path,context,uses);
-    auxiliaryUses(local,path,context,uses);
-    for(const [slot,source] of Object.entries((component.data ?? {}) as Json)) {
-      uses.push({...context,path:`${path}/data/${pointerToken(slot)}`,kind:'data-slot',slot,source:String(source)});
-    }
-    if(uses.length===before) uses.push({...context,path,kind:'static-or-control'});
-    for(const use of uses.slice(before)) {
-      if(use.kind==='invalid-field-binding') diagnostics.push({path:use.path,type:'INVALID_FIELD_BINDING'});
-      if(use.slot && !use.source) use.source=(component.data as Json)?.[use.slot];
-      if(use.field && !use.source) diagnostics.push({path:use.path,type:'UNRESOLVED_DATA_SLOT',slot:use.slot});
-    }
-  });
-  const sources=Object.fromEntries(Object.entries(page.dataSources ?? {}).map(([id,source]:[string,any])=>[id,{
-    fields:source.fields,source:source.source?.type==='inline'?{type:'inline'}:withoutRows(source.source),compute:source.compute
-  }]));
+  walkDocumentComponents(page,(component,path)=>scanComponent(component,path,schema,uses,diagnostics));
+  const projection=projectDataSources(page.dataSources ?? {}),sources=projection.sources;
+  diagnostics.push(...projection.diagnostics);
   const expanded=uses.flatMap(use=>use.kind==='related-data-source'?relatedSourceFields(use,sources):[use]);
   const unique=[...new Map(expanded.map(use=>[`${use.path}:${use.kind}:${use.field ?? ''}`,use])).values()];
-  for(const use of unique) if(use.field && use.source && !sources[use.source]?.fields?.[use.field]) diagnostics.push({path:use.path,type:'UNKNOWN_FIELD',source:use.source,field:use.field});
+  for(const use of unique) if(use.field && use.source && !useFieldContract(use,sources)) diagnostics.push({path:use.path,type:'UNKNOWN_FIELD',source:use.source,field:use.field});
   return {uses:unique,diagnostics,sources,filters:page.filters ?? [],params:page.params ?? []};
+}
+
+export function projectDataSources(dataSources:Json):{sources:Json;diagnostics:Json[]} {
+  const declarations=Object.fromEntries(Object.entries(dataSources).map(([id,source]:[string,any])=>[id,{
+    fields:source?.fields,source:source?.source?.type==='inline'?{type:'inline'}:withoutRows(source?.source),compute:source?.compute
+  }]));
+  const projected=materializePageDocument({dataSources:declarations});
+  return {sources:(projected.document as Json).dataSources,diagnostics:projected.errors};
 }
 
 function relatedSourceFields(use:DataUse,sources:Json):DataUse[] {
@@ -151,10 +212,10 @@ export function draftAnalysis(page:Json,schema:Json,pageHash:string,md:string):J
   const scan=scanPageData(page,schema),blocks=markdownBlocks(md);
   const gaps=new Map<string,Json>();
   const entries=scan.uses.filter(use=>use.field).map(use=>{
-    const field=scan.sources[use.source ?? '']?.fields?.[use.field!];
+    const field=useFieldContract(use,scan.sources);
     const terms=[use.field,field?.label,field?.queryField,use.label].filter((s):s is string=>typeof s==='string');
     const candidates=findBlocks(blocks,terms,3);
-    const group=`${use.source ?? 'unknown'}:${use.field}`;
+    const group=`${use.source ?? 'unknown'}:${use.recordListField?use.recordListField+':':''}${use.field}`;
     gaps.set(group,{id:group,blocks:'matching',question:`确认 ${field?.label ?? use.label ?? use.field} 的指标口径、时间范围/粒度、过滤编码及查询标识；区分原文依据与建议。`,paths:[...(gaps.get(group)?.paths ?? []),use.path]});
     return {use,fieldContract:field ?? null,matching:'unresolved',execution:'not-run',evidence:[],candidates:candidates.blocks.map(b=>({id:b.id,heading:b.heading,from:b.from,to:b.to})),omittedMatches:candidates.omittedMatches,conditions:scan.sources[use.source ?? '']?.source ?? null,missing:[group]};
   });
@@ -176,7 +237,7 @@ export function checkAnalysis(report:Json,draft:Json,md:string):string[] {
   report.entries.forEach((entry:Json,i:number)=>{
     const key=`${entry.use?.path}:${entry.use?.field}`;seen.add(key);
     if(!expected.has(key)) errors.push(`entries/${i}: unknown data use`);
-    for(const prop of ['source','slot','componentId','componentType','kind']) if(entry.use?.[prop]!==originals.get(key)?.use[prop]) errors.push(`entries/${i}: changed use identity ${prop}`);
+    for(const prop of ['source','slot','componentId','componentType','kind','recordListField']) if(entry.use?.[prop]!==originals.get(key)?.use[prop]) errors.push(`entries/${i}: changed use identity ${prop}`);
     if(!['unresolved','matched','ambiguous','not-found','conflict'].includes(entry.matching)) errors.push(`entries/${i}: invalid matching state`);
     if(entry.execution!=='not-run') errors.push(`entries/${i}: analysis cannot attest execution; use external request/response evidence separately`);
     if(!Array.isArray(entry.evidence)) errors.push(`entries/${i}: evidence must be an array`);

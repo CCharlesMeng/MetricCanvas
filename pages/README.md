@@ -73,6 +73,7 @@ pages/
 ### 本地创作：指标匹配与字段呈现
 
 - 页面：[local-authoring-knowledge-demo.json](capabilities/layout/local-authoring-knowledge-demo.json)，入口 `/pages/local-authoring-knowledge-demo`；`pnpm dev:playground` 启动，无 URL 参数或外部服务，使用内联合成数据。
+- 局部接数：[共享指标与独立内容](capabilities/layout/README.md#局部接数共享指标与独立内容)，入口 `/pages/local-authoring-scoped-data-demo`；组件范围读取、共享消费者和临时快照隔离，内联合成数据。
 - 签约金额为 4,200.0万，达成率为 42.0%；明细表显示同一数据，三列声明宽度分别为 180/200/160px。窄屏通过现有表格布局查看，百分格式不把 42 再乘 100。
 - 指标材料：[合成说明](../tools/fixtures/local-authoring-data/metrics.md)。用 local-authoring 的 analyze-data.mjs 扫描页面、检索说明并输出报告；“签约金额”有当期/累计两种口径，“达成率”缺目标口径与 DQE 标识，须报告候选/缺口，不直接写真实数据源。
 - 静态/仓外工具回归见 `tests/local-authoring-tools.test.ts`；浏览器直接读取本页面。脚本与运行时呈现、真实查询分层验收。

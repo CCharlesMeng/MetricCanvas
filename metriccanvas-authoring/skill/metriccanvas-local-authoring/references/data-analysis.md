@@ -1,47 +1,64 @@
-# 页面元素、指标匹配与查询数据源
+# 页面用数与查询数据源
 
-输入：页面 JSON、指标/指标表说明 MD，可附修改范围、已验证查询和执行环境。材料可不齐；先输出确定的对应关系和缺口。指标表不等于页面数据源，物理字段名不等于 DQE 标识。权限事实、数据上下文快照与执行证据来自项目真实材料/环境。
+新增口径、指标匹配或查询修改时使用本页。输入为页面 JSON、相关指标说明或数据契约；已有可信字段绑定的局部修改直接编辑，不要求完整分析报告。指标表不等于页面数据源，物理字段名不等于 DQE 标识。
 
-## 扫描和检索
+## 先定范围与执行条件
 
-命令只读输入，JSON 输出可重定向到用户工作目录。Node.js 22+，skill-dir 为安装目录：
+沿用用户已明确的真实数据或演示意图。编写查询前核对项目已提供的可信数据上下文、已验证查询及执行入口；无入口时交未执行候选和缺口，原目标页保持不变，不自动改为 inline 或扩大环境排障。补字段保留布局，修改共享页面数据源时核对其全部消费者及依赖。
+
+## 中文业务标识
+
+生成 DQE 查询时，指标名、维度名、筛选目标和结果字段映射默认使用数据上下文确认的中文业务标识。不得直接用物理表英文字段名替代 DQE 标识；中文名称本身也不证明它是合法标识，仍须核对可信数据契约与执行结果。
+
+queryField 必须对应真实输出字段，中文映射须有可信输出契约或真实响应证据。数据源仅提供英文标识或返回英文键时，报告缺口并请用户确认例外；已有有效确认可沿用。不自行翻译标识、改名实际返回键或伪造映射。普通指标的 output_metrics 保持真实 DQE 支持的名称字符串形状，不编造 alias 语法。
+
+本节是查询创作默认规范，不是页面 Schema 的英文禁令；合法的已有英文查询不因此被拒绝或擅自改写。页面稳定字段 id、协议属性名，以及 china、oversea、europe 等真实编码值不受中文规则影响。
+
+## 精确读取
+
+命令只读输入、输出 JSON。局部任务可重复指定组件 id：
 
 ```sh
-node "<skill-dir>/scripts/analyze-data.mjs" scan --page page.json
-node "<skill-dir>/scripts/analyze-data.mjs" index --md metrics.md
-node "<skill-dir>/scripts/analyze-data.mjs" find --md metrics.md --search 签约金额 --search contract_amount --limit 5
-node "<skill-dir>/scripts/analyze-data.mjs" draft --page page.json --md metrics.md
+node "<skill-dir>/scripts/analyze-data.mjs" scan --page page.json --component table-a --component table-b
 ```
 
-scan 返回嵌套组件、数据槽、字段、动态文字/条件/关联数据的用数位置与诊断，不打印 inline/initial 行。index 返回章节、块 id 和行号；find 返回字面命中的原文块、检索块数和未展示命中数；draft 给逐字段候选与按源/字段去重的缺口。名称检索不是语义匹配。
+局部 scan 返回所选组件摘要、相关用数位置与页面数据源，不打印 inline/initial 行；按返回的 path 从原页提取待改对象。范围包含子组件及父级用数、共享源消费者和页面数据源依赖闭包；全局 filters、params 与诊断仍保留。省略 --component 扫描全页。该选项仅属于 scan，draft/check/prepare 仍按完整页面覆盖。
 
-先用字段标签、id、queryField、组件上下文检索，核对原数据源。未命中时尝试别名/业务域，再扩大章节范围；只查过部分不能宣称全文没有指标。任意 MD 的语义由模型阅读原文提取；首次可能需要分批覆盖全文，计入冷启动成本。中间产物绑定页面/MD 内容哈希，材料改变重新分析。
-
-## 补全报告
-
-以 draft 为起点编辑 page-data-analysis.json，保留 use 与输入身份。matching 为 unresolved/matched/ambiguous/not-found/conflict，execution 保持 not-run。matched 提供 metricName、reason 与 evidence；证据对象为 `{from:起始行,to:结束行,quote:"原文片段"}`。未解决条目引用 gaps 中问题 id，问题 paths 列出所有影响位置。另写 Markdown 摘要供审阅。
-
-核对业务名/别名、口径、单位/币种、比率刻度、可加性/时间聚合、可用维度、行粒度与查询标识。整理指标、分组维度、时间窗口/粒度、固定条件、筛选/参数绑定、排序分页与完整性要求；每项注明页面/MD 依据、建议或未知。建议不作为事实；同名不同口径并列证据，缺连接键/基数不猜连接，缺可加性不折叠已有行，比率核对分子分母/零分母规则。
-
-缺口按共同原因合并，先问影响全页的时间/组织范围，再问个别指标。无执行环境仍可交匹配报告；补用数时保持布局，不读整页范式。
+短 MD 可直接读原文；长文先按字段标签、id、queryField 和组件上下文检索，未命中再查别名或相关章节。需要章节定位时用 index：
 
 ```sh
+node "<skill-dir>/scripts/analyze-data.mjs" find --md metrics.md --search 闭环率 --search close_rate --limit 5
+node "<skill-dir>/scripts/analyze-data.mjs" index --md metrics.md
+```
+
+find 返回字面命中的原文块、行号和未展示命中数。名称检索不是语义匹配；只查过部分不能宣称全文没有指标。需要全页匹配时直接运行 draft，它已包含页面扫描与 MD 分块，无需先重复 scan/index。
+
+核对本次所需的口径、单位、比率刻度、行粒度、时间聚合、维度、查询标识及筛选/参数绑定。事实标来源，建议与未知分开；比率核对分子分母和零分母规则，连接核对键与基数。缺口按共同原因合并，仅追问阻碍本次修改的信息。
+
+## 需要完整报告时
+
+全页接数、批量指标匹配或需机器检查证据覆盖时，使用完整报告：
+
+```sh
+node "<skill-dir>/scripts/analyze-data.mjs" draft --page page.json --md metrics.md
 node "<skill-dir>/scripts/analyze-data.mjs" check --page page.json --md metrics.md --report page-data-analysis.json
 ```
 
-check 验证输入哈希、位置覆盖、状态、证据范围/原文和问题引用。它不能自动判定业务解释正确，模型仍需给理由。退出码 0 为结构/引用通过，1 为报告/候选错误，2 为调用/文件错误；不能删除未解决位置制造覆盖率。
+以 draft 输出编辑分析 JSON，保留 use 与输入身份。matching 为 unresolved/matched/ambiguous/not-found/conflict；execution 保持 not-run。matched 提供 metricName、reason 与 evidence：`{from:起始行,to:结束行,quote:"原文片段"}`。未解决条目引用 gaps 中的问题 id，问题 paths 覆盖所有影响位置。Markdown 摘要仅在用户审阅或解释缺口时另写。
 
-## 候选与写回
+check 核对输入哈希、全页位置覆盖、状态、原文证据和问题引用，不判定业务解释正确。材料改变后重新分析，不能删掉未解决位置制造覆盖率。退出码 0/1/2 为通过/报告或候选错误/调用或文件错误。
 
-有真实 DQE 映射和充分条件时，按协议写 proposals.json：键为原有页面数据源 id，值为完整页面数据源声明。受影响条目均须 matched，missing 为空；条件未明确时先停在报告。
+## 查询候选与验真
+
+可信 DQE 映射与取数条件充分时，按所涉协议主题形成候选。已有完整报告且需替换原有页面数据源时，可用 prepare：
 
 ```sh
 node "<skill-dir>/scripts/read-knowledge.mjs" show --topic data.query --topic query.core --topic fields.core
 node "<skill-dir>/scripts/analyze-data.mjs" prepare --page page.json --md metrics.md --report page-data-analysis.json --proposals proposals.json
 ```
 
-prepare 在内存替换拟改源，运行产品页面校验，输出候选或静态错误；每个 queryField 须在该字段的引用证据范围内出现。execution 仍为 not-run。不写页面、不添加未验证 initial、不直接把表名当 DQE 指标，不改用任意 SQL。新增源/组件走普通页面创作流程。
+proposals 的键为原有页面数据源 id，值为完整声明；该源所有用数条目须 matched 且 missing 为空。prepare 只接受 query 候选，每个 queryField 须出现在该字段引用的 MD 证据内。它在内存替换拟改源并运行产品页面校验，不写页面，execution 仍为 not-run；新增源/组件走普通页面创作流程。
 
-项目有执行入口时再运行候选，记录请求/响应、条件、字段、粒度与完整性；修复失败候选。真实验证后更新工作页面的 source、fields、queryField 与绑定。initial 只能采用匹配查询和初始条件的真实结果。共享查询需满足指标/维度/时间/条件/范围与消费者限制，分页独占/pagedJoin 规则仍适用。
+通过已有执行入口验证候选，保留真实请求/响应，核对条件、字段、粒度与完整性后写回 source、fields、queryField 和绑定。initial 只采用匹配查询及初始条件的真实结果。共享查询仍须满足指标、维度、时间、条件及消费者限制，分页独占、pagedJoin/pagedUnion 约束继续适用。
 
-最后快照、完整校验、预览所涉交互。无环境时交分析 JSON、可读摘要和 query-candidates.json，明确候选未执行，原目标页保持不变。报告是创作期工作产物，不是页面协议字段，不放进 Skill 安装包。
+最后按[本地验收](local-workflow.md)快照、完整校验并预览所涉交互。缺环境时说明哪些证据未取得，保留必要候选即可；报告和候选是创作期工作产物，不进入页面协议或 Skill 安装包。语义分析较复杂且可独立拆分时，按需读[分析委派](data-delegation.md)。

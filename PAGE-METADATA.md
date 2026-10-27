@@ -26,7 +26,7 @@
 
 ## 从需求到页面
 
-本地创作可先用页面 JSON 和指标说明 MD 识别组件用数、指标候选、取数条件与缺口；已有页面的局部呈现修改只查所涉属性，不要求重新读取全部数据协议。工具与证据分层见[本地 Skill 维护](docs/agents/local-authoring-skill-maintenance.md)，可观察页面见[指标匹配与字段呈现](pages/capabilities/layout/local-authoring-knowledge-demo.json)。匹配报告和查询候选是创作期产物，不新增页面字段，不等于真实查询已验证。
+本地创作可先用页面 JSON 和指标说明 MD 识别组件用数、指标候选、取数条件与缺口；已有页面的局部呈现修改只查所涉属性，不要求重新读取全部数据协议。工具与证据分层见[本地 Skill 维护](docs/agents/local-authoring-skill-maintenance.md)，可观察页面见[指标匹配与字段呈现](pages/capabilities/layout/local-authoring-knowledge-demo.json)。匹配报告和查询候选是创作期产物，不新增页面字段，不等于真实查询已验证。 局部接数可按组件读取相关数据源及共享消费者，最终仍校验完整页面；已有可信绑定不要求重做全页指标报告。操作与范围边界见[局部接数示例](pages/capabilities/layout/README.md#局部接数共享指标与独立内容)。
 
 创作先取得受治理的数据上下文，确定性工具按页面构建规格装配完整页面，经过校验后交统一运行时。数据上下文、会话、执行身份与修订信息不写进页面文档。页面协议可表达、Authoring工具已支持、外部服务已接通分别举证。
 

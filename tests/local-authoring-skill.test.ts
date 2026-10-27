@@ -1,6 +1,6 @@
 import { pageFilesById } from '../tools/scripts/page-files.mjs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { chmod, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { chmod, cp, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -17,6 +17,7 @@ const isolated = await mkdtemp(path.join(tmpdir(), 'metriccanvas-local-skill-'))
 const folder = path.join(isolated, 'skill');
 const script = path.join(folder, 'scripts/validate-page.mjs');
 const files = new Map<string,string>();
+const snapshotFolders = new Set<string>();
 beforeAll(async () => {
   await cp(source, folder, {recursive: true});
   for (const entry of await readdir(folder, {recursive: true, withFileTypes: true})) if (entry.isFile()) {
@@ -24,8 +25,19 @@ beforeAll(async () => {
     files.set(path.relative(folder, absolute).split(path.sep).join('/'), await readFile(absolute, 'utf8'));
   }
 });
-afterAll(() => rm(isolated, {recursive: true, force: true}));
+afterAll(async () => {
+  await rm(isolated, {recursive: true, force: true});
+  await Promise.all([...snapshotFolders].map(directory => rm(directory, {recursive: true, force: true})));
+});
 const run = (args: string[]) => spawnSync(process.execPath, [script, ...args], {cwd: isolated, encoding: 'utf8', timeout: 10_000, env: {PATH: process.env.PATH}});
+const snapshot = (args: string[]) => spawnSync(process.execPath, [path.join(folder, 'scripts/snapshot-attempt.mjs'), ...args], {cwd: isolated, encoding: 'utf8', timeout: 10_000});
+function captureSnapshot(args: string[]) {
+  const result = snapshot(args);
+  expect(result.status, result.stderr).toBe(0);
+  const receipt: {folder: string; file: string; sha256: string} = JSON.parse(result.stdout);
+  snapshotFolders.add(receipt.folder);
+  return receipt;
+}
 
 describe('独立本地创作 Skill', () => {
   it('仓外使用复数正式声明，并保留 6.52 单数旧拼写的读取与版本约束', async () => {
@@ -287,12 +299,56 @@ describe('独立本地创作 Skill', () => {
     }
   });
 
-  it('尝试快照保留错误字节、拒绝覆盖并检测篡改', async () => {
+  it('默认快照在页面发现树之外，返回的文件路径可直接校验', async () => {
+    const pages = await mkdtemp(path.join(isolated, 'pages-'));
+    const content = files.get('references/page-metadata/examples/inline-report.json')!;
+    const target = path.join(pages, `${JSON.parse(content).id}.json`);
+    await writeFile(target, content);
+    const discovered = [...pageFilesById(pages)];
+    const receipt = captureSnapshot([target]);
+    expect(path.dirname(receipt.folder)).toBe(path.resolve(tmpdir()));
+    expect(path.isAbsolute(receipt.file)).toBe(true);
+    expect(receipt.file).toBe(path.join(receipt.folder, path.basename(target)));
+    expect([...pageFilesById(pages)]).toEqual(discovered);
+    expect(receipt.sha256).toBe(createHash('sha256').update(content).digest('hex'));
+    expect(run([receipt.file]).status).toBe(0);
+    expect((await stat(receipt.file)).mode & 0o222).toBe(0);
+    expect((await stat(path.join(receipt.folder, 'snapshot-manifest.txt'))).mode & 0o222).toBe(0);
+  });
+
+  it('连续默认快照使用不同目录，且不改变工作页面', async () => {
+    const target = path.join(isolated, 'repeat.json');
+    const bytes = Buffer.from('{"id":"repeat"}\n');
+    await writeFile(target, bytes);
+    const first = captureSnapshot([target]);
+    const second = captureSnapshot([target]);
+    expect(second.folder).not.toBe(first.folder);
+    expect(second.sha256).toBe(first.sha256);
+    expect(await readFile(first.file)).toEqual(bytes);
+    expect(await readFile(second.file)).toEqual(bytes);
+    expect(await readFile(target)).toEqual(bytes);
+  });
+
+  it('默认快照保留无法解析的原始字节及哈希，工作页修复不改失败样本', async () => {
+    const target = path.join(isolated, 'invalid-bytes.json');
+    const bytes = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from('{broken\r\n bytes  '), Buffer.from([0xff])]);
+    await writeFile(target, bytes);
+    const receipt = captureSnapshot([target]);
+    expect(await readFile(receipt.file)).toEqual(bytes);
+    expect(receipt.sha256).toBe(createHash('sha256').update(bytes).digest('hex'));
+    expect(run([receipt.file]).status).toBe(1);
+    await writeFile(target, '{}');
+    expect(snapshot(['--check', receipt.folder]).status).toBe(0);
+    expect(await readFile(receipt.file)).toEqual(bytes);
+  });
+
+  it('显式尝试快照保留错误字节、拒绝覆盖并检测篡改', async () => {
     const target = path.join(isolated, 'broken.json');
     const attempt = path.join(isolated, 'attempt-1');
     await writeFile(target, '{broken bytes');
-    const snapshot = (args: string[]) => spawnSync(process.execPath, [path.join(folder, 'scripts/snapshot-attempt.mjs'), ...args], {cwd: isolated, encoding: 'utf8'});
-    expect(snapshot([target, attempt]).status).toBe(0);
+    const receipt = captureSnapshot([target, attempt]);
+    expect(receipt.folder).toBe(attempt);
+    expect(receipt.file).toBe(path.join(attempt, 'broken.json'));
     expect(await readFile(path.join(attempt, 'broken.json'), 'utf8')).toBe('{broken bytes');
     await writeFile(target, '{different bytes');
     expect(snapshot([target, attempt]).status).toBe(1);
@@ -300,6 +356,15 @@ describe('独立本地创作 Skill', () => {
     await chmod(path.join(attempt, 'broken.json'), 0o644);
     await writeFile(path.join(attempt, 'broken.json'), 'changed');
     expect(snapshot(['--check', attempt]).status).toBe(1);
+  });
+
+  it('快照拒绝已有空目录和缺失父目录，不隐式复用或创建父目录', async () => {
+    const target = path.join(isolated, 'explicit.json');
+    await writeFile(target, '{}');
+    const existing = await mkdtemp(path.join(isolated, 'existing-attempt-'));
+    expect(snapshot([target, existing]).status).toBe(1);
+    expect(await readdir(existing)).toEqual([]);
+    expect(snapshot([target, path.join(isolated, 'missing-parent', 'attempt')]).status).toBe(1);
   });
 
   it('独立打包校验器与当前产品对所有契约向量给出相同结果', async () => {
