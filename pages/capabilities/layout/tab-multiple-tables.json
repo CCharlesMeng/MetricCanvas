@@ -1,0 +1,569 @@
+{
+  "schemaVersion": "6.69",
+  "id": "tab-multiple-tables",
+  "layout": "dashboard",
+  "meta": {
+    "title": "Tab 多表格自然展开",
+    "description": "内联合成数据；Tab 无额外滚动，表格保留独立滚动及分页。"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "合成记录1",
+            "amount": 10
+          },
+          {
+            "name": "合成记录2",
+            "amount": 20
+          },
+          {
+            "name": "合成记录3",
+            "amount": 30
+          },
+          {
+            "name": "合成记录4",
+            "amount": 40
+          },
+          {
+            "name": "合成记录5",
+            "amount": 50
+          },
+          {
+            "name": "合成记录6",
+            "amount": 60
+          },
+          {
+            "name": "合成记录7",
+            "amount": 70
+          },
+          {
+            "name": "合成记录8",
+            "amount": 80
+          },
+          {
+            "name": "合成记录9",
+            "amount": 90
+          },
+          {
+            "name": "合成记录10",
+            "amount": 100
+          },
+          {
+            "name": "合成记录11",
+            "amount": 110
+          },
+          {
+            "name": "合成记录12",
+            "amount": 120
+          },
+          {
+            "name": "合成记录13",
+            "amount": 130
+          },
+          {
+            "name": "合成记录14",
+            "amount": 140
+          },
+          {
+            "name": "合成记录15",
+            "amount": 150
+          },
+          {
+            "name": "合成记录16",
+            "amount": 160
+          },
+          {
+            "name": "合成记录17",
+            "amount": 170
+          },
+          {
+            "name": "合成记录18",
+            "amount": 180
+          },
+          {
+            "name": "合成记录19",
+            "amount": 190
+          },
+          {
+            "name": "合成记录20",
+            "amount": 200
+          },
+          {
+            "name": "合成记录21",
+            "amount": 210
+          },
+          {
+            "name": "合成记录22",
+            "amount": 220
+          },
+          {
+            "name": "合成记录23",
+            "amount": 230
+          },
+          {
+            "name": "合成记录24",
+            "amount": 240
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "default",
+      "title": "默认布局",
+      "components": [
+        {
+          "id": "default-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "默认 Tab",
+            "defaultTab": "multiple",
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "default-first",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "默认：first",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  },
+                  {
+                    "id": "default-second",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "默认：second",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "default-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "records"
+                  },
+                  "props": {
+                    "title": "默认：single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "local",
+                      "pageSize": 10
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "compact",
+      "title": "紧凑布局",
+      "components": [
+        {
+          "id": "compact-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "紧凑 Tab",
+            "defaultTab": "multiple",
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "compact-first",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "紧凑：first",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  },
+                  {
+                    "id": "compact-second",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "紧凑：second",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "compact-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "records"
+                  },
+                  "props": {
+                    "title": "紧凑：single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "local",
+                      "pageSize": 10
+                    }
+                  }
+                }
+              }
+            ],
+            "variant": "compact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "analysis-stack",
+      "title": "分析堆叠布局",
+      "components": [
+        {
+          "id": "analysis-stack-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "分析堆叠 Tab",
+            "defaultTab": "multiple",
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "analysis-stack-first",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "分析堆叠：first",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  },
+                  {
+                    "id": "analysis-stack-second",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "分析堆叠：second",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "analysis-stack-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "records"
+                  },
+                  "props": {
+                    "title": "分析堆叠：single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "local",
+                      "pageSize": 10
+                    }
+                  }
+                }
+              }
+            ],
+            "variant": "analysisStack"
+          }
+        }
+      ]
+    },
+    {
+      "id": "grid",
+      "title": "栅格布局",
+      "components": [
+        {
+          "id": "grid-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "栅格 Tab",
+            "defaultTab": "multiple",
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "grid-first",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "栅格：first",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  },
+                  {
+                    "id": "grid-second",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "records"
+                    },
+                    "props": {
+                      "title": "栅格：second",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 10
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "grid-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "records"
+                  },
+                  "props": {
+                    "title": "栅格：single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "local",
+                      "pageSize": 10
+                    }
+                  }
+                }
+              }
+            ],
+            "contentLayout": "grid"
+          }
+        }
+      ]
+    }
+  ]
+}

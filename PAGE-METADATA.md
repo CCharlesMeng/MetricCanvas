@@ -474,7 +474,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 普通表格通过 `props.rowNumber: {}` 开启独立序号列，可设置标题、宽度和左固定；排序筛选后重新编号，跨页连续，完整导出从1开始。声明及边界见[表格自动序号列](docs/page-metadata/components/table.md#自动序号列648)，可运行场景为 [table-row-number](pages/capabilities/table/table-row-number.json)。
 
-Tab 6.49 支持普通内容与组合卡，显式 `props.contentLayout: "grid"` 复用12列栅格，旧纵向布局兼容；首次进入取数、切换保活、活动项URL恢复及Report全展开规则见[Tab容器](docs/page-metadata/components/tabContainer.md)。可观察场景：[tab-mixed-content](pages/capabilities/layout/tab-mixed-content.json)。
+Tab 6.49 支持普通内容与组合卡，显式 `props.contentLayout: "grid"` 复用12列栅格，旧纵向布局兼容；首次进入取数、切换保活、活动项URL恢复及Report全展开规则见[Tab容器](docs/page-metadata/components/tabContainer.md)。可观察场景：[tab-mixed-content](pages/capabilities/layout/tab-mixed-content.json)。多内容面板随内容展开，不另设滚动区域；表格保留自身滚动，见[多表格 Tab](pages/capabilities/layout/tab-multiple-tables.json)。
 
 Dashboard白底容器中的指标卡自动补充统一边框，组合卡只保留外框；声明与呈现边界见[指标卡](docs/page-metadata/components/metricCard.md)。
 

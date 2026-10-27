@@ -234,3 +234,14 @@ Tab不允许页头或嵌套Tab；Report导出不补生成未访问的AI总结。
 5. 将 --component 改为不存在的 id，脚本应明确报错；使用坏 JSON 创建快照仍保存原字节，页面校验失败不覆盖该样本。
 
 本场景验证局部读取、已有运行时共享数据呈现和快照隔离；不证明真实 DQE、模型耗时、token 或线上发布。
+
+## Tab 多表格自然展开
+
+入口：`/pages/tab-multiple-tables`；[页面 JSON](tab-multiple-tables.json)。运行 `pnpm dev:playground`，无 URL 参数，无服务依赖；24 条内联合成记录。
+
+1. 默认、compact、analysisStack、grid 四组页签均包含两个表格。面板随内容增高，没有 Tab 级滚动条，后续分区位于内容下方。
+2. 切换到“单个表格”，compact 恢复原有 524px 高度；切回“多个表格”时恢复自然高度，已访问页签保留状态。
+3. 第一张表翻至第 2 页，显示合成记录 11，第二张表仍从合成记录 1 开始。390px 宽屏下横向滚动由表格自身承担，Tab 不另加滚动容器。
+4. 回归命令：`PLAYGROUND_BASE_URL=http://127.0.0.1:5173 node apps/playground/tests/tab-multiple-tables-browser.mjs`。
+
+仅验证正式运行时布局、分页与滚动，不涉及真实 DQE/Relay。

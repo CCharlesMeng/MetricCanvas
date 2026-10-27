@@ -172,10 +172,14 @@
     flex: none;
     padding: 16px 18px 0;
   }
-  /* A tab may declare several tables. Keep each table's intrinsic body height
-     and scroll the panel, instead of dividing a fixed card into zero-height bodies. */
+  /* Multiple children keep their intrinsic height; the page owns outer scrolling.
+     A compact card must also grow so the next section stays below its content. */
+  .compact:has(> .tab-panel.multiple-content:not([hidden])) {
+    height: auto;
+  }
   .tab-panel.multiple-content {
-    overflow: auto;
+    height: auto;
+    overflow: visible;
   }
   .multiple-content :global(.table-widget) {
     flex: none;

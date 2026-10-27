@@ -559,3 +559,5 @@ DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/qu
 表格列条件显隐：见[表格能力目录](capabilities/table/README.md#顶部筛选联动列显隐)，包含 Dashboard、私有作用域与 Report 导出三个入口。
 
 审批记录多对一补列及审批期间查询下推：见[表格场景](capabilities/table/README.md#审批记录关联与全局筛选)，入口 `/pages/record-join-demo`（合成数据）。
+
+Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-multiple-tables.json)，操作与预期见[布局场景说明](capabilities/layout/README.md#tab-多表格自然展开)。

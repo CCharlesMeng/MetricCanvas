@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "dec05579d09bc68b46ac273a4980a7961c19ae8289cc377dec7781f321233b08",
+  "sha256": "fb75afd7d08844b9f0c4e333b59350bb99542494c3d32c41d369512d95272bae",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -88,7 +88,7 @@
     },
     {
       "file": "docs/page-metadata/components/tabContainer.md",
-      "sha256": "65e8120100b8cb47c4b7b6d3443d52d54ea268de94ce596567f4fbb7576a11ca"
+      "sha256": "da80a8664a381e6980a11390b9a96ecfe57ca16fa276155a867fa022fc5c0147"
     },
     {
       "file": "docs/page-metadata/components/table.md",
@@ -1796,7 +1796,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "9745715f7c9926e4dd02053b5b8c1f1cc97a9a20bcfcb2a14b880af8a3f577d5"
+      "sha256": "2aa921a4fb3679b10a555ba81e5eb1597bf452b8288ea673e13d1f28f849a73b"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2124,7 +2124,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "f22be9f46efef2558a7bdbbf25fa35ec79e5fd5771c87bcc424692dd84991ace"
+      "sha256": "d2c0f1f4080187516930ffd3ea69109c3f2dbd8cd7b424e9b205302b05391205"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -2181,6 +2181,10 @@
     {
       "file": "pages/capabilities/layout/tab-mixed-content.json",
       "sha256": "8cc8b7a61ddd6dc09de4597fc4b222f8750d288d491b9288e011bf1409832ec9"
+    },
+    {
+      "file": "pages/capabilities/layout/tab-multiple-tables.json",
+      "sha256": "55daf0a7685dd1980391fd03b56345e22c3525485ec912abcf95789704c821ed"
     },
     {
       "file": "pages/capabilities/navigation/README.md",
