@@ -83,3 +83,7 @@ ADR索引检查被基线已有的 `docs/adr/topics/page-document-structure.md` �
 - 原始全仓测试扩大检查发现流水报表旧拼写后已中止该过期运行，修正三处源夹具并完成最终202文件回归；不声称全仓所有测试均已通过。
 - `git diff --check` 通过；源pages、合法协议夹具和Sim JSON无保存的by数组或orderByField。ADR索引的基线缺失链接仍未关闭；真实服务、CI与部署未运行。
 - 实施验收时未创建提交或远端分支。用户随后授权提交和推送；交付完成后归档本任务工作树并停止其5183/18238服务，其他任务保持原状。
+
+## 交付 CI 派生回执补齐
+
+首次提交 cf87633ab3fa96bae2ce66883e97e41000a8ecf0 的 CI 已通过 local-authoring，MC 内容包测试30项及覆盖对账6项也通过，但 mc-content-fixtures.py --check 报 diagnostics.json 漂移。原因是本批重新生成 MC 后，三份已跟踪的诊断回执仍保留旧 contentSha256 / productManifestSha256。已用原生成器重建 diagnostics、business-report、usage-report 三份回执；页面内容与可执行代码无变化，无新函数或复杂度变化。原失败命令复测通过，并完成 MC 独立归档打包。后续 CI 结论以最终提交为准。
