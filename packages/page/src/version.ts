@@ -22,7 +22,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 67;
+const CURRENT_MINOR = 68;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -47,6 +47,8 @@ export interface PageCapabilityDefinition {
 
 export const pageCapabilities = {
   'period-query-policy': {minor:67,legacyReadable:false,description:'查询独立期间策略与期间模式展示条件',usedAt:periodCapabilityPaths},
+  'metric-field-time-binding': {minor:68,legacyReadable:false,description:'普通 DQE 显式时间字段绑定下推维度范围条件',
+    usedAt:document=>dataSourcePaths(document,data=>usesMetricFieldTime(data.source))},
   'paged-join-records': {minor:66,legacyReadable:false,description:'审批记录逐行保留、成员筛选适用性和有界分批补列',
     usedAt:document=>dataSourcePaths(document,data=>record(data.source)?.type==='pagedJoin'&&(has(record(data.source),'records')||Object.values(record(record(data.source)?.members)??{}).some(member=>has(record(member),'notApplicableFilters'))))},
   'metric-primary-details': {
@@ -1203,5 +1205,19 @@ function sourceNavigationUsed(columns: unknown): boolean {
   return Array.isArray(columns) && columns.some(value => {
     const column = record(value);
     return has(column, 'navigateBySource') || sourceNavigationUsed(column?.children);
+  });
+}
+
+function usesMetricFieldTime(source: unknown): boolean {
+  const query=record(record(source)?.query);
+  if(!query)return false;
+  const leaves=[query,...Object.values(record(record(query.queryModes)?.cases)??{}),...Object.values(record(record(query.timeModes)?.cases)??{})];
+  return leaves.some(value=>{
+    const leaf=record(value),items=record(leaf?.body)?.dsl_list;
+    if(!Array.isArray(items)||!items.length||items.some(isObjectDqeItem))return false;
+    return Object.values(record(leaf?.filterBindings)??{}).some(value=>{
+      const binding=record(value);
+      return binding?.target==='time'&&has(binding,'queryField');
+    });
   });
 }

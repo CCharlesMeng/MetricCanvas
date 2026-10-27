@@ -90,11 +90,13 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 `pagedJoin.source.records` 显式启用记录模式，保留主表每条原始记录，成员 `key` 仅为关联键。旧页面不声明 `records`，继续使用原有一键一行、选页补列及最大1000行完整关联规则。
 
-记录模式配置 `batchSize`（1—1000）、`maxRows`（1—100000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—120000），不以调大旧 `fallback.maxRows` 解锁。执行器以固定的原始字段顺序分批读取主表，检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批查询补列表。主表重复关联键保留，补列表重复键、额外编码、截断、失败和超限整轮失败。无事务快照令牌，不能证明读取期间同总数的内容变化；既有单表分页的排序、准确计数与跨批稳定性仍须真实 DQE 验真。
+记录模式配置 `batchSize`（1—1000）、`maxRows`（1—100000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—120000），不以调大旧 `fallback.maxRows` 解锁。指标查询保留声明的单字段排序，未声明时按关联键升序分批读取；对象查询保留固定的原始字段顺序。执行器检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批查询补列表。主表重复关联键保留，补列表重复键、额外编码、截断、失败和超限整轮失败。无事务快照令牌，不能证明读取期间同总数的内容变化；既有单表分页的排序、准确计数与跨批稳定性仍须真实 DQE 验真。
 
 `rowKey` 与关联键分离：可投影主表真实唯一记录字段；若该字段不在 `projection`，必须声明非空string维度，由执行器按完整读取顺序生成快照内标识。该标识仅在此快照内稳定，不作为跨刷新业务ID；完全相同的两条记录仍保留两行。持久化第一页 initial 无法恢复完整内部快照，因此记录模式重新读取，不借第一页推断后续记录。
 
 `records.timeFilters` 显式声明本地时间筛选：键引用日或月精度 `timeRange`，`field` 引用主表的最终投影字段，`valueFormat` 声明 `iso`（YYYY-MM-DD）、`compact`（YYYYMMDD）或 `datetime`（YYYY-MM-DD HH:mm:ss）；返回值须符合声明格式和真实日历，非法值明确失败。`datetime` 对月份、日期展开为起日00:00:00、止日23:59:59，按来源本地日历比较，不做时区转换。主表查询不再声明相同筛选绑定；完整读取后先筛主表，再补列。筛选不伪造 `filter.time`，也不需要补列表存在统计期间字段；本地过滤意味着主表读取预算覆盖区域内所有被读取记录，而非仅期间内结果。
+
+6.68起，已确认可下推的审批时间应使用主表查询 `filterBindings` 的 `target:time + queryField + valueFormat`（见[指定时间字段](queries-and-bindings.md#metric-field-time)），并移除同一筛选的 `records.timeFilters`。先由上游筛选并返回匹配总数，再检查记录预算、分批读取和补列。仍需本地过滤的既有页面继续显式使用 `records.timeFilters`；其预算始终按过滤前读取范围计算。两种声明不能对同一个筛选重复配置。
 
 成员 `notApplicableFilters` 仅用于记录模式的非主表成员，显式列出由其他成员消费、而自己不适用的筛选；不能与已消费筛选重叠、不能引用未知筛选。其余业务筛选仍须消费，成员自己的静态条件和权限条件保留。此声明不绕过权限，也不授予取数范围。
 
@@ -103,7 +105,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 示例及浏览器验收入口为 `/pages/record-join-demo`，来自 `pages/capabilities/table/record-join-demo.json`，使用1205条合成审批记录。`pages/business-rejection-details.json` 是业务配置；其真实DQE字段、数据粒度、区域语义、HCS排除和服务完整性仍需真实环境确认，不由示例通过证明。
 
 
-页面协议 6.67。结构真源为本册[schema.json](schema.json)，SHA256 `bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.68。结构真源为本册[schema.json](schema.json)，SHA256 `8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

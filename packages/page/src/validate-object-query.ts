@@ -43,7 +43,7 @@ function metricShapeErrors(query: DqeQueryDefinition, item: JsonObject, path: st
   const errors: TypedError[]=[];
   if(item.output_fields!==undefined)errors.push(issue(path,'output_fields 必须使用 query_type:object'));
   for(const binding of Object.values(query.filterBindings??{})){
-    if(binding.target==='time' && (binding.queryField!==undefined || binding.valueFormat!==undefined))errors.push(issue(path,'普通 DQE 时间绑定不声明 object 字段或格式'));
+    if(binding.target==='time' && Boolean(binding.queryField)!==Boolean(binding.valueFormat))errors.push(issue(path,'字段时间绑定必须同时声明 queryField 和 valueFormat'));
   }
   return errors;
 }

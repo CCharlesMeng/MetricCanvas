@@ -1,5 +1,5 @@
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
-import { dqeDefaultSort, isObjectDqeItem } from '@metriccanvas/page/internal';
+import { dqeDefaultSort, validateCalendarTimeRange, calendarEndpoint, objectDateBoundary, isObjectDqeItem } from '@metriccanvas/page/internal';
 import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
 import { validateCandidatePage } from '../column-candidates';
 import type { ColumnCandidatesQuery } from '../ports';
@@ -667,7 +667,7 @@ function encodedMetricItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfi
     } else if (filter.target === 'dimensionRange') {
       setDimensionRangeFilter(item, filter.queryField, filter.from, filter.to);
     } else {
-      setTimeFilter(item, filter.value.from, filter.value.to, filter.period);
+      setMetricTimeBinding(item, filter);
     }
   }
   if (!applyTableFilters(item, query.tableFilters)) throw new EmptyTableQuery();
@@ -772,6 +772,18 @@ function setMetricRangeFilter(
     existing.push({ metric_name: metric, metric_value_list: [to], operator: '<=' });
   }
   filter.metrics = existing;
+}
+
+function setMetricTimeBinding(item: JsonObject, predicate: Extract<EffectiveQuery['filterValues'][number], {target:'time'}>): void {
+  if (!predicate.queryField && !predicate.valueFormat) {
+    setTimeFilter(item, predicate.value.from, predicate.value.to, predicate.period);
+    return;
+  }
+  if (!predicate.queryField || !predicate.valueFormat) throw new DqeGatewayError('DQE_FILTER_BINDING_ERROR', '字段时间绑定必须同时声明 queryField 和 valueFormat');
+  if (validateCalendarTimeRange(predicate.value, predicate.value.from.length === 7 ? 'month' : 'date').length) throw new DqeGatewayError('DQE_FILTER_BINDING_ERROR', '字段时间绑定要求合法的日或月范围');
+  const from = objectDateBoundary(calendarEndpoint(predicate.value.from, false), false, predicate.valueFormat);
+  const to = objectDateBoundary(calendarEndpoint(predicate.value.to, true), true, predicate.valueFormat);
+  if (!applyTableFilters(item, [{target:'dimensionRange', queryField:predicate.queryField, from, to}])) throw new EmptyTableQuery();
 }
 
 function setTimeFilter(item: JsonObject, start: string, end: string, period?: import('@metriccanvas/page/internal').QueryPeriod): void {

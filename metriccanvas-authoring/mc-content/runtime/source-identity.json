@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "68caa48e575ebe7077ac90581d227a76eb98481fcafefe59951d73151f0a2692",
+  "sha256": "a6e58e5384ff75fed404b8beb36e227015b105ebe75296ab52dedf954d249c40",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "cffbd4260d0226ac05df2dbae4ee56f535b979e6e9cd6cd1995e0011a913c713"
+      "sha256": "e69c9f87c9fd144d0f3feea2b9beaa951ae22e26420c71363f92c28aaffdf789"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -144,11 +144,11 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "2f3d91717a5ea4d9c927094793e8c441816966e91ae39ab3b066d759db27a3c4"
+      "sha256": "545eef450f5e20632a6cd81d12019b784441e78cf2a39f5bd6b922ba9c763c4a"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "8d2d7b1b9fe133bde4214986434096665fed0e4c305f365f9255d456b563836a"
+      "sha256": "db187e5629495ddd1c554b62e0bf8fe435193f1eaad38d1eb63f33a79a614c9e"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1492,7 +1492,7 @@
     },
     {
       "file": "packages/page/src/query-selection-validation.ts",
-      "sha256": "a171f46650864b66cb17d208680db0d4c0b0c6d393ef16e00fb8938de6573989"
+      "sha256": "1dc4900bbbddd104b240d67e30234ee90d84ed87c863376f5d4204eeaac1281f"
     },
     {
       "file": "packages/page/src/query-selection.ts",
@@ -1504,7 +1504,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "9023dde14c796f0c7c7540f73d62f3f0258910f6c860edbfd2815a306abbb0e8"
+      "sha256": "e34e7b660fa6665d08264e438048659eaa3b8d62cd21747d45ef6cc59a63cc2b"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -1752,7 +1752,7 @@
     },
     {
       "file": "packages/page/src/validate-object-query.ts",
-      "sha256": "29bb4b69632c57ed82d4aee6ab144787530c1d1ad3230bad112a022db6f5a271"
+      "sha256": "b3cda256ba4ba8a30437d9ae930bae7ae05ed2c1cc6a7560ca7dfd5973d15c4f"
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
@@ -1776,15 +1776,15 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "bd010a1a768084cf8f1e4ffa17603c55555fb5f6ce93e8d943e77f71c8059893"
+      "sha256": "b496608d420a834de3f30f2b48060bdc0951c971e6b84c203a3a2eda219dc19e"
     },
     {
       "file": "pages/README.md",
-      "sha256": "84b161a3e0c97d1e69121b99025cbaf47fa7b7933ec3e5da1bead10d1c386236"
+      "sha256": "e2db2fba012c1c73212710de5b7dbbb34a1d51584e6ce6601dfd4ff77e987f4e"
     },
     {
       "file": "pages/business-rejection-details.json",
-      "sha256": "5d0bbbabecb0a6d7bbdc1fc5f756bf56bf345500ef80c30aac1e7071c175ce7c"
+      "sha256": "f5bfba5ea22ff8f9a93b2a835e6bc49cddc3a3628b655bb0face2eab1db3fcaa"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -2132,15 +2132,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "553623bc2db8c9bb521fd3ce5dc4d243d30f560be159652c5796fe9a998df4a4"
+      "sha256": "7d6f966c9cc264d33793a63e32dfeb1fc5ff9f0a3dee7159a7703d60d22494fd"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "a6487c860016c95f5752c6b6a93fce2f862ac2461b6829b7d1d9ceea77be485d"
+      "sha256": "f4d1e5c6ed03394925a25439e8d0ca671f63da70767d5954f95b8ff39a048b05"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "20b95ce2035c689ddcacbea5602f9766b835a9ab48cd9b08767481c5300f19eb"
+      "sha256": "10d5f1135e131ae565b72b3d2c44b79ef5c2d89c3dab276f78aa14c563bce1af"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2156,7 +2156,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "d9f70323d36c98d4f6cdc853a35df0743c96aeb1b270f4fba29883fafdf90ce1"
+      "sha256": "cea028cddbc1857bffbdf92886ff9747ac03f908e0ef868ec3febe0e6e55c633"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2204,7 +2204,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "824ab3bcdae2aacc51b85a8e65cf2f6f123e7dc0a22290d8b56a72506fed57e4"
+      "sha256": "deb8c7c51252a77c631e9a51d7782f949491aa69ae9b77f08c46fe5804155d12"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2228,7 +2228,7 @@
     },
     {
       "file": "pages/capabilities/table/record-join-demo.json",
-      "sha256": "805ac3b33a6d1d61af767b781e3941dac80f0b6e3385e6b7f552792fca4fcd00"
+      "sha256": "0844d75eafb7dbb75f48817a6e2753fed870c5787e718af763bdcec0da1914c6"
     },
     {
       "file": "pages/capabilities/table/sales-detail.json",
@@ -2315,12 +2315,32 @@
       "sha256": "4aef6268ac0c8d42b41d1975315e8ea0bb388d1b886dc260f5168f8d11ee87d4"
     },
     {
+      "file": "pages/temporary/README.md",
+      "sha256": "f354b7438d2995071f138cd0f034bafb3621ba450fab16682cc794b16e65557d"
+    },
+    {
       "file": "pages/temporary/contract-maturity-score-20261027/README.md",
       "sha256": "e9bf4f3d6ca373aa740120b080d505d26c7db1207885161400e38692c07612c8"
     },
     {
       "file": "pages/temporary/contract-maturity-score-20261027/contract-maturity-score.json",
       "sha256": "a76fc4dbf2658490d296cce2830a47fc5ea5ed016bed8392b9fe2554a1793095"
+    },
+    {
+      "file": "pages/temporary/governance-compliance-20261027/README.md",
+      "sha256": "a0637207e115fed694430f754b325c30843edb66a7af0836cc08a90789c443eb"
+    },
+    {
+      "file": "pages/temporary/governance-compliance-20261027/governance-compliance.json",
+      "sha256": "540d6eff22d7ff924670db142f3515408507491f74f826a0cd4e91509dac6f5d"
+    },
+    {
+      "file": "pages/temporary/partner-health-data-analysis.md",
+      "sha256": "cf4d748e6414b3c718e90f4682480432c8c32c9145d1372abdc757a0537d0014"
+    },
+    {
+      "file": "pages/temporary/partner-health.json",
+      "sha256": "b03fbd817c5e486cb3fa70232a7d8414c18403e6ae3bb05df9dce223d505c7d4"
     },
     {
       "file": "pnpm-lock.yaml",

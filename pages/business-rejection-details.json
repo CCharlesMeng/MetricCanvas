@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.68",
   "id": "business-rejection-details",
   "layout": "dashboard",
   "dashboardToolbar": {
@@ -8,7 +8,7 @@
   },
   "meta": {
     "title": "商务驳回明细",
-    "description": "商务驳回审批记录明细；审批期间由共享执行器按审批完成时间筛选，商务ID仅用于关联当前商务责任人和生命状态。分批完整读取后统一搜索、筛选、排序和分页；真实 DQE 字段及完整性待接入验真。"
+    "description": "商务驳回审批记录明细；审批期间下推主表审批完成时间范围，预算针对期间内匹配记录，商务ID仅用于关联当前商务责任人和生命状态。分批完整读取后统一搜索、筛选、排序和分页；真实 DQE 字段及完整性待接入验真。"
   },
   "params": {
     "display": [
@@ -162,6 +162,11 @@
                 "region-dept": "region_dept_code",
                 "office": "rep_office_code"
               }
+            },
+            "mtime": {
+              "target": "time",
+              "queryField": "审批完成时间",
+              "valueFormat": "datetime"
             }
           }
         }
@@ -395,13 +400,7 @@
           "batchSize": 500,
           "maxRows": 100000,
           "maxBytes": 67108864,
-          "timeoutMs": 60000,
-          "timeFilters": {
-            "mtime": {
-              "field": "biz-approve-time",
-              "valueFormat": "datetime"
-            }
-          }
+          "timeoutMs": 60000
         }
       }
     }

@@ -14,7 +14,7 @@
 
 6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。
 
-当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。
+当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。6.68起普通DQE可同时声明queryField和valueFormat，将时间范围绑定到指定维度字段。页面字段id、筛选器dimension和DQE字段属于不同空间。
 
 未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。
 
@@ -215,3 +215,19 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 窗口、有限选择、complete 的用途边界及取消、缓存、URL、筛选写入规则与普通 DQE 一致。对象 complete 源经共享范围读取取得完整行集后再计算或关联；显式完整导出使用完整读取入口。分页失败、总数变化或累计行数超出总数时不返回部分对象结果冒充完整结果；不收紧普通指标查询原有兼容规则。导出单表最多 10000 行，结果绑定去重集合最多 1000 值，超限拒绝而不截断。没有真实记录标识时不能从重复投影行推断上游重复翻页，也不能据此删除重复行；稳定分页需真实服务验真。
 
 完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。
+
+<a id="metric-field-time"></a>
+
+## 指定时间字段的范围下推（6.68）
+
+普通 DQE（output_dims/output_metrics）查询的 `filterBindings` 可使用已有的 `target:time`，同时显式声明 `queryField` 与 `valueFormat:iso|compact|datetime`。例如审批期间绑定为：
+
+```json
+{"mtime":{"target":"time","queryField":"审批完成时间","valueFormat":"datetime"}}
+```
+
+绑定到日/月精度的 timeRange，或通过 window 绑定 timePoint；月份先展开为真实起止日（含闰年），datetime 再展开为起日00:00:00至止日23:59:59，按来源日历表达，不转换时区。普通DQE生成同名维度的两个 `filter.dims` 比较条件（operator为 `>=` 和 `<=`），不伪造统计 `filter.time`。原有静态条件保留并以AND叠加，不因期间选择放宽。字段与格式须成对声明；未声明二者时沿用统计时间槽的既有规则，对象查询仍使用filter.fields。
+
+指定字段必须是已确认的可筛选DQE维度标识；输出列存在不等于服务已支持范围谓词，真实接入须验证编码及筛选后的准确total_count。完整关联预算仍保留，但针对服务返回的匹配行域生效。不能把limit缩小当成缩小总数，也不能用读取后本地筛选解决读取预算超限。
+
+完整示例为 `record-join-demo`，业务配置为 `business-rejection-details`：主表下推审批期间，基本信息通过商务ID补列并显式声明期间不适用。示例使用合成数据；真实DQE能力单独验收。

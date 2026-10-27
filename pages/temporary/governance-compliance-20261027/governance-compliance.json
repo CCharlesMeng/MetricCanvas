@@ -1,0 +1,855 @@
+{
+  "schemaVersion": "6.59",
+  "id": "governance-compliance",
+  "layout": "dashboard",
+  "dashboardToolbar": {
+    "variant": "compact"
+  },
+  "meta": {
+    "title": "行权效率",
+    "description": "地区部与代表处行权效率情况明细及趋势图。展示商务/合同决策意见有效占比、紧急决策比例与申请规范率，含决策意见有效性、紧急决策比例、申请规范率三张柱线混合图。内嵌初始行为合成演示数据（占位值），不来自真实系统，不得用于业务判断。"
+  },
+  "filters": [
+    {
+      "id": "key-rep-only",
+      "type": "boolean",
+      "label": "仅看重点国代",
+      "default": false
+    },
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "数据期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "emptyLabel": "全部区域",
+      "hierarchy": [
+        { "id": "geo", "dimension": "geo-pc-code", "label": "全球" },
+        { "id": "region-dept", "dimension": "region-dept-code", "label": "地区部" },
+        { "id": "office", "dimension": "rep-office-code", "label": "代表处" }
+      ],
+      "defaultLevel": "geo"
+    },
+    {
+      "id": "sdt-duration-site",
+      "type": "dimension",
+      "dimension": "data-site-type",
+      "label": "SDT决策时长站点",
+      "default": ["国内"]
+    },
+    {
+      "id": "sdt-count-site",
+      "type": "dimension",
+      "dimension": "data-site-type",
+      "label": "SDT决策人数站点",
+      "default": ["国内"]
+    },
+    {
+      "id": "biz-decision-site",
+      "type": "dimension",
+      "dimension": "data-site-type",
+      "label": "商务决策站点",
+      "default": ["国内"]
+    },
+    {
+      "id": "contract-decision-site",
+      "type": "dimension",
+      "dimension": "data-site-type",
+      "label": "合同决策站点",
+      "default": ["国内"]
+    }
+  ],
+  "dataSources": {
+    "region-dept-norms": {
+      "fields": {
+        "no": {
+          "type": "number",
+          "role": "dimension",
+          "label": "序号"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "bizSdtAvgDuration": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处SDT平均决策时长",
+          "unit": "天"
+        },
+        "bizAvgDecisionCount": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处平均决策人数",
+          "unit": "人"
+        },
+        "bizClosureRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处闭环率",
+          "defaultFormat": "percent-1"
+        },
+        "contractClosureRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同决策代表处闭环率",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "no": 1,
+            "region-dept-name": "华东地区部",
+            "bizSdtAvgDuration": 2.8,
+            "bizAvgDecisionCount": 6,
+            "bizClosureRate": 0.946,
+            "contractClosureRate": 0.879
+          },
+          {
+            "no": 2,
+            "region-dept-name": "华北地区部",
+            "bizSdtAvgDuration": 4.9,
+            "bizAvgDecisionCount": 5,
+            "bizClosureRate": 0.865,
+            "contractClosureRate": 0.842
+          },
+          {
+            "no": 3,
+            "region-dept-name": "华南地区部",
+            "bizSdtAvgDuration": 4.8,
+            "bizAvgDecisionCount": 3,
+            "bizClosureRate": 0.92,
+            "contractClosureRate": 0.931
+          },
+          {
+            "no": 4,
+            "region-dept-name": "西部地区部",
+            "bizSdtAvgDuration": 2.7,
+            "bizAvgDecisionCount": 4,
+            "bizClosureRate": 0.861,
+            "contractClosureRate": 0.865
+          },
+          {
+            "no": 5,
+            "region-dept-name": "东北地区部",
+            "bizSdtAvgDuration": 2.1,
+            "bizAvgDecisionCount": 7,
+            "bizClosureRate": 0.891,
+            "contractClosureRate": 0.879
+          },
+          {
+            "no": 6,
+            "region-dept-name": "西南地区部",
+            "bizSdtAvgDuration": 4.5,
+            "bizAvgDecisionCount": 6,
+            "bizClosureRate": 0.958,
+            "contractClosureRate": 0.865
+          },
+          {
+            "no": 7,
+            "region-dept-name": "西北地区部",
+            "bizSdtAvgDuration": 2.8,
+            "bizAvgDecisionCount": 4,
+            "bizClosureRate": 0.912,
+            "contractClosureRate": 0.866
+          },
+          {
+            "no": 8,
+            "region-dept-name": "中南地区部",
+            "bizSdtAvgDuration": 2.3,
+            "bizAvgDecisionCount": 6,
+            "bizClosureRate": 0.872,
+            "contractClosureRate": 0.932
+          },
+          {
+            "no": 9,
+            "region-dept-name": "东南地区部",
+            "bizSdtAvgDuration": 4.4,
+            "bizAvgDecisionCount": 7,
+            "bizClosureRate": 0.853,
+            "contractClosureRate": 0.843
+          },
+          {
+            "no": 10,
+            "region-dept-name": "海外地区部",
+            "bizSdtAvgDuration": 3.3,
+            "bizAvgDecisionCount": 3,
+            "bizClosureRate": 0.882,
+            "contractClosureRate": 0.848
+          }
+        ]
+      }
+    },
+    "rep-office-norms": {
+      "fields": {
+        "no": {
+          "type": "number",
+          "role": "dimension",
+          "label": "序号"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "bizSdtAvgDuration": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处SDT平均决策时长",
+          "unit": "天"
+        },
+        "bizAvgDecisionCount": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处平均决策人数",
+          "unit": "人"
+        },
+        "bizClosureRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处闭环率",
+          "defaultFormat": "percent-1"
+        },
+        "contractClosureRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同决策代表处闭环率",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "no": 1,
+            "rep-office-name": "上海代表处",
+            "bizSdtAvgDuration": 3.9,
+            "bizAvgDecisionCount": 3,
+            "bizClosureRate": 0.945,
+            "contractClosureRate": 0.933
+          },
+          {
+            "no": 2,
+            "rep-office-name": "北京代表处",
+            "bizSdtAvgDuration": 3.1,
+            "bizAvgDecisionCount": 3,
+            "bizClosureRate": 0.894,
+            "contractClosureRate": 0.932
+          },
+          {
+            "no": 3,
+            "rep-office-name": "深圳代表处",
+            "bizSdtAvgDuration": 4.1,
+            "bizAvgDecisionCount": 5,
+            "bizClosureRate": 0.907,
+            "contractClosureRate": 0.908
+          },
+          {
+            "no": 4,
+            "rep-office-name": "成都代表处",
+            "bizSdtAvgDuration": 4.6,
+            "bizAvgDecisionCount": 4,
+            "bizClosureRate": 0.865,
+            "contractClosureRate": 0.833
+          },
+          {
+            "no": 5,
+            "rep-office-name": "西安代表处",
+            "bizSdtAvgDuration": 2.6,
+            "bizAvgDecisionCount": 3,
+            "bizClosureRate": 0.892,
+            "contractClosureRate": 0.917
+          },
+          {
+            "no": 6,
+            "rep-office-name": "杭州代表处",
+            "bizSdtAvgDuration": 4.3,
+            "bizAvgDecisionCount": 6,
+            "bizClosureRate": 0.967,
+            "contractClosureRate": 0.885
+          },
+          {
+            "no": 7,
+            "rep-office-name": "广州代表处",
+            "bizSdtAvgDuration": 4.6,
+            "bizAvgDecisionCount": 3,
+            "bizClosureRate": 0.95,
+            "contractClosureRate": 0.886
+          },
+          {
+            "no": 8,
+            "rep-office-name": "南京代表处",
+            "bizSdtAvgDuration": 4.1,
+            "bizAvgDecisionCount": 7,
+            "bizClosureRate": 0.899,
+            "contractClosureRate": 0.933
+          },
+          {
+            "no": 9,
+            "rep-office-name": "武汉代表处",
+            "bizSdtAvgDuration": 4.5,
+            "bizAvgDecisionCount": 7,
+            "bizClosureRate": 0.908,
+            "contractClosureRate": 0.866
+          },
+          {
+            "no": 10,
+            "rep-office-name": "济南代表处",
+            "bizSdtAvgDuration": 4.7,
+            "bizAvgDecisionCount": 6,
+            "bizClosureRate": 0.867,
+            "contractClosureRate": 0.857
+          }
+        ]
+      }
+    },
+    "decision-validity-trend": {
+      "fields": {
+        "rep-office": { "type": "string", "role": "dimension", "label": "代表处", "queryField": "代表处" },
+        "sdt-avg-duration": { "type": "number", "role": "measure", "label": "代表处SDT平均决策时长", "unit": "天", "queryField": "商审SDT平均决策时长" }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["代表处"],
+                "output_metrics": [
+                  "商审SDT平均决策时长"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": { "period": "month", "is_aggregate": false }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "sdt-duration-site": { "target": "dimension", "queryField": "国内或海外" },
+            "mtime": { "target": "time" }
+          }
+        }
+      }
+    },
+    "urgent-decision-trend": {
+      "fields": {
+        "rep-office": { "type": "string", "role": "dimension", "label": "代表处", "queryField": "代表处" },
+        "sdt-avg-count": { "type": "number", "role": "measure", "label": "代表处SDT平均决策人数", "unit": "人", "queryField": "商审SDT平均决策人数" }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["代表处"],
+                "output_metrics": [
+                  "商审SDT平均决策人数"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": { "period": "month", "is_aggregate": false }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "sdt-count-site": { "target": "dimension", "queryField": "国内或海外" },
+            "mtime": { "target": "time" }
+          }
+        }
+      }
+    },
+    "apply-norm-trend": {
+      "fields": {
+        "rep-office": { "type": "string", "role": "dimension", "label": "代表处", "queryField": "代表处" },
+        "biz-decision-count": { "type": "number", "role": "measure", "label": "商务决策数量", "unit": "个", "queryField": "审批通过商务申请数量" },
+        "biz-closure-rate": { "type": "number", "role": "measure", "label": "商务决策闭环率", "unit": "%", "defaultFormat": "percent-1", "queryField": "区域商审闭环率" }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["代表处"],
+                "output_metrics": [
+                  "审批通过商务申请数量",
+                  "区域商审闭环率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": { "period": "month", "is_aggregate": false }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "biz-decision-site": { "target": "dimension", "queryField": "国内或海外" },
+            "mtime": { "target": "time" }
+          }
+        }
+      }
+    },
+    "contract-decision-trend": {
+      "fields": {
+        "rep-office": { "type": "string", "role": "dimension", "label": "代表处", "queryField": "代表处" },
+        "contract-decision-count": { "type": "number", "role": "measure", "label": "合同决策数量", "unit": "个", "queryField": "完成申请的销售合同数量" },
+        "contract-closure-rate": { "type": "number", "role": "measure", "label": "合同决策闭环率", "unit": "%", "defaultFormat": "percent-1", "queryField": "销售合同决策代表处闭环率" }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["代表处"],
+                "output_metrics": [
+                  "完成申请的销售合同数量",
+                  "销售合同决策代表处闭环率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": { "period": "month", "is_aggregate": false }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "contract-decision-site": { "target": "dimension", "queryField": "国内或海外" },
+            "mtime": { "target": "time" }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "notice",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-scope-notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "注：不含混合云（HCS）的数据",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-dept-norms",
+      "container": "card",
+      "components": [
+        {
+          "id": "region-dept-norms-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-dept-norms"
+          },
+          "props": {
+            "title": "地区部行权效率情况",
+            "fit": "content",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "地区部行权效率情况"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "no",
+                "title": "序号",
+                "width": 60,
+                "fixed": "left",
+                "align": "left"
+              },
+              {
+                "field": "region-dept-name",
+                "title": "区域",
+                "width": 150,
+                "fixed": "left"
+              },
+              {
+                "field": "bizSdtAvgDuration",
+                "title": "商务代表处SDT平均决策时长",
+                "width": 180,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "bizAvgDecisionCount",
+                "title": "商务代表处平均决策人数",
+                "width": 180,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "bizClosureRate",
+                "title": "商务代表处闭环率",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contractClosureRate",
+                "title": "合同决策代表处闭环率",
+                "width": 180,
+                "align": "right",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rep-office-norms",
+      "container": "card",
+      "components": [
+        {
+          "id": "rep-office-norms-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rep-office-norms"
+          },
+          "props": {
+            "title": "代表处行权效率情况",
+            "fit": "content",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "代表处行权效率情况"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "no",
+                "title": "序号",
+                "width": 60,
+                "fixed": "left",
+                "align": "left"
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 150,
+                "fixed": "left"
+              },
+              {
+                "field": "bizSdtAvgDuration",
+                "title": "商务代表处SDT平均决策时长",
+                "width": 180,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "bizAvgDecisionCount",
+                "title": "商务代表处平均决策人数",
+                "width": 180,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "bizClosureRate",
+                "title": "商务代表处闭环率",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contractClosureRate",
+                "title": "合同决策代表处闭环率",
+                "width": 180,
+                "align": "right",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "sdt-decision-chart",
+      "container": "card",
+      "components": [
+        {
+          "id": "sdt-decision-card",
+          "type": "compositeCard",
+          "layout": { "span": 12 },
+          "props": {
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "sdt-duration-site-filter",
+                "type": "filterGroup",
+                "layout": { "span": 12 },
+                "props": {
+                  "filterId": "sdt-duration-site",
+                  "display": "buttons",
+                  "align": "left",
+                  "options": [
+                    { "label": "中国区", "value": "国内" },
+                    { "label": "海外", "value": "海外" }
+                  ]
+                }
+              },
+              {
+                "id": "sdt-duration-bar-chart",
+                "type": "barChart",
+                "layout": { "span": 12 },
+                "data": { "main": "decision-validity-trend" },
+                "props": {
+                  "title": "代表处SDT平均决策时长",
+                  "categoryField": "rep-office",
+                  "dualAxis": true,
+                  "series": [
+                    { "field": "sdt-avg-duration", "label": "代表处SDT平均决策时长", "kind": "bar", "axis": "primary" },
+                    { "value": 3.5, "label": "基线", "kind": "line", "axis": "secondary", "unit": "天" }
+                  ],
+                  "categoryLabels": { "mode": "all", "rotate": -45 },
+                  "echartsOption": {
+                    "grid": { "bottom": 44 },
+                    "legend": { "top": null, "bottom": 0, "left": "center" },
+                    "series": [
+                      { "barWidth": 16 },
+                      {}
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "sdt-count-site-filter",
+                "type": "filterGroup",
+                "layout": { "span": 12 },
+                "props": {
+                  "filterId": "sdt-count-site",
+                  "display": "buttons",
+                  "align": "left",
+                  "options": [
+                    { "label": "中国区", "value": "国内" },
+                    { "label": "海外", "value": "海外" }
+                  ]
+                }
+              },
+              {
+                "id": "sdt-count-bar-chart",
+                "type": "barChart",
+                "layout": { "span": 12 },
+                "data": { "main": "urgent-decision-trend" },
+                "props": {
+                  "title": "代表处SDT平均决策人数",
+                  "categoryField": "rep-office",
+                  "dualAxis": true,
+                  "series": [
+                    { "field": "sdt-avg-count", "label": "代表处SDT平均决策人数", "kind": "bar", "axis": "primary" },
+                    { "value": 5, "label": "基线", "kind": "line", "axis": "secondary", "unit": "人" }
+                  ],
+                  "categoryLabels": { "mode": "all", "rotate": -45 },
+                  "echartsOption": {
+                    "grid": { "bottom": 44 },
+                    "legend": { "top": null, "bottom": 0, "left": "center" },
+                    "series": [
+                      { "barWidth": 16 },
+                      {}
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply-norm-chart",
+      "container": "card",
+      "components": [
+        {
+          "id": "biz-decision-card",
+          "type": "compositeCard",
+          "layout": { "span": 12 },
+          "props": {
+            "variant": "metricGrid",
+            "title": "商务决策闭环率",
+            "components": [
+              {
+                "id": "biz-decision-site-filter",
+                "type": "filterGroup",
+                "layout": { "span": 12 },
+                "props": {
+                  "filterId": "biz-decision-site",
+                  "display": "buttons",
+                  "align": "left",
+                  "options": [
+                    { "label": "中国区", "value": "国内" },
+                    { "label": "海外", "value": "海外" }
+                  ]
+                }
+              },
+              {
+                "id": "biz-decision-bar-chart",
+                "type": "barChart",
+                "layout": { "span": 12 },
+                "data": { "main": "apply-norm-trend" },
+                "props": {
+                  "categoryField": "rep-office",
+                  "dualAxis": true,
+                  "series": [
+                    { "field": "biz-decision-count", "label": "商务决策数量", "kind": "bar", "axis": "primary" },
+                    { "field": "biz-closure-rate", "label": "商务决策闭环率", "kind": "line", "axis": "secondary" }
+                  ],
+                  "categoryLabels": { "mode": "all", "rotate": -45 },
+                  "echartsOption": {
+                    "grid": { "bottom": 44 },
+                    "legend": { "top": null, "bottom": 0, "left": "center" },
+                    "series": [
+                      { "barWidth": 16 },
+                      {}
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "contract-decision-chart",
+      "container": "card",
+      "components": [
+        {
+          "id": "contract-decision-card",
+          "type": "compositeCard",
+          "layout": { "span": 12 },
+          "props": {
+            "variant": "metricGrid",
+            "title": "合同决策闭环率",
+            "components": [
+              {
+                "id": "contract-decision-site-filter",
+                "type": "filterGroup",
+                "layout": { "span": 12 },
+                "props": {
+                  "filterId": "contract-decision-site",
+                  "display": "buttons",
+                  "align": "left",
+                  "options": [
+                    { "label": "中国区", "value": "国内" },
+                    { "label": "海外", "value": "海外" }
+                  ]
+                }
+              },
+              {
+                "id": "contract-decision-bar-chart",
+                "type": "barChart",
+                "layout": { "span": 12 },
+                "data": { "main": "contract-decision-trend" },
+                "props": {
+                  "categoryField": "rep-office",
+                  "dualAxis": true,
+                  "series": [
+                    { "field": "contract-decision-count", "label": "合同决策数量", "kind": "bar", "axis": "primary" },
+                    { "field": "contract-closure-rate", "label": "合同决策闭环率", "kind": "line", "axis": "secondary" }
+                  ],
+                  "categoryLabels": { "mode": "all", "rotate": -45 },
+                  "echartsOption": {
+                    "grid": { "bottom": 44 },
+                    "legend": { "top": null, "bottom": 0, "left": "center" },
+                    "series": [
+                      { "barWidth": 16 },
+                      {}
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

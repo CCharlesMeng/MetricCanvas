@@ -97,7 +97,9 @@ function queryDateFilterErrors(query: DqeQueryDefinition, path: string, filters:
   if (times.length > 1) error(path, '查询时间目标只能由一个筛选器控制');
   for (const [filterId, binding] of times) {
     if (binding.target !== 'time') continue;
-    if(isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])) objectDateFilterErrors(binding,filters.get(filterId),`${path}/${filterId}`,error);
+    const declaration=filters.get(filterId);
+    if(binding.queryField && !isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0]) && declaration?.type==='timeRange' && declaration.precision==='datetime') error(`${path}/${filterId}`, '字段时间绑定仅支持日或月精度筛选');
+    if(binding.queryField || isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])) objectDateFilterErrors(binding,filters.get(filterId),`${path}/${filterId}`,error);
     else boundDateFilterErrors(binding, filters.get(filterId), queryTimeConfig(query), `${path}/${filterId}`, error);
   }
 }

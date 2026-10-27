@@ -107,7 +107,8 @@ describe('record-preserving pagedJoin',()=>{
 
   it.each(['iso','compact','invalid'] as const)('handles declared %s local date values',async format=>{
     const page=parsed(),source=page.dataSources[root].source;if(source.type!=='pagedJoin')throw Error('join');
-    source.records!.timeFilters!.mtime.valueFormat=format==='compact'?'compact':'iso';
+    source.records!.timeFilters={mtime:{field:'biz-approve-time',valueFormat:format==='compact'?'compact':'iso'}};
+    const main=page.dataSources['rejection-details'].source;if(main.type!=='query')throw Error('query');delete main.query.filterBindings!.mtime;
     const preview=createRejectionPreview({rows:6});
     const gateway={async fetchData(query:Parameters<typeof preview.dataGateway.fetchData>[0]){
       const result=await preview.dataGateway.fetchData(query);

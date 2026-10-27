@@ -13,7 +13,7 @@
 `variant: heading` 的标题按页面layout分别呈现：Dashboard为黑色16px、500字重、左对齐、无装饰图标；Report为32px居中图标标题。两种形态不通过plain容器回退到共用标题。完整对照页为dashboard-title-styles与report-title-styles。
 
 
-页面协议 6.67。结构真源为本册[schema.json](../schema.json)，SHA256 `bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.68。结构真源为本册[schema.json](../schema.json)，SHA256 `8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

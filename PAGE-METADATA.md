@@ -8,7 +8,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.64**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.65、6.54、6.55、6.56、6.57、6.58、6.59、6.60、6.61、6.62、6.63和6.64；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.68**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -495,3 +495,5 @@ MC 内容包随本协议同步生成，包含同源字段语义、规则、例�
 6.66 增量：`pagedJoin.records` 支持主表逐条审批记录与多对一当前信息补列、独立记录标识、本地审批期间筛选和有预算的分批完整关联；成员可显式声明不适用的业务筛选。旧组合源行为保持。配置与限制见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，合成验收入口 `/pages/record-join-demo`。
 
 DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一使用 `order.order_by_field/type`，分页继续为 offset/limit；`order.by` 非指标 DQE 语法。分页合并、关联选页与子表格不自动追加第二排序字段，合并主排序相等时保留来源内返回次序。指标多字段排序发送前明确失败；不新增页面字段或改变 Schema 版本。参见[查询与绑定](docs/page-metadata/queries-and-bindings.md)、[分页合并](docs/page-metadata/data-sources.md#paged-union)及 `/pages/query-result-where-page`、`/pages/multi-source-table`。
+
+6.68：普通DQE可将time绑定显式指定到维度字段，下推日/月范围，详见[查询时间字段](docs/page-metadata/queries-and-bindings.md#metric-field-time)。审批记录示例 `record-join-demo` 在预算检查前筛选；既有records.timeFilters仍为读取后本地筛选。

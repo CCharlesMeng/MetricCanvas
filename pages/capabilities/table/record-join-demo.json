@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.66",
+  "schemaVersion": "6.68",
   "id": "record-join-demo",
   "layout": "dashboard",
   "dashboardToolbar": {
@@ -8,7 +8,7 @@
   },
   "meta": {
     "title": "审批记录关联与全局筛选",
-    "description": "合成数据：1205 条审批记录，同一商务多条记录，当前基本信息补列；验证本地时间范围、搜索、候选值和导出。"
+    "description": "合成数据：1205 条审批记录，同一商务多条记录，当前基本信息补列；验证时间范围下推、搜索、候选值和导出。"
   },
   "params": {
     "display": [
@@ -162,6 +162,11 @@
                 "region-dept": "region_dept_code",
                 "office": "rep_office_code"
               }
+            },
+            "mtime": {
+              "target": "time",
+              "queryField": "审批完成时间",
+              "valueFormat": "datetime"
             }
           }
         }
@@ -395,13 +400,7 @@
           "batchSize": 500,
           "maxRows": 100000,
           "maxBytes": 67108864,
-          "timeoutMs": 60000,
-          "timeFilters": {
-            "mtime": {
-              "field": "biz-approve-time",
-              "valueFormat": "datetime"
-            }
-          }
+          "timeoutMs": 60000
         }
       }
     }

@@ -72,7 +72,7 @@
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.67。结构真源为本册[schema.json](schema.json)，SHA256 `bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.68。结构真源为本册[schema.json](schema.json)，SHA256 `8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

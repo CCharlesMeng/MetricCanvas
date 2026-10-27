@@ -556,4 +556,4 @@ DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/qu
 多来源逐行合并、同列异字段映射和整体默认排序：[`multi-source-table`](capabilities/table/README.md#多来源字段映射与整体排序)，使用产品 `pagedUnion` 与本地模拟分页接口。
 表格列条件显隐：见[表格能力目录](capabilities/table/README.md#顶部筛选联动列显隐)，包含 Dashboard、私有作用域与 Report 导出三个入口。
 
-审批记录多对一补列及本地审批期间筛选：见[表格场景](capabilities/table/README.md#审批记录关联与全局筛选)，入口 `/pages/record-join-demo`（合成数据）。
+审批记录多对一补列及审批期间查询下推：见[表格场景](capabilities/table/README.md#审批记录关联与全局筛选)，入口 `/pages/record-join-demo`（合成数据）。

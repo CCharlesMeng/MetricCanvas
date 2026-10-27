@@ -132,7 +132,8 @@ function timeModeErrors(page:Page,query:DqeQueryDefinition,path:string):TypedErr
 }
 function timePeriodMatches(mode:string,leaf:DqeQueryCase):boolean {
   const item=leaf.body.dsl_list[0];
-  if(isObjectDqeItem(item))return Object.values(leaf.filterBindings).some(binding=>binding.target==='time'&&!!binding.queryField&&!!binding.valueFormat);
+  if(Object.values(leaf.filterBindings).some(binding=>binding.target==='time'&&!!binding.queryField&&!!binding.valueFormat))return true;
+  if(isObjectDqeItem(item))return false;
   const filter=item.filter;
   if(!filter||typeof filter!=='object'||Array.isArray(filter))return false;
   const time=filter.time;

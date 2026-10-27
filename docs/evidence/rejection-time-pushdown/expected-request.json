@@ -1,0 +1,88 @@
+{
+  "dsl_list": [
+    {
+      "output_dims": [
+        "商务ID",
+        "地区部",
+        "代表处",
+        "商务编码",
+        "审批完成时间",
+        "审批结果",
+        "审批意见",
+        "审批人姓名",
+        "阶段名称"
+      ],
+      "output_metrics": [],
+      "filter": {
+        "dims": [
+          {
+            "dim_name": "审批完成时间",
+            "dim_value_list": [
+              "2026-09-01 00:00:00"
+            ],
+            "operator": ">="
+          },
+          {
+            "dim_name": "审批完成时间",
+            "dim_value_list": [
+              "2026-09-30 23:59:59"
+            ],
+            "operator": "<="
+          }
+        ],
+        "metrics": []
+      },
+      "order": {
+        "offset": 0,
+        "limit": 500,
+        "by": [
+          {
+            "field": "商务ID",
+            "type": "asc",
+            "priority": 1
+          },
+          {
+            "field": "地区部",
+            "type": "asc",
+            "priority": 2
+          },
+          {
+            "field": "代表处",
+            "type": "asc",
+            "priority": 3
+          },
+          {
+            "field": "商务编码",
+            "type": "asc",
+            "priority": 4
+          },
+          {
+            "field": "审批完成时间",
+            "type": "asc",
+            "priority": 5
+          },
+          {
+            "field": "审批结果",
+            "type": "asc",
+            "priority": 6
+          },
+          {
+            "field": "审批意见",
+            "type": "asc",
+            "priority": 7
+          },
+          {
+            "field": "审批人姓名",
+            "type": "asc",
+            "priority": 8
+          },
+          {
+            "field": "阶段名称",
+            "type": "asc",
+            "priority": 9
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.67",
-  "schemaSha256": "bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3",
+  "schemaVersion": "6.68",
+  "schemaSha256": "8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -168,7 +168,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "9023dde14c796f0c7c7540f73d62f3f0258910f6c860edbfd2815a306abbb0e8"
+      "sha256": "e34e7b660fa6665d08264e438048659eaa3b8d62cd21747d45ef6cc59a63cc2b"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -328,7 +328,7 @@
     },
     {
       "file": "packages/page/src/validate-object-query.ts",
-      "sha256": "29bb4b69632c57ed82d4aee6ab144787530c1d1ad3230bad112a022db6f5a271"
+      "sha256": "b3cda256ba4ba8a30437d9ae930bae7ae05ed2c1cc6a7560ca7dfd5973d15c4f"
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
@@ -1734,7 +1734,8 @@
         "6.64",
         "6.65",
         "6.66",
-        "6.67"
+        "6.67",
+        "6.68"
       ]
     },
     {

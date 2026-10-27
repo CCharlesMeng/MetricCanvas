@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "6.68",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "queries-and-bindings.section-1a627338"
+  ],
+  "semantics": [
+    {
+      "module": "queries-and-bindings",
+      "reference": "references/page-metadata/queries-and-bindings.md",
+      "blocks": [
+        "# 查询定义与显式绑定",
+        "## 指定时间字段的范围下推（6.68）\n\n普通 DQE（output_dims/output_metrics）查询的 `filterBindings` 可使用已有的 `target:time`，同时显式声明 `queryField` 与 `valueFormat:iso|compact|datetime`。例如审批期间绑定为：\n\n```json\n{\"mtime\":{\"target\":\"time\",\"queryField\":\"审批完成时间\",\"valueFormat\":\"datetime\"}}\n```\n\n绑定到日/月精度的 timeRange，或通过 window 绑定 timePoint；月份先展开为真实起止日（含闰年），datetime 再展开为起日00:00:00至止日23:59:59，按来源日历表达，不转换时区。普通DQE生成同名维度的两个 `filter.dims` 比较条件（operator为 `>=` 和 `<=`），不伪造统计 `filter.time`。原有静态条件保留并以AND叠加，不因期间选择放宽。字段与格式须成对声明；未声明二者时沿用统计时间槽的既有规则，对象查询仍使用filter.fields。\n\n指定字段必须是已确认的可筛选DQE维度标识；输出列存在不等于服务已支持范围谓词，真实接入须验证编码及筛选后的准确total_count。完整关联预算仍保留，但针对服务返回的匹配行域生效。不能把limit缩小当成缩小总数，也不能用读取后本地筛选解决读取预算超限。\n\n完整示例为 `record-join-demo`，业务配置为 `business-rejection-details`：主表下推审批期间，基本信息通过商务ID补列并显式声明期间不适用。示例使用合成数据；真实DQE能力单独验收。"
+      ],
+      "rules": [
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "filter-binding",
+          "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "map-page",
+            "hierarchy-binding-page"
+          ],
+          "invalid": [
+            "level-query-fields-on-flat-filter",
+            "level-query-fields-missing-level",
+            "level-query-fields-undeclared-level",
+            "hierarchy-filter-flat-query-field",
+            "time-point-target-not-time-point",
+            "boolean-target-not-boolean",
+            "number-range-target-not-number-range",
+            "time-point-initial-param-not-times",
+            "time-point-initial-param-precision",
+            "time-point-initial-param-range",
+            "time-point-initial-param-and-default",
+            "time-point-initial-param-without-query-target",
+            "unknown-filter-binding",
+            "filter-binding-time-target-not-time-range",
+            "filter-binding-dimension-target-not-dimension"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/dimension-params-page.json",
+        "references/page-metadata/examples/hierarchy-binding-page.json",
+        "references/page-metadata/examples/non-dimension-bindings-page.json",
+        "references/page-metadata/examples/query-cascade-page.json",
+        "references/page-metadata/examples/query-result-where-page.json",
+        "references/page-metadata/examples/query-result-where-branches.json",
+        "references/page-metadata/examples/query-result-page-window-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/time-binding-branches-page.json",
+        "references/page-metadata/examples/query-modes-page.json",
+        "references/page-metadata/examples/query-mode-binding-branches-page.json",
+        "references/page-metadata/examples/object-query-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/period-query-columns-demo.json",
+        "references/page-metadata/examples/period-query-branches.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

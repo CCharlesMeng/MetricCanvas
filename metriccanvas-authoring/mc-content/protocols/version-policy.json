@@ -1,11 +1,16 @@
 {
   "major": 6,
-  "minor": 67,
-  "current": "6.67",
+  "minor": 68,
+  "current": "6.68",
   "capabilities": {
     "period-query-policy": {
       "minor": 67,
       "description": "查询独立期间策略与期间模式展示条件",
+      "legacyReadable": false
+    },
+    "metric-field-time-binding": {
+      "minor": 68,
+      "description": "普通 DQE 显式时间字段绑定下推维度范围条件",
       "legacyReadable": false
     },
     "paged-join-records": {
@@ -717,6 +722,7 @@
     "6.64",
     "6.65",
     "6.66",
-    "6.67"
+    "6.67",
+    "6.68"
   ]
 }

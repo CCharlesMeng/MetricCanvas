@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.67",
-  "schemaSha256": "bb75457bcc4f99e4a91b83f604f9d520afed5a7be574e041be3359ce7058a9d3",
+  "schemaVersion": "6.68",
+  "schemaSha256": "8c49eb958c45b7b0162c61ccf862ea6447d6ed0fb624a3cc57071a805d15de66",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1163,7 +1163,8 @@
         "6.64",
         "6.65",
         "6.66",
-        "6.67"
+        "6.67",
+        "6.68"
       ]
     },
     {
@@ -19730,5 +19731,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "7fc17ecd05d746a9ed8ea74a84366ed9338d0244bede2a1b855dd4b9c064e5e9"
+  "semanticSourceDigest": "0d40f5fc88415af876b2f8ced4973dd49281bee5b19fad6045dccf5b4e382841"
 }

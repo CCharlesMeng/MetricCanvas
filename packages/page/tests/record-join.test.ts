@@ -15,8 +15,8 @@ describe('record join protocol',()=>{
     if(kind==='unknown')source.members.basic.notApplicableFilters.push('missing');
     if(kind==='consumed')source.members.basic.notApplicableFilters.push('region');
     if(kind==='domain')source.members.rejection.notApplicableFilters=['mtime'];
-    if(kind==='non-time')source.records.timeFilters.region=source.records.timeFilters.mtime;
-    if(kind==='basic-time')source.records.timeFilters.mtime.field='life-status';
+    if(kind==='non-time')source.records.timeFilters={region:{field:'biz-approve-time',valueFormat:'datetime'}};
+    if(kind==='basic-time')source.records.timeFilters={mtime:{field:'life-status',valueFormat:'datetime'}};
     if(kind==='numeric-id')page.dataSources[root].fields['record-id'].type='number';
     expect(parsePage(page).ok).toBe(false);
   });

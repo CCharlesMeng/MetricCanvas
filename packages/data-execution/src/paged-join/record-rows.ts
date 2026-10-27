@@ -1,4 +1,4 @@
-import {copyFieldFallback,hasQueryFieldMapping,calendarEndpoint,objectDateBoundary,timeFilterBoundaryError,validateCalendarTimeRange,validateTimePointValue,type Row,type EffectiveQuery} from '@metriccanvas/page/internal';
+import {copyFieldFallback,hasQueryFieldMapping,dqeDefaultSort,isObjectDqeItem,calendarEndpoint,objectDateBoundary,timeFilterBoundaryError,validateCalendarTimeRange,validateTimePointValue,type Row,type EffectiveQuery} from '@metriccanvas/page/internal';
 import type {PagedJoinPlan} from './plan';
 import {rowFailure} from './rows';
 import {validateRecordRows} from './record-batches';
@@ -9,8 +9,12 @@ export function associationKey(plan:PagedJoinPlan,id:string,row:Row):Key{
   if(typeof key!==type||(typeof key!=='string'&&typeof key!=='number')||(typeof key==='string'&&!key.trim())||(typeof key==='number'&&!Number.isFinite(key)))throw rowFailure('记录关联键缺失或类型错误');
   return key;
 }
-/** Deterministic source ordering, independent from the user's changing table view. */
+/** Read ordering is independent from the table view and respects the DQE sort contract. */
 export function recordReadOrder(plan:PagedJoinPlan,id:string,query:EffectiveQuery):EffectiveQuery{
+  if(!isObjectDqeItem(query.body.dsl_list[0])){
+    if(query.sort?.length || dqeDefaultSort(query.body.dsl_list[0]).length)return query;
+    return {...query,sort:[{queryField:plan.source.source.members[id].key.queryField,direction:'asc'}]};
+  }
   const fields=Object.entries(plan.members.get(id)!.fields).filter(([,field])=>hasQueryFieldMapping(field)&&['string','number','money','date','datetime'].includes(field.type));
   return {...query,sort:fields.map(([,field])=>({queryField:hasQueryFieldMapping(field)?field.queryField:'',direction:'asc' as const}))};
 }

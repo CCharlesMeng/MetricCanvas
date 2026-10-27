@@ -3,6 +3,7 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
   "period-query-policy": 67,
+  "metric-field-time-binding": 68,
   "paged-join-records": 66,
   "metric-primary-details": 65,
   "pie-legend-table": 64,
