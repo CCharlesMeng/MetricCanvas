@@ -32,12 +32,19 @@ function plainText(html: string): string {
 
 /** One column tree controls multi-level headers, aligned slot values and compound fields. */
 export async function encodeTableWorkbook(component: TableComponent, data: NamedDataSlots, signal: AbortSignal): Promise<Uint8Array<ArrayBuffer>> {
+  return encodeWorkbookTables([{component,data,name:'表格数据'}],signal);
+}
+export async function encodeWorkbookTables(tables:readonly {component:TableComponent;data:NamedDataSlots;name:string}[],signal:AbortSignal):Promise<Uint8Array<ArrayBuffer>>{
+  signal.throwIfAborted();
+  const ExcelJS=(await import('exceljs')).default;
+  const workbook=new ExcelJS.Workbook();
+  for(const table of tables)writeTableSheet(workbook.addWorksheet(table.name),table.component,table.data,signal);
+  const buffer=await workbook.xlsx.writeBuffer();signal.throwIfAborted();return new Uint8Array(buffer);
+}
+function writeTableSheet(sheet:import('exceljs').Worksheet,component:TableComponent,data:NamedDataSlots,signal:AbortSignal):void{
   signal.throwIfAborted();
   if(!component.props.columns.length)throw new Error('当前条件下无可见列');
-  const ExcelJS = (await import('exceljs')).default;
-  signal.throwIfAborted();
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('表格数据');
+
   let groupIndex = 0;
   const title = (binding: FieldBinding, given?: string) => {
     const definition = resolveField(binding, data).definition;
@@ -100,13 +107,14 @@ export async function encodeTableWorkbook(component: TableComponent, data: Named
   });
   sheet.columns.forEach((column, index) => { column.width = Math.min(60, Math.max(14, (index < leadingColumns ? component.props.rowNumber?.width ?? 64 : layout.leaves[index - leadingColumns]?.width ?? 150) / 7)); });
   sheet.views = [{ state: 'frozen', ySplit: headerCount }];
-  const buffer = await workbook.xlsx.writeBuffer();
-  signal.throwIfAborted();
-  return new Uint8Array(buffer);
+
 }
 
 export async function downloadTableWorkbook(component: TableComponent, data: NamedDataSlots, signal: AbortSignal): Promise<void> {
   const bytes = await encodeTableWorkbook(component, data, signal);
+  await downloadWorkbookBytes(component,bytes,signal);
+}
+export async function downloadWorkbookBytes(component:TableComponent,bytes:Uint8Array<ArrayBuffer>,signal:AbortSignal):Promise<void>{
   signal.throwIfAborted();
   const url = URL.createObjectURL(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
   const link = document.createElement('a');

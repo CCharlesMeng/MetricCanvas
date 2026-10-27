@@ -17,6 +17,7 @@ export function columnFilterIds(columns: readonly TableColumnNode[]): Set<string
 export function expandedColumnFilterIds(page: Page): Set<string> {
     const ids = new Set<string>();
     walkPageComponents(page, table => {
+        if (table.type === 'table' && table.props.rowExpansion?.selection) ids.add(table.props.rowExpansion.selection.filter);
         if (table.type === 'table' && table.props.rowExpansion)
             for (const id of columnFilterIds(table.props.rowExpansion.table.columns))
                 ids.add(id);
@@ -30,6 +31,8 @@ function privateOwners(page: Page): Map<string, string> {
             owners.set(id, `detail:${view.id}`);
     walkPageComponents(page, table => {
         const input = table.type === 'table' ? table.props.rowExpansion?.data : undefined;
+        if (table.type === 'table' && table.props.rowExpansion?.selection)
+            for (const id of table.props.rowExpansion.selection.parentLookup.filters) owners.set(id, `lookup:${table.id}`);
         if (input?.type === 'query')
             for (const id of input.filters)
                 owners.set(id, `row:${table.id}`);

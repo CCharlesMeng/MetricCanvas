@@ -330,6 +330,110 @@
           "value": "代表处级"
         }
       ]
+    },
+    "h_region": {
+      "values": [
+        {
+          "value": "R01",
+          "label": "华东"
+        },
+        {
+          "value": "R02",
+          "label": "中国区"
+        },
+        {
+          "value": "R03",
+          "label": "欧洲"
+        },
+        {
+          "value": "R04",
+          "label": "亚太"
+        }
+      ]
+    },
+    "h_office": {
+      "values": [
+        {
+          "value": "O101",
+          "label": "上海"
+        },
+        {
+          "value": "O102",
+          "label": "江苏"
+        },
+        {
+          "value": "O103",
+          "label": "浙江"
+        },
+        {
+          "value": "O104",
+          "label": "安徽"
+        },
+        {
+          "value": "O105",
+          "label": "福建"
+        },
+        {
+          "value": "O201",
+          "label": "北京"
+        },
+        {
+          "value": "O202",
+          "label": "广东"
+        },
+        {
+          "value": "O203",
+          "label": "四川"
+        },
+        {
+          "value": "O204",
+          "label": "湖北"
+        },
+        {
+          "value": "O301",
+          "label": "德国"
+        },
+        {
+          "value": "O302",
+          "label": "法国"
+        },
+        {
+          "value": "O303",
+          "label": "英国"
+        },
+        {
+          "value": "O304",
+          "label": "意大利"
+        },
+        {
+          "value": "O401",
+          "label": "日本"
+        },
+        {
+          "value": "O402",
+          "label": "韩国"
+        },
+        {
+          "value": "O403",
+          "label": "新加坡"
+        },
+        {
+          "value": "O404",
+          "label": "澳大利亚"
+        },
+        {
+          "value": "O-empty",
+          "label": "定位无结果（异常验收）"
+        },
+        {
+          "value": "O-multi",
+          "label": "归属不唯一（异常验收）"
+        },
+        {
+          "value": "O-error",
+          "label": "定位失败（异常验收）"
+        }
+      ]
     }
   }
 }

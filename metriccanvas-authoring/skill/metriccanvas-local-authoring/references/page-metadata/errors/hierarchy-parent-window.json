@@ -1,0 +1,41 @@
+{
+  "case": "hierarchy-parent-window",
+  "invariant": "table-hierarchy-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源:region-summary",
+      "paths": [
+        "/sections/0/components/0/props/pagination/mode"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "父表要求完整普通查询、本地视图与原始 string 父级维度",
+      "paths": [
+        "/sections/0/components/0/props/rowExpansion/selection/parentField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pagination": {
+                "mode": "local"
+              },
+              "rowExpansion": {
+                "selection": {
+                  "parentField": "region-id"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -117,7 +117,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 示例及浏览器验收入口为 `/pages/record-join-demo`，来自 `pages/capabilities/table/record-join-demo.json`，使用1205条合成审批记录。`pages/business-rejection-details.json` 是业务配置；其真实DQE字段、数据粒度、区域语义、HCS排除和服务完整性仍需真实环境确认，不由示例通过证明。
 
 
-页面协议 6.69。结构真源为本册[schema.json](schema.json)，SHA256 `67b52fc850dd593cca5491b8b3dd6f6dfabe1732eb4b06ee42093f3fb0062e6e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.70。结构真源为本册[schema.json](schema.json)，SHA256 `67288605b6f6dd184ce097844c86c313d7d6e9ce0df1883c6a24f748a82da711`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

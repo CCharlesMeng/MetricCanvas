@@ -1,3 +1,4 @@
+import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
 import {columnBindingKey,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
 import { tableColumnPresentation } from '../../../runtime/src/table/column-presentation';
@@ -23,10 +24,17 @@ function renderHeaders(headers: TableHeaderFilters): Record<string, TableHeaderF
             : value.mode === 'select' ? { ...value, values: [...value.values] } : value]));
 }
 /** Draft ownership and event adaptation; committed values live exclusively in TableSession. */
-export function createTableController(page: Page, stream: () => PageSnapshotStream | null, changed: () => void, conditions: () => FilterValues = () => new Map(), candidateContext: () => Pick<ColumnCandidatesRead, 'now' | 'displayInputs' | 'filterRevision'> = () => ({})) {
+export function createTableController(page: Page, stream: () => PageSnapshotStream | null, changed: () => void, conditions: () => FilterValues = () => new Map(), candidateContext: () => Pick<ColumnCandidatesRead, 'now' | 'displayInputs' | 'filterRevision'> = () => ({}), hierarchyContext?: () => HierarchyContext & {gateway:import('../../../runtime/src/ports').DataGateway}) {
     const declarations = new Map(flattenPageComponents(page).filter((node): node is DeclaredTable => node.type === 'table').map(node => [node.id, node]));
     const context = () => ({ declarations: page.filters ?? [], filters: conditions(), displaySnapshot: candidateContext().displayInputs, filterRevision: candidateContext().filterRevision });
     const columns = (table: TableComponent) => tableColumnPresentation(page, declarations.get(table.id) ?? table, context());
+    const hierarchies = new Map<string, ReturnType<typeof createHierarchySelectionSession>>();
+    function syncHierarchy(table:TableComponent){
+      if(!table.props.rowExpansion?.selection||!hierarchyContext)return;
+      let session=hierarchies.get(table.id);
+      if(!session){session=createHierarchySelectionSession(page,table,hierarchyContext().gateway,changed);hierarchies.set(table.id,session);}
+      session.sync(hierarchyContext());
+    }
     const sessions = new Map<string, TableSession>();
     const candidates = new Map<string, ReturnType<typeof createColumnCandidatesSession>>();
     const headers = new Map<string, Record<string, TableHeaderFilterValue>>();
@@ -70,9 +78,22 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     }
     const controller = {
         view,
+        hierarchy(table:TableComponent):HierarchySelection|undefined{return hierarchies.get(table.id)?.snapshot();},
+        hierarchySnapshot(table:TableComponent,snapshot:import('@metriccanvas/page/internal').DataSnapshot){
+          const selection=controller.hierarchy(table);
+          if(!selection)return snapshot;
+          if(selection.status==='pending')return {status:'loading' as const};
+          if(!['selected','unrestricted'].includes(selection.status))return {status:'error' as const,error:{code:'DQE_QUERY_REJECTED' as const,message:selection.message??'父级定位未完成'}};
+          if(snapshot.status==='ready')try{
+            if(snapshot.totalCount!==undefined&&snapshot.totalCount!==snapshot.rows.length)throw new Error('父汇总结果不完整');
+            hierarchyRows(table,snapshot.rows,selection);
+          }catch(cause){return {status:'error' as const,error:{code:'DQE_QUERY_REJECTED' as const,message:cause instanceof Error?cause.message:'父级匹配失败'}};}
+          return snapshot;
+        },
+        hierarchyRows(table:TableComponent,rows:readonly import('@metriccanvas/page/internal').Row[]){const selection=controller.hierarchy(table);return selection?hierarchyRows(table,rows,selection):[...rows];},
         captureTables(sections:Page['sections']) {
       const tables=flattenPageComponents({sections}).filter((node):node is TableComponent=>node.type==='table');
-      for(const table of tables)controller.syncColumns(table);
+      for(const table of tables){controller.syncColumns(table);syncHierarchy(table);}
       controller.syncCandidates();
       return {views:Object.fromEntries(tables.map(table=>[table.id,controller.render(table)])),headers:Object.fromEntries(tables.map(table=>[table.id,controller.headers(table)])),pageSizes:Object.fromEntries(tables.map(table=>[table.id,controller.view(table).pageSize]))};
     },
@@ -116,7 +137,11 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 onpage: index => controller.page(table, index), onpagesize: size => controller.pageSize(table, size),
                 onsort: sort => controller.sort(table, sort), onheaderfilter: (field, value) => controller.header(table, field, value) };
         },
-        present(table: TableComponent, rows: readonly import('@metriccanvas/page/internal').Row[], complete = false) { return evaluateTableView(rows, view(table), complete); },
+        present(table: TableComponent, rows: readonly import('@metriccanvas/page/internal').Row[], complete = false) {
+          const result=evaluateTableView(rows,view(table),complete);
+          if(table.props.rowExpansion?.selection&&!remote(table)&&result.pageIndex!==view(table).pageIndex)local(table).correct({...view(table),pageIndex:result.pageIndex},local(table).generation);
+          return result;
+        },
         render(table: TableComponent): TableViewState {
             const committed = view(table);
             return { pageIndex: committed.pageIndex, sort: committed.sort, searchQuery: committed.search?.query, search: committed.search,
@@ -189,6 +214,10 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         },
         reset(table: TableComponent, previous: FilterValues, next: FilterValues) {
             const changedIds = new Set([...new Set([...previous.keys(), ...next.keys()])].filter(id => JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))));
+            if(table.props.rowExpansion?.selection){
+                if(changedIds.has(table.props.rowExpansion.selection.filter)){headers.delete(table.id);searches.delete(table.id);searchOptions.delete(table.id);local(table).resetDefault();}
+                changed();return;
+            }
             if (fieldSelectionIds(table.props).some(id => changedIds.has(id))) {
                 headers.delete(table.id);
                 searches.delete(table.id);
@@ -209,7 +238,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 local(table).resetPage();
             changed();
         },
-        dispose() { for (const session of candidates.values())
+        dispose() { for(const session of hierarchies.values())session.dispose();hierarchies.clear();for (const session of candidates.values())
             session.dispose(); candidates.clear(); for (const session of sessions.values())
             session.dispose(); sessions.clear(); headers.clear(); searches.clear(); searchOptions.clear(); }
     };

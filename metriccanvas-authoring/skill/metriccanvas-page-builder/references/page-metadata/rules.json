@@ -352,6 +352,20 @@
       ]
     },
     {
+      "id": "table-hierarchy-selection",
+      "description": "6.70显式归属定位、父行投影、私有选择及完整父子导出",
+      "valid": [
+        "table-hierarchy-selection",
+        "table-hierarchy-lookup-param"
+      ],
+      "invalid": [
+        "hierarchy-old-version",
+        "hierarchy-parent-window",
+        "hierarchy-without-selection",
+        "hierarchy-export-fields"
+      ]
+    },
+    {
       "id": "table-row-expansion",
       "description": "6.44单层子表格的作用域、只读及查询分页约束",
       "valid": [

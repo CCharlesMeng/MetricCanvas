@@ -1,7 +1,8 @@
+import { hierarchySelectionErrors, hierarchyExportErrors } from './validate-selection';
 import {tableAlignedSlots} from '../table-pinned';
 import { dqeDefaultSort } from '../dqe-object';
 import { ordinaryQuery } from '../time-mode';
-import type { Page, TableComponent } from '../page';
+import type { Page, TableComponent, Component } from '../page';
 import type { TypedError } from '../errors';
 import { fieldName, hasQueryFieldMapping } from '../field';
 import { resolveDataSourceFields } from '../data-source';
@@ -17,10 +18,12 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
     const owners = new Map<string, string>();
     const inputs = new Map<string, string>();
     walkPageComponents(page, (component, componentPath) => {
+        errors.push(...componentHierarchyExportErrors(component,componentPath));
         if (component.type !== 'table' || !component.props.rowExpansion)
             return;
         const expansion = component.props.rowExpansion;
         const path = `${componentPath}/props/rowExpansion`;
+        errors.push(...hierarchySelectionErrors(page,component,path,owners,inputs));
         const fields = page.dataSources[component.data.main] ? resolveDataSourceFields(page.dataSources[component.data.main]!) : {};
         const key = component.props.rowKey && fields[component.props.rowKey];
         if (!key || key.role !== 'dimension' || !['string', 'number'].includes(key.type))
@@ -29,7 +32,7 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
             errors.push(error(path, '子表格父表仅支持单一 main 数据槽，不能同时跨行合并'));
         if (componentPath.startsWith('/detailViews/'))
             errors.push(error(path, '详情浮层内暂不支持行内子表格'));
-        if (component.props.toolbar?.export)
+        if (legacyExpandedExport(component))
             errors.push(error(path, '子表格导出范围待确认，暂不启用该父表导出'));
         const source = page.dataSources[component.data.main];
         const rows = source?.source.type === 'inline' ? source.source.rows : source?.source.type === 'query' ? source.source.initial?.rows : undefined;
@@ -86,7 +89,7 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
                     if (!page.filters?.some(filter => filter.id === binding.id) || input.filters.includes(binding.id))
                         errors.push(error(`${path}/data/bindings`, '来源筛选不存在或引用了子表格私有输入'));
                 }
-                else if (!page.params?.some(param => param.id === binding.id))
+                else if (missingExpansionParam(page,binding))
                     errors.push(error(`${path}/data/bindings`, '来源页面参数不存在'));
             }
         }
@@ -108,11 +111,34 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
         catch { /* The precise source/field error is already reported above. */ }
     });
     const components = flattenPageComponents(page);
+    errors.push(...privateBindingErrors(components,inputs),...sourceOwnerErrors(page,components,owners),...privateInputErrors(page,components,inputs));
+    if (owners.size || components.some(component => component.type === 'table' && component.props.rowExpansion)) {
+        if (components.some(component => component.type === 'reportHeader' && component.props.exportButtons?.length))
+            errors.push(error('/sections', '子表格页面导出范围待确认，暂不启用页面导出'));
+    }
+    return errors;
+}
+function childDefaultSortErrors(item: import('../query').JsonObject, path: string): TypedError[] {
+    try { dqeDefaultSort(item); return []; }
+    catch { return [error(path, '子表格默认排序须使用 order_by_field/type 单字段格式')]; }
+}
+
+function componentHierarchyExportErrors(component:Component,path:string):TypedError[]{return component.type==='table'?hierarchyExportErrors(component,`${path}/props`):[];}
+function legacyExpandedExport(component:TableComponent):boolean{return !!component.props.toolbar?.export&&!component.props.toolbar.export.rowExpansion;}
+function missingExpansionParam(page:Page,binding:{source:string;id?:string}):boolean{return binding.source==='param'&&!page.params?.some(param=>param.id===binding.id);}
+function privateBindingErrors(components:Component[],inputs:Map<string,string>):TypedError[]{
+    const errors:TypedError[]=[];
     for (const component of components) {
         const input = component.type === 'table' ? component.props.rowExpansion?.data : undefined;
+        const lookup=component.type==='table'?component.props.rowExpansion?.selection?.parentLookup:undefined;
+        if(lookup&&Object.values(lookup.bindings).some(b=>b.source==='filter'&&inputs.has(b.id)))errors.push(error('/filters','父级定位不得读取其他作用域私有输入'));
         if (input?.type === 'query' && Object.values(input.bindings).some(binding => binding.source === 'filter' && inputs.has(binding.id)))
             errors.push(error('/filters', '子表格绑定不得读取其他实例的私有输入'));
     }
+    return errors;
+}
+function sourceOwnerErrors(page:Page,components:Component[],owners:Map<string,string>):TypedError[]{
+    const errors:TypedError[]=[];
     for (const [id, owner] of owners) {
         if (components.some(component => Object.values(component.data ?? {}).includes(id)))
             errors.push(error(owner, '子表格查询定义不能同时被正文或详情视图消费'));
@@ -121,6 +147,10 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
                 errors.push(error(owner, '子表格查询定义不能被其他数据源依赖'));
         }
     }
+    return errors;
+}
+function privateInputErrors(page:Page,components:Component[],inputs:Map<string,string>):TypedError[]{
+    const errors:TypedError[]=[];
     for (const [id, owner] of inputs) {
         for (const [sourceId, source] of Object.entries(page.dataSources)) {
             if (sourceId !== owner && source.source.type === 'query' && source.source.query.filterBindings?.[id])
@@ -131,13 +161,5 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
         if (components.some(component => 'actions' in component.props && component.props.actions?.some(action => 'writeFilter' in action && action.writeFilter === id)))
             errors.push(error('/filters', '正文不能写入子表格私有输入'));
     }
-    if (owners.size || components.some(component => component.type === 'table' && component.props.rowExpansion)) {
-        if (components.some(component => component.type === 'reportHeader' && component.props.exportButtons?.length))
-            errors.push(error('/sections', '子表格页面导出范围待确认，暂不启用页面导出'));
-    }
     return errors;
-}
-function childDefaultSortErrors(item: import('../query').JsonObject, path: string): TypedError[] {
-    try { dqeDefaultSort(item); return []; }
-    catch { return [error(path, '子表格默认排序须使用 order_by_field/type 单字段格式')]; }
 }

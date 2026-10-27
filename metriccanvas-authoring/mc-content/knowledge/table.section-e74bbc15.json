@@ -1,0 +1,297 @@
+{
+  "schemaVersion": "6.70",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "table.section-e74bbc15"
+  ],
+  "semantics": [
+    {
+      "module": "table",
+      "reference": "references/page-metadata/components/table.md",
+      "blocks": [
+        "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
+        "## 表格工具栏与搜索（6.21）\n\n每张表可独立声明 `props.toolbar.search` 和 `props.toolbar.export`，省略哪项就关闭哪项，省略整个工具区保留旧页行为：\n\n```json\n{\n  \"toolbar\": {\n    \"search\": { \"fields\": [\"customerName\", \"projectName\"], \"placeholder\": \"搜索客户或项目\" },\n    \"export\": { \"format\": \"xlsx\", \"filename\": \"项目明细\" }\n  }\n}\n```\n\n搜索字段必须是 `main` 数据槽中的文本标量字段，1—64项且不得重复。按 Enter 或搜索按钮提交，清空可恢复集合；提交时重置页码并保留排序与列头筛选。关键词只属于当前表格的实例状态，多个字段按任一字段包含匹配，采用不区分大小写的字面量包含语义，`%`、`_` 不作为通配符。草稿不参与导出。\n\n内联页面数据源及显式完整查询结果先搜索再排序和本地分页。其他查询源的搜索进入生效查询，由数据网关在上游执行；该表必须独占查询页面数据源，避免改动其他消费者的结果。共享查询定义的组合源属于单独的 `pagedJoin` 设计，不由本字段暗中引入。DQE 网关须配置经过核验的搜索编码器；未配置时报 `DQE_CONFIG_ERROR`，不会筛当前页或自动拉全表冒充查询搜索。"
+      ],
+      "rules": [
+        {
+          "id": "table-column-visibility",
+          "description": "列显隐条件与版本下限",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-old-version",
+            "table-column-row-context"
+          ]
+        },
+        {
+          "id": "table-column-search-fields",
+          "description": "列搜索须关联主、次或徽标字段",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-unowned-search"
+          ]
+        },
+        {
+          "id": "table-pinned-top",
+          "description": "独立完整查询置顶，明确字段及行域归属",
+          "valid": [
+            "table-pinned-summary-page"
+          ],
+          "invalid": [
+            "pinned-top-version",
+            "pinned-top-main",
+            "pinned-top-window",
+            "pinned-top-unknown-field",
+            "pinned-top-incomplete"
+          ]
+        },
+        {
+          "id": "table-hierarchy-selection",
+          "description": "6.70显式归属定位、父行投影、私有选择及完整父子导出",
+          "valid": [
+            "table-hierarchy-selection",
+            "table-hierarchy-lookup-param"
+          ],
+          "invalid": [
+            "hierarchy-old-version",
+            "hierarchy-parent-window",
+            "hierarchy-without-selection",
+            "hierarchy-export-fields"
+          ]
+        },
+        {
+          "id": "table-row-expansion",
+          "description": "6.44单层子表格的作用域、只读及查询分页约束",
+          "valid": [
+            "table-row-expansion-inline",
+            "table-row-expansion-query"
+          ],
+          "invalid": [
+            "row-expansion-before-6.44",
+            "row-expansion-missing-parent-key",
+            "row-expansion-query-local-page",
+            "row-expansion-unbound-parent"
+          ]
+        },
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches"
+          ],
+          "invalid": [
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
+          ]
+        },
+        {
+          "id": "paged-join",
+          "description": "6.22 组合表全局视图与普通查询定义引用",
+          "valid": [
+            "paged-join-page",
+            "table-number-range-page"
+          ],
+          "invalid": [
+            "table-number-range-before-6.22",
+            "paged-join-initial-predicate-in",
+            "paged-join-initial-predicate-numeric",
+            "paged-join-initial-predicate-date",
+            "paged-join-before-6.22",
+            "paged-join-unknown-member",
+            "paged-join-invalid-key",
+            "paged-join-invalid-projection",
+            "paged-join-member-topn",
+            "paged-join-shared-root",
+            "paged-join-invalid-initial",
+            "table-number-range-non-numeric"
+          ]
+        },
+        {
+          "id": "table-toolbar-search",
+          "description": "表格工具区由6.21引入，搜索显式引用文本标量字段",
+          "valid": [
+            "table-toolbar-page"
+          ],
+          "invalid": [
+            "table-toolbar-before-6.21",
+            "table-search-nontext-field",
+            "table-search-duplicate-field"
+          ]
+        },
+        {
+          "id": "table-search-options",
+          "description": "6.42 静态搜索选项唯一、默认项有效且每项引用文本字段",
+          "valid": [
+            "table-search-options-page"
+          ],
+          "invalid": [
+            "table-search-options-before-6.42",
+            "table-search-options-duplicate",
+            "table-search-options-default-missing",
+            "table-search-options-nontext",
+            "table-search-options-unmapped"
+          ]
+        },
+        {
+          "id": "table-row-key",
+          "description": "多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-multi-slot-without-row-key",
+            "table-row-key-missing-in-slot",
+            "table-row-key-not-dimension",
+            "table-row-key-type-inconsistent"
+          ]
+        },
+        {
+          "id": "table-row-kind-field",
+          "description": "表格行类别字段必须存在且由该数据源的折叠算子写入",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-row-kind-field-unknown",
+            "table-row-kind-field-not-written"
+          ]
+        },
+        {
+          "id": "table-merge-by-column",
+          "description": "mergeBy 必须是表格已声明的列字段",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-merge-by-not-column"
+          ]
+        },
+        {
+          "id": "table-selection-writes",
+          "description": "单元格选择只能写入已声明的 dimension 筛选器",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-selection-writes-unknown-filter",
+            "table-selection-writes-non-dimension"
+          ]
+        },
+        {
+          "id": "table-column-binding-unique",
+          "description": "表格列字段绑定不重复",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-duplicate-column-binding"
+          ]
+        },
+        {
+          "id": "table-filterable-dimension",
+          "description": "表头筛选只能声明在 dimension 列上",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-filterable-on-measure"
+          ]
+        },
+        {
+          "id": "pagination-local-inline",
+          "description": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "pagination-local-on-query"
+          ]
+        },
+        {
+          "id": "pagination-query-source",
+          "description": "pagination.mode='query' 只允许绑定 query 数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-query-on-inline"
+          ]
+        },
+        {
+          "id": "pagination-query-order",
+          "description": "查询分页要求 DQE order.offset 为 0 且 limit 为正整数",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-offset-not-zero",
+            "pagination-limit-not-positive"
+          ]
+        },
+        {
+          "id": "pagination-initial-rows",
+          "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-initial-without-total-count",
+            "pagination-initial-not-full-page"
+          ]
+        },
+        {
+          "id": "pagination-exclusive-source",
+          "description": "查询分页表格必须独占页面数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-shared-source"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/query-dashboard.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/reference-export-column-actions.json",
+        "references/page-metadata/examples/table-toolbar-page.json",
+        "references/page-metadata/examples/table-number-range-page.json",
+        "references/page-metadata/examples/paged-join-fixed-rank-page.json",
+        "references/page-metadata/examples/table-search-options-page.json",
+        "references/page-metadata/examples/table-row-expansion-inline.json",
+        "references/page-metadata/examples/table-row-expansion-query.json",
+        "references/page-metadata/examples/table-row-expansion-inputs.json",
+        "references/page-metadata/examples/table-row-expansion-none.json",
+        "references/page-metadata/examples/table-row-number-page.json",
+        "references/page-metadata/examples/table-scalar-fallback-page.json",
+        "references/page-metadata/examples/table-pinned-summary-page.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/table-column-visibility.json",
+        "references/page-metadata/examples/table-hierarchy-selection.json",
+        "references/page-metadata/examples/table-hierarchy-lookup-param.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

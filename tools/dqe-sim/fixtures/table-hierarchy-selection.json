@@ -1,0 +1,185 @@
+{
+  "parents": [
+    {
+      "h_row_id": 1,
+      "h_region": "R01",
+      "h_region_name": "华东",
+      "h_parent_amount": 1200
+    },
+    {
+      "h_row_id": 2,
+      "h_region": "R02",
+      "h_region_name": "中国区",
+      "h_parent_amount": 900
+    },
+    {
+      "h_row_id": 3,
+      "h_region": "R03",
+      "h_region_name": "欧洲",
+      "h_parent_amount": 780
+    },
+    {
+      "h_row_id": 4,
+      "h_region": "R04",
+      "h_region_name": "亚太",
+      "h_parent_amount": 650
+    }
+  ],
+  "children": [
+    {
+      "h_office": "O101",
+      "h_office_name": "上海",
+      "h_child_amount": 360
+    },
+    {
+      "h_office": "O102",
+      "h_office_name": "江苏",
+      "h_child_amount": 120
+    },
+    {
+      "h_office": "O103",
+      "h_office_name": "浙江",
+      "h_child_amount": 140
+    },
+    {
+      "h_office": "O104",
+      "h_office_name": "安徽",
+      "h_child_amount": 160
+    },
+    {
+      "h_office": "O105",
+      "h_office_name": "福建",
+      "h_child_amount": 180
+    },
+    {
+      "h_office": "O201",
+      "h_office_name": "北京",
+      "h_child_amount": 100
+    },
+    {
+      "h_office": "O202",
+      "h_office_name": "广东",
+      "h_child_amount": 120
+    },
+    {
+      "h_office": "O203",
+      "h_office_name": "四川",
+      "h_child_amount": 140
+    },
+    {
+      "h_office": "O204",
+      "h_office_name": "湖北",
+      "h_child_amount": 160
+    },
+    {
+      "h_office": "O301",
+      "h_office_name": "德国",
+      "h_child_amount": 100
+    },
+    {
+      "h_office": "O302",
+      "h_office_name": "法国",
+      "h_child_amount": 120
+    },
+    {
+      "h_office": "O303",
+      "h_office_name": "英国",
+      "h_child_amount": 140
+    },
+    {
+      "h_office": "O304",
+      "h_office_name": "意大利",
+      "h_child_amount": 160
+    },
+    {
+      "h_office": "O401",
+      "h_office_name": "日本",
+      "h_child_amount": 100
+    },
+    {
+      "h_office": "O402",
+      "h_office_name": "韩国",
+      "h_child_amount": 120
+    },
+    {
+      "h_office": "O403",
+      "h_office_name": "新加坡",
+      "h_child_amount": 140
+    },
+    {
+      "h_office": "O404",
+      "h_office_name": "澳大利亚",
+      "h_child_amount": 160
+    }
+  ],
+  "lookup": [
+    {
+      "h_office": "O101",
+      "h_parent": "R01"
+    },
+    {
+      "h_office": "O102",
+      "h_parent": "R01"
+    },
+    {
+      "h_office": "O103",
+      "h_parent": "R01"
+    },
+    {
+      "h_office": "O104",
+      "h_parent": "R01"
+    },
+    {
+      "h_office": "O105",
+      "h_parent": "R01"
+    },
+    {
+      "h_office": "O201",
+      "h_parent": "R02"
+    },
+    {
+      "h_office": "O202",
+      "h_parent": "R02"
+    },
+    {
+      "h_office": "O203",
+      "h_parent": "R02"
+    },
+    {
+      "h_office": "O204",
+      "h_parent": "R02"
+    },
+    {
+      "h_office": "O301",
+      "h_parent": "R03"
+    },
+    {
+      "h_office": "O302",
+      "h_parent": "R03"
+    },
+    {
+      "h_office": "O303",
+      "h_parent": "R03"
+    },
+    {
+      "h_office": "O304",
+      "h_parent": "R03"
+    },
+    {
+      "h_office": "O401",
+      "h_parent": "R04"
+    },
+    {
+      "h_office": "O402",
+      "h_parent": "R04"
+    },
+    {
+      "h_office": "O403",
+      "h_parent": "R04"
+    },
+    {
+      "h_office": "O404",
+      "h_parent": "R04"
+    }
+  ]
+}

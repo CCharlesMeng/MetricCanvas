@@ -10,6 +10,7 @@ import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,Table
 export interface TableRenderBinding {
   failureNotice?: string;
   expansion?: { page: import('@metriccanvas/page').Page; gateway: import('../../runtime/src').RuntimeDataGateway;
+    selection?: import('../../runtime/src/table/hierarchy-selection').HierarchySelection;
     displaySnapshot?: import('@metriccanvas/page/internal').DisplaySnapshot; filterRevision?: number;
     filters: import('../../runtime/src').FilterValues; params: import('../../runtime/src').PageParamValues; instanceId: string };
   searchDraft?: string;

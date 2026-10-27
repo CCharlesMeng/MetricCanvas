@@ -28,7 +28,7 @@ export const scenes: readonly Scene[] = [
   { id: 'record-detail', title: '打开记录详情', owner: 'data/interactions', components: ['table', 'metricCard'], topics: ['interactions', 'relationships'],
     pages: ['table-detail-overlay'], question: '详情来自当前快照还是独立查询，空结果怎样呈现？' },
   { id: 'child-records', title: '展开父行关联明细', owner: 'components/table', components: ['table'], topics: ['interactions', 'relationships'],
-    pages: ['table-row-expansion-inline', 'table-row-expansion-query'], question: '父行怎样关联子记录？不同父行的分页和查询是否独立？' },
+    pages: ['table-row-expansion-inline', 'table-row-expansion-query', 'table-hierarchy-selection'], question: '父行怎样关联子记录？不同父行的分页和查询是否独立？' },
   { id: 'multiple-sources', title: '多查询组合与全局结果', owner: 'data/relationships', components: ['table'], topics: ['relationships', 'results'],
     pages: ['multi-query-table', 'record-join-demo', 'decision-opinion-details', 'multi-source-table'], question: '按键补列与逐行拼接有什么区别，排序和分页覆盖哪份结果？' },
   { id: 'ioc-header', title: '页面级筛选与 IOC 页头', owner: 'components/iocHeader', components: ['iocHeader'], topics: ['conditions', 'sources'],

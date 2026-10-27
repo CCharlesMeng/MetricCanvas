@@ -638,6 +638,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-hierarchy-lookup-param.json",
+      "target": "product-contracts/page/conformance/valid/table-hierarchy-lookup-param.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/table-hierarchy-selection.json",
+      "target": "product-contracts/page/conformance/valid/table-hierarchy-selection.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-number-range-page.json",
       "target": "product-contracts/page/conformance/valid/table-number-range-page.json",
       "scope": "exact product contract"
@@ -1430,6 +1440,26 @@
     {
       "source": "product:page/conformance/invalid/row-number-no-data-field.json",
       "target": "product-contracts/page/conformance/invalid/row-number-no-data-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/hierarchy-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/hierarchy-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/hierarchy-parent-window.json",
+      "target": "product-contracts/page/conformance/invalid/hierarchy-parent-window.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/hierarchy-without-selection.json",
+      "target": "product-contracts/page/conformance/invalid/hierarchy-without-selection.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/hierarchy-export-fields.json",
+      "target": "product-contracts/page/conformance/invalid/hierarchy-export-fields.json",
       "scope": "exact product contract"
     },
     {
@@ -3873,6 +3903,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/hierarchy-old-version.json",
+      "target": "references/page-metadata/errors/hierarchy-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/hierarchy-parent-window.json",
+      "target": "references/page-metadata/errors/hierarchy-parent-window.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/hierarchy-without-selection.json",
+      "target": "references/page-metadata/errors/hierarchy-without-selection.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/hierarchy-export-fields.json",
+      "target": "references/page-metadata/errors/hierarchy-export-fields.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/row-expansion-before-6.44.json",
       "target": "references/page-metadata/errors/row-expansion-before-6.44.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6018,6 +6068,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-hierarchy-selection.json",
+      "target": "references/page-metadata/examples/table-hierarchy-selection.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/table-hierarchy-lookup-param.json",
+      "target": "references/page-metadata/examples/table-hierarchy-lookup-param.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/table.md",
       "target": "references/page-metadata/components/table.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6439,11 +6499,11 @@
     }
   ],
   "counts": {
-    "product": 1256,
+    "product": 1268,
     "authoring": 31,
     "modules": 33,
-    "topics": 188,
-    "nodes": 2359,
+    "topics": 193,
+    "nodes": 2386,
     "tools": 9,
     "components": 19
   },

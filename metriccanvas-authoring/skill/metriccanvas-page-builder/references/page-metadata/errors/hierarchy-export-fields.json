@@ -1,0 +1,35 @@
+{
+  "case": "hierarchy-export-fields",
+  "invariant": "table-hierarchy-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "父关联列必须是去重的父表字段列",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/export/rowExpansion/parentFields"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "toolbar": {
+                "export": {
+                  "rowExpansion": {
+                    "parentFields": [
+                      "unknown"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/hierarchy-export-fields.json"
+}

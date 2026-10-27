@@ -1,0 +1,79 @@
+{
+  "case": "hierarchy-old-version",
+  "invariant": "table-hierarchy-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "显式父级定位与层级筛选联动子表格 由 6.70 引入，文档声明的是 6.69",
+      "paths": [
+        "/sections/0/components/0/props/rowExpansion/selection"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "子表格私有选择输入的明确不适用语义 由 6.70 引入，文档声明的是 6.69",
+      "paths": [
+        "/sections/0/components/0/props/rowExpansion/data/bindings"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "完整父子双工作表 Excel 由 6.70 引入，文档声明的是 6.69",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/export/rowExpansion"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rowExpansion": {
+                "selection": {
+                  "filter": "region",
+                  "parentLevel": "region-dept",
+                  "parentField": "region-id",
+                  "childLevel": "office",
+                  "parentLookup": {
+                    "source": "office-region-lookup",
+                    "field": "located-region-id",
+                    "filters": [
+                      "…（共1项）"
+                    ],
+                    "bindings": {
+                      "…": "共1个键"
+                    }
+                  }
+                },
+                "data": {
+                  "bindings": {
+                    "detail-region": {
+                      "source": "row",
+                      "field": "region-id"
+                    },
+                    "detail-office": {
+                      "source": "selection"
+                    }
+                  }
+                }
+              },
+              "toolbar": {
+                "export": {
+                  "rowExpansion": {
+                    "scope": "all",
+                    "parentFields": [
+                      "region-name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/hierarchy-old-version.json"
+}

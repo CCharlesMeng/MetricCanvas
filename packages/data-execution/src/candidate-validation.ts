@@ -44,7 +44,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       return !dynamic(filter)||!requires(sourceId)||!receipt;
     });
   }
-  async function verify(sourceId:string,values:FilterValues,signal:AbortSignal) {
+  async function verify(sourceId:string,values:FilterValues,signal:AbortSignal,extraIds:readonly string[] = []) {
     const done=new Set<string>();
     const cache=new Map<string,readonly FilterCandidate[]>();
     async function verifyFilter(id:string):Promise<void> {
@@ -75,7 +75,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       }
       if(!allowed(dimension,values,candidates))reject();
     }
-    for(const id of filterIds(sourceId,values))await verifyFilter(id);
+    for(const id of new Set([...filterIds(sourceId,values),...extraIds]))await verifyFilter(id);
   }
   const requires=(sourceId:string)=>filterIds(sourceId).some(id=>{const filter=byId.get(id);return localOptions.has(id)||(filter?.type==='dimension'&&!!(filter.selection||filter.options||filter.candidateContext||filter.treeSelection||filter.candidateWindow))||(filter&&requiresTimeValidation(filter))||(filter?.type==='numberRange'&&!!(filter.constraints||filter.units||filter.presets));});
   return {trusted,verify,requires};

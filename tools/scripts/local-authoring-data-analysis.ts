@@ -102,6 +102,8 @@ function rowInputUses(input:Json,path:string,context:Omit<DataUse,'path'|'kind'>
       uses.push({...context,path:location,kind:'filter-reference',declaration:{filterId:binding.id}});
     } else if(binding?.source==='param') {
       uses.push({...context,path:location,kind:'param-reference',declaration:{paramId:binding.id}});
+    } else if(binding?.source==='selection') {
+      uses.push({...context,path:location,kind:'row-selection-input'});
     } else diagnostics.push({path:location,type:'INVALID_ROW_EXPANSION_BINDING'});
   }
   for(const [index,id] of (Array.isArray(input.filters)?input.filters:[]).entries()) {
@@ -122,10 +124,21 @@ function rowExpansionContext(input:Json,path:string,context:Omit<DataUse,'path'|
   diagnostics.push({path,type:'INVALID_ROW_EXPANSION_CONTEXT'});
 }
 
+function scanHierarchySelection(selection:Json,path:string,context:Omit<DataUse,'path'|'kind'>,uses:DataUse[],diagnostics:Json[]):void {
+  if(!selection)return;
+  uses.push({...context,path:path+'/filter',kind:'filter-reference',declaration:{filterId:selection.filter}});
+  uses.push({...context,path:path+'/parentField',kind:'field',slot:'main',field:selection.parentField});
+  const lookup=selection.parentLookup;
+  if(!lookup)return;
+  uses.push({...context,path:path+'/parentLookup/source',kind:'row-lookup-source',source:lookup.source});
+  uses.push({...context,path:path+'/parentLookup/field',kind:'field',source:lookup.source,field:lookup.field});
+  rowInputUses(lookup,path+'/parentLookup',context,uses,diagnostics);
+}
 function scanRowExpansion(component:Json,path:string,schema:Json,context:Omit<DataUse,'path'|'kind'>,uses:DataUse[],diagnostics:Json[]):void {
   const expansion=component.props?.rowExpansion;
   if(component.type!=='table' || !expansion) return;
   const location=path+'/props/rowExpansion';
+  scanHierarchySelection(expansion.selection,location+'/selection',context,uses,diagnostics);
   const child=rowExpansionContext(expansion.data,location+'/data',{...context,source:component.data?.main},uses,diagnostics);
   if(!child) return;
   const definition=schema.definitions?.rowExpansionTable;

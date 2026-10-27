@@ -9,7 +9,8 @@ export type RowExpansion = NonNullable<TableProps['rowExpansion']>;
 export function rowExpansionQuerySources(page: Pick<Page, 'sections' | 'detailViews'>): Set<string> {
     return new Set(flattenPageComponents(page).flatMap(component => {
         const input = component.type === 'table' ? component.props.rowExpansion?.data : undefined;
-        return input?.type === 'query' ? [input.source] : [];
+        const lookup = component.type === 'table' ? component.props.rowExpansion?.selection?.parentLookup.source : undefined;
+        return [...(input?.type === 'query' ? [input.source] : []), ...(lookup ? [lookup] : [])];
     }));
 }
 export {tableColumnLeaves as rowExpansionColumns} from './columns';

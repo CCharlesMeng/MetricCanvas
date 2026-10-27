@@ -31,7 +31,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
 }
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
-  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>,timeContext:{displayInputs?:()=>import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date}={}, initialTabs: TabSelections = {}): PageSnapshotStream {
+  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>,timeContext:{displayInputs?:()=>import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date}={}, initialTabs: TabSelections = {}, initialViews:ReadonlyMap<string,TableQueryView> = new Map()): PageSnapshotStream {
   let selections = initialTabs;
   const demand = () => activeSourceIds(page, selections);
   const ids = visibleSourceIds(page), compiled = compileSources(page), defaults = filters?new Map():initialFilterValues(page.filters ?? [],timeContext.now??timeContext.clock?.()??new Date(),timeContext.displayInputs?.(),timeContext.filterRevision?.());
@@ -55,7 +55,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const views = () => new Map([...tables].map(([id, session]) => [id, session.snapshot()]));
     for (const id of ids) {
       const source = page.dataSources[id];
-      if (source?.source.type !== 'inline') tables.set(id, createTableSession(defaultSourceView(page, id, compiled.limits.get(id)), () => refetch(new Set([id]))));
+      if (source?.source.type !== 'inline') tables.set(id, createTableSession(initialTableView(page,id,compiled.limits.get(id),initialViews), () => refetch(new Set([id]))));
     }
     const reconcileColumns=()=>reconcileTableSources(page,tables,{declarations:page.filters??[],filters:values,displaySnapshot:timeContext.displayInputs?.(),filterRevision:timeContext.filterRevision?.()});
     reconcileColumns();
@@ -184,3 +184,5 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
 function same(left: FilterValues, right: FilterValues) { return [...new Set([...left.keys(), ...right.keys()])].every(id => JSON.stringify(left.get(id)) === JSON.stringify(right.get(id))); }
 
 function queryCondition(value: import('./filter-state').FilterValue | undefined): string | undefined { return JSON.stringify(value?.type === 'timeRange' ? {type:value.type,mode:value.mode,from:value.from,to:value.to} : value); }
+
+function initialTableView(page:Page,id:string,limit:number|undefined,views:ReadonlyMap<string,TableQueryView>):TableQueryView{return views.get(id)??defaultSourceView(page,id,limit);}
