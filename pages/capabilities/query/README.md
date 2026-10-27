@@ -78,3 +78,13 @@
 ## DQE 单字段排序回归（2026-10-27）
 
 启动 `pnpm dev:dqe`，访问 `/pages/query-result-where-page`，初始金额降序、切换执行周期列和翻页，网络请求的 order 只能使用 order_by_field/type 与 offset/limit。Shift 追加第二排序列时明确失败，不能发送 by 数组；普通点击恢复单列查询。访问 `/pages/table-row-expansion-query` 展开客户，子表格默认按行键升序，切换产品列排序时不追加行键。访问 `/pages/multi-source-table` 验证两个来源整体排序和翻页；此页为合成独立网关，也经过正式 DQE 排序编码校验。418行等指标、行键逆序、跨200行批次由 dqe-sort-contract.test.ts 验证。合成浏览器与 Mock 不证明真实 DQE 的比较、计数或跨批稳定性。
+
+## 创作契约与时间精度
+
+入口：`/pages/authoring-contract-reliability`；[页面 JSON](authoring-contract-reliability.json)。无需 URL 参数或 DQE 服务；启动 `pnpm dev:playground`。
+
+1. 普通指标卡和汇总呈现都显示 **2**。两者由 `block_component` 使用完整的两行可信证据装配；源初始缓存仅一行。演示页面以完整 inline 行呈现，不把缓存当完整性证明。
+2. “实际解析结果”展示共享测试向量的规范结果与失败码；月粒度搭配八位日值必须报 `TIME_VALUE_PRECISION_INVALID`，非法日历值、倒置范围也被拒绝。
+3. 最后表格故意声明 `month + 20260401/20260930`。控制台应显示 `[MetricCanvas][DQE_QUERY_REJECTED] TIME_VALUE_PRECISION_INVALID: filter.time.start`，不会向服务发出该请求。当前运行时将错误源投影成空行，表格显示“暂无数据”；这不代表业务空结果，必须结合诊断判定。刷新后行为相同。
+
+矩阵和两张卡由 `tools/scripts/authoring-contract-demo.py` 调用实际 Python 公共模块生成；TypeScript 测试读取本页非法查询，并复验浏览器筛选后的生效查询。生成命令：`PYTHONDONTWRITEBYTECODE=1 <Python解释器> tools/scripts/authoring-contract-demo.py`。证据不代表真实 Relay、IAM 或 DQE 年/月/日协议已联调。记录见 `docs/evidence/authoring-session-audit-20261027/implementation.md`。

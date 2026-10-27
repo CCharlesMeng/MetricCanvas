@@ -1,8 +1,8 @@
 """Bounded, provenance-carrying business suggestions; core discovery stays authoritative."""
 from copy import deepcopy
-from datetime import date, datetime
+from datetime import datetime
 from typing import Protocol
-import re
+from metriccanvas_authoring.data.time_range import normalize_time, TimeRangeError
 from jsonschema import Draft202012Validator
 
 _STRING = {'type': 'string', 'minLength': 1, 'maxLength': 256}
@@ -37,17 +37,11 @@ def _require(condition, code='BUSINESS_INTERPRETATION_INVALID'):
 def _time(candidate, context):
     granularity = candidate['granularity']
     _require(any(entry.is_time and granularity in entry.granularities for entry in context.dimension_entries), 'BUSINESS_TIME_UNSUPPORTED')
-    pattern = {'day': r'\d{4}-\d{2}-\d{2}', 'month': r'\d{4}-\d{2}', 'year': r'\d{4}'}.get(granularity)
-    _require(pattern is not None, 'BUSINESS_TIME_UNSUPPORTED')
-    for field in ('start', 'end'):
-        value = candidate[field]
-        _require(re.fullmatch(pattern, value) is not None, 'BUSINESS_TIME_INVALID')
-        try:
-            date.fromisoformat(value + ('-01-01' if granularity == 'year' else '-01' if granularity == 'month' else ''))
-        except ValueError:
-            raise BusinessInterpretationError('BUSINESS_TIME_INVALID') from None
-    _require(candidate['start'] <= candidate['end'], 'BUSINESS_TIME_INVALID')
-    return {key: candidate[key] for key in ('granularity', 'start', 'end')} | {'providedBy': 'user'}
+    try:
+        value = normalize_time({key: candidate[key] for key in ('granularity', 'start', 'end')})
+    except TimeRangeError:
+        raise BusinessInterpretationError('BUSINESS_TIME_INVALID') from None
+    return value | {'providedBy': 'user'}
 
 
 def _identity(candidate):

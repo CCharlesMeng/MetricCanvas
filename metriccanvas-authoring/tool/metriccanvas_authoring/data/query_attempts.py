@@ -1,3 +1,4 @@
+from metriccanvas_authoring.work.diagnostics import timed_stage
 """Retry transient reads once; successful query records remain immutable."""
 import asyncio
 from metriccanvas_authoring.data.execution import DqeExecutionError, retry_safe_for_code
@@ -9,6 +10,7 @@ class RetryingDqe:
         self.retries = 0
         self.failures = []
 
+    @timed_stage('query.dqe')
     async def execute(self, query):
         for attempt in range(2):
             await self.current()

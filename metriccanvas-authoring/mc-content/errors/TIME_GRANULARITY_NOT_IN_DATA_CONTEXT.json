@@ -1,9 +1,9 @@
 {
   "code": "TIME_GRANULARITY_NOT_IN_DATA_CONTEXT",
   "guidance": {
-    "message": "读取 candidates 和失败阶段，按发现的规范名与粒度修正；同请求重复调用不解决问题。不得删除地域/时间条件换取成功。",
-    "action": null,
-    "owner": "caller"
+    "message": "当前数据上下文未声明该粒度；核对可用粒度与原始需求。",
+    "action": "check_time_capability",
+    "owner": "model"
   },
   "sourceLocations": [],
   "coverage": {

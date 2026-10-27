@@ -1,5 +1,6 @@
 """Atomic controlled operations over a complete canonical page baseline."""
 import json
+from metriccanvas_authoring.work.diagnostics import public_issue
 from typing import Any
 
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
@@ -21,7 +22,7 @@ def apply_page_operation(document, op, *, summary_enabled=False):
             if op['type'] == 'add_ai_summary' else OPERATION_HANDLERS[op['type']](document, op))
         return document, [], adjustments
     except EditFailure as error:
-        return None, [{'code': error.code, 'path': error.path}], []
+        return None, [public_issue(error)], []
 
 
 def edit_page_document(baseline: Any, request: Any, *, summary_enabled: bool = False) -> dict[str, Any]:

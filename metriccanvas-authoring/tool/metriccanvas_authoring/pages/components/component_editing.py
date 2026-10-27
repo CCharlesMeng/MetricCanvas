@@ -23,8 +23,8 @@ PROPERTY_WHITELIST = {
 
 
 class EditFailure(Exception):
-    def __init__(self, code: str, path: str = "") -> None:
-        self.code, self.path = code, path
+    def __init__(self, code: str, path: str = "", reason=None) -> None:
+        self.code, self.path, self.reason = code, path, reason
         super().__init__(code)
 
 
@@ -151,8 +151,10 @@ def change_component_type(page, op):
     component = component_by_id(page, op["componentId"])
     if component["type"] == op["componentType"]:
         return []
-    if component["type"] not in DATA_COMPONENTS or set(component.get("data", {})) != {"main"}:
-        raise EditFailure("TYPE_CHANGE_UNSUPPORTED")
+    if component["type"] not in DATA_COMPONENTS:
+        raise EditFailure("TYPE_CHANGE_UNSUPPORTED", "/componentId", 'component_type_not_data')
+    if set(component.get("data", {})) != {"main"}:
+        raise EditFailure("TYPE_CHANGE_UNSUPPORTED", "/componentId", 'requires_single_main_slot')
     source_id = component["data"]["main"]
     source = page["dataSources"][source_id]
     if source.get("compute"):

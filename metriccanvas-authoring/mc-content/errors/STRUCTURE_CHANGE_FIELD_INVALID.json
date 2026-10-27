@@ -1,21 +1,29 @@
 {
   "code": "STRUCTURE_CHANGE_FIELD_INVALID",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "变化字段必须已列入 fields、为 measure 且未被重复消费。",
+    "action": "correct_change_field",
+    "owner": "model"
   },
   "sourceLocations": [
     {
       "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py",
-      "line": 44
+      "line": 9
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py",
+      "line": 11
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py",
+      "line": 13
     }
   ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

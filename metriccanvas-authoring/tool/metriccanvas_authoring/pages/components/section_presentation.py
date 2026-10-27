@@ -3,23 +3,19 @@ from copy import deepcopy
 from metriccanvas_authoring.pages.composition.page_structure import StructureError, field_id
 
 
-def present_metric_summary(block, source, component, relations):
-    fields = source['fields']
-    def select_metric_row():
-        initial = source['source'].get('initial', {})
-        rows = initial.get('rows', [])
-        match = block.get('match')
-        if initial.get('totalCount', len(rows)) != len(rows):
-            raise StructureError('STRUCTURE_ROW_SELECTION_UNVERIFIED')
-        if not match and len(rows) != 1:
-            raise StructureError('STRUCTURE_ROW_SELECTION_AMBIGUOUS')
-        match_id = field_id(fields, match['field']) if match else None
-        selected = [r for r in rows if r.get(fields[match_id].get('queryField', match_id)) == match['equals']] if match else rows
-        if len(selected) != 1:
-            raise StructureError('STRUCTURE_ROW_SELECTION_AMBIGUOUS')
-        return match_id, selected, match
 
-    match_id, selected, match = select_metric_row()
+def require_change_field(auxiliary, fields, allowed, consumed, path):
+    if auxiliary not in allowed:
+        raise StructureError('STRUCTURE_CHANGE_FIELD_INVALID', path, reason='field_not_declared')
+    if auxiliary in consumed:
+        raise StructureError('STRUCTURE_CHANGE_FIELD_INVALID', path, reason='field_already_consumed')
+    if fields[auxiliary]['role'] != 'measure':
+        raise StructureError('STRUCTURE_CHANGE_FIELD_INVALID', path, reason='field_not_measure')
+
+
+def present_metric_summary(block, source, component, relations, *, match_id):
+    fields = source['fields']
+    match = block.get('match')
     allowed = {field_id(fields, ref) for ref in block['fields']}
 
     def binding(key):
@@ -31,17 +27,17 @@ def present_metric_summary(block, source, component, relations):
         return value
 
     metrics, consumed = [], set()
-    def build_metric_row(item):
+    def build_metric_row(item, metric_index):
         primary = field_id(fields, item['field'])
         if primary not in allowed or fields[primary]['role'] != 'measure' or primary in consumed:
             raise StructureError('STRUCTURE_PRIMARY_FIELD_INVALID')
         consumed.add(primary)
         row = {'label': item.get('label', fields[primary].get('label', primary)), 'valueField': binding(primary)}
         changes = []
-        def build_change(change):
+        def build_change(change, change_index):
             auxiliary = field_id(fields, change['field'])
-            if auxiliary not in allowed or auxiliary in consumed or fields[auxiliary]['role'] != 'measure':
-                raise StructureError('STRUCTURE_CHANGE_FIELD_INVALID')
+            path = f'/presentation/metrics/{metric_index}/changes/{change_index}/field'
+            require_change_field(auxiliary, fields, allowed, consumed, path)
             raw_primary = fields[primary].get('queryField', primary)
             raw_auxiliary = fields[auxiliary].get('queryField', auxiliary)
             matching = [r for r in relations if r['evidenceRef'] == change['evidenceRef']
@@ -55,14 +51,14 @@ def present_metric_summary(block, source, component, relations):
             consumed.add(auxiliary)
             changes.append({'label': change['label'], 'field': binding(auxiliary)})
 
-        for change in item.get('changes', []):
-            build_change(change)
+        for change_index, change in enumerate(item.get('changes', [])):
+            build_change(change, change_index)
         if changes:
             row['changes'] = changes
         metrics.append(row)
 
-    for item in block['presentation']['metrics']:
-        build_metric_row(item)
+    for metric_index, item in enumerate(block['presentation']['metrics']):
+        build_metric_row(item, metric_index)
     if consumed != allowed:
         raise StructureError('STRUCTURE_PRESENTATION_FIELDS_UNUSED')
     from metriccanvas_authoring.pages.composition.page_structure import PATTERNS

@@ -1,0 +1,21 @@
+{
+  "code": "TIME_VALUE_PRECISION_INVALID",
+  "guidance": {
+    "message": "时间值必须匹配粒度：year 用 YYYY，month 用 YYYY-MM，day 用 YYYY-MM-DD；月和日可用同精度紧凑写法，不能截去日改变范围。",
+    "action": "correct_time_precision",
+    "owner": "model"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/time_range.py",
+      "line": 20
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

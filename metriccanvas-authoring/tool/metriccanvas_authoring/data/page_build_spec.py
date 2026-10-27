@@ -7,6 +7,7 @@ from typing import Any
 from jsonschema import Draft202012Validator
 
 from metriccanvas_authoring.runtime_assets import bundle_root
+from metriccanvas_authoring.data.time_range import time_issue
 
 
 BUNDLE_ROOT = bundle_root()
@@ -29,6 +30,9 @@ def validate_page_build_spec(value: Any) -> list[PageBuildSpecIssue]:
     """Validate structure plus closed sets exported from current TS rules."""
     schema = _read_authoring_json("authored/page-build-spec.schema.json")
     validator = Draft202012Validator(schema)
+    time_errors = _time_errors(value)
+    if time_errors:
+        return time_errors
     issues = [
         PageBuildSpecIssue(
             code="PAGE_BUILD_SPEC_SCHEMA_ERROR",
@@ -78,6 +82,20 @@ def validate_page_build_spec(value: Any) -> list[PageBuildSpecIssue]:
                     candidates=tuple(sorted(component_types)),
                 )
             )
+    return issues
+
+
+
+def _time_errors(value):
+    if not isinstance(value, dict) or not isinstance(value.get('units'), list):
+        return []
+    issues = []
+    for index, unit in enumerate(value['units']):
+        time = unit.get('time') if isinstance(unit, dict) else None
+        if isinstance(time, dict) and {'granularity', 'start', 'end'} <= time.keys():
+            issue = time_issue(time, f'/units/{index}/time')
+            if issue:
+                issues.append(PageBuildSpecIssue(**issue, message=issue['code']))
     return issues
 
 

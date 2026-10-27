@@ -19,6 +19,13 @@ def inspect_assembly(document, specification, *, root=None, correlation=None):
     return inspect_program(document, specification, root=root, correlation=correlation)
 
 
+
+def inspect_artifact(artifact, specification, *, artifact_ref, binding, association, root=None):
+    from mc_inspection import inspect_artifact as inspect_program
+    return inspect_program(artifact, specification, artifact_ref=artifact_ref,
+                           binding=binding, association=association, root=root)
+
+
 def inspect_schema(document, *, root=None):
     from mc_inspection import inspect_schema as inspect_program
     return inspect_program(document, root=root)

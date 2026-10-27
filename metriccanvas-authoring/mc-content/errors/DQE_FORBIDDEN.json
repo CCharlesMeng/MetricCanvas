@@ -1,16 +1,16 @@
 {
   "code": "DQE_FORBIDDEN",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "执行服务拒绝访问；由集成方检查当前身份和授权。",
+    "action": "check_execution_authorization",
+    "owner": "integration"
   },
   "sourceLocations": [],
   "coverage": {
     "literalCallSite": false,
     "queryClosedSet": true,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

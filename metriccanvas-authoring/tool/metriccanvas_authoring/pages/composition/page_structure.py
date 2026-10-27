@@ -1,5 +1,6 @@
 """Versioned authoring structure, expanded into the ordinary page protocol."""
 from copy import deepcopy
+from metriccanvas_authoring.work.diagnostics import public_issue
 import json
 from jsonschema import Draft202012Validator
 
@@ -20,12 +21,16 @@ from metriccanvas_authoring.pages.compose_contract import (
 
 
 class StructureError(Exception):
-    def __init__(self, code, path='', message=None):
+    def __init__(self, code, path='', message=None, *, reason=None, candidates=()):
         super().__init__(message or code)
-        self.code, self.path = code, path
+        self.code, self.path, self.reason = code, path, reason
+        self.candidates = candidates
 
     def issue(self):
-        return {'code': self.code, 'path': self.path}
+        value = public_issue(self)
+        if self.candidates:
+            value['candidates'] = list(self.candidates)[:10]
+        return value
 
 
 def validate_plan(plan):
@@ -64,6 +69,62 @@ def field_id(fields, reference):
     return found[0]
 
 
+
+def select_metric_row(block, fields, rows, count):
+    """One completeness/uniqueness decision shared by every metric-card presentation."""
+    if count is None or count != len(rows):
+        raise StructureError('STRUCTURE_ROW_SELECTION_UNVERIFIED', '/match')
+    match = block.get('match')
+    match_id = field_id(fields, match['field']) if match else None
+    if match and fields[match_id]['role'] != 'dimension':
+        raise StructureError('STRUCTURE_ROW_SELECTION_UNVERIFIED', '/match/field')
+    selected = [row for row in rows if row.get(fields[match_id].get('queryField', match_id)) == match['equals']] if match else rows
+    if len(selected) != 1:
+        raise StructureError('STRUCTURE_ROW_SELECTION_AMBIGUOUS', '/match')
+    return match_id, selected
+
+
+
+def paged_table_component(block, source, keys):
+    if block['component'] != 'table':
+        raise StructureError('STRUCTURE_COMPONENT_INVALID')
+    props = {'rowKey': source['source']['rowKey'], 'pagination': {'mode': 'query'},
+             'columns': [{'field': field, 'sortable': field in source['source']['ordering']['sortableFields']} for field in keys]}
+    if 'title' in block:
+        props['title'] = block['title']
+    return {'id': block['id'], 'type': 'table', 'data': {'main': block['source']}, 'layout': {'span': 12}, 'props': props}
+
+
+def validate_chart_evidence(component_type, fields, rows, count):
+    if component_type in {'barChart', 'lineChart'}:
+        measures = [f for f in fields.values() if f['role'] == 'measure']
+        units = {(f.get('unit'), f.get('currency'), f.get('scale')) for f in measures}
+        if len(units) > 1:
+            raise StructureError('STRUCTURE_MIXED_MEASURE_UNITS')
+    if component_type == 'pieChart' and count != len(rows):
+        raise StructureError('STRUCTURE_INCOMPLETE_PROPORTION')
+
+
+def component_span(block, pattern, component_type):
+    recipe = PATTERNS['patterns'][pattern]
+    default = (PATTERNS['presentations']['metric-summary']['metricSpan'] if block.get('presentation', {}).get('kind') == 'metric-summary'
+               else recipe['metricSpan'] if component_type == 'metricCard' else recipe['defaultSpan'])
+    if component_type in {'table', 'lineChart'}:
+        default = 12
+    return {'full': 12, 'half': 6, 'third': 4, 'two-thirds': 8}.get(block.get('width'), default)
+
+
+
+def component_rows(source, evidence):
+    if evidence is not None:
+        return evidence['rows'], evidence['totalCount']
+    raw = source['source']
+    initial = raw if raw['type'] == 'inline' else raw.get('initial', {})
+    rows = initial.get('rows', [])
+    count = initial.get('totalCount', len(rows) if raw['type'] == 'inline' else None)
+    return rows, count
+
+
 def block_component(block, sources, pattern='custom', *, relations=(), evidence=None):
     """Reuse executed sources, never execute queries or aggregate result rows."""
     if block['type'] == 'text':
@@ -73,43 +134,22 @@ def block_component(block, sources, pattern='custom', *, relations=(), evidence=
         return {'id': block['id'], 'type': 'text', 'layout': {'span': 12}, 'props': props}
     source = sources.get(block['source'])
     if source is None:
-        raise StructureError('STRUCTURE_SOURCE_NOT_FOUND')
+        raise StructureError('STRUCTURE_SOURCE_NOT_FOUND', '/source', candidates=tuple(sources))
     keys = [field_id(source['fields'], name) for name in block['fields']]
     if len(keys) != len(set(keys)):
         raise StructureError('STRUCTURE_DUPLICATE_FIELD')
     fields = {key: deepcopy(source['fields'][key]) for key in keys}
-    initial = source['source'].get('initial', {})
-    rows = initial.get('rows', [])
-    count = initial.get('totalCount', len(rows))
-    if evidence is not None:
-        # Private authorized result record, never a model-supplied proof.
-        rows = evidence['rows']
-        count = evidence['totalCount']
+    rows, count = component_rows(source, evidence)
     component_type = block['component']
-    if source['source']['type']=='pagedJoin':
-        if component_type!='table':raise StructureError('STRUCTURE_COMPONENT_INVALID')
-        props={'rowKey':source['source']['rowKey'],'pagination':{'mode':'query'},'columns':[{'field':field,'sortable':field in source['source']['ordering']['sortableFields']} for field in keys]}
-        if 'title' in block:props['title']=block['title']
-        return {'id':block['id'],'type':'table','data':{'main':block['source']},'layout':{'span':12},'props':props}
+    if source['source']['type'] == 'pagedJoin':
+        return paged_table_component(block, source, keys)
     match = block.get('match')
-    if match:
-        if component_type != 'metricCard':
-            raise StructureError('STRUCTURE_MATCH_UNSUPPORTED')
-        match_id = field_id(source['fields'], match['field'])
-        match_field = source['fields'][match_id]
-        if match_field['role'] != 'dimension' or count != len(rows):
-            raise StructureError('STRUCTURE_ROW_SELECTION_UNVERIFIED')
-        selected = [r for r in rows if r.get(match_field.get('queryField', match_id)) == match['equals']]
-        if len(selected) != 1:
-            raise StructureError('STRUCTURE_ROW_SELECTION_AMBIGUOUS')
+    if match and component_type != 'metricCard':
+        raise StructureError('STRUCTURE_MATCH_UNSUPPORTED', '/match')
+    if component_type == 'metricCard':
+        match_id, rows = select_metric_row(block, source['fields'], rows, count)
         count = 1
-    if component_type in {'barChart', 'lineChart'}:
-        measures = [f for f in fields.values() if f['role'] == 'measure']
-        units = {(f.get('unit'), f.get('currency'), f.get('scale')) for f in measures}
-        if len(units) > 1:
-            raise StructureError('STRUCTURE_MIXED_MEASURE_UNITS')
-    if component_type == 'pieChart' and count != len(rows):
-        raise StructureError('STRUCTURE_INCOMPLETE_PROPORTION')
+    validate_chart_evidence(component_type, fields, rows, count)
     from metriccanvas_authoring.pages.components.structure_presentation import purpose_intent
     unit = ExecutableUnit(block['source'], block['title'], fields, {}, block.get('intent', purpose_intent(block.get('purpose'))),
                           component_type, UnitScope('', (), '', '', ()), ())
@@ -120,19 +160,14 @@ def block_component(block, sources, pattern='custom', *, relations=(), evidence=
     component['id'] = block['id']
     if block.get('presentation', {}).get('kind') == 'metric-summary':
         from metriccanvas_authoring.pages.components.section_presentation import present_metric_summary
-        component = present_metric_summary(block, source, component, relations)
+        component = present_metric_summary(block, source, component, relations, match_id=match_id)
     elif match:
         for row in component['props']['rows']:
             row['valueField'] = {'data': 'main', 'field': row['valueField'],
                                  'match': {'field': match_id, 'equals': match['equals']}}
     from metriccanvas_authoring.pages.components.structure_presentation import apply_presentation
     component = apply_presentation(block, source, component)
-    recipe = PATTERNS['patterns'][pattern]
-    default = (PATTERNS['presentations']['metric-summary']['metricSpan'] if block.get('presentation', {}).get('kind') == 'metric-summary'
-               else recipe['metricSpan'] if component_type == 'metricCard' else recipe['defaultSpan'])
-    if component_type in {'table', 'lineChart'}:
-        default = 12
-    component['layout']['span'] = {'full': 12, 'half': 6, 'third': 4, 'two-thirds': 8}.get(block.get('width'), default)
+    component['layout']['span'] = component_span(block, pattern, component_type)
     return component
 
 

@@ -1,0 +1,303 @@
+{
+  "id": "authoring-contract-reliability",
+  "schemaVersion": "6.68",
+  "layout": "dashboard",
+  "dataSources": {
+    "trusted": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "a",
+            "amount": 1
+          },
+          {
+            "region": "b",
+            "amount": 2
+          }
+        ]
+      }
+    },
+    "cases": {
+      "fields": {
+        "period": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "input": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "actual": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "period": "year",
+            "input": "0001 → 9999",
+            "actual": "0001 → 9999"
+          },
+          {
+            "period": "month",
+            "input": "2026-04 → 2026-09",
+            "actual": "2026-04 → 2026-09"
+          },
+          {
+            "period": "day",
+            "input": "2024-02-29 → 2024-03-01",
+            "actual": "2024-02-29 → 2024-03-01"
+          },
+          {
+            "period": "M",
+            "input": "202604 → 202609",
+            "actual": "2026-04 → 2026-09"
+          },
+          {
+            "period": "day",
+            "input": "20240229 → 20240301",
+            "actual": "2024-02-29 → 2024-03-01"
+          },
+          {
+            "period": "month",
+            "input": "20260401 → 20260930",
+            "actual": "TIME_VALUE_PRECISION_INVALID"
+          },
+          {
+            "period": "month",
+            "input": "2026-04-01 → 2026-09-30",
+            "actual": "TIME_VALUE_PRECISION_INVALID"
+          },
+          {
+            "period": "year",
+            "input": "2026-04 → 2026-09",
+            "actual": "TIME_VALUE_PRECISION_INVALID"
+          },
+          {
+            "period": "day",
+            "input": "2026-04 → 2026-09",
+            "actual": "TIME_VALUE_PRECISION_INVALID"
+          },
+          {
+            "period": "month",
+            "input": "2026-04 → 20260930",
+            "actual": "TIME_VALUE_PRECISION_INVALID"
+          },
+          {
+            "period": "day",
+            "input": "2026-0401 → 2026-0930",
+            "actual": "TIME_VALUE_PRECISION_INVALID"
+          },
+          {
+            "period": "month",
+            "input": "２０２６０４ → 202609",
+            "actual": "TIME_VALUE_PRECISION_INVALID"
+          },
+          {
+            "period": "year",
+            "input": "0000 → 2026",
+            "actual": "TIME_VALUE_CALENDAR_INVALID"
+          },
+          {
+            "period": "month",
+            "input": "202613 → 202613",
+            "actual": "TIME_VALUE_CALENDAR_INVALID"
+          },
+          {
+            "period": "day",
+            "input": "20260229 → 20260230",
+            "actual": "TIME_VALUE_CALENDAR_INVALID"
+          },
+          {
+            "period": "month",
+            "input": "202609 → 202604",
+            "actual": "TIME_RANGE_REVERSED"
+          },
+          {
+            "period": "week",
+            "input": "202604 → 202609",
+            "actual": "TIME_GRANULARITY_UNSUPPORTED"
+          }
+        ]
+      }
+    },
+    "invalid-time": {
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "amount"
+                ],
+                "output_dims": [],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "20260401",
+                    "end": "20260930"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "创作契约可靠性验收",
+            "subtitle": "合成证据 · 时间精度、完整行证据与执行前拒绝"
+          }
+        }
+      ]
+    },
+    {
+      "id": "evidence",
+      "title": "相同可信行证据：两种呈现都应显示 2",
+      "components": [
+        {
+          "id": "plain",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "trusted"
+          },
+          "props": {
+            "title": "普通指标卡",
+            "rows": [
+              {
+                "label": "amount",
+                "valueField": {
+                  "data": "main",
+                  "field": "amount",
+                  "match": {
+                    "field": "region",
+                    "equals": "b"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "rich",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "trusted"
+          },
+          "props": {
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "amount",
+                "valueField": {
+                  "data": "main",
+                  "field": "amount",
+                  "match": {
+                    "field": "region",
+                    "equals": "b"
+                  }
+                }
+              }
+            ],
+            "title": "汇总呈现"
+          }
+        }
+      ]
+    },
+    {
+      "id": "time-cases",
+      "components": [
+        {
+          "id": "matrix",
+          "type": "table",
+          "data": {
+            "main": "cases"
+          },
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "实际解析结果",
+            "columns": [
+              {
+                "field": "period",
+                "title": "粒度"
+              },
+              {
+                "field": "input",
+                "title": "输入范围"
+              },
+              {
+                "field": "actual",
+                "title": "规范值或错误码"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "execution-rejection",
+      "components": [
+        {
+          "id": "bad-time",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "invalid-time"
+          },
+          "props": {
+            "title": "非法 month + 日精度：执行前拒绝（诊断见控制台）",
+            "columns": [
+              {
+                "field": "amount",
+                "title": "不会请求服务"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

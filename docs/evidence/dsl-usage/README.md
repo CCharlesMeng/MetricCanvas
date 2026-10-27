@@ -31,3 +31,5 @@
 - 状态与待办：待定位/待验证/已回灌/已核验无需回灌；未完成项及既有 Issue/计划链接。
 - 后续发生与复验：按日期追加新证据、复发环境、验证结论或替代规则。
 ```
+
+| [DSL-20261027-authoring-time-precision](../authoring-session-audit-20261027/README.md) | 创作查询 / 时间精度、装配与编辑诊断 | month+20260401/20260930、strict/relaxed、metric-summary、artifactRef | 调查基线54021ab；实施基线d227d538；生产未知 | 本地已回灌并验收，部署待验 | [整体计划](../../plan/2026-10-27-authoring-contract-reliability.md)、queries-and-bindings 时间契约、MC discovery-query |

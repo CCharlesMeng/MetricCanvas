@@ -210,3 +210,13 @@ python3 /path/to/upstream/metriccanvas-authoring/scripts/sync_upstream.py \
 [SEMANTIC-DISCOVERY-HANDOFF.md](SEMANTIC-DISCOVERY-HANDOFF.md)。
 同轮复用仍有效的 context_ref；新轮由 Relay 提供新值，通过可信 taskRef/事件恢复需求，
 不能直接使用旧 contextRef、旧授权或旧结果引用。首期无需向量数据库，知识库和解释模型均可选。
+
+## 创作契约诊断（2026-10-27）
+
+部署 `prepare(adapters)` 报告增加 `implementations`：实际类/模块、模块源码 SHA256、可选 turnMetadata 声明。指纹只覆盖类所在源码模块，不涵盖依赖或配置；不读取实例配置或凭据。`verification=not_run` 必须保留，不能将声明或公共包 manifest 当成部署已验收。
+
+示例 JavaDatasetMetadataProvider 声明 `turn-metadata/1` 并使用公共 `read_turn_metadata`。内部 `adapters/` 由接手方维护，本次不覆盖其实现；实际工厂应薄接公共机制并复用 `test_dataset_metadata_http`、`test_metadata_processes` 的同轮/并发/重启/取消/身份变更场景，对实际加载类记录 HTTP 与身份获取次数。未采用的旧类不得标注具备同轮复用。
+
+`timed_stage` 日志增加程序生成 trace_id/span_id/parent_span_id、单调开始时间与耗时；查询授权、元数据读取、DQE 尝试可关联至公开调用，metadata hit/wait/acquire 事件沿用当前 span。completed 只代表方法是否抛异常，不等于业务成功/保存完成。跨进程关联仍需宿主提供调用证据；不得将并行耗时相加或将空隙推断为模型思考。
+
+真实 IAM/TitanScc、外部时间编码、tool_mc_inspect 包装层与最终业务时间范围需独立验证；公共模块修复不能关闭这些部署事项。凭据和原始业务行不得写入诊断。

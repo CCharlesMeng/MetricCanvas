@@ -1,0 +1,16 @@
+{
+  "code": "CONTENT_KEY_AMBIGUOUS",
+  "guidance": {
+    "message": "短名称在当前 topic 中对应多个资源；从 candidates 选择完整 key，或读取该 topic 的 index，不模糊猜测。",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [],
+  "coverage": {
+    "literalCallSite": false,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

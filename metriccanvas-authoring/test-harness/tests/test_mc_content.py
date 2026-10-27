@@ -372,6 +372,43 @@ class McCompletenessTest(unittest.TestCase):
             self.assertTrue(any(item['type'] == 'compositeCard' for section in target['sections'] for item in section['components']))
             self.assertEqual(original.read_bytes(), before)
 
+    def test_catalog_query_refs_and_unique_basename_aliases(self):
+        from mc_resources import canonical_key
+        catalog = query_content('layout', 'catalog', root=CONTENT)['content']
+        ref = catalog['scenes'][0]['variants'][1]['queryRef']
+        canonical = query_content(ref['topic'], ref['key'], root=CONTENT)
+        aliased = query_content('layout', 'business-report-standard', root=CONTENT)
+        self.assertEqual(aliased, canonical)
+        self.assertEqual(aliased['key'], 'standards/business-report-standard')
+        index = {'layout': {'a/x': 'one', 'b/x': 'two', 'x': 'canonical'}}
+        self.assertEqual(canonical_key(index, 'layout', 'x'), 'x')
+        del index['layout']['x']
+        with self.assertRaises(ContentError) as caught:
+            canonical_key(index, 'layout', 'x')
+        self.assertEqual(caught.exception.issue['code'], 'CONTENT_KEY_AMBIGUOUS')
+        self.assertEqual(caught.exception.issue['candidates'], ['a/x', 'b/x'])
+
+    def test_exact_artifact_adapter_checks_binding_and_immutable_association(self):
+        from mc_content import inspect_artifact
+        from mc_resources import value_digest
+        value = {**envelope(), 'requestId': 'request-A'}
+        compiled = compile_layout(value, root=CONTENT)
+        spec, document = compiled['inspectionSpec'], page()
+        artifact = {'document': document, 'binding': {'turnId': 'A'}, 'operationId': 'op-A'}
+        ref = 'artifact-' + value_digest(artifact)
+        artifact['artifactRef'] = ref
+        association = {'artifactRef': ref, 'requestId': 'request-A', 'compileInput': value,
+                       'documentSha256': value_digest(document), 'inspectionSpecSha256': value_digest(spec)}
+        def inspect(candidate=artifact, specification=spec, binding=artifact['binding']):
+            return inspect_artifact(candidate, specification, artifact_ref=ref, binding=binding, association=association, root=CONTENT)
+        self.assertEqual(inspect()['correlation']['status'], 'checked')
+        self.assertEqual(inspect(binding={'turnId': 'B'})['status'], 'not_run')
+        wrong = deepcopy(artifact); wrong['operationId'] = 'op-B'
+        self.assertEqual(inspect(candidate=wrong)['status'], 'not_run')
+        stale = deepcopy(spec); stale['requirements'] = []
+        self.assertEqual(inspect(specification=stale)['status'], 'not_run')
+        self.assertEqual(artifact['document'], document)
+
 
 if __name__ == '__main__':
     unittest.main()

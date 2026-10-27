@@ -1,0 +1,158 @@
+[
+  {
+    "input": {
+      "period": "year",
+      "start": "0001",
+      "end": "9999"
+    },
+    "expected": {
+      "period": "year",
+      "start": "0001",
+      "end": "9999"
+    }
+  },
+  {
+    "input": {
+      "period": "month",
+      "start": "2026-04",
+      "end": "2026-09"
+    },
+    "expected": {
+      "period": "month",
+      "start": "2026-04",
+      "end": "2026-09"
+    }
+  },
+  {
+    "input": {
+      "period": "day",
+      "start": "2024-02-29",
+      "end": "2024-03-01"
+    },
+    "expected": {
+      "period": "day",
+      "start": "2024-02-29",
+      "end": "2024-03-01"
+    }
+  },
+  {
+    "input": {
+      "period": "M",
+      "start": "202604",
+      "end": "202609"
+    },
+    "expected": {
+      "period": "month",
+      "start": "2026-04",
+      "end": "2026-09"
+    }
+  },
+  {
+    "input": {
+      "period": "day",
+      "start": "20240229",
+      "end": "20240301"
+    },
+    "expected": {
+      "period": "day",
+      "start": "2024-02-29",
+      "end": "2024-03-01"
+    }
+  },
+  {
+    "input": {
+      "period": "month",
+      "start": "20260401",
+      "end": "20260930"
+    },
+    "error": "TIME_VALUE_PRECISION_INVALID"
+  },
+  {
+    "input": {
+      "period": "month",
+      "start": "2026-04-01",
+      "end": "2026-09-30"
+    },
+    "error": "TIME_VALUE_PRECISION_INVALID"
+  },
+  {
+    "input": {
+      "period": "year",
+      "start": "2026-04",
+      "end": "2026-09"
+    },
+    "error": "TIME_VALUE_PRECISION_INVALID"
+  },
+  {
+    "input": {
+      "period": "day",
+      "start": "2026-04",
+      "end": "2026-09"
+    },
+    "error": "TIME_VALUE_PRECISION_INVALID"
+  },
+  {
+    "input": {
+      "period": "month",
+      "start": "2026-04",
+      "end": "20260930"
+    },
+    "error": "TIME_VALUE_PRECISION_INVALID"
+  },
+  {
+    "input": {
+      "period": "day",
+      "start": "2026-0401",
+      "end": "2026-0930"
+    },
+    "error": "TIME_VALUE_PRECISION_INVALID"
+  },
+  {
+    "input": {
+      "period": "month",
+      "start": "２０２６０４",
+      "end": "202609"
+    },
+    "error": "TIME_VALUE_PRECISION_INVALID"
+  },
+  {
+    "input": {
+      "period": "year",
+      "start": "0000",
+      "end": "2026"
+    },
+    "error": "TIME_VALUE_CALENDAR_INVALID"
+  },
+  {
+    "input": {
+      "period": "month",
+      "start": "202613",
+      "end": "202613"
+    },
+    "error": "TIME_VALUE_CALENDAR_INVALID"
+  },
+  {
+    "input": {
+      "period": "day",
+      "start": "20260229",
+      "end": "20260230"
+    },
+    "error": "TIME_VALUE_CALENDAR_INVALID"
+  },
+  {
+    "input": {
+      "period": "month",
+      "start": "202609",
+      "end": "202604"
+    },
+    "error": "TIME_RANGE_REVERSED"
+  },
+  {
+    "input": {
+      "period": "week",
+      "start": "202604",
+      "end": "202609"
+    },
+    "error": "TIME_GRANULARITY_UNSUPPORTED"
+  }
+]

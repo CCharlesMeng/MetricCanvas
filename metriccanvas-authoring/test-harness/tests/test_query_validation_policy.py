@@ -113,7 +113,7 @@ class QueryValidationPolicyTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(auth.seen[0]['filters'],[{'dimension':'区域','values':['中国区']}])
             effective=deps.dqe.calls[0]['body']['dsl_list'][0]
             self.assertEqual(effective['filter']['dims'],[{'dim_name':'区域','dim_value_list':['中国区']}])
-            self.assertEqual(effective['filter']['time'],{'period':'month','start':'202601','end':'202606'})
+            self.assertEqual(effective['filter']['time'],{'period':'month','start':'2026-01','end':'2026-06'})
 
     async def test_default_relaxed_missing_governance_reaches_execution(self):
         from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy

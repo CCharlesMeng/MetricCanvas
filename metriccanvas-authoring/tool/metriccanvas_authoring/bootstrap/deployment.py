@@ -1,5 +1,6 @@
 """One deployment loader and assembly path, with no concrete adapter dependency."""
 import importlib
+from metriccanvas_authoring.bootstrap.adapter_diagnostics import adapter_identities
 from metriccanvas_authoring.bootstrap.adapter_contract import (
     ADAPTER_INTERFACE_VERSION, AdapterContractError, AuthoringAdapters,
 )
@@ -37,6 +38,7 @@ def prepare(adapters: AuthoringAdapters):
         raise AdapterContractError('SEMANTIC_CATALOG_CONTRACT_MISMATCH')
     report['discoveryProtocolVersion'] = getattr(adapters.semantic_catalog, 'discovery_protocol_version', None)
     report['adapterInterfaceVersion'] = ADAPTER_INTERFACE_VERSION
+    report['implementations'] = adapter_identities(adapters)
     report['semanticCatalog'] = 'assembled' if adapters.semantic_catalog is not None else 'optional_unconfigured'
     return dependencies, inputs, report
 

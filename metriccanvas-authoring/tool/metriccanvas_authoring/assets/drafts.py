@@ -4,6 +4,7 @@ from uuid import uuid4
 import asyncio
 import logging
 from metriccanvas_authoring.diagnostics import safe_log
+from metriccanvas_authoring.work.diagnostics import timed_stage
 from metriccanvas_authoring.assets.lifecycle import Lifecycle, VALIDATOR
 from metriccanvas_authoring.work.state import require, digest
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
@@ -17,6 +18,7 @@ class DraftSaver:
     def __init__(self, store, service, identities):
         self.store, self.service, self.identities = store, service, identities
 
+    @timed_stage("draft.verify_current")
     async def verify_current(self, prepared, base, document, current):
         """Compare the work baseline to Java's current resource, never rebase silently."""
         if base is None:
@@ -40,6 +42,7 @@ class DraftSaver:
                 and isinstance(result.get('document'), dict), 'CURRENT_PAGE_MISMATCH')
         require(definition(result['document']) == definition(document), 'CURRENT_PAGE_STALE')
 
+    @timed_stage("draft.save")
     async def save(self, prepared, document, base, description, operation_id, current):
         require(self.service is not None and self.identities is not None and self.service.capabilities.single_save, 'SAVE_CAPABILITY_UNAVAILABLE')
         lifecycle = Lifecycle(self.service, None, self.identities)

@@ -101,6 +101,23 @@ def index_page(index, key, options):
         'nextOffset': offset + limit if offset + limit < len(pairs) else None}
 
 
+
+def canonical_key(index, topic, key):
+    entries = index.get(topic)
+    if entries is None:
+        raise ContentError('CONTENT_TOPIC_UNKNOWN', topic)
+    if key in entries:
+        return key
+    candidates = [name for name in entries if '/' not in key and name.rsplit('/', 1)[-1] == key]
+    if len(candidates) == 1:
+        return candidates[0]
+    error = ContentError('CONTENT_KEY_AMBIGUOUS' if candidates else 'CONTENT_KEY_UNKNOWN',
+                         f'{topic}/{key}', 'Use a canonical key returned by query_content(index, topic).')
+    error.issue['candidates'] = candidates[:20]
+    error.issue['truncated'] = len(candidates) > 20
+    raise error
+
+
 def atom_content(root, manifest, topic, key, options):
     if topic == 'version':
         return {k: v for k, v in manifest.items() if k != 'files'}, 'mc-content.version.json'
@@ -141,6 +158,8 @@ def query_content(topic, key='', options=None, *, root=None):
         raise ContentError('QUERY_OPTIONS_INVALID')
     if 'includeSchema' in options and type(options['includeSchema']) is not bool:
         raise ContentError('QUERY_OPTIONS_INVALID')
+    if topic not in {'version', 'index', 'node'}:
+        key = canonical_key(read_json(root, 'index.json'), topic, key)
     content, file = node_content(root, key) if topic == 'node' else atom_content(root, manifest, topic, key, options)
     budget = options.get('maxBytes', 32768)
     if type(budget) is not int or not 128 <= budget <= 4 * 1024 * 1024:

@@ -88,6 +88,21 @@ export function indexFor(outputs: Outputs): object {
     ]))]));
 }
 
+/** Catalog query references use the same canonical index as query_content. */
+function addLayoutQueryRefs(outputs: Outputs): void {
+  const index = indexFor(outputs) as Record<string, Record<string, string>>;
+  const catalog = JSON.parse(outputs.get('layouts/catalog.json')!);
+  for (const scene of catalog.scenes) {
+    for (const variant of scene.variants ?? []) {
+      if (!variant.templateFile) continue;
+      const key = Object.keys(index.layout).find(key => index.layout[key] === `layouts/${variant.templateFile}`);
+      if (!key) throw new Error(`Layout template is not indexed: ${variant.templateFile}`);
+      variant.queryRef = {topic: 'layout', key};
+    }
+  }
+  outputs.set('layouts/catalog.json', json(catalog));
+}
+
 export interface McBuildGraph { product: Outputs; authoring: Outputs; lock: string }
 
 async function buildInputSources(root: string, sources: string[]): Promise<string[]> {
@@ -151,6 +166,7 @@ export async function mcContentOutputs(root: string, graph: McBuildGraph): Promi
   await addPageTools(root, outputs);
   outputs.set('runtime/schema-catalog.json', json(schemaCatalog(outputs)));
   outputs.set('runtime/source-identity.json', json(await sourceIdentity(root, raw.publicSources)));
+  addLayoutQueryRefs(outputs);
   outputs.set('index.json', json(indexFor(outputs)));
   const denominator = await knowledgeDenominator(root);
   outputs.set('runtime/coverage.json', json(checkMcCoverage(outputs, graph.product, graph.authoring, raw, denominator)));

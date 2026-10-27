@@ -1,0 +1,21 @@
+{
+  "code": "TIME_VALUE_CALENDAR_INVALID",
+  "guidance": {
+    "message": "时间值不是有效日历日期；核对年份、月份、月末及闰年。",
+    "action": "correct_calendar_date",
+    "owner": "model"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/time_range.py",
+      "line": 28
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

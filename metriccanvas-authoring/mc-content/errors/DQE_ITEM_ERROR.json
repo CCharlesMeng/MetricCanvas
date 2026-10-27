@@ -1,16 +1,16 @@
 {
   "code": "DQE_ITEM_ERROR",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "执行服务返回条目失败；没有证据确定具体业务原因，请按关联调用检查服务。",
+    "action": "inspect_execution_failure",
+    "owner": "integration"
   },
   "sourceLocations": [],
   "coverage": {
     "literalCallSite": false,
     "queryClosedSet": true,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

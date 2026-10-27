@@ -83,3 +83,22 @@ def inspect_correlation(document, specification, correlation):
         raise ContentError('INSPECTION_CORRELATION_MISMATCH')
     return {'status': 'checked', 'documentSha256': correlation['documentSha256'],
         'requestId': correlation['requestId'], 'note': 'Caller association only; not authentication or a save/preview receipt'}
+
+
+def inspect_artifact(artifact, specification, *, artifact_ref, binding, association, root=None):
+    """No lookup of latest artifacts. Inputs must come from the trusted program channel."""
+    from mc_resources import value_digest
+    try:
+        if not isinstance(artifact, dict) or artifact.get('artifactRef') != artifact_ref or artifact.get('binding') != binding:
+            raise ContentError('INSPECTION_ARTIFACT_MISMATCH')
+        payload = {key: value for key, value in artifact.items() if key != 'artifactRef'}
+        if artifact_ref != 'artifact-' + value_digest(payload):
+            raise ContentError('INSPECTION_ARTIFACT_MISMATCH')
+        if not isinstance(association, dict) or association.get('artifactRef') != artifact_ref:
+            raise ContentError('INSPECTION_CORRELATION_REQUIRED')
+        result = inspect_assembly(artifact['document'], specification, root=root, correlation=association)
+        result['artifactRef'] = artifact_ref
+        return result
+    except (ContentError, KeyError, TypeError, ValueError) as error:
+        diagnostic = error.issue if isinstance(error, ContentError) else issue('INSPECTION_ARTIFACT_MISMATCH')
+        return {'status': 'not_run', 'issues': [diagnostic]}

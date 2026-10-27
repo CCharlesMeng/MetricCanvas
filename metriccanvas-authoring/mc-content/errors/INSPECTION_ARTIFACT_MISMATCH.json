@@ -1,0 +1,29 @@
+{
+  "code": "INSPECTION_ARTIFACT_MISMATCH",
+  "guidance": {
+    "message": "由集成程序核对精确 artifactRef、内容摘要和可信 binding；不得改用最近一次产物或让模型重建 document。",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "tools/mc-content/scripts/mc_inspection.py",
+      "line": 93
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_inspection.py",
+      "line": 96
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_inspection.py",
+      "line": 103
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

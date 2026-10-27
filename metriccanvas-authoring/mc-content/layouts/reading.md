@@ -37,3 +37,5 @@ metricCard 可用 match={field, equals} 选择已验证行；只支持能证明�
 字段无法解析、单轴混合单位、截断数据做占比、组件形状不适用会返回精确问题。修正真实错误，不通过反复换词检索参考文档；read_page_context 只读页面配置。
 
 已有页按当前结构局部修改。新增章节用 add_section（含至少一个初始 blocks），set_section 改标题/容器，move_section 改顺序；add_source_component 复用当前工作稿数据。remove_section 必须用 componentIds 明确列出当前章全部组件，原子移除；列表不符拒绝，页头章受保护。重排不需要重新执行数据查询。
+
+布局 catalog 的 variant 提供生成的 `queryRef: {topic, key}`，可直接传给 `query_content`。`templateFile` 保留文件身份。完整 key 优先；短 basename 仅在同 topic 内唯一时兼容，返回规范 key 与 continuation；歧义返回 CONTENT_KEY_AMBIGUOUS 和有界候选。不得跨 topic 或模糊猜测资源。

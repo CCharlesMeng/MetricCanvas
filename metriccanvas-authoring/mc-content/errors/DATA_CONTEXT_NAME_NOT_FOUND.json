@@ -1,9 +1,9 @@
 {
   "code": "DATA_CONTEXT_NAME_NOT_FOUND",
   "guidance": {
-    "message": "读取 candidates 和失败阶段，按发现的规范名与粒度修正；同请求重复调用不解决问题。不得删除地域/时间条件换取成功。",
-    "action": null,
-    "owner": "caller"
+    "message": "当前业务域未找到所选名称；核对规范名称、受治理别名及可见域候选，选择后重新授权。",
+    "action": "check_governed_name",
+    "owner": "model"
   },
   "sourceLocations": [],
   "coverage": {

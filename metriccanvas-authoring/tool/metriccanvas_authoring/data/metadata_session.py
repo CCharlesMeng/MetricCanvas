@@ -16,14 +16,15 @@ from uuid import uuid4
 from metriccanvas_authoring.canonical import canonical_sha256
 from metriccanvas_authoring.data.ports import DataContextError
 from metriccanvas_authoring.diagnostics import safe_log
+from metriccanvas_authoring.work.diagnostics import stage_context
 
 _logger = logging.getLogger(__name__)
 
 
 def metadata_event(event, started):
     # Fixed event names and elapsed time only; never log source keys or values.
-    safe_log(_logger, logging.INFO, 'metadata event=%s elapsed_ms=%d',
-             event, (time.monotonic() - started) * 1000)
+    safe_log(_logger, logging.INFO, 'metadata event=%s elapsed_ms=%d trace_id=%s span_id=%s',
+             event, (time.monotonic() - started) * 1000, stage_context()['traceId'], stage_context()['spanId'])
 
 
 _scope = ContextVar('authoring_metadata_scope', default=None)

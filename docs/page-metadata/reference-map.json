@@ -2480,6 +2480,15 @@
         "查询独立期间策略"
       ],
       "dependencies": []
+    },
+    "query.time-contract": {
+      "module": "queries-and-bindings",
+      "title": "查询时间粒度、精度与日历范围",
+      "roots": [],
+      "headings": [
+        "查询时间精度与执行前校验"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2521,7 +2530,8 @@
       "6.39 静态时间查询模式",
       "6.50 固定单选查询分支",
       "6.55 DQE 对象查询",
-      "指定时间字段的范围下推（6.68）"
+      "指定时间字段的范围下推（6.68）",
+      "查询时间精度与执行前校验"
     ],
     "compute.md": [
       "查阅方式",

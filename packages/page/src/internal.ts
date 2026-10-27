@@ -91,3 +91,5 @@ export * from './table-pinned';
 export type { PagedUnionDataSource, PagedUnionSource, PagedUnionMember } from './paged-union';
 
 export * from './table/columns';
+
+export { normalizeQueryTime, QueryTimeRangeError } from './query-time';

@@ -1,0 +1,21 @@
+{
+  "code": "TIME_RANGE_REVERSED",
+  "guidance": {
+    "message": "开始时间晚于结束时间；按原始业务需求修正起止值。",
+    "action": "correct_time_range",
+    "owner": "model"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/time_range.py",
+      "line": 39
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

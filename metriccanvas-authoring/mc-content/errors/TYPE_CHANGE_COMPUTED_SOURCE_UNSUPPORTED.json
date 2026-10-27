@@ -1,21 +1,21 @@
 {
   "code": "TYPE_CHANGE_COMPUTED_SOURCE_UNSUPPORTED",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "当前组件使用计算数据源，直接类型转换不支持此来源。",
+    "action": "inspect_component_binding",
+    "owner": "model"
   },
   "sourceLocations": [
     {
       "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py",
-      "line": 159
+      "line": 161
     }
   ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

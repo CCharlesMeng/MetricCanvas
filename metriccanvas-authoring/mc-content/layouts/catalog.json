@@ -8,15 +8,27 @@
       "variants": [
         {
           "variant": "compact",
-          "templateFile": "standards/business-report-compact.json"
+          "templateFile": "standards/business-report-compact.json",
+          "queryRef": {
+            "topic": "layout",
+            "key": "standards/business-report-compact"
+          }
         },
         {
           "variant": "standard",
-          "templateFile": "standards/business-report-standard.json"
+          "templateFile": "standards/business-report-standard.json",
+          "queryRef": {
+            "topic": "layout",
+            "key": "standards/business-report-standard"
+          }
         },
         {
           "variant": "rich",
-          "templateFile": "standards/business-report-rich.json"
+          "templateFile": "standards/business-report-rich.json",
+          "queryRef": {
+            "topic": "layout",
+            "key": "standards/business-report-rich"
+          }
         }
       ]
     },
@@ -26,7 +38,11 @@
       "variants": [
         {
           "variant": "standard",
-          "templateFile": "standards/usage-report-standard.json"
+          "templateFile": "standards/usage-report-standard.json",
+          "queryRef": {
+            "topic": "layout",
+            "key": "standards/usage-report-standard"
+          }
         }
       ]
     },
@@ -37,7 +53,11 @@
       "variants": [
         {
           "variant": "standard",
-          "templateFile": "standards/ioc-overview-standard.json"
+          "templateFile": "standards/ioc-overview-standard.json",
+          "queryRef": {
+            "topic": "layout",
+            "key": "standards/ioc-overview-standard"
+          }
         }
       ]
     }

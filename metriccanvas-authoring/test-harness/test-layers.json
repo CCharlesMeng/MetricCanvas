@@ -19,7 +19,8 @@
       "tests/test_field_presentation.py",
       "tests/test_paged_join.py",
       "tests/test_presentation_editing.py",
-      "tests/test_mc_content.py"
+      "tests/test_mc_content.py",
+      "tests/test_authoring_contract_reliability.py"
     ],
     "adapters": [
       "tests/test_content_baselines.py",

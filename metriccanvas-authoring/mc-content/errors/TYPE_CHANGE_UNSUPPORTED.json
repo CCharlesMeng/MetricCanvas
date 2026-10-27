@@ -1,21 +1,25 @@
 {
   "code": "TYPE_CHANGE_UNSUPPORTED",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "目标组件不能直接转换：需要支持的数据组件和唯一 main 数据槽。先读取该组件的实际类型与绑定。",
+    "action": "inspect_component_binding",
+    "owner": "model"
   },
   "sourceLocations": [
     {
       "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py",
       "line": 155
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py",
+      "line": 157
     }
   ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

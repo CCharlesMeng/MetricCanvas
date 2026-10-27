@@ -1,3 +1,4 @@
+from metriccanvas_authoring.work.diagnostics import timed_stage
 """Scoped query reuse and explicitly authorized bounded model evidence."""
 from copy import deepcopy
 from dataclasses import replace
@@ -5,6 +6,8 @@ import asyncio
 import json
 import time
 from metriccanvas_authoring.data.query_attempts import RetryingDqe
+from metriccanvas_authoring.work.diagnostics import issue_details
+from metriccanvas_authoring.data.request_diagnostics import request_issues, query_issue, locate_results, domain_candidates
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.data.query import create_query_data
 from metriccanvas_authoring.data.validation_policy import (load_query_validation_policy, normalize_request, current_for_query, FixedQueryContext, normalize_semantic_names)
@@ -32,6 +35,7 @@ class QueryResults:
         self.dependencies, self.state, self.authorization = dependencies, state, authorization
         self.semantic_catalog = semantic_catalog
 
+    @timed_stage('query.authorize')
     async def authorize(self, prepared, request, version):
         require(self.authorization is not None, 'ANALYSIS_AUTHORIZATION_UNAVAILABLE')
         grant = await self.authorization.authorize(deepcopy(dict(prepared.binding)), deepcopy(request), version)
@@ -48,7 +52,7 @@ class QueryResults:
             require(Draft202012Validator(envelope).is_valid(request), 'QUERY_REQUEST_INVALID')
             policy = load_query_validation_policy()
             original = deepcopy(request)
-            invalid = {i for i, item in enumerate(request['requests']) if not Draft202012Validator(DATA_REQUEST).is_valid(item)}
+            invalid = {i: issues for i, item in enumerate(request['requests']) if (issues := request_issues(item, DATA_REQUEST))}
             request, normalizations = deepcopy(request), []
             return policy, original, invalid, request, normalizations
 
@@ -60,7 +64,7 @@ class QueryResults:
         context, context_issues = parse_data_context(snapshot, policy=policy)
         if context_issues:
             return {'status': 'failed', 'validationMode': policy.mode,
-                    'issues': [{'code': i.code, 'path': i.path} for i in context_issues]}
+                    'issues': [{**issue_details(i.code, i.path, stage='discovery'), 'pathScope': 'dataContext'} for i in context_issues]}
         require(context.version == request['dataContextVersion'], 'DATA_CONTEXT_VERSION_CHANGED')
         def normalize_items():
             for index, item in enumerate(request['requests']):
@@ -86,6 +90,7 @@ class QueryResults:
         results = await asyncio.gather(*(self._execute_one(prepared, request, current, index, item,
             invalid=invalid, original=original, policy=policy, snapshot=snapshot, normalizations=normalizations)
             for index, item in enumerate(requests)))
+        locate_results(results, normalizations)
         await current()
         payload = {'status': 'ready' if all(r['status'] in {'ready', 'empty'} for r in results) else 'partial' if any(r['status'] in {'ready', 'empty'} for r in results) else 'pending' if any(r['status'] == 'pending' for r in results) else 'failed',
                    'dataContextVersion': version, 'validationMode': policy.mode, 'results': results}
@@ -120,7 +125,7 @@ class QueryResults:
     async def _execute_one(self, prepared, request, current, index, item, *, invalid, original, policy, snapshot, normalizations):
         version = request['dataContextVersion']
         if index in invalid:
-            return {'dataSourceId': item['dataSourceId'], 'status': 'failed', 'issues': [{'code': 'QUERY_ITEM_INVALID', 'path': f'/requests/{index}', 'action': 'correct_affected_request'}]}
+            return {'dataSourceId': item['dataSourceId'], 'status': 'failed', 'issues': deepcopy(invalid[index])}
         def claim_payload():
             signature = digest([self.state.key(prepared), version, policy.identity, {k: v for k, v in item.items() if k != 'dataSourceId'}])
             ref = 'result-' + signature
@@ -156,7 +161,7 @@ class QueryResults:
                     issues = (await checker(dict(prepared.binding), item, snapshot) if callable(checker)
                               else await self.semantic_catalog.query_issues(dict(prepared.binding), item))
                     if issues:
-                        claimed.update(status='failed', issues=issues)
+                        claimed.update(status='failed', issues=[{**issue_details(i['code'], i.get('path', '')), **i} for i in issues])
                         return await publish()
                 spec = {'question': request['question'], 'dataContextVersion': version,
                         'units': [{**item, 'intent': 'detail', 'pinnedComponent': 'table'}]}
@@ -185,9 +190,10 @@ class QueryResults:
 
                     await capture_execution()
                 else:
-                    claimed.update(status='failed', issues=[{'code': i.code, 'path': i.path, 'stage': i.stage,
-                        'candidates': list(i.candidates)[:10], 'retrySafe': i.retry_safe,
-                        'action': 'correct_request_or_refresh_context' if i.stage in {'discovery','generation'} else 'inspect_execution_failure'} for i in result.issues])
+                    claimed.update(status='failed', issues=[query_issue(i) for i in result.issues])
+                    if any(i.code in {'DATA_CONTEXT_NAME_NOT_FOUND', 'METRIC_NOT_IN_DATA_CONTEXT'} for i in result.issues):
+                        claimed['domainCandidates'] = domain_candidates(snapshot, item)
+
                 return await publish()
         except BaseException:
             claimed.update(status='failed', issues=[{'code': 'QUERY_INTERRUPTED', 'path': ''}])
@@ -219,6 +225,8 @@ class QueryResults:
         result['scope']['dataSourceId'] = result['dataSourceId']
         if record['status'] not in {'ready', 'empty'}:
             result['issues'] = deepcopy(record.get('issues', []))
+            if 'domainCandidates' in record:
+                result['domainCandidates'] = deepcopy(record['domainCandidates'])
             if record['status'] == 'pending':
                 expired = record.get('expiresAt', float('inf')) < time.time()
                 result['issues'] = [{'code': 'QUERY_ATTEMPT_EXPIRED' if expired else 'RESULT_NOT_READY', 'path': '',

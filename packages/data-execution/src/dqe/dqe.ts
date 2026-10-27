@@ -1,5 +1,5 @@
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
-import { dqeDefaultSort, validateCalendarTimeRange, calendarEndpoint, objectDateBoundary, isObjectDqeItem } from '@metriccanvas/page/internal';
+import { normalizeQueryTime, QueryTimeRangeError, dqeDefaultSort, validateCalendarTimeRange, calendarEndpoint, objectDateBoundary, isObjectDqeItem } from '@metriccanvas/page/internal';
 import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
 import { validateCandidatePage } from '../column-candidates';
 import type { ColumnCandidatesQuery } from '../ports';
@@ -670,12 +670,26 @@ function encodedMetricItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfi
       setMetricTimeBinding(item, filter);
     }
   }
+  normalizeMetricTime(item);
   if (!applyTableFilters(item, query.tableFilters)) throw new EmptyTableQuery();
   if (item.order !== undefined || query.pagination || query.sort) item.order = metricOrder(item, query);
   if (query.search) {
     return encodeTableSearch(item, query.search, encodeSearch);
   }
   return item;
+}
+
+/** Validate the final range after bindings, before either initial or repeated transport. */
+function normalizeMetricTime(item: JsonObject): void {
+  if (!isRecord(item.filter) || !isRecord(item.filter.time)) return;
+  const time = item.filter.time;
+  // A declaration without endpoints may be filled by a later applied filter.
+  if (time.start === undefined && time.end === undefined) return;
+  try { item.filter.time = {...time, ...normalizeQueryTime(time)}; }
+  catch (error) {
+    if (!(error instanceof QueryTimeRangeError)) throw error;
+    throw new DqeGatewayError('DQE_QUERY_REJECTED', `${error.code}: filter.time.${error.field}`);
+  }
 }
 
 /** The metric service accepts one ordering field; reject unsupported rules before transport. */

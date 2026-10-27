@@ -35,6 +35,8 @@ def identifier(value):
 
 
 class JavaDatasetMetadataProvider:
+    turn_metadata_capability = "turn-metadata/1"
+
     def __init__(self, base_url, identities, *, dataset_ids=None, projection=None,
                  transport=None, timeout_seconds=20):
         parsed = urlsplit(base_url)

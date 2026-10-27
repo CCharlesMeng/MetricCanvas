@@ -26,3 +26,11 @@
 来源：公共 semantic_catalog、validation_policy、results、discovery/service/contracts 与活动 platform_mcp 注册。对应源码变动参与内容身份和生成漂移检查；部署 Adapter 的真实能力与凭据由部署回执证明。
 
 信封 items 包含 requirementId、expression、status、options；options 包含 optionId、requirementId、metricRef、label、businessDomain、definition。taskRef/revision 和 interactionId 由程序保存/关联；旧 revision 不自动合并，确认引用不匹配报 DISCOVERY_REVISION_CONFLICT / DISCOVERY_INTERACTION_STALE / DISCOVERY_EVENT_MISMATCH 等结构化诊断。
+
+## 时间契约与可修复诊断
+
+- `year`：`YYYY`；`month`：`YYYY-MM` 或 `YYYYMM`；`day`：`YYYY-MM-DD` 或 `YYYYMMDD`。`M` 等价于 `month`。日历必须有效，起点不晚于终点；不同精度不能转换。`month + 20260401/20260930` 必须修正输入，不能自动删掉日。
+- 公共层将合法紧凑格式规范为 ISO 后再授权、计算结果身份和生成查询；返回 `normalizations`。strict/relaxed 均执行日期结构、日历和范围检查。结果校验策略身份为 `query-validation/2`；旧结果仍可读取，作为新装配依据时需当前策略下重查。
+- 错误的 `pathScope=input` 路径从 `/requests/<index>` 定位，包含安全 `message/action/recoveryOwner`。`retrySafe` 沿执行失败分类，不自动重试确定性错误或换域。上游原始报错、SQL、凭据不回显。
+- 域内找不到指标时，`domainCandidates.items` 仅含当前授权快照的精确同名/受治理别名，以及来源口径说明和单位。`snapshotComplete=false` 或 `truncated=true` 不能当成穷尽；`executionReadiness=not_checked` 与兼容性未知不代表可执行。选择候选会形成新请求并重新授权，派生指标不自动替代基础指标。
+- 结果引用在新批次复用时按本次请求索引定位；直接读取结果引用的诊断路径相对于其 `scope`。来源未变不意味着无需授权、当前轮次或数据上下文核验。

@@ -1,25 +1,25 @@
 {
   "code": "STRUCTURE_ROW_SELECTION_UNVERIFIED",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "无法证明行集合完整或匹配字段不是维度；核对完整结果与 totalCount。",
+    "action": "inspect_result_coverage",
+    "owner": "model"
   },
   "sourceLocations": [
     {
-      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py",
-      "line": 13
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "line": 76
     },
     {
       "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
-      "line": 101
+      "line": 80
     }
   ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

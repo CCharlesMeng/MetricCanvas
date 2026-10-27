@@ -497,3 +497,5 @@ MC 内容包随本协议同步生成，包含同源字段语义、规则、例�
 DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一使用 `order.order_by_field/type`，分页继续为 offset/limit；`order.by` 非指标 DQE 语法。分页合并、关联选页与子表格不自动追加第二排序字段，合并主排序相等时保留来源内返回次序。指标多字段排序发送前明确失败；不新增页面字段或改变 Schema 版本。参见[查询与绑定](docs/page-metadata/queries-and-bindings.md)、[分页合并](docs/page-metadata/data-sources.md#paged-union)及 `/pages/query-result-where-page`、`/pages/multi-source-table`。
 
 6.68：普通DQE可将time绑定显式指定到维度字段，下推日/月范围，详见[查询时间字段](docs/page-metadata/queries-and-bindings.md#metric-field-time)。审批记录示例 `record-join-demo` 在预算检查前筛选；既有records.timeFilters仍为读取后本地筛选。
+
+查询时间的年/月/日精度、合法日历及起止顺序在创作与运行时执行前保持一致；合法紧凑格式等价规范化，粒度不匹配不截断。见[查询时间精度与执行前校验](docs/page-metadata/queries-and-bindings.md#查询时间精度与执行前校验)与 `/pages/authoring-contract-reliability` 验收页。历史页面的读取兼容性与执行时合法性分开报告。

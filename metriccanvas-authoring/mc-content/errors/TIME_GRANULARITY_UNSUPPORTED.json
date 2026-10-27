@@ -1,0 +1,21 @@
+{
+  "code": "TIME_GRANULARITY_UNSUPPORTED",
+  "guidance": {
+    "message": "时间粒度只支持 year、month、day；M 等价于 month。",
+    "action": "correct_time_granularity",
+    "owner": "model"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/time_range.py",
+      "line": 18
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

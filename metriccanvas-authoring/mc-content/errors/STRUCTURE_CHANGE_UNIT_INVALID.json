@@ -1,21 +1,21 @@
 {
   "code": "STRUCTURE_CHANGE_UNIT_INVALID",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "变化字段需要 number 类型及 % 单位。",
+    "action": "check_change_unit",
+    "owner": "model"
   },
   "sourceLocations": [
     {
       "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py",
-      "line": 54
+      "line": 50
     }
   ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

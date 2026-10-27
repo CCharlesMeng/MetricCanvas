@@ -2,6 +2,7 @@ from __future__ import annotations
 from metriccanvas_authoring.pages.composition.paged_join import build_paged_join, referenced_definitions
 """Page expression from verified results; this module never executes DQE."""
 from copy import deepcopy
+from metriccanvas_authoring.work.diagnostics import public_issue
 from metriccanvas_authoring.pages.scope_annotations import refresh, source_contract, data_locations
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.bundle_info import load_bundle_info
@@ -44,6 +45,13 @@ def pack_default_widths(components, blocks):
             flush(); row = []; used = 0
         row.append(component); used += span
     flush()
+
+
+
+def failed_block_outcome(block_id, error, section_index, block_index):
+    path = error.path if error.path.startswith('/sections/') else f'/sections/{section_index}/blocks/{block_index}' + error.path
+    return {'id': block_id, 'status': 'failed', 'component': {'id': 'structure-missing-' + block_id, 'type': 'text'},
+            'issues': [{**error.issue(), 'path': path, 'pathScope': 'input', 'blockId': block_id}], 'adjustments': []}
 
 
 def compose(prepared, request, records):
@@ -92,9 +100,9 @@ def compose(prepared, request, records):
                     sources[block['source']]['source'].pop('initial', None)
                 if block.get('source') in sources:
                     used.append(block['source'])
-                outcomes.append({'id': block['id'], 'status': 'applied', 'issues': [], 'adjustments': []})
+                outcomes.append({'id': block['id'], 'status': 'applied', 'component': {'id': component['id'], 'type': component['type']}, 'issues': [], 'adjustments': []})
             except StructureError as error:
-                outcomes.append({'id': block['id'], 'status': 'failed', 'issues': [error.issue()], 'adjustments': []})
+                outcomes.append(failed_block_outcome(block['id'], error, si, bi))
                 target['components'].append({'id': 'structure-missing-' + block['id'], 'type': 'text', 'layout': {'span': 12}, 'props': {'body': f"未生成「{block.get('title', block['id'])}」：{error.code}。"}})
         if used:
             for key in used:document['dataSources'].update(referenced_definitions(sources,key))
@@ -174,7 +182,7 @@ async def edit(baseline, request, resolve, current, summary_enabled=False, scope
                     candidate['dataSources'][source_id]['source'].pop('initial', None)
                 result = candidate, [], adjustments
             except (StructureError, ContentBaselineError) as error:
-                result = None, [{'code': error.code, 'path': ''}], []
+                result = None, [public_issue(error)], []
         elif op['type'] in SECTION_TYPES:
             try: result = edit_section(document, op), [], []
             except StructureError as error: result = None, [error.issue()], []

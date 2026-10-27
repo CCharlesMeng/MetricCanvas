@@ -1,21 +1,16 @@
 {
   "code": "OPERATION_INVALID",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "编辑操作不符合契约；按 operationId、字段位置和 constraint 修正该操作，保留其他独立操作。",
+    "action": "correct_affected_input",
+    "owner": "model"
   },
-  "sourceLocations": [
-    {
-      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/operation_batch.py",
-      "line": 43
-    }
-  ],
+  "sourceLocations": [],
   "coverage": {
-    "literalCallSite": true,
+    "literalCallSite": false,
     "queryClosedSet": false,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }

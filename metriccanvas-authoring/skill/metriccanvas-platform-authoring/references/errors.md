@@ -46,3 +46,8 @@ MC 内容与布局能力的诊断说明；下面的修复方向供调用方决�
 - DATA_CONTEXT_NAME_NOT_FOUND / DIMENSION_NOT_IN_DATA_CONTEXT / METRIC_NOT_IN_DATA_CONTEXT / TIME_GRANULARITY_NOT_IN_DATA_CONTEXT：读取 candidates 和失败阶段，按发现的规范名与粒度修正；同请求重复调用不解决问题。不得删除地域/时间条件换取成功。
 - RESULT_VALIDATION_POLICY_CHANGED：结果来自不同校验策略，重新确认并取数后用于页面；旧引用仅作带原模式的历史证据。
 - QUERY_VALIDATION_CONFIG_ERROR：交部署方修复可信配置；模型不能切换校验策略或伪造参数。
+
+- CONTENT_KEY_AMBIGUOUS：短名称在当前 topic 中对应多个资源；从 candidates 选择完整 key，或读取该 topic 的 index，不模糊猜测。
+- TIME_VALUE_PRECISION_INVALID：时间值精度必须匹配 year/month/day；不截去日、不自动扩大业务范围。
+- TIME_VALUE_CALENDAR_INVALID、TIME_RANGE_REVERSED：修正不存在的日期或倒置的起止值；strict 与 relaxed 都不放宽。
+- INSPECTION_ARTIFACT_MISMATCH：由集成程序核对精确 artifactRef、内容摘要和可信 binding；不得改用最近一次产物或让模型重建 document。

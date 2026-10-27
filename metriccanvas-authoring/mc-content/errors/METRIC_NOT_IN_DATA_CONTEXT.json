@@ -1,9 +1,9 @@
 {
   "code": "METRIC_NOT_IN_DATA_CONTEXT",
   "guidance": {
-    "message": "读取 candidates 和失败阶段，按发现的规范名与粒度修正；同请求重复调用不解决问题。不得删除地域/时间条件换取成功。",
-    "action": null,
-    "owner": "caller"
+    "message": "当前业务域未找到该指标；核对精确名称或当前授权快照中的跨域候选，不自动改用派生指标。",
+    "action": "check_governed_metric",
+    "owner": "model"
   },
   "sourceLocations": [],
   "coverage": {

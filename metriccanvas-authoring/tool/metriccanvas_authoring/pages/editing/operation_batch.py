@@ -5,6 +5,7 @@ adjustments). It owns identity, dependency ordering, rollback, validation and
 partial/unchanged aggregation; operation handlers do not schedule batches.
 """
 from copy import deepcopy
+from metriccanvas_authoring.work.diagnostics import schema_issues, issue_details
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.pages.validation.page_validation import normalize_page_document, validate_page_document
 from metriccanvas_authoring.pages.composition.table_pagination import add_query_table_pagination, _components
@@ -39,10 +40,11 @@ def operation_batch(baseline, request, operation_schema):
 
 def _apply_operation(document, op, index, validator, states):
     result = {'id': op['id'], 'status': 'failed', 'issues': [], 'adjustments': []}
-    if not validator.is_valid(op):
-        result['issues'] = [{'code': 'OPERATION_INVALID', 'path': f'/operations/{index}'}]
+    invalid = schema_issues(validator.schema, op, 'OPERATION_INVALID')
+    if invalid:
+        result['issues'] = invalid
     elif any(states.get(dep) not in {'applied', 'unchanged'} for dep in op.get('dependsOn', [])):
-        result.update(status='skipped', issues=[{'code': 'DEPENDENCY_NOT_SUCCEEDED', 'path': f'/operations/{index}/dependsOn'}])
+        result.update(status='skipped', issues=[{'code': 'DEPENDENCY_NOT_SUCCEEDED', 'path': '/dependsOn'}])
     else:
         candidate, issues, adjustments = yield deepcopy(document), deepcopy(op)
         result['issues'] = issues
@@ -53,12 +55,30 @@ def _apply_operation(document, op, index, validator, states):
             add_query_table_pagination(candidate, new_tables)
             errors = validate_page_document(candidate)
             if errors:
-                result['issues'] = [{'code': e.type, 'path': e.path} for e in errors]
+                result['issues'] = [{**issue_details(e.type, e.path), 'pathScope': 'document'} for e in errors]
             else:
                 result['status'] = 'unchanged' if candidate == document else 'applied'
                 result['adjustments'] = adjustments if result['status'] == 'applied' else []
                 document = candidate
+    _locate_issues(result, op['id'], index)
+    _component_state(result, document, op)
     return document, result
+
+
+
+def _component_state(result, document, operation):
+    target = operation.get('componentId') or operation.get('block', {}).get('id')
+    if target:
+        found = next((c for c in _components(document) if c['id'] == target), None)
+        result['component'] = {'id': target, 'exists': found is not None,
+                               'type': found['type'] if found is not None else None}
+
+
+def _locate_issues(result, operation_id, index):
+    for issue in result['issues']:
+        issue['operationId'] = operation_id
+        if issue.get('pathScope') != 'document':
+            issue.update(path=f'/operations/{index}' + issue.get('path', ''), pathScope='input')
 
 
 def _batch_request_issue(request):

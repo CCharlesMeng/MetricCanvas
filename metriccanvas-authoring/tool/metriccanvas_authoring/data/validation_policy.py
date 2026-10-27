@@ -1,3 +1,4 @@
+from metriccanvas_authoring.work.diagnostics import timed_stage
 """Trusted, batch-scoped semantic validation; never a model-controlled argument."""
 from copy import deepcopy
 from dataclasses import dataclass
@@ -6,8 +7,9 @@ import os
 from pathlib import Path
 
 from metriccanvas_authoring.data.ports import DataContextError
+from metriccanvas_authoring.data.time_range import normalize_time, TimeRangeError
 
-POLICY_VERSION = 'query-validation/1'
+POLICY_VERSION = 'query-validation/2'
 OPTIONAL_GOVERNANCE = frozenset({'additivity', 'timeAggregation', 'isRatio'})
 SUPPORTED_PERIODS = ('year', 'month', 'day')
 
@@ -58,13 +60,21 @@ def normalize_request(request):
     changes = []
     for index, item in enumerate(value.get('requests', value.get('units', []))):
         time = item.get('time')
-        if isinstance(time, dict) and time.get('granularity') == 'M':
-            time['granularity'] = 'month'
-            changes.append({'path': f'/{"requests" if "requests" in value else "units"}/{index}/time/granularity',
-                            'from': 'M', 'to': 'month'})
+        if not isinstance(time, dict) or not {'granularity', 'start', 'end'} <= time.keys():
+            continue
+        try:
+            normalized = normalize_time(time)
+        except TimeRangeError:
+            continue  # Validation reports invalid input; never repair by guessing.
+        for key in ('granularity', 'start', 'end'):
+            if time[key] != normalized[key]:
+                changes.append({'path': f'/{"requests" if "requests" in value else "units"}/{index}/time/{key}',
+                                'from': time[key], 'to': normalized[key]})
+        item['time'] = normalized
     return value, changes
 
 
+@timed_stage('query.metadata')
 async def current_for_query(provider, policy):
     """Additive adapter capability. Old current() remains a supported strict provider."""
     method = getattr(provider, 'current_for_query', None)

@@ -1,21 +1,21 @@
 {
   "code": "TYPE_CHANGE_REQUIRES_ROW_EVIDENCE",
   "guidance": {
-    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
-    "action": null,
-    "owner": "caller"
+    "message": "转换需要行数证据；保留原组件并核对对应结果。",
+    "action": "inspect_result_evidence",
+    "owner": "model"
   },
   "sourceLocations": [
     {
       "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py",
-      "line": 166
+      "line": 168
     }
   ],
   "coverage": {
     "literalCallSite": true,
     "queryClosedSet": false,
     "pageErrorType": false,
-    "authoredGuidance": false
+    "authoredGuidance": true
   },
   "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
 }
