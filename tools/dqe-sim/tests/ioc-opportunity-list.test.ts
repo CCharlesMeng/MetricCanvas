@@ -79,9 +79,9 @@ describe('DQE Sim 机会点清单', () => {
   });
 
   // 服务端排序与表头区间筛选(ADR-0086)：分页下本地排序只能排到当前页。
-  it('order.by 按优先级排序，表头区间筛选走带 operator 的维度谓词', () => {
+  it('order_by_field/type 单字段排序，表头区间筛选走带 operator 的维度谓词', () => {
     const descending = executeDqeItem(
-      query([], { by: [{ field: 'bidding_amount', type: 'desc', priority: 1 }] })
+      query([], { order_by_field: 'bidding_amount', type: 'desc' })
     );
     expect(descending.code).toBe('SUCCESS');
     expect(descending.data.map((row) => row.bidding_amount)).toEqual(
@@ -99,7 +99,7 @@ describe('DQE Sim 机会点清单', () => {
     expect(ranged.total_count).toBeLessThan(10);
 
     expect(
-      executeDqeItem(query([], { by: [{ field: 'bidding_amount', type: '随便', priority: 1 }] })).code
+      executeDqeItem(query([], { order_by_field: 'bidding_amount', type: '随便' })).code
     ).toBe('DQE_SIM_UNSUPPORTED_QUERY');
   });
 

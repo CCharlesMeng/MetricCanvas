@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "551b516ae45bbdd6381afe4ed333e022f3edccde099f0704a48ca386a2a70239"
+      "sha256": "98120565f0ce2bce9cb74309eef65e934fd2b7b795e177a7592f3caffcd893c4"
     },
     {
       "file": "references/map-regions.json",
@@ -99,7 +99,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "e985f8071351ce6a445bb04618f981f6961c847ed8568b9e3efd28e6d42ee143"
+      "sha256": "dc7cd85e25d67137b48c64b65a7d87a25cc68cb16644a71e0377a53ad078468f"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -115,7 +115,7 @@
     },
     {
       "file": "references/page-metadata/data-sources.md",
-      "sha256": "53057afc402b00df6504ba46717ed751931193085fe44feef6827b635625c630"
+      "sha256": "8d195238d286d8779731b04996bfb73a46feadce25e1f270a8d07b2aab4a024d"
     },
     {
       "file": "references/page-metadata/errors/actual-after-captured-month.json",
@@ -2331,7 +2331,7 @@
     },
     {
       "file": "references/page-metadata/examples/query-result-page-window-page.json",
-      "sha256": "4dd182b2be7159027c2f127c34f5e7de56c3e0532be74c1a39e7307cbe6c060a"
+      "sha256": "b9a7b97e883c5bf2fac5014d3abe0be6c8787f68bb897cd0439c9fe0bca7bf61"
     },
     {
       "file": "references/page-metadata/examples/query-result-where-branches.json",
@@ -2611,7 +2611,7 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "e87428c2a81f95aadcf95e14c4bd09e9ff67994d912bd42158e3494e384941f9"
+      "sha256": "80fe0bb8f91ff54e37b027af5e19809bd1e85352d0356e954ffe30db44556f9a"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -2623,7 +2623,7 @@
     },
     {
       "file": "references/page-metadata/queries-and-bindings.md",
-      "sha256": "5b93b116e3217b66ec28f9a648c3a5921d28f7c2e40d3b1b8e7e2d0d272695f6"
+      "sha256": "4fe709929b470739c4f0ed5d9cee30bd6b1eaf7a7257d6c11945e142987cb76b"
     },
     {
       "file": "references/page-metadata/README.md",
@@ -2667,7 +2667,7 @@
     },
     {
       "file": "references/page-patterns/report-briefing.json",
-      "sha256": "0180c246a572628c345e7f119221d3df4e20f7da112cbeec1814fe50a745cef7"
+      "sha256": "4a8284bdbc8772363fdae0df7409e05e94780fff7619b98502cf1bba676386c1"
     },
     {
       "file": "references/page-patterns/report-monthly.json",
@@ -2675,7 +2675,7 @@
     },
     {
       "file": "scripts/analyze-data.mjs",
-      "sha256": "b5915d88353ed3bbc0515bf158d68aa6bff89ce5029308bc17c27646ff6ec795"
+      "sha256": "4716057a61933944c3467f34f814bdaef47e06cfd66edb2cb749252123847b81"
     },
     {
       "file": "scripts/read-knowledge.mjs",
@@ -2687,11 +2687,11 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "d401fa11def22c51e6b8511173cd7e3b39623476d65b2ca781778877b0aa8c6f"
+      "sha256": "21a9dff35bca94ee232a62de3e132779c2cf689aab00144b292cbd502c279817"
     },
     {
       "file": "scripts/validate-page.mjs",
-      "sha256": "1c169f064db8702ddce9bed49897799bc2db8c72e2aa1c55b1041b27cf5f90f0"
+      "sha256": "60244404e1b23d34875a5cd8b115bab33013a6de151466857de8564fd5c47f10"
     }
   ]
 }

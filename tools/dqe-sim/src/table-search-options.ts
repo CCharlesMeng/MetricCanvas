@@ -1,3 +1,4 @@
+import { sortDqeRows } from './sort';
 import fixture from '../fixtures/table-search-options.json';
 import type { DqeSimItemResult } from './execute';
 
@@ -26,20 +27,9 @@ export function executeTableSearchOptions(input: unknown): DqeSimItemResult | un
     rows = rows.filter(row => values.includes(row[field]));
   }
   const order = input.order;
-  if (order.by !== undefined) {
-    if (!Array.isArray(order.by) || !order.by.every((rule, index) => record(rule) &&
-        [...dimensions, ...metrics].includes(String(rule.field)) && ['asc', 'desc'].includes(String(rule.type)) &&
-        rule.priority === index + 1)) return result(false, []);
-    const rules = order.by as Array<{ field: string; type: string }>;
-    rows.sort((a, b) => {
-      for (const rule of rules) {
-        const left = a[rule.field] as string | number, right = b[rule.field] as string | number;
-        const comparison = left < right ? -1 : left > right ? 1 : 0;
-        if (comparison) return rule.type === 'asc' ? comparison : -comparison;
-      }
-      return 0;
-    });
-  }
+  const sorted = sortDqeRows(rows, order, [...dimensions, ...metrics]);
+  if (!sorted) return result(false, []);
+  rows = sorted;
   const offset = order.offset ?? 0, limit = order.limit;
   if (!Number.isSafeInteger(offset) || Number(offset) < 0 ||
       (limit !== undefined && (!Number.isSafeInteger(limit) || Number(limit) < 1))) return result(false, []);

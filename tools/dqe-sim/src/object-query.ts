@@ -1,3 +1,4 @@
+import { sortDqeRows } from './sort';
 import fixture from '../fixtures/object-query.json';
 import type { DqeSimItemResult } from './execute';
 
@@ -41,19 +42,12 @@ function compare(value: string | number, bound: unknown, operator: string): bool
 }
 function windowResult(input: Record<string, unknown>, rows: Row[], fields: string[]): DqeSimItemResult & { columns?: null } {
   const order = record(input.order) ? input.order : {};
-  const rules = Array.isArray(order.by) ? order.by : order.order_by_field ? [{ field: order.order_by_field, type: order.type }] : [];
-  rows.sort((left,right) => compareRows(left,right,rules));
+  const sorted = sortDqeRows(rows, order, fields);
+  if (!sorted) return failure();
+  rows = sorted;
   const offset=Number(order.offset ?? 0), limit=Number(order.limit ?? (rows.length || 1));
   if(!Number.isSafeInteger(offset)||offset<0||!Number.isSafeInteger(limit)||limit<1)return failure();
   return { code: 'SUCCESS', columns: null, dqe:{columns:[],orders:[],limit:-1,offset:-1,sql:null}, data: rows.slice(offset,offset+limit).map(row => Object.fromEntries(fields.map(field=>[field,row[field]]))), total_count: rows.length };
-}
-function compareRows(left: Row, right: Row, rules: unknown[]): number {
-  for(const raw of rules){
-    if(!record(raw)||!['asc','desc'].includes(String(raw.type))||!Object.hasOwn(left,String(raw.field)))throw new Error('sort');
-    const a=left[String(raw.field)],b=right[String(raw.field)],comparison=a<b?-1:a>b?1:0;
-    if(comparison)return raw.type==='asc'?comparison:-comparison;
-  }
-  return 0;
 }
 function metricRows(input: Record<string, unknown>): DqeSimItemResult {
   const filter=record(input.filter)?input.filter:{},dims=Array.isArray(filter.dims)?filter.dims:[];

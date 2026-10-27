@@ -1,3 +1,4 @@
+import { sortDqeRows } from './sort';
 import { executeTableEnhancements } from './table-enhancements';
 import { executeObjectQuery } from './object-query';
 import { executeQueryModes } from './query-modes';
@@ -161,6 +162,7 @@ function executeLocalDemo(item:unknown):DqeSimItemResult|undefined {
 }
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  if (isRecord(item) && isRecord(item.order) && (item.order.by !== undefined || item.order.orderByField !== undefined)) return unsupported('DQE 不支持 order.by/orderByField；请使用 order_by_field/type');
   const demo = executeLocalDemo(item); if (demo) return demo;
   const sdt = executeBusinessSdt(item, process.env.DQE_SDT_SCENARIO);
   if (sdt) return sdt;
@@ -307,55 +309,6 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
       sql: null
     }
   );
-}
-
-/**
- * 服务端排序:`order.by` 按中间层文档的 `@order(type, priority)` 语义
- * (ADR-0086),priority 小者先比。缺席即保持夹具原序。
- */
-function applyDqeSort(
-  rows: JsonRecord[],
-  order: unknown
-): { rows: JsonRecord[] } | { error: DqeSimItemResult } {
-  if (!isRecord(order) || order.by === undefined) return { rows };
-  if (!Array.isArray(order.by)) return { error: unsupported('order.by 必须是数组') };
-  const rules: Array<{ field: string; descending: boolean; priority: number }> = [];
-  for (const entry of order.by) {
-    if (!isRecord(entry) || typeof entry.field !== 'string') {
-      return { error: unsupported('排序项格式无效') };
-    }
-    if (entry.type !== 'asc' && entry.type !== 'desc') {
-      return { error: unsupported(`不支持的排序方向:${String(entry.type)}`) };
-    }
-    if (!Number.isInteger(entry.priority) || Number(entry.priority) < 1) {
-      return { error: unsupported('排序优先级必须是正整数') };
-    }
-    rules.push({
-      field: entry.field,
-      descending: entry.type === 'desc',
-      priority: Number(entry.priority)
-    });
-  }
-  rules.sort((left, right) => left.priority - right.priority);
-  const sorted = [...rows].sort((left, right) => {
-    for (const rule of rules) {
-      const a = left[rule.field];
-      const b = right[rule.field];
-      const comparison =
-        a === b
-          ? 0
-          : a === null || a === undefined
-            ? -1
-            : b === null || b === undefined
-              ? 1
-              : a < b
-                ? -1
-                : 1;
-      if (comparison !== 0) return rule.descending ? -comparison : comparison;
-    }
-    return 0;
-  });
-  return { rows: sorted };
 }
 
 /**
@@ -580,9 +533,9 @@ function executeIocOpportunityList(
     }
     rows = rows.filter((row) => values.includes(String(row[name] ?? '')));
   }
-  const sorted = applyDqeSort(rows, item.order);
-  if ('error' in sorted) return sorted.error;
-  rows = sorted.rows;
+  const sorted = sortDqeRows(rows, item.order, [...fixture.output_dims, ...fixture.output_metrics]);
+  if (!sorted) return unsupported('排序须使用已输出字段的 order_by_field/type 单字段格式');
+  rows = sorted;
   const metricFiltered = applyMetricRangeFilters(
     rows,
     item.filter.metrics,
@@ -1125,7 +1078,7 @@ function successResult(
 
 /**
  * `order` 承载分页与排序两件事(ADR-0086):分页要么整体缺席,要么 offset
- * 与 limit 成对且合法;排序 `by` 的形状由 `applyDqeSort` 单独判定。
+ * 与 limit 成对且合法;单字段排序的形状由 `sortDqeRows` 单独判定。
  */
 function validOrder(value: unknown): boolean {
   if (!isRecord(value)) return false;

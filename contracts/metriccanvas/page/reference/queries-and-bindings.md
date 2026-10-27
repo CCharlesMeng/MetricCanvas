@@ -63,10 +63,10 @@ columns[].field、resultBindings[].field和where.field使用页面字段id；DQE
 projects.source.query的DQE查询体声明202610月份、需要的输出维度和度量，order为：
 
 ```json
-{"by":[{"field":"金额","type":"desc","priority":1}],"limit":10,"offset":0}
+{"order_by_field":"金额","type":"desc","limit":10,"offset":0}
 ```
 
-初始金额降序只是默认查询顺序。服务端先对全部匹配项目排序，再取前10行。每页10条时，第3页的生效查询offset为20；改变任何已声明可排序列后，排序规则更新且offset回到0。Shift追加多列排序，priority按提交次序从1开始。运行时的页码、页大小与排序变化形成生效查询，不写回页面模板。
+初始金额降序只是默认查询顺序。服务端先对全部匹配项目排序，再取前10行。每页10条时，第3页的生效查询offset为20；改变任何已声明可排序列后，排序规则更新且offset回到0。指标 DQE 只支持单字段排序；显式多字段排序在发请求前返回 DQE_CONFIG_ERROR，不截断、不生成 order.by。运行时的页码、页大小与排序变化形成生效查询，不写回页面模板。
 
 分页源不声明resultScope:complete。响应totalCount表示全部匹配行数，例如80；rows只包含本轮窗口，例如10行。页面JSON保存查询定义，80行演示数据由本地DQE仿真返回，不是页面内嵌的inline行。
 
@@ -198,7 +198,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。
 
-查询分页继续使用 `order.offset/limit`。单字段排序编码为 `order_by_field/type`；多字段（包括子表格稳定行键补排序）需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索与列候选沿用可信 encodeSearch/encodeColumnCandidates 能力；缺失时明确不可用，不从当前页生成候选。
+查询分页继续使用 `order.offset/limit`。子表格、关联选页和分页合并不自动追加第二排序键；没有其他排序时子表格才以行键升序作为唯一排序。单字段排序编码为 `order_by_field/type`；显式多字段排序需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索与列候选沿用可信 encodeSearch/encodeColumnCandidates 能力；缺失时明确不可用，不从当前页生成候选。
 
 窗口、有限选择、complete 的用途边界及取消、缓存、URL、筛选写入规则与普通 DQE 一致。对象 complete 源经共享范围读取取得完整行集后再计算或关联；显式完整导出使用完整读取入口。分页失败、总数变化或累计行数超出总数时不返回部分对象结果冒充完整结果；不收紧普通指标查询原有兼容规则。导出单表最多 10000 行，结果绑定去重集合最多 1000 值，超限拒绝而不截断。没有真实记录标识时不能从重复投影行推断上游重复翻页，也不能据此删除重复行；稳定分页需真实服务验真。
 

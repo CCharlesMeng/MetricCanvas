@@ -46,18 +46,11 @@ export function setObjectTimeRange(item: JsonObject, target: ObjectTimeTarget, f
 }
 export function dqeDefaultSort(item: JsonObject): Array<{ queryField: string; direction: 'asc' | 'desc' }> {
   const order = dqeRecord(item.order);
-  if (isObjectDqeItem(item) && typeof order.order_by_field === 'string') {
-    if(order.by!==undefined)throw new Error('object 默认排序不能混用 order_by_field 和 by');
-    if (order.type !== 'asc' && order.type !== 'desc') throw new Error('object 默认排序方向无效');
-    return [{ queryField: order.order_by_field, direction: order.type }];
-  }
-  if (order.by === undefined) return [];
-  if (!Array.isArray(order.by)) throw new Error('DQE 默认排序格式不可用');
-  return order.by.map(value => {
-    const rule = dqeRecord(value);
-    if (typeof rule.field !== 'string' || (rule.type !== 'asc' && rule.type !== 'desc')) throw new Error('DQE 默认排序格式不可用');
-    return { queryField: rule.field, direction: rule.type };
-  });
+  if (order.by !== undefined || order.orderByField !== undefined) throw new Error('DQE 不支持 order.by/orderByField；请使用 order_by_field/type 单字段排序');
+  if (order.order_by_field === undefined && order.type === undefined) return [];
+  if (typeof order.order_by_field !== 'string' || !order.order_by_field.trim()) throw new Error('DQE 默认排序字段无效');
+  if (order.type !== 'asc' && order.type !== 'desc') throw new Error('DQE 默认排序方向无效');
+  return [{ queryField: order.order_by_field, direction: order.type }];
 }
 
 /** An explicitly bound field belongs to page state even when the control is cleared. */

@@ -46,7 +46,7 @@ describe('query mode source execution',()=>{
     const view={...defaultSourceView(page,'office-overview'),sort:[{field:'support-rate',direction:'desc' as const}]};
     const updates=await collect(program,{roots:['office-overview'],conditions:initialFilterValues(page.filters??[]),views:new Map([['office-overview',view]])});
     expect(updates.at(-1)?.snapshot).toMatchObject({status:'ready',totalCount:8,rows:expect.any(Array)});
-    expect(calls.find(query=>JSON.stringify(query.body.dsl_list[0].output_metrics).includes('alternate_support_rate'))).toMatchObject({pagination:{limit:3},sort:[{queryField:'alternate_support_rate',direction:'desc'},{queryField:'rep_office_code',direction:'asc'}]});program.dispose();
+    expect(calls.find(query=>JSON.stringify(query.body.dsl_list[0].output_metrics).includes('alternate_support_rate'))).toMatchObject({pagination:{limit:3},sort:[{queryField:'alternate_support_rate',direction:'desc'}]});program.dispose();
   });
   it('uses the active native mapping for sorting, table filters and captured exports',async()=>{
     const page=load(),values=initialFilterValues(page.filters??[]),source=page.dataSources['amount-trend'];

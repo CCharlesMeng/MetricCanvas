@@ -491,3 +491,5 @@ MC 内容包随本协议同步生成，包含同源字段语义、规则、例�
 6.61 新增 `pagedUnion` 分页合并源：按成员显式字段/常量/null 投影统一列，逐行保留全部记录，在完整匹配范围整体排序、搜索、筛选、计数、分页和导出；表格可按来源选择详情导航。声明、执行限制与真实接入边界见[数据源](docs/page-metadata/data-sources.md#paged-union)和[表格](docs/page-metadata/components/table.md#source-navigation)，验收页为 [multi-source-table.json](pages/capabilities/table/multi-source-table.json)。
 
 6.66 增量：`pagedJoin.records` 支持主表逐条审批记录与多对一当前信息补列、独立记录标识、本地审批期间筛选和有预算的分批完整关联；成员可显式声明不适用的业务筛选。旧组合源行为保持。配置与限制见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，合成验收入口 `/pages/record-join-demo`。
+
+DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一使用 `order.order_by_field/type`，分页继续为 offset/limit；`order.by` 非指标 DQE 语法。分页合并、关联选页与子表格不自动追加第二排序字段，合并主排序相等时保留来源内返回次序。指标多字段排序发送前明确失败；不新增页面字段或改变 Schema 版本。参见[查询与绑定](docs/page-metadata/queries-and-bindings.md)、[分页合并](docs/page-metadata/data-sources.md#paged-union)及 `/pages/query-result-where-page`、`/pages/multi-source-table`。

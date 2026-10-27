@@ -164,44 +164,18 @@ function candidatesResult(item) {
   );
 }
 
-/** 服务端排序：order.by 按 @order(type, priority) 语义，priority 小者先比。 */
+/** Service-compatible single-field ordering. */
 function sortRows(rows, order) {
-  if (!isRecord(order) || order.by === undefined) return { rows };
-  if (!Array.isArray(order.by)) return { error: unsupported('order.by 必须是数组') };
-  const rules = [];
-  for (const entry of order.by) {
-    if (!isRecord(entry) || typeof entry.field !== 'string') {
-      return { error: unsupported('排序项格式无效') };
-    }
-    if (entry.type !== 'asc' && entry.type !== 'desc') {
-      return { error: unsupported(`不支持的排序方向:${String(entry.type)}`) };
-    }
-    if (!Number.isInteger(entry.priority) || entry.priority < 1) {
-      return { error: unsupported('排序优先级必须是正整数') };
-    }
-    rules.push({ field: entry.field, descending: entry.type === 'desc', priority: entry.priority });
-  }
-  rules.sort((left, right) => left.priority - right.priority);
-  return {
-    rows: [...rows].sort((left, right) => {
-      for (const rule of rules) {
-        const a = left[rule.field];
-        const b = right[rule.field];
-        const comparison =
-          a === b
-            ? 0
-            : a === null || a === undefined
-              ? -1
-              : b === null || b === undefined
-                ? 1
-                : a < b
-                  ? -1
-                  : 1;
-        if (comparison !== 0) return rule.descending ? -comparison : comparison;
-      }
-      return 0;
-    })
-  };
+  if (!isRecord(order)) return { rows };
+  if (order.by !== undefined || order.orderByField !== undefined) return { error: unsupported('DQE 不支持 order.by/orderByField') };
+  if (order.order_by_field === undefined && order.type === undefined) return { rows };
+  if (typeof order.order_by_field !== 'string' || !['asc', 'desc'].includes(order.type)) return { error: unsupported('排序格式无效') };
+  const field = order.order_by_field, direction = order.type === 'asc' ? 1 : -1;
+  return { rows: [...rows].sort((left, right) => {
+    const a = left[field], b = right[field];
+    if (a == null || b == null) return a == null ? (b == null ? 0 : 1) : -1;
+    return direction * (a < b ? -1 : a > b ? 1 : 0);
+  }) };
 }
 
 function columns(dimensions, metrics) {

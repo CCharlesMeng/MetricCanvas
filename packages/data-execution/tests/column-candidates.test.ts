@@ -137,12 +137,12 @@ it('rejects candidate enumeration above the existing joined row bound', async ()
 it('passes the fixed business TopN unchanged to the verified remote encoder', async () => {
   const page = parsed();
   page.dataSources.records = { fields: { name: { type: 'string', role: 'dimension', queryField: '客户' } },
-    source: { type: 'query', query: { language: 'dqe', body: { dsl_list: [{ output_dims: ['客户'], output_metrics: [], order: { limit: 5, by: [{ field: '客户', type: 'desc' }] } }] } } } };
+    source: { type: 'query', query: { language: 'dqe', body: { dsl_list: [{ output_dims: ['客户'], output_metrics: [], order: { limit: 5, order_by_field: '客户', type: 'desc' } }] } } } };
   const received: ColumnCandidatesQuery[] = [];
   const program = createSourceProgram(page, { gateway: { fetchData: async () => ({ rows: [] }), fetchColumnCandidates: async request => { received.push(request); return { kind: 'values', candidates: [], totalCount: 0 }; } } });
   try {
     await program.readColumnCandidates({ sourceId: 'records', field: 'name', conditions: new Map(), view: { ...view(), sort: [{ field: 'name', direction: 'asc' }] } });
-    expect(received[0].query.body.dsl_list[0].order).toEqual({ limit: 5, by: [{ field: '客户', type: 'desc' }] });
+    expect(received[0].query.body.dsl_list[0].order).toEqual({ limit: 5, order_by_field: '客户', type: 'desc' });
     expect(received[0].query.pagination).toBeUndefined(); expect(received[0].query.sort).toBeUndefined();
   } finally { program.dispose(); }
 });

@@ -9,6 +9,7 @@ const configError = (message: string) => Object.assign(new Error(message), { cod
 export function encodeObjectQuery(query: EffectiveQuery, encodeSort?: ObjectSortEncoder): JsonObject {
   let item = structuredClone(query.body.dsl_list[0]);
   if (!isObjectDqeItem(item)) throw configError('object 编码要求 query_type:object');
+  const defaults = defaultSort(item);
   for (const predicate of query.bindingValues ?? query.filterValues) applyBinding(item, predicate);
   for (const predicate of query.tableFilters ?? []) appendPredicate(item, formattedTablePredicate(query,predicate));
   if (query.search?.match === 'equals') {
@@ -17,8 +18,12 @@ export function encodeObjectQuery(query: EffectiveQuery, encodeSort?: ObjectSort
   }
   if (query.pagination) item.order = { ...dqeRecord(item.order), ...query.pagination };
   if (query.sort?.length) item = encodeObjectSort(item, query.sort, encodeSort);
-  else if (dqeRecord(item.order).by !== undefined) item = encodeObjectSort(item, dqeDefaultSort(item), encodeSort);
+  else if (defaults.length) item = encodeObjectSort(item, defaults, encodeSort);
   return item;
+}
+function defaultSort(item: JsonObject): Sort {
+  try { return dqeDefaultSort(item); }
+  catch { throw configError('DQE 默认排序须使用 order_by_field/type 单字段格式'); }
 }
 export function encodeObjectSort(item: JsonObject, sort: Sort, encoder?: ObjectSortEncoder): JsonObject {
   if (sort.length > 1) {

@@ -1,3 +1,4 @@
+import { sortDqeRows } from './sort';
 import type { DqeSimItemResult } from './execute';
 type RecordValue = Record<string, unknown>;
 const samples: RecordValue[] = [
@@ -37,17 +38,15 @@ function summaryRows(item: RecordValue): RecordValue[] {
   return mode === 'multiple' ? [row, { ...row }] : [row];
 }
 function result(rows: RecordValue[], item: RecordValue, failed = false): DqeSimItemResult {
-  const order = item.order as { offset?: number; limit?: number; by?: { field: string; type: string }[] } | undefined;
-  let ordered = [...rows];
-  for (const rule of [...(order?.by ?? [])].reverse()) ordered.sort((a, b) => compare(a[rule.field], b[rule.field]) * (rule.type === 'desc' ? -1 : 1));
+  const order = item.order as { offset?: number; limit?: number } | undefined;
+  const fields = [item.output_dims, item.output_metrics].flatMap(value => Array.isArray(value) ? value.map(String) : []);
+  const sorted = sortDqeRows(rows, item.order, fields, (a, b) => a.localeCompare(b));
+  failed ||= sorted === undefined;
+  let ordered = sorted ?? [];
   const offset = order?.offset ?? 0, limit = order?.limit ?? rows.length;
   ordered = ordered.slice(offset, offset + limit);
   return { code: failed ? 'DQE_SIM_UNSUPPORTED_QUERY' : 'SUCCESS', data: failed ? [] : ordered, total_count: failed ? 0 : rows.length,
     dqe: { columns: [], orders: [], limit: -1, offset: -1, sql: null } };
-}
-function compare(a: unknown, b: unknown): number {
-  if (typeof a === 'number' && typeof b === 'number') return a - b;
-  return String(a).localeCompare(String(b));
 }
 /** Synthetic indicator-table receipts. No page ID, transport bypass, or real permission claim. */
 export function executeTableEnhancements(value: unknown): DqeSimItemResult | undefined {

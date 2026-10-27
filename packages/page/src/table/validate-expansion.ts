@@ -1,5 +1,5 @@
 import {tableAlignedSlots} from '../table-pinned';
-import { dqeDefaultSort, isObjectDqeItem } from '../dqe-object';
+import { dqeDefaultSort } from '../dqe-object';
 import { ordinaryQuery } from '../time-mode';
 import type { Page, TableComponent } from '../page';
 import type { TypedError } from '../errors';
@@ -138,22 +138,6 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
     return errors;
 }
 function childDefaultSortErrors(item: import('../query').JsonObject, path: string): TypedError[] {
-    if (isObjectDqeItem(item)) {
-        try {
-            dqeDefaultSort(item);
-            return [];
-        }
-        catch {
-            return [error(path, 'object 子表格默认排序格式不可用')];
-        }
-    }
-    const order = item.order;
-    if (!order || typeof order !== 'object' || Array.isArray(order))
-        return [];
-    const by = order.by;
-    const invalid = order.order_by_field !== undefined || (by !== undefined && (!Array.isArray(by) || by.some(invalidDefaultRule)));
-    return invalid ? [error(path, '子表格默认排序须使用 order.by 的 field/type 有序数组')] : [];
-}
-function invalidDefaultRule(rule: import('../query').JsonValue, index: number): boolean {
-    return !rule || typeof rule !== 'object' || Array.isArray(rule) || typeof rule.field !== 'string' || !['asc', 'desc'].includes(String(rule.type)) || (rule.priority !== undefined && rule.priority !== index + 1);
+    try { dqeDefaultSort(item); return []; }
+    catch { return [error(path, '子表格默认排序须使用 order_by_field/type 单字段格式')]; }
 }

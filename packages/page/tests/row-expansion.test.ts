@@ -5,6 +5,13 @@ import { parsePage } from '../src/validate';
 function fixture(kind = 'query') { return JSON.parse(readFileSync(new URL(`../fixtures/contract-valid/table-row-expansion-${kind}.json`, import.meta.url), 'utf8')); }
 
 describe('row expansion contract', () => {
+  it('accepts the service default sort and diagnoses an invented by array', () => {
+    const doc = fixture(), item = doc.dataSources['orders-default'].source.query.body.dsl_list[0];
+    item.order = { offset: 0, limit: 10, order_by_field: 'row_order_id', type: 'asc' };
+    expect(parsePage(doc).ok).toBe(true);
+    item.order = { offset: 0, limit: 10, by: [{ field: 'row_order_id', type: 'asc', priority: 1 }] };
+    expect(parsePage(doc)).toMatchObject({ ok: false, errors: expect.arrayContaining([expect.objectContaining({ message: expect.stringContaining('order_by_field/type') })]) });
+  });
   it.each(['query', 'inline'])('accepts the real %s example and clean defaults', kind => {
     const document = fixture(kind), parsed = parsePage(document);
     expect(parsed, JSON.stringify(parsed)).toMatchObject({ ok: true });

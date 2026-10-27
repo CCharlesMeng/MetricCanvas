@@ -16713,15 +16713,10 @@
                         "metrics": []
                       },
                       "order": {
-                        "by": [
-                          {
-                            "field": "金额",
-                            "type": "desc",
-                            "priority": 1
-                          }
-                        ],
                         "limit": 10,
-                        "offset": 0
+                        "offset": 0,
+                        "order_by_field": "金额",
+                        "type": "desc"
                       }
                     }
                   ]
@@ -17203,15 +17198,10 @@
                         "metrics": []
                       },
                       "order": {
-                        "by": [
-                          {
-                            "field": "金额",
-                            "type": "desc",
-                            "priority": 1
-                          }
-                        ],
                         "limit": 10,
-                        "offset": 0
+                        "offset": 0,
+                        "order_by_field": "金额",
+                        "type": "desc"
                       }
                     }
                   ]
@@ -17694,15 +17684,10 @@
                         "metrics": []
                       },
                       "order": {
-                        "by": [
-                          {
-                            "field": "金额",
-                            "type": "desc",
-                            "priority": 1
-                          }
-                        ],
                         "limit": 10,
-                        "offset": 0
+                        "offset": 0,
+                        "order_by_field": "金额",
+                        "type": "desc"
                       }
                     }
                   ]
@@ -18186,14 +18171,9 @@
                         "metrics": []
                       },
                       "order": {
-                        "by": [
-                          {
-                            "field": "金额",
-                            "type": "desc",
-                            "priority": 1
-                          }
-                        ],
-                        "offset": 0
+                        "offset": 0,
+                        "order_by_field": "金额",
+                        "type": "desc"
                       }
                     }
                   ]
@@ -18676,15 +18656,10 @@
                         "metrics": []
                       },
                       "order": {
-                        "by": [
-                          {
-                            "field": "金额",
-                            "type": "desc",
-                            "priority": 1
-                          }
-                        ],
                         "limit": 10,
-                        "offset": 10
+                        "offset": 10,
+                        "order_by_field": "金额",
+                        "type": "desc"
                       }
                     }
                   ]
@@ -19167,15 +19142,10 @@
                         "metrics": []
                       },
                       "order": {
-                        "by": [
-                          {
-                            "field": "金额",
-                            "type": "desc",
-                            "priority": 1
-                          }
-                        ],
                         "limit": 10,
-                        "offset": 0
+                        "offset": 0,
+                        "order_by_field": "金额",
+                        "type": "desc"
                       }
                     }
                   ]

@@ -52,14 +52,14 @@ export function expansionRowKey(value: unknown): string | undefined {
     return typeof value === 'string' && value.length > 0 ? `s:${value}`
         : typeof value === 'number' && Number.isFinite(value) ? `n:${value}` : undefined;
 }
-/** Add deterministic tie-breaking without changing the user's visible sort controls. */
+/** Preserve the declared ordering; use the row key only when no ordering is supplied. */
 export function stableRowQuery(query: EffectiveQuery, rowKey: string): EffectiveQuery {
     const field = query.fieldMappings[rowKey];
     if (!field || !hasQueryFieldMapping(field))
         throw new Error('子表格行键没有查询映射');
     const defaults = query.sort ? [] : dqeDefaultSort(query.body.dsl_list[0]);
     const sort = [...(query.sort ?? defaults)];
-    if (!sort.some(rule => rule.queryField === field.queryField))
+    if (!sort.length)
         sort.push({ queryField: field.queryField, direction: 'asc' });
     return { ...query, sort };
 }

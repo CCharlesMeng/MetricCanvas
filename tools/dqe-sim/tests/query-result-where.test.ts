@@ -44,7 +44,10 @@ describe('query-result-where paged development page',()=>{
         }
       }
       stream.setQuerySort('projects',[{field:'status',direction:'asc'},{field:'amount',direction:'desc'}]);
-      const multiple=[...fixture.projects].sort((a,b)=>a['状态'].localeCompare(b['状态'],'zh-CN')||b['金额']-a['金额']);
+      await expect.poll(() => snapshots.get('projects')?.status).toBe('error');
+      expect(snapshots.get('projects')).toMatchObject({ error: { code: 'DQE_CONFIG_ERROR' } });
+      stream.setQuerySort('projects',[{field:'amount',direction:'desc'}]);
+      const multiple=sorted('金额','desc');
       await assertWindow(multiple.slice(0,10));
       stream.setQueryPage('projects',1);await assertWindow(multiple.slice(10,20));
       stream.setQueryPageSize('projects',20);await assertWindow(multiple.slice(0,20));
@@ -56,16 +59,16 @@ describe('query-result-where paged development page',()=>{
       expect(items.filter(q=>q.output_metrics.includes('时长')).every(q=>q.order.limit===10||q.order.limit===20)).toBe(true);
       expect(items.filter(q=>q.output_metrics.includes('得分')).every(q=>!('offset' in q.order)&&!('limit' in q.order)&&q.filter.dims.length===1)).toBe(true);
       expect(items.some(q=>q.order.offset===20&&q.order.limit===10)).toBe(true);
-      expect(items.some(q=>Array.isArray(q.order.by)&&q.order.by.length===2)).toBe(true);
+      expect(items.every(q=>!('by' in q.order))).toBe(true);
     } finally {stop();server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}
   });
   it('sorts before pagination and reports the population count',()=>{
     const item=document().dataSources.projects.source;
     if(item.type!=='query')throw Error('query');
-    const query=item.query.body!.dsl_list[0];query.order={by:[{field:'时长',type:'asc',priority:1}],limit:10,offset:10};
+    const query=item.query.body!.dsl_list[0];query.order={order_by_field: '时长', type: 'asc',limit:10,offset:10};
     const result=executeQueryResultWhere(query);
     expect(result?.code).toBe('SUCCESS');expect(result?.data).toEqual(sorted('时长','asc').slice(10,20));expect(result?.total_count).toBe(80);
-    query.order={by:[{field:'不存在',type:'asc',priority:1}],limit:10};expect(executeQueryResultWhere(query)?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
+    query.order={order_by_field: '不存在', type: 'asc',limit:10};expect(executeQueryResultWhere(query)?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
   });
   it.each([{ids:[]},{ids:['UNKNOWN']}])('rejects empty and unknown detail identifiers: $ids',({ids})=>{
     expect(executeQueryResultWhere({output_dims:['项目编号','项目名称'],output_metrics:['得分','金额'],filter:{time:{period:'month',start:'202610',end:'202610'},dims:[{dim_name:'项目编号',dim_value_list:ids}],metrics:[]},order:{}})?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');

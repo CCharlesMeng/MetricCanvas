@@ -168,15 +168,10 @@
                   "metrics": []
                 },
                 "order": {
-                  "by": [
-                    {
-                      "field": "decision_count",
-                      "type": "desc",
-                      "priority": 1
-                    }
-                  ],
                   "offset": 0,
-                  "limit": 20
+                  "limit": 20,
+                  "order_by_field": "decision_count",
+                  "type": "desc"
                 }
               }
             ]

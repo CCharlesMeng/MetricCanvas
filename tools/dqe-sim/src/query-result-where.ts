@@ -1,3 +1,4 @@
+import { sortDqeRows } from './sort';
 import fixture from '../fixtures/query-result-where-paged.json';
 import type { DqeSimItemResult } from './execute';
 type RecordValue = Record<string, unknown>;
@@ -14,16 +15,7 @@ export function executeQueryResultWhere(value: unknown): DqeSimItemResult | unde
   if (!record(value.filter) || !record(value.filter.time) || value.filter.time.period !== 'month' || value.filter.time.start !== fixture.month || value.filter.time.end !== fixture.month || !Array.isArray(value.filter.dims) || !Array.isArray(value.filter.metrics) || value.filter.metrics.length || !record(value.order)) return reject();
   const order = value.order;
   const allowed = main ? ['项目编号', '项目名称', '状态', '启用', '日期', '采集时间', '金额', '时长'] : ['项目编号', '项目名称', '金额', '得分'];
-  if (Object.keys(order).some(key => !['order_by_field', 'type', 'by', 'limit', 'offset'].includes(key))) return reject();
-  let rules: Array<{ field: string; direction: number }> = [];
-  if (order.by !== undefined) {
-    if (!Array.isArray(order.by) || !order.by.length || !order.by.every((rule, i) => record(rule) && allowed.includes(String(rule.field)) && ['asc', 'desc'].includes(String(rule.type)) && rule.priority === i + 1 && Object.keys(rule).every(key => ['field', 'type', 'priority'].includes(key)))) return reject();
-    rules = order.by.map(rule => ({ field: rule.field, direction: rule.type === 'asc' ? 1 : -1 }));
-    if (new Set(rules.map(rule => rule.field)).size !== rules.length) return reject();
-  } else if (order.order_by_field !== undefined || order.type !== undefined) {
-    if (!allowed.includes(String(order.order_by_field)) || !['asc', 'desc'].includes(String(order.type))) return reject();
-    rules = [{ field: String(order.order_by_field), direction: order.type === 'asc' ? 1 : -1 }];
-  }
+  if (Object.keys(order).some(key => !['order_by_field', 'type', 'limit', 'offset'].includes(key))) return reject();
   const limit = order.limit, offset = order.offset ?? 0;
   if ((limit !== undefined && (!Number.isSafeInteger(limit) || Number(limit) <= 0)) || !Number.isSafeInteger(offset) || Number(offset) < 0 || (order.offset !== undefined && limit === undefined) || (!main && (limit !== undefined || order.offset !== undefined))) return reject();
   let rows: RecordValue[];
@@ -37,14 +29,9 @@ export function executeQueryResultWhere(value: unknown): DqeSimItemResult | unde
     if (!ids.every(id => fixture.projects.some(row => row['项目编号'] === id))) return reject();
     rows = fixture.details.filter(row => ids.includes(row['项目编号']));
   }
-  rows = [...rows].sort((a, b) => {
-    for (const { field, direction } of rules) {
-      const x = a[field], y = b[field];
-      const difference = typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), 'zh-CN');
-      if (difference) return direction * difference;
-    }
-    return String(a['项目编号']).localeCompare(String(b['项目编号']));
-  });
+  const sorted = sortDqeRows(rows, order, allowed, (a, b) => a.localeCompare(b, 'zh-CN'));
+  if (!sorted) return reject();
+  rows = sorted;
   const total = rows.length;
   if (limit !== undefined) rows = rows.slice(Number(offset), Number(offset) + Number(limit));
   return { code: 'SUCCESS', data: rows.map(row => ({ ...row })), total_count: total, dqe: { columns: [

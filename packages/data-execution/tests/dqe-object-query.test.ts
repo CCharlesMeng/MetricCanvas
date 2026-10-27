@@ -68,11 +68,14 @@ describe('object gateway and shared source execution',()=>{
     expect(results.find(result=>result.sourceId==='linked')?.raw).toMatchObject({totalCount:3});
     expect(results.find(result=>result.sourceId==='reverse')?.raw).toMatchObject({totalCount:28});program.dispose();
   });
-  it('requires a trusted multi-sort encoder instead of silently dropping tie breaking',async()=>{
-    const query=stableRowQuery({...composed(),sort:[{queryField:'审批金额',direction:'desc'}]},'record');
+  it('requires a trusted encoder only for explicitly requested multi-sort',async()=>{
+    const query={...composed(),sort:[{queryField:'审批金额',direction:'desc' as const},{queryField:'审批记录ID',direction:'asc' as const}]};
     expect(()=>effectiveDqeItem(query)).toThrow('encodeObjectSort');
-    const {fetchImpl}=port();const gateway=createDqeGateway({fetchImpl,encodeObjectSort:(item,sort)=>({...item,order:{...(item.order as JsonObject),by:sort.map((rule,index)=>({field:rule.queryField,type:rule.direction,priority:index+1}))}})});
-    expect((await gateway.fetchData(query)).rows[0]).toMatchObject({record:'R024'});
+    const fetchImpl=vi.fn<typeof fetch>(async()=>Response.json({retCode:'CBC.0000',results:[{code:'SUCCESS',data:[],total_count:0}]}));
+    const gateway=createDqeGateway({fetchImpl,encodeObjectSort:(item,sort)=>({...item,approved_sort:sort})});
+    await gateway.fetchData(query);
+    expect(JSON.parse(String(fetchImpl.mock.calls[0][1]?.body)).dsl_list[0].approved_sort).toEqual(query.sort);
+    expect(stableRowQuery({...composed(),sort:[query.sort[0]]},'record').sort).toEqual([query.sort[0]]);
   });
   it('rejects excess counts during complete reads instead of returning a partial result',async()=>{
     const page=load(),fetchImpl=vi.fn<typeof fetch>(async()=>Response.json({retCode:'CBC.0000',results:[{code:'SUCCESS',total_count:1,data:[{'审批记录ID':'R1','商务编号':'B1','特价审批通过时间':'2025-01-01 12:00:00','区域':'东区','审批金额':1,'预算金额':2},{'审批记录ID':'R2','商务编号':'B2','特价审批通过时间':'2025-01-01 12:00:00','区域':'东区','审批金额':1,'预算金额':2}]}]}));

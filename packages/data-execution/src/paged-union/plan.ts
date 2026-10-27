@@ -29,7 +29,6 @@ function compileMember(page: Page, data: PagedUnionDataSource, id: string, membe
   if (!filterTableRows([literals], literalPredicates).length) return;
   const predicates = view.predicates.filter(p => !Object.hasOwn(literals, p.field)).map(p => ({ ...p, field: mappedField(member, p.field) }));
   const sort = view.sort.filter(rule => !Object.hasOwn(literals, rule.field)).map(rule => ({ ...rule, field: mappedField(member, rule.field) }));
-  if (!sort.some(rule => rule.field === member.rowKey)) sort.push({ field: member.rowKey, direction: 'asc' });
   const search = memberSearch(view, member, literals);
   if (search === false) return;
   const query = composeEffectiveQuery({ now, filters: page.filters, dataSource: input, pagination: { limit: 200 } }, conditions, 0, sort, tableHeaders(predicates), search);

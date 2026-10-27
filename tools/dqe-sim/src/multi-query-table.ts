@@ -1,3 +1,4 @@
+import { sortDqeRows } from './sort';
 import fixture from '../fixtures/multi-query-table.json';
 import type {DqeSimItemResult} from './execute';
 type RecordValue=Record<string,unknown>;
@@ -28,11 +29,9 @@ export function executeMultiQueryTable(item:unknown):DqeSimItemResult|undefined 
   rows=rows.filter(row=>typeof row[String(f.metric_name)]==='number'&&(f.operator==='>='?Number(row[String(f.metric_name)])>=Number((f.metric_value_list as number[])[0]):Number(row[String(f.metric_name)])<=Number((f.metric_value_list as number[])[0])));
  }
  const order=item.order;
- if(order.by!==undefined){
-  if(!Array.isArray(order.by)||!order.by.every((r,i)=>record(r)&&[...dims,...metrics].includes(r.field)&&['asc','desc'].includes(String(r.type))&&r.priority===i+1))return reject();
-  const rules=order.by as Array<{field:string;type:string}>;
-  rows.sort((a,b)=>{for(const r of rules){const x=a[r.field],y=b[r.field],diff=x!<y!?-1:x!>y!?1:0;if(diff)return r.type==='asc'?diff:-diff;}return 0;});
- }
+ const sorted = sortDqeRows(rows, order, [...dims, ...metrics]);
+ if (!sorted) return reject();
+ rows = sorted;
  const total=rows.length,offset=order.offset??0,limit=order.limit;
  if(!Number.isSafeInteger(offset)||Number(offset)<0||(limit!==undefined&&(!Number.isSafeInteger(limit)||Number(limit)<1)))return reject();
  if(limit!==undefined)rows=rows.slice(Number(offset),Number(offset)+Number(limit));

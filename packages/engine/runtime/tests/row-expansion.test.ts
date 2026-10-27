@@ -40,7 +40,7 @@ describe('isolated expanded table scopes', () => {
     expect(received.at(-1)!.pagination).toEqual({ offset: 10, limit: 10 });
     expect(second.stream!.getQueryView(second.table.data.main)!.pageIndex).toBe(0);
     first.stream!.setQuerySort(first.table.data.main, [{ field: 'product', direction: 'desc' }]); await flush();
-    expect(received.at(-1)!.sort).toEqual([{ queryField: 'row_product', direction: 'desc' }, { queryField: 'row_order_id', direction: 'asc' }]);
+    expect(received.at(-1)!.sort).toEqual([{ queryField: 'row_product', direction: 'desc' }]);
     first.stream!.setQuerySearch(first.table.data.main, { fields: ['product'], query: '产品24' }); await flush();
     expect(first.snapshots.get(first.table.data.main)).toMatchObject({ status: 'ready', totalCount: 1 });
     expect(second.stream!.getQueryView(second.table.data.main)!.search).toBeUndefined();

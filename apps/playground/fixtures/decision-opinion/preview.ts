@@ -1,5 +1,7 @@
+import { effectiveDqeItem } from '../../../../packages/data-execution/src/dqe/dqe';
+import { dqeDefaultSort } from '@metriccanvas/page/internal';
 import type { DataGateway, DataGatewayResult } from '@metriccanvas/engine';
-import type { EffectiveQuery, JsonValue } from '@metriccanvas/page/internal';
+import type { EffectiveQuery } from '@metriccanvas/page/internal';
 import { memberIds, memberLabels, type MemberId, type SortField, type SortRule } from './model';
 import { createMemberReader, previewError, type PreviewOptions } from './member-source';
 import { mergeOpinionPage } from './merge';
@@ -8,16 +10,8 @@ const sortableFields: Record<string, SortField> = {
   decision_count: 'decisionCount', valid_opinion_count: 'validOpinionCount', valid_opinion_rate: 'validOpinionRate'
 };
 
-function declaredSort(item: JsonValue | undefined): { queryField: string; direction: string }[] {
-  if (!item || typeof item !== 'object' || Array.isArray(item) || !Array.isArray(item.by)) return [];
-  return item.by.map(rule => {
-    if (!rule || typeof rule !== 'object' || Array.isArray(rule)) throw previewError('DQE_CONFIG_ERROR', '合成排序声明无效');
-    return { queryField: String(rule.field), direction: String(rule.type) };
-  });
-}
-
 function querySort(query: EffectiveQuery): SortRule[] {
-  const rules = query.sort?.length ? query.sort : declaredSort(query.body.dsl_list[0].order);
+  const rules = dqeDefaultSort(effectiveDqeItem(query));
   if (!rules.length) throw previewError('DQE_CONFIG_ERROR', '合成查询缺少默认排序');
   return rules.map(rule => {
     const field = sortableFields[rule.queryField];

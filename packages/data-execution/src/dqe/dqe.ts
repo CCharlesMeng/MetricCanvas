@@ -1,5 +1,5 @@
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
-import { isObjectDqeItem } from '@metriccanvas/page/internal';
+import { dqeDefaultSort, isObjectDqeItem } from '@metriccanvas/page/internal';
 import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
 import { validateCandidatePage } from '../column-candidates';
 import type { ColumnCandidatesQuery } from '../ports';
@@ -671,27 +671,25 @@ function encodedMetricItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfi
     }
   }
   if (!applyTableFilters(item, query.tableFilters)) throw new EmptyTableQuery();
-  if (query.pagination || query.sort) {
-    const order = isRecord(item.order) ? { ...item.order } : {};
-    if (query.pagination) {
-      order.offset = query.pagination.offset;
-      order.limit = query.pagination.limit;
-    }
-    if (query.sort) {
-      // 排序编码沿用中间层文档的 @order(type, priority) 语义(ADR-0086):
-      // asc/desc 加优先级，数组序即优先级。真实环境协议复验归 issue #3。
-      order.by = query.sort.map((rule, index) => ({
-        field: rule.queryField,
-        type: rule.direction,
-        priority: index + 1
-      }));
-    }
-    item.order = order;
-  }
+  if (item.order !== undefined || query.pagination || query.sort) item.order = metricOrder(item, query);
   if (query.search) {
     return encodeTableSearch(item, query.search, encodeSearch);
   }
   return item;
+}
+
+/** The metric service accepts one ordering field; reject unsupported rules before transport. */
+function metricOrder(item: JsonObject, query: EffectiveQuery): JsonObject {
+  let defaults: NonNullable<EffectiveQuery['sort']>;
+  try { defaults = dqeDefaultSort(item); }
+  catch (cause) { throw new DqeGatewayError('DQE_CONFIG_ERROR', String(cause)); }
+  const sort = query.sort ?? defaults;
+  if (sort.length > 1) throw new DqeGatewayError('DQE_CONFIG_ERROR', '指标 DQE 只支持 order_by_field/type 单字段排序');
+  const order = isRecord(item.order) ? { ...item.order } : {};
+  delete order.order_by_field; delete order.type;
+  if (sort[0]) { order.order_by_field = sort[0].queryField; order.type = sort[0].direction; }
+  if (query.pagination) Object.assign(order, query.pagination);
+  return order;
 }
 
 function encodeTableSearch(item: JsonObject, search: NonNullable<EffectiveQuery['search']>, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {

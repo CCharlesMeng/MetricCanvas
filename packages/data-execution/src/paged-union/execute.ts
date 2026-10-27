@@ -6,7 +6,7 @@ import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-polic
 import { unionError, unionRow, type UnionMemberPlan, type UnionPlan } from './plan';
 import { compareUnionRows } from './order';
 
-interface Cursor { member: UnionMemberPlan; rows: Row[]; index: number; offset: number; total: number; previous?: { row: Row; key: string | number }; seen: Set<string>; }
+interface Cursor { member: UnionMemberPlan; rows: Row[]; index: number; offset: number; total: number; previous?: Row; seen: Set<string>; }
 interface Progress { cursors: Cursor[]; position: number; total: number; }
 const BATCH = 200, MAX_SCAN = 100_000;
 export function createUnionReader(runner: QueryRunner) {
@@ -90,9 +90,8 @@ function validateRowOrder(plan: UnionPlan, cursor: Cursor, row: Row): void {
   if (cursor.seen.has(key)) throw unionError('来源内行键重复或实时分页发生重叠，请刷新');
   if (cursor.seen.size >= MAX_SCAN + BATCH) throw unionError('来源扫描超过资源限制', 'DQE_QUERY_REJECTED');
   cursor.seen.add(key);
-  const localKey = JSON.parse(key)[1] as string | number;
-  if (cursor.previous && compareMemberOrder(cursor.previous, row, localKey, plan) > 0) throw unionError('来源排序与合并比较规则不一致');
-  cursor.previous = { row, key: localKey };
+  if (cursor.previous && compareUnionRows(cursor.previous, row, plan.view.sort) > 0) throw unionError('来源排序与合并比较规则不一致');
+  cursor.previous = row;
 }
 function first(cursors: Cursor[], plan: UnionPlan): Cursor | undefined {
   let result: Cursor | undefined;
@@ -111,11 +110,6 @@ function compareHeads(left: Cursor, right: Cursor, plan: UnionPlan): number {
 class CountChanged extends Error {
   readonly code = 'DQE_QUERY_REJECTED';
   constructor() { super('读取中来源总数持续变化，请刷新重试'); }
-}
-function compareMemberOrder(previous: NonNullable<Cursor['previous']>, row: Row, key: string | number, plan: UnionPlan): number {
-  const compared = compareUnionRows(previous.row, row, plan.view.sort);
-  if (compared) return compared;
-  return previous.key < key ? -1 : previous.key > key ? 1 : 0;
 }
 
 function assertReadSize(complete: boolean, total: number): void {

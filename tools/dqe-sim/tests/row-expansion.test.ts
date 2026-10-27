@@ -36,6 +36,6 @@ it('executes the registered query page through the real gateway and Sim with iso
 });
 
 it.each([{ values: [] }, { values: ['UNKNOWN'] }, { values: ['C01', 'C02'] }])('rejects missing or ambiguous synthetic parents: $values', ({ values }) => {
-  const query = { output_dims: ['row_customer', 'row_order_id', 'row_product'], output_metrics: ['row_amount'], filter: { dims: [{ dim_name: 'row_customer', dim_value_list: values }], metrics: [] }, order: { offset: 0, limit: 10, by: [{ field: 'row_order_id', type: 'asc', priority: 1 }] } };
+  const query = { output_dims: ['row_customer', 'row_order_id', 'row_product'], output_metrics: ['row_amount'], filter: { dims: [{ dim_name: 'row_customer', dim_value_list: values }], metrics: [] }, order: { offset: 0, limit: 10, order_by_field: 'row_order_id', type: 'asc' } };
   expect(executeRowExpansion(query)?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
 });

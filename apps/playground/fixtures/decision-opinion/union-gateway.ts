@@ -1,3 +1,5 @@
+import { effectiveDqeItem } from '../../../../packages/data-execution/src/dqe/dqe';
+import { dqeDefaultSort } from '@metriccanvas/page/internal';
 import type { DataGateway } from '../../../../packages/data-execution/src/ports';
 import type { EffectiveQuery, Row } from '@metriccanvas/page/internal';
 import { filterTableRows, searchTableRows, sortTableRows } from '../../../../packages/data-execution/src/table-view';
@@ -21,7 +23,7 @@ export function createUnionPreview(options: { generatedCount?: number; failMembe
       else if (predicate.target === 'dimensionRange') result = filterTableRows(result, [{ field: mapping(predicate.queryField), op: 'dateRange', from: predicate.from, to: predicate.to }]);
     }
     if (query.search) result = searchTableRows(result, query.search.queryFields.map(mapping), query.search.query, query.search.match);
-    return sortTableRows(result, (query.sort ?? []).map(rule => ({ field: mapping(rule.queryField), direction: rule.direction })));
+    return sortTableRows(result, dqeDefaultSort(effectiveDqeItem({ ...query, search: undefined })).map(rule => ({ field: mapping(rule.queryField), direction: rule.direction })));
   }
   const dataGateway: DataGateway = {
     async fetchData(query, _diagnostics, signal) {

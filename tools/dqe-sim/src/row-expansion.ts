@@ -1,3 +1,4 @@
+import { sortDqeRows } from './sort';
 import fixture from '../fixtures/table-row-expansion.json';
 import type { DqeSimItemResult } from './execute';
 
@@ -15,15 +16,10 @@ export function executeRowExpansion(item: unknown): DqeSimItemResult | undefined
   const parent = item.filter.dims[0], order = item.order;
   if (!record(parent) || parent.dim_name !== 'row_customer' || parent.operator !== undefined ||
     !Array.isArray(parent.dim_value_list) || parent.dim_value_list.length !== 1 || !['C01', 'C02', 'C03'].includes(String(parent.dim_value_list[0])) ||
-    !Number.isSafeInteger(order.offset) || Number(order.offset) < 0 || !Number.isSafeInteger(order.limit) || Number(order.limit) < 1 ||
-    !Array.isArray(order.by) || !order.by.every((rule, index) => record(rule) && fields.includes(String(rule.field)) && ['asc', 'desc'].includes(String(rule.type)) && rule.priority === index + 1)) return rejected();
+    !Number.isSafeInteger(order.offset) || Number(order.offset) < 0 || !Number.isSafeInteger(order.limit) || Number(order.limit) < 1) return rejected();
   const customer = (parent.dim_value_list as unknown[])[0];
-  const rows = fixture.filter(row => row.row_customer === customer);
-  const rules = order.by as Array<{ field: keyof typeof fixture[number]; type: 'asc' | 'desc' }>;
-  rows.sort((left, right) => {
-    for (const rule of rules) { const a = left[rule.field], b = right[rule.field], diff = a < b ? -1 : a > b ? 1 : 0; if (diff) return rule.type === 'asc' ? diff : -diff; }
-    return 0;
-  });
+  const rows = sortDqeRows(fixture.filter(row => row.row_customer === customer), order, fields);
+  if (!rows) return rejected();
   return { code: 'SUCCESS', data: rows.slice(Number(order.offset), Number(order.offset) + Number(order.limit)), total_count: rows.length,
     dqe: { columns: [...dimensions.map(id => ({ id, caption: id, data_type: 'STRING' as const, type: 'dimension' as const })), { id: 'row_amount', caption: 'row_amount', data_type: 'NUMBER', type: 'metric' }], orders: [], limit: Number(order.limit), offset: Number(order.offset), sql: null } };
 }

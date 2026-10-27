@@ -74,3 +74,7 @@
 5. 指标结果反向驱动对象查询；主表完整对象结果通过 joinAggregate 关联普通指标结果。详见行为测试对窗口绑定、完整绑定及行数的断言。
 
 异常夹具位于 `packages/page/tests/dqe-object-query.test.ts` 与 `packages/data-execution/tests/dqe-object-query.test.ts`：缺对象、字段或时间目标、版本过低、参数不成对、完整结果总数失配、多列排序未提供可信编码。包含搜索、列候选及多列排序需要与普通 DQE 相同的可信接入能力，默认网关明确报错；这些真实能力没有被 Sim 页面证明。
+
+## DQE 单字段排序回归（2026-10-27）
+
+启动 `pnpm dev:dqe`，访问 `/pages/query-result-where-page`，初始金额降序、切换执行周期列和翻页，网络请求的 order 只能使用 order_by_field/type 与 offset/limit。Shift 追加第二排序列时明确失败，不能发送 by 数组；普通点击恢复单列查询。访问 `/pages/table-row-expansion-query` 展开客户，子表格默认按行键升序，切换产品列排序时不追加行键。访问 `/pages/multi-source-table` 验证两个来源整体排序和翻页；此页为合成独立网关，也经过正式 DQE 排序编码校验。418行等指标、行键逆序、跨200行批次由 dqe-sort-contract.test.ts 验证。合成浏览器与 Mock 不证明真实 DQE 的比较、计数或跨批稳定性。
