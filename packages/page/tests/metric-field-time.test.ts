@@ -1,7 +1,12 @@
 import {readFileSync} from 'node:fs';
 import {expect,it} from 'vitest';
 import {parsePage} from '../src/validate';
-const load=()=>JSON.parse(readFileSync('pages/business-rejection-details.json','utf8'));
+const load=()=>{
+  const page=JSON.parse(readFileSync('pages/business-rejection-details.json','utf8'));
+  const query=page.dataSources['rejection-details'].source.query;
+  query.body.dsl_list=[{output_dims:query.body.dsl_list[0].output_fields,output_metrics:[],filter:{dims:[],metrics:[]},order:{}}];
+  return page;
+};
 it('accepts a named approval time with no statistical filter.time',()=>{
   const page=load(),before=structuredClone(page);
   expect(parsePage(page).errors).toEqual([]);

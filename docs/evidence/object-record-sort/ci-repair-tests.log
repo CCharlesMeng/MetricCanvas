@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/metric-field-time.test.ts tests/local-authoring-tools.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/object-record-sort-fix/DataDashboard
+
+
+ Test Files  2 passed (2)
+      Tests  40 passed (40)
+   Start at  11:52:36
+   Duration  2.87s (transform 627ms, setup 0ms, import 1.19s, tests 2.19s, environment 0ms)
