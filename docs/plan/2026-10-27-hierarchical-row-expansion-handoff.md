@@ -1,6 +1,6 @@
 # 层级筛选联动父子表格实施交接
 
-本交接已执行。P0–P5的正式实现与本地/Sim验收见[主方案完成记录](2026-10-27-hierarchical-row-expansion.md#正式实施进度2026-10-27)及[验收报告](../evidence/hierarchical-row-expansion/result.md)。以下为原始交接约束；原型证据已保存于本地分支 `codex/prototype-hierarchy-selection`，正式树不包含原型壳。
+本交接已执行。P0–P5的正式实现与本地/Sim验收见[主方案完成记录](2026-10-27-hierarchical-row-expansion.md#正式实施进度2026-10-27)及[验收报告](../evidence/hierarchical-row-expansion/result.md)。以下为原始交接约束；原型来源为 `codex/prototype-hierarchy-selection`。2026-10-28 按用户批量合入要求，将原型保存在独立 prototypes 目录，不接入产品构建；正式能力继续使用已实现的页面协议与统一运行时。
 
 2026-10-27。用户已在本会话完成 grill，并对实际可交互原型确认：“没错，就是这个意思，handoff一下，然后在新会话中完成这个功能”。本交接授权新会话直接实施与验收；不再重复确认已定业务行为。
 
