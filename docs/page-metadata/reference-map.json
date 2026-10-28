@@ -793,13 +793,16 @@
         "table-pinned-summary-page",
         "paged-union-page",
         "paged-union-branches",
-        "table-column-visibility"
+        "table-column-visibility",
+        "table-hierarchy-selection",
+        "table-hierarchy-lookup-param"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
         "packages/embed/tests/browser/embed.spec.ts",
         "packages/page/src/table/expansion.ts",
-        "packages/page/src/table/validate-expansion.ts"
+        "packages/page/src/table/validate-expansion.ts",
+        "packages/page/src/table/validate-selection.ts"
       ],
       "rules": [
         "table-row-key",
@@ -820,7 +823,8 @@
         "table-pinned-top",
         "paged-union",
         "table-column-visibility",
-        "table-column-search-fields"
+        "table-column-search-fields",
+        "table-hierarchy-selection"
       ]
     },
     "components/mapChart.md": {
@@ -1680,7 +1684,14 @@
     "#/definitions/pagedJoinSource/properties/records/properties/maxRows": "可选；6.69起省略表示不限制行数。显式值1至100000，限制本地时间筛选前的主表读取量；字节与超时保持。",
     "#/definitions/pagedJoinSource/properties/records/properties/maxBytes": "原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs": "完整读取的超时预算，1至120000毫秒，取消和超时不保存部分快照。",
-    "#/definitions/pagedJoinSource/properties/records/properties/timeFilters": "本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。"
+    "#/definitions/pagedJoinSource/properties/records/properties/timeFilters": "本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion": "6.70：显式开启完整父子双工作表 Excel；未声明保留旧导出限制。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion/properties/scope": "首期仅 all，补齐未展开子表并忽略子表局部视图。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion/properties/parentFields": "非空、去重的父表可见关联字段列，与子字段分槽写入。",
+    "#/definitions/tableRowExpansion/properties/selection/properties/parentLevel": "层级筛选器的父层级 id。",
+    "#/definitions/tableRowExpansion/properties/selection/properties/childLevel": "同一层级筛选器的子层级 id，与父层级不同。",
+    "#/definitions/tableRowExpansion/properties/selection/properties/parentLookup": "专属 complete 普通父级定位查询，不依赖候选或子明细携带 parent。",
+    "#/definitions/tableRowExpansion/properties/selection/properties/parentLookup/properties/bindings": "定位私有输入完整显式绑定；只读公共筛选或页面参数，恰好一次读取所选子级 values。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1974,7 +1985,8 @@
     "6.66": "记录逐行保留、多对一补列、成员筛选适用性与有预算分批完整关联。",
     "6.67": "查询独立期间消费策略与已应用期间模式展示条件。",
     "6.68": "普通DQE显式时间字段绑定，下推日/月范围并保留统计时间槽行为。",
-    "6.69": "记录关联可省略maxRows以取消行数限制；显式预算保持，字节、超时及完整性检查不变。"
+    "6.69": "记录关联可省略maxRows以取消行数限制；显式预算保持，字节、超时及完整性检查不变。",
+    "#/properties/schemaVersion=\"6.70\"": "显式层级联动、私有选择输入与完整父子 Excel。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2237,7 +2249,7 @@
         "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search"
       ],
       "headings": [
-        "右上角搜索与 Excel 导出（6.21）",
+        "表格工具栏与搜索（6.21）",
         "静态搜索选项（6.42）"
       ],
       "dependencies": []
@@ -2260,8 +2272,7 @@
         "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export"
       ],
       "headings": [
-        "右上角搜索与 Excel 导出（6.21）",
-        "静态搜索选项（6.42）"
+        "Excel 导出（6.21）"
       ],
       "dependencies": []
     },
@@ -2490,6 +2501,28 @@
         "查询时间精度与执行前校验"
       ],
       "dependencies": []
+    },
+    "table.hierarchy-selection": {
+      "module": "table",
+      "title": "层级筛选与父级定位",
+      "roots": [
+        "#/definitions/tableRowExpansion/properties/selection"
+      ],
+      "headings": [
+        "层级筛选联动（6.70）"
+      ],
+      "dependencies": []
+    },
+    "table.hierarchy-export": {
+      "module": "table",
+      "title": "完整父子双工作表 Excel",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion"
+      ],
+      "headings": [
+        "完整父子 Excel（6.70）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2612,7 +2645,8 @@
       "列条件显隐（6.62）",
       "单元格点击与筛选联动",
       "渲染外观与变体",
-      "右上角搜索与 Excel 导出（6.21）",
+      "表格工具栏与搜索（6.21）",
+      "Excel 导出（6.21）",
       "静态搜索选项（6.42）",
       "查阅方式",
       "数值范围和组合表（6.22）",
@@ -2623,7 +2657,9 @@
       "标量原文展示与本地尾排（6.60）",
       "独立查询置顶行（6.60）",
       "多来源整体排序与来源导航（6.61）",
-      "期间模式列显隐（6.67）"
+      "期间模式列显隐（6.67）",
+      "层级筛选联动（6.70）",
+      "完整父子 Excel（6.70）"
     ],
     "components/mapChart.md": [
       "查阅方式",

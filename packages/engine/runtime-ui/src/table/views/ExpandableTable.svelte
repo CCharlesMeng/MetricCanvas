@@ -13,7 +13,7 @@
   let controller = $state.raw<ReturnType<typeof createRowExpansionController>>();
   const contextPage = $derived(binding.expansion!.page);
   const contextGateway = $derived(binding.expansion!.gateway);
-  const scopeKey = $derived(JSON.stringify([component, [...binding.expansion!.filters], [...binding.expansion!.params]]));
+  const scopeKey = $derived(JSON.stringify(component.props.rowExpansion?.selection ? [component.id,component.data,component.props.rowKey,component.props.rowExpansion,binding.expansion!.selection?.identity,[...binding.expansion!.params]] : [component,[...binding.expansion!.filters],[...binding.expansion!.params]]));
   const parentViewKey = $derived(JSON.stringify([binding.view.pageIndex, binding.view.searchQuery, binding.view.headerFilters, binding.pagination?.pageSize]));
   const safeData = $derived(data.main ? data : { main: { fields: resolveDataSourceFields(contextPage.dataSources[component.data.main]!), snapshot: { status: 'ready' as const, rows: [] } } });
   let retainedData = $state.raw<typeof safeData>();
@@ -22,16 +22,18 @@
   let previousView: string | undefined;
   $effect(() => {
     void scopeKey;
-    const page = contextPage, gateway = contextGateway;
-    const next = untrack(() => createRowExpansionController(page, component, gateway, binding.expansion!.filters, binding.expansion!.params, () => revision++,binding.expansion!.displaySnapshot,binding.expansion!.filterRevision));
+    const next = untrack(() => createRowExpansionController(contextPage, component, contextGateway, binding.expansion!.filters, binding.expansion!.params, () => revision++,binding.expansion!.displaySnapshot,binding.expansion!.filterRevision));
     controller = next; previousView = undefined;
     return () => next.dispose();
   });
   $effect(() => {
     const current = controller, key = parentViewKey, rows = safeData.main.snapshot.rows, loading = snapshot.status === 'loading';
     untrack(() => {
-      if (previousView !== undefined && previousView !== key) current?.clear();
-      previousView = key; if (!loading) current?.retain(rows);
+      if (previousView !== undefined && previousView !== key && !component.props.rowExpansion?.selection) current?.clear();
+      previousView = key; if (!loading) {
+        if(component.props.rowExpansion?.selection)current?.sync(rows,binding.expansion!,binding.expansion!.selection);
+        else current?.retain(rows);
+      }
     });
   });
   $effect(()=>{const snapshot=binding.expansion!.displaySnapshot,revision=binding.expansion!.filterRevision,current=controller;untrack(()=>current?.updatePresentation(snapshot,revision));});
@@ -44,7 +46,7 @@
   }; });
 </script>
 
-<div hidden={snapshot.status === 'loading'}>
+<div hidden={snapshot.status === 'loading' || Boolean(component.props.rowExpansion?.selection && snapshot.status === 'error')}>
 <Table data={renderedData} props={{ ...component.props, pagination: binding.paginationConfig }} view={binding.view}
   interactionGate={binding.interactionGate} toolbarEnabled={binding.toolbarEnabled} searchOption={binding.searchOption} onsearchoption={binding.onsearchoption}
   selectedCell={binding.selectedCell} sortReset={binding.sortReset} filterOptions={binding.filterOptions} filterOptionsStatus={binding.filterOptionsStatus}
@@ -58,4 +60,4 @@
   {/snippet}
 </Table>
 </div>
-{#if snapshot.status === 'loading'}<div role="status">正在加载…</div>{/if}
+{#if snapshot.status === 'loading'}<div role="status">正在加载…</div>{:else if snapshot.status==='error' && component.props.rowExpansion?.selection}<div role="alert">{snapshot.error.message}</div>{/if}

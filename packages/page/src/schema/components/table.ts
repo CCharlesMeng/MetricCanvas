@@ -162,13 +162,22 @@ const rowTableZ = z.object({
   }).strict().optional() }).strict().optional()
 }).strict().meta({ id: 'rowExpansionTable' });
 
+const expansionBindingZ = z.union([navigationBindingZ, z.object({ source: z.literal('selection') }).strict()]);
+const hierarchySelectionZ = z.object({
+  filter: idZ, parentLevel: idZ, parentField: fieldNameZ, childLevel: idZ,
+  parentLookup: z.object({ source: idZ, field: fieldNameZ,
+    filters: z.array(idZ).min(1).meta({ uniqueItems: true }),
+    bindings: z.record(idZ, z.union([navigationBindingZ.options[1], navigationBindingZ.options[2]])).meta({ minProperties: 1 })
+  }).strict()
+}).strict();
 const rowExpansionZ = z.object({
+  selection: hierarchySelectionZ.optional(),
   mode: z.enum(['multiple', 'single']).optional(),
   data: z.discriminatedUnion('type', [
     z.object({ type: z.literal('recordList'), field: fieldNameZ }).strict(),
     z.object({ type: z.literal('query'), source: idZ,
       filters: z.array(idZ).min(1).meta({ uniqueItems: true }),
-      bindings: z.record(idZ, navigationBindingZ).meta({ minProperties: 1 })
+      bindings: z.record(idZ, expansionBindingZ).meta({ minProperties: 1 })
     }).strict()
   ]),
   table: rowTableZ
@@ -204,6 +213,7 @@ export const tableComponentZ = z
           export: z.object({
             ...interactionShape,
             format: z.literal('xlsx'),
+            rowExpansion: z.object({ scope: z.literal('all'), parentFields: z.array(fieldNameZ).min(1).meta({ uniqueItems: true }) }).strict().optional(),
             filename: textValueZ.optional()
           }).strict().optional()
         }).strict().optional(),

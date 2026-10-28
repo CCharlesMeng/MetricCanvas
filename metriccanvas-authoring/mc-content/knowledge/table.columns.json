@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.69",
+  "schemaVersion": "6.70",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.columns"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
         "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
-        "## 期间模式列显隐（6.67）\n\n6.67 起可在字段列或分组列的 `visibleWhen` 读取期间筛选模式，例如 `{filter:\"statistics-period\",part:\"mode\",op:\"in\",values:[\"year\",\"quarter\"]}`。显示由已应用 selection.mode 决定，与查询 periodPolicy 独立。既有列投影同步表头、搜索、用户排序/筛选清理与 XLSX/PDF/PNG 导出；隐藏不停止共享查询。示例：[期间模式与查询策略](../examples/period-query-columns-demo.json)。"
+        "## 期间模式列显隐（6.67）\n\n6.67 起可在字段列或分组列的 `visibleWhen` 读取期间筛选模式，例如 `{filter:\"statistics-period\",part:\"mode\",op:\"in\",values:[\"year\",\"quarter\"]}`。显示由已应用 selection.mode 决定，与查询 periodPolicy 独立。既有列投影同步表头、搜索、用户排序/筛选清理与 XLSX/PDF/PNG 导出；隐藏不停止共享查询。示例：[期间模式与查询策略](../examples/period-query-columns-demo.json)。\n\n<a id=\"hierarchy-selection\"></a>"
       ],
       "rules": [
         {
@@ -46,6 +46,20 @@
             "pinned-top-window",
             "pinned-top-unknown-field",
             "pinned-top-incomplete"
+          ]
+        },
+        {
+          "id": "table-hierarchy-selection",
+          "description": "6.70显式归属定位、父行投影、私有选择及完整父子导出",
+          "valid": [
+            "table-hierarchy-selection",
+            "table-hierarchy-lookup-param"
+          ],
+          "invalid": [
+            "hierarchy-old-version",
+            "hierarchy-parent-window",
+            "hierarchy-without-selection",
+            "hierarchy-export-fields"
           ]
         },
         {
@@ -272,7 +286,9 @@
         "references/page-metadata/examples/table-pinned-summary-page.json",
         "references/page-metadata/examples/paged-union-page.json",
         "references/page-metadata/examples/paged-union-branches.json",
-        "references/page-metadata/examples/table-column-visibility.json"
+        "references/page-metadata/examples/table-column-visibility.json",
+        "references/page-metadata/examples/table-hierarchy-selection.json",
+        "references/page-metadata/examples/table-hierarchy-lookup-param.json"
       ]
     }
   ],
@@ -293,7 +309,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.69",
+        "$id": "https://metriccanvas/page/v6.70",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

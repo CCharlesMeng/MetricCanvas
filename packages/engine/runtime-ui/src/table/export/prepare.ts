@@ -1,3 +1,4 @@
+import {hierarchyRows,type HierarchySelection} from '../../../../runtime/src/table/hierarchy-selection';
 import { projectSnapshotRows, pinnedSnapshotError } from '@metriccanvas/page/internal';
 import type { EffectiveQuery, Page, TableComponent } from '@metriccanvas/page/internal';
 import { projectComponentFields,resolveDataSourceFields } from '@metriccanvas/page/internal';
@@ -10,7 +11,7 @@ import { exportComponentData, type ExportRenderState } from '../../export-render
 export async function prepareTableExport(input: {
   page: Page; component: TableComponent; queries: ReadonlyMap<string, EffectiveQuery>;
   gateway: RuntimeDataGateway; state: Pick<ExportRenderState, 'filters' | 'tables' | 'headerFilters' | 'currentYear' | 'displaySnapshot' | 'filterRevision' | 'now'>;
-  controller: AbortController; views?: ReadonlyMap<string, import('@metriccanvas/page/internal').TableQueryView>; program?: import('@metriccanvas/data-execution/runtime').SourceProgram;
+  controller: AbortController; hierarchy?:HierarchySelection; views?: ReadonlyMap<string, import('@metriccanvas/page/internal').TableQueryView>; program?: import('@metriccanvas/data-execution/runtime').SourceProgram;
 }): Promise<NamedDataSlots> {
   const page = JSON.parse(JSON.stringify(input.page)) as Page;
   const component = projectComponentFields(page,JSON.parse(JSON.stringify(input.component)),input.state.filters) as TableComponent;
@@ -23,6 +24,10 @@ export async function prepareTableExport(input: {
     const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
     signal.throwIfAborted();
     assertPinnedExport(component, snapshots);
+    if(input.hierarchy){
+      const snapshot=snapshots.get(component.data.main);
+      if(snapshot?.status==='ready')snapshots.set(component.data.main,projectSnapshotRows(snapshot,hierarchyRows(component,snapshot.rows,input.hierarchy)));
+    }
     return exportComponentData({ ...state, page, snapshots, summaries: {} }, component);
   } finally { clearTimeout(timer); }
 }
@@ -40,7 +45,7 @@ export function detailExportData(page: Page, component: TableComponent, snapshot
   }));
 }
 
-function abortable<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
+export function abortable<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
   return new Promise((resolve, reject) => {
     const aborted = () => reject(signal.reason);
     signal.addEventListener('abort', aborted, { once: true });

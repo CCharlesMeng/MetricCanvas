@@ -26,3 +26,5 @@ export { candidateContextKey, filterCandidatesRequest, validFilterCandidates } f
 export { createCandidateGatewaySession } from './candidate-session';
 export { candidateView, candidateKey, localColumnCandidates } from './column-candidates';
 export type { ColumnCandidatesRead } from './source-program/column-candidates';
+
+export { createCandidateValidator } from './candidate-validation';

@@ -1,0 +1,390 @@
+{
+  "case": "hierarchy-without-selection",
+  "invariant": "table-hierarchy-selection",
+  "input": {
+    "schemaVersion": "6.70",
+    "id": "table-hierarchy-selection",
+    "layout": "dashboard",
+    "meta": {
+      "title": "层级筛选联动父子表格",
+      "description": "合成 DQE Sim：完整地区部指标、独立归属定位与按需代表处明细。父指标始终为地区部整体。"
+    },
+    "iocHeader": {
+      "filterIds": [
+        "region",
+        "year",
+        "product"
+      ]
+    },
+    "dataSources": {
+      "region-summary": {
+        "fields": {
+          "row-id": {
+            "type": "number",
+            "role": "dimension",
+            "queryField": "h_row_id"
+          },
+          "region-id": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "h_region"
+          },
+          "region-name": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "h_region_name"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "h_parent_amount"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "h_row_id",
+                    "h_region",
+                    "h_region_name"
+                  ],
+                  "output_metrics": [
+                    "h_parent_amount"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "year": {
+                "target": "dimension",
+                "queryField": "h_year"
+              },
+              "product": {
+                "target": "dimension",
+                "queryField": "h_product"
+              }
+            }
+          },
+          "resultScope": "complete"
+        }
+      },
+      "office-region-lookup": {
+        "fields": {
+          "located-region-id": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "h_parent"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "h_parent"
+                  ],
+                  "output_metrics": [],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "lookup-office": {
+                "target": "dimension",
+                "queryField": "h_office"
+              }
+            }
+          },
+          "resultScope": "complete"
+        }
+      },
+      "office-detail": {
+        "fields": {
+          "office-id": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "h_office"
+          },
+          "office-name": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "h_office_name"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "h_child_amount"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "h_office",
+                    "h_office_name"
+                  ],
+                  "output_metrics": [
+                    "h_child_amount"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {
+                    "offset": 0,
+                    "limit": 2
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "detail-region": {
+                "target": "dimension",
+                "queryField": "h_region"
+              },
+              "detail-office": {
+                "target": "dimension",
+                "queryField": "h_office"
+              },
+              "year": {
+                "target": "dimension",
+                "queryField": "h_year"
+              },
+              "product": {
+                "target": "dimension",
+                "queryField": "h_product"
+              }
+            }
+          }
+        }
+      }
+    },
+    "filters": [
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "h_region",
+        "label": "地区范围",
+        "display": "tree",
+        "treeSelection": "level",
+        "selection": {
+          "mode": "single"
+        },
+        "hierarchy": [
+          {
+            "id": "region-dept",
+            "dimension": "h_region",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "h_office",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "region-dept"
+      },
+      {
+        "id": "year",
+        "type": "dimension",
+        "dimension": "h_year",
+        "label": "年度",
+        "display": "select",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "options": [
+          {
+            "value": "2026",
+            "label": "2026"
+          },
+          {
+            "value": "2025",
+            "label": "2025"
+          }
+        ],
+        "default": [
+          "2026"
+        ]
+      },
+      {
+        "id": "product",
+        "type": "dimension",
+        "dimension": "h_product",
+        "label": "产品",
+        "display": "select",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "options": [
+          {
+            "value": "all",
+            "label": "全部产品"
+          },
+          {
+            "value": "cloud",
+            "label": "云服务"
+          }
+        ],
+        "default": [
+          "all"
+        ]
+      },
+      {
+        "id": "lookup-office",
+        "type": "dimension",
+        "dimension": "h_office",
+        "visible": false
+      },
+      {
+        "id": "detail-region",
+        "type": "dimension",
+        "dimension": "h_region",
+        "visible": false
+      },
+      {
+        "id": "detail-office",
+        "type": "dimension",
+        "dimension": "h_office",
+        "visible": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "hierarchy",
+        "components": [
+          {
+            "id": "region-office-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "region-summary"
+            },
+            "props": {
+              "title": "地区部整体与代表处明细（合成数据）",
+              "rowKey": "row-id",
+              "columns": [
+                {
+                  "field": "region-name",
+                  "title": "地区部",
+                  "filterable": {
+                    "mode": "select"
+                  }
+                },
+                {
+                  "field": "amount",
+                  "title": "整体金额",
+                  "sortable": true
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2,
+                "numbered": true
+              },
+              "toolbar": {
+                "search": {
+                  "fields": [
+                    "region-name"
+                  ]
+                },
+                "export": {
+                  "format": "xlsx",
+                  "filename": "地区部与代表处情况",
+                  "rowExpansion": {
+                    "scope": "all",
+                    "parentFields": [
+                      "region-name"
+                    ]
+                  }
+                }
+              },
+              "rowExpansion": {
+                "mode": "multiple",
+                "data": {
+                  "type": "query",
+                  "source": "office-detail",
+                  "filters": [
+                    "detail-region",
+                    "detail-office"
+                  ],
+                  "bindings": {
+                    "detail-region": {
+                      "source": "row",
+                      "field": "region-id"
+                    },
+                    "detail-office": {
+                      "source": "selection"
+                    }
+                  }
+                },
+                "table": {
+                  "title": "代表处明细",
+                  "rowKey": "office-id",
+                  "columns": [
+                    {
+                      "field": "office-name",
+                      "title": "代表处",
+                      "sortable": true
+                    },
+                    {
+                      "field": "amount",
+                      "title": "金额",
+                      "sortable": true
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "toolbar": {
+                    "search": {
+                      "fields": [
+                        "office-name"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar/export/rowExpansion",
+      "message": "完整父子导出要求显式层级联动"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowExpansion/data/bindings",
+      "message": "私有 selection 输入要求显式层级联动"
+    }
+  ]
+}

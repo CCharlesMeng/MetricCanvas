@@ -22,7 +22,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 69;
+const CURRENT_MINOR = 70;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -46,6 +46,12 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'table-row-hierarchy-selection': { minor:70, legacyReadable:false, description:'显式父级定位与层级筛选联动子表格',
+    usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(record(props(c)?.rowExpansion),'selection')).map(p=>p+'/props/rowExpansion/selection') },
+  'table-private-selection-input': { minor:70, legacyReadable:false, description:'子表格私有选择输入的明确不适用语义',
+    usedAt:document=>componentPaths(document,c=>c.type==='table'&&Object.values(record(record(record(props(c)?.rowExpansion)?.data)?.bindings)??{}).some(v=>record(v)?.source==='selection')).map(p=>p+'/props/rowExpansion/data/bindings') },
+  'table-complete-hierarchy-export': { minor:70, legacyReadable:false, description:'完整父子双工作表 Excel',
+    usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(record(record(props(c)?.toolbar)?.export),'rowExpansion')).map(p=>p+'/props/toolbar/export/rowExpansion') },
   'paged-join-unbounded-rows': {minor:69,legacyReadable:false,description:'记录关联可省略行数预算，保留字节和超时限制',
     usedAt:document=>dataSourcePaths(document,data=>unboundedRecordRows(data.source))},
   'period-query-policy': {minor:67,legacyReadable:false,description:'查询独立期间策略与期间模式展示条件',usedAt:periodCapabilityPaths},

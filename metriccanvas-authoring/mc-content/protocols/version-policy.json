@@ -1,8 +1,23 @@
 {
   "major": 6,
-  "minor": 69,
-  "current": "6.69",
+  "minor": 70,
+  "current": "6.70",
   "capabilities": {
+    "table-row-hierarchy-selection": {
+      "minor": 70,
+      "description": "显式父级定位与层级筛选联动子表格",
+      "legacyReadable": false
+    },
+    "table-private-selection-input": {
+      "minor": 70,
+      "description": "子表格私有选择输入的明确不适用语义",
+      "legacyReadable": false
+    },
+    "table-complete-hierarchy-export": {
+      "minor": 70,
+      "description": "完整父子双工作表 Excel",
+      "legacyReadable": false
+    },
     "paged-join-unbounded-rows": {
       "minor": 69,
       "description": "记录关联可省略行数预算，保留字节和超时限制",
@@ -729,6 +744,7 @@
     "6.66",
     "6.67",
     "6.68",
-    "6.69"
+    "6.69",
+    "6.70"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.69",
+  "schemaVersion": "6.70",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-1f2915eb"
@@ -46,6 +46,20 @@
             "pinned-top-window",
             "pinned-top-unknown-field",
             "pinned-top-incomplete"
+          ]
+        },
+        {
+          "id": "table-hierarchy-selection",
+          "description": "6.70显式归属定位、父行投影、私有选择及完整父子导出",
+          "valid": [
+            "table-hierarchy-selection",
+            "table-hierarchy-lookup-param"
+          ],
+          "invalid": [
+            "hierarchy-old-version",
+            "hierarchy-parent-window",
+            "hierarchy-without-selection",
+            "hierarchy-export-fields"
           ]
         },
         {
@@ -272,7 +286,9 @@
         "references/page-metadata/examples/table-pinned-summary-page.json",
         "references/page-metadata/examples/paged-union-page.json",
         "references/page-metadata/examples/paged-union-branches.json",
-        "references/page-metadata/examples/table-column-visibility.json"
+        "references/page-metadata/examples/table-column-visibility.json",
+        "references/page-metadata/examples/table-hierarchy-selection.json",
+        "references/page-metadata/examples/table-hierarchy-lookup-param.json"
       ]
     }
   ],

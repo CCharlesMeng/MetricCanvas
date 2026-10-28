@@ -48,6 +48,8 @@
 | 点击或按钮联动：点击表格值／固定按钮，改变筛选状态并让已绑定查询更新 | `filterGroup.core`、`query.core`；[选择与查询绑定](page-metadata/examples/dimension-selection-page.json)、[固定按钮组](page-metadata/examples/filter-group-page.json)。 | `table-cell-selection`；`filter-group-page` |
 | 行内已有明细：父行已带 recordList，展开其中的记录 | [表格](page-metadata/components/table.md)的行内子表格；[recordList 展开](page-metadata/examples/table-row-expansion-inline.json)。子字段按项契约解释。 | `table-row-expansion-inline` |
 | 行内查询明细：展开一行后，以该父行作为输入独立查询 | [按行查询展开](page-metadata/examples/table-row-expansion-query.json)、[输入绑定](page-metadata/examples/table-row-expansion-inputs.json)。实例属于各父行。 | `table-row-expansion-query` |
+| 层级选择只收窄父行、保持父整体指标，子级先反向定位父级 | `read-knowledge.mjs show --topic table.hierarchy-selection`、[完整声明](page-metadata/examples/table-hierarchy-selection.json)。确认真实独立归属查询，不假设候选或明细有 parent。 | `table-hierarchy-selection` |
+| 一次导出全部匹配父子数据，包含未展开子表 | `read-knowledge.mjs show --topic table.hierarchy-export`；显式 all 范围、可见父关联列、冻结条件与严格失败。 | `table-hierarchy-selection` |
 | 弹窗／抽屉明细：点击入口展示详情，先确认使用已有快照还是独立查询 | [交互与导航](page-metadata/actions-and-navigation.md)；[详情浮层](page-metadata/examples/detail-views.json)、[查询详情绑定](page-metadata/examples/reference-export-detail-bindings.json)。 | `table-detail-overlay` 演示已准备好的快照 |
 | 跨页明细：从清单进入详情页，传对象身份、筛选或期间 | [交互与导航](page-metadata/actions-and-navigation.md)；[来源页](page-metadata/examples/navigation-source-page.json)与[目标页](page-metadata/examples/navigation-detail-page.json)。核对显式传值和目标输入。 | `ioc-header-navigation-source-demo`；`ioc-header-navigation-detail-demo` |
 | 时间模式切换：年／季／月等模式需要不同静态查询时间声明 | `filters.timeModes`；[静态时间模式](page-metadata/examples/time-modes-page.json)。 | `ioc-header-time-modes-demo` |

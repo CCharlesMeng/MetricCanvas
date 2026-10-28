@@ -351,3 +351,14 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 入口 `/pages/record-join-no-row-limit`，使用完整页面 `record-join-no-row-limit.json`。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5202`；无需URL参数或真实DQE。现有合成Adapter提供100001条审批记录，页面不声明 `records.maxRows`，保留128 MiB和60秒限制。默认9月完整读取后显示100001条；搜索 `BIZ-50000` 能找到末尾的一条审批及当前责任人，证明全局查询未截在十万条。清空搜索、排序和翻页复用完整关联结果；8月为0条。添加 `?sourceFailure=true` 模拟上游失败，不能显示部分成功。完整导出仍有独立10000行限制。
 
 `business-rejection-details.json` 与 `record-join-demo.json` 也省略行数预算，保留各自字节和超时配置。旧页面显式 `maxRows` 继续执行；把它移除需同版6.69运行时和校验器。自动回归覆盖跨十万行关联及末尾搜索、显式行数拒绝、字节拒绝、超时、取消、截断及计数变化。本场景使用合成数据，不证明真实内网性能和最终业务查询成功。
+
+
+## 层级筛选联动父子表格
+
+入口：`/pages/table-hierarchy-selection`。正式6.70 Dashboard，合成 DQE HTTP 数据；代表处明细没有 parent，归属使用独立查询。启动 `pnpm dev:dqe`（默认 Sim 18228、Playground 5173）；独立工作树可分别使用 `DQE_SIM_PORT=18229 pnpm sim:dqe` 与 `DQE_SIM_PORT=18229 pnpm --filter playground dev --port 5210`。
+
+首屏地区部4行，父表每页2行，不查归属及子表。选华东仅保留整体1200，手动展开5个代表处；切代表处选上海，先定位 O101→R01，再自动展开华东，整体1200、上海360。年度2025为960/288；共同条件保留展开或手动收起，子页回1，父页保持。切层级或地区选值恢复默认。
+
+未选择且只展开华东、子表搜索上海时导出，Excel仍为两个工作表、父4行子17行。选华东为1/5行，选上海为1/1行。父搜索和表头条件限定父域，父页与子局部状态不限制完整范围；不展开也可导出。
+
+异常候选含“定位无结果”“归属不唯一”“定位失败”，均显示诊断，不展示全量、不发目标子查询。URL初值：`?region=O101&region.level=office&year=2026&product=all`。合成搜索编码仅支持示例代表处名称；实际服务需提供候选与归属查询，真实 DQE/Relay/权限未由此场景证明。正式证据在 `docs/evidence/hierarchical-row-expansion/result.md`。

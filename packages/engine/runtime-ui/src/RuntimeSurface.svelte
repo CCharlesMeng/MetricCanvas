@@ -373,6 +373,7 @@
     reportExportMessage = '';
     reportExportError = undefined;
     exportController.reset();
+    tableController?.dispose();tableController=undefined;
     session += 1;
     for (const fn of disposers) fn();
     disposers = [];
@@ -555,10 +556,11 @@
           for (const component of flattenPageComponents({sections:loaded.sections})) if(component.type==='table') tableController?.reset(component,previous,values);
         }
         primed = true;
+        syncTableState(loaded);
       })
     );
 
-    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext);
+    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:blockedFilters,displaySnapshot,filterRevision}));
     syncTableState(loaded);
     pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues),displaySnapshot,state.revision), capabilities };
 
@@ -671,8 +673,8 @@
     tableController?.syncColumns(component);
     const projected=tableController?.project(component)??component;
     if(!projected.props.columns.length)return;
-    await exportVisibleTable({page:pageState.page,component:projected,stream,gateway:activeGateway,controller:exportController,
-      blocked:sourceBlocked(pageState.page,component.data.main),
+    await exportVisibleTable({page:pageState.page,component:projected,stream,gateway:activeGateway,controller:exportController,params:pageParams,
+      blocked:sourceBlocked(pageState.page,component.data.main)||!!(component.props.rowExpansion?.selection&&blockedFilters.includes(component.props.rowExpansion.selection.filter)),
       state:{now:new Date(),displaySnapshot,filterRevision,currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}});
   }
 
@@ -1035,10 +1037,11 @@
   }
 
   function componentSnapshots(component: Component): ComponentSnapshots {
+    void tableRevision;
     return new Map(
       Object.entries(component.data ?? {}).map(([slot, sourceId]) => [
         slot,
-        snapshots.get(sourceId) ?? ({ status: 'loading' } as DataSnapshot)
+        component.type==='table'&&slot==='main' ? tableController?.hierarchySnapshot(component,snapshots.get(sourceId)??{status:'loading'})??{status:'loading'} : snapshots.get(sourceId) ?? ({ status: 'loading' } as DataSnapshot)
       ])
     );
   }
@@ -1117,14 +1120,14 @@
     const pagination = resolvedTablePagination(component,snapshot);
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
     if (remoteTableSearch(source)) return projectSnapshotRows(snapshot, presentation?.rows(component,snapshot.rows) ?? snapshot.rows);
-    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    const rows=applySearchFilters(presentation?.rows(component,tableController?.hierarchyRows(component,snapshot.rows)??snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     const presented = tableController?.present(component,rows,pagination?.mode!=='local').rows??rows;
     return {status:'ready',rows:presented,...snapshotCellFallbacks(presented)};
   }
   function filteredTableRows(component: TableComponent,snapshot: Extract<DataSnapshot,{status:'ready'}>):Row[] {
     void tableRevision;
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    const rows=applySearchFilters(presentation?.rows(component,tableController?.hierarchyRows(component,snapshot.rows)??snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return tableController?.present(component,rows,true).rows??rows;
   }
 
@@ -1174,6 +1177,7 @@
   }
 
   function tableInteractionGate(component:TableComponent,row:Row,column:TableColumn){
+    if(component.props.rowExpansion?.selection&&!visibleTableRows(component).includes(row))return {eligible:false,enabled:false};
     if(tableController?.columnEligible(component,column)===false)return {eligible:false,enabled:false};
     const target = tableColumnNavigation(column, row);
     if (column.navigateBySource && !target) return { eligible: false, enabled: false };
@@ -1191,7 +1195,7 @@
     if (component.type !== 'table') return undefined;
     void tableRevision;
     return tableController?.binding(component,{
-      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, displaySnapshot, filterRevision, instanceId: rowScopeInstanceId } : undefined,
+      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, displaySnapshot, filterRevision, instanceId: rowScopeInstanceId, selection: tableController?.hierarchy(component) } : undefined,
       onexport: () => { void exportTable(component); },
       oncancelexport: () => exportController.cancel(component.id),
       exporting: tableExportStates[component.id]?.busy,

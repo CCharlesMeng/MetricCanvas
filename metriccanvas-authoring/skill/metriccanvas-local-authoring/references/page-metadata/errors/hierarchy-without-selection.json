@@ -1,0 +1,56 @@
+{
+  "case": "hierarchy-without-selection",
+  "invariant": "table-hierarchy-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "完整父子导出要求显式层级联动",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/export/rowExpansion"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "私有 selection 输入要求显式层级联动",
+      "paths": [
+        "/sections/0/components/0/props/rowExpansion/data/bindings"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "toolbar": {
+                "export": {
+                  "rowExpansion": {
+                    "scope": "all",
+                    "parentFields": [
+                      "region-name"
+                    ]
+                  }
+                }
+              },
+              "rowExpansion": {
+                "data": {
+                  "bindings": {
+                    "detail-region": {
+                      "source": "row",
+                      "field": "region-id"
+                    },
+                    "detail-office": {
+                      "source": "selection"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

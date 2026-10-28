@@ -1,6 +1,6 @@
 # 页面文档结构与书写原则
 
-**独立置顶汇总行：** [ADR-0122](../0122-table-scalar-fallback-and-independent-pinned-row.md) 新增 6.62 的组件及列级 pinnedTop，最多一行且每页显示，无序号、不计明细总数，汇总失败不阻断明细但阻止完整 Excel 导出；现有 rowKindField 和 grandTotal 不变。
+**独立置顶汇总行：** [ADR-0122](../0120-table-scalar-fallback-and-independent-pinned-row.md) 新增 6.62 的组件及列级 pinnedTop，最多一行且每页显示，无序号、不计明细总数，汇总失败不阻断明细但阻止完整 Excel 导出；现有 rowKindField 和 grandTotal 不变。
 
 
 > 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。
@@ -52,3 +52,5 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 **行内子表格（[ADR-0113](../0113-isolated-expanded-row-tables.md)）：** 6.44在父表就地声明一层独立Table，recordList与query来源显式分支。默认仅白底内容及现有分页，搜索/标题/排序按需声明；每个父行独立拥有查询与会话，折叠或条件失效即销毁。它不扩展详情浮层或引入递归页面；导出范围仍待确认。
 
 表格自6.62按 [ADR-0122](../0122-table-column-visibility-and-view-reconciliation.md) 增加列/列组 visibleWhen。列组没有可见叶子时不生成表头，仅为表头结构性例外；零业务列的表格保留标题和专用状态。统一纯投影、原会话调和及冻结导出保持单一规则，新搜索/查询独占约束仅对启用列条件的表格生效。
+
+[ADR-0123](../0123-explicit-hierarchy-selection-and-complete-child-export.md) 在6.70以显式 `rowExpansion.selection` 声明独立父级定位和父行私有投影，父整体指标不绑定层级选择。仅启用分支保留共同条件刷新的展开/收起与合法会话，显式完整 Excel 补齐未展开子表；旧页面、旧输入失败语义和页面 PDF/PNG 限制保持。

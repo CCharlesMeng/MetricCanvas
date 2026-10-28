@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createHierarchyGateway} from '../../../../../fixtures/hierarchy-gateway';
   import {createRejectionPreview} from '../../../../../fixtures/rejection-details/gateway';
   import { createUnionPreview } from '../../../../../fixtures/decision-opinion/union-gateway';
   import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
@@ -103,7 +104,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: rejectionPreviewRowCount(pageId), failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: rejectionPreviewRowCount(pageId), failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : pageExternalInputs(pageId)==='hierarchy'?createHierarchyGateway():dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;

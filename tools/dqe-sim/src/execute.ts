@@ -5,6 +5,7 @@ import { executeRejectionDetails } from './rejection-details';
 import { executeQueryModes } from './query-modes';
 import { executeStoredCountMeasures } from './stored-count-measures';
 import { iocHeaderFixture } from '../fixtures/ioc-header-query.mjs';
+import { executeHierarchySelection } from './hierarchy-selection';
 import { executeRowExpansion } from './row-expansion';
 import { executeChartLocalFilter } from './chart-local-filter';
 import { executeTableSearchOptions } from './table-search-options';
@@ -157,7 +158,7 @@ const customerActivityDetailDimensions = [
 
 /** Exact demo handlers retain their previous precedence. */
 function executeLocalDemo(item:unknown):DqeSimItemResult|undefined {
-  for(const execute of [executeTableEnhancements,executeRejectionDetails,executeObjectQuery,iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeStoredCountMeasures,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
+  for(const execute of [executeHierarchySelection,executeTableEnhancements,executeRejectionDetails,executeObjectQuery,iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeStoredCountMeasures,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
     const result=execute(item);if(result)return result;
   }
 }

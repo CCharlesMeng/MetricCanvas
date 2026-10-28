@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "6b8a194a1b53c33c405a4ea15da580c02afa3e91ff9124bb66fc10c239ac8182",
+  "sha256": "8df7e46d097610262a55cf999c2e420abaa4dc94478f84d1d148e26ea6cb647d",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -92,7 +92,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "ac1c8908f4d15d16edfd2b9e7d41eeecd8136f31db333e63b281c4d0a68eb88b"
+      "sha256": "78f95f13746bf72550b454fee867a570000477146493b6d398ad29c8d4b8c96c"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "52b930a789b340d7b26aa08c1ac8e1ae3bbee89ebabeb2ce9b69d7f6b2daa4cc"
+      "sha256": "7e5fd56b57661c3b23837ce67e9b3beb86754ef0cc8fcf8e55d028da1c2f15af"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1163,6 +1163,14 @@
       "sha256": "9418624fe91103d5db7d27baa13ab5e98c97b6b87fd958c2f5cc00c5bb2cd10f"
     },
     {
+      "file": "packages/page/fixtures/contract-valid/table-hierarchy-lookup-param.json",
+      "sha256": "f880b6d1df6ed0726c9e15709988c44c1b92f065cfb2aa9e6f795bfb54e6c0a0"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/table-hierarchy-selection.json",
+      "sha256": "ffc03a66a6997dbc3008de7e1c269a053101a562130a40eb6838713bf367f6de"
+    },
+    {
       "file": "packages/page/fixtures/contract-valid/table-number-range-page.json",
       "sha256": "9c7300d989b50a27814119679c16c395e5c35cd68e6fb93fabbd19afeae6e4a0"
     },
@@ -1612,7 +1620,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "687fab7c3e2841641545ee4281707c3b302820b6d04ebe9f1d81b187687d681b"
+      "sha256": "6ab51acdcace9a887fdea13a8feb7d82c4905aac29f7c38d81dd89580301f61f"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -1696,7 +1704,7 @@
     },
     {
       "file": "packages/page/src/table/condition-scope.ts",
-      "sha256": "143694a100b265caddf61983c46c4aea10e5d54f911f9418f984db15950aab3a"
+      "sha256": "b8346913c5c6cf6473aed93231f8cf55873a006ec346a8e854a00c8b8ee124d4"
     },
     {
       "file": "packages/page/src/table/edit.ts",
@@ -1704,7 +1712,7 @@
     },
     {
       "file": "packages/page/src/table/expansion.ts",
-      "sha256": "9ccc03555aba2fc245156a381c9b79840f1354bc215042c9a94310a9e8b012c7"
+      "sha256": "d11eabd0638a917beca5eba8b393946b0451cfbae2fe0a19024349a1b3e98b9c"
     },
     {
       "file": "packages/page/src/table/query-view.ts",
@@ -1716,7 +1724,11 @@
     },
     {
       "file": "packages/page/src/table/validate-expansion.ts",
-      "sha256": "1d229c9292800772a423d9201811150c461173bfa0c95f7bd56c49954a332ddb"
+      "sha256": "5e35fecd8a742dcfd82e9261fc7ca7c8ed34c061fb886c3c3443a6f6f1e2c6c9"
+    },
+    {
+      "file": "packages/page/src/table/validate-selection.ts",
+      "sha256": "b0e6c65daea5b5a2242b27b031348755dcd3cb10d0a177079680a2672dadcf29"
     },
     {
       "file": "packages/page/src/table/validation.ts",
@@ -1792,11 +1804,11 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "31190bc6ad9110d6abce25bf551d7c13a745bd71736c6b01d4c140351aacd222"
+      "sha256": "474f35b9d863259e634c18463b9dd47c52f32e59d4f431c9bb7772fbd822a460"
     },
     {
       "file": "pages/README.md",
-      "sha256": "557edd9abc9ddd2acd18b612c55b6adb7d0552962b8e195856b1597dc4862580"
+      "sha256": "d89e20377bc03dad3dacc074ae37f12abb32d6102644930ca4fe4b7804153080"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2148,15 +2160,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "652016067d5ea16f171a8daff395ec74a5525e2a71e544a51f9189b70b018fe1"
+      "sha256": "bd78373e5545b8e26c49ac6441714baafbd8c6f1edc8f9cf2d91563573423acd"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "826193f6b6b74d23979ee80789e5767a005b858abf0f5cd0b0dd45592ffc6f8c"
+      "sha256": "bf697cd3c95b90f412ad67a019db5600b0e6222fc5a6acd5a4e8aa62387bdd46"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "e486c8f320fd71245378b9933e29ada7b0f8ec06087596ebe5ba26d3e86c962b"
+      "sha256": "f228632ca8bbed70a27ce976990eac58c39c7f1c2a0568a7e35ec858cb31046b"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2172,7 +2184,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "966c7928419dc8f503df9bca0e0952c0b20528a34b83706f833c4cb6447b55ac"
+      "sha256": "8097acdf11f68bbbb44aa26cb4d10142619ab604715c5db4d936af2ce8810358"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2232,7 +2244,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "c0ac60015676f345d986274bfaec1299f5ebd4f256a52cf6fad78f35795f55cd"
+      "sha256": "a94c70373a29a99b868ad05b9ee26255bac71e47675ee2a4dc58b1a2230a1253"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2289,6 +2301,10 @@
     {
       "file": "pages/capabilities/table/table-detail-overlay.json",
       "sha256": "6603f9b0f84ec0e72d977ff929c91e51de9d85b4bb7caed58e0f29ac5a365834"
+    },
+    {
+      "file": "pages/capabilities/table/table-hierarchy-selection.json",
+      "sha256": "ffc03a66a6997dbc3008de7e1c269a053101a562130a40eb6838713bf367f6de"
     },
     {
       "file": "pages/capabilities/table/table-missing-cell-actions.json",
@@ -2692,7 +2708,7 @@
     },
     {
       "file": "tools/scripts/local-authoring-data-analysis.ts",
-      "sha256": "34b73f31997f31d2dcea7e07a574f5cb8a56cc90904ccc9fd18e392ce1b1e268"
+      "sha256": "b9a60818e5b4c416130bd53169ab3f686a4c56405f94ee8142e92f6cff5af0c1"
     },
     {
       "file": "tools/scripts/local-authoring-data-cli.ts",
@@ -2780,7 +2796,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "21fa65dcefdce9a097e7a8d9659c14702ef6a0009f18e177a067b73c9df5e899"
+      "sha256": "21bd59d7d8c9628fcf6a75b675b1009098cecf73aa8d6b82b63180fa669873eb"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

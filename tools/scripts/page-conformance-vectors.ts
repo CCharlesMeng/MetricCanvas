@@ -261,6 +261,12 @@ export const invariants: InvariantDefinition[] = [
     {case:'row-number-invalid-width',base:'table-row-number-page',expect:/./,mutate:d=>{d.sections[0].components[0].props.rowNumber.width=0;}},
     {case:'row-number-no-data-field',base:'table-row-number-page',expect:/./,mutate:d=>{d.sections[0].components[0].props.rowNumber.field='name';}}
   ]},
+  { id:'table-hierarchy-selection', description:'6.70显式归属定位、父行投影、私有选择及完整父子导出', valid:['table-hierarchy-selection','table-hierarchy-lookup-param'], cases:[
+    {case:'hierarchy-old-version',base:'table-hierarchy-selection',expect:/由 6.70 引入/,mutate:d=>{d.schemaVersion='6.69';}},
+    {case:'hierarchy-parent-window',base:'table-hierarchy-selection',expect:/父表要求完整/,mutate:d=>{d.dataSources['region-summary'].source.query.body.dsl_list[0].order={limit:2,offset:0};}},
+    {case:'hierarchy-without-selection',base:'table-hierarchy-selection',expect:/要求显式层级联动/,mutate:d=>{delete d.sections[0].components[0].props.rowExpansion.selection;}},
+    {case:'hierarchy-export-fields',base:'table-hierarchy-selection',expect:/父关联列/,mutate:d=>{d.sections[0].components[0].props.toolbar.export.rowExpansion.parentFields=['unknown'];}}
+  ]},
   { id:'table-row-expansion', description:'6.44单层子表格的作用域、只读及查询分页约束', valid:['table-row-expansion-inline','table-row-expansion-query'], cases:[
     {case:'row-expansion-before-6.44',base:'table-row-expansion-inline',expect:/由 6.44 引入/,mutate:d=>{d.schemaVersion='6.43';}},
     {case:'row-expansion-missing-parent-key',base:'table-row-expansion-inline',expect:/稳定的.*维度行键/,mutate:d=>{delete d.sections[0].components[0].props.rowKey;}},

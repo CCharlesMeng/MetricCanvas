@@ -94,3 +94,5 @@ json / txt / py 这类**不给人读**的执行留痕，如果被测试引用就
 **这条只管新产生的东西，不回溯改已冻结的批次。** `authoring-tickets-126/t04-contract-examples.json` 与 `unified-authoring/2026-09-15-unified-authoring-s0-sources.json` 被三处测试直接读取，却留在归档批次里——2026-09-21 逐个看过后决定不迁：批次内部的 checker 脚本按同级文件名找它、实证正文写着「同目录」，迁走就得改已冻结的记录。两处批次结论页都写明了它们是 CI 的真实输入。判据与例外的完整理由见 [`2026-09-21-docs-consolidation.md`](../archive/docs-consolidation/2026-09-21-docs-consolidation.md) §4.6。
 
 IOC当前：B0–B4本地完成；B5按用户收窄为显式跨页传值、不恢复；B6挂起。主计划§22为准。
+
+- [层级筛选联动父子表格](2026-10-27-hierarchical-row-expansion.md)：正式6.70实施与验收主入口。

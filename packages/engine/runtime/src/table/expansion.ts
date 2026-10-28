@@ -3,7 +3,8 @@ import type { DataGateway } from '../ports';
 import type { FilterValues } from '../filter-state';
 import { createFilterState } from '../filter-state';
 import type { PageParamValues } from '../page-params';
-import { scopedFilterValues } from '../detail-view';
+import { rowExpansionFilters, type HierarchySelection, type HierarchyContext } from './hierarchy-selection';
+import { sourceFilterIds, type TableQueryView } from '@metriccanvas/page/internal';
 import { orchestrate, type PageSnapshotStream, type PageDataSnapshots } from '../orchestrator';
 export interface RowTableInstance {
     key: string;
@@ -28,7 +29,7 @@ function checkedRows(snapshot: DataSnapshot, table: TableComponent): DataSnapsho
 function limitedGateway(gateway: DataGateway): DataGateway {
     let active = 0;
     const queue: Array<() => void> = [];
-    return { fetchData(query, context, signal) {
+    return { ...gateway, fetchData(query, context, signal) {
             return new Promise((resolve, reject) => {
                 let started = false;
                 const abort = () => {
@@ -67,13 +68,17 @@ function limitedGateway(gateway: DataGateway): DataGateway {
 }
 /** Each expansion owns an ordinary source program and table view, with no cross-fold cache. */
 export function createRowExpansionController(page: Page, parent: TableComponent, gateway: DataGateway, filters: FilterValues, params: PageParamValues, changed: () => void, displaySnapshot?: import('@metriccanvas/page/internal').DisplaySnapshot, filterRevision?: number) {
+    let selection:HierarchySelection|undefined;
+    let autoAttempted=false;
+    let childIntent=false;
+    let selectedParentValue:string|undefined;
     let presentationKey = JSON.stringify([displaySnapshot, filterRevision]);
     const instances = new Map<string, RowTableInstance>();
     const limited = limitedGateway(gateway);
     const keyOf = (row: Row) => ['subtotal', 'total'].includes(String(row[parent.props.rowKindField ?? ''])) ? undefined : parent.props.rowKey ? expansionRowKey(row[parent.props.rowKey]) : undefined;
     function close(key: string) { const instance = instances.get(key); if (!instance)
         return; instances.delete(key); instance.dispose(); }
-    function open(row: Row, key: string) {
+    function open(row: Row, key: string,views?:ReadonlyMap<string,TableQueryView>) {
         const expansion = parent.props.rowExpansion!;
         let scope: ReturnType<typeof rowExpansionPage>;
         try {
@@ -94,20 +99,7 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
                 instance.snapshots = new Map([[sourceId, snapshot]]);
             }
             else {
-                const values = scopedFilterValues(page, expansion.data.filters, expansion.data.bindings, row, filters, params);
-                instance.filters = values;
-                const scopedGateway: DataGateway = { fetchData(query, context, signal) {
-                        return limited.fetchData(stableRowQuery(query, expansion.table.rowKey), context, signal);
-                    } };
-                const stream = orchestrate(scope.page, scopedGateway, createFilterState(values, scope.page.filters ?? []), undefined, undefined, { displayInputs: () => displaySnapshot, filterRevision: () => filterRevision ?? 0 });
-                instance.stream = stream;
-                const unsubscribe = stream.subscribe(snapshots => {
-                    if (instances.get(key) !== instance)
-                        return;
-                    instance.snapshots = new Map([...snapshots].map(([id, snapshot]) => [id, checkedRows(snapshot, scope.table)]));
-                    changed();
-                });
-                instance.dispose = unsubscribe;
+                startQuery(instance,views);
             }
         }
         catch {
@@ -115,8 +107,55 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
         }
         changed();
     }
+    function startQuery(instance:RowTableInstance,views?:ReadonlyMap<string,TableQueryView>){
+        const expansion=parent.props.rowExpansion!;
+        if(expansion.data.type!=='query')return;
+        instance.filters=rowExpansionFilters(page,parent,instance.row,{filters,params},selection);
+        const scopedGateway:DataGateway={...(parent.props.rowExpansion?.selection?limited:{}),fetchData(query,context,signal){return limited.fetchData(stableRowQuery(query,expansion.table.rowKey),context,signal);}};
+        const stream=orchestrate(instance.page,scopedGateway,createFilterState(instance.filters,instance.page.filters??[]),undefined,undefined,
+            {displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision??0},{},views);
+        instance.stream=stream;
+        instance.dispose=stream.subscribe(snapshots=>{
+            if(instances.get(instance.key)!==instance)return;
+            instance.snapshots=new Map([...snapshots].map(([id,snapshot])=>[id,checkedRows(snapshot,instance.table)]));changed();
+        });
+    }
+    function refresh(instance:RowTableInstance,row:Row){
+        const values=rowExpansionFilters(page,parent,row,{filters,params},selection);
+        const ids=new Set(sourceFilterIds(instance.page.dataSources[instance.table.data.main]));
+        const signature=(values:FilterValues)=>JSON.stringify([...values].filter(([id])=>ids.has(id)));
+        instance.row=row;
+        if(signature(values)===signature(instance.filters))return;
+        const views=new Map([...instance.stream?.captureViews()??[]].map(([id,view])=>[id,{...view,pageIndex:0}]));
+        instance.dispose();instance.snapshots=new Map();startQuery(instance,views);
+    }
+    function selectionMove(next:HierarchySelection|undefined){
+        const moved=next?.status==='selected'&&selectedParentValue!==undefined&&selectedParentValue!==next.parentValue;
+        if(!moved)return {moved:false,views:undefined};
+        const instance=[...instances.values()][0];
+        return {moved:true,views:instance?.stream?.captureViews()};
+    }
+    function syncSelectedRow(rows:readonly Row[],next:HierarchySelection|undefined,move:ReturnType<typeof selectionMove>){
+        if(next?.status!=='selected'||!next.childValue)return;
+        selectedParentValue=next.parentValue;
+        if(autoAttempted&&!move.moved)return;
+        if(!autoAttempted)childIntent=true;
+        autoAttempted=true;
+        if(!childIntent||rows.length!==1)return;
+        const row=rows[0]!,key=keyOf(row);
+        if(key===undefined||instances.has(key))return;
+        const views=move.views&&new Map([...move.views].map(([id,view])=>[id,{...view,pageIndex:0}]));
+        open(row,key,views);
+    }
     return {
         keyOf,
+        sync(rows:readonly Row[],context:HierarchyContext,next?:HierarchySelection){
+            filters=context.filters;params=context.params;selection=next;
+            this.updatePresentation(context.displaySnapshot,context.filterRevision);
+            const move=selectionMove(next);
+            this.retain(rows);
+            syncSelectedRow(rows,next,move);
+        },
         updatePresentation(snapshot: typeof displaySnapshot, revision: typeof filterRevision) {
             const key = JSON.stringify([snapshot, revision]);
             if (key === presentationKey)
@@ -136,6 +175,7 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
             const key = keyOf(row);
             if (key === undefined)
                 return;
+            if(selection?.childValue)childIntent=!instances.has(key);
             if (instances.has(key)) {
                 close(key);
                 changed();
@@ -156,9 +196,11 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
             let removed = false;
             for (const [key, instance] of instances) {
                 const row = rows.find(row => keyOf(row) === key);
-                if (counts.get(key) !== 1 || !row || JSON.stringify(row) !== JSON.stringify(instance.row)) {
+                if (counts.get(key) !== 1 || !row || (!parent.props.rowExpansion?.selection && JSON.stringify(row) !== JSON.stringify(instance.row))) {
                     close(key);
                     removed = true;
+                }else if(parent.props.rowExpansion?.selection){
+                    try{refresh(instance,row);}catch{instance.dispose();instance.snapshots=new Map([[instance.table.data.main,unavailable()]]);}
                 }
             }
             if (removed)

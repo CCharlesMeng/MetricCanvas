@@ -28,6 +28,7 @@ export function createTableSession(initial: TableQueryView, changed: (view: Tabl
             return false; return commit({ ...view, predicates: tablePredicates(filters), pageIndex: 0 }); },
         setSearch(search: NonNullable<TableQueryView['search']>) { return commit({ ...view, search: { ...search, fields: [...search.fields], query: search.query.trim() }, pageIndex: 0 }); },
         reconcileColumns(columns: TableColumnPresentation, notify = true) { const next = reconcileColumnView(view, columns, defaultSort, userSorted), affects = columnViewBehaviorChanged(view, next); const committed = commit(next, notify && affects, affects); return committed && affects; },
+        resetDefault() { userSorted=false;return commit(structuredClone(initial),false); },
         resetPresentation() { userSorted = false; return commit({ ...view, pageIndex: 0, sort: [], predicates: [], search: undefined }, false); },
         resetPage() { return commit({ ...view, pageIndex: 0 }, false); },
         correct(next: TableQueryView, expectedGeneration: number) { return expectedGeneration === generation && commit(next, false, false); },
