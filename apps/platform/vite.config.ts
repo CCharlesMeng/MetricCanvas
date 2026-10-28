@@ -26,7 +26,18 @@ function developmentServer(localPreview:boolean,cloudIoc:ReturnType<typeof readC
     proxy['/rest/cdi/cdinl2databuilderservice/v1/user-page-metadata']={target:'http://127.0.0.1:8080',changeOrigin:true};
   }else{
     delete proxy['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'];
-    proxy['/rest/cdi/cdinl2databuilderservice/']=cloudIoc?createCloudIocDevProxy(cloudIoc):{target:'https://ioc.cloudbu.huawei.com',changeOrigin:true};
+    proxy['/rest/cdi/cdinl2databuilderservice/']={
+      ...(cloudIoc?createCloudIocDevProxy(cloudIoc):{target:'https://ioc.cloudbu.huawei.com',changeOrigin:true}),
+      secure:false,
+      configure(proxy){
+        proxy.on('proxyReq',(proxyReq)=>{
+          console.info('[platform proxy]',proxyReq.method,proxyReq.path.split('?')[0],{
+            cftk:proxyReq.hasHeader('cftk'),
+            cookie:proxyReq.hasHeader('cookie')
+          });
+        });
+      }
+    };
   }
   return {host:'localhost',port:localPreview?5175:5174,strictPort:true,proxy};
 }

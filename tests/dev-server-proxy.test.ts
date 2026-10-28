@@ -14,6 +14,7 @@ const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform')!
 afterEach(async () => {
   for (const close of cleanup.splice(0).reverse()) await close();
   vi.unstubAllEnvs();
+  vi.restoreAllMocks();
   Object.defineProperty(process, 'platform', platformDescriptor);
 });
 
@@ -23,6 +24,7 @@ it.each([
   {app: 'platform', cookie: 'session=configured; route=gray=='},
   {app: 'platform', cookie: ''}
 ])('$app gray 代理实际转发 cftk 与 Cookie（配置 %j）', async ({app, cookie}) => {
+  const log = vi.spyOn(console, 'info').mockImplementation(() => {});
   const received: Array<{cftk: unknown; cookie: unknown; url: unknown; method: unknown; body: string}> = [];
   const upstream = createHttpServer(async (request, response) => {
     let body = '';
@@ -70,9 +72,17 @@ it.each([
   }
   expect(received).toEqual(paths.map(url => ({url, method: 'POST', body: '{}',
     cftk: 'test-config-cftk', cookie: cookie || 'session=browser'})));
+  if (app === 'platform') {
+    expect(dqeProxy.secure).toBe(false);
+    expect(log.mock.calls).toEqual(paths.map(url => [
+      '[platform proxy]', 'POST', url.split('?')[0], {cftk: true, cookie: true}
+    ]));
+    expect(JSON.stringify(log.mock.calls)).not.toMatch(/test-config-cftk|session=|debug=|page=|browser-cftk/);
+  }
 });
 
 it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用本地服务替身', async () => {
+  const log = vi.spyOn(console, 'info').mockImplementation(() => {});
   const upstream = createDqeSimServer({
     logger: false, aiSummaryText: '完成', aiSummaryCharacterIntervalMs: 0
   });
@@ -96,6 +106,7 @@ it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用�
     const prefix = '/rest/cdi/cdinl2databuilderservice/';
     const remoteProxy = proxy[prefix];
     if (remoteProxy && typeof remoteProxy !== 'string') {
+      expect(remoteProxy.secure).toBe(false);
       proxy[prefix] = {...remoteProxy, target: `http://127.0.0.1:${process.env.DQE_SIM_PORT}`};
     }
     const frontend = await createServer({
@@ -125,6 +136,10 @@ it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用�
     expect(await response.json()).toMatchObject({
       retCode: 'CBC.0000', results: [{ code: 'SUCCESS', data: [{ 客户级别: '卓越NA', NA客户数: 15 }] }]
     });
+    if (remoteProxy) {
+      expect(log).toHaveBeenCalledWith('[platform proxy]', 'POST', DQE_EXECUTE_PATH,
+        {cftk: false, cookie: false});
+    }
     const summary = await fetch(origin + AI_SUMMARY_CONVERSATIONS_PATH + 'ip-access/chat', {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ context_info: {} })
