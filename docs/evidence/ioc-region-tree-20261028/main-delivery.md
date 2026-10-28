@@ -33,6 +33,13 @@
 - 新增 hierarchyTreeSnapshot 11、hierarchyTreeOptions 9、hierarchyTreeSelection 6、usesHierarchyTree 4、hierarchyTreeStatus 3；其他辅助函数及回调 1–3。
 - 新增 HierarchyTreeFilter.commit 4、值映射回调 1；新增测试回调最高 7。
 - 两个既有浏览器用例只修改断言，相关回调复杂度保持。FilterBar 透传、Schema 注释与 Selection 模板提示文本没有增加可执行函数分支。
+- 打包后 IOC 浏览器用例：默认结构树和显式 tabs 两个测试主体均 2 → 2；新增必选单树测试主体 1，相关路由／请求回调最高 3。与原文件其他回调一起实测均未超限。
 - 新增和修改函数全部 ≤15，没有本批未关闭项。
 
 主工作区的并行修改及 5210 活动服务保持原状。远端 SHA 和 exact-SHA CI 在提交推送后单独核对；本文件记录提交前输入和验收，不以本地通过替代 CI。
+
+## 第一轮 CI 与补充
+
+提交 e60343fa0693defa700443a052f81a3ae3a5f7ca 的 types、build、authoring 通过。全量测试 3334 通过、5 跳过，唯一失败为未修改的仓外扫描测试超过默认 5 秒；同一测试本地按原门限复跑，815ms 通过。兼容性浏览器 502 通过、4 失败，来自 Chrome/Edge 各两条仍点击默认前置层级 tab 的旧用例。
+
+补充同步打包后的 IOC 浏览器验收：默认单树直接展开并选代表处、校验原始同码与 office 层级、关闭弹层；旧必选草稿用例显式声明 hierarchyPicker:tabs，继续验证 opt-in 兼容；新增必选单树的原子提交及不可清空验证。Embed check 零错误、零警告，契约生成检查仍一致。未放宽超时或删减行为断言；最终 CI 以包含该补充的提交为准。

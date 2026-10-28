@@ -15,10 +15,10 @@ test('closed enums preserve UI codes, single choice, all-unrestricted, and boole
   expect(candidateRequests).toBe(0);await expect(header.locator('[data-filter-hint]').first()).toContainText('2026-09');
   await page.setViewportSize({width:390,height:850});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:info.outputPath('business-options-390.png'),fullPage:true});
 });
-test('explicit structure tree has own values per level; legacy tree still selects leaves',async({page},info)=>{
+test('single structure tree chooses level inside one dropdown; legacy tree still selects leaves',async({page},info)=>{
   await page.goto('/pages/ioc-header-business-tree-demo');const header=page.locator('[data-ioc-header]');if(await header.getByRole('button',{name:'展开筛选'}).count())await header.getByRole('button',{name:'展开筛选'}).click();
   const region=header.locator('[data-filter-id="region"]');await expect(page.getByText(/合成 · .*department_code=same/)).toBeVisible();await openSelection(region);await expect(region.getByRole('treeitem').filter({hasText:'北部地区部'})).toHaveAttribute('aria-selected','true');await expect(region.getByRole('button',{name:'北京代表处',exact:true})).toHaveCount(0);
-  await region.getByRole('tab',{name:'代表处',exact:true}).click();await chooseTree(region,'北京代表处');await expect(page.getByText(/合成 · .*office_code=same/)).toBeVisible();
+  await expect(region.getByRole('tab')).toHaveCount(0);await region.getByRole('button',{name:'展开北部地区部',exact:true}).click();await expect(page.getByText(/合成 · .*department_code=same/)).toBeVisible();await chooseTree(region,'北京代表处');await expect(page.getByText(/合成 · .*office_code=same/)).toBeVisible();expect(new URL(page.url()).searchParams.get('region.level')).toBe('office');await expect(region.getByRole('dialog')).toHaveCount(0);
   const legacy=header.locator('[data-filter-id="legacy"]');await openSelection(legacy);await legacy.getByText('North',{exact:true}).click();await expect(page.getByText(/合成 · .*legacy_path=North\/One,North\/Two/)).toBeVisible();
   await page.setViewportSize({width:390,height:850});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:info.outputPath('business-tree-390.png'),fullPage:true});
 });
@@ -37,11 +37,19 @@ test('detail enum stays private and single month still emits compact mtime',asyn
   await page.goto('/pages/ioc-header-business-detail-demo');const kind=page.locator('[data-filter-id="detail-kind"]');await kind.getByRole('button',{name:'详情档位',exact:true}).click();await kind.getByRole('option',{name:'详情二级'}).click();await expect(page.getByText(/合成 · .*detail_kind=L2/)).toBeVisible();
   const month=page.locator('[data-filter-id="month"]').getByRole('combobox');await month.fill('2026-08');await month.press('Enter');await expect(page.getByText(/合成 · .*mtime=202608.*detail_kind=L2/)).toBeVisible();await expect(page.getByRole('button',{name:'返回来源页'})).toHaveCount(0);
 });
-test('required structural tree drafts a new level until one value can be committed atomically',async({page})=>{
-  await page.route('**/pages/ioc-header-business-tree-demo.json',async route=>{const response=await route.fetch();const doc=await response.json();doc.filters.find((f:any)=>f.id==='region').selection={mode:'single',required:true};await route.fulfill({response,json:doc});});
+test('explicit tabs keep required structural tree level drafts until an atomic value commit',async({page})=>{
+  await page.route('**/pages/ioc-header-business-tree-demo.json',async route=>{const response=await route.fetch();const doc=await response.json();const region=doc.filters.find((f:any)=>f.id==='region');region.selection={mode:'single',required:true};region.hierarchyPicker='tabs';await route.fulfill({response,json:doc});});
   const queries:any[]=[];page.on('request',r=>{if(r.url().includes(endpoint)&&r.method()==='POST')queries.push(...r.postDataJSON().dsl_list);});
   await page.goto('/pages/ioc-header-business-tree-demo');const header=page.locator('[data-ioc-header]');await expect(page.getByText(/合成 · .*department_code=same/)).toBeVisible();
   if(await header.getByRole('button',{name:'展开筛选'}).count())await header.getByRole('button',{name:'展开筛选'}).click();
   const region=header.locator('[data-filter-id="region"]'),before=queries.length;await region.getByRole('tab',{name:'代表处',exact:true}).click();expect(queries).toHaveLength(before);
   await chooseTree(region,'北京代表处');await expect(page.getByText(/合成 · .*office_code=same/)).toBeVisible();const after=queries.length;await openSelection(region);await region.getByRole('textbox').fill('北京代表处');await expect(region.getByRole('treeitem',{name:'北京代表处',exact:true})).toHaveAttribute('aria-selected','true');await expect(region.getByRole('button',{name:'清除筛选',exact:true})).toHaveCount(0);await region.getByRole('button',{name:'北京代表处',exact:true}).click();expect(queries.length).toBe(after);expect(new URL(page.url()).searchParams.get('region.level')).toBe('office');
+});
+test('required single tree commits an office atomically and cannot clear its selection',async({page})=>{
+  await page.route('**/pages/ioc-header-business-tree-demo.json',async route=>{const response=await route.fetch();const doc=await response.json();doc.filters.find((f:any)=>f.id==='region').selection={mode:'single',required:true};await route.fulfill({response,json:doc});});
+  const queries:any[]=[];page.on('request',r=>{if(r.url().includes(endpoint)&&r.method()==='POST')queries.push(...r.postDataJSON().dsl_list);});
+  await page.goto('/pages/ioc-header-business-tree-demo');await expect(page.getByText(/合成 · .*department_code=same/)).toBeVisible();const region=page.locator('[data-filter-id="region"]'),before=queries.length;
+  await expect(region.getByRole('tab')).toHaveCount(0);await openSelection(region);await region.getByRole('textbox').fill('北京代表处');expect(queries).toHaveLength(before);await expect(region.getByRole('button',{name:/清空|清除/})).toHaveCount(0);
+  await region.getByRole('button',{name:'北京代表处',exact:true}).click();await expect(page.getByText(/合成 · .*office_code=same/)).toBeVisible();expect(new URL(page.url()).searchParams.get('region.level')).toBe('office');expect(new URL(page.url()).searchParams.get('region')).toBe('same');await expect(region.getByRole('dialog')).toHaveCount(0);
+  const after=queries.length;await chooseTree(region,'北京代表处');expect(queries).toHaveLength(after);
 });
