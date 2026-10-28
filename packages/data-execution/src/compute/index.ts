@@ -41,13 +41,7 @@ export function applyComputation(
 function applyOperator(operator: Exclude<ComputeOperator, { op: 'joinAggregate' | 'timeFill' | 'selectField' }>, rows: DataRow[]): DataRow[] {
   switch (operator.op) {
     case 'sumFields':
-      return rows.map(row => {
-        const values = operator.fields.map(field => numeric(row[field]));
-        const missing = values.some(value => value === undefined);
-        const present = values.filter((value): value is number => value !== undefined);
-        return copyRowFallbacks(row, { ...row, [operator.output]: !present.length || (missing && operator.onMissing === 'null')
-          ? null : finiteOrNull(present.reduce((sum, value) => sum + value, 0)) });
-      });
+      return rows.map(row => copyRowFallbacks(row, { ...row, [operator.output]: sumFields(operator, row) }));
     case 'cagr':
       return rows.map(row => {
         const beginning = numeric(row[operator.beginning]);
@@ -84,6 +78,26 @@ function applyOperator(operator: Exclude<ComputeOperator, { op: 'joinAggregate' 
     case 'pivot':
       return pivot(operator, rows);
   }
+}
+
+function sumFields(operator: Extract<ComputeOperator, { op: 'sumFields' }>, row: DataRow): number | null {
+  let total = 0;
+  let present = false;
+  for (const field of operator.fields) {
+    const value = row[field];
+    if (value == null) {
+      if (operator.onMissing === 'null') return null;
+      continue;
+    }
+    const number = numeric(value);
+    if (number === undefined) {
+      if (operator.onMissing !== 'ignore') return null;
+      continue;
+    }
+    present = true;
+    total += number;
+  }
+  return present || operator.onMissing === 'zero' ? finiteOrNull(total) : null;
 }
 
 /**

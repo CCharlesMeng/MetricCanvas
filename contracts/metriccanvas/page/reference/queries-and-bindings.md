@@ -243,7 +243,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 可观察入口：`/pages/authoring-contract-reliability`，使用说明见同目录 README。共享跨语言向量由产品测试维护。
 
 
-页面协议 6.70。结构真源为本册[schema.json](schema.json)，SHA256 `67288605b6f6dd184ce097844c86c313d7d6e9ce0df1883c6a24f748a82da711`。字段表自动生成；可选不等于有默认值。
+页面协议 6.71。结构真源为本册[schema.json](schema.json)，SHA256 `532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

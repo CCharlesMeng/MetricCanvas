@@ -5,6 +5,7 @@ const introducedAt: Record<string, number> = {
   "table-row-hierarchy-selection":70,
   "table-private-selection-input":70,
   "table-complete-hierarchy-export":70,
+  "sum-fields-zero": 71,
   "paged-join-unbounded-rows": 69,
   "period-query-policy": 67,
   "metric-field-time-binding": 68,

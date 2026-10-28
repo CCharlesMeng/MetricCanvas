@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 70,
-  "current": "6.70",
+  "minor": 71,
+  "current": "6.71",
   "capabilities": {
     "table-row-hierarchy-selection": {
       "minor": 70,
@@ -16,6 +16,11 @@
     "table-complete-hierarchy-export": {
       "minor": 70,
       "description": "完整父子双工作表 Excel",
+      "legacyReadable": false
+    },
+    "sum-fields-zero": {
+      "minor": 71,
+      "description": "字段求和可按零处理全部缺项，并支持单字段归零",
       "legacyReadable": false
     },
     "paged-join-unbounded-rows": {
@@ -745,6 +750,7 @@
     "6.67",
     "6.68",
     "6.69",
-    "6.70"
+    "6.70",
+    "6.71"
   ]
 }

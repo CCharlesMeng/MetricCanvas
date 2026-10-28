@@ -1,5 +1,6 @@
 <script lang="ts">
   import {createHierarchyGateway} from '../../../../../fixtures/hierarchy-gateway';
+  import {partnerHealthPreviewGateway} from "../../../../../fixtures/partner-preview/gateway";
   import {createRejectionPreview} from '../../../../../fixtures/rejection-details/gateway';
   import { createUnionPreview } from '../../../../../fixtures/decision-opinion/union-gateway';
   import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
@@ -104,7 +105,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: rejectionPreviewRowCount(pageId), failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : pageExternalInputs(pageId)==='hierarchy'?createHierarchyGateway():dataGateway
+        dataGateway: partnerHealthPreviewGateway(pageId, pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: rejectionPreviewRowCount(pageId), failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : pageExternalInputs(pageId)==='hierarchy'?createHierarchyGateway():dataGateway)
       };
     } catch (cause) {
       if (session !== loadSession) return;
@@ -135,6 +136,9 @@
       <p>{pageState.message}</p>
     </div>
   {:else}
+    {#if pageExternalInputs(page.params.pageId)==='partner-preview'}
+      <div class="simulation-note" role="status">本地模拟数据 · 用于验收得分计算和筛选联动，不代表真实业务结果</div>
+    {/if}
     {#if pageExternalInputs(page.params.pageId)==='visibility'}
       <div data-sim-facts aria-label="Sim事实控制">
         <strong>Sim 事实输入</strong>
@@ -161,6 +165,7 @@
 </div>
 
 <style>
+  .simulation-note { padding: 10px 24px; color: #854d0e; background: #fef9c3; font-size: 13px; }
   /* 报表形态沿用宿主的定宽居中外框;看板形态始终使用宿主的
      全部可用宽度,页面画布与内边距由统一运行时决定。 */
   .page-frame {

@@ -533,6 +533,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/sum-fields-zero.json",
+      "target": "product-contracts/page/conformance/valid/sum-fields-zero.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/tab-content-aisummary.json",
       "target": "product-contracts/page/conformance/valid/tab-content-aisummary.json",
       "scope": "exact product contract"
@@ -6499,10 +6504,10 @@
     }
   ],
   "counts": {
-    "product": 1268,
+    "product": 1269,
     "authoring": 31,
     "modules": 33,
-    "topics": 193,
+    "topics": 194,
     "nodes": 2386,
     "tools": 9,
     "components": 19

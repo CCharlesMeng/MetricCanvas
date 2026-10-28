@@ -105,7 +105,7 @@ export interface SumFieldsOperator {
   op: 'sumFields';
   fields: string[];
   output: string;
-  onMissing: 'null' | 'ignore';
+  onMissing: 'null' | 'ignore' | 'zero';
 }
 
 /** 复合增长率；期数来自已声明字段，不猜测年份差。 */

@@ -1986,7 +1986,8 @@
     "6.67": "查询独立期间消费策略与已应用期间模式展示条件。",
     "6.68": "普通DQE显式时间字段绑定，下推日/月范围并保留统计时间槽行为。",
     "6.69": "记录关联可省略maxRows以取消行数限制；显式预算保持，字节、超时及完整性检查不变。",
-    "#/properties/schemaVersion=\"6.70\"": "显式层级联动、私有选择输入与完整父子 Excel。"
+    "#/properties/schemaVersion=\"6.70\"": "显式层级联动、私有选择输入与完整父子 Excel。",
+    "6.71": "字段求和可按零处理缺项和全部缺项，并支持单字段分类；原有缺项策略保持。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2570,7 +2571,8 @@
     "compute.md": [
       "查阅方式",
       "汇总的全空结果（6.12）",
-      "多度量透视与有限主集合左关联 6.14"
+      "多度量透视与有限主集合左关联 6.14",
+      "字段求和与缺项归零（6.71）"
     ],
     "filters.md": [
       "期间选择与查询消费",

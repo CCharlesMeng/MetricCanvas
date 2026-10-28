@@ -22,7 +22,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 70;
+const CURRENT_MINOR = 71;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -52,6 +52,8 @@ export const pageCapabilities = {
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&Object.values(record(record(record(props(c)?.rowExpansion)?.data)?.bindings)??{}).some(v=>record(v)?.source==='selection')).map(p=>p+'/props/rowExpansion/data/bindings') },
   'table-complete-hierarchy-export': { minor:70, legacyReadable:false, description:'完整父子双工作表 Excel',
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(record(record(props(c)?.toolbar)?.export),'rowExpansion')).map(p=>p+'/props/toolbar/export/rowExpansion') },
+  'sum-fields-zero': {minor:71,legacyReadable:false,description:'字段求和可按零处理全部缺项，并支持单字段归零',
+    usedAt:document=>dataSourcePaths(document,data=>Array.isArray(data.compute)&&data.compute.some(op=>record(op)?.op==='sumFields'&&(record(op)?.onMissing==='zero'||(Array.isArray(record(op)?.fields)&&(record(op)!.fields as unknown[]).length===1))))},
   'paged-join-unbounded-rows': {minor:69,legacyReadable:false,description:'记录关联可省略行数预算，保留字节和超时限制',
     usedAt:document=>dataSourcePaths(document,data=>unboundedRecordRows(data.source))},
   'period-query-policy': {minor:67,legacyReadable:false,description:'查询独立期间策略与期间模式展示条件',usedAt:periodCapabilityPaths},

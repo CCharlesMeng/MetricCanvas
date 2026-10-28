@@ -102,8 +102,8 @@ const joinAggregateOperatorZ = z.object({
 }).strict();
 
 const sumFieldsOperatorZ = z.object({
-  op: z.literal('sumFields'), fields: z.array(fieldNameZ).min(2).meta({ uniqueItems: true }),
-  output: fieldNameZ, onMissing: z.enum(['null', 'ignore'])
+  op: z.literal('sumFields'), fields: z.array(fieldNameZ).min(1).meta({ uniqueItems: true }),
+  output: fieldNameZ, onMissing: z.enum(['null', 'ignore', 'zero'])
 }).strict();
 const cagrOperatorZ = z.object({
   op: z.literal('cagr'), beginning: fieldNameZ, ending: fieldNameZ, periods: fieldNameZ,

@@ -567,3 +567,5 @@ DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/qu
 Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-multiple-tables.json)，操作与预期见[布局场景说明](capabilities/layout/README.md#tab-多表格自然展开)。
 
 - [层级筛选联动父子表格](capabilities/table/README.md#层级筛选联动父子表格)：显式归属定位、共同条件刷新及完整双工作表 Excel，入口 `/pages/table-hierarchy-selection`。
+
+- 缺项得分归零能力：`/pages/sum-fields-missing-values`（inline合成），说明见[数据计算](capabilities/data/README.md)；伙伴健康度业务计算见[临时业务页面](temporary/README.md)。

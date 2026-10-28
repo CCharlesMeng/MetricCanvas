@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.70",
-  "schemaSha256": "67288605b6f6dd184ce097844c86c313d7d6e9ce0df1883c6a24f748a82da711",
+  "schemaVersion": "6.71",
+  "schemaSha256": "532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -248,7 +248,7 @@
     },
     {
       "file": "packages/page/src/schema/compute.ts",
-      "sha256": "c922e46f94e2ac5e751ede7ecacf4404dbca6d718c8cf5cfea4b7ff45604edd1"
+      "sha256": "7ae6549de97a92395ada1a130192ab2eeee7fdcc675cf10ee575fc77fecd6e68"
     },
     {
       "file": "packages/page/src/schema/condition.ts",
@@ -1745,7 +1745,8 @@
         "6.67",
         "6.68",
         "6.69",
-        "6.70"
+        "6.70",
+        "6.71"
       ]
     },
     {
@@ -3287,7 +3288,8 @@
       "module": "compute.md",
       "enum": [
         "null",
-        "ignore"
+        "ignore",
+        "zero"
       ]
     },
     {

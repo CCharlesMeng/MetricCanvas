@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.71 为 `sumFields` 增加 `onMissing:"zero"` 与单字段列表；缺项及全部缺项按 0 相加，旧策略保持。声明与边界见[字段求和](docs/page-metadata/compute.md#字段求和与缺项归零671)，合成场景 `/pages/sum-fields-missing-values`，业务页 `/pages/partner-health`。
+
 Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期）与展示条件 `part:"mode"`。新策略独占时间粒度和起止，旧绑定保持行为；表格字段列及分组列复用 `visibleWhen` 读取已应用的期间模式。声明、映射与兼容规则见[查询独立期间策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)、[期间选择](docs/page-metadata/filters.md#期间选择与查询消费)，验收页为 `period-query-columns-demo`。
 
 饼图 `pieChart`（6.64：左右表格式图例、可选列单位及对齐、默认保留输入顺序、显式排序与固定类别顺序；场景 `/pages/pie-table-legend`） → [模块参考](contracts/metriccanvas/page/reference/components/pieChart.md)。
@@ -8,7 +10,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.70**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.71**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 

@@ -99,7 +99,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 沿真实行展开的常量点保留原行点击上下文；没有真实行时不制造字段或行身份。运行时和静态导出共用取值及空态规则。场景：[chart-constant-values-page](examples/chart-constant-values-page.json)，浏览器入口与步骤见 pages/capabilities/chart/README.md。
 
 
-页面协议 6.70。结构真源为本册[schema.json](schema.json)，SHA256 `67288605b6f6dd184ce097844c86c313d7d6e9ce0df1883c6a24f748a82da711`。字段表自动生成；可选不等于有默认值。
+页面协议 6.71。结构真源为本册[schema.json](schema.json)，SHA256 `532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

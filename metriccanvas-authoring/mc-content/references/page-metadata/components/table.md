@@ -268,7 +268,7 @@ Excel 固定“父表汇总”“子表明细”两个工作表。父表搜索�
 旧页面即使只升 schemaVersion 也不自动获得新语义；旧 recordList、数字行键、远程父分页与普通 Excel 保持。新字段在6.69及更旧版本中由能力下限拒绝。决策见 ADR-0123；真实服务与 Relay 边界见验收证据。
 
 
-页面协议 6.70。结构真源为本册[schema.json](../schema.json)，SHA256 `67288605b6f6dd184ce097844c86c313d7d6e9ce0df1883c6a24f748a82da711`。字段表自动生成；可选不等于有默认值。
+页面协议 6.71。结构真源为本册[schema.json](../schema.json)，SHA256 `532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

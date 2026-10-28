@@ -18,8 +18,16 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不同度量，重复的有效valueField与类别组合拒绝；新多度量透视的分组键与类别必须唯一。缺阶段产出null，0保持0。有限主结果仅在被结果绑定引用且声明正整数limit、无offset/查询分页时允许左关联；辅助源仍须complete，无分页窗口。导出保持此选择范围并使用本轮原始结果重建明细输入。
 
+## 字段求和与缺项归零（6.71）
 
-页面协议 6.70。结构真源为本册[schema.json](schema.json)，SHA256 `67288605b6f6dd184ce097844c86c313d7d6e9ce0df1883c6a24f748a82da711`。字段表自动生成；可选不等于有默认值。
+`sumFields` 的 `fields` 是有序、不重复的数值字段列表；6.71 起允许单个输入，`onMissing:"zero"` 将 null 或缺失按 0 相加，全部缺失也输出数值 0。负分直接相加，不重新计算权重、不折叠不同行。非法非空值和溢出仍取 null；空行集不生成行，查询失败不等于缺项。旧 `null`（任一缺项为空）与 `ignore`（部分缺项忽略、全部缺项为空）保持原行为。新策略和单字段列表在 6.70 及以下拒绝。
+
+最小声明：`{"op":"sumFields","fields":["a","b"],"output":"category","onMissing":"zero"}`。输出字段须声明为数值度量，不能带 queryField 或嵌入输入行。多个算子顺序执行，可先算分类、再算总分。单字段分类可用同一策略将缺项归零。
+
+Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 使用整体、地区部、代表处三种后端粒度后逐行计算，真实 DQE 需单独验真。
+
+
+页面协议 6.71。结构真源为本册[schema.json](schema.json)，SHA256 `532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -228,7 +236,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/1/properties/fields`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支必填 | minItems=2; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 结果字段契约；对象键就是页面字段id。 |
+| "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 结果字段契约；对象键就是页面字段id。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f6669656c64732f6974656d73"></a>
 
@@ -258,12 +266,13 @@ Schema位置：`#/definitions/computeOperator/oneOf/1/properties/onMissing`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["null","ignore"] | Schema未设默认；装配/运行时默认见语义说明 | 明确关联或字段缺失时的处理方式。 |
+| "string" | 本分支必填 | enum=["null","ignore","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 明确关联或字段缺失时的处理方式。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "null" | 零/缺分母时输出空值。 |
 | "ignore" | 忽略缺失输入；其余值参与求和。 |
+| "zero" | 零/缺分母时输出0。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f32"></a>
 

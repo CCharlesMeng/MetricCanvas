@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "6.71",
+  "id": "sum-fields-zero",
+  "layout": "dashboard",
+  "meta": {
+    "title": "缺失得分按零相加（合成数据）"
+  },
+  "dataSources": {
+    "scores": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "a": {
+          "type": "number",
+          "role": "measure"
+        },
+        "b": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk": {
+          "type": "number",
+          "role": "measure"
+        },
+        "category": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "部分缺项",
+            "a": 8,
+            "b": null,
+            "risk": -2
+          },
+          {
+            "region": "全部缺项",
+            "a": null,
+            "b": null,
+            "risk": null
+          },
+          {
+            "region": "真实零分",
+            "a": 0,
+            "b": 0,
+            "risk": 0
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "sumFields",
+          "fields": [
+            "a",
+            "b"
+          ],
+          "output": "category",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "risk"
+          ],
+          "output": "risk-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "category",
+            "risk-score"
+          ],
+          "output": "total",
+          "onMissing": "zero"
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "score-table",
+          "type": "table",
+          "data": {
+            "main": "scores"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "category",
+                "title": "分类得分"
+              },
+              {
+                "field": "risk-score",
+                "title": "风险扣分"
+              },
+              {
+                "field": "total",
+                "title": "总分"
+              }
+            ]
+          },
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    }
+  ]
+}
