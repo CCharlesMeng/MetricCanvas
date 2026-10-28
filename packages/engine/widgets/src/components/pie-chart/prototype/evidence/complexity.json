@@ -1,0 +1,435 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "packages/engine/widgets/src/components/pie-chart/prototype/model.ts",
+      "functions": [
+        {
+          "name": "orderedBands",
+          "qualifiedName": "orderedBands",
+          "line": 23,
+          "endLine": 28,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@25:49>",
+          "qualifiedName": "orderedBands/<anonymous@25:49>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@25:70>",
+          "qualifiedName": "orderedBands/<anonymous@25:49>/<anonymous@25:70>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@27:26>",
+          "qualifiedName": "orderedBands/<anonymous@27:26>",
+          "line": 27,
+          "endLine": 27,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "moveBand",
+          "qualifiedName": "moveBand",
+          "line": 30,
+          "endLine": 36,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@31:26>",
+          "qualifiedName": "moveBand/<anonymous@31:26>",
+          "line": 31,
+          "endLine": 31,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "legendColumns",
+          "qualifiedName": "legendColumns",
+          "line": 38,
+          "endLine": 44,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "makeOption",
+          "qualifiedName": "makeOption",
+          "line": 46,
+          "endLine": 102,
+          "selfCC": 10,
+          "optionalChains": 0,
+          "subtreeCC": 13,
+          "nestedFunctions": 11
+        },
+        {
+          "name": "<anonymous@48:30>",
+          "qualifiedName": "makeOption/<anonymous@48:30>",
+          "line": 48,
+          "endLine": 48,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@51:58>",
+          "qualifiedName": "makeOption/<anonymous@51:58>",
+          "line": 51,
+          "endLine": 51,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@58:35>",
+          "qualifiedName": "makeOption/<anonymous@58:35>",
+          "line": 58,
+          "endLine": 58,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "shareValue",
+          "qualifiedName": "makeOption/shareValue",
+          "line": 59,
+          "endLine": 59,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "cell",
+          "qualifiedName": "makeOption/cell",
+          "line": 60,
+          "endLine": 60,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@62:32>",
+          "qualifiedName": "makeOption/<anonymous@62:32>",
+          "line": 62,
+          "endLine": 66,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "formatter",
+          "qualifiedName": "makeOption/formatter",
+          "line": 69,
+          "endLine": 73,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@78:22>",
+          "qualifiedName": "makeOption/<anonymous@78:22>",
+          "line": 78,
+          "endLine": 78,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "formatter",
+          "qualifiedName": "makeOption/formatter",
+          "line": 79,
+          "endLine": 82,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@81:49>",
+          "qualifiedName": "makeOption/formatter/<anonymous@81:49>",
+          "line": 81,
+          "endLine": 81,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@99:22>",
+          "qualifiedName": "makeOption/<anonymous@99:22>",
+          "line": 99,
+          "endLine": 99,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/routes/(viewer)/prototypes/pie-table-legend/+page.ts",
+      "functions": [
+        {
+          "name": "load",
+          "qualifiedName": "load",
+          "line": 4,
+          "endLine": 6,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "extracted:pie-legend-PrototypeSwitcher.svelte.ts",
+      "functions": [
+        {
+          "name": "<anonymous@7:47>",
+          "qualifiedName": "<anonymous@7:47>",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "cycle",
+          "qualifiedName": "cycle",
+          "line": 8,
+          "endLine": 10,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "keyboard",
+          "qualifiedName": "keyboard",
+          "line": 11,
+          "endLine": 17,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "extracted:pie-legend-+page.svelte.ts",
+      "functions": [
+        {
+          "name": "<anonymous@9:42>",
+          "qualifiedName": "<anonymous@9:42>",
+          "line": 9,
+          "endLine": 9,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@15:33>",
+          "qualifiedName": "<anonymous@15:33>",
+          "line": 15,
+          "endLine": 15,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@19:123>",
+          "qualifiedName": "<anonymous@19:123>",
+          "line": 19,
+          "endLine": 19,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@21:11>",
+          "qualifiedName": "<anonymous@21:11>",
+          "line": 21,
+          "endLine": 25,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "switchVariant",
+          "qualifiedName": "switchVariant",
+          "line": 26,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "move",
+          "qualifiedName": "move",
+          "line": 31,
+          "endLine": 34,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "extracted:pie-legend-LegendChart.svelte.ts",
+      "functions": []
+    },
+    {
+      "file": "extracted:pie-legend-template-functions.ts",
+      "functions": [
+        {
+          "name": "<anonymous@2:26>",
+          "qualifiedName": "<anonymous@2:26>",
+          "line": 2,
+          "endLine": 2,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@4:26>",
+          "qualifiedName": "<anonymous@4:26>",
+          "line": 4,
+          "endLine": 4,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@6:26>",
+          "qualifiedName": "<anonymous@6:26>",
+          "line": 6,
+          "endLine": 6,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@8:26>",
+          "qualifiedName": "<anonymous@8:26>",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@10:26>",
+          "qualifiedName": "<anonymous@10:26>",
+          "line": 10,
+          "endLine": 10,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@12:26>",
+          "qualifiedName": "<anonymous@12:26>",
+          "line": 12,
+          "endLine": 12,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@14:26>",
+          "qualifiedName": "<anonymous@14:26>",
+          "line": 14,
+          "endLine": 14,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@16:26>",
+          "qualifiedName": "<anonymous@16:26>",
+          "line": 16,
+          "endLine": 16,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@18:26>",
+          "qualifiedName": "<anonymous@18:26>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@20:26>",
+          "qualifiedName": "<anonymous@20:26>",
+          "line": 20,
+          "endLine": 20,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@22:27>",
+          "qualifiedName": "<anonymous@22:27>",
+          "line": 22,
+          "endLine": 22,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}
