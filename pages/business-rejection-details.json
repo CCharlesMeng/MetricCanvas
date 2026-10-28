@@ -135,7 +135,9 @@
           "body": {
             "dsl_list": [
               {
-                "output_dims": [
+                "query_type": "object",
+                "object_type": "Business/Commercial Review Rejection Details",
+                "output_fields": [
                   "商务ID",
                   "地区部",
                   "代表处",
@@ -146,10 +148,8 @@
                   "审批人姓名",
                   "阶段名称"
                 ],
-                "output_metrics": [],
                 "filter": {
-                  "dims": [],
-                  "metrics": []
+                  "fields": []
                 },
                 "order": {}
               }

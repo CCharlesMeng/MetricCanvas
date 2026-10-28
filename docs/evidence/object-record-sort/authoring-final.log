@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/object-record-sort-fix/DataDashboard
+
+
+ Test Files  5 passed (5)
+      Tests  188 passed (188)
+   Start at  10:51:17
+   Duration  9.46s (transform 967ms, setup 0ms, import 6.22s, tests 18.18s, environment 0ms)

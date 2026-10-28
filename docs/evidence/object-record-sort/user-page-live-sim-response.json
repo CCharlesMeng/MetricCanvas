@@ -1,0 +1,19 @@
+{
+  "retCode": "CBC.0000",
+  "retDesc": null,
+  "results": [
+    {
+      "code": "DQE_SIM_UNSUPPORTED_QUERY",
+      "data": [],
+      "total_count": 0,
+      "dqe": {
+        "columns": [],
+        "orders": [],
+        "limit": -1,
+        "offset": -1,
+        "sql": null
+      },
+      "retDesc": "object 合成场景不支持此查询"
+    }
+  ]
+}

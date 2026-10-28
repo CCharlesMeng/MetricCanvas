@@ -496,6 +496,8 @@ MC 内容包随本协议同步生成，包含同源字段语义、规则、例�
 
 6.66 增量：`pagedJoin.records` 支持主表逐条审批记录与多对一当前信息补列、独立记录标识、本地审批期间筛选和有预算的分批完整关联；成员可显式声明不适用的业务筛选。旧组合源行为保持。配置与限制见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，合成验收入口 `/pages/record-join-demo`。
 
+记录模式的 object 成员保留显式查询排序；无排序时仅按关联键升序，不自动生成多字段排序。完整关联后的表格排序与扫描顺序分别处理；对应合成验收页为 [object-record-join-demo](pages/capabilities/query/object-record-join-demo.json)，支持审批记录保留、指标补列及全局表格操作。
+
 DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一使用 `order.order_by_field/type`，分页继续为 offset/limit；`order.by` 非指标 DQE 语法。分页合并、关联选页与子表格不自动追加第二排序字段，合并主排序相等时保留来源内返回次序。指标多字段排序发送前明确失败；不新增页面字段或改变 Schema 版本。参见[查询与绑定](docs/page-metadata/queries-and-bindings.md)、[分页合并](docs/page-metadata/data-sources.md#paged-union)及 `/pages/query-result-where-page`、`/pages/multi-source-table`。
 
 6.68：普通DQE可将time绑定显式指定到维度字段，下推日/月范围，详见[查询时间字段](docs/page-metadata/queries-and-bindings.md#metric-field-time)。审批记录示例 `record-join-demo` 在预算检查前筛选；既有records.timeFilters仍为读取后本地筛选。

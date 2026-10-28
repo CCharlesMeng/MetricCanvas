@@ -1,6 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {expect,it,vi} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
+import {dqeDimensionConditions} from '@metriccanvas/page/internal';
 import type {DataSnapshot,EffectiveQuery,JsonObject,Page,Row} from '@metriccanvas/page/internal';
 import {effectiveDqeItem,createDqeGateway} from '../src/dqe/dqe';
 import {createSourceProgram,initialFilterValues} from '../src/runtime';
@@ -32,9 +33,9 @@ function inPeriod(row:Row,conditions:JsonObject[]):boolean {
 }
 function responseFor(item:JsonObject,page:Page,requests:JsonObject[]):JsonObject {
   requests.push(item);
-  const isMain=(item.output_dims as string[]).includes('审批完成时间');
+  const isMain=((item.output_fields??item.output_dims) as string[]).includes('审批完成时间');
   const definition=page.dataSources[isMain?'rejection-details':'business-basic'];
-  const conditions=((item.filter as JsonObject).dims as JsonObject[]);
+  const conditions=dqeDimensionConditions(item);
   const period=conditions.filter(condition=>condition.dim_name==='审批完成时间');
   const raw=rejectionRows(12),order=item.order as {offset:number;limit:number};
   if(isMain&&!period.length)return {code:'SUCCESS',total_count:1299225,data:Array.from({length:order.limit},()=>Object.fromEntries(Object.entries(definition.fields).map(([id,field])=>[('queryField' in field)?field.queryField:id,raw[0][id]])))};
@@ -43,19 +44,30 @@ function responseFor(item:JsonObject,page:Page,requests:JsonObject[]):JsonObject
   const filtered=keys?records.filter(row=>keys.includes(String(row['biz-id']))):records;
   return {code:'SUCCESS',total_count:filtered.length,data:filtered.slice(order.offset,order.offset+order.limit).map(row=>Object.fromEntries(Object.entries(definition.fields).map(([id,field])=>[('queryField' in field)?field.queryField:id,row[id]])))};
 }
-it('filters the approval population before the record budget and keeps basic information unbound',async()=>{
+it.each(['metric','object'])('filters %s approvals before the record budget and keeps basic information unbound',async kind=>{
   const page=businessPage(),requests:JsonObject[]=[];
+  const source=page.dataSources['rejection-details'].source;
+  if(source.type!=='query')throw Error('query');
+  const item=source.query.body!.dsl_list[0],fields=item.output_dims??item.output_fields;
+  source.query.body!.dsl_list[0]=kind==='object'
+    ?{query_type:'object',object_type:'Business/Commercial Review Rejection Details',output_fields:fields,filter:{fields:[]},order:{}}
+    :{output_dims:fields,output_metrics:[],filter:{dims:[],metrics:[]},order:{}};
   const fetchImpl=vi.fn<typeof fetch>(async(_url,init)=>Response.json({retCode:'CBC.0000',results:JSON.parse(String(init?.body)).dsl_list.map((item:JsonObject)=>responseFor(item,page,requests))}));
   const program=createSourceProgram(page,{gateway:createDqeGateway({fetchImpl})});
   try{
     let snapshot:DataSnapshot|undefined;
     for await(const update of program.read({roots:['rejection-overview'],conditions:initialFilterValues(page.filters??[])}))snapshot=update.snapshot;
     expect(snapshot).toMatchObject({status:'ready',totalCount:12});
+    if(snapshot?.status!=='ready')throw Error('records');
+    expect(snapshot.rows.filter(row=>row['biz-id']==='B-00001')).toEqual(expect.arrayContaining([
+      expect.objectContaining({'approval-stage':'初审','biz-owner-name':'测试责任人1','life-status':'已关闭'}),
+      expect.objectContaining({'approval-stage':'复审','biz-owner-name':'测试责任人1','life-status':'已关闭'})
+    ]));
     expect(requests).toHaveLength(2);
     expect(requests[0].order).toMatchObject({order_by_field:'商务ID',type:'asc'});
-    const main=requests[0].filter as JsonObject;
-    expect(main.dims).toContainEqual({dim_name:'审批完成时间',operator:'>=',dim_value_list:['2026-09-01 00:00:00']});
-    expect(main.dims).toContainEqual({dim_name:'审批完成时间',operator:'<=',dim_value_list:['2026-09-30 23:59:59']});
+    const main=dqeDimensionConditions(requests[0]);
+    expect(main).toContainEqual(expect.objectContaining({dim_name:'审批完成时间',operator:'>=',dim_value_list:['2026-09-01 00:00:00']}));
+    expect(main).toContainEqual(expect.objectContaining({dim_name:'审批完成时间',operator:'<=',dim_value_list:['2026-09-30 23:59:59']}));
     expect(JSON.stringify(requests[1].filter)).not.toContain('审批完成时间');
     const august=initialFilterValues(page.filters??[]);august.set('mtime',{type:'timeRange',from:'2026-08',to:'2026-08'});
     for await(const update of program.read({roots:['rejection-overview'],conditions:august}))snapshot=update.snapshot;

@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/engine/runtime-ui/tests/business-rejection-sim.test.ts tools/dqe-sim/tests/rejection-details.test.ts packages/data-execution/tests/rejection-time-pushdown.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/object-record-sort-fix/DataDashboard
+
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  11:23:50
+   Duration  1.43s (transform 974ms, setup 0ms, import 1.80s, tests 397ms, environment 0ms)

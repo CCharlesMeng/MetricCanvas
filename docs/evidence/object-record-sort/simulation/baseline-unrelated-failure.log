@@ -1,0 +1,217 @@
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/object-record-sort-fix/DataDashboard
+
+stderr | tools/dqe-sim/tests/query-result-where.test.ts > query-result-where paged development page > queries only the window, accepts every sortable column, resets pagination and exports the captured window
+[MetricCanvas][DQE_QUERY_REJECTED] DQE 拒绝执行查询项:DQE_SIM_UNSUPPORTED_QUERY {
+  pageId: 'query-result-where-page',
+  dataSourceIds: [ 'projects' ],
+  executionId: 'dqe-exec-1',
+  batchId: 'dqe-batch-1',
+  requestId: 'dqe-sim-1',
+  detail: { resultCode: 'DQE_SIM_UNSUPPORTED_QUERY' }
+}
+
+stderr | tools/dqe-sim/tests/query-result-where.test.ts > query-result-where paged development page > queries only the window, accepts every sortable column, resets pagination and exports the captured window
+[MetricCanvas][DQE_QUERY_REJECTED] DQE 拒绝执行查询项:DQE_SIM_UNSUPPORTED_QUERY {
+  pageId: 'query-result-where-page',
+  dataSourceId: 'projects',
+  dataSourcePath: '/dataSources/projects',
+  components: [
+    {
+      componentId: 'projects-table',
+      componentType: 'table',
+      componentTitle: '01 · 项目清单',
+      componentPath: '/sections/1/components/0',
+      sectionId: 'primary-query',
+      bindingPath: '/sections/1/components/0/data/main',
+      boundSourceId: 'projects',
+      relation: 'direct'
+    },
+    {
+      componentId: 'details-high-table',
+      componentType: 'table',
+      componentTitle: '02 · 大额在建项目评估',
+      componentPath: '/sections/2/components/0',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/0/data/main',
+      boundSourceId: 'details-high',
+      relation: 'dependency'
+    },
+    {
+      componentId: 'details-low-table',
+      componentType: 'table',
+      componentTitle: '03 · 小额在建项目评估',
+      componentPath: '/sections/2/components/1',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/1/data/main',
+      boundSourceId: 'details-low',
+      relation: 'dependency'
+    }
+  ],
+  code: 'DQE_QUERY_REJECTED',
+  message: 'DQE 拒绝执行查询项:DQE_SIM_UNSUPPORTED_QUERY'
+}
+[MetricCanvas][DQE_QUERY_REJECTED] DQE 拒绝执行查询项:DQE_SIM_UNSUPPORTED_QUERY {
+  pageId: 'query-result-where-page',
+  dataSourceId: 'projects',
+  dataSourcePath: '/dataSources/projects',
+  components: [
+    {
+      componentId: 'projects-table',
+      componentType: 'table',
+      componentTitle: '01 · 项目清单',
+      componentPath: '/sections/1/components/0',
+      sectionId: 'primary-query',
+      bindingPath: '/sections/1/components/0/data/main',
+      boundSourceId: 'projects',
+      relation: 'direct'
+    },
+    {
+      componentId: 'details-high-table',
+      componentType: 'table',
+      componentTitle: '02 · 大额在建项目评估',
+      componentPath: '/sections/2/components/0',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/0/data/main',
+      boundSourceId: 'details-high',
+      relation: 'dependency'
+    },
+    {
+      componentId: 'details-low-table',
+      componentType: 'table',
+      componentTitle: '03 · 小额在建项目评估',
+      componentPath: '/sections/2/components/1',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/1/data/main',
+      boundSourceId: 'details-low',
+      relation: 'dependency'
+    }
+  ],
+  code: 'DQE_QUERY_REJECTED',
+  message: 'DQE 拒绝执行查询项:DQE_SIM_UNSUPPORTED_QUERY'
+}
+[MetricCanvas][DQE_QUERY_REJECTED] DQE 拒绝执行查询项:DQE_SIM_UNSUPPORTED_QUERY {
+  pageId: 'query-result-where-page',
+  dataSourceId: 'projects',
+  dataSourcePath: '/dataSources/projects',
+  components: [
+    {
+      componentId: 'projects-table',
+      componentType: 'table',
+      componentTitle: '01 · 项目清单',
+      componentPath: '/sections/1/components/0',
+      sectionId: 'primary-query',
+      bindingPath: '/sections/1/components/0/data/main',
+      boundSourceId: 'projects',
+      relation: 'direct'
+    },
+    {
+      componentId: 'details-high-table',
+      componentType: 'table',
+      componentTitle: '02 · 大额在建项目评估',
+      componentPath: '/sections/2/components/0',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/0/data/main',
+      boundSourceId: 'details-high',
+      relation: 'dependency'
+    },
+    {
+      componentId: 'details-low-table',
+      componentType: 'table',
+      componentTitle: '03 · 小额在建项目评估',
+      componentPath: '/sections/2/components/1',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/1/data/main',
+      boundSourceId: 'details-low',
+      relation: 'dependency'
+    }
+  ],
+  code: 'DQE_QUERY_REJECTED',
+  message: 'DQE 拒绝执行查询项:DQE_SIM_UNSUPPORTED_QUERY'
+}
+
+stderr | tools/dqe-sim/tests/query-result-where.test.ts > query-result-where paged development page > queries only the window, accepts every sortable column, resets pagination and exports the captured window
+[MetricCanvas][DQE_QUERY_REJECTED] 查询输入数据源失败 {
+  pageId: 'query-result-where-page',
+  dataSourceId: 'details-high',
+  dataSourcePath: '/dataSources/details-high',
+  components: [
+    {
+      componentId: 'details-high-table',
+      componentType: 'table',
+      componentTitle: '02 · 大额在建项目评估',
+      componentPath: '/sections/2/components/0',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/0/data/main',
+      boundSourceId: 'details-high',
+      relation: 'direct'
+    }
+  ],
+  code: 'DQE_QUERY_REJECTED',
+  message: '查询输入数据源失败'
+}
+[MetricCanvas][DQE_QUERY_REJECTED] 查询输入数据源失败 {
+  pageId: 'query-result-where-page',
+  dataSourceId: 'details-low',
+  dataSourcePath: '/dataSources/details-low',
+  components: [
+    {
+      componentId: 'details-low-table',
+      componentType: 'table',
+      componentTitle: '03 · 小额在建项目评估',
+      componentPath: '/sections/2/components/1',
+      sectionId: 'follow-up-queries',
+      bindingPath: '/sections/2/components/1/data/main',
+      boundSourceId: 'details-low',
+      relation: 'direct'
+    }
+  ],
+  code: 'DQE_QUERY_REJECTED',
+  message: '查询输入数据源失败'
+}
+
+ ❯ tools/dqe-sim/tests/query-result-where.test.ts (4 tests | 1 failed) 1080ms
+     × queries only the window, accepts every sortable column, resets pagination and exports the captured window 1067ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tools/dqe-sim/tests/query-result-where.test.ts > query-result-where paged development page > queries only the window, accepts every sortable column, resets pagination and exports the captured window
+AssertionError: expected [] to deeply equal [ 'P-067', 'P-054', 'P-041', …(7) ]
+
+- Expected
++ Received
+
+- [
+-   "P-067",
+-   "P-054",
+-   "P-041",
+-   "P-028",
+-   "P-015",
+-   "P-002",
+-   "P-069",
+-   "P-056",
+-   "P-043",
+-   "P-030",
+- ]
++ []
+
+ ❯ assertWindow tools/dqe-sim/tests/query-result-where.test.ts:27:122
+     25|     const stream=orchestrate(parsed.page,gateway);let snapshots:PageDa…
+     26|     async function assertWindow(expected: typeof fixture.projects) {
+     27|       await expect.poll(()=>{const s=snapshots.get('projects');return …
+       |                                                                                                                          ^
+     28|       expect(snapshots.get('projects')).toMatchObject({status:'ready',…
+     29|       for(const [id,high] of [['details-high',true],['details-low',fal…
+ ❯ tools/dqe-sim/tests/query-result-where.test.ts:36:13
+
+Caused by: Error: Matcher did not succeed in time.
+ ❯ assertWindow tools/dqe-sim/tests/query-result-where.test.ts:27:7
+ ❯ tools/dqe-sim/tests/query-result-where.test.ts:36:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  11:22:43
+   Duration  1.83s (transform 431ms, setup 0ms, import 695ms, tests 1.08s, environment 0ms)

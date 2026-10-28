@@ -1,0 +1,12 @@
+$ pnpm authoring:contracts:check && pnpm mc:content:coverage && pnpm mc:content:test && python3 tools/scripts/mc-content-fixtures.py --check
+$ tsx tools/scripts/export-authoring-contracts.ts --check
+authoring contract export current (1256 product, 4 authoring, 1 interface files)
+$ tsx tools/scripts/export-authoring-contracts.ts --mc-coverage
+MC source coverage current
+$ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s metriccanvas-authoring/test-harness/tests -p test_mc_content.py
+.................................
+----------------------------------------------------------------------
+Ran 33 tests in 21.134s
+
+OK
+MC diagnostics and visible fixture current

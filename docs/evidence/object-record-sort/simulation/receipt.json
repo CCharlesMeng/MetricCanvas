@@ -1,0 +1,56 @@
+{
+  "originalMetadataUnchanged": true,
+  "sha256": "fc58498e482c54f31f5787bf3981d2ab7c8010956dce95f9b9a630ba588b4d2c",
+  "page": "business-rejection-details",
+  "playgroundPort": 5186,
+  "simPort": 18230,
+  "exports": {
+    "business-rejection-all.xlsx": {
+      "rows": 1205,
+      "columns": 11,
+      "headers": [
+        "序号",
+        "地区部",
+        "代表处",
+        "商务编码",
+        "商务责任人",
+        "商务审批通过时间",
+        "生命状态",
+        "审批结果",
+        "审批意见",
+        "评审组织人",
+        "审批阶段"
+      ],
+      "statusCounts": {
+        "已关闭": 402,
+        "进行中": 400,
+        "已取消": 401,
+        "null": 2
+      },
+      "missingOwners": 2,
+      "lastOrdinal": 1205
+    },
+    "business-rejection-closed.xlsx": {
+      "rows": 402,
+      "columns": 11,
+      "headers": [
+        "序号",
+        "地区部",
+        "代表处",
+        "商务编码",
+        "商务责任人",
+        "商务审批通过时间",
+        "生命状态",
+        "审批结果",
+        "审批意见",
+        "评审组织人",
+        "审批阶段"
+      ],
+      "statusCounts": {
+        "已关闭": 402
+      },
+      "missingOwners": 0,
+      "lastOrdinal": 402
+    }
+  }
+}

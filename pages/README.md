@@ -1,5 +1,9 @@
 # 页面示例与验收场景
 
+- [商务驳回明细原始元数据](business-rejection-details.json)：审批object主表、责任人与生命状态补列的完整模拟验收；入口 `/pages/business-rejection-details`，操作及1205/402/201条预期见 [DQE Sim说明](../tools/dqe-sim/README.md#商务驳回明细的原始元数据模拟验收)。
+
+- [对象查询作为记录关联主表](capabilities/query/README.md#对象查询作为记录关联主表)：object 分批完整读取、同商务多条审批与指标补列；入口 `/pages/object-record-join-demo`，使用 DQE Sim。
+
 期间查询策略与按年/季/月切换列：[period-query-columns-demo](capabilities/filters/period-query-columns-demo.json)，操作及数据边界见[筛选示例说明](capabilities/filters/README.md)。
 
 - [MC 内容包、布局与 Schema 兼容](capabilities/layout/README.md#mc-内容包布局与版本检查)：真实本地诊断生成的合成页面、旧文件升级流程及未验范围；入口 `/pages/mc-content-layout-demo`。

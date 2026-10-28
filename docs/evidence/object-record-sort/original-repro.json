@@ -1,0 +1,50 @@
+{
+  "pageId": "business-rejection-details",
+  "httpCalls": 1,
+  "snapshot": {
+    "status": "empty",
+    "totalCount": 0
+  },
+  "requests": [
+    {
+      "query_type": "object",
+      "object_type": "Business/Commercial Review Rejection Details",
+      "output_fields": [
+        "商务ID",
+        "地区部",
+        "代表处",
+        "商务编码",
+        "审批完成时间",
+        "审批结果",
+        "审批意见",
+        "审批人姓名",
+        "阶段名称"
+      ],
+      "filter": {
+        "fields": [
+          {
+            "field_name": "审批完成时间",
+            "value_list": [
+              "2026-09-01 00:00:00"
+            ],
+            "operator": ">="
+          },
+          {
+            "field_name": "审批完成时间",
+            "value_list": [
+              "2026-09-30 23:59:59"
+            ],
+            "operator": "<="
+          }
+        ]
+      },
+      "order": {
+        "offset": 0,
+        "limit": 500,
+        "order_by_field": "商务ID",
+        "type": "asc"
+      }
+    }
+  ],
+  "mockResponse": true
+}

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "a5d22caa84ff726c0dfd702f0da3d56072ad87cc2a1b8d3514067378e63d9f0e",
+  "sha256": "6b8a194a1b53c33c405a4ea15da580c02afa3e91ff9124bb66fc10c239ac8182",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "dcb115279684374b4607a1490569e7684062936a96f452c5e2f2e52fc4ce10cc"
+      "sha256": "6fe34878f88b844efb95caf8f99e86d8ffb8a7b387f6322dff2700915ce0bff4"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -1796,11 +1796,11 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "2aa921a4fb3679b10a555ba81e5eb1597bf452b8288ea673e13d1f28f849a73b"
+      "sha256": "557edd9abc9ddd2acd18b612c55b6adb7d0552962b8e195856b1597dc4862580"
     },
     {
       "file": "pages/business-rejection-details.json",
-      "sha256": "8d9e1e54ecc0a4e9df648ebf9644c0908d9a0e399873ee2fa7a207c863c44b8a"
+      "sha256": "eff16235dae56944a650a4a013cf79c00c940592c811915ffd13046152c28a5b"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -2204,7 +2204,7 @@
     },
     {
       "file": "pages/capabilities/query/README.md",
-      "sha256": "7ef66461ef373edd07c47561e395457bd264f15ffcace02d504bcd055d8b0298"
+      "sha256": "7206a7b65da7a1f7c7882a0e0a39e487ecbfd6591c30f75bb2405047604a7ef6"
     },
     {
       "file": "pages/capabilities/query/authoring-contract-reliability.json",
@@ -2213,6 +2213,10 @@
     {
       "file": "pages/capabilities/query/dqe-object-query-demo.json",
       "sha256": "9aa1977e777595193bd33b1b1a7aae4d600b5c75965622dee81ad2bdbb92dacb"
+    },
+    {
+      "file": "pages/capabilities/query/object-record-join-demo.json",
+      "sha256": "94f9f6c6e0eb226fd0ea0bc0558da859c298e244ad6201390fe6eaaab7f51138"
     },
     {
       "file": "pages/capabilities/query/query-numeric-tolerance.json",

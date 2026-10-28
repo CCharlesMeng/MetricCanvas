@@ -1,0 +1,464 @@
+{
+  "schemaVersion": "6.69",
+  "id": "object-record-join-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "对象审批记录与指标补列",
+    "description": "DQE Sim 合成数据：同一商务多条审批记录，object 主表分批完整读取，再按商务编号补充合同金额。"
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "label": "审批日期",
+      "precision": "date",
+      "default": {
+        "from": "2025-01-01",
+        "to": "2025-01-31"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "object_region",
+      "label": "区域",
+      "options": [
+        {
+          "label": "东区",
+          "value": "东区"
+        },
+        {
+          "label": "西区",
+          "value": "西区"
+        }
+      ]
+    },
+    {
+      "id": "business",
+      "type": "dimension",
+      "dimension": "object_business",
+      "label": "选中商务",
+      "visible": false,
+      "options": [
+        {
+          "label": "B001",
+          "value": "B001"
+        },
+        {
+          "label": "B002",
+          "value": "B002"
+        },
+        {
+          "label": "B003",
+          "value": "B003"
+        },
+        {
+          "label": "B004",
+          "value": "B004"
+        },
+        {
+          "label": "B005",
+          "value": "B005"
+        },
+        {
+          "label": "B006",
+          "value": "B006"
+        },
+        {
+          "label": "B007",
+          "value": "B007"
+        },
+        {
+          "label": "B008",
+          "value": "B008"
+        },
+        {
+          "label": "B009",
+          "value": "B009"
+        },
+        {
+          "label": "B010",
+          "value": "B010"
+        },
+        {
+          "label": "B011",
+          "value": "B011"
+        },
+        {
+          "label": "B012",
+          "value": "B012"
+        },
+        {
+          "label": "B013",
+          "value": "B013"
+        },
+        {
+          "label": "B014",
+          "value": "B014"
+        }
+      ]
+    },
+    {
+      "id": "amount",
+      "type": "numberRange",
+      "label": "审批金额"
+    }
+  ],
+  "dataSources": {
+    "approvals": {
+      "fields": {
+        "record": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "审批记录ID",
+          "label": "审批记录ID",
+          "nullable": false
+        },
+        "business": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "商务编号",
+          "label": "商务编号",
+          "nullable": false
+        },
+        "approved": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "特价审批通过时间",
+          "label": "特价审批通过时间",
+          "nullable": false
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域",
+          "nullable": false
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "审批金额",
+          "label": "审批金额",
+          "nullable": false
+        },
+        "budget": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "预算金额",
+          "label": "预算金额",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Approval Details",
+                "output_fields": [
+                  "审批记录ID",
+                  "商务编号",
+                  "特价审批通过时间",
+                  "区域",
+                  "审批金额",
+                  "预算金额"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "特价审批通过时间",
+                      "value_list": [
+                        "2025-01-01 00:00:00"
+                      ],
+                      "operator": ">="
+                    },
+                    {
+                      "field_name": "特价审批通过时间",
+                      "value_list": [
+                        "2025-01-31 23:59:59"
+                      ],
+                      "operator": "<="
+                    }
+                  ]
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "queryField": "特价审批通过时间",
+              "valueFormat": "datetime"
+            },
+            "region": {
+              "target": "dimension",
+              "queryField": "区域"
+            },
+            "business": {
+              "target": "dimension",
+              "queryField": "商务编号"
+            },
+            "amount": {
+              "target": "numberRange",
+              "metric": "审批金额"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "metrics": {
+      "fields": {
+        "business": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "商务编号",
+          "nullable": false
+        },
+        "contract": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "示例合同金额"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "商务编号"
+                ],
+                "output_metrics": [
+                  "示例合同金额"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "approval-overview": {
+      "fields": {
+        "record": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批记录ID",
+          "nullable": false
+        },
+        "business": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "nullable": false
+        },
+        "approved": {
+          "type": "string",
+          "role": "dimension",
+          "label": "特价审批通过时间",
+          "nullable": false
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "nullable": false
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批金额",
+          "nullable": false
+        },
+        "budget": {
+          "type": "number",
+          "role": "measure",
+          "label": "预算金额",
+          "nullable": false
+        },
+        "contract": {
+          "type": "number",
+          "role": "measure"
+        },
+        "row-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "快照记录标识",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "row-id",
+        "domainMember": "approval",
+        "members": {
+          "approval": {
+            "source": "approvals",
+            "key": {
+              "field": "business",
+              "queryField": "商务编号"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "metrics",
+            "key": {
+              "field": "business",
+              "queryField": "商务编号"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "period",
+              "region",
+              "business",
+              "amount"
+            ]
+          }
+        },
+        "projection": {
+          "record": {
+            "member": "approval",
+            "field": "record"
+          },
+          "business": {
+            "member": "approval",
+            "field": "business"
+          },
+          "approved": {
+            "member": "approval",
+            "field": "approved"
+          },
+          "region": {
+            "member": "approval",
+            "field": "region"
+          },
+          "amount": {
+            "member": "approval",
+            "field": "amount"
+          },
+          "budget": {
+            "member": "approval",
+            "field": "budget"
+          },
+          "contract": {
+            "member": "basic",
+            "field": "contract"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "approved",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "record",
+            "business",
+            "approved",
+            "amount",
+            "contract"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 5
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "onMissing": "null",
+        "records": {
+          "batchSize": 5,
+          "maxBytes": 67108864,
+          "timeoutMs": 60000
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "container": "card",
+      "components": [
+        {
+          "id": "approval-records",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "approval-overview"
+          },
+          "props": {
+            "title": "对象审批记录与合同金额（合成数据）",
+            "rowKey": "row-id",
+            "columns": [
+              {
+                "field": "record",
+                "sortable": true
+              },
+              {
+                "field": "business",
+                "sortable": true
+              },
+              {
+                "field": "approved",
+                "sortable": true
+              },
+              {
+                "field": "region",
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "amount",
+                "sortable": true
+              },
+              {
+                "field": "budget"
+              },
+              {
+                "field": "contract",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "title": "合同金额"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "business"
+                ],
+                "placeholder": "输入完整商务编号，如 B003"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "对象审批记录补列"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
