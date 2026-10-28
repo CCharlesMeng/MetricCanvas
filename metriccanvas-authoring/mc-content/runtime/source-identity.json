@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "29f230d238e0fb4c0d9b8a43e823c89522268946b7f347959f11fff46ddf0ec2",
+  "sha256": "515dc9479d9ae710cef9f6c73731a5c309615ca6438585de0efe917bb103f530",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -124,7 +124,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "b20106b5bd4e776f0b6ee242aea6b93412894da03c6d251c1a41127cfa2090f6"
+      "sha256": "968fc5a351a4ac60bc99b3f028e5da931b73ffcb0ebf2fb0ec8f56ffcb22720d"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -2256,7 +2256,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "a94c70373a29a99b868ad05b9ee26255bac71e47675ee2a4dc58b1a2230a1253"
+      "sha256": "1f4ff24647ca87db305bbe4b193653975994ef6221a3b3fc81d0451d6c0cebfd"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2377,6 +2377,14 @@
     {
       "file": "pages/temporary/README.md",
       "sha256": "46bbfd0e94f45a94e9a702a322da2c0b3116e06ebb083cbd9c11ab580d6c286d"
+    },
+    {
+      "file": "pages/temporary/contract-maturity-linkage-20261027/README.md",
+      "sha256": "b20066afb67b6e27c60b9521d3c7a3e1c6d1f8886a67b1d0d06dc09e805dd9d4"
+    },
+    {
+      "file": "pages/temporary/contract-maturity-linkage-20261027/contract-maturity-score-linked.json",
+      "sha256": "2343c3cfc907765fcd675c588b6f25f28eade0a9a247e17a7486641f4ed5e589"
     },
     {
       "file": "pages/temporary/contract-maturity-score-20261027/README.md",

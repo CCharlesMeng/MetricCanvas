@@ -84,7 +84,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 层级维度只要声明 `hierarchy`、`selection.mode:"single"`，且 `display` 省略或为 `select`／`tree`，省略 `hierarchyPicker` 就默认使用单个树形下拉。旧候选端口仅提供各层平面值时，按已声明的层级展示不可选择的分组节点；各业务节点直接提交所属层级与原始值，不虚构跨层父子归属，也不强制旧页切换到V2候选端口。显式 `hierarchyPicker`、多选和 `display:"tabs"` 保留既有行为。旧页入口 `ioc-opportunity-list` 与 `contract-maturity-score` 同样没有前置层级按钮；`ioc-project-overview` 显式 hidden 仍由地图接管切层。
 
-IOC Region 新页面默认采用单选树形下拉：`{id:"region",type:"dimension",dimension:"地区部编码",display:"tree",treeSelection:"level",selection:{mode:"single"},hierarchy:[{id:"region-dept",dimension:"地区部编码",label:"地区部"},{id:"office",dimension:"代表处编码",label:"代表处"}],defaultLevel:"region-dept"}`。字段名及业务值须按实际数据契约替换，候选必须由集成应用提供显式父子关系；不因需要树形外观伪造归属，不把 `hierarchyPicker:"hidden"` 当作单树替代。完整联动验收入口为 `ioc-header-standard`；同码样例为 `ioc-header-business-tree-demo`。本次修复不新增页面字段或版本，显式按钮、地图切层及旧多选行为保留。
+IOC Region 新页面默认采用单选树形下拉：`{id:"region",type:"dimension",dimension:"地区部编码",display:"tree",treeSelection:"level",selection:{mode:"single"},hierarchy:[{id:"region-dept",dimension:"地区部编码",label:"地区部"},{id:"office",dimension:"代表处编码",label:"代表处"}],defaultLevel:"region-dept"}`。字段名及业务值须按实际数据契约替换，候选必须由集成应用提供显式父子关系；不因需要树形外观伪造归属，不把 `hierarchyPicker:"hidden"` 当作单树替代。完整联动验收入口为 `ioc-header-standard`；同码样例为 `ioc-header-business-tree-demo`。`table-hierarchy-selection` 补充验证同一个树形下拉内选择代表处后，通过独立父级定位查询联动父子表格；其候选父子关系来自明确标注的合成夹具。本次修复不新增页面字段或版本，显式按钮、地图切层及旧多选行为保留。
 - candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，等用户显式确认；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
 - 共用hint为TextValue，可引用不可变参数或已应用筛选，缺值省略；clearOnChangeOf是明确失效关系，不伪装成候选请求约束。普通只读不清合法条件。
 
