@@ -17,10 +17,10 @@
 入口：[主指标与多行次级指标](http://localhost:5178/pages/metric-card-primary-detail)。命令：`pnpm --filter playground exec vite dev --port 5178`。正式场景文件：`pages/capabilities/layout/metric-card-primary-detail.json`，显式Dashboard、仅内联合成数据。
 
 - 第一排四卡为0/1/3/6行次级指标，最新main复验外框高度均为257.91015625 CSS px，顶边和底边一致。
-- 浏览器计算样式核对字号、行高、颜色、字重、字体、8px上间距和下划线；最新集成详见 [browser-main.json](browser-main.json)，初始实现记录见[browser.json](browser.json)。浏览器将零字距的计算值序列化为normal。
+- 浏览器计算样式核对字号、行高、颜色、字重、字体、8px上间距和下划线；最新集成详见 [browser-main.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/browser-main.json)，初始实现记录见[browser.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/browser.json)。浏览器将零字距的计算值序列化为normal。
 - 实测390 CSS px视口，各卡逐张堆叠且高度随行数变化，无页面横向溢出；长名称换行、真实零和缺失值保留。
 - 鼠标点击及键盘Enter均可通过显式link打开明细，表格显示已回款960万元；普通下划线数值仍为文本。
-- [桌面截图](desktop.png)、[窄屏截图](mobile.png)。
+- [桌面截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/desktop.png)、[窄屏截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/mobile.png)。
 
 ## 初始实现检查结果（ea40f664基线）
 
@@ -30,12 +30,12 @@
 - `pnpm exec tsc --noEmit -p tests/tsconfig.json`：通过。
 - `pnpm validate pages/capabilities/layout`：9个页面通过。
 - `pnpm authoring:contracts`及`pnpm authoring:contracts:check`：通过，1101项产品、4项创作、1项接口输出一致。
-- 复制完整local-authoring到仓库外，以独立工作目录验证新页面和`metricCard.core`知识：通过，见 [standalone.json](standalone.json)。相关测试亦覆盖知识链接闭合与全部契约向量一致性。
+- 复制完整local-authoring到仓库外，以独立工作目录验证新页面和`metricCard.core`知识：通过，见 [standalone.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/standalone.json)。相关测试亦覆盖知识链接闭合与全部契约向量一致性。
 - 页面与契约合法夹具逐字一致；`git diff --check`通过。
 
 ## 复杂度
 
-口径：`metriccanvas-ts-ast/1`，TypeScript5.9.3，逐函数selfCC，排除嵌套函数体后另行计量。明细见 [complexity.json](complexity.json)。
+口径：`metriccanvas-ts-ast/1`，TypeScript5.9.3，逐函数selfCC，排除嵌套函数体后另行计量。明细见 [complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/complexity.json)。
 
 | 函数或回调 | 修改前 | 修改后 |
 | --- | --- | --- |
@@ -60,6 +60,6 @@ Svelte仅增加变体class与CSS，没有修改脚本函数或模板分支结构
 - 广泛回归：`pnpm test --exclude tests/authoring-export-isolation.test.ts`，353文件、3124项通过、4项既有跳过。耗时的冷导出隔离文件由精确提交SHA的CI继续执行。
 - `pnpm check`、`pnpm build`、`pnpm mc:content:check`通过。MC检查含1247项产品输出一致性、独立来源覆盖、30项Python测试和诊断夹具检查。
 - Python使用已安装的3.12 Tool环境，通过METRICCANVAS_PYTHON指定注册探查；没有放宽依赖检查。
-- 最新浏览器复验：0/1/3/6行同排等高，390 CSS px逐卡自然高度且无横向溢出；Enter打开原有明细并显示960。证据见[browser-main.json](browser-main.json)。
-- 完整Skill仓外复制后，新页面校验与metricCard.core知识读取均通过，见[standalone-main.json](standalone-main.json)。
-- 复杂度复验：`metriccanvas-ts-ast/1` / TypeScript5.9.3，新校验3；`checkMetricCard`5→5，`componentErrors`4→4；新能力回调1/2，新契约回调均1，新测试最大2。饼图及表面测试只修正断言/正则，函数决策数不增加。见[complexity-main.json](complexity-main.json)。本批无新增超限遗留。
+- 最新浏览器复验：0/1/3/6行同排等高，390 CSS px逐卡自然高度且无横向溢出；Enter打开原有明细并显示960。证据见[browser-main.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/browser-main.json)。
+- 完整Skill仓外复制后，新页面校验与metricCard.core知识读取均通过，见[standalone-main.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/standalone-main.json)。
+- 复杂度复验：`metriccanvas-ts-ast/1` / TypeScript5.9.3，新校验3；`checkMetricCard`5→5，`componentErrors`4→4；新能力回调1/2，新契约回调均1，新测试最大2。饼图及表面测试只修正断言/正则，函数决策数不增加。见[complexity-main.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/metric-card-primary-detail/complexity-main.json)。本批无新增超限遗留。

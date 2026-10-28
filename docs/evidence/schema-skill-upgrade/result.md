@@ -28,11 +28,11 @@ Skill编辑已有页面前先检查upgrade-page回执。可升级时写入全新
 - 生成脚本篡改检查：`tests/authoring-export-isolation.test.ts -t upgrade-page`通过，损坏生成脚本会被契约漂移检查拒绝。
 - 完整authoring:check初跑148项通过、2项在30秒子进程上限超时（同机同时有其他隔离工作树运行导出）；没有放宽上限，单独重跑这2项及新增脚本漂移场景，3项全部通过。最终local-authoring工具、安装、升级、参考文档及相关协议边界共7个测试文件178项通过；最终authoring:contracts:check通过。
 - 分发：同版生成知识、脚本及哈希；`check_bundle.py`通过3747项摘要检查；Skill quick_validate通过。
-- 浏览器：实际服务cwd为此工作树的apps/playground，端口5191。访问`/pages/schema-upgrade-demo`，显示后续修改的页级标题和“继续开发：GMV”，原金额为6,323.0亿。升序为华南、华北、华东，降序相反；无console error/warn。截图见[Playground](playground.png)。
+- 浏览器：实际服务cwd为此工作树的apps/playground，端口5191。访问`/pages/schema-upgrade-demo`，显示后续修改的页级标题和“继续开发：GMV”，原金额为6,323.0亿。升序为华南、华北、华东，降序相反；无console error/warn。截图见[Playground](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/schema-skill-upgrade/playground.png)。
 
 ## 复杂度
 
-使用仓内`metriccanvas-ts-ast/1`、TypeScript5.9.3，测量每个函数自身CC，排除嵌套函数体并单独测量闭包。完整数据见[实测](complexity.json)。
+使用仓内`metriccanvas-ts-ast/1`、TypeScript5.9.3，测量每个函数自身CC，排除嵌套函数体并单独测量闭包。完整数据见[实测](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/schema-skill-upgrade/complexity.json)。
 
 新增代码无原函数基线：upgradePageDocument=12，sourceVersionErrors=6，semanticMigrationErrors=5，convertChart=7，upgradeChartFilters=1；CLI options=11、runUpgrade=8、main=6。全部新增辅助函数及测试回调不超过15。
 

@@ -30,7 +30,7 @@
 
 ## 浏览器
 
-独立工作树Vite入口：http://127.0.0.1:5192/pages/record-join-demo。通过Codex浏览器实操：默认9月1205条；起止都改为8月并Enter后0条；改回9月并搜索BIZ-00001得到初审/复审两条，见[browser.png](browser.png)。sourceFailure=true产生DQE_TRANSPORT_ERROR，表格无部分行及成功总数。合成Adapter在返回总数与窗口前应用期间；真实HTTP请求编码由共享网关回归覆盖。
+独立工作树Vite入口：http://127.0.0.1:5192/pages/record-join-demo。通过Codex浏览器实操：默认9月1205条；起止都改为8月并Enter后0条；改回9月并搜索BIZ-00001得到初审/复审两条，见[browser.png](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/rejection-time-pushdown/browser.png)。sourceFailure=true产生DQE_TRANSPORT_ERROR，表格无部分行及成功总数。合成Adapter在返回总数与窗口前应用期间；真实HTTP请求编码由共享网关回归覆盖。
 
 ## 复杂度
 

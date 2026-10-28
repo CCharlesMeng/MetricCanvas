@@ -23,12 +23,12 @@ DQE_SIM_PORT=18229 pnpm sim:dqe
 DQE_SIM_PORT=18229 pnpm --filter playground dev --host 127.0.0.1 --port 5193 --strictPort
 ```
 
-浏览器使用真实页面声明及本地 HTTP Sim，未替换页面查询或组件。完成以下操作，DOM 记录见 [browser.json](browser.json)，控制台错误为空：
+浏览器使用真实页面声明及本地 HTTP Sim，未替换页面查询或组件。完成以下操作，DOM 记录见 [browser.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/browser.json)，控制台错误为空：
 
-1. 首屏四行：东区 12/9、南区 7/5、零值区 0/0、缺失区 —/3；柱图按同一行集呈现。[全区域截图](all-regions.png)
-2. 选择南区，图表两根柱及明细为 7 和 5；清空恢复四行。[筛选截图](south.png)
-3. 切换零值区，两个数值显示真实 0。[零值截图](zero.png)
-4. 切换缺失区，项目数量保持缺失、已完成数量为 3；再清空恢复。[缺失截图](missing.png)
+1. 首屏四行：东区 12/9、南区 7/5、零值区 0/0、缺失区 —/3；柱图按同一行集呈现。[全区域截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/all-regions.png)
+2. 选择南区，图表两根柱及明细为 7 和 5；清空恢复四行。[筛选截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/south.png)
+3. 切换零值区，两个数值显示真实 0。[零值截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/zero.png)
+4. 切换缺失区，项目数量保持缺失、已完成数量为 3；再清空恢复。[缺失截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/missing.png)
 
 HTTP 回归直接读取同一 `pages/` JSON，检查 initial 与强制刷新、维度筛选、完整结果读取、实际生成的柱系列，以及请求中 output_dims 不变、output_metrics 始终为空。现成金额及数值字符串/缺失归一化在页面契约测试覆盖。数字编号保留 dimension，非数值 output_dims 不得成为 measure，output_metrics 角色约束与 collapsible 授权继续校验。
 
@@ -49,7 +49,7 @@ HTTP 回归直接读取同一 `pages/` JSON，检查 initial 与强制刷新、�
 
 ## 复杂度
 
-使用 `metriccanvas-ts-ast/1`、TypeScript 5.9.3 的 selfCC；每个函数独立测量，含闭包/回调，不把子树复杂度当作自身复杂度。明细见 [complexity.json](complexity.json)。
+使用 `metriccanvas-ts-ast/1`、TypeScript 5.9.3 的 selfCC；每个函数独立测量，含闭包/回调，不把子树复杂度当作自身复杂度。明细见 [complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/complexity.json)。
 
 | 修改函数 | 前 → 后 |
 |---|---|
@@ -74,7 +74,7 @@ HTTP 回归直接读取同一 `pages/` JSON，检查 initial 与强制刷新、�
 - 契约导出隔离：原全量运行中 24 项有 23 项通过；初轮并行验证出现的 2 个超时场景，经 `pnpm test tests/authoring-export-isolation.test.ts -t '无旧链时可运行|拒绝共享 Skill 作者漂移：layouts/dashboard.md'` 独立复跑后 2 项通过、其余 22 项未重跑，覆盖原失败项；重叠不相加，子进程上限仍为 30 秒。
 - `pnpm check`、`pnpm build:packages` 通过；页面包在迁移断言修正后再次类型检查通过。
 - `pnpm authoring:contracts:check` 通过（1130 product、4 authoring、1 interface 文件）；`pnpm validate pages` 的 89 个页面全部通过，ADR 索引无漂移。
-- 在原入口重新加载合入后的页面、选择南区得到 7/5、清空后恢复四行。[浏览器记录](delivery-browser.json)、[截图](delivery.png)。
-- 新基线复杂度记录见 [delivery-complexity.json](delivery-complexity.json)：queryContractErrors 10→10、checkMappedField 11→12、executeLocalDemo 3→3、版本测试 2→2、参数迁移测试 4→4；新增函数最高12，本批无超限未关闭项。
+- 在原入口重新加载合入后的页面、选择南区得到 7/5、清空后恢复四行。[浏览器记录](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/delivery-browser.json)、[截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/delivery.png)。
+- 新基线复杂度记录见 [delivery-complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/stored-count-measures/delivery-complexity.json)：queryContractErrors 10→10、checkMappedField 11→12、executeLocalDemo 3→3、版本测试 2→2、参数迁移测试 4→4；新增函数最高12，本批无超限未关闭项。
 
 远端 SHA 与 CI 结果以本次交付回执为准。原始混合工作区未进行暂存、清理、合并或重置；隔离工作区的预览服务仍供用户查看。本次只交付代码，不代表内网部署或真实 DQE/Relay 验收完成。

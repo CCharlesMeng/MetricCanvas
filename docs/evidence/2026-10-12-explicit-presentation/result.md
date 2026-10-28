@@ -11,16 +11,16 @@
 5. `showValueLabels: true` 逐有效数据项常驻显示对应字段格式化数值，混合图柱与线均显示；零显示，缺失不伪造。密集图采用交替位置，标签保持关联于实际节点，重复 resize 后位置稳定。新开关与旧标签开关不能重复启用。
 6. [商务 SDT 页](../../../pages/business-sdt-report.json) 的时长变化显式正红负绿；最快榜主时长固定绿，最慢榜固定红；次数变化保留原映射并显式声明。项目榜只调整主决策时长，阶段时长和名称等列不继承。5个图全部启用类别及数值标签。
 
-目标页面相对实施前快照共28个声明路径变化，[差分记录](metadata-diff.json) 证明 `dataSources` 与 `filters` 未变。本轮不修改查询口径，不需要 Relay/DQE 的业务协议改动。
+目标页面相对实施前快照共28个声明路径变化，[差分记录](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-12-explicit-presentation/metadata-diff.json) 证明 `dataSources` 与 `filters` 未变。本轮不修改查询口径，不需要 Relay/DQE 的业务协议改动。
 
 ## 验收证据
 
 | 验证 | 结果及边界 |
 |---|---|
-| TypeScript 全量 | 197文件、1746测试通过，见[日志](typescript-tests-final.log) |
-| 作者侧规则及交付 | 450测试通过，见[日志](authoring-tests-final.log)；scripted-no-model，不代表真实模型验收 |
+| TypeScript 全量 | 197文件、1746测试通过，见日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/2026-10-12-explicit-presentation/typescript-tests-final.log`） |
+| 作者侧规则及交付 | 450测试通过，见日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/2026-10-12-explicit-presentation/authoring-tests-final.log`）；scripted-no-model，不代表真实模型验收 |
 | 变更聚焦回归 | 最后颜色样式统一后，页面与组件17测试通过；含有效零、负值、缺失、冲突、旧规则、三条图表路径及真实 ECharts SVG 重复 resize |
-| 类型检查 | engine 和 Playground 均0错误、0警告，见[engine](engine-check-final.log)、[Playground](playground-check.log)；page 包检查也通过 |
+| 类型检查 | engine 和 Playground 均0错误、0警告，见engine（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/2026-10-12-explicit-presentation/engine-check-final.log`）、Playground（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/2026-10-12-explicit-presentation/playground-check.log`）；page 包检查也通过 |
 | 页面校验 | `pnpm validate`，15/15页面通过 |
 | 生成物 | `authoring:contracts`、`authoring:contracts:check` 和 `check_bundle.py` 通过；570产品契约、4创作契约、1接口契约，bundle 0.3.1 的1829个摘要一致 |
 | 页面实际绘图 | [可重跑脚本](render-chart-evidence.ts) 使用 parsePage 后的初始行，调用实际 option 与 ECharts SVG 渲染；[汇总](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/2026-10-12-explicit-presentation/svg-summary.json) 中无缺失类别，所有有效数据项数值均被绘制，无需 hover |

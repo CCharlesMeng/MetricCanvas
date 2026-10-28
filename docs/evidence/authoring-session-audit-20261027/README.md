@@ -25,7 +25,7 @@
 | 探针全部 | 15个方法，约1秒 | 执行退出码应为1，产品尚未修复 |
 | 复杂度 | Radon 6.0.1，16个函数/方法CC=1–3 | 新增的是调查探针，产品函数前后无变化；没有新增超限函数 |
 
-原始输出：[probe.log](probe.log)、[baseline-tests.log](baseline-tests.log)、[复杂度测量](complexity.json)。日志包含既有夹具的 TemporaryDirectory ResourceWarning，不改变断言结果。最初定向执行缺少 model-evals 导入路径及被引用页面/模拟数据，补齐固定提交的这些依赖后重新执行，最终56项通过。
+原始输出：probe.log（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/authoring-session-audit-20261027/probe.log`）、baseline-tests.log（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/authoring-session-audit-20261027/baseline-tests.log`）、[复杂度测量](complexity.json)。日志包含既有夹具的 TemporaryDirectory ResourceWarning，不改变断言结果。最初定向执行缺少 model-evals 导入路径及被引用页面/模拟数据，补齐固定提交的这些依赖后重新执行，最终56项通过。
 
 ### 缺陷探针的确切断言
 

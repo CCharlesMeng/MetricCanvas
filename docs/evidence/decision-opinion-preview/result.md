@@ -28,7 +28,7 @@
 | sourceFailure=contract | 页面保留表头并显示暂无数据；控制台输出 DQE_TIMEOUT，没有商务半份结果 |
 | 页面目录搜索决策意见明细 | 显示 capabilities/table 下唯一匹配卡片，点击后正常打开预览 |
 
-默认页面截图：[desktop.jpg](desktop.jpg)；表头筛选截图：[header-filter.jpg](header-filter.jpg)。浏览结束保留无失败参数的页面并展开类型列表头筛选。
+默认页面截图：[desktop.jpg](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/decision-opinion-preview/desktop.jpg)；表头筛选截图：[header-filter.jpg](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/decision-opinion-preview/header-filter.jpg)。浏览结束保留无失败参数的页面并展开类型列表头筛选。
 
 ## 检查与证据
 

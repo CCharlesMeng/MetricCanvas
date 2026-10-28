@@ -7,10 +7,10 @@
 验证：
 
 - `pnpm check`：全仓类型与 Svelte 检查通过；`pnpm build:packages` 构建通过。
-- 项目 `pnpm test` 入口执行 11 个相关测试文件，197 项通过；包括版本、工具栏、筛选、组合卡、Sim、local-authoring 独立安装及升级。见 [delivery-tests.log](delivery-tests.log)。
-- UI Chrome 选择组件 9 项通过，含普通 DOM 与 ShadowRoot 宽度回归，见 [delivery-ui-browser.log](delivery-ui-browser.log)。
-- `pnpm authoring:contracts:check` 与 MC 来源覆盖检查通过；MC 内容 Python 30 项通过。诊断生成/校验最后在所有页面版本稳定后执行，见 [delivery-contracts-check.log](delivery-contracts-check.log)、[delivery-fixtures-check.log](delivery-fixtures-check.log)。
-- 隔离 Playground 5178、DQE Sim 18232，实际三条件页面显示订单量 1,857；左边距 0、右边距 0、下拉间距 12px，各宽 160px，见 [delivery-browser.jpg](delivery-browser.jpg)。
+- 项目 `pnpm test` 入口执行 11 个相关测试文件，197 项通过；包括版本、工具栏、筛选、组合卡、Sim、local-authoring 独立安装及升级。见 [delivery-tests.log](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-filter-toolbar/delivery-tests.log)。
+- UI Chrome 选择组件 9 项通过，含普通 DOM 与 ShadowRoot 宽度回归，见 [delivery-ui-browser.log](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-filter-toolbar/delivery-ui-browser.log)。
+- `pnpm authoring:contracts:check` 与 MC 来源覆盖检查通过；MC 内容 Python 30 项通过。诊断生成/校验最后在所有页面版本稳定后执行，见 [delivery-contracts-check.log](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-filter-toolbar/delivery-contracts-check.log)、[delivery-fixtures-check.log](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-filter-toolbar/delivery-fixtures-check.log)。
+- 隔离 Playground 5178、DQE Sim 18232，实际三条件页面显示订单量 1,857；左边距 0、右边距 0、下拉间距 12px，各宽 160px，见 [delivery-browser.jpg](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-filter-toolbar/delivery-browser.jpg)。
 - AST 口径 `metriccanvas-ts-ast/1` / TypeScript 5.9.3：新分组函数 CC=5，新版本检测与谓词 CC=1/2，新测试回调 CC≤3；其他函数仅移入原行为或改固定版本表，无新增复杂度超限项。
 
 Python 依赖复用已锁定依赖环境 `/tmp/mc-content-completeness-venv/bin/python`（FastMCP 3.4.7），未修改 requirements.lock 或 pnpm-lock.yaml。真实 DQE、Relay 与生产部署未复验。远端提交与精确 SHA 的 CI 结果由交付消息分别报告；本记录不将 push/规则 bypass 当作 CI 通过。

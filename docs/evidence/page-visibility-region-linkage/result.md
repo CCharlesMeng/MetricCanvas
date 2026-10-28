@@ -18,7 +18,7 @@
 | 协议版本、非法来源、类型、深度、行键、片段定位 | 产品与分发 conformance 向量、page/runtime 单元测试 | Schema 6.34、`reference-conditions-page.json` |
 | 人工/AI 操作差分、失败回滚、隐藏目标 | 产品 operation、属性编辑与 Python stdio 测试 | `set_presentation_condition`、`add_button`、`set_text_parts` |
 
-三页均注册在 Playground 目录；Sim 只由开发应用的目录配置注入，页面没有模拟权限开关。`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`pages/README.md` 和本地创作 Skill 已同步。生成器输出同版契约、参考文档、示例、Bundle 和独立 Node Bridge。最终文件树与独立安装结果见[安装验收](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/installed-acceptance.json)，原始失败阶段记录另存[原矩阵记录](compatibility-original.json)。
+三页均注册在 Playground 目录；Sim 只由开发应用的目录配置注入，页面没有模拟权限开关。`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`pages/README.md` 和本地创作 Skill 已同步。生成器输出同版契约、参考文档、示例、Bundle 和独立 Node Bridge。最终文件树与独立安装结果见[安装验收](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/installed-acceptance.json)，原始失败阶段记录另存[原矩阵记录](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/compatibility-original.json)。
 
 ## 浏览器与导出
 
@@ -36,7 +36,7 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 
 ## 模型与受控链路
 
-[无模型预检](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/preflight.json) 通过，modelRequests=0；[确定性六用例](scripted.json) 全绿，modelCalls=0。[真实 DS 合并记录](model-merged.json) 覆盖三种创建和三种编辑；没有单次全量全绿。真实模型为 deepseek-v4-flash，各次参数、用量、Skill/用例 hash 在对应报告中。
+[无模型预检](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/preflight.json) 通过，modelRequests=0；[确定性六用例](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/scripted.json) 全绿，modelCalls=0。[真实 DS 合并记录](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/model-merged.json) 覆盖三种创建和三种编辑；没有单次全量全绿。真实模型为 deepseek-v4-flash，各次参数、用量、Skill/用例 hash 在对应报告中。
 
 | 用例 | 确定性 | 真实 DS | 页面产物 | 浏览器 |
 |---|---|---|---|---|
@@ -48,11 +48,11 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 | edit-add-data | pass | pass | pass，保留旧源和旧组件 | 本轮未单独复验 |
 | 新展示条件三种编辑操作 | 产品/stdio pass | NOT_RUN | parse/差分/失败回滚 pass | 实际功能页 pass |
 
-首次全量因600000预算阻塞后续编辑；第二轮 edit-report通过，但 edit-dashboard遇MCP Connection closed，edit-add-data预算不足。随后分别重跑dashboard与新增数据用例均通过，未删除失败报告，见 `model-first.json`、`model-edit-retry.json`、`model-dashboard-retry.json`、`model-add-retry.json`。完整脱敏轨迹、HTTP日志与 `document.json` 保留在 `/tmp/visibility-ds-*`。这证明六个既有创作主流程的回归；新增条件操作只有确定性证据，不能称为真实模型已掌握条件创作。
+首次全量因600000预算阻塞后续编辑；第二轮 edit-report通过，但 edit-dashboard遇MCP Connection closed，edit-add-data预算不足。随后分别重跑dashboard与新增数据用例均通过，未删除失败报告，见 [model-first.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/model-first.json)、[model-edit-retry.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/model-edit-retry.json)、[model-dashboard-retry.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/model-dashboard-retry.json)、[model-add-retry.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/model-add-retry.json)。完整脱敏轨迹、HTTP日志与 `document.json` 保留在 `/tmp/visibility-ds-*`。这证明六个既有创作主流程的回归；新增条件操作只有确定性证据，不能称为真实模型已掌握条件创作。
 
 ## 最终回归与安装兼容
 
-冻结产品源码为`0c6464bf`，运行时与构建输入hash见[frozen-inputs.json](frozen-inputs.json)。完整TS回归263文件、2295通过、4项既有skip；Python完整回归544项、1项既有skip，最终Bridge相关18项另行通过。详情工具栏补齐执行条件与触发复核，参考文档生成器统一结尾换行。类型检查、全部包/Platform/Playground生产构建及独立安装均通过；另已通过、产品/Playground构建、定向行为回归、共享契约检查、2910项Bundle digest检查、ADR索引及Python复杂度检查（366函数、最大15、超限0）。全量回归首次发现旧目录/组件计数/页面身份断言，已修正并定向全绿；一次Python完整回归与契约生成并行，命中重建目录短暂不存在的测试设施竞态；冻结后完整重跑通过。首次全量TS及安装矩阵遇到生成隔离场景超时；复用同一Schema的联合分支编译后，独立检查从5.62秒降至2.94秒，产物完全不变。26项参考/生成隔离回归及最终2295项全量回归通过，未扩大超时门槛。
+冻结产品源码为`0c6464bf`，运行时与构建输入hash见[frozen-inputs.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/frozen-inputs.json)。完整TS回归263文件、2295通过、4项既有skip；Python完整回归544项、1项既有skip，最终Bridge相关18项另行通过。详情工具栏补齐执行条件与触发复核，参考文档生成器统一结尾换行。类型检查、全部包/Platform/Playground生产构建及独立安装均通过；另已通过、产品/Playground构建、定向行为回归、共享契约检查、2910项Bundle digest检查、ADR索引及Python复杂度检查（366函数、最大15、超限0）。全量回归首次发现旧目录/组件计数/页面身份断言，已修正并定向全绿；一次Python完整回归与契约生成并行，命中重建目录短暂不存在的测试设施竞态；冻结后完整重跑通过。首次全量TS及安装矩阵遇到生成隔离场景超时；复用同一Schema的联合分支编译后，独立检查从5.62秒降至2.94秒，产物完全不变。26项参考/生成隔离回归及最终2295项全量回归通过，未扩大超时门槛。
 
 ## 外部边界
 
@@ -97,6 +97,6 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 
 合并后的 `pnpm check` 零错误/警告，补丁后的 engine 类型检查、`pnpm build && pnpm build:playground` 均通过；页面 37/37 校验通过，契约生成一致性及 ADR 索引通过。版本、条件、属性编辑、指标卡、目录和投影的 45 项定向回归通过；仓外 local-authoring 安装与独立校验 20 项通过。未追加其他 Skill 或真实 DS 模型复验。
 
-`VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/metriccanvas-visibility-main-635` 在 6.35 三份实际页面上完成 16 类场景，pageerror 为零，包括公共 JS 输入、权限失效、替换输入源、PDF/PNG/XLSX 和导出取消。[浏览器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/merge-browser-6.35.json)与[合并输入和检查记录](main-merge-6.35.json)分别保留机器证据。合并后的仓外浏览器矩阵交由远端 CI；真实 CloudIOC/Java/DQE/Relay 与新条件真实 DS 创作仍未运行。
+`VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/metriccanvas-visibility-main-635` 在 6.35 三份实际页面上完成 16 类场景，pageerror 为零，包括公共 JS 输入、权限失效、替换输入源、PDF/PNG/XLSX 和导出取消。[浏览器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/page-visibility-region-linkage/merge-browser-6.35.json)与[合并输入和检查记录](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-visibility-region-linkage/main-merge-6.35.json)分别保留机器证据。合并后的仓外浏览器矩阵交由远端 CI；真实 CloudIOC/Java/DQE/Relay 与新条件真实 DS 创作仍未运行。
 
 首次合并全量 TS 回归覆盖267文件，2329通过、5项既有skip、2项目录失败：自动合并把新增页面放入了能力列表，导致目录缺页及能力缺少文档。已修复为独立能力及三份完整页面说明，目录9/9与合并回归45/45通过。最终提交的全量结论以远端CI为准，未把首次失败写成全绿。

@@ -1,6 +1,6 @@
 # 最新main基线交付复验
 
-基线：`a1618d7e058a19d81e285ac288e9ec8b56d540e3`；检出：`/Users/moon/.codex/worktrees/table-detail-width-delivery/DataDashboard`。按本次文件清单承接运行时、演示、浏览器测试和文档；完整保留基线上已有的权限、字段选择、查询与表格能力。从此检出的产品真源重新生成契约、local-authoring知识与摘要清单。新增语义标题同时注册于`docs/page-metadata/reference-map.json`，安装后的精确知识可发现该主题。源码与锁文件摘要见`inputs.json`。
+基线：`a1618d7e058a19d81e285ac288e9ec8b56d540e3`；检出：`/Users/moon/.codex/worktrees/table-detail-width-delivery/DataDashboard`。按本次文件清单承接运行时、演示、浏览器测试和文档；完整保留基线上已有的权限、字段选择、查询与表格能力。从此检出的产品真源重新生成契约、local-authoring知识与摘要清单。新增语义标题同时注册于`docs/page-metadata/reference-map.json`，安装后的精确知识可发现该主题。源码与锁文件摘要见[inputs.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/table-detail-width/delivery/inputs.json)。
 
 在此基线执行：
 

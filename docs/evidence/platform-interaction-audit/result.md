@@ -20,13 +20,13 @@
 
 页面：[`platform-interaction-audit.json`](../../../pages/platform/platform-interaction-audit.json)，Dashboard，当前产品版本 6.51，纯内联合成数据。操作和启动见 [`pages/platform/README.md`](../../../pages/platform/README.md#工作台交互审计验收)。
 
-- Playground：`http://127.0.0.1:5173/pages/platform-interaction-audit` 自动发现新页面。清空“区域”后，带 visibleWhen 的文字消失，其他图表及合计不被假装重查；[页面截图](playground.jpg)。
+- Playground：`http://127.0.0.1:5173/pages/platform-interaction-audit` 自动发现新页面。清空“区域”后，带 visibleWhen 的文字消失，其他图表及合计不被假装重查；[页面截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/playground.jpg)。
 - 隔离工作台：`http://127.0.0.1:5176/flow/create?page=platform-interaction-audit&resource=resource-platform-interaction-audit`。真实 Platform 组件、合成页面资产及明确标识的 Chat 替身；未连接真实服务。
-- 标题输入通过实际键盘提交后：未保存工作副本、保存按钮及本机保护可见；`sendCount=0/infoWrites=0/assetWrites=0`，没有服务端写入。[未保存证据](title-unsaved.jpg)。确认保存后：`lastIntent=confirm-save`、`sendCount=1`，完整输入同时包含最新标题和新增条件，工作台变为已保存。[保存证据](title-saved.jpg)。
-- 默认页面属性只有已配置条件摘要，没有大量空白 JSON。[摘要](condition-summary.jpg)、[基础表单](condition-basic.jpg)。非法 `{` 留在窗口报错；合法 JSON 中引用 missing 筛选器同样被拒绝，取消保留原规则。[非法引用](condition-rejected.jpg)。含 all/not/containsAny 的组合规则应用、重新打开仍完整保留，默认使用高级编辑。[组合规则](condition-complex.jpg)。
-- 目录选择“底部区域占比”后，实际目标进入视口并显示蓝色选框（取样 top≈380px）；通过“切换组件”选择“操作说明”后目标切回 `intro/instructions`，top≈266px。[定位与切换](component-located.jpg)。
-- 顶部“页面管理”打开既有对话框，关闭后回到原画布。[管理对话框](page-management.jpg)。
-- 正常 Platform 查询页：`http://127.0.0.1:5175/create?page=demo&resource=local-demo`。本地资产及 DQE Sim，Chat 未接通；本轮只选择组件和查看候选，没有保存或发布这份已有工作副本。选 GMV 指标卡，展开查看不可用形态，柱/线/饼图明确解释当前 0 个维度而需要 1 个等原因。[形态原因](unavailable-shapes.jpg)。纯内联场景沿用原限制，不提供查询形态局部构造。
+- 标题输入通过实际键盘提交后：未保存工作副本、保存按钮及本机保护可见；`sendCount=0/infoWrites=0/assetWrites=0`，没有服务端写入。[未保存证据](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/title-unsaved.jpg)。确认保存后：`lastIntent=confirm-save`、`sendCount=1`，完整输入同时包含最新标题和新增条件，工作台变为已保存。[保存证据](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/title-saved.jpg)。
+- 默认页面属性只有已配置条件摘要，没有大量空白 JSON。[摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/condition-summary.jpg)、[基础表单](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/condition-basic.jpg)。非法 `{` 留在窗口报错；合法 JSON 中引用 missing 筛选器同样被拒绝，取消保留原规则。[非法引用](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/condition-rejected.jpg)。含 all/not/containsAny 的组合规则应用、重新打开仍完整保留，默认使用高级编辑。[组合规则](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/condition-complex.jpg)。
+- 目录选择“底部区域占比”后，实际目标进入视口并显示蓝色选框（取样 top≈380px）；通过“切换组件”选择“操作说明”后目标切回 `intro/instructions`，top≈266px。[定位与切换](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/component-located.jpg)。
+- 顶部“页面管理”打开既有对话框，关闭后回到原画布。[管理对话框](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/page-management.jpg)。
+- 正常 Platform 查询页：`http://127.0.0.1:5175/create?page=demo&resource=local-demo`。本地资产及 DQE Sim，Chat 未接通；本轮只选择组件和查看候选，没有保存或发布这份已有工作副本。选 GMV 指标卡，展开查看不可用形态，柱/线/饼图明确解释当前 0 个维度而需要 1 个等原因。[形态原因](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/unavailable-shapes.jpg)。纯内联场景沿用原限制，不提供查询形态局部构造。
 
 ## 文档与 local-authoring
 

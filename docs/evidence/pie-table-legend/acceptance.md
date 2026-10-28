@@ -20,7 +20,7 @@
 
 窄卡片实例使用 span=4，在实际组件宽 467px 时，plot 高 320px，legend.top 大于 plot.bottom，组件 scrollWidth=clientWidth=467；四条图例均存在。浏览器的 viewport override 没有改变此 tab 的 DOM 宽度，因此不将该调用当作整页手机尺寸的验收；窄卡片的实际容器重排已经通过，临时覆盖已恢复。
 
-截图：[正式页面](desktop.jpg)、[排序后点击](sorted-click.jpg)、[窄卡片](narrow-card.jpg)。截图只作可视证据，断点与完整行数以上述实际 DOM 检查为准。
+截图：[正式页面](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/desktop.jpg)、[排序后点击](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/sorted-click.jpg)、[窄卡片](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/narrow-card.jpg)。截图只作可视证据，断点与完整行数以上述实际 DOM 检查为准。
 
 检查命令均从本 checkout 执行，pnpm 使用 `--config.verify-deps-before-run=false` 复用已安装依赖：
 
@@ -35,7 +35,7 @@
 
 ## 复杂度
 
-口径 `metriccanvas-ts-ast/1`、TypeScript 5.9.3；Svelte 脚本和模板函数分别提取后测量，不能将整个 Svelte 文件当 TypeScript 解析。修改函数与所有新增辅助函数/回调均已测量，完整记录见 [complexity.json](complexity.json)。
+口径 `metriccanvas-ts-ast/1`、TypeScript 5.9.3；Svelte 脚本和模板函数分别提取后测量，不能将整个 Svelte 文件当 TypeScript 解析。修改函数与所有新增辅助函数/回调均已测量，完整记录见 [complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/complexity.json)。
 
 | 函数 | 前 | 后 |
 | --- | ---: | ---: |

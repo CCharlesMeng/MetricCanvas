@@ -10,7 +10,7 @@
 - Playground、data-execution、engine检查通过；两个Svelte检查均0错误0警告。
 - `pnpm build:playground`通过，未增加构建参数。
 - `pnpm authoring:contracts`与`:check`通过，当前产品1098项；页面由生成的独立校验器校验通过。Skill测试包含仓外安装副本闭合与校验。
-- 浏览器复验此checkout的5183服务：默认256条，首行为商务130、次行为合同120且占比63.0%；类型弹层160px无横向溢出；选择合同后128条，跳第7页显示末行128及缺失占比；清除后回第1页256条。该交付checkout记录DOM与布局读数；视觉截图沿用原5173同版表格的`compact-filter.jpg`。该临时服务验后停止，原5173预览保留。
-- `metriccanvas-ts-ast/1`、TypeScript5.9.3对本批TS、路由提取脚本及全部新增测试回调重新实测，见`delivery-complexity.json`，所有扫描函数selfCC≤15；函数前后值沿用`result.md`对照，本次交付不改执行分支。筛选宽度的纯呈现改动不新增函数，无复杂度未关闭项。
+- 浏览器复验此checkout的5183服务：默认256条，首行为商务130、次行为合同120且占比63.0%；类型弹层160px无横向溢出；选择合同后128条，跳第7页显示末行128及缺失占比；清除后回第1页256条。该交付checkout记录DOM与布局读数；视觉截图沿用原5173同版表格的[compact-filter.jpg](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/decision-opinion-preview/compact-filter.jpg)。该临时服务验后停止，原5173预览保留。
+- `metriccanvas-ts-ast/1`、TypeScript5.9.3对本批TS、路由提取脚本及全部新增测试回调重新实测，见[delivery-complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/decision-opinion-preview/delivery-complexity.json)，所有扫描函数selfCC≤15；函数前后值沿用`result.md`对照，本次交付不改执行分支。筛选宽度的纯呈现改动不新增函数，无复杂度未关闭项。
 
 本记录是提交前本地复验，不代表真实DQE/Relay/生产数据接入，也不替代推送后CI结论。

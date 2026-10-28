@@ -16,7 +16,7 @@
 | 能力页面变体 | 72 | 73 | 新增一份共享内联数据页面，补齐六类基础组件演示 |
 | 全部页面文档 | 111 | 112 | 全部旧地址保留；业务 13、临时 25、平台 1 均保留 |
 
-本次减少的是默认浏览的场景分散程度，未删除旧页面或声称物理文档数量下降。兼容页面、流程目标、自动化引用和其他批次文件继续保留；详见原清单（本机原始产物 `inventory-before.json`）与新清单（本机原始产物 `inventory-after.json`）。全部 73 份能力页面均归入推荐场景。
+本次减少的是默认浏览的场景分散程度，未删除旧页面或声称物理文档数量下降。兼容页面、流程目标、自动化引用和其他批次文件继续保留；详见原清单（本地附件，不随仓交付：`inventory-before.json`）与新清单（本地附件，不随仓交付：`inventory-after.json`）。全部 73 份能力页面均归入推荐场景。
 
 ## 关键行为
 
@@ -32,18 +32,18 @@
 
 | 检查 | 结果与证据 |
 | --- | --- |
-| Playground 测试 | 17 文件、81 测试通过，日志（本机原始产物 `tests.log`） |
-| 相关运行时回归 | 表格导出、报告导出、子表会话共 3 文件、24 测试通过，日志（本机原始产物 `runtime-regression.log`） |
-| 类型与 Svelte 检查 | 0 errors、0 warnings，日志（本机原始产物 `check.log`） |
-| Playground 静态构建 | 成功，日志（本机原始产物 `build.log`） |
-| 新页面校验 | 仓库校验和 local-authoring 独立校验通过，日志（本机原始产物 `page-validation.log`）、最终独立回执（本机原始产物 `attempt-2-validation.json`） |
-| local-authoring 一致性 | 导出检查 current；无新增页面协议语义或分发知识差异，日志（本机原始产物 `authoring-consistency.log`） |
-| local-authoring 仓外安装 | 21 测试通过，覆盖独立安装、知识链接及页面校验，日志（本机原始产物 `local-authoring-install.log`） |
-| 浏览器 | 19 个组件目录逐个打开；搜索、试改、真实 Sim 联动、子表、跨页传值、只读、返回、临时入口及窄屏等记录见浏览器结果（本机原始产物 `browser.json`） |
+| Playground 测试 | 17 文件、81 测试通过，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/tests.log`） |
+| 相关运行时回归 | 表格导出、报告导出、子表会话共 3 文件、24 测试通过，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/runtime-regression.log`） |
+| 类型与 Svelte 检查 | 0 errors、0 warnings，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/check.log`） |
+| Playground 静态构建 | 成功，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/build.log`） |
+| 新页面校验 | 仓库校验和 local-authoring 独立校验通过，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/page-validation.log`）、最终独立回执（本地附件，不随仓交付：`attempt-2-validation.json`） |
+| local-authoring 一致性 | 导出检查 current；无新增页面协议语义或分发知识差异，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/authoring-consistency.log`） |
+| local-authoring 仓外安装 | 21 测试通过，覆盖独立安装、知识链接及页面校验，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/local-authoring-install.log`） |
+| 浏览器 | 19 个组件目录逐个打开；搜索、试改、真实 Sim 联动、子表、跨页传值、只读、返回、临时入口及窄屏等记录见浏览器结果（本地附件，不随仓交付：`browser.json`） |
 
 运行服务为当前仓库 `apps/playground` 的 5173 与已有本地 DQE Sim 18228。浏览器检查仅使用 CUA 控制现有服务，不替换页面交互配置。390 CSS 像素验收按实际 `documentElement.clientWidth` 核对，整页 `scrollWidth` 同为 390；工具视口因当前应用缩放进行过校准，结束已恢复默认。
 
-新基础页面显式使用 Dashboard，采用主题分析范式。第一次快照中部分 id 使用大写而校验失败；保留原始尝试（本机原始产物 `attempt-1/component-foundations.json`）和失败回执（本机原始产物 `attempt-1-validation.json`），改为合法 id 后保存第二次快照（本机原始产物 `attempt-2/component-foundations.json`），未覆盖失败输入。
+新基础页面显式使用 Dashboard，采用主题分析范式。第一次快照中部分 id 使用大写而校验失败；保留原始尝试（本地附件，不随仓交付：`attempt-1/component-foundations.json`）和失败回执（本地附件，不随仓交付：`attempt-1-validation.json`），改为合法 id 后保存第二次快照（本地附件，不随仓交付：`attempt-2/component-foundations.json`），未覆盖失败输入。
 
 页面元数据总览、页面目录说明、Playground 使用与路由文档及功能验收规则已同步。没有修改产品 Schema、查询语义或组件属性，因此产品协议模块与 local-authoring 派生知识保持原有内容；生成一致性和仓外安装仍实际执行，未手改其他批次已有的分发差异。
 
@@ -57,7 +57,7 @@
 
 ## 复杂度
 
-采用 `metriccanvas-ts-ast/1`，对修改与新增 TS／JS 函数、辅助函数、闭包和 Svelte script 分别实测。本次最终扫描覆盖 172 个函数，最高 `selfCC=9`，没有超过 15 的函数。修改前（本机原始产物 `complexity-before.json`）、修改后（本机原始产物 `complexity-after.json`）。Svelte 模板由实际 Svelte 检查与构建覆盖，不把 script 的 AST 数值冒充模板复杂度。
+采用 `metriccanvas-ts-ast/1`，对修改与新增 TS／JS 函数、辅助函数、闭包和 Svelte script 分别实测。本次最终扫描覆盖 172 个函数，最高 `selfCC=9`，没有超过 15 的函数。修改前（本地附件，不随仓交付：`complexity-before.json`）、修改后（本地附件，不随仓交付：`complexity-after.json`）。Svelte 模板由实际 Svelte 检查与构建覆盖，不把 script 的 AST 数值冒充模板复杂度。
 
 | 函数 | 修改前 | 修改后 |
 | --- | --- | --- |

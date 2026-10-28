@@ -6,7 +6,7 @@
 
 - 基线：`13a651791cfbe05ed8f6053afce02dbfe4e9999d`；隔离检出为 `standalone-filter/DataDashboard`（managed worktree，detached HEAD），原工作区的并行修改未纳入。
 - 页面协议：6.45。用户明确选择统一迁移和移除旧 `chart.props.filter`，并批准本次次版本例外，见 [ADR-0115](../../adr/0115-standalone-filter-groups-and-controlled-migration.md)。这不是零使用例外，也不授权删除其他已发布字段。
-- 锁文件 SHA256：`63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0`；源码、契约和分发摘要见 [输入记录](inputs.json)。
+- 锁文件 SHA256：`63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0`；源码、契约和分发摘要见 [输入记录](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/standalone-filter/inputs.json)。
 - Node 24.11.1、pnpm 11.13.0、Svelte 5.56.6；本地 Chrome，1440/390 宽度。
 
 ## 功能到交付物

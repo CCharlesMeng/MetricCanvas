@@ -25,7 +25,7 @@
 
 独立页面 `?metric=orders&region=east` 刷新后恢复订单量、华东和 3,095；`?metric=unknown&region=east` 与 `?metric=orders&metric=revenue&region=east` 均回退营业收入并保留华东，合计 951。
 
-实际 390 CSS 像素视口下，两个下拉继续可操作，区域控件随栅格缩到约 125.53px，弹层等宽且右边界约 330.02px；Escape 返回触发框。截图见[原场景修复后](original-fixed.jpg)、[双下拉联动](parallel-desktop.jpg)、[窄屏弹层](parallel-narrow.jpg)。原始几何与复杂度结果见 [verification.json](verification.json)。
+实际 390 CSS 像素视口下，两个下拉继续可操作，区域控件随栅格缩到约 125.53px，弹层等宽且右边界约 330.02px；Escape 返回触发框。截图见[原场景修复后](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-condition-selects/original-fixed.jpg)、[双下拉联动](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-condition-selects/parallel-desktop.jpg)、[窄屏弹层](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-condition-selects/parallel-narrow.jpg)。原始几何与复杂度结果见 [verification.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-condition-selects/verification.json)。
 
 ## 自动检查与复杂度
 
@@ -34,7 +34,7 @@
 - `pnpm exec vitest run tools/dqe-sim/tests/chart-local-filter.test.ts packages/engine/runtime/tests/filter-group-presentation.test.ts packages/engine/runtime/tests/filter-group-export.test.ts packages/engine/runtime-ui/tests/dashboard-filter-groups.test.ts`：4 文件、9 项通过。
 - 独立 local-authoring 校验器验证新页面：通过。完整 Skill 复制到仓外后再次验证新页面：通过，无断链。
 - 从隔离副本执行产品导出，仅回写本批产生变化的 10 项派生输出；回写前逐字节确认主工作区对应输出仍等于生成基线，保留其他任务的内容。`pnpm authoring:contracts:check`：通过。
-- `pnpm authoring:check`：68/73 项通过，5 项失败；3 项本地 Skill 漂移检查和 1 项版本再生成检查在 30 秒子进程边界处未返回预期诊断，另 1 项旧入口场景超过 30 秒测试预算。详见 [完整日志](authoring-tests.log)。本批未修改这些导出或测试逻辑；单独复跑本地 Skill 相关 3 项后全部通过（67.16 秒，未放宽预算），见 [复跑日志](authoring-local-retry.log)。完整套件仍保留旧入口兼容、包版本再生成两项超时未关闭，不标为全绿；这些导出行为不是本次修复范围。
+- `pnpm authoring:check`：68/73 项通过，5 项失败；3 项本地 Skill 漂移检查和 1 项版本再生成检查在 30 秒子进程边界处未返回预期诊断，另 1 项旧入口场景超过 30 秒测试预算。详见 [完整日志](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-condition-selects/authoring-tests.log)。本批未修改这些导出或测试逻辑；单独复跑本地 Skill 相关 3 项后全部通过（67.16 秒，未放宽预算），见 [复跑日志](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-10-26-condition-selects/authoring-local-retry.log)。完整套件仍保留旧入口兼容、包版本再生成两项超时未关闭，不标为全绿；这些导出行为不是本次修复范围。
 
 复杂度口径为 `metriccanvas-ts-ast/1`、TypeScript 5.9.3。Selection 的 26 个脚本函数前后测量结果完全一致；改动只在模板的呈现宽度条件。新增回归测试回调的自身 CC 为 2，低于 15；两个目录模块仅改页面引用数组，没有新增或修改函数。测量未将 Svelte 模板伪装成 TypeScript 函数。当前范围没有新增复杂度超限或待关闭项。
 

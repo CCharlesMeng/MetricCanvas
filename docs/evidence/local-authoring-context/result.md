@@ -44,7 +44,7 @@ Skill 入口由基线12,005 bytes缩为5,458 bytes，完整参考仍保留。[re
 
 上述小改动对照先于 --help 指引修正；原审计与冻结信息见[forward/summary.json](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/forward/summary.json)。
 
-独立数据分析试用覆盖全部5个字段位置和3个数据槽，识别金额当期/累计歧义、达成率查询契约缺口、区域维度映射和共享源的粒度/范围问题。报告检查通过，输入哈希未变，执行状态保持 not-run。首次试用打开压缩脚本导致截断，后增加 --help 与入口指引；第二次全新上下文试用未读压缩脚本，通过帮助与精确知识完成任务。保留[最终报告](forward/final-report.md)、[实际命令](forward/final-execution-log.md)、[检查回执](forward/final-check-receipt.json)和[输入完整性](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/forward/final-input-integrity.json)；这仍不是完整数据集的识别准确率测量。
+独立数据分析试用覆盖全部5个字段位置和3个数据槽，识别金额当期/累计歧义、达成率查询契约缺口、区域维度映射和共享源的粒度/范围问题。报告检查通过，输入哈希未变，执行状态保持 not-run。首次试用打开压缩脚本导致截断，后增加 --help 与入口指引；第二次全新上下文试用未读压缩脚本，通过帮助与精确知识完成任务。保留[最终报告](forward/final-report.md)、[实际命令](forward/final-execution-log.md)、[检查回执](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/local-authoring-context/forward/final-check-receipt.json)和[输入完整性](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/local-authoring-context/forward/final-input-integrity.json)；这仍不是完整数据集的识别准确率测量。
 
 ## 页面与浏览器
 

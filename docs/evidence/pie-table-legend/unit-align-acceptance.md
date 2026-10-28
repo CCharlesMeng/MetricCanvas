@@ -19,7 +19,7 @@
 3. 数量变化图客户数列头/数值均为 left，占比列头/数值均为 right。
 4. 窄卡片和左侧图例省略 unit/align，仍显示“96”、列头/数值均为 right，证明缺省不会隐式追加字段元数据单位。
 
-计算样式与可见文本的真实浏览器读取见 [unit-align-browser.json](unit-align-browser.json)，截图见 [unit-align.jpg](unit-align.jpg)。单位与对齐均通过静态声明验证，不添加新的页面设置面板。
+计算样式与可见文本的真实浏览器读取见 [unit-align-browser.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/unit-align-browser.json)，截图见 [unit-align.jpg](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/unit-align.jpg)。单位与对齐均通过静态声明验证，不添加新的页面设置面板。
 
 ## 检查
 
@@ -34,6 +34,6 @@
 
 行为回归覆盖单位在格式化之后追加、真实零保留、缺失值不追加、原始行不变、排序和数值未被字符串化、可选值缺省、三种合法对齐及非法枚举拒绝。
 
-复杂度采用 `metriccanvas-ts-ast/1`、TypeScript 5.9.3。`categoryBreakdownView` 5→5、`pieLegendData` 3→3，新增 `columnValue` 为 3；其余新增回调均 ≤5。Svelte 脚本及模板函数分别提取测量，详见 [unit-align-complexity.json](unit-align-complexity.json)。本批无新增/修改函数超限或待关闭项。
+复杂度采用 `metriccanvas-ts-ast/1`、TypeScript 5.9.3。`categoryBreakdownView` 5→5、`pieLegendData` 3→3，新增 `columnValue` 为 3；其余新增回调均 ≤5。Svelte 脚本及模板函数分别提取测量，详见 [unit-align-complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/unit-align-complexity.json)。本批无新增/修改函数超限或待关闭项。
 
 未 push、未合入 main、未运行远端 CI；未复验真实 DQE / Relay / 模型或 PDF/PNG 下载。原型分支与实施 worktree 继续保留，未达到已合并清理条件。

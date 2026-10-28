@@ -31,9 +31,9 @@ P1-4 多步撤销/重做、P1-5 编辑/预览连续性保留专项，本批没�
 ## 浏览器复验
 
 - 隔离工作台 `http://127.0.0.1:5186/flow/create?page=platform-interaction-audit&resource=resource-platform-interaction-audit`：键盘修改标题后处于未保存且已本机保护状态，`sendCount=0/infoWrites=0/assetWrites=0`；显式保存后进入已保存修订，Chat 替身记录 confirm-save。
-- 目录选择表格后定位并持续显示组件切换入口。表格置顶行通用 JSON 输入 `{` 时拒绝且不修改文档，原有表格属性仍可见：[表格回归](delivery-table-properties.jpg)。
-- 条件高级输入 `{` 时在对话框内解释错误，取消后表格没有新增条件：[非法规则拒绝](delivery-condition-rejected.jpg)。
-- Playground `http://127.0.0.1:5187/pages/platform-interaction-audit`：初始条件文字可见，清空“区域”后隐藏，表格和其他图表继续显示：[清空后截图](delivery-playground.jpg)。
+- 目录选择表格后定位并持续显示组件切换入口。表格置顶行通用 JSON 输入 `{` 时拒绝且不修改文档，原有表格属性仍可见：[表格回归](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/delivery-table-properties.jpg)。
+- 条件高级输入 `{` 时在对话框内解释错误，取消后表格没有新增条件：[非法规则拒绝](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/delivery-condition-rejected.jpg)。
+- Playground `http://127.0.0.1:5187/pages/platform-interaction-audit`：初始条件文字可见，清空“区域”后隐藏，表格和其他图表继续显示：[清空后截图](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/platform-interaction-audit/delivery-playground.jpg)。
 
 首次验收的摘要、基础表单、复杂条件、组件定位、管理窗口及形态原因截图仍见[首次实施记录](result.md)。页面资产、数据和 Chat 均为本地合成夹具；真实云宝、Java、DQE、Relay、门户与真实 DS 模型未复验，构建通过不代表生产部署。
 

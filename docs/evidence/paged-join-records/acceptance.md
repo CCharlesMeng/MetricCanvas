@@ -37,11 +37,11 @@ Schema 6.66 显式增加 `pagedJoin.records`、成员 `notApplicableFilters`。�
 - 默认条件实际下载`审批记录关联验收.xlsx`，使用标准库读取工作表XML，确认1206行，其中表头1行、审批记录1205行。
 - `?sourceFailure=true`产生稳定`DQE_TRANSPORT_ERROR`诊断，不显示成功总数或部分行。现有Table呈现沿用空态；本批没有新增错误面板样式。
 
-截图：`two-approvals.png`、`status-filter.png`、`empty-period.png`、`member-error.png`。
+截图：[two-approvals.png](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/paged-join-records/two-approvals.png)、[status-filter.png](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/paged-join-records/status-filter.png)、[empty-period.png](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/paged-join-records/empty-period.png)、[member-error.png](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/paged-join-records/member-error.png)。
 
 ## 复杂度
 
-工具口径`metriccanvas-ts-ast/1`，TypeScript 5.9.3；函数自身selfCC，嵌套回调逐项计量。Svelte只测script，不包含模板；同一工具测基线和完成版本，原始数据见`complexity-before.json`、`complexity-after.json`。新增核心37个函数/回调均≤15。
+工具口径`metriccanvas-ts-ast/1`，TypeScript 5.9.3；函数自身selfCC，嵌套回调逐项计量。Svelte只测script，不包含模板；同一工具测基线和完成版本，原始数据见[complexity-before.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/paged-join-records/complexity-before.json)、[complexity-after.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/paged-join-records/complexity-after.json)。新增核心37个函数/回调均≤15。
 
 | 函数 | 前 | 后 |
 |---|---:|---:|

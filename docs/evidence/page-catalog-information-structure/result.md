@@ -1,6 +1,6 @@
 # 页面试验场信息结构验收
 
-日期：2026-10-19。检出目录与输入哈希见 [inputs.json](inputs.json)，开工基线为 `952b3a273f0f4f8be5820f5af1bb76c2f5afa513`。本轮在共享工作区增量修改，保留开工前已存在的指标卡混排、详情弹窗与三层表头页面增量；未执行 Git 提交或 push。
+日期：2026-10-19。检出目录与输入哈希见 [inputs.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/page-catalog-information-structure/inputs.json)，开工基线为 `952b3a273f0f4f8be5820f5af1bb76c2f5afa513`。本轮在共享工作区增量修改，保留开工前已存在的指标卡混排、详情弹窗与三层表头页面增量；未执行 Git 提交或 push。
 
 ## 范围与可观察结果
 

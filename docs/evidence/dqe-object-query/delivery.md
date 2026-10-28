@@ -15,7 +15,7 @@ local-authoring 初始本地73项已通过；交付基线变更后重新启动�
 - `pnpm validate`：87个页面全部通过。
 - `pnpm authoring:contracts:check`：1116产品、4authoring、1interface产物一致。
 - `pnpm build:packages`、`pnpm build:playground`、`pnpm packages:check`：通过。
-- 本次版本合并的AST复测与初始实施采用相同 metriccanvas-ts-ast/1、TypeScript5.9.3口径：`usesObjectQuery` 自身CC4→4，`queryContractErrors`10→10。回调分别单列，报告为 `delivery-complexity.json`。初始实施新增函数均≤15及存量未关闭项见 `result.md`。
-- 浏览器复验实际Sim HTTP：二月、金额≥2700显示R027/R028，完整表预算差额675/700，关联金额14000；点击B014后URL写入business=B014，窗口指标为B014/14000。见 `delivery-browser.txt`、`delivery-browser.png`。其余初始分页/排序/导出证据仍见 `browser.json` 等文件。
+- 本次版本合并的AST复测与初始实施采用相同 metriccanvas-ts-ast/1、TypeScript5.9.3口径：`usesObjectQuery` 自身CC4→4，`queryContractErrors`10→10。回调分别单列，报告为 [delivery-complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/dqe-object-query/delivery-complexity.json)。初始实施新增函数均≤15及存量未关闭项见 `result.md`。
+- 浏览器复验实际Sim HTTP：二月、金额≥2700显示R027/R028，完整表预算差额675/700，关联金额14000；点击B014后URL写入business=B014，窗口指标为B014/14000。见 [delivery-browser.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/dqe-object-query/delivery-browser.txt)、[delivery-browser.png](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/dqe-object-query/delivery-browser.png)。其余初始分页/排序/导出证据仍见 [browser.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/dqe-object-query/browser.json) 等文件。
 
 上述结果对应交付工作树合并后的源码和未变化的 `pnpm-lock.yaml`。具体日志以同目录 `delivery-*.log` 为准。真实 DQE/Relay 尚未验收；本记录为推送前证据，最终提交和远端 CI 结论由 Git 及对应提交的 GitHub Actions 记录确定。

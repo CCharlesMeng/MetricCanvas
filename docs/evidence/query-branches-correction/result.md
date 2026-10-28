@@ -15,23 +15,23 @@
 | 泛化验收结论 | 原演示没有真实 DQE/Relay、权限或业务验证；共用执行代码不能替代分页/组合和全部导出路径验收。 | 收窄文档；新增本地分支映射的排序、远程候选端口、上游 where、组合成员分页和冻结读取回归。完整读取回归不证明真实服务无截断，也不等于所有文件导出格式验收。 |
 | 更早的同类夹具 | `filters-page.json` 的 `{name:"订单数",alias:"order_cnt"}` 早于本次提交，校验器过去也宽松接受任意 alias。 | 正向夹具改为“订单数”及原始初始行键；重新生成全部相关派生夹具。旧归档和原验收材料保留历史，不再作为当前协议依据。 |
 
-`metric-shape-audit.json` 记录扫描到的历史归档引用。扫描现行 `pages/`、产品正向夹具及 JSON 工具数据，未发现其他普通指标 name/alias 正向用例；负向用例故意保留以验证拒绝。这不是对整个产品所有后端协议的全面认证。
+[metric-shape-audit.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/metric-shape-audit.json) 记录扫描到的历史归档引用。扫描现行 `pages/`、产品正向夹具及 JSON 工具数据，未发现其他普通指标 name/alias 正向用例；负向用例故意保留以验证拒绝。这不是对整个产品所有后端协议的全面认证。
 
 ## 首轮验证
 
-- `red.txt`：修复前，普通指标字符串断言失败，原 HTTP Sim 测试仍成功，重现自证漏洞。
-- `product-regression.txt`：170文件、1435项通过，覆盖页面、data-execution、runtime、Sim。
-- `authoring.txt`：4文件、141项通过；包含修复后旧页面升级到当前版本的场景。
-- `check.txt`：全工作区类型及 Svelte 检查通过。
-- `build.txt` / `data-execution-build.txt`：公共包构建与后续执行包重建通过。
-- `contracts-check.txt`：生成一致性通过；`standalone.txt`：仓外复制的完整 local-authoring Skill 校验实际页面通过。
-- `regression.txt` 为中间批次执行记录：除两个随后修正的测试/版本夹具问题外通过1595项，其中包含导出隔离检查；不把这份日志写成全绿。修复后的相应场景由 `repairs.txt`、`branch-consumers.txt` 和上述最终命令覆盖。
+- [red.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/red.txt)：修复前，普通指标字符串断言失败，原 HTTP Sim 测试仍成功，重现自证漏洞。
+- [product-regression.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/product-regression.txt)：170文件、1435项通过，覆盖页面、data-execution、runtime、Sim。
+- [authoring.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/authoring.txt)：4文件、141项通过；包含修复后旧页面升级到当前版本的场景。
+- [check.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/check.txt)：全工作区类型及 Svelte 检查通过。
+- [build.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/build.txt) / [data-execution-build.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/data-execution-build.txt)：公共包构建与后续执行包重建通过。
+- [contracts-check.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/contracts-check.txt)：生成一致性通过；[standalone.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/standalone.txt)：仓外复制的完整 local-authoring Skill 校验实际页面通过。
+- [regression.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/regression.txt) 为中间批次执行记录：除两个随后修正的测试/版本夹具问题外通过1595项，其中包含导出隔离检查；不把这份日志写成全绿。修复后的相应场景由 [repairs.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/repairs.txt)、[branch-consumers.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/branch-consumers.txt) 和上述最终命令覆盖。
 
 ## 浏览器与真实服务边界
 
 Playground仍使用本任务工作区，端口5174，Sim端口18231。页面与HTTP测试使用同一份JSON。
 
-浏览器工具拒绝定位现有HTTP标签页，报告URL安全策略拦截（理由称请求协议不允许，尽管给定地址为http）。未尝试通过其他浏览器或底层接口绕过。已请求用户刷新确认，自动浏览器验收保持未完成。`browser-dqe-exchanges-snapshot.txt` 是服务实际收到的请求/响应记录，不替代页面视觉及交互验收。
+浏览器工具拒绝定位现有HTTP标签页，报告URL安全策略拦截（理由称请求协议不允许，尽管给定地址为http）。未尝试通过其他浏览器或底层接口绕过。已请求用户刷新确认，自动浏览器验收保持未完成。[browser-dqe-exchanges-snapshot.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/browser-dqe-exchanges-snapshot.txt) 是服务实际收到的请求/响应记录，不替代页面视觉及交互验收。
 
 没有访问真实 DQE、Relay、数据目录、数据库或生产权限，因此这些项目全部未验真。当前交付是页面端修复与本地合成演示。
 
@@ -39,12 +39,12 @@ Playground仍使用本任务工作区，端口5174，Sim端口18231。页面与H
 
 交付基线：`e6706d4af1c9e8295581b182b62ecc8472c53fca`。完整保留其“数值维度显式作为度量”的6.56能力，本次页面响应映射顺延6.57。补齐两种能力组合时的原始文档能力探测，未改动并行功能的业务行为。派生产物全部由合并后的真源重新导出。
 
-- `integrated-tests.txt`：176文件，1591项全部通过。覆盖页面、执行、运行时、Sim及4组local-authoring检查。
-- `integrated-check.txt`：全工作区类型/Svelte检查通过；`integrated-build.txt`：公共包构建通过。
-- `integrated-contracts-check.txt`：1138份产品产物及对应authoring/interface生成一致性通过。
-- `standalone-integrated.txt`：最终6.57完整Skill复制至仓外后校验同一演示页面通过。
-- `measure-integration.txt`：并行数值度量功能的12项专项回归通过。
-- `inputs.json`：最终真源与锁文件SHA256、工作区和基线。其他日志中的旧计数/版本属于首轮或中间输入，不替代本节最终结果。
+- [integrated-tests.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/integrated-tests.txt)：176文件，1591项全部通过。覆盖页面、执行、运行时、Sim及4组local-authoring检查。
+- [integrated-check.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/integrated-check.txt)：全工作区类型/Svelte检查通过；[integrated-build.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/integrated-build.txt)：公共包构建通过。
+- [integrated-contracts-check.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/integrated-contracts-check.txt)：1138份产品产物及对应authoring/interface生成一致性通过。
+- [standalone-integrated.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/standalone-integrated.txt)：最终6.57完整Skill复制至仓外后校验同一演示页面通过。
+- [measure-integration.txt](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/measure-integration.txt)：并行数值度量功能的12项专项回归通过。
+- [inputs.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/query-branches-correction/inputs.json)：最终真源与锁文件SHA256、工作区和基线。其他日志中的旧计数/版本属于首轮或中间输入，不替代本节最终结果。
 
 功能对应：Playground `pages/capabilities/filters/query-mode-chart-demo.json`；页面文档 `PAGE-METADATA.md`、`docs/page-metadata/queries-and-bindings.md`；独立创作Skill `metriccanvas-authoring/skill/metriccanvas-local-authoring/`。浏览器被安全策略阻断的状态未因单元/HTTP测试通过而关闭；真实DQE相关项目继续未验真。
 

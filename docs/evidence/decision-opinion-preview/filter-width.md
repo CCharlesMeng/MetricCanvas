@@ -14,8 +14,8 @@
 | 搜索后仅15字候选 | 265.94 | 266 / 266 | 随内容收缩 |
 | 数值区间 | 270 | 270 / 270 | 两个输入各约114px |
 
-长候选通过 `/preview` 的“Page JSON 编辑器”加载 `width-fixture.json`，来源为现有列候选页，替换两条合成记录；临时页验后关闭。正式入口验证候选搜索、清除恢复256条、勾选合同后128条，截图为 `compact-filter.jpg`。
+长候选通过 `/preview` 的“Page JSON 编辑器”加载 `width-fixture.json`，来源为现有列候选页，替换两条合成记录；临时页验后关闭。正式入口验证候选搜索、清除恢复256条、勾选合同后128条，截图为 [compact-filter.jpg](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/decision-opinion-preview/compact-filter.jpg)。
 
 本次只修改样式、添加纯样式模式类。按 `metriccanvas-ts-ast/1` 口径，无新增或修改脚本函数，不存在函数前后CC变化，不伪造函数测量；无本次复杂度未关闭项。
 
-检查：`pnpm --filter @metriccanvas/engine check` 通过，Svelte 0错误0警告；`pnpm authoring:contracts` 与 `:check` 通过；local-authoring Skill与页面参考回归2文件28项通过；仓外完整安装副本校验页面通过，无外部软链接（`width-installed-validation.json`）；`git diff --check` 通过。页面语义文档、Playground操作说明和派生Skill知识同步。未改变查询或筛选语义。
+检查：`pnpm --filter @metriccanvas/engine check` 通过，Svelte 0错误0警告；`pnpm authoring:contracts` 与 `:check` 通过；local-authoring Skill与页面参考回归2文件28项通过；仓外完整安装副本校验页面通过，无外部软链接（[width-installed-validation.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/decision-opinion-preview/width-installed-validation.json)）；`git diff --check` 通过。页面语义文档、Playground操作说明和派生Skill知识同步。未改变查询或筛选语义。

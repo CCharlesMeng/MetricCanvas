@@ -16,10 +16,10 @@
 
 390 CSS 像素宽度下，折叠和展开时页面 `scrollWidth` 均为 390，未出现横向溢出。测试完成恢复默认视口。
 
-- 修改前截图（本机原始产物 `compact-header-before.png`）、修改后截图（本机原始产物 `compact-header-desktop.png`）、窄屏截图（本机原始产物 `compact-header-mobile.png`）。
-- `pnpm --filter playground check`：0 errors、0 warnings，日志（本机原始产物 `compact-header-check.log`）。
-- `pnpm build:playground`：静态构建成功，日志（本机原始产物 `compact-header-build.log`）。
+- 修改前截图（本地附件，不随仓交付：`compact-header-before.png`）、修改后截图（本地附件，不随仓交付：`compact-header-desktop.png`）、窄屏截图（本地附件，不随仓交付：`compact-header-mobile.png`）。
+- `pnpm --filter playground check`：0 errors、0 warnings，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/compact-header-check.log`）。
+- `pnpm build:playground`：静态构建成功，日志（本地附件，不随仓交付：`.scratch/evidence-runtime-attachments-20261028/playground-information-architecture/compact-header-build.log`）。
 
-采用 `metriccanvas-ts-ast/1` 分别提取两份 Svelte script 测量，覆盖全部 15 个函数与闭包，前后自身 CC 序列完全一致。目录脚本最高 2 → 2；工作台脚本最高 7 → 7，具体 `trackPage` 6 → 6、`trackMessage` 7 → 7，其余函数 1–2 不变。没有新增可执行函数或修改查询／导航分支；模板只移动已有说明到原生折叠元素，不新增条件或循环。模板由 Svelte 检查、构建与实际浏览器交互覆盖，不作为 TypeScript AST 测量对象。测量范围无未关闭超限项：前（本机原始产物 `compact-header-complexity-before.json`）、后（本机原始产物 `compact-header-complexity-after.json`）。
+采用 `metriccanvas-ts-ast/1` 分别提取两份 Svelte script 测量，覆盖全部 15 个函数与闭包，前后自身 CC 序列完全一致。目录脚本最高 2 → 2；工作台脚本最高 7 → 7，具体 `trackPage` 6 → 6、`trackMessage` 7 → 7，其余函数 1–2 不变。没有新增可执行函数或修改查询／导航分支；模板只移动已有说明到原生折叠元素，不新增条件或循环。模板由 Svelte 检查、构建与实际浏览器交互覆盖，不作为 TypeScript AST 测量对象。测量范围无未关闭超限项：前（本地附件，不随仓交付：`compact-header-complexity-before.json`）、后（本地附件，不随仓交付：`compact-header-complexity-after.json`）。
 
 本次为本地 UI 调整，未提交、推送或执行远端 CI。

@@ -14,14 +14,14 @@
 - 扫描器补充后，local-authoring-tools、local-authoring-skill、mc-content-coverage：3 文件、58 测试通过。
 - Page、引擎、Playground 类型检查通过，Svelte 0 errors / 0 warnings；工具/测试 TypeScript 检查通过。
 - Playground 静态构建通过。最新 Schema、模板知识及 MC 导出：1234 product / 4 authoring / 1 interface outputs。
-- 真实浏览器重载 `/pages/pie-table-legend` 后确认首图 `96 家`、缺省右对齐，第二图数量居中/占比左对齐，数量变化图左/右对齐，旧缺省列无单位。窄卡片实际宽约 253px，图例位于 plot 下方。截图 [main-browser.jpg](main-browser.jpg)。
+- 真实浏览器重载 `/pages/pie-table-legend` 后确认首图 `96 家`、缺省右对齐，第二图数量居中/占比左对齐，数量变化图左/右对齐，旧缺省列无单位。窄卡片实际宽约 253px，图例位于 plot 下方。截图 [main-browser.jpg](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/main-browser.jpg)。
 - 导出需要新版 MC 的 Python 依赖，使用已有 `/tmp/mc-content-completeness-venv` 的 Python 3.14.7 / FastMCP 3.4.7，未修改环境或依赖锁。远端 CI 使用仓库锁定依赖独立验证。
 
 补充检查结果在完成后追加，远端 SHA 与 CI 以交付答复为准。
 
 ## 复杂度与边界
 
-口径仍为 `metriccanvas-ts-ast/1` / TypeScript 5.9.3。基于最新 main：`pieOption` 9→9、`pieRows` 1→4、`checkPieChart` 1→9、`scanPageData` 13→13（组件查找回调 1→3）；新增 `projectColumn` 3、`pieLegendData` 3。其他本批函数及回调均未超过 15；原始及 unit/align 记录中的其他结果仍适用。Svelte 脚本/模板函数分开提取，原始测量见 [main-complexity.json](main-complexity.json)。本批无未关闭的复杂度问题。
+口径仍为 `metriccanvas-ts-ast/1` / TypeScript 5.9.3。基于最新 main：`pieOption` 9→9、`pieRows` 1→4、`checkPieChart` 1→9、`scanPageData` 13→13（组件查找回调 1→3）；新增 `projectColumn` 3、`pieLegendData` 3。其他本批函数及回调均未超过 15；原始及 unit/align 记录中的其他结果仍适用。Svelte 脚本/模板函数分开提取，原始测量见 [main-complexity.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/pie-table-legend/main-complexity.json)。本批无未关闭的复杂度问题。
 
 真实 DQE、Relay、权限服务、模型与端到端导出未复验。原型快照 `f6fd243c` 留在本地 `codex/pie-table-legend-prototype`，作为设计裁决的可恢复记录；不会混入 main。实施工作树在远端提交与 CI 核对后归档。
 

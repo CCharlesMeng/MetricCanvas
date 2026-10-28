@@ -49,7 +49,7 @@ Python 主包从 113 个源文件、14,032 行变成 101 个源文件、13,013 �
 | git diff --check | 通过 | 执行退出码 0 |
 | 截图、真实模型、生产服务联调 | 未执行 | 遵循本轮验收范围 |
 
-全项目唯一失败是 apps/platform/tests/workbench/platform-shell-and-composer.test.ts 的“分析会话轨在所有工作台断点保持 480px 宽”：测试从组件源码读取 --analysis-rail-w，期待 ['480px']，当前得到 []。组件与测试均与本轮开始的 HEAD 完全相同，HEAD 同样没有该声明，见 [基线核对](existing-failure.json)。未修改该既有前端断言，也没有宣称全项目测试全绿。
+全项目唯一失败是 apps/platform/tests/workbench/platform-shell-and-composer.test.ts 的“分析会话轨在所有工作台断点保持 480px 宽”：测试从组件源码读取 --analysis-rail-w，期待 ['480px']，当前得到 []。组件与测试均与本轮开始的 HEAD 完全相同，HEAD 同样没有该声明，见 [基线核对](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/2026-09-22-authoring-retirement/existing-failure.json)。未修改该既有前端断言，也没有宣称全项目测试全绿。
 
 最终格式整理后另运行关系、普通问数配置与迁移后的页面装配回归；行为检查仍通过。源码范围搜索没有发现对已删除 Python 模块的活动导入。文档和 Bundle 已同步更新。
 

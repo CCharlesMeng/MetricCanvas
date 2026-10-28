@@ -29,6 +29,6 @@
 
 ## 交付和验证边界
 
-`page-data-analysis.json` 保留输入哈希、5 个字段用数位置、3 个数据槽、原文行号证据和按共同原因合并的缺口。`query-candidates.json` 仅记录条件清单，runnableCandidates 为空，execution=not-run。条件缺失时不运行 prepare，也不生成 proposals。
+`page-data-analysis.json` 保留输入哈希、5 个字段用数位置、3 个数据槽、原文行号证据和按共同原因合并的缺口。[query-candidates.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/local-authoring-context/forward/query-candidates.json) 仅记录条件清单，runnableCandidates 为空，execution=not-run。条件缺失时不运行 prepare，也不生成 proposals。
 
 实际结构与引用检查结果见 `check-receipt.json`。本任务未生成或修改页面，不需要对新页面进行快照或完整页面校验；未执行浏览器预览或服务查询。原输入字节保持情况见 `input-integrity.json`。

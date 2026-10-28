@@ -46,7 +46,7 @@
 | CUA 正式属性面板→运行时 | 季度应用、Q1—Q4、近一年移除输入均实测；键盘 Shift+Tab 到月分段，focus-visible=true，蓝色 2px outline / 2px offset，见 formal-focus.png |
 | 独立源码构建＋六包 tarball 严格依赖安装 | 构建、page-only Node ESM、UI-only 与组合消费者 svelte-check / tsc / Vite 均通过；UI 22 项、安装后 embed 期间 3 项 Chrome 通过 |
 
-安装包证据见 [installed-consumers.json](installed-consumers.json)、[浏览器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/dashboard-period-filter/installed-period-browser-results.json) 与 [logs](logs/)。使用源码树 `b5adefa4752b480b2f46bc1b88c9a60fe32fcc57`；它是临时索引生成的 Git tree，未创建仓库分支或提交。原型 4183 和源码服务 4175 保留，安装包临时服务改用 4193 / 4195 / 4196。
+安装包证据见 [installed-consumers.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/dashboard-period-filter/installed-consumers.json)、[浏览器结果](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/dashboard-period-filter/installed-period-browser-results.json) 与 [logs](logs/)。使用源码树 `b5adefa4752b480b2f46bc1b88c9a60fe32fcc57`；它是临时索引生成的 Git tree，未创建仓库分支或提交。原型 4183 和源码服务 4175 保留，安装包临时服务改用 4193 / 4195 / 4196。
 
 官方 `compatibility:check` 先跑全仓测试，遇下列失败后停止。为继续验证已安装产品，本轮仅在 `/tmp` 的临时 runner 跳过已记录的源码 test/check 门，保留源码 build、真实 pack/install、类型与构建检查，组合浏览器限期间用例、浏览器限 Chrome。这是定向安装包证据，不能写成官方完整兼容矩阵通过。未修改仓库兼容性脚本。
 

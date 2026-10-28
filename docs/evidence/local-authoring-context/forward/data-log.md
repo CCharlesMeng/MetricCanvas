@@ -36,7 +36,7 @@ cat "$W/check-receipt.json"
 cat "$W/input-integrity.json"
 ```
 
-使用 `apply_patch` 新增本目录 `build-report.mjs`，然后新增 `page-data-analysis.md` 和本记录。`build-report.mjs` 仅读本目录 draft 和原始输入，写 `page-data-analysis.json`、`query-candidates.json`、`input-integrity.json`。
+使用 `apply_patch` 新增本目录 `build-report.mjs`，然后新增 `page-data-analysis.md` 和本记录。`build-report.mjs` 仅读本目录 draft 和原始输入，写 `page-data-analysis.json`、[query-candidates.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/local-authoring-context/forward/query-candidates.json)、`input-integrity.json`。
 
 明确读取/执行的 Skill 文件：`SKILL.md`、`references/data-analysis.md`、`scripts/validate-page.mjs`、`scripts/analyze-data.mjs`、`scripts/read-knowledge.mjs`。精确知识内容与约束输出保留在 `knowledge.txt`，主题为 `fields.format`、`query.core`；其关联参考路径为 `references/page-metadata/field-bindings-and-formats.md`、`references/page-metadata/queries-and-bindings.md`，没有另行读取参考全文。工具内部读取其配套 schema/knowledge 进行产品校验，不是仓库源码探索。
 

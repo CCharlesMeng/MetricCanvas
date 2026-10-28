@@ -27,6 +27,6 @@
 
 页面未声明筛选器/参数，所以不存在可据以填写的筛选或参数绑定。没有可信连接键或基数，不能推导跨表连接。共享数据源能否同时满足区域明细与卡片范围，需要先澄清消费契约。
 
-报告附带输入 SHA-256、逐元素位置、原文逐行引文、合并缺口和候选标识。`query-candidates.json` 只是分析级候选清单；因条件不充分，未生成可执行查询数据源、未运行 `prepare`、未添加 `initial`、未改页面。纯分析任务没有生成页面，因此不运行页面生成快照或页面校验；使用报告 `check` 验证结构、输入身份、覆盖与引用。
+报告附带输入 SHA-256、逐元素位置、原文逐行引文、合并缺口和候选标识。[query-candidates.json](https://github.com/CCharlesMeng/MetricCanvas/blob/9ee7e6ac611e5651046dde16f9b5fc44dc0974b1/docs/evidence/local-authoring-context/forward/query-candidates.json) 只是分析级候选清单；因条件不充分，未生成可执行查询数据源、未运行 `prepare`、未添加 `initial`、未改页面。纯分析任务没有生成页面，因此不运行页面生成快照或页面校验；使用报告 `check` 验证结构、输入身份、覆盖与引用。
 
 验证回执见 `check-receipt.json`（退出码 0）；输入字节未变见 `input-integrity.json`。静态报告检查不证明业务解释、真实查询或浏览器效果已验收。
