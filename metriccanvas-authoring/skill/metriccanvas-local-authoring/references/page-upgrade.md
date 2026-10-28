@@ -19,6 +19,8 @@ node "<skill-dir>/scripts/upgrade-page.mjs" "<page-file>" --out-dir "<new-attemp
 
 当前规则覆盖已知版本的布局规范化、5.x导航兼容转换及旧图表筛选向独立filterGroup的转换。图表筛选保持图表id、外层跨度、筛选器、默认值、选项和查询绑定；组合卡内旧图表筛选需在原卡内显式拆分，避免创建嵌套组合卡。5.x导航转换后的部署URL需预览核对。
 
+用户要求旧 header 换成新版时，升级后继续按[页头迁移](ioc-header-migration.md)处理。`upgrade-page.mjs` 不会把旧工具栏或正文 `reportHeader` 自动改写成根级 `iocHeader`；`unchanged` 也不表示页头迁移已完成。
+
 `blocked` 返回退出码1，errors保留type/path/message，不写出页面。先用validate-page校验原件：原页仍有效，且本次需求只用到该版本已支持的能力时，保留原schemaVersion和历史语义继续局部修改，再校验；报告“保留原版本完成开发，整页升级未执行”及升级缺口。不要为改标题、文案等局部需求强制用户先处理整页迁移。
 
 原件无效或本次确实需要新版本能力时，定位报出的字段完成显式迁移。未知/未来版本、能力下限错误、非法配置、6.5/6.6非空数组参数的旧写入语义，以及6.13/6.14页头filterIds触发的自动期间文字不能仅靠改版本号解决；涉及业务语义选择时只澄清该选择，继续可独立完成的工作。保留合法查询、参数、initial、筛选和交互。

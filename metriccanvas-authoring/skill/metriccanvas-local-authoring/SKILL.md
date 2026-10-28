@@ -1,8 +1,8 @@
 ---
 name: metriccanvas-local-authoring
-description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
+description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.3.2"
+  version: "1.4.0"
 ---
 
 # 本地页面创作
@@ -15,6 +15,7 @@ metadata:
 
 | 本次任务 | 读取与动作 |
 |---|---|
+| 旧 header 换成 iocHeader | 读[页头迁移](references/ioc-header-migration.md)，识别旧工具栏或正文页头，按映射最小替换，保留筛选、查询、只读和导航语义；沿用原布局形态。 |
 | 局部呈现或已有可信字段绑定修改 | 定位相关对象，沿用原形态、数据和查询，直接改最小对象；只查受影响属性。大页面按对象提取，不打印全部数据行。 |
 | 指标表、详情表、级联或多来源等逻辑选型 | 按[场景索引](references/scenario-index.md)选择操作与数据逻辑，只读命中的主题和示例。 |
 | 新增口径、指标匹配或查询修改 | 读[数据识别与接数](references/data-analysis.md)，先确认数据依据和项目已提供的执行入口，再分析受影响范围。完整报告按需生成。 |

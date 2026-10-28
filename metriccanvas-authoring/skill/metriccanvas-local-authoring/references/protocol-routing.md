@@ -18,7 +18,7 @@
 - 金额与币种按本次修改的语义查[筛选](page-metadata/filters.md#amount-range)和[字段绑定](page-metadata/field-bindings-and-formats.md#field-selection)6.38规则；保留两个静态CNY/USD字段，units只换算输入，不前端换汇。
 - Dashboard 正文固定单选按钮组使用独立 filterGroup；查 filterGroup.core 或[筛选按钮组](page-metadata/components/filterGroup.md)，作用范围由 filterBindings 决定。旧图表 props.filter 已移除；未知默认值或查询绑定列缺口。
 - 业务筛选单/多选、封闭枚举、结构树或时间候选依赖，按本次修改的语义查[筛选](page-metadata/filters.md)6.37规则；显式queryField/levelQueryFields，options不作权限候选回退，不生成待审Condition字段。
-- IOC 公共页头使用根级iocHeader，按本次修改的语义查[页面](page-metadata/page.md)的6.36规则与普通/密集/详情样例；身份与filterIds分开，缺省不启用可选动作；详情保留Report和独立单月。
+- IOC 公共页头使用根级 `iocHeader`；旧 header 替换先读[页头迁移](ioc-header-migration.md)。字段与运行行为查[页面](page-metadata/page.md)的 IOC 公共页头及唯一页头章节；身份与 filterIds 分开，详情沿用原布局和独立单月。
 - Dashboard或IOC页头需要年／季／月／近一年切换时，读取[筛选](page-metadata/filters.md)的期间选择与完整示例；声明一个 timeRange 及其查询绑定，先确定查询使用月份还是日期范围。
 - 参数、日期和筛选：[参数与文字](page-metadata/params-and-text-values.md)、[筛选](page-metadata/filters.md)、[查询绑定](page-metadata/queries-and-bindings.md)。
 - 计算、导航或自定义组件：从协议索引进入对应模块。
