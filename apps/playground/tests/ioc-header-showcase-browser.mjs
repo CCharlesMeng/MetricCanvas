@@ -99,7 +99,7 @@ try {
   const expand = frame.getByRole('button', { name: '展开筛选', exact: true });
   if (await expand.isVisible()) await expand.click();
   const region = frame.locator('[data-filter-id="region"]');
-  await region.getByRole('tab', { name: '代表处', exact: true }).click();
+  await expect(region.getByRole('tab')).toHaveCount(0);
   await region.locator('button[aria-haspopup=tree]').click();
   await region.getByRole('textbox').fill('北京代表处');
   await region.getByRole('button', { name: '北京代表处', exact: true }).click();

@@ -26,7 +26,7 @@ const dimensionFilterZ = z
     label: z.string().optional(),
     /** 空选时的控件文案；缺省仍为“全部”。 */
     emptyLabel: z.string().min(1).optional(),
-    /** 层级声明的级别切换器；缺省显示，地图等其它交互可承担切层时可隐藏。 */
+    /** 显式层级切换器；单选层级下拉省略时在树内切层，其他形态缺省 tabs。hidden 由地图等交互切层。 */
     hierarchyPicker: z.enum(['tabs', 'hidden']).optional(),
     display: z.enum(['select', 'tabs', 'tree', 'search']).optional(),
     visible: z.boolean().optional(),

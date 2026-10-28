@@ -16,7 +16,7 @@ test('seven real review pages render and retain narrow wrapping',async({page},in
 test('region department and office each select one stable code',async({page})=>{
  await page.goto('/ioc-header-review?view=ioc-header-models');const region=page.locator('[data-filter-id="region"]');await openSelection(region);
  await region.getByRole('button',{name:'示例地区部',exact:true}).click();await expect(region.getByRole('dialog')).toHaveCount(0);await expect(page.getByText('R',{exact:true})).toBeVisible();
- await region.getByRole('tab',{name:'代表处',exact:true}).click();await openSelection(region);await region.getByRole('textbox').fill('示例代表处一');await region.getByRole('button',{name:'示例代表处一',exact:true}).click();
+ await expect(region.getByRole('tab')).toHaveCount(0);await openSelection(region);await region.getByRole('textbox').fill('示例代表处一');await region.getByRole('button',{name:'示例代表处一',exact:true}).click();
  await expect(region.getByRole('dialog')).toHaveCount(0);await expect(page.getByText('R01',{exact:true})).toBeVisible();await expect(page.getByText('R',{exact:true})).toHaveCount(0);
 });
 test('model retries preserve dates and unrelated changes do not refetch',async({page})=>{

@@ -4,6 +4,8 @@
 
 Dashboard 的外框满宽；标题和全局筛选通常由统一工具栏承担。分区、组合卡、Tab 与表格依据本次业务关系选择。局部使用说明性文字不会把页面变成 Report。
 
+IOC Region 默认是一个单选树形下拉：地区部、代表处在树内直接选择，不另加层级按钮。使用 `display:"tree"`、`treeSelection:"level"`、`selection:{mode:"single"}`，声明真实 hierarchy 并省略 hierarchyPicker；结构树候选必须包含可信 level 和 parent 关系。旧数据仅有各层平面候选时，保留原候选端口并按声明层级分组，显式单选并省略 hierarchyPicker 即可；不为外观切换到不可用的V2端口。已有示例的按钮或地图专用 hidden 不是默认范式，不能为还原下拉外观伪造父子关系。协议和异常边界见[业务筛选](page-metadata/filters.md#business-filters)。
+
 | 范式 | 适用目的 | 阅读骨架 | 结构摘要 |
 |---|---|---|---|
 | 地图概览 | 扫描地域差异、业务状态和重点对象 | 地图 + 主题组合卡 + 切换明细 | [dashboard-map](page-patterns/dashboard-map.json) |

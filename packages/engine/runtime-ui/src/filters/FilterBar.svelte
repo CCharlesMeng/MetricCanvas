@@ -165,7 +165,7 @@
         levels={declaration.hierarchy}
         level={current.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]!.id}
         values={current.values}
-        picker={declaration.hierarchyPicker ?? 'tabs'}
+        picker={declaration.hierarchyPicker}
         display={declaration.display ?? 'select'}
         candidates={dimensionValuesSnapshot(candidates, candidates.has(candidateScopeKey(declaration.id,currentDimension(declaration),current.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]?.id)) ? candidateScopeKey(declaration.id,currentDimension(declaration),current.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]?.id) : currentDimension(declaration))}
         onchange={(next) => ondimension(declaration, next.values, next.level)}

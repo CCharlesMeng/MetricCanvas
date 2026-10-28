@@ -33,6 +33,7 @@
       "dimension": "geo-pc-code",
       "label": "区域",
       "emptyLabel": "全部区域",
+      "selection": { "mode": "single" },
       "hierarchy": [
         { "id": "geo", "dimension": "geo-pc-code", "label": "全球" },
         { "id": "region-dept", "dimension": "region-dept-code", "label": "地区部" },

@@ -80,7 +80,11 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 - dimension.selection声明mode为single/multiple；缺省保持旧多选，tabs交互继续单选。旧页未声明selection时，initialParam仍可用多值数组初始化tabs的已应用条件；后续点选替换为单值。显式selection.mode=single始终严格校验初值及后续写入。single至多一个值；required要求非空，single与required组合恰好一个值，6.46起multiple与required组合允许非空多值，缺失时相关查询等待选择，非法整组写入拒绝。options是创作期确认的穷尽枚举，稳定value与label分开，可显式disabled；有options不请求候选网关，不允许同时配置动态依赖或hierarchy。disabled值不参与选择或默认值。
 - allBehavior缺省values。只有multiple+显式options可用unrestricted：选中全部有效枚举后仅省略对应动态查询谓词，UI/URL保留实际值，查询体原有静态条件仍保留。禁用项不算必须选中。boolean与枚举分别处理：勾选走whenTrue，明确false走whenFalse；省略whenFalse仍为无条件。default:false仍保留旧的不加初始化条件行为；需要确定的否值谓词时，使用显式false输入或用户取消勾选，并声明whenFalse。
-- display:tree带treeSelection:level为新结构树，必须有hierarchy。候选显式提供level和parent，不从业务码拆斜杠；不同层可使用相同value。当前只有一个level，可选父节点只选择自身，切层清掉旧值并保留新层级；其他层节点只展开。旧tree不带该字段仍按父节点批量选择叶子。
+- display:tree带treeSelection:level为结构树，必须有hierarchy。候选显式提供level和parent，不从业务码拆斜杠；不同层可使用相同value。`selection.mode:"single"` 且省略 `hierarchyPicker` 时，默认仅呈现一个树形下拉，不附加地区部／代表处按钮或返回按钮。在树内直接选择任意有效层级的节点，原子提交该节点的level与原始业务值，替换旧选择并关闭弹层；父节点只选择自身，不批量选择子节点。清空保留当前level，不写入UI内部节点标识。各层完整候选均就绪且一致后才展示可选树，失败／拒绝／未配置不降级为部分树；重复同码以level区分，禁用节点不可选。显式 `hierarchyPicker:"tabs"` 保留层级按钮，`"hidden"` 保留由地图等交互切层及原有返回入口；多选结构树仍只选择当前层级，其他层只展开。旧tree不带该字段仍按父节点批量选择叶子。
+
+层级维度只要声明 `hierarchy`、`selection.mode:"single"`，且 `display` 省略或为 `select`／`tree`，省略 `hierarchyPicker` 就默认使用单个树形下拉。旧候选端口仅提供各层平面值时，按已声明的层级展示不可选择的分组节点；各业务节点直接提交所属层级与原始值，不虚构跨层父子归属，也不强制旧页切换到V2候选端口。显式 `hierarchyPicker`、多选和 `display:"tabs"` 保留既有行为。旧页入口 `ioc-opportunity-list` 与 `contract-maturity-score` 同样没有前置层级按钮；`ioc-project-overview` 显式 hidden 仍由地图接管切层。
+
+IOC Region 新页面默认采用单选树形下拉：`{id:"region",type:"dimension",dimension:"地区部编码",display:"tree",treeSelection:"level",selection:{mode:"single"},hierarchy:[{id:"region-dept",dimension:"地区部编码",label:"地区部"},{id:"office",dimension:"代表处编码",label:"代表处"}],defaultLevel:"region-dept"}`。字段名及业务值须按实际数据契约替换，候选必须由集成应用提供显式父子关系；不因需要树形外观伪造归属，不把 `hierarchyPicker:"hidden"` 当作单树替代。完整联动验收入口为 `ioc-header-standard`；同码样例为 `ioc-header-business-tree-demo`。本次修复不新增页面字段或版本，显式按钮、地图切层及旧多选行为保留。
 - candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，等用户显式确认；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
 - 共用hint为TextValue，可引用不可变参数或已应用筛选，缺值省略；clearOnChangeOf是明确失效关系，不伪装成候选请求约束。普通只读不清合法条件。
 
@@ -122,7 +126,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 `dimension.selection`沿用对象`{mode:"single"|"multiple",required?,allBehavior?}`；不可写字符串。所有维度下拉默认本地搜索，`searchable:false`关闭。名称、稳定代码及完整祖先路径参与过滤，搜索和展开不提交筛选。
 
-`treeSelection:"level"`继续使用6.37的显式层级树、`hierarchy`和候选`parent:{level,value}`，仅当前层级候选可选；不改变其必选、权限、回执或联动校验。普通同维树另有`descendants`（父选后代，默认存量行为）、`independent`（父子独立）、`leaf`（仅叶子）三种规则；仅用于`display:"tree"`。普通树候选可提供`parentValue`，引用同一完整批次内的稳定value；重复、缺失父或循环显示层级错误。未提供父关系保留旧`/`路径约定，不从显示名生成业务代码。
+`treeSelection:"level"`继续使用6.37的显式层级树、`hierarchy`和候选`parent:{level,value}`；单选默认在树内提交节点层级，显式切层器及多选仅当前层级候选可选。不改变其必选、权限、回执或联动校验。普通同维树另有`descendants`（父选后代，默认存量行为）、`independent`（父子独立）、`leaf`（仅叶子）三种规则；仅用于`display:"tree"`。普通树候选可提供`parentValue`，引用同一完整批次内的稳定value；重复、缺失父或循环显示层级错误。未提供父关系保留旧`/`路径约定，不从显示名生成业务代码。
 
 单选值替换后关闭；多选保持32px单行标签并横向滚动。未知已选值保留代码，可移除；required仍恰好一个，不提供清空。树内容左侧16px、带框加减号及浅灰连接线使用冻结OpenTiny样式。
 

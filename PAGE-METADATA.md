@@ -20,6 +20,8 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 6.47 为独立 `filterGroup` 增加 `display:"select"` 与 `align:"right"`，支持图表卡左侧按钮、右侧下拉共享查询筛选。入口 `/pages/filter-group-page`，声明与状态规则见[独立筛选](docs/page-metadata/components/filterGroup.md)。
 
+IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提交层级与业务值，不显示前置层级按钮。完整场景 `/pages/ioc-header-standard`，声明与兼容边界见[筛选结构树](docs/page-metadata/filters.md#business-filters)。
+
 6.46 补齐 `selection:{mode:"multiple",required:true}` 的非空多选：保持离散集合并拒绝清空，单选仍至多一个。七主题 IOC 合成验收入口为 `/ioc-header-review`；完整声明、主线迁移及证据边界见[筛选声明](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646)。
 
 6.50 新增 `query.queryModes`：固定单选筛选选择完整静态 DQE 查询，允许不同分支提交不同完整查询并共享稳定结果字段契约；真实表路由须实测，原始字段不同使用6.57页面响应映射。Chart 保持同一个 `data.main`，其他筛选按当前分支绑定下推；演示 `/pages/query-mode-chart-demo`，声明与限制见[查询分支](docs/page-metadata/queries-and-bindings.md#query-modes)。

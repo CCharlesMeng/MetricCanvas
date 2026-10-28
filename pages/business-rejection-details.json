@@ -39,6 +39,7 @@
       "dimension": "geo-pc-code",
       "label": "区域",
       "emptyLabel": "区域",
+      "selection": { "mode": "single" },
       "hierarchy": [
         {
           "id": "geo",

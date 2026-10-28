@@ -49,7 +49,7 @@ export interface DimensionFilterDeclaration extends FilterInteractionExtension, 
   label?: string;
   /** 空选时的控件内文案；缺省为“全部”。 */
   emptyLabel?: string;
-  /** 层级级别切换器；缺省 tabs，只有其它交互承担切层时才声明 hidden。 */
+  /** 单选层级下拉省略时在树内切层，其他形态缺省 tabs；hidden 由地图等交互切层。 */
   hierarchyPicker?: 'tabs' | 'hidden';
   /**
    * 展示形态,四种共用同一纯渲染契约(候选项/当前值进、变更事件出):

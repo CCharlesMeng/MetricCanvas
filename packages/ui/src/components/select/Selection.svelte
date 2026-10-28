@@ -173,7 +173,7 @@
   <div class="mc-ui-tree-node" class:is-expanded={branchOpen(node)} role="treeitem" aria-level={depth} aria-selected={state.checked} aria-checked={multiple ? state.partial ? 'mixed' : state.checked : undefined} aria-expanded={node.children?.length ? branchOpen(node) : undefined}>
     <div class="mc-ui-tree-node__content">
       <button type="button" class="mc-ui-tree-node__expand-icon expand" class:is-leaf={!node.children?.length} tabindex="-1" aria-label={`${branchOpen(node) ? '收起' : '展开'}${node.label}`} aria-hidden={!node.children?.length} disabled={!node.children?.length} onclick={() => expand(node)}><Icon name={branchOpen(node) ? 'expand' : 'put-away'}/></button>
-      <button type="button" class="tree-choice choice" class:is-disabled={!canChoose} data-selection-choice data-value={node.value} disabled={node.disabled} aria-label={node.label} title={`${node.path} (${node.value})`} onclick={() => choose(node)}>
+      <button type="button" class="tree-choice choice" class:is-disabled={!canChoose} data-selection-choice data-value={node.value} disabled={node.disabled} aria-label={node.label} title={node.path} onclick={() => choose(node)}>
         {#if multiple}{@render checkbox(state.checked, state.partial)}{/if}<span class="mc-ui-tree-node__label" class:selected={state.checked}>{node.label}</span>
       </button>
     </div>
