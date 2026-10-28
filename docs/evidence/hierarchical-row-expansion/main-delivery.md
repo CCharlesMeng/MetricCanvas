@@ -21,3 +21,13 @@
 - 复杂度：`metriccanvas-ts-ast/1`，TypeScript 5.9.3。唯一冲突调整的可执行函数 `executeLocalDemo` selfCC 为 3→3，无新增辅助函数；本次保留原实现函数，原实现新增函数及存量超限说明见 [完整测量](complexity.md)。Skill 仅改版本，无新增工作流分支。
 
 浏览器原始截图 `/tmp/hierarchy-delivery-browser.png`，测试与构建日志 `/tmp/hierarchy-delivery-*.log` 是本机临时证据。生产 DQE、Relay 与生产权限仍为 NOT_RUN。远端 SHA 与对应 CI 的最终结论在交付回复中提供。
+
+## CI 发现的非表格重绘回归
+
+首次 main 集成提交 `81a438bd20f9bc2a28c3c049fc39517261cffb4f` 的 types、build、tests、authoring 通过；compatibility 的 508 项安装消费者浏览器测试中，506 项通过，Chrome/Edge 的同一图表降级用例失败。不能将这次 CI 描述为成功。
+
+`componentSnapshots` 原先无条件读取 `tableRevision`，使图表也订阅表格状态修订；修订后生成的新快照输入触发图表重绘，破坏“绘制失败单次回退，输入未变不重试”的既有约定。现仅表格读取此修订状态，保留层级父行投影响应能力。使用既有 `chart-echarts-option.spec.ts` 直接复现：改动前 `a drawing failure` 在 5 秒后仍为 extended，改动后通过；同文件全部 9 项浏览器测试通过，父子表格 Schema/runtime/export 41 项回归通过，engine 类型检查通过。
+
+同口径实测：`componentSnapshots` selfCC 2→3，内部快照回调 6→6，均不超过 15；无新增辅助函数。产品、MC、Skill 的生成输入与安装内容没有变化，`pnpm authoring:contracts:check` 复核一致，Skill 保持 1.6.0。
+
+首次本地完整 `pnpm test` 为 3391 通过、2 项导出隔离子进程超时、4 跳过；只复跑这两项后均通过。远端首次完整 tests job 通过；本地首次结果不改写为一次全绿。

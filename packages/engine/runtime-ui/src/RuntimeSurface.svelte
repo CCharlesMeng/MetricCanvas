@@ -1037,7 +1037,7 @@
   }
 
   function componentSnapshots(component: Component): ComponentSnapshots {
-    void tableRevision;
+    if (component.type === 'table') void tableRevision;
     return new Map(
       Object.entries(component.data ?? {}).map(([slot, sourceId]) => [
         slot,
