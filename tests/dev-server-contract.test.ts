@@ -77,8 +77,9 @@ describe('本地开发服务端口契约', () => {
     expect(config.plugins).not.toEqual(expect.arrayContaining([expect.objectContaining({name: 'vite:basic-ssl'})]));
   });
 
-  it('Mac 使用本地地址和 5174，端口冲突时禁止静默漂移', () => {
-    Object.defineProperty(process, 'platform', {value: 'darwin'});
+  it.each(['darwin', 'linux', 'win32'])('Platform 在 %s 使用 localhost 和 5174，端口冲突时禁止静默漂移', (platform) => {
+    Object.defineProperty(process, 'platform', {value: platform});
+    vi.stubEnv('PLATFORM_CLOUDIOC', 'false');
     const config = typeof platformViteConfig === 'function'
       ? platformViteConfig({
           command: 'serve',
@@ -88,7 +89,7 @@ describe('本地开发服务端口契约', () => {
         })
       : platformViteConfig;
     expect(config).toMatchObject({
-      server: { host: '127.0.0.1', port: 5174, strictPort: true }
+      server: { host: 'localhost', port: 5174, strictPort: true }
     });
   });
 
@@ -103,12 +104,13 @@ describe('本地开发服务端口契约', () => {
     });
   });
 
-  it('Windows 使用本地域名和 443，服务前缀统一代理到 IOC', () => {
+  it('Windows 使用 localhost 和普通端口，服务前缀统一代理到 IOC', () => {
     Object.defineProperty(process, 'platform', {value: 'win32'});
+    vi.stubEnv('PLATFORM_CLOUDIOC', 'false');
     const config = typeof platformViteConfig === 'function'
       ? platformViteConfig({command: 'serve', mode: 'development'}) : platformViteConfig;
     expect(config).toMatchObject({server: {
-      host: 'local.cloudbu.huawei.com', port: 443, strictPort: true,
+      host: 'localhost', port: 5174, strictPort: true,
       proxy: {'/rest/cdi/cdinl2databuilderservice/': {target: 'https://ioc.cloudbu.huawei.com', changeOrigin: true}}
     }});
     expect(config).not.toHaveProperty('server.proxy./rest/cdi/cdinl2databuilderservice/v1/dsl/execute');
@@ -145,7 +147,8 @@ describe.each([
     const config = typeof viteConfig === 'function'
       ? viteConfig({command: 'serve', mode: 'development'}) : viteConfig;
     expect(config).toMatchObject({server: {
-      host: 'local.cloudioc.huawei.com', port: 443, strictPort: true,
+      host: app === 'platform' ? 'localhost' : 'local.cloudioc.huawei.com',
+      port: app === 'platform' ? 5174 : 443, strictPort: true,
       proxy: {[path]: {target: 'https://gray.cloudioc.huawei.com', changeOrigin: true, secure: false,
         headers: {cftk: 'test-cftk', cookie: 'session=test-session; route=test-route=='}}}
     }});
