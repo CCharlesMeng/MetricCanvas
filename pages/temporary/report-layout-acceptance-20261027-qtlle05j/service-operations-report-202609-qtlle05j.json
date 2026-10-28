@@ -1,0 +1,1069 @@
+{
+  "schemaVersion": "6.69",
+  "id": "service-operations-report-202609-qtlle05j",
+  "layout": "report",
+  "meta": {
+    "title": "2026年9月服务运营月报"
+  },
+  "dataSources": {
+    "teams": {
+      "fields": {
+        "team": {
+          "type": "string",
+          "role": "dimension",
+          "label": "团队"
+        },
+        "previous": {
+          "type": "number",
+          "role": "measure",
+          "label": "8月工单数",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "current": {
+          "type": "number",
+          "role": "measure",
+          "label": "9月工单数",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "label": "工单净变化",
+          "defaultFormat": "number-signed",
+          "unit": "件"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "工单环比",
+          "defaultFormat": "percent-2-signed",
+          "unit": "%"
+        },
+        "previousHours": {
+          "type": "number",
+          "role": "measure",
+          "label": "8月平均响应时长",
+          "defaultFormat": "number-1",
+          "unit": "小时"
+        },
+        "hours": {
+          "type": "number",
+          "role": "measure",
+          "label": "9月平均响应时长",
+          "defaultFormat": "number-1",
+          "unit": "小时"
+        },
+        "hoursDelta": {
+          "type": "number",
+          "role": "measure",
+          "label": "时长变化",
+          "defaultFormat": "number-1-signed",
+          "unit": "小时"
+        },
+        "hoursRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "时长环比",
+          "defaultFormat": "percent-2-signed",
+          "unit": "%"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "team": "东区服务团队",
+            "previous": 1000,
+            "current": 1200,
+            "delta": 200,
+            "rate": 20,
+            "previousHours": 3,
+            "hours": 2.4,
+            "hoursDelta": -0.6,
+            "hoursRate": -20
+          },
+          {
+            "team": "西区服务团队",
+            "previous": 1200,
+            "current": 1080,
+            "delta": -120,
+            "rate": -10,
+            "previousHours": 2.5,
+            "hours": 2.8,
+            "hoursDelta": 0.3,
+            "hoursRate": 12
+          }
+        ]
+      }
+    },
+    "trend": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份"
+        },
+        "east": {
+          "type": "number",
+          "role": "measure",
+          "label": "东区服务团队",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "west": {
+          "type": "number",
+          "role": "measure",
+          "label": "西区服务团队",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "2026-04",
+            "east": 900,
+            "west": 1100
+          },
+          {
+            "month": "2026-05",
+            "east": 960,
+            "west": 1120
+          },
+          {
+            "month": "2026-06",
+            "east": 1020,
+            "west": 1090
+          },
+          {
+            "month": "2026-07",
+            "east": 980,
+            "west": 1160
+          },
+          {
+            "month": "2026-08",
+            "east": 1000,
+            "west": 1200
+          },
+          {
+            "month": "2026-09",
+            "east": 1200,
+            "west": 1080
+          }
+        ]
+      }
+    },
+    "customers": {
+      "fields": {
+        "group": {
+          "type": "string",
+          "role": "dimension",
+          "label": "变化方向"
+        },
+        "customer": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户"
+        },
+        "previous": {
+          "type": "number",
+          "role": "measure",
+          "label": "8月",
+          "defaultFormat": "number",
+          "unit": "件"
+        },
+        "current": {
+          "type": "number",
+          "role": "measure",
+          "label": "9月",
+          "defaultFormat": "number",
+          "unit": "件"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "label": "净变化",
+          "defaultFormat": "number-signed",
+          "unit": "件"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "环比",
+          "defaultFormat": "percent-2-signed",
+          "unit": "%"
+        },
+        "reason": {
+          "type": "string",
+          "role": "dimension",
+          "label": "已核实原因"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "group": "增长",
+            "customer": "城东园区",
+            "previous": 120,
+            "current": 180,
+            "delta": 60,
+            "rate": 50,
+            "reason": "新增两栋楼宇接入"
+          },
+          {
+            "group": "增长",
+            "customer": "海港中心",
+            "previous": 100,
+            "current": 140,
+            "delta": 40,
+            "rate": 40,
+            "reason": "季度巡检集中开展"
+          },
+          {
+            "group": "增长",
+            "customer": "星河广场",
+            "previous": 90,
+            "current": 108,
+            "delta": 18,
+            "rate": 20,
+            "reason": "延长夜间服务时间"
+          },
+          {
+            "group": "下降",
+            "customer": "西城大厦",
+            "previous": 150,
+            "current": 105,
+            "delta": -45,
+            "rate": -30,
+            "reason": "设备更新后重复报修减少"
+          },
+          {
+            "group": "下降",
+            "customer": "科创基地",
+            "previous": 120,
+            "current": 96,
+            "delta": -24,
+            "rate": -20,
+            "reason": "部分楼层暂停使用"
+          },
+          {
+            "group": "下降",
+            "customer": "南站商圈",
+            "previous": 100,
+            "current": 90,
+            "delta": -10,
+            "rate": -10,
+            "reason": "集中维修在上月完成"
+          }
+        ]
+      }
+    },
+    "stages": {
+      "fields": {
+        "team": {
+          "type": "string",
+          "role": "dimension",
+          "label": "团队"
+        },
+        "accepted": {
+          "type": "number",
+          "role": "measure",
+          "label": "受理工单",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "acceptedHours": {
+          "type": "number",
+          "role": "measure",
+          "label": "受理平均时长",
+          "defaultFormat": "number-1",
+          "unit": "小时"
+        },
+        "assigned": {
+          "type": "number",
+          "role": "measure",
+          "label": "派单工单",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "assignedHours": {
+          "type": "number",
+          "role": "measure",
+          "label": "派单平均时长",
+          "defaultFormat": "number-1",
+          "unit": "小时"
+        },
+        "processed": {
+          "type": "number",
+          "role": "measure",
+          "label": "处理工单",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "processedHours": {
+          "type": "number",
+          "role": "measure",
+          "label": "处理平均时长",
+          "defaultFormat": "number-1",
+          "unit": "小时"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "team": "东区服务团队",
+            "accepted": 1200,
+            "acceptedHours": 0.3,
+            "assigned": 1180,
+            "assignedHours": 0.8,
+            "processed": 1140,
+            "processedHours": 6.2
+          },
+          {
+            "team": "西区服务团队",
+            "accepted": 1080,
+            "acceptedHours": 0.4,
+            "assigned": 1060,
+            "assignedHours": 1,
+            "processed": 1020,
+            "processedHours": 7.1
+          }
+        ]
+      }
+    },
+    "types": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "业务类型"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "label": "工单数",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "share": {
+          "type": "number",
+          "role": "measure",
+          "label": "占比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "设备服务",
+            "count": 1140,
+            "share": 50.0
+          },
+          {
+            "category": "维护服务",
+            "count": 684,
+            "share": 30.0
+          },
+          {
+            "category": "咨询服务",
+            "count": 456,
+            "share": 20.0
+          }
+        ]
+      }
+    },
+    "status": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "办结状态"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "label": "工单数",
+          "defaultFormat": "number-grouped",
+          "unit": "件"
+        },
+        "share": {
+          "type": "number",
+          "role": "measure",
+          "label": "占比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "已办结",
+            "count": 2160,
+            "share": 94.73684210526315
+          },
+          {
+            "category": "待办结",
+            "count": 120,
+            "share": 5.263157894736842
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "cover",
+      "container": "plain",
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "2026年9月服务运营月报",
+            "subtitle": "两支团队的服务量、响应效率与业务构成",
+            "asOf": {
+              "label": "报告期间",
+              "value": "2026年9月"
+            },
+            "tags": [
+              "PC会议阅读",
+              "合成演示数据"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "team-performance",
+      "title": "01 团队月度表现",
+      "container": "plain",
+      "components": [
+        {
+          "id": "overview",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "本月两队合计 2,280 件，上月 2,200 件，净增 80 件（+3.64%）。以下变化统一比较2026年8月；工单量颜色仅表示增减，响应时长越低越快。",
+            "variant": "plain"
+          }
+        },
+        {
+          "id": "east-team",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "东区服务团队",
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "本月工单数",
+                "valueField": {
+                  "data": "main",
+                  "field": "current",
+                  "match": {
+                    "field": "team",
+                    "equals": "东区服务团队"
+                  }
+                },
+                "unit": "件",
+                "changes": [
+                  {
+                    "label": "较8月",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "match": {
+                        "field": "team",
+                        "equals": "东区服务团队"
+                      }
+                    },
+                    "unit": "件",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  },
+                  {
+                    "label": " / 环比",
+                    "field": {
+                      "data": "main",
+                      "field": "rate",
+                      "match": {
+                        "field": "team",
+                        "equals": "东区服务团队"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "平均响应时长",
+                "valueField": {
+                  "data": "main",
+                  "field": "hours",
+                  "match": {
+                    "field": "team",
+                    "equals": "东区服务团队"
+                  }
+                },
+                "unit": "小时",
+                "changes": [
+                  {
+                    "label": "较8月",
+                    "field": {
+                      "data": "main",
+                      "field": "hoursDelta",
+                      "match": {
+                        "field": "team",
+                        "equals": "东区服务团队"
+                      }
+                    },
+                    "unit": "小时",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": " / 环比",
+                    "field": {
+                      "data": "main",
+                      "field": "hoursRate",
+                      "match": {
+                        "field": "team",
+                        "equals": "东区服务团队"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "data": {
+            "main": "teams"
+          }
+        },
+        {
+          "id": "west-team",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "西区服务团队",
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "本月工单数",
+                "valueField": {
+                  "data": "main",
+                  "field": "current",
+                  "match": {
+                    "field": "team",
+                    "equals": "西区服务团队"
+                  }
+                },
+                "unit": "件",
+                "changes": [
+                  {
+                    "label": "较8月",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "match": {
+                        "field": "team",
+                        "equals": "西区服务团队"
+                      }
+                    },
+                    "unit": "件",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  },
+                  {
+                    "label": " / 环比",
+                    "field": {
+                      "data": "main",
+                      "field": "rate",
+                      "match": {
+                        "field": "team",
+                        "equals": "西区服务团队"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "平均响应时长",
+                "valueField": {
+                  "data": "main",
+                  "field": "hours",
+                  "match": {
+                    "field": "team",
+                    "equals": "西区服务团队"
+                  }
+                },
+                "unit": "小时",
+                "changes": [
+                  {
+                    "label": "较8月",
+                    "field": {
+                      "data": "main",
+                      "field": "hoursDelta",
+                      "match": {
+                        "field": "team",
+                        "equals": "西区服务团队"
+                      }
+                    },
+                    "unit": "小时",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": " / 环比",
+                    "field": {
+                      "data": "main",
+                      "field": "hoursRate",
+                      "match": {
+                        "field": "team",
+                        "equals": "西区服务团队"
+                      }
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "data": {
+            "main": "teams"
+          }
+        },
+        {
+          "id": "scope-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "8月基准：东区 1,000 件 / 3.0 小时；西区 1,200 件 / 2.5 小时。未提供团队合计平均响应时长口径，不汇总时长。",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "six-month-trend",
+      "title": "02 近半年工单走势",
+      "container": "plain",
+      "components": [
+        {
+          "id": "work-order-trend",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "2026年4—9月 · 两队工单量（件）",
+            "xField": "month",
+            "series": [
+              {
+                "field": "east",
+                "label": "东区服务团队"
+              },
+              {
+                "field": "west",
+                "label": "西区服务团队"
+              }
+            ],
+            "smooth": false
+          },
+          "data": {
+            "main": "trend"
+          }
+        },
+        {
+          "id": "trend-values",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "month",
+                "title": "月份",
+                "width": 180
+              },
+              {
+                "field": "east",
+                "title": "东区服务团队（件）",
+                "width": 260,
+                "align": "right"
+              },
+              {
+                "field": "west",
+                "title": "西区服务团队（件）",
+                "width": 260,
+                "align": "right"
+              }
+            ],
+            "variant": "reportCompact",
+            "pagination": {
+              "mode": "none"
+            }
+          },
+          "data": {
+            "main": "trend"
+          }
+        }
+      ]
+    },
+    {
+      "id": "key-customers",
+      "title": "03 重点客户变化及原因",
+      "container": "plain",
+      "components": [
+        {
+          "id": "customer-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "仅展示6个重点客户样本，不是全量排名，不与团队总量相加。",
+            "variant": "plain"
+          }
+        },
+        {
+          "id": "customer-changes",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "group",
+                "title": "方向",
+                "width": 66
+              },
+              {
+                "field": "customer",
+                "title": "客户",
+                "width": 112
+              },
+              {
+                "field": "previous",
+                "title": "8月（件）",
+                "width": 86,
+                "align": "right"
+              },
+              {
+                "field": "current",
+                "title": "9月（件）",
+                "width": 86,
+                "align": "right"
+              },
+              {
+                "field": "delta",
+                "title": "净变化（件）",
+                "width": 100,
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                }
+              },
+              {
+                "field": "rate",
+                "title": "环比",
+                "width": 94,
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                }
+              },
+              {
+                "field": "reason",
+                "title": "已核实原因",
+                "width": 250
+              }
+            ],
+            "variant": "reportCompact",
+            "pagination": {
+              "mode": "none"
+            }
+          },
+          "data": {
+            "main": "customers"
+          }
+        }
+      ]
+    },
+    {
+      "id": "service-stages",
+      "title": "04 服务阶段明细",
+      "container": "plain",
+      "components": [
+        {
+          "id": "stage-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "按团队横向比较受理、派单和处理。各阶段独立统计，工单数不可跨阶段相加。",
+            "variant": "plain"
+          }
+        },
+        {
+          "id": "stage-details",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "team",
+                "title": "团队",
+                "width": 150
+              },
+              {
+                "kind": "group",
+                "id": "acceptance",
+                "title": "受理阶段",
+                "children": [
+                  {
+                    "field": "accepted",
+                    "title": "工单数（件）",
+                    "width": 106,
+                    "align": "right"
+                  },
+                  {
+                    "field": "acceptedHours",
+                    "title": "平均时长（小时）",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "assignment",
+                "title": "派单阶段",
+                "children": [
+                  {
+                    "field": "assigned",
+                    "title": "工单数（件）",
+                    "width": 106,
+                    "align": "right"
+                  },
+                  {
+                    "field": "assignedHours",
+                    "title": "平均时长（小时）",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "processing",
+                "title": "处理阶段",
+                "children": [
+                  {
+                    "field": "processed",
+                    "title": "工单数（件）",
+                    "width": 106,
+                    "align": "right"
+                  },
+                  {
+                    "field": "processedHours",
+                    "title": "平均时长（小时）",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              }
+            ],
+            "variant": "reportCompact",
+            "pagination": {
+              "mode": "none"
+            }
+          },
+          "data": {
+            "main": "stages"
+          }
+        }
+      ]
+    },
+    {
+      "id": "composition",
+      "title": "05 业务构成与办结情况",
+      "container": "plain",
+      "components": [
+        {
+          "id": "composition-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "两个主题均覆盖同一批 2,280 件。已办结 2,160 件 = 东区 1,140 件 + 西区 1,020 件，与处理阶段件数一致。",
+            "variant": "plain"
+          }
+        },
+        {
+          "id": "business-types",
+          "type": "compositeCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "业务类型构成",
+            "components": [
+              {
+                "id": "business-types-ring",
+                "type": "pieChart",
+                "layout": {
+                  "span": 5
+                },
+                "props": {
+                  "categoryField": "category",
+                  "valueField": "count",
+                  "ring": "58%",
+                  "variant": "compactRing"
+                },
+                "data": {
+                  "main": "types"
+                }
+              },
+              {
+                "id": "business-types-detail",
+                "type": "categoryBreakdown",
+                "layout": {
+                  "span": 7
+                },
+                "data": {
+                  "main": "types"
+                },
+                "props": {
+                  "categoryField": "category",
+                  "categoryLabel": "类别",
+                  "swatches": false,
+                  "columns": [
+                    {
+                      "label": "工单数（件）",
+                      "field": "count"
+                    },
+                    {
+                      "label": "占比",
+                      "field": "share"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "completion-status",
+          "type": "compositeCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "办结状态构成",
+            "components": [
+              {
+                "id": "completion-status-ring",
+                "type": "pieChart",
+                "layout": {
+                  "span": 5
+                },
+                "props": {
+                  "categoryField": "category",
+                  "valueField": "count",
+                  "ring": "58%",
+                  "variant": "compactRing"
+                },
+                "data": {
+                  "main": "status"
+                }
+              },
+              {
+                "id": "completion-status-detail",
+                "type": "categoryBreakdown",
+                "layout": {
+                  "span": 7
+                },
+                "data": {
+                  "main": "status"
+                },
+                "props": {
+                  "categoryField": "category",
+                  "categoryLabel": "类别",
+                  "swatches": false,
+                  "columns": [
+                    {
+                      "label": "工单数（件）",
+                      "field": "count"
+                    },
+                    {
+                      "label": "占比",
+                      "field": "share"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

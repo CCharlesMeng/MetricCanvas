@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "fb75afd7d08844b9f0c4e333b59350bb99542494c3d32c41d369512d95272bae",
+  "sha256": "4dcf43747a1ae1d08dae154a353204c4b4e99469399242520c793ddbdcd63661",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -2371,6 +2371,142 @@
       "sha256": "5896a0c0f17d319e1d56480aa9a7895da3e5dff65d6cfdc4b84727d873a8cb25"
     },
     {
+      "file": "pages/temporary/report-container-principles-20261027-r3/README.md",
+      "sha256": "0d075f242298c172c05edb769b4b14710ba49966404e4a871e9025297ff1b8d1"
+    },
+    {
+      "file": "pages/temporary/report-container-principles-20261027-r3/field-maintenance-report-202611-r3.json",
+      "sha256": "bbdfd2bbf44cee4204d26ef7d7be62d6d3b9a1c4fcf03a9822c301a1703c8add"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/README.md",
+      "sha256": "c1f72fa14e1513582f33cb72a467113fcdf1715b0613bcc0edc57112d6957877"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/acceptance.json.txt",
+      "sha256": "2f644841fd2d35990679fba852f02a145472722e6405fe61aaf9b07468569115"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/attempt-02-css1440-full.jpg",
+      "sha256": "ae825d73e63b23f5af9c85a12c18f6be8acd40df715f3504e7225cf6ba68ca45"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/final-css1280-full.jpg",
+      "sha256": "6d214dad8cd374ecf2c7701513420a0203c5f2bc2fd0c06ff401a15550a8534d"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/final-css1280-overview.jpg",
+      "sha256": "ca78036585357d48ee2b1fa0fbe4ca701ad84bcf6da2e3d8413b529c37c2db19"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/final-css1280-stages-composition.jpg",
+      "sha256": "3a332aa07ceb5cccaf1b883a677c3562ce7635ede72a8b6e6c79b7ee8d70cb8c"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/final-css1440-stages-composition.jpg",
+      "sha256": "47506440a35f6d56a59d7db021ae23aeb2ab6cf8f718ae54150d523b20cfd485"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/final-open-report.jpg",
+      "sha256": "310ff9b4c5a261df7646f5cbb819b3b5d750c708108410f5305da417df72448b"
+    },
+    {
+      "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/service-operations-report-202609-qtlle05j.json",
+      "sha256": "50fc7b40c77f52fca9ba1159168b03b98af90a5c6c1b1ea35490a4199d1acd74"
+    },
+    {
+      "file": "pages/temporary/report-layout-independent-20261027-r2/README.md",
+      "sha256": "177abaf2b1f9259ccac997ffa093671de266dba8ff21fd51b7514e3dbdfa2d46"
+    },
+    {
+      "file": "pages/temporary/report-layout-independent-20261027-r2/acceptance.json.txt",
+      "sha256": "d113d9e4fcfe0efb32ac207d285d78db45f0477ac4ca6a4076a51860e934c9f4"
+    },
+    {
+      "file": "pages/temporary/report-layout-independent-20261027-r2/first-pass-1280.png",
+      "sha256": "65f0f0cfe412fa90c10bc5bce4e99c96af5ddefab6ccdf372ed9faba832eb87d"
+    },
+    {
+      "file": "pages/temporary/report-layout-independent-20261027-r2/first-pass-1440.png",
+      "sha256": "8e1495b42a5e179bd90c304ec9767675ac0ac95a6e8a7dd47ce941d284cba3ef"
+    },
+    {
+      "file": "pages/temporary/report-layout-independent-20261027-r2/operations-october-independent-20261027-r2.json",
+      "sha256": "5974830d3589deb4415a31c70177892741f39166f973e1eb166f181402f8291a"
+    },
+    {
+      "file": "pages/temporary/report-layout-patterns-20261026/report-layout-patterns-1026.json",
+      "sha256": "c3ac76357aa0efcf645eb71c2ded56dd165272c62ce26a22f8c1de7edda66e80"
+    },
+    {
+      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/README.md",
+      "sha256": "a28dea65ea462c920dc4de3c38f9e27c336e8182d9c1cf82999048b594edddf1"
+    },
+    {
+      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/acceptance.json.txt",
+      "sha256": "4ff082fa49e7273ec54be53cbdd29daf397f66ce2a916fbd6c9de2388e26670d"
+    },
+    {
+      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1280-full.jpg",
+      "sha256": "80f2b9047c42725fabe03c28f7ccfd91194bfb490d329afd7c1704e77375e185"
+    },
+    {
+      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1280-stages-composition.jpg",
+      "sha256": "bf784f1a94a9a28d34139ce27e2e2ab32b5274bcafe5eb033d28abd9f41707c8"
+    },
+    {
+      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1440-full.jpg",
+      "sha256": "d0a458c90a8333dcfefe57aa51b234bfa705c4651d7e2840f7150d728739a09f"
+    },
+    {
+      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1440-overview.jpg",
+      "sha256": "f6485ec71f3358f1a952193128355dfb32a4d3f5bfc98b1d74a551e85a96ab34"
+    },
+    {
+      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/service-operations-report-202609-refined.json",
+      "sha256": "a4dd848a62d9e8e7e71270bf708c2e36b5b2997ecc85d57da028eefebd6a29b4"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/README.md",
+      "sha256": "3c99c60e3c5394a0a773347498c2c08918651cbca52776ad93a5e413519219fe"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/acceptance.json.txt",
+      "sha256": "a68b4eb72b5e3d72f94e11cb9c3fb7135bd983764c5bda2b919853bdf715d58c"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/charts-1280-full.jpg",
+      "sha256": "63f51ebc68323ec44b6548c8f1106c4019a88bdec0d0e9a2e17198883aceb801"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/charts-1440-full.jpg",
+      "sha256": "f895b58e2beab7d2ef1ccd4f071ff40ef9f35fc657786a96953904829ba82ec1"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/final-1280-full.jpg",
+      "sha256": "dcd082fc5b82119279793c4032f6a2e51f402e04f150c0baa6c146a78fdcae60"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/final-1280-stages-composition.jpg",
+      "sha256": "126bbb5516bf1671f558f3b7f192422b12b2bdf9020831fba5e499da3bbd2a98"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/final-1440-full.jpg",
+      "sha256": "8a514a486dc19e2a88c76cb2242f63bdae267a73b7b9c1a00185231359f72974"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/outer-cards-1280-full.png",
+      "sha256": "2dceff849f2b91ae3724d39ff75a151aed84f0c73b19151a96c0e6fb600af6f4"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/outer-cards-1440-full.png",
+      "sha256": "34847595eebfaacbcb6d03563645da484dd0bcae1353241ea4cbedb11973447a"
+    },
+    {
+      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/service-operations-report-202609-structured.json",
+      "sha256": "36504ea39a5c2b2db6f09a4530d2636b2f1f6f84baeb8fc4c8b122598d2734a8"
+    },
+    {
       "file": "pnpm-lock.yaml",
       "sha256": "1a33c68c0755b6d9bf6d05bbf45438b9b5e2b9bc574a6f41908944dfe5fc2f4f"
     },
@@ -2404,7 +2540,7 @@
     },
     {
       "file": "tools/mc-content/README.md",
-      "sha256": "b661f8d52c2a47c6c422c897aefd368e6a76c2f52ea647c89f5ab9afc512ee08"
+      "sha256": "57a8bc546220c32e9ec9c4f8346e65eb9f2be691de015cb7d9bbfa742f407381"
     },
     {
       "file": "tools/mc-content/eval/fixtures/example-matrix.json",
@@ -2424,11 +2560,15 @@
     },
     {
       "file": "tools/mc-content/layouts/reading.md",
-      "sha256": "5f98360b8423232a35df7ac9927062ff773dbffb9bc6ecc2b23dff792f285fbb"
+      "sha256": "e535bb814ca5363ec37c8de20d587cd70cd35152a2062ba3468c26ac13375180"
+    },
+    {
+      "file": "tools/mc-content/layouts/report-composition.md",
+      "sha256": "002b0ad8ca21360cde57f7d9b656a285d08027252b7ce6916e77ce006934f261"
     },
     {
       "file": "tools/mc-content/layouts/report.md",
-      "sha256": "7f53185b6a1247136b665fccd577e0773772c573b424d8e0272b73a01adc0813"
+      "sha256": "ce0acbce18be2794c84a91e0dcecc03d8ae66ef8aee81f2e9132b669ee125f52"
     },
     {
       "file": "tools/mc-content/layouts/standards/business-report-compact.json",
@@ -2512,11 +2652,11 @@
     },
     {
       "file": "tools/mc-content/scenarios/business-report.md",
-      "sha256": "9bd27d7abfd873020ae683cc497794c6e02f05878c82c488a5ba4c7d9415d443"
+      "sha256": "5b22b378bb639119ecfdec53f2a548c358daac024416b4b32f67fc1c726f30ad"
     },
     {
       "file": "tools/mc-content/scenarios/usage-report.md",
-      "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55"
+      "sha256": "d553fe62ee08fb97b058c5600dd5851180d38866332eaa0b731d19123e97ba4e"
     },
     {
       "file": "tools/mc-content/scripts/mc_content.py",
@@ -2576,7 +2716,7 @@
     },
     {
       "file": "tools/scripts/local-authoring-patterns.ts",
-      "sha256": "b54ee7f914691b602696b4b905ebafa42b436f2a8d651013b30239e73843c7f1"
+      "sha256": "f69a3259a5ee0f7ee93ccda2e9aa60199ea591cdc4f0b5bd28d27edd68bed465"
     },
     {
       "file": "tools/scripts/local-authoring-projection.ts",
@@ -2600,7 +2740,7 @@
     },
     {
       "file": "tools/scripts/mc-content-coverage.ts",
-      "sha256": "c9e5aea5fc32ce2b94037de77c840d6916ef7713137d1d03fa1dee6e421df291"
+      "sha256": "5cc38610f6c46059cbb84ec5cf6abc8f66b842eb03d5c9fe56aa7142890ba0d8"
     },
     {
       "file": "tools/scripts/mc-content-fixtures.py",
@@ -2628,7 +2768,7 @@
     },
     {
       "file": "tools/scripts/mc-content.ts",
-      "sha256": "da1d175f6307113f66fb19cb86130260a69d3e568d1acd29cfe17ad2fc1e6e19"
+      "sha256": "7e75bc21280099790b545c9119276c9865b10601e73b12df43ef499562922e3b"
     },
     {
       "file": "tools/scripts/mc-contracts.py",

@@ -1,0 +1,366 @@
+{
+  "status": "usable_with_visual_adjustments",
+  "model": {
+    "model": "GPT-6 (Codex session; exact backend variant not exposed)",
+    "externalModelCalls": 0,
+    "mcContentVersion": "1-82287d016985e73d",
+    "gitHead": "9ee7e6ac611e5651046dde16f9b5fc44dc0974b1"
+  },
+  "url": "http://localhost:5173/pages/service-operations-report-202609-qtlle05j",
+  "frozenInput": {
+    "packageSha256": "6395a8355554f8315dee029c8149bedcabf86039760145a66fd37edadd4fc72a",
+    "contentVersion": "1-82287d016985e73d",
+    "contentSha256": "82287d016985e73d0179b3135b10f03c4776157c61f3a41ad265ebcd69b72095",
+    "compositionSha256": "c54645a86a9fe52a0ef8b06fd3c1d9f30f10fcee0f901d038e78cdd3b334275b",
+    "skillVersion": "1.4.0",
+    "writer": "6.69",
+    "manifest": "/tmp/report-layout-acceptance-20261027-qtlle05j/input-sha256.json"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "schema": "pass",
+      "visual": "needs_adjustment",
+      "sha256": "6ee1d7957ad5843b7af2a09630262be775ec028f0cd557daf03b3070578a4d57",
+      "notes": [
+        "变化标签相接",
+        "半宽表格图例自动移到底部，构成卡偏高"
+      ],
+      "path": "/tmp/report-layout-acceptance-20261027-qtlle05j/attempt-01"
+    },
+    {
+      "attempt": 2,
+      "schema": "pass",
+      "visual": "usable_with_visual_adjustments",
+      "sha256": "50fc7b40c77f52fca9ba1159168b03b98af90a5c6c1b1ea35490a4199d1acd74",
+      "path": "/tmp/report-layout-acceptance-20261027-qtlle05j/attempt-02"
+    }
+  ],
+  "layout": {
+    "readingOrder": [
+      "团队表现",
+      "半年走势及精确值",
+      "客户变化及原因",
+      "服务阶段",
+      "两个已有构成主题"
+    ],
+    "patterns": [
+      "C1-A",
+      "C5-B",
+      "C2-B",
+      "C3-A",
+      "C4-A"
+    ],
+    "checks": [
+      {
+        "item": "对象归属与主辅层级",
+        "status": "pass",
+        "evidence": "两团队各一张compactSummary；本期值默认主题色20px，变化18px。未显式设置蓝色。"
+      },
+      {
+        "item": "变化值颜色",
+        "status": "pass",
+        "evidence": "全部8个团队变化值已核对DOM颜色；工单增绿减红，时长降绿升红；客户变化独立同向规则。"
+      },
+      {
+        "item": "客户原因",
+        "status": "pass",
+        "evidence": "6条样本本期、基期、净变化、环比与原因同一行；最长原因完整可见。"
+      },
+      {
+        "item": "阶段分组表头",
+        "status": "pass",
+        "evidence": "一张7叶列表、3阶段分组，含团队列；未采用C3-B。1440/1280末列可见，无表内横滚。"
+      },
+      {
+        "item": "构成卡",
+        "status": "needs_adjustment",
+        "evidence": "两卡同排，compactRing与右侧categoryBreakdown共享源；小环图不占通栏。默认组合卡最小高度280px，图偏小、底部留白仍明显；无共享类别色点。"
+      },
+      {
+        "item": "趋势与密度",
+        "status": "usable",
+        "evidence": "半年两序列图及6个月数表连续；表用于核对精确值。默认零基准纵轴使变化集中上方；页面整体约2326px高。"
+      }
+    ],
+    "viewports": [
+      {
+        "cssWidth": 1440,
+        "cssHeight": 1000,
+        "documentWidth": 1440,
+        "requestWidth": 1843,
+        "devicePixelRatio": 1.28000009059906,
+        "evidence": "/tmp/report-layout-acceptance-20261027-qtlle05j/browser-css1440.json"
+      },
+      {
+        "cssWidth": 1280,
+        "cssHeight": 1000,
+        "documentWidth": 1280,
+        "requestWidth": 1638,
+        "devicePixelRatio": 1.28000009059906,
+        "evidence": "/tmp/report-layout-acceptance-20261027-qtlle05j/browser-css1280.json"
+      }
+    ],
+    "viewportNote": "视口覆盖与现有浏览器缩放存在偏差，验收以innerWidth实测1440/1280为准。首轮额外800px截图按实测重命名，不列为1280验收。截图由浏览器直接保存。"
+  },
+  "data": {
+    "status": "pass",
+    "synthetic": true,
+    "receipts": [
+      {
+        "check": "teams",
+        "status": "pass",
+        "rows": 2,
+        "fields": [
+          "team",
+          "previous",
+          "current",
+          "previousHours",
+          "hours"
+        ]
+      },
+      {
+        "check": "trend",
+        "status": "pass",
+        "rows": 6,
+        "fields": [
+          "month",
+          "east",
+          "west"
+        ]
+      },
+      {
+        "check": "customers",
+        "status": "pass",
+        "rows": 6,
+        "fields": [
+          "customer",
+          "previous",
+          "current",
+          "reason"
+        ]
+      },
+      {
+        "check": "stages",
+        "status": "pass",
+        "rows": 2,
+        "fields": [
+          "team",
+          "accepted",
+          "acceptedHours",
+          "assigned",
+          "assignedHours",
+          "processed",
+          "processedHours"
+        ]
+      },
+      {
+        "check": "types",
+        "status": "pass",
+        "rows": 3,
+        "fields": [
+          "category",
+          "count"
+        ]
+      },
+      {
+        "check": "status",
+        "status": "pass",
+        "rows": 2,
+        "fields": [
+          "category",
+          "count"
+        ]
+      },
+      {
+        "check": "derived-values",
+        "status": "pass",
+        "tolerance": 1e-09,
+        "notes": "8 team changes, 12 customer changes; composition percentage uses 0-100 scale; independent source literals from brief"
+      }
+    ]
+  },
+  "capabilityBoundary": {
+    "path": "full Page JSON + local-authoring validator + existing RuntimeView",
+    "composePageCalled": false,
+    "compositeCardAssembled": false,
+    "notes": [
+      "未声称在线compose_page支持组合卡。",
+      "无自定义Svelte/CSS、无中心合计、无高级ECharts配置、无未提供业务主题。",
+      "inline合成数据，不是DQE/Relay/DeepSeek API验收。"
+    ]
+  },
+  "console": {
+    "finalDirectVisit": [],
+    "earlierLogs": "/tmp/report-layout-acceptance-20261027-qtlle05j/console-observed.json",
+    "note": "同一旧标签观测到4条DQE 502日志；最终新标签直接访问无warn/error。该页所有页面数据源为inline，未将历史错误混为本页取数。"
+  },
+  "complexity": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "before": "新建临时验收脚本，无存量修改函数",
+    "after": [
+      {
+        "file": "create-page.mjs",
+        "functions": [
+          {
+            "name": "source",
+            "selfCC": 1
+          },
+          {
+            "name": "dimension",
+            "selfCC": 1
+          },
+          {
+            "name": "measure",
+            "selfCC": 1
+          },
+          {
+            "name": "component",
+            "selfCC": 2
+          },
+          {
+            "name": "text",
+            "selfCC": 1
+          },
+          {
+            "name": "column",
+            "selfCC": 1
+          },
+          {
+            "name": "table",
+            "selfCC": 1
+          },
+          {
+            "name": "teamCard",
+            "selfCC": 1
+          },
+          {
+            "name": "teamCard/bind",
+            "selfCC": 1
+          },
+          {
+            "name": "composition",
+            "selfCC": 1
+          }
+        ]
+      },
+      {
+        "file": "check-data.mjs",
+        "functions": [
+          {
+            "name": "exactRows",
+            "selfCC": 1
+          },
+          {
+            "name": "exactRows/<anonymous@6:92>",
+            "selfCC": 1
+          },
+          {
+            "name": "exactRows/<anonymous@6:92>/<anonymous@6:106>",
+            "selfCC": 1
+          },
+          {
+            "name": "<anonymous@15:94>",
+            "selfCC": 1
+          }
+        ]
+      }
+    ],
+    "unclosed": []
+  },
+  "notVerified": [
+    "真实DQE/Relay",
+    "外部模型或DeepSeek API",
+    "普遍创作提升或因果A/B结论",
+    "线上保存、发布、导出文件效果"
+  ],
+  "git": {
+    "commitOrPush": false,
+    "productCodeChanged": false,
+    "preservedParallelEdits": true
+  },
+  "evidenceRoot": "/tmp/report-layout-acceptance-20261027-qtlle05j",
+  "knowledgeQueries": [
+    {
+      "topic": "layout",
+      "key": "report-composition",
+      "truncated": false,
+      "source": "layouts/report-composition.md",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/01-report-composition.json",
+      "sha256": "c0ac3c7725db91ce35c3a27d2fb7a05c7308e8130b404459a227e2a369cbc165"
+    },
+    {
+      "topic": "component",
+      "key": "categoryBreakdown",
+      "truncated": false,
+      "source": "components/categoryBreakdown.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-categoryBreakdown.json",
+      "sha256": "4c6ce011d7e8ae5647150a55b8555f877c8d5d2fa55a85e861d1eb4923e43d64"
+    },
+    {
+      "topic": "component",
+      "key": "compositeCard",
+      "truncated": false,
+      "source": "components/compositeCard.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-compositeCard.json",
+      "sha256": "67dffe51b6e7010bfa38c33bb9c68b9ec2c80259d8507149b29683e1c998a2d1"
+    },
+    {
+      "topic": "component",
+      "key": "lineChart",
+      "truncated": false,
+      "source": "components/lineChart.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-lineChart.json",
+      "sha256": "f3c05d04db3b3142bc5f67e2828338cf08ff315afdbf9a79e82b65820b9cc1e0"
+    },
+    {
+      "topic": "component",
+      "key": "metricCard",
+      "truncated": false,
+      "source": "components/metricCard.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-metricCard.json",
+      "sha256": "64e47db8ccd7ebbc0d00c878de8257a1685213ff9ce68abb4a86c69ffc16cf39"
+    },
+    {
+      "topic": "component",
+      "key": "pieChart",
+      "truncated": false,
+      "source": "components/pieChart.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-pieChart.json",
+      "sha256": "e293539cbc6903c3a35f2805e5990833668e28d274625fbb73f495a2fc13ea49"
+    },
+    {
+      "topic": "component",
+      "key": "reportHeader",
+      "truncated": false,
+      "source": "components/reportHeader.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-reportHeader.json",
+      "sha256": "7bb7d02601625d1b304c7e05809ef3f4cf471ad85593d6cd22c9b5c40772f20c"
+    },
+    {
+      "topic": "component",
+      "key": "table",
+      "truncated": false,
+      "source": "components/table.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-table.json",
+      "sha256": "c418ad7a04bf5870b4ae6b571fd0511f9ad2ff130eb81760dec73ec0330f8005"
+    },
+    {
+      "topic": "component",
+      "key": "text",
+      "truncated": false,
+      "source": "components/text.json",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/component-text.json",
+      "sha256": "3783254686b4db26bf3a5e2c66612e4b1b05c0b72c8750e7ff7709ab0990db1d"
+    },
+    {
+      "topic": "layout",
+      "key": "report",
+      "truncated": false,
+      "source": "layouts/report.md",
+      "receipt": "/tmp/report-layout-acceptance-20261027-qtlle05j/knowledge/layout-report.json",
+      "sha256": "a0cb2c6209186cc23296e4a5418318319d53669336829f84e7c0a6948c6bc897"
+    }
+  ]
+}

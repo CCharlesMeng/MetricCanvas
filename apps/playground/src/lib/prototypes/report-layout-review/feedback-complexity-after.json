@@ -1,0 +1,380 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "apps/playground/src/lib/prototypes/report-layout-review/model.ts",
+      "functions": [
+        {
+          "name": "<anonymous@32:55>",
+          "qualifiedName": "<anonymous@32:55>",
+          "line": 32,
+          "endLine": 32,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "initialReviews",
+          "qualifiedName": "initialReviews",
+          "line": 36,
+          "endLine": 40,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@37:44>",
+          "qualifiedName": "initialReviews/<anonymous@37:44>",
+          "line": 37,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@38:30>",
+          "qualifiedName": "initialReviews/<anonymous@37:44>/<anonymous@38:30>",
+          "line": 38,
+          "endLine": 38,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "reviewLabel",
+          "qualifiedName": "reviewLabel",
+          "line": 41,
+          "endLine": 45,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "slot",
+          "qualifiedName": "slot",
+          "line": 47,
+          "endLine": 52,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@55:75>",
+          "qualifiedName": "<anonymous@55:75>",
+          "line": 55,
+          "endLine": 55,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@60:48>",
+          "qualifiedName": "<anonymous@60:48>",
+          "line": 60,
+          "endLine": 60,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@61:49>",
+          "qualifiedName": "<anonymous@61:49>",
+          "line": 61,
+          "endLine": 61,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "objectProps",
+          "qualifiedName": "objectProps",
+          "line": 67,
+          "endLine": 72,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rankingProps",
+          "qualifiedName": "rankingProps",
+          "line": 82,
+          "endLine": 84,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "stageTable",
+          "qualifiedName": "stageTable",
+          "line": 92,
+          "endLine": 98,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@102:17>",
+          "qualifiedName": "<anonymous@102:17>",
+          "line": 102,
+          "endLine": 102,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "revenueComposition",
+          "qualifiedName": "revenueComposition",
+          "line": 107,
+          "endLine": 111,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@108:29>",
+          "qualifiedName": "revenueComposition/<anonymous@108:29>",
+          "line": 108,
+          "endLine": 108,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@109:30>",
+          "qualifiedName": "revenueComposition/<anonymous@109:30>",
+          "line": 109,
+          "endLine": 109,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/tmp/report-layout-review-feedback-20261027/page-after.ts",
+      "functions": [
+        {
+          "name": "<anonymous@7:59>",
+          "qualifiedName": "<anonymous@7:59>",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@8:43>",
+          "qualifiedName": "<anonymous@8:43>",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 3,
+          "optionalChains": 2,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "choose",
+          "qualifiedName": "choose",
+          "line": 9,
+          "endLine": 12,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "annotate",
+          "qualifiedName": "annotate",
+          "line": 13,
+          "endLine": 16,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "copyReview",
+          "qualifiedName": "copyReview",
+          "line": 17,
+          "endLine": 24,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/tmp/report-layout-review-feedback-20261027/preview-after.ts",
+      "functions": []
+    },
+    {
+      "file": "/tmp/report-layout-review-feedback-20261027/template-handlers.ts",
+      "functions": [
+        {
+          "name": "templateHandler0",
+          "qualifiedName": "templateHandler0",
+          "line": 1,
+          "endLine": 1,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "templateHandler1",
+          "qualifiedName": "templateHandler1",
+          "line": 2,
+          "endLine": 2,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/tmp/report-layout-review-feedback-20261027/browser.mjs",
+      "functions": [
+        {
+          "name": "facts",
+          "qualifiedName": "facts",
+          "line": 6,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "<anonymous@8:89>",
+          "qualifiedName": "facts/<anonymous@8:89>",
+          "line": 8,
+          "endLine": 11,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@12:71>",
+          "qualifiedName": "facts/<anonymous@12:71>",
+          "line": 12,
+          "endLine": 12,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@12:114>",
+          "qualifiedName": "facts/<anonymous@12:71>/<anonymous@12:114>",
+          "line": 12,
+          "endLine": 12,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@13:36>",
+          "qualifiedName": "facts/<anonymous@13:36>",
+          "line": 13,
+          "endLine": 17,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "capture",
+          "qualifiedName": "capture",
+          "line": 27,
+          "endLine": 31,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "checksFor",
+          "qualifiedName": "checksFor",
+          "line": 33,
+          "endLine": 42,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "main",
+          "qualifiedName": "main",
+          "line": 44,
+          "endLine": 69,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "<anonymous@49:24>",
+          "qualifiedName": "main/<anonymous@49:24>",
+          "line": 49,
+          "endLine": 49,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@57:51>",
+          "qualifiedName": "main/<anonymous@57:51>",
+          "line": 57,
+          "endLine": 57,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:48>",
+          "qualifiedName": "main/<anonymous@64:48>",
+          "line": 64,
+          "endLine": 64,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:123>",
+          "qualifiedName": "main/<anonymous@64:123>",
+          "line": 64,
+          "endLine": 64,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

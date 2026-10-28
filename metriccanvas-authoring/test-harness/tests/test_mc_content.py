@@ -1,6 +1,7 @@
 """Exercise the distributed Interface, including replacement and schema evolution."""
 from copy import deepcopy
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -31,6 +32,19 @@ def page():
 
 
 class McContentTest(unittest.TestCase):
+    def test_reviewed_report_compositions_are_queryable(self):
+        result = query_content('layout', 'report-composition', root=CONTENT)
+        text = result['content']
+        self.assertFalse(result['truncated'])
+        ids = re.findall(r'^\| (C\d-[A-D]) \|', text, re.MULTILINE)
+        self.assertEqual(ids, ['C1-A', 'C1-B', 'C2-A', 'C2-B', 'C3-A', 'C4-A', 'C4-B', 'C4-C', 'C4-D', 'C5-A', 'C5-B'])
+        self.assertIn('本期数值使用默认文本色', text)
+        self.assertIn('不能只给一半变化值着色', text)
+        self.assertIn('单个小环图不独占通栏', text)
+        self.assertIn('不支持compositeCard／tabContainer', text)
+        self.assertIn('report-composition.md', query_content('layout', 'report', root=CONTENT)['content'])
+        self.assertIn('report-composition.md', query_content('layout', 'reading', root=CONTENT)['content'])
+
     def test_snapshot_matches_actual_compose_contract(self):
         snapshot = json.loads((CONTENT / 'mc-closed-sets/snapshot.json').read_text())
         self.assertEqual(snapshot['composeSchema'], COMPOSE_SCHEMA)

@@ -1,0 +1,309 @@
+{
+  "status": "needs_adjustment",
+  "layoutStatus": "needs_adjustment",
+  "staticStatus": "pass",
+  "dataStatus": "pass",
+  "runtimeCompletenessStatus": "pass",
+  "independence": "Fresh-context author subagent; frozen knowledge and new raw business input; parent expectations calculated before generation; no parent layout feedback to author. Browser review performed by parent only after author finished.",
+  "scopeOfConclusion": "Independent first-pass output; author did not run browser repair loop. Not a full autonomous preview-and-repair benchmark or A/B claim.",
+  "skillVersion": "1.4.1",
+  "mcContentVersion": "1-972222e3488e9c2c",
+  "schemaVersion": "6.69",
+  "attemptCount": 1,
+  "repairCount": 0,
+  "firstAndFinalSha256": "5974830d3589deb4415a31c70177892741f39166f973e1eb166f181402f8291a",
+  "url": "http://localhost:5173/pages/operations-october-independent-20261027-r2",
+  "servingWorktree": "/Users/moon/Documents/Code/公司项目/DataDashboard",
+  "servingPort": 5173,
+  "gitBaseline": "9ee7e6ac611e5651046dde16f9b5fc44dc0974b1",
+  "findings": [
+    {
+      "id": "L1",
+      "status": "needs_adjustment",
+      "title": "图表卡面边界未形成",
+      "evidence": "趋势图、饼图及祖先层背景均为透明；仅3个团队组合卡及2张真实表格拥有白色卡面，图表直接铺在蓝色画布。",
+      "cause": "采用plain分区后未为不自带卡面的图表选择独立组合卡。"
+    },
+    {
+      "id": "L2",
+      "status": "needs_adjustment",
+      "title": "基期与本期主值紧贴",
+      "evidence": "6个指标的row-context右缘与row-value左缘间距均为0px；截图中基期数与本期主值连续挤在同一行。",
+      "cause": "compactSummary的context选择未经实际视觉复核；信息正确但主辅区分欠清楚。"
+    },
+    {
+      "id": "L3",
+      "status": "needs_adjustment",
+      "title": "口径说明误用分析摘要变体",
+      "evidence": "4段口径／样本说明被呈现为带图标的“AI 总结：”；冻结text组件语义已经明确reportInline自动显示此前缀。",
+      "cause": "创作选型未充分遵守已提供语义；属于变体误用，不是Schema能力缺失。"
+    }
+  ],
+  "checks": {
+    "data": {
+      "status": "pass",
+      "numericComparisons": 68,
+      "tolerance": 1e-09,
+      "teamCount": 3,
+      "trendRows": 4,
+      "typeRows": 4,
+      "siteRows": 6,
+      "reasonTextsExact": true,
+      "zeroChangesPreserved": true,
+      "total": {
+        "previous": 2960,
+        "current": 3000,
+        "delta": 40,
+        "rate": 1.3513513513513513
+      },
+      "allInputHashesUnchanged": true,
+      "firstAndFinalBytesEqual": true,
+      "sha256": "5974830d3589deb4415a31c70177892741f39166f973e1eb166f181402f8291a",
+      "method": "Expected calculated from business input before author generation; author self-check not used"
+    },
+    "browserViewports": [
+      {
+        "aiSummaryLabels": 4,
+        "height": 1000,
+        "scrollWidth": 1440,
+        "tables": [
+          {
+            "parentClient": 439,
+            "parentScroll": 439,
+            "rows": 4
+          },
+          {
+            "parentClient": 260,
+            "parentScroll": 260,
+            "rows": 4
+          },
+          {
+            "parentClient": 1126,
+            "parentScroll": 1126,
+            "rows": 6
+          }
+        ],
+        "width": 1440
+      },
+      {
+        "aiSummaryLabels": 4,
+        "canvasAncestors": [
+          [
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": ""
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "echart svelte-1rcrrjn"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "cell svelte-1jzn1hh chart-cell"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "section-grid svelte-1jzn1hh"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "page-section svelte-1jzn1hh container-plain"
+            }
+          ],
+          [
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": ""
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "echart svelte-1rcrrjn"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "pie-plot svelte-ulvb4b"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "pie-layout svelte-ulvb4b"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "className": "pie-chart svelte-ulvb4b has-table-legend"
+            }
+          ]
+        ],
+        "cards": [
+          {
+            "background": "rgb(255, 255, 255)",
+            "height": 279.98046875,
+            "title": " 北区运维团队",
+            "width": 378.671875
+          },
+          {
+            "background": "rgb(255, 255, 255)",
+            "height": 279.98046875,
+            "title": " 南区运维团队",
+            "width": 378.69140625
+          },
+          {
+            "background": "rgb(255, 255, 255)",
+            "height": 279.98046875,
+            "title": " 中区运维团队",
+            "width": 378.671875
+          }
+        ],
+        "height": 1000,
+        "metricFirst": "<!----> <div class=\"metric-values svelte-1vxoqkp\"><div class=\"metric-row svelte-1vxoqkp\"><span class=\"row-label svelte-1vxoqkp\">10月工单数</span> <span class=\"value-line svelte-1vxoqkp\"><!----><span class=\"row-context svelte-1vxoqkp\">9月基期：960 件</span><!----> <span class=\"row-value svelte-1vxoqkp\">1,056</span> <span class=\"unit svelte-1vxoqkp\">件</span><!----><!----></span><!----> <div class=\"changes svelte-1vxoqkp\"><span class=\"change svelte-1vxoqkp positive explicit-color\" style=\"color: var(--mc-color-positive, #52c41a);\"><span class=\"change-label svelte-1vxoqkp\">较9月</span> <span class=\"change-value svelte-1vxoqkp\"><!----> <span class=\"svelte-1vxoqkp\">+96<span class=\"change-unit svelte-1vxoqkp\">件</span><!----></span></span></span><span class=\"change svelte-1vxoqkp positive explicit-color\" style=\"color: var(--mc-color-positive, #52c41a);\"><span class=\"change-label svelte-1vxoqkp\">环比</span> <span class=\"change-value svelte-1vxoqkp\"><!----> <span class=\"svelte-1vxoqkp\">+10.00%<!----></span></span></span></div><!----></div></div><!---->",
+        "pie": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "height": 320,
+            "insideComposite": false,
+            "width": 1164.0234375
+          }
+        ],
+        "scrollWidth": 1280,
+        "tables": [
+          {
+            "parentClient": 439,
+            "parentScroll": 439,
+            "rows": 4,
+            "text": "月份 北区 南区 中区 2026-07 880 1,120 760 2026-08 920 1,160 780 2026-09 960 1,200 800 2026-10 1,056 1,080 864 "
+          },
+          {
+            "parentClient": 260,
+            "parentScroll": 260,
+            "rows": 4,
+            "text": "业务类型工单数占比 网络维护1,200 件40.0% 设备检修900 件30.0% 配置调整600 件20.0% 操作咨询300 件10.0%"
+          },
+          {
+            "parentClient": 1126,
+            "parentScroll": 1126,
+            "rows": 6,
+            "text": "重点站点 9月（件） 10月（件） 增减（件） 环比 已核实原因 北辰物流枢纽 80 110 +30 +37.50% 新增自动分拣设备上线，调试期维护工单增加 滨江研发园区 70 84 +14 +20.00% 园区网络扩容，本月集中开展链路"
+          }
+        ],
+        "width": 1280
+      }
+    ],
+    "metricColorsAndSpacing": [
+      {
+        "changes": [
+          {
+            "color": "rgb(82, 196, 26)",
+            "text": "较9月  +96件"
+          },
+          {
+            "color": "rgb(82, 196, 26)",
+            "text": "环比  +10.00%"
+          }
+        ],
+        "context": "9月基期：960 件",
+        "contextValueGap": 0,
+        "label": "10月工单数",
+        "value": "1,056",
+        "valueColor": "rgb(25, 25, 25)"
+      },
+      {
+        "changes": [
+          {
+            "color": "rgb(82, 196, 26)",
+            "text": "较9月  -0.4小时"
+          },
+          {
+            "color": "rgb(82, 196, 26)",
+            "text": "环比  -12.50%"
+          }
+        ],
+        "context": "9月基期：3.2 小时",
+        "contextValueGap": 0,
+        "label": "10月平均响应时长",
+        "value": "2.8",
+        "valueColor": "rgb(25, 25, 25)"
+      },
+      {
+        "changes": [
+          {
+            "color": "rgb(245, 34, 45)",
+            "text": "较9月  -120件"
+          },
+          {
+            "color": "rgb(245, 34, 45)",
+            "text": "环比  -10.00%"
+          }
+        ],
+        "context": "9月基期：1,200 件",
+        "contextValueGap": 0,
+        "label": "10月工单数",
+        "value": "1,080",
+        "valueColor": "rgb(25, 25, 25)"
+      },
+      {
+        "changes": [
+          {
+            "color": "rgb(245, 34, 45)",
+            "text": "较9月  +0.5小时"
+          },
+          {
+            "color": "rgb(245, 34, 45)",
+            "text": "环比  +19.23%"
+          }
+        ],
+        "context": "9月基期：2.6 小时",
+        "contextValueGap": 0,
+        "label": "10月平均响应时长",
+        "value": "3.1",
+        "valueColor": "rgb(25, 25, 25)"
+      },
+      {
+        "changes": [
+          {
+            "color": "rgb(82, 196, 26)",
+            "text": "较9月  +64件"
+          },
+          {
+            "color": "rgb(82, 196, 26)",
+            "text": "环比  +8.00%"
+          }
+        ],
+        "context": "9月基期：800 件",
+        "contextValueGap": 0,
+        "label": "10月工单数",
+        "value": "864",
+        "valueColor": "rgb(25, 25, 25)"
+      },
+      {
+        "changes": [
+          {
+            "color": "rgb(113, 113, 122)",
+            "text": "较9月  0.0小时"
+          },
+          {
+            "color": "rgb(113, 113, 122)",
+            "text": "环比  0.00%"
+          }
+        ],
+        "context": "9月基期：3.0 小时",
+        "contextValueGap": 0,
+        "label": "10月平均响应时长",
+        "value": "3.0",
+        "valueColor": "rgb(25, 25, 25)"
+      }
+    ],
+    "console": []
+  },
+  "positiveFindings": [
+    "3个团队独立成卡，主值为默认深色，12个变化项含零变化呈现正确",
+    "真实趋势图与4行月度table相邻",
+    "只有1个输入支持的饼图构成主题，原生图例4行数量占比齐全",
+    "重点站点6行原因完整随行，未当全量排名",
+    "1440及1280实际CSS视口均无页面和表格横向溢出；控制台无warn/error"
+  ],
+  "productCodeChanged": false,
+  "standardsChanged": false,
+  "commitOrPush": false,
+  "externalServices": "not_run; inline synthetic only",
+  "frozenInputsChanged": false,
+  "evidenceRoot": "/tmp/report-layout-independent-20261027-r2"
+}

@@ -1,0 +1,171 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "/tmp/report-layout-review-color-fix-20261027/model-before.ts",
+      "functions": [
+        {
+          "name": "<anonymous@32:55>",
+          "qualifiedName": "<anonymous@32:55>",
+          "line": 32,
+          "endLine": 32,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "initialReviews",
+          "qualifiedName": "initialReviews",
+          "line": 36,
+          "endLine": 40,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@37:44>",
+          "qualifiedName": "initialReviews/<anonymous@37:44>",
+          "line": 37,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@38:30>",
+          "qualifiedName": "initialReviews/<anonymous@37:44>/<anonymous@38:30>",
+          "line": 38,
+          "endLine": 38,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "reviewLabel",
+          "qualifiedName": "reviewLabel",
+          "line": 41,
+          "endLine": 45,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "slot",
+          "qualifiedName": "slot",
+          "line": 47,
+          "endLine": 52,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@55:75>",
+          "qualifiedName": "<anonymous@55:75>",
+          "line": 55,
+          "endLine": 55,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@60:48>",
+          "qualifiedName": "<anonymous@60:48>",
+          "line": 60,
+          "endLine": 60,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@61:49>",
+          "qualifiedName": "<anonymous@61:49>",
+          "line": 61,
+          "endLine": 61,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "objectProps",
+          "qualifiedName": "objectProps",
+          "line": 67,
+          "endLine": 72,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rankingProps",
+          "qualifiedName": "rankingProps",
+          "line": 82,
+          "endLine": 84,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "stageTable",
+          "qualifiedName": "stageTable",
+          "line": 92,
+          "endLine": 98,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@102:17>",
+          "qualifiedName": "<anonymous@102:17>",
+          "line": 102,
+          "endLine": 102,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "revenueComposition",
+          "qualifiedName": "revenueComposition",
+          "line": 107,
+          "endLine": 111,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@108:29>",
+          "qualifiedName": "revenueComposition/<anonymous@108:29>",
+          "line": 108,
+          "endLine": 108,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@109:30>",
+          "qualifiedName": "revenueComposition/<anonymous@109:30>",
+          "line": 109,
+          "endLine": 109,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

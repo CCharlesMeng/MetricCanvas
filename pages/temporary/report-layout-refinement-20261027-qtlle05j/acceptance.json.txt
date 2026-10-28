@@ -1,0 +1,358 @@
+{
+  "status": "pass",
+  "model": "GPT-6 Codex session; exact backend variant not exposed",
+  "externalModelCalls": 0,
+  "layout": "report",
+  "schemaVersion": "6.69",
+  "url": "http://localhost:5173/pages/service-operations-report-202609-refined",
+  "baselineRetained": true,
+  "allSixDataSourcesUnchanged": true,
+  "validation": {
+    "file": "/Users/moon/Documents/Code/公司项目/DataDashboard/pages/temporary/report-layout-refinement-20261027-qtlle05j/service-operations-report-202609-refined.json",
+    "ok": true,
+    "errors": []
+  },
+  "changes": [
+    "six white sections own their heading, explanation and evidence",
+    "two team groups use compositeCard metricGrid with compactStrip metrics; no nested card frames or gradient headers",
+    "current values 28px and neutral rgb(25,25,25), all eight changes 12px with explicit direction rules",
+    "trend chart 7 tracks and exact month table 5 tracks within the same white section",
+    "customer reasons remain in-row; service stage grouping remains a single table",
+    "two composition themes use compact categorical detail with natural height, removing undersized rings"
+  ],
+  "viewports": [
+    {
+      "documentHeight": 2146,
+      "dpr": 0.800000011920929,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "sections": [
+        {
+          "background": "rgb(255, 255, 255)",
+          "height": 171.2890625,
+          "title": "2026年9月服务运营月报",
+          "width": 1164.0234375
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "height": 317.578125,
+          "title": " 01 团队月度表现 ",
+          "width": 1164.0234375
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "height": 400,
+          "title": " 02 近半年工单走势 ",
+          "width": 1164.0234375
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "height": 395.99609375,
+          "title": " 03 重点客户变化及原因 ",
+          "width": 1164.0234375
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "height": 261.26953125,
+          "title": " 04 服务阶段明细 ",
+          "width": 1164.0234375
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "height": 271.5625,
+          "title": " 05 业务构成与办结情况 ",
+          "width": 1164.0234375
+        }
+      ],
+      "tables": [
+        {
+          "parentClient": 454,
+          "parentScroll": 454,
+          "start": "月份 东区（件） 西区（件） 2026-04  900  1,100   2026-05  960  1,12",
+          "width": 453.76953125
+        },
+        {
+          "parentClient": 1124,
+          "parentScroll": 1124,
+          "start": "方向 客户 8月（件） 9月（件） 净变化（件） 环比 已核实原因 增长  城东园区  120  180  +",
+          "width": 1124.0234375
+        },
+        {
+          "parentClient": 1124,
+          "parentScroll": 1124,
+          "start": "团队 受理阶段派单阶段处理阶段工单数（件） 平均时长（小时） 工单数（件） 平均时长（小时） 工单数（件） 平",
+          "width": 1124.0234375
+        },
+        {
+          "parentClient": 550,
+          "parentScroll": 550,
+          "start": "业务类型工单数（件）占比 设备服务1,14050.0% 维护服务68430.0% 咨询服务45620.0%",
+          "width": 549.51171875
+        },
+        {
+          "parentClient": 550,
+          "parentScroll": 550,
+          "start": "办结状态工单数（件）占比 已办结2,16094.7% 待办结1205.3%",
+          "width": 549.51171875
+        }
+      ],
+      "values": [
+        {
+          "color": "rgb(25, 25, 25)",
+          "font": "28px",
+          "text": "1,200"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "+200件"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "+200件"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "+20.00%"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "+20.00%"
+        },
+        {
+          "color": "rgb(25, 25, 25)",
+          "font": "28px",
+          "text": "2.4"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "-0.6小时"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "-0.6小时"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "-20.00%"
+        },
+        {
+          "color": "rgb(82, 196, 26)",
+          "font": "12px",
+          "text": "-20.00%"
+        },
+        {
+          "color": "rgb(25, 25, 25)",
+          "font": "28px",
+          "text": "1,080"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "-120件"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "-120件"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "-10.00%"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "-10.00%"
+        },
+        {
+          "color": "rgb(25, 25, 25)",
+          "font": "28px",
+          "text": "2.8"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "+0.3小时"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "+0.3小时"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "+12.00%"
+        },
+        {
+          "color": "rgb(245, 34, 45)",
+          "font": "12px",
+          "text": "+12.00%"
+        }
+      ],
+      "width": 1440
+    },
+    {
+      "documentHeight": 2146,
+      "dpr": 0.800000011920929,
+      "headings": [
+        {
+          "text": "2026年9月服务运营月报",
+          "width": 261.11328125,
+          "x": 119.9609375,
+          "y": 200.25390625
+        },
+        {
+          "text": " 01 团队月度表现 ",
+          "width": 1115.0390625,
+          "x": 86.97265625,
+          "y": 377.34375
+        },
+        {
+          "text": " 东区服务团队",
+          "width": 509.51171875,
+          "x": 97.98828125,
+          "y": 468.14453125
+        },
+        {
+          "text": " 西区服务团队",
+          "width": 509.51171875,
+          "x": 672.5,
+          "y": 468.14453125
+        },
+        {
+          "text": " 02 近半年工单走势 ",
+          "width": 1115.0390625,
+          "x": 86.97265625,
+          "y": 710.91796875
+        },
+        {
+          "text": "2026年4—9月 · 工单数（件）",
+          "width": 645.25390625,
+          "x": 77.98828125,
+          "y": 750.91796875
+        },
+        {
+          "text": " 03 重点客户变化及原因 ",
+          "width": 1115.0390625,
+          "x": 86.97265625,
+          "y": 1126.9140625
+        },
+        {
+          "text": " 04 服务阶段明细 ",
+          "width": 1115.0390625,
+          "x": 86.97265625,
+          "y": 1538.90625
+        },
+        {
+          "text": " 05 业务构成与办结情况 ",
+          "width": 1115.0390625,
+          "x": 86.97265625,
+          "y": 1816.171875
+        },
+        {
+          "text": "业务类型构成",
+          "width": 549.51171875,
+          "x": 77.98828125,
+          "y": 1886.97265625
+        },
+        {
+          "text": "办结状态构成",
+          "width": 549.51171875,
+          "x": 652.5,
+          "y": 1886.97265625
+        }
+      ],
+      "height": 1000,
+      "scrollWidth": 1280,
+      "tables": [
+        {
+          "parentClient": 454,
+          "parentScroll": 454,
+          "start": "月份 东区（件） 西区（件） 2026-04  900  1,100   2026-05  960  1,12",
+          "width": 453.76953125
+        },
+        {
+          "parentClient": 1124,
+          "parentScroll": 1124,
+          "start": "方向 客户 8月（件） 9月（件） 净变化（件） 环比 已核实原因 增长  城东园区  120  180  +",
+          "width": 1124.0234375
+        },
+        {
+          "parentClient": 1124,
+          "parentScroll": 1124,
+          "start": "团队 受理阶段派单阶段处理阶段工单数（件） 平均时长（小时） 工单数（件） 平均时长（小时） 工单数（件） 平",
+          "width": 1124.0234375
+        },
+        {
+          "parentClient": 550,
+          "parentScroll": 550,
+          "start": "业务类型工单数（件）占比 设备服务1,14050.0% 维护服务68430.0% 咨询服务45620.0%",
+          "width": 549.51171875
+        },
+        {
+          "parentClient": 550,
+          "parentScroll": 550,
+          "start": "办结状态工单数（件）占比 已办结2,16094.7% 待办结1205.3%",
+          "width": 549.51171875
+        }
+      ],
+      "width": 1280
+    }
+  ],
+  "console": [],
+  "complexity": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "/tmp/report-layout-refinement-20261027-qtlle05j/outputs/refine.mjs",
+        "functions": []
+      },
+      {
+        "file": "/tmp/report-layout-refinement-20261027-qtlle05j/outputs/compact-teams.mjs",
+        "functions": [
+          {
+            "name": "<anonymous@8:163>",
+            "qualifiedName": "<anonymous@8:163>",
+            "line": 8,
+            "endLine": 8,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "schema": "pass",
+      "visual": "rejected",
+      "reason": "summary variant introduced gradient titles and extra layers",
+      "path": "/tmp/report-layout-refinement-20261027-qtlle05j/attempt-01"
+    },
+    {
+      "attempt": 2,
+      "schema": "pass",
+      "visual": "pass at 1440 and 1280",
+      "path": "/tmp/report-layout-refinement-20261027-qtlle05j/attempt-02"
+    }
+  ],
+  "limits": [
+    "existing blue Report canvas retained; visible mainly in section gutters",
+    "single scenario and local synthetic data only; no external model evaluation",
+    "no product code, protocol, validator or MC standards changes; no commit or push"
+  ],
+  "evidenceRoot": "/tmp/report-layout-refinement-20261027-qtlle05j"
+}

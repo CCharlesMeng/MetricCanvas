@@ -1,0 +1,1015 @@
+{
+  "schemaVersion": "6.69",
+  "id": "operations-october-independent-20261027-r2",
+  "layout": "report",
+  "meta": {
+    "title": "2026年10月设备运维服务月报",
+    "description": "面向运维负责人的PC月度会议报告；完整inline合成演示数据。"
+  },
+  "dataSources": {
+    "teams": {
+      "fields": {
+        "team": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "baseCount": {
+          "type": "number",
+          "role": "measure"
+        },
+        "currentCount": {
+          "type": "number",
+          "role": "measure"
+        },
+        "countDelta": {
+          "type": "number",
+          "role": "measure"
+        },
+        "countPct": {
+          "type": "number",
+          "role": "measure"
+        },
+        "baseResponse": {
+          "type": "number",
+          "role": "measure"
+        },
+        "currentResponse": {
+          "type": "number",
+          "role": "measure"
+        },
+        "responseDelta": {
+          "type": "number",
+          "role": "measure"
+        },
+        "responsePct": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "team": "北区运维团队",
+            "baseCount": 960,
+            "currentCount": 1056,
+            "countDelta": 96,
+            "countPct": 10.0,
+            "baseResponse": 3.2,
+            "currentResponse": 2.8,
+            "responseDelta": -0.4,
+            "responsePct": -12.50000000000001
+          },
+          {
+            "team": "南区运维团队",
+            "baseCount": 1200,
+            "currentCount": 1080,
+            "countDelta": -120,
+            "countPct": -10.0,
+            "baseResponse": 2.6,
+            "currentResponse": 3.1,
+            "responseDelta": 0.5,
+            "responsePct": 19.23076923076923
+          },
+          {
+            "team": "中区运维团队",
+            "baseCount": 800,
+            "currentCount": 864,
+            "countDelta": 64,
+            "countPct": 8.0,
+            "baseResponse": 3.0,
+            "currentResponse": 3.0,
+            "responseDelta": 0.0,
+            "responsePct": 0.0
+          }
+        ]
+      }
+    },
+    "trend": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "north": {
+          "type": "number",
+          "role": "measure"
+        },
+        "south": {
+          "type": "number",
+          "role": "measure"
+        },
+        "central": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "2026-07",
+            "north": 880,
+            "south": 1120,
+            "central": 760
+          },
+          {
+            "month": "2026-08",
+            "north": 920,
+            "south": 1160,
+            "central": 780
+          },
+          {
+            "month": "2026-09",
+            "north": 960,
+            "south": 1200,
+            "central": 800
+          },
+          {
+            "month": "2026-10",
+            "north": 1056,
+            "south": 1080,
+            "central": 864
+          }
+        ]
+      }
+    },
+    "types": {
+      "fields": {
+        "type": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure"
+        },
+        "share": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "type": "网络维护",
+            "count": 1200,
+            "share": 40.0
+          },
+          {
+            "type": "设备检修",
+            "count": 900,
+            "share": 30.0
+          },
+          {
+            "type": "配置调整",
+            "count": 600,
+            "share": 20.0
+          },
+          {
+            "type": "操作咨询",
+            "count": 300,
+            "share": 10.0
+          }
+        ]
+      }
+    },
+    "sites": {
+      "fields": {
+        "site": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "reason": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "baseCount": {
+          "type": "number",
+          "role": "measure"
+        },
+        "currentCount": {
+          "type": "number",
+          "role": "measure"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure"
+        },
+        "pct": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "site": "北辰物流枢纽",
+            "baseCount": 80,
+            "currentCount": 110,
+            "delta": 30,
+            "pct": 37.5,
+            "reason": "新增自动分拣设备上线，调试期维护工单增加"
+          },
+          {
+            "site": "滨江研发园区",
+            "baseCount": 70,
+            "currentCount": 84,
+            "delta": 14,
+            "pct": 20.0,
+            "reason": "园区网络扩容，本月集中开展链路巡检"
+          },
+          {
+            "site": "中央公共服务中心",
+            "baseCount": 65,
+            "currentCount": 65,
+            "delta": 0,
+            "pct": 0.0,
+            "reason": "服务范围与设备规模保持稳定"
+          },
+          {
+            "site": "南港仓储基地",
+            "baseCount": 100,
+            "currentCount": 75,
+            "delta": -25,
+            "pct": -25.0,
+            "reason": "老旧交换设备完成更换，重复报修减少"
+          },
+          {
+            "site": "西岭制造园",
+            "baseCount": 50,
+            "currentCount": 40,
+            "delta": -10,
+            "pct": -20.0,
+            "reason": "部分产线本月停机检修，日常运行工单减少"
+          },
+          {
+            "site": "东湖会展中心",
+            "baseCount": 40,
+            "currentCount": 20,
+            "delta": -20,
+            "pct": -50.0,
+            "reason": "大型展会结束，临时网络支持需求回落"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "report-header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "2026年10月设备运维服务月报",
+            "subtitle": "报告期：2026年10月  ·  比较基期：2026年9月",
+            "badge": "inline合成演示数据"
+          }
+        },
+        {
+          "id": "opening",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "insight",
+            "body": "本月三个团队共记录 3,000 件工单，9月为 2,960 件，增加 40 件（+1.35%）。北区响应加快，南区响应变慢，中区保持不变。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "team-overview",
+      "title": "01  团队本月工作量与响应",
+      "container": "plain",
+      "components": [
+        {
+          "id": "team-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "reportInline",
+            "body": "每队同时核对工单数与平均响应时长。变化量＝10月－9月；环比＝变化量÷9月×100%。工单数仅表示增减，不能直接等同经营改善或恶化；响应时长越低表示响应越快。整体平均响应汇总口径未提供，不作跨团队平均。"
+          }
+        },
+        {
+          "id": "team-1",
+          "type": "compositeCard",
+          "layout": {
+            "span": 4
+          },
+          "props": {
+            "title": "北区运维团队",
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "team-1-count",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactSummary",
+                  "showTrendArrows": false,
+                  "rows": [
+                    {
+                      "label": "10月工单数",
+                      "context": "9月基期：960 件",
+                      "valueField": {
+                        "data": "main",
+                        "field": "currentCount",
+                        "format": "number-grouped",
+                        "match": {
+                          "field": "team",
+                          "equals": "北区运维团队"
+                        }
+                      },
+                      "unit": "件",
+                      "changes": [
+                        {
+                          "label": "较9月",
+                          "field": {
+                            "data": "main",
+                            "field": "countDelta",
+                            "format": "number-grouped-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "北区运维团队"
+                            }
+                          },
+                          "unit": "件",
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        },
+                        {
+                          "label": "环比",
+                          "field": {
+                            "data": "main",
+                            "field": "countPct",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "北区运维团队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "team-1-response",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactSummary",
+                  "showTrendArrows": false,
+                  "rows": [
+                    {
+                      "label": "10月平均响应时长",
+                      "context": "9月基期：3.2 小时",
+                      "valueField": {
+                        "data": "main",
+                        "field": "currentResponse",
+                        "format": "number-1",
+                        "match": {
+                          "field": "team",
+                          "equals": "北区运维团队"
+                        }
+                      },
+                      "unit": "小时",
+                      "changes": [
+                        {
+                          "label": "较9月",
+                          "field": {
+                            "data": "main",
+                            "field": "responseDelta",
+                            "format": "number-1-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "北区运维团队"
+                            }
+                          },
+                          "unit": "小时",
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        },
+                        {
+                          "label": "环比",
+                          "field": {
+                            "data": "main",
+                            "field": "responsePct",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "北区运维团队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "team-2",
+          "type": "compositeCard",
+          "layout": {
+            "span": 4
+          },
+          "props": {
+            "title": "南区运维团队",
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "team-2-count",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactSummary",
+                  "showTrendArrows": false,
+                  "rows": [
+                    {
+                      "label": "10月工单数",
+                      "context": "9月基期：1,200 件",
+                      "valueField": {
+                        "data": "main",
+                        "field": "currentCount",
+                        "format": "number-grouped",
+                        "match": {
+                          "field": "team",
+                          "equals": "南区运维团队"
+                        }
+                      },
+                      "unit": "件",
+                      "changes": [
+                        {
+                          "label": "较9月",
+                          "field": {
+                            "data": "main",
+                            "field": "countDelta",
+                            "format": "number-grouped-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "南区运维团队"
+                            }
+                          },
+                          "unit": "件",
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        },
+                        {
+                          "label": "环比",
+                          "field": {
+                            "data": "main",
+                            "field": "countPct",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "南区运维团队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "team-2-response",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactSummary",
+                  "showTrendArrows": false,
+                  "rows": [
+                    {
+                      "label": "10月平均响应时长",
+                      "context": "9月基期：2.6 小时",
+                      "valueField": {
+                        "data": "main",
+                        "field": "currentResponse",
+                        "format": "number-1",
+                        "match": {
+                          "field": "team",
+                          "equals": "南区运维团队"
+                        }
+                      },
+                      "unit": "小时",
+                      "changes": [
+                        {
+                          "label": "较9月",
+                          "field": {
+                            "data": "main",
+                            "field": "responseDelta",
+                            "format": "number-1-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "南区运维团队"
+                            }
+                          },
+                          "unit": "小时",
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        },
+                        {
+                          "label": "环比",
+                          "field": {
+                            "data": "main",
+                            "field": "responsePct",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "南区运维团队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "team-3",
+          "type": "compositeCard",
+          "layout": {
+            "span": 4
+          },
+          "props": {
+            "title": "中区运维团队",
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "team-3-count",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactSummary",
+                  "showTrendArrows": false,
+                  "rows": [
+                    {
+                      "label": "10月工单数",
+                      "context": "9月基期：800 件",
+                      "valueField": {
+                        "data": "main",
+                        "field": "currentCount",
+                        "format": "number-grouped",
+                        "match": {
+                          "field": "team",
+                          "equals": "中区运维团队"
+                        }
+                      },
+                      "unit": "件",
+                      "changes": [
+                        {
+                          "label": "较9月",
+                          "field": {
+                            "data": "main",
+                            "field": "countDelta",
+                            "format": "number-grouped-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "中区运维团队"
+                            }
+                          },
+                          "unit": "件",
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        },
+                        {
+                          "label": "环比",
+                          "field": {
+                            "data": "main",
+                            "field": "countPct",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "中区运维团队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "team-3-response",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactSummary",
+                  "showTrendArrows": false,
+                  "rows": [
+                    {
+                      "label": "10月平均响应时长",
+                      "context": "9月基期：3.0 小时",
+                      "valueField": {
+                        "data": "main",
+                        "field": "currentResponse",
+                        "format": "number-1",
+                        "match": {
+                          "field": "team",
+                          "equals": "中区运维团队"
+                        }
+                      },
+                      "unit": "小时",
+                      "changes": [
+                        {
+                          "label": "较9月",
+                          "field": {
+                            "data": "main",
+                            "field": "responseDelta",
+                            "format": "number-1-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "中区运维团队"
+                            }
+                          },
+                          "unit": "小时",
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        },
+                        {
+                          "label": "环比",
+                          "field": {
+                            "data": "main",
+                            "field": "responsePct",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "中区运维团队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "monthly-trend",
+      "title": "02  近四个月工单走势",
+      "container": "plain",
+      "components": [
+        {
+          "id": "trend-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "reportInline",
+            "body": "2026年7—10月完整月度统计，单位：件。折线展示走势，右侧表格保留每个月、每个团队的准确数值。"
+          }
+        },
+        {
+          "id": "trend-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 7
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "团队工单数趋势（件）",
+            "xField": "month",
+            "series": [
+              {
+                "field": "north",
+                "label": "北区运维团队"
+              },
+              {
+                "field": "south",
+                "label": "南区运维团队"
+              },
+              {
+                "field": "central",
+                "label": "中区运维团队"
+              }
+            ],
+            "smooth": false,
+            "showPointLabels": false
+          }
+        },
+        {
+          "id": "trend-table",
+          "type": "table",
+          "layout": {
+            "span": 5
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "月度核对（件）",
+            "subtitle": "北／南／中区对应同名运维团队",
+            "rowKey": "month",
+            "fit": "content",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "month",
+                "title": "月份",
+                "width": 104
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "north",
+                  "format": "number-grouped"
+                },
+                "title": "北区",
+                "align": "right",
+                "width": 88
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "south",
+                  "format": "number-grouped"
+                },
+                "title": "南区",
+                "align": "right",
+                "width": 88
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "central",
+                  "format": "number-grouped"
+                },
+                "title": "中区",
+                "align": "right",
+                "width": 88
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "business-mix",
+      "title": "03  10月业务类型构成",
+      "container": "plain",
+      "components": [
+        {
+          "id": "mix-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "reportInline",
+            "body": "全部3,000件工单的完整、互斥业务类型构成。占比＝类别工单数÷3,000件×100%，四类合计100%。"
+          }
+        },
+        {
+          "id": "mix-pie",
+          "type": "pieChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "types"
+          },
+          "props": {
+            "categoryField": "type",
+            "valueField": "count",
+            "categoryOrder": [
+              "网络维护",
+              "设备检修",
+              "配置调整",
+              "操作咨询"
+            ],
+            "legend": {
+              "type": "table",
+              "position": "right",
+              "categoryLabel": "业务类型",
+              "columns": [
+                {
+                  "label": "工单数",
+                  "field": {
+                    "data": "main",
+                    "field": "count",
+                    "format": "number-grouped"
+                  },
+                  "unit": "件",
+                  "align": "right"
+                },
+                {
+                  "label": "占比",
+                  "field": {
+                    "data": "main",
+                    "field": "share",
+                    "format": "percent-1"
+                  },
+                  "align": "right"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "priority-sites",
+      "title": "04  重点站点变化与已核实原因",
+      "container": "plain",
+      "components": [
+        {
+          "id": "sites-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "reportInline",
+            "body": "以下6个站点是重点样本，并非全量排名，不与团队总量加总。按输入顺序完整列出；变化均相对2026年9月，零变化保留，原因按已核实原文呈现。"
+          }
+        },
+        {
+          "id": "sites-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sites"
+          },
+          "props": {
+            "rowKey": "site",
+            "fit": "content",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "site",
+                "title": "重点站点",
+                "width": 180
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "baseCount",
+                  "format": "number-grouped"
+                },
+                "title": "9月（件）",
+                "align": "right",
+                "width": 100
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "currentCount",
+                  "format": "number-grouped"
+                },
+                "title": "10月（件）",
+                "align": "right",
+                "width": 104
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "delta",
+                  "format": "number-signed"
+                },
+                "title": "增减（件）",
+                "align": "right",
+                "width": 108,
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "pct",
+                  "format": "percent-2-signed"
+                },
+                "title": "环比",
+                "align": "right",
+                "width": 108,
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                }
+              },
+              {
+                "field": "reason",
+                "title": "已核实原因",
+                "width": 410
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

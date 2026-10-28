@@ -1,0 +1,175 @@
+{
+  "url": "http://localhost:5173/prototypes/report-layout-review",
+  "wide": {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "matrix": [
+      [
+        {
+          "text": "平均响应时长（小时）  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "3.2  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "−0.4  ",
+          "color": "rgb(82, 196, 26)"
+        },
+        {
+          "text": "4.1  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "+0.2  ",
+          "color": "rgb(245, 34, 45)"
+        }
+      ],
+      [
+        {
+          "text": "工单量（件）  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "1,200  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "+100  ",
+          "color": "rgb(82, 196, 26)"
+        },
+        {
+          "text": "800  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "−50  ",
+          "color": "rgb(245, 34, 45)"
+        }
+      ]
+    ],
+    "modules": [
+      {
+        "x": 283,
+        "y": 4393.046875,
+        "width": 536,
+        "text": "增长组样本收入构成   360万元  客户收入（万元）占比 春林服务15041.7% 远山制造12033.3% 青禾园区9025.0%"
+      },
+      {
+        "x": 839,
+        "y": 4393.046875,
+        "width": 536,
+        "text": "下降组样本收入构成   195万元  客户收入（万元）占比 南岸运营8041.0% 星桥设施6533.3% 云川交通5025.6%"
+      }
+    ],
+    "overflow": 0,
+    "candidates": 12,
+    "checked": 12,
+    "retained": 10,
+    "adjusted": 1,
+    "rejected": 1,
+    "previewWidth": 1148
+  },
+  "smaller": {
+    "width": 1280,
+    "scrollWidth": 1280,
+    "matrix": [
+      [
+        {
+          "text": "平均响应时长（小时）  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "3.2  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "−0.4  ",
+          "color": "rgb(82, 196, 26)"
+        },
+        {
+          "text": "4.1  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "+0.2  ",
+          "color": "rgb(245, 34, 45)"
+        }
+      ],
+      [
+        {
+          "text": "工单量（件）  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "1,200  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "+100  ",
+          "color": "rgb(82, 196, 26)"
+        },
+        {
+          "text": "800  ",
+          "color": "rgb(25, 25, 25)"
+        },
+        {
+          "text": "−50  ",
+          "color": "rgb(245, 34, 45)"
+        }
+      ]
+    ],
+    "modules": [
+      {
+        "x": 283,
+        "y": 3034.046875,
+        "width": 456,
+        "text": "增长组样本收入构成   360万元  客户收入（万元）占比 春林服务15041.7% 远山制造12033.3% 青禾园区9025.0%"
+      },
+      {
+        "x": 759,
+        "y": 3034.046875,
+        "width": 456,
+        "text": "下降组样本收入构成   195万元  客户收入（万元）占比 南岸运营8041.0% 星桥设施6533.3% 云川交通5025.6%"
+      }
+    ],
+    "overflow": 0,
+    "candidates": 12,
+    "checked": 12,
+    "retained": 10,
+    "adjusted": 1,
+    "rejected": 1,
+    "previewWidth": 988
+  },
+  "checks": {
+    "wide": {
+      "noPageOverflow": true,
+      "noChartOverflow": true,
+      "allReviewLoaded": true,
+      "twoModulesSameRow": true,
+      "moduleUsesPartOfRow": true,
+      "primaryNeutral": true,
+      "quantityIncreaseGreen": true,
+      "quantityDecreaseRed": true,
+      "timeImprovementGreen": true,
+      "timeWorseningRed": true
+    },
+    "smaller": {
+      "noPageOverflow": true,
+      "noChartOverflow": true,
+      "allReviewLoaded": true,
+      "twoModulesSameRow": true,
+      "moduleUsesPartOfRow": true,
+      "primaryNeutral": true,
+      "quantityIncreaseGreen": true,
+      "quantityDecreaseRed": true,
+      "timeImprovementGreen": true,
+      "timeWorseningRed": true
+    },
+    "copiedOriginalNotes": true,
+    "restoredSavedReview": true,
+    "noPageErrors": true
+  },
+  "errors": []
+}

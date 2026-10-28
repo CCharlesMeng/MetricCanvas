@@ -51,6 +51,12 @@ describe('MC coverage uses the product denominator', () => {
     broken.set('tool-contracts/edit_page.json', JSON.stringify(tool));
     expect(() => check(broken)).toThrow(/tool registration drift/);
   });
+  it('detects omission of the reviewed Report composition reference', () => {
+    const broken = new Map(content);
+    broken.delete('layouts/report-composition.md');
+    broken.set('index.json', JSON.stringify(indexFor(broken)));
+    expect(() => check(broken)).toThrow(/unreachable layout: report-composition/);
+  });
   it('requires every product component to explicitly declare authoring support', () => {
     expect(() => checkMcCoverage(content, product, authoring, {...raw, componentCatalog: [...raw.componentCatalog, {type: 'futureComponent'}]}, map)).toThrow(/capability declaration missing/);
   });

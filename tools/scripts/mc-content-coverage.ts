@@ -37,7 +37,7 @@ export function checkMcCoverage(outputs: Outputs, product: Outputs, authoring: O
     required(index.tool[name], `unreachable tool: ${name}`);
   }
   checkComponents(outputs, index, raw);
-  for (const key of ['dashboard', 'report', 'reading']) required(index.layout[key], `unreachable layout: ${key}`);
+  for (const key of ['dashboard', 'report', 'reading', 'report-composition']) required(index.layout[key], `unreachable layout: ${key}`);
   for (const key of ['business-report', 'usage-report']) {
     required(index.scenario[key], `missing scenario: ${key}`);
     required(index.example[key], `missing scene example: ${key}`);

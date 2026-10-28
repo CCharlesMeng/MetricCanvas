@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # 本地页面创作
@@ -20,6 +20,7 @@ metadata:
 | 指标表、详情表、级联或多来源等逻辑选型 | 按[场景索引](references/scenario-index.md)选择操作与数据逻辑，只读命中的主题和示例。 |
 | 新增口径、指标匹配或查询修改 | 读[数据识别与接数](references/data-analysis.md)，先确认数据依据和项目已提供的执行入口，再分析受影响范围。完整报告按需生成。 |
 | 新建、整页重组、切换形态 | 读[形态识别与确认](references/page-form.md)，确认本目标页 Dashboard/Report 后，只选[看板](references/dashboard-patterns.md)或[报表](references/report-patterns.md)的一张范式卡与摘要。 |
+| 已确认Report的区域划分、背景或卡片布局调整 | 读[报表范式](references/report-patterns.md)指向的PC章节组合，先判断表达与卡面边界，再查相关组件属性；沿用已确认形态和数据。 |
 | 删除列、组件、数据源或筛选 | 按[场景索引](references/scenario-index.md)核对完整引用与共享依赖，删除目标后完整校验。 |
 | debug：报错、没数据、数不对或交互失效 | 按[场景索引](references/scenario-index.md)从症状定位失败层，再检查相应数据逻辑。 |
 
@@ -57,7 +58,7 @@ node "<skill-dir>/scripts/validate-page.mjs" --expected-layout dashboard "<page-
 
 expected-layout 来自有效用户确认；Report 使用 report。局部修改可只传文件。退出码 0/1/2 为通过/文档错误/调用错误；保留 type/path/message，修复后重跑。目录模式递归读取子目录的 .json；单页任务传精确文件，快照放扫描范围外。不得放宽规则或删合法配置掩盖错误。Node 不可用时说明自动校验未执行。
 
-有目标运行时则预览精确文件和所涉交互；设计还原附截图对照，查询变动保留真实请求/响应证据。缺环境时继续完成可验证部分，静态、浏览器、真实取数分别报告。
+有目标运行时则按[本地流程的预览与修复](references/local-workflow.md)自行预览精确文件和所涉交互；在自身页面范围内修复并复验呈现问题，每轮保留快照。Report按章节组合先明确卡面归属，再检查实际卡面与主辅信息。设计还原附截图对照，查询变动保留真实请求/响应证据。缺环境时继续完成可验证部分，静态、浏览器、真实取数分别报告。
 
 ## 交付与分发
 

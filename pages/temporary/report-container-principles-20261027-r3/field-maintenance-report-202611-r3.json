@@ -1,0 +1,1120 @@
+{
+  "schemaVersion": "6.69",
+  "id": "field-maintenance-report-202611-r3",
+  "layout": "report",
+  "meta": {
+    "title": "2026年11月现场维保月报",
+    "description": "inline合成演示数据；报告期2026-11，比较基期2026-10。"
+  },
+  "dataSources": {
+    "teams": {
+      "fields": {
+        "team": {
+          "type": "string",
+          "role": "dimension",
+          "label": "团队",
+          "nullable": false
+        },
+        "prev": {
+          "type": "number",
+          "role": "measure",
+          "label": "10月工单数",
+          "nullable": false,
+          "unit": "件"
+        },
+        "current": {
+          "type": "number",
+          "role": "measure",
+          "label": "11月工单数",
+          "nullable": false,
+          "unit": "件"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "label": "工单增减",
+          "nullable": false,
+          "unit": "件"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "工单环比",
+          "nullable": false,
+          "unit": "%"
+        },
+        "responsePrev": {
+          "type": "number",
+          "role": "measure",
+          "label": "10月平均响应",
+          "nullable": false,
+          "unit": "小时"
+        },
+        "response": {
+          "type": "number",
+          "role": "measure",
+          "label": "11月平均响应",
+          "nullable": false,
+          "unit": "小时"
+        },
+        "responseDelta": {
+          "type": "number",
+          "role": "measure",
+          "label": "响应变化",
+          "nullable": false,
+          "unit": "小时"
+        },
+        "responseRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "响应环比",
+          "nullable": false,
+          "unit": "%"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "team": "东部现场维保队",
+            "prev": 1100,
+            "current": 1210,
+            "delta": 110,
+            "rate": 10.000000000000009,
+            "responsePrev": 2.5,
+            "response": 2,
+            "responseDelta": -0.5,
+            "responseRate": -19.999999999999996
+          },
+          {
+            "team": "西部现场维保队",
+            "prev": 900,
+            "current": 855,
+            "delta": -45,
+            "rate": -5.000000000000004,
+            "responsePrev": 3,
+            "response": 3.3,
+            "responseDelta": 0.2999999999999998,
+            "responseRate": 9.999999999999986
+          },
+          {
+            "team": "南部现场维保队",
+            "prev": 800,
+            "current": 840,
+            "delta": 40,
+            "rate": 5.000000000000004,
+            "responsePrev": 2.4,
+            "response": 2.4,
+            "responseDelta": 0,
+            "responseRate": 0
+          },
+          {
+            "team": "北部现场维保队",
+            "prev": 700,
+            "current": 665,
+            "delta": -35,
+            "rate": -5.000000000000004,
+            "responsePrev": 2.8,
+            "response": 2.6,
+            "responseDelta": -0.19999999999999973,
+            "responseRate": -7.142857142857128
+          }
+        ]
+      }
+    },
+    "trend": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份",
+          "nullable": false
+        },
+        "east": {
+          "type": "number",
+          "role": "measure",
+          "label": "东部",
+          "nullable": false,
+          "unit": "件"
+        },
+        "west": {
+          "type": "number",
+          "role": "measure",
+          "label": "西部",
+          "nullable": false,
+          "unit": "件"
+        },
+        "south": {
+          "type": "number",
+          "role": "measure",
+          "label": "南部",
+          "nullable": false,
+          "unit": "件"
+        },
+        "north": {
+          "type": "number",
+          "role": "measure",
+          "label": "北部",
+          "nullable": false,
+          "unit": "件"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "2026-07",
+            "east": 1020,
+            "west": 960,
+            "south": 760,
+            "north": 720
+          },
+          {
+            "month": "2026-08",
+            "east": 1060,
+            "west": 940,
+            "south": 780,
+            "north": 710
+          },
+          {
+            "month": "2026-09",
+            "east": 1080,
+            "west": 920,
+            "south": 790,
+            "north": 705
+          },
+          {
+            "month": "2026-10",
+            "east": 1100,
+            "west": 900,
+            "south": 800,
+            "north": 700
+          },
+          {
+            "month": "2026-11",
+            "east": 1210,
+            "west": 855,
+            "south": 840,
+            "north": 665
+          }
+        ]
+      }
+    },
+    "types": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "业务类型",
+          "nullable": false
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "label": "数量",
+          "nullable": false,
+          "unit": "件"
+        },
+        "share": {
+          "type": "number",
+          "role": "measure",
+          "label": "占比",
+          "nullable": false,
+          "unit": "%"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "预防维护",
+            "count": 1428,
+            "share": 40
+          },
+          {
+            "category": "故障处理",
+            "count": 1071,
+            "share": 30
+          },
+          {
+            "category": "部署调试",
+            "count": 714,
+            "share": 20
+          },
+          {
+            "category": "操作支持",
+            "count": 357,
+            "share": 10
+          }
+        ]
+      }
+    },
+    "sites": {
+      "fields": {
+        "site": {
+          "type": "string",
+          "role": "dimension",
+          "label": "重点站点",
+          "nullable": false
+        },
+        "prev": {
+          "type": "number",
+          "role": "measure",
+          "label": "10月",
+          "nullable": false,
+          "unit": "件"
+        },
+        "current": {
+          "type": "number",
+          "role": "measure",
+          "label": "11月",
+          "nullable": false,
+          "unit": "件"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "label": "增减",
+          "nullable": false,
+          "unit": "件"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "环比",
+          "nullable": false,
+          "unit": "%"
+        },
+        "reason": {
+          "type": "string",
+          "role": "dimension",
+          "label": "已核实原因",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "site": "海滨智能制造与仓储协同运营中心",
+            "prev": 100,
+            "current": 120,
+            "delta": 20,
+            "rate": 19.999999999999996,
+            "reason": "新增仓储机器人及无线接入点，本月开展联合调试与连续性保障，维护记录相应增加"
+          },
+          {
+            "site": "西山冷链配送基地",
+            "prev": 75,
+            "current": 60,
+            "delta": -15,
+            "rate": -19.999999999999996,
+            "reason": "温控采集设备完成集中更新，重复告警与现场检修需求减少"
+          },
+          {
+            "site": "中央科研共享服务站",
+            "prev": 50,
+            "current": 50,
+            "delta": 0,
+            "rate": 0,
+            "reason": "服务范围与设备规模保持稳定，本月工单总数与上月相同"
+          },
+          {
+            "site": "南湾公共交通保障中心",
+            "prev": 30,
+            "current": 39,
+            "delta": 9,
+            "rate": 30.000000000000004,
+            "reason": "新增夜间巡检班次，增加了计划性维护记录"
+          },
+          {
+            "site": "北岭会展综合服务园",
+            "prev": 40,
+            "current": 32,
+            "delta": -8,
+            "rate": -19.999999999999996,
+            "reason": "大型活动结束，临时支持任务减少"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "report-header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "2026年11月现场维保月报",
+            "subtitle": "四支团队工作量、响应效率与重点站点观察",
+            "badge": "现场维保",
+            "asOf": {
+              "label": "报告期",
+              "value": "2026年11月"
+            },
+            "tags": [
+              "比较基期：2026年10月",
+              "inline合成演示数据"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "teams",
+      "container": "plain",
+      "title": "01 团队工作量与响应",
+      "components": [
+        {
+          "id": "team-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "变化均以10月为基准。工单量增减只表示方向；平均响应时间越低越快。未提供跨队响应汇总口径。"
+          }
+        },
+        {
+          "id": "team-0",
+          "type": "compositeCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "东部现场维保队",
+            "variant": "metricGrid",
+            "dividers": false,
+            "components": [
+              {
+                "id": "team-0-count",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月工单数",
+                      "valueField": {
+                        "data": "main",
+                        "field": "current",
+                        "format": "number-grouped",
+                        "match": {
+                          "field": "team",
+                          "equals": "东部现场维保队"
+                        }
+                      },
+                      "unit": "件",
+                      "changes": [
+                        {
+                          "label": "较10月 1,100 件",
+                          "field": {
+                            "data": "main",
+                            "field": "rate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "东部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "team-0-response",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月平均响应",
+                      "valueField": {
+                        "data": "main",
+                        "field": "response",
+                        "format": "number-1",
+                        "match": {
+                          "field": "team",
+                          "equals": "东部现场维保队"
+                        }
+                      },
+                      "unit": "小时",
+                      "changes": [
+                        {
+                          "label": "较10月 2.5 小时",
+                          "field": {
+                            "data": "main",
+                            "field": "responseRate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "东部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "team-1",
+          "type": "compositeCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "西部现场维保队",
+            "variant": "metricGrid",
+            "dividers": false,
+            "components": [
+              {
+                "id": "team-1-count",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月工单数",
+                      "valueField": {
+                        "data": "main",
+                        "field": "current",
+                        "format": "number-grouped",
+                        "match": {
+                          "field": "team",
+                          "equals": "西部现场维保队"
+                        }
+                      },
+                      "unit": "件",
+                      "changes": [
+                        {
+                          "label": "较10月 900 件",
+                          "field": {
+                            "data": "main",
+                            "field": "rate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "西部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "team-1-response",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月平均响应",
+                      "valueField": {
+                        "data": "main",
+                        "field": "response",
+                        "format": "number-1",
+                        "match": {
+                          "field": "team",
+                          "equals": "西部现场维保队"
+                        }
+                      },
+                      "unit": "小时",
+                      "changes": [
+                        {
+                          "label": "较10月 3.0 小时",
+                          "field": {
+                            "data": "main",
+                            "field": "responseRate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "西部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "team-2",
+          "type": "compositeCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "南部现场维保队",
+            "variant": "metricGrid",
+            "dividers": false,
+            "components": [
+              {
+                "id": "team-2-count",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月工单数",
+                      "valueField": {
+                        "data": "main",
+                        "field": "current",
+                        "format": "number-grouped",
+                        "match": {
+                          "field": "team",
+                          "equals": "南部现场维保队"
+                        }
+                      },
+                      "unit": "件",
+                      "changes": [
+                        {
+                          "label": "较10月 800 件",
+                          "field": {
+                            "data": "main",
+                            "field": "rate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "南部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "team-2-response",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月平均响应",
+                      "valueField": {
+                        "data": "main",
+                        "field": "response",
+                        "format": "number-1",
+                        "match": {
+                          "field": "team",
+                          "equals": "南部现场维保队"
+                        }
+                      },
+                      "unit": "小时",
+                      "changes": [
+                        {
+                          "label": "较10月 2.4 小时",
+                          "field": {
+                            "data": "main",
+                            "field": "responseRate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "南部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "team-3",
+          "type": "compositeCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "北部现场维保队",
+            "variant": "metricGrid",
+            "dividers": false,
+            "components": [
+              {
+                "id": "team-3-count",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月工单数",
+                      "valueField": {
+                        "data": "main",
+                        "field": "current",
+                        "format": "number-grouped",
+                        "match": {
+                          "field": "team",
+                          "equals": "北部现场维保队"
+                        }
+                      },
+                      "unit": "件",
+                      "changes": [
+                        {
+                          "label": "较10月 700 件",
+                          "field": {
+                            "data": "main",
+                            "field": "rate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "北部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "green",
+                            "negative": "red"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "team-3-response",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "teams"
+                },
+                "props": {
+                  "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "11月平均响应",
+                      "valueField": {
+                        "data": "main",
+                        "field": "response",
+                        "format": "number-1",
+                        "match": {
+                          "field": "team",
+                          "equals": "北部现场维保队"
+                        }
+                      },
+                      "unit": "小时",
+                      "changes": [
+                        {
+                          "label": "较10月 2.8 小时",
+                          "field": {
+                            "data": "main",
+                            "field": "responseRate",
+                            "format": "percent-2-signed",
+                            "match": {
+                              "field": "team",
+                              "equals": "北部现场维保队"
+                            }
+                          },
+                          "colorRule": {
+                            "mode": "sign",
+                            "positive": "red",
+                            "negative": "green"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "monthly",
+      "container": "plain",
+      "title": "02 近五月工单走势",
+      "components": [
+        {
+          "id": "trend-scope",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "2026年7—11月完整月度统计；东部／西部／南部／北部对应同名前缀现场维保队。"
+          }
+        },
+        {
+          "id": "trend-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 7
+          },
+          "props": {
+            "title": "四队月度工单走势 · 件",
+            "dividers": false,
+            "components": [
+              {
+                "id": "trend",
+                "type": "lineChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "trend"
+                },
+                "props": {
+                  "xField": "month",
+                  "smooth": false,
+                  "series": [
+                    {
+                      "field": "east",
+                      "label": "东部"
+                    },
+                    {
+                      "field": "west",
+                      "label": "西部"
+                    },
+                    {
+                      "field": "south",
+                      "label": "南部"
+                    },
+                    {
+                      "field": "north",
+                      "label": "北部"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "monthly-values",
+          "type": "table",
+          "layout": {
+            "span": 5
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "月度工单核数 · 件",
+            "rowKey": "month",
+            "fit": "content",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "month"
+                },
+                "title": "月份",
+                "width": 96
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "east",
+                  "format": "number-grouped"
+                },
+                "title": "东部",
+                "width": 72,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "west",
+                  "format": "number-grouped"
+                },
+                "title": "西部",
+                "width": 72,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "south",
+                  "format": "number-grouped"
+                },
+                "title": "南部",
+                "width": 72,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "north",
+                  "format": "number-grouped"
+                },
+                "title": "北部",
+                "width": 72,
+                "align": "right"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "composition",
+      "container": "plain",
+      "title": "03 11月业务构成",
+      "components": [
+        {
+          "id": "type-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "11月全量工单共 3,570 件，四类业务完整且互斥；预防维护与故障处理合计占 70%。图与明细使用同一范围。"
+          }
+        },
+        {
+          "id": "type-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "业务类型 · 数量与占比",
+            "dividers": false,
+            "components": [
+              {
+                "id": "type-pie",
+                "type": "pieChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "types"
+                },
+                "props": {
+                  "categoryField": "category",
+                  "valueField": "count",
+                  "ring": "55%",
+                  "categoryOrder": [
+                    "预防维护",
+                    "故障处理",
+                    "部署调试",
+                    "操作支持"
+                  ],
+                  "legend": {
+                    "type": "table",
+                    "categoryLabel": "业务类型",
+                    "columns": [
+                      {
+                        "label": "数量",
+                        "field": {
+                          "data": "main",
+                          "field": "count",
+                          "format": "number-grouped"
+                        },
+                        "unit": "件"
+                      },
+                      {
+                        "label": "占比",
+                        "field": {
+                          "data": "main",
+                          "field": "share",
+                          "format": "percent-0"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "sites",
+      "container": "plain",
+      "title": "04 重点站点变化原因",
+      "components": [
+        {
+          "id": "site-details",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sites"
+          },
+          "props": {
+            "title": "五个重点站点 · 工单变化与已核实原因",
+            "subtitle": "仅为重点站点样本，不是全量排名；不与团队总量相加。",
+            "rowKey": "site",
+            "fit": "content",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "site"
+                },
+                "title": "重点站点",
+                "width": 230
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "prev",
+                  "format": "number-grouped"
+                },
+                "title": "10月（件）",
+                "width": 92,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "current",
+                  "format": "number-grouped"
+                },
+                "title": "11月（件）",
+                "width": 92,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "delta",
+                  "format": "number-grouped-signed"
+                },
+                "title": "增减（件）",
+                "width": 96,
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "rate",
+                  "format": "percent-2-signed"
+                },
+                "title": "环比",
+                "width": 100,
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "reason"
+                },
+                "title": "已核实原因",
+                "width": 420
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

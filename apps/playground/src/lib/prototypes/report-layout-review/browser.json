@@ -1,0 +1,129 @@
+{
+  "url": "http://localhost:5173/prototypes/report-layout-review",
+  "wide": {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "candidates": [
+      {
+        "id": "C1-A",
+        "width": 1150
+      },
+      {
+        "id": "C1-B",
+        "width": 1150
+      },
+      {
+        "id": "C2-A",
+        "width": 1150
+      },
+      {
+        "id": "C2-B",
+        "width": 1150
+      },
+      {
+        "id": "C3-A",
+        "width": 1150
+      },
+      {
+        "id": "C3-B",
+        "width": 1150
+      },
+      {
+        "id": "C4-A",
+        "width": 1150
+      },
+      {
+        "id": "C4-B",
+        "width": 1150
+      },
+      {
+        "id": "C4-C",
+        "width": 1150
+      },
+      {
+        "id": "C4-D",
+        "width": 1150
+      },
+      {
+        "id": "C5-A",
+        "width": 1150
+      },
+      {
+        "id": "C5-B",
+        "width": 1150
+      }
+    ],
+    "failures": [],
+    "chartsOutsidePreview": 0
+  },
+  "smaller": {
+    "width": 1280,
+    "scrollWidth": 1280,
+    "candidates": [
+      {
+        "id": "C1-A",
+        "width": 990
+      },
+      {
+        "id": "C1-B",
+        "width": 990
+      },
+      {
+        "id": "C2-A",
+        "width": 990
+      },
+      {
+        "id": "C2-B",
+        "width": 990
+      },
+      {
+        "id": "C3-A",
+        "width": 990
+      },
+      {
+        "id": "C3-B",
+        "width": 990
+      },
+      {
+        "id": "C4-A",
+        "width": 990
+      },
+      {
+        "id": "C4-B",
+        "width": 990
+      },
+      {
+        "id": "C4-C",
+        "width": 990
+      },
+      {
+        "id": "C4-D",
+        "width": 990
+      },
+      {
+        "id": "C5-A",
+        "width": 990
+      },
+      {
+        "id": "C5-B",
+        "width": 990
+      }
+    ],
+    "failures": [],
+    "chartsOutsidePreview": 0
+  },
+  "checks": {
+    "allTwelve": true,
+    "wideFits": true,
+    "smallerFits": true,
+    "noAlerts": true,
+    "detailsVisible": true,
+    "overviewRestored": true,
+    "copiedDecisions": true,
+    "copiedNote": true,
+    "chartsStayInPreview": true,
+    "noPageErrors": true
+  },
+  "errors": [],
+  "diagnostics": []
+}

@@ -22,6 +22,8 @@ python /absolute/mc-content/scripts/mc_content.py query --topic tool --key compo
 
 ## 程序 Interface
 
+Report新建／章节重组的参考入口为 `query_content('layout', 'report-composition')`，或CLI的 `query --topic layout --key report-composition`。先选适用组合并核对组件自动装配支持面，再形成结构计划；完成后按参考检查PC预览。`layout/report`、`layout/reading`与两类Report场景都指向此单一正文，布局建议不变成保存或交付门禁。
+
 将 scripts 加入调用程序的 Python 模块路径后，可从 mc_content 导入 query_content、compile_layout、inspect_assembly、inspect_schema、upgrade_page、evaluate。
 
 - 查询受控 topic/key，索引可分页。单原子超预算时整体暂不返回并给 requiredBytes，不截断成貌似完整的工具契约。同轮缓存由 Adapter 决定。

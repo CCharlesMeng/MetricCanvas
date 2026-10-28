@@ -56,10 +56,12 @@ export async function mcPlatformFacts(root: string): Promise<Outputs> {
     ['runtime/delivery.md', 'references/delivery.md'], ['runtime/numeric-format.md', 'references/numeric-format.md'],
     ['protocols/discovery-query.md', 'references/discovery-query.md'], ['runtime/error-repair.md', 'references/errors.md'],
     ['runtime/execution.md', 'references/execution.md'], ['layouts/reading.md', 'references/scenarios.md'],
-    ['layouts/report.md', 'references/layouts/report.md'], ['layouts/dashboard.md', 'references/layouts/dashboard.md']
+    ['layouts/report.md', 'references/layouts/report.md'], ['layouts/dashboard.md', 'references/layouts/dashboard.md'],
+    ['layouts/report-composition.md', 'references/layouts/report-composition.md']
   ]) {
     let text = materialize(await readFile(path.join(root, 'tools/mc-content', source), 'utf8'), protocol);
     if (source === 'layouts/report.md') text = text.replace(/\]\(reading\.md\)/g, '](../scenarios.md)');
+    if (source === 'layouts/reading.md') text = text.replaceAll('](report-composition.md)', '](layouts/report-composition.md)');
     outputs.set(target, text);
   }
   return outputs;

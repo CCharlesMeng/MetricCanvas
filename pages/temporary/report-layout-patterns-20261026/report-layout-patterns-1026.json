@@ -1,0 +1,784 @@
+{
+  "schemaVersion": "6.52",
+  "id": "report-layout-patterns-1026",
+  "layout": "report",
+  "meta": {
+    "title": "PC 报告布局组合展示（合成数据）",
+    "description": "复用已有组件展示五类局部布局组合，全部为静态合成数据。"
+  },
+  "dataSources": {
+    "response-a": {
+      "fields": {
+        "hours": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "hours": 3.2,
+            "delta": -0.4
+          }
+        ]
+      }
+    },
+    "volume-a": {
+      "fields": {
+        "tickets": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "tickets": 1200,
+            "delta": 100
+          }
+        ]
+      }
+    },
+    "response-b": {
+      "fields": {
+        "hours": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "hours": 4.1,
+            "delta": 0.2
+          }
+        ]
+      }
+    },
+    "volume-b": {
+      "fields": {
+        "tickets": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "tickets": 800,
+            "delta": -50
+          }
+        ]
+      }
+    },
+    "growth": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "note": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "春林服务",
+            "amount": 150,
+            "change": 18,
+            "note": "已确认新增服务订单。"
+          },
+          {
+            "name": "远山制造",
+            "amount": 120,
+            "change": 12,
+            "note": "已确认完成续约。"
+          },
+          {
+            "name": "青禾园区",
+            "amount": 90,
+            "change": 8,
+            "note": "新增设备服务已开始计费。"
+          }
+        ]
+      }
+    },
+    "decline": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "note": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "南岸运营",
+            "amount": 80,
+            "change": -18,
+            "note": "合同到期，续约仍在核对中。"
+          },
+          {
+            "name": "星桥设施",
+            "amount": 65,
+            "change": -12,
+            "note": "本月项目交付量减少。"
+          },
+          {
+            "name": "云川交通",
+            "amount": 50,
+            "change": -8,
+            "note": "月末结算尚有待核对事项。"
+          }
+        ]
+      }
+    },
+    "stage-records": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "total": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "in-count": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "in-hours": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "out-count": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "out-hours": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "return-count": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        },
+        "return-hours": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "北城批次A",
+            "total": 9.4,
+            "in-count": 4,
+            "in-hours": 4.7,
+            "out-count": 3,
+            "out-hours": 2.9,
+            "return-count": 2,
+            "return-hours": 1.8
+          },
+          {
+            "name": "南城批次B",
+            "total": 7.5,
+            "in-count": 3,
+            "in-hours": 3.6,
+            "out-count": 2,
+            "out-hours": 2.5,
+            "return-count": 1,
+            "return-hours": 1.4
+          }
+        ]
+      }
+    },
+    "categories": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "业务类型"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "工单数"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "设备服务",
+            "count": 30
+          },
+          {
+            "category": "维护服务",
+            "count": 20
+          },
+          {
+            "category": "咨询服务",
+            "count": 10
+          }
+        ]
+      }
+    },
+    "history": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "tickets": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "2026-08",
+            "tickets": 100
+          },
+          {
+            "month": "2026-09",
+            "tickets": 120
+          },
+          {
+            "month": "2026-10",
+            "tickets": 140
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "PC 报告布局组合展示",
+            "subtitle": "全部为合成数据。观察对象归属、并列比较、字段分组、卡内构成和页签组织；不代表真实业务分析。",
+            "asOf": {
+              "label": "示例更新",
+              "value": "2026-10-26"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "peer-objects",
+      "title": "同一对象的两个核心指标",
+      "container": "card",
+      "components": [
+        {
+          "id": "object-a",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "response-a",
+            "compare": "volume-a"
+          },
+          "props": {
+            "title": "城市服务组",
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "平均响应时长",
+                "valueField": {
+                  "data": "main",
+                  "field": "hours",
+                  "format": "number-1"
+                },
+                "unit": "小时",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed"
+                    },
+                    "unit": "小时",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "工单量",
+                "valueField": {
+                  "data": "compare",
+                  "field": "tickets",
+                  "format": "number-grouped"
+                },
+                "unit": "件",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": {
+                      "data": "compare",
+                      "field": "delta",
+                      "format": "number-signed"
+                    },
+                    "unit": "件",
+                    "tone": "neutral"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "object-b",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "response-b",
+            "compare": "volume-b"
+          },
+          "props": {
+            "title": "企业服务组",
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "平均响应时长",
+                "valueField": {
+                  "data": "main",
+                  "field": "hours",
+                  "format": "number-1"
+                },
+                "unit": "小时",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": {
+                      "data": "main",
+                      "field": "delta",
+                      "format": "number-1-signed"
+                    },
+                    "unit": "小时",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "工单量",
+                "valueField": {
+                  "data": "compare",
+                  "field": "tickets",
+                  "format": "number-grouped"
+                },
+                "unit": "件",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": {
+                      "data": "compare",
+                      "field": "delta",
+                      "format": "number-signed"
+                    },
+                    "unit": "件",
+                    "tone": "neutral"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "opposing-groups",
+      "title": "增长与下降对象并列核对",
+      "container": "card",
+      "components": [
+        {
+          "id": "growth-objects",
+          "type": "rankingDetailCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "growth"
+          },
+          "props": {
+            "title": "重点增长对象",
+            "variant": "report",
+            "tone": "positive",
+            "nameField": "name",
+            "valueField": "amount",
+            "changeField": {
+              "data": "main",
+              "field": "change",
+              "format": "percent-1"
+            },
+            "descriptionField": "note",
+            "metricLabel": "本月收入（万元）"
+          }
+        },
+        {
+          "id": "decline-objects",
+          "type": "rankingDetailCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "decline"
+          },
+          "props": {
+            "title": "重点下降对象",
+            "variant": "report",
+            "tone": "negative",
+            "nameField": "name",
+            "valueField": "amount",
+            "changeField": {
+              "data": "main",
+              "field": "change",
+              "format": "percent-1"
+            },
+            "descriptionField": "note",
+            "metricLabel": "本月收入（万元）"
+          }
+        }
+      ]
+    },
+    {
+      "id": "grouped-detail",
+      "title": "按业务阶段核对明细",
+      "container": "card",
+      "components": [
+        {
+          "id": "stage-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "stage-records"
+          },
+          "props": {
+            "title": "批次累计时长与各阶段参与量",
+            "fit": "container",
+            "columns": [
+              {
+                "field": "name",
+                "title": "作业批次",
+                "width": 140
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "total",
+                  "format": "number-1"
+                },
+                "title": "累计时长（小时）",
+                "width": 130,
+                "align": "right"
+              },
+              {
+                "kind": "group",
+                "id": "inbound",
+                "title": "入库复核",
+                "children": [
+                  {
+                    "field": "in-count",
+                    "title": "参与人次",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": {
+                      "data": "main",
+                      "field": "in-hours",
+                      "format": "number-1"
+                    },
+                    "title": "时长（小时）",
+                    "width": 110,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "outbound",
+                "title": "出库复核",
+                "children": [
+                  {
+                    "field": "out-count",
+                    "title": "参与人次",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": {
+                      "data": "main",
+                      "field": "out-hours",
+                      "format": "number-1"
+                    },
+                    "title": "时长（小时）",
+                    "width": 110,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "returns",
+                "title": "退货复核",
+                "children": [
+                  {
+                    "field": "return-count",
+                    "title": "参与人次",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": {
+                      "data": "main",
+                      "field": "return-hours",
+                      "format": "number-1"
+                    },
+                    "title": "时长（小时）",
+                    "width": 110,
+                    "align": "right"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "composition",
+      "title": "构成概览与精确值同处",
+      "container": "plain",
+      "components": [
+        {
+          "id": "composition-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "三类业务工单构成（合计60件）",
+            "variant": "compact",
+            "components": [
+              {
+                "id": "composition-ring",
+                "type": "pieChart",
+                "layout": {
+                  "span": 5
+                },
+                "data": {
+                  "main": "categories"
+                },
+                "props": {
+                  "title": "工单占比",
+                  "variant": "compactRing",
+                  "categoryField": "category",
+                  "valueField": "count",
+                  "ring": "60%",
+                  "labelLine": false
+                }
+              },
+              {
+                "id": "composition-detail",
+                "type": "categoryBreakdown",
+                "layout": {
+                  "span": 7
+                },
+                "data": {
+                  "main": "categories"
+                },
+                "props": {
+                  "title": "各类工单数量",
+                  "variant": "compactList",
+                  "categoryField": "category",
+                  "columns": [
+                    {
+                      "label": "工单数（件）",
+                      "field": "count"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "overview-detail",
+      "title": "概览与逐月明细按需切换",
+      "container": "card",
+      "components": [
+        {
+          "id": "overview-detail-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "defaultTab": "overview",
+            "contentLayout": "grid",
+            "tabs": [
+              {
+                "id": "overview",
+                "label": "概览",
+                "components": [
+                  {
+                    "id": "history-chart",
+                    "type": "lineChart",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "history"
+                    },
+                    "props": {
+                      "title": "近三个月工单量",
+                      "xField": "month",
+                      "series": [
+                        {
+                          "field": "tickets",
+                          "label": "工单数（件）"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "details",
+                "label": "逐月明细",
+                "components": [
+                  {
+                    "id": "history-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "history"
+                    },
+                    "props": {
+                      "title": "同一批月份的精确值",
+                      "fit": "container",
+                      "columns": [
+                        {
+                          "field": "month",
+                          "title": "月份"
+                        },
+                        {
+                          "field": "tickets",
+                          "title": "工单数（件）",
+                          "align": "right"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

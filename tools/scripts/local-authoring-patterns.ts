@@ -66,6 +66,7 @@ export function pagePattern(source: PatternSource, content: string) {
 
 export async function localPagePatternOutputs(root: string): Promise<Map<string, string>> {
   const outputs = new Map<string, string>();
+  outputs.set('references/page-patterns/report-composition.md', await readFile(path.join(root, 'tools/mc-content/layouts/report-composition.md'), 'utf8'));
   const pages = pageFilesById(path.join(root, 'pages'));
   for (const source of pagePatternSources) {
     const file = pages.get(source.pageId);

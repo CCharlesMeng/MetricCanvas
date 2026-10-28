@@ -1,0 +1,156 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "/tmp/report-layout-review-feedback-20261027/model-before.ts",
+      "functions": [
+        {
+          "name": "<anonymous@31:55>",
+          "qualifiedName": "<anonymous@31:55>",
+          "line": 31,
+          "endLine": 31,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "slot",
+          "qualifiedName": "slot",
+          "line": 36,
+          "endLine": 41,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@44:75>",
+          "qualifiedName": "<anonymous@44:75>",
+          "line": 44,
+          "endLine": 44,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@49:48>",
+          "qualifiedName": "<anonymous@49:48>",
+          "line": 49,
+          "endLine": 49,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@50:49>",
+          "qualifiedName": "<anonymous@50:49>",
+          "line": 50,
+          "endLine": 50,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "objectProps",
+          "qualifiedName": "objectProps",
+          "line": 56,
+          "endLine": 61,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rankingProps",
+          "qualifiedName": "rankingProps",
+          "line": 71,
+          "endLine": 73,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "stageTable",
+          "qualifiedName": "stageTable",
+          "line": 81,
+          "endLine": 87,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@91:17>",
+          "qualifiedName": "<anonymous@91:17>",
+          "line": 91,
+          "endLine": 91,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/tmp/report-layout-review-feedback-20261027/page-before.ts",
+      "functions": [
+        {
+          "name": "<anonymous@7:59>",
+          "qualifiedName": "<anonymous@7:59>",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@8:43>",
+          "qualifiedName": "<anonymous@8:43>",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 3,
+          "optionalChains": 2,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "choose",
+          "qualifiedName": "choose",
+          "line": 9,
+          "endLine": 12,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "annotate",
+          "qualifiedName": "annotate",
+          "line": 13,
+          "endLine": 16,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "copyReview",
+          "qualifiedName": "copyReview",
+          "line": 17,
+          "endLine": 24,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-f88cf90e161f7117",
-  "contentSha256": "f88cf90e161f711761ea16010cbb2c1b8f70e15c16a6aa7d5ff1276a69b0e565",
+  "contentVersion": "1-a9ccefcfaec8536a",
+  "contentSha256": "a9ccefcfaec8536ae31cc3df80063531e5852bebdac7227aafac7ba0358e54ea",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -1585,7 +1585,7 @@
     },
     {
       "file": "index.json",
-      "sha256": "47a9e742f0aedf64637e7d6e271b178754b672ec9415ed220a94564774c546f1"
+      "sha256": "4896a08fdf3619bc6cd5b251046cc48559f0eaafff3cf5f9307679e072c62707"
     },
     {
       "file": "knowledge/actions-and-navigation.overview.json",
@@ -2349,11 +2349,15 @@
     },
     {
       "file": "layouts/reading.md",
-      "sha256": "5f98360b8423232a35df7ac9927062ff773dbffb9bc6ecc2b23dff792f285fbb"
+      "sha256": "e535bb814ca5363ec37c8de20d587cd70cd35152a2062ba3468c26ac13375180"
+    },
+    {
+      "file": "layouts/report-composition.md",
+      "sha256": "002b0ad8ca21360cde57f7d9b656a285d08027252b7ce6916e77ce006934f261"
     },
     {
       "file": "layouts/report.md",
-      "sha256": "7f53185b6a1247136b665fccd577e0773772c573b424d8e0272b73a01adc0813"
+      "sha256": "ce0acbce18be2794c84a91e0dcecc03d8ae66ef8aee81f2e9132b669ee125f52"
     },
     {
       "file": "layouts/standards/business-report-compact.json",
@@ -4801,7 +4805,7 @@
     },
     {
       "file": "README.md",
-      "sha256": "b661f8d52c2a47c6c422c897aefd368e6a76c2f52ea647c89f5ab9afc512ee08"
+      "sha256": "57a8bc546220c32e9ec9c4f8346e65eb9f2be691de015cb7d9bbfa742f407381"
     },
     {
       "file": "references/authoring-knowledge/model.json",
@@ -7497,7 +7501,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "31e14c554d8043d738b26315b48affee8edbda04701091d0b36afab929cecfc7"
+      "sha256": "101b8936c57243a5bfbf80054395c8883103bada46197580e01024b1a136f083"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -7509,11 +7513,11 @@
     },
     {
       "file": "scenarios/business-report.md",
-      "sha256": "9bd27d7abfd873020ae683cc497794c6e02f05878c82c488a5ba4c7d9415d443"
+      "sha256": "5b22b378bb639119ecfdec53f2a548c358daac024416b4b32f67fc1c726f30ad"
     },
     {
       "file": "scenarios/usage-report.md",
-      "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55"
+      "sha256": "d553fe62ee08fb97b058c5600dd5851180d38866332eaa0b731d19123e97ba4e"
     },
     {
       "file": "scripts/inspect-page.mjs",

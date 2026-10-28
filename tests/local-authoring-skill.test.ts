@@ -222,6 +222,14 @@ describe('独立本地创作 Skill', () => {
     expect(run([target]).status).toBe(1);
   });
 
+  it('仓外Skill携带同源Report组合参考，并由报表创作入口触发读取', async () => {
+    const canonical = await readFile('tools/mc-content/layouts/report-composition.md', 'utf8');
+    expect(files.get('references/page-patterns/report-composition.md')).toBe(canonical);
+    expect(files.get('references/report-patterns.md')).toContain('](page-patterns/report-composition.md)');
+    const manifest = JSON.parse(files.get('references/knowledge.json')!);
+    expect(manifest.files.some((entry: {file: string}) => entry.file === 'references/page-patterns/report-composition.md')).toBe(true);
+  });
+
   it('整目录复制后知识链接与机器索引闭合，所有生成内容有一致的版本和哈希', () => {
     validateReferenceLinks(files);
     const manifest = JSON.parse(files.get('references/knowledge.json')!);

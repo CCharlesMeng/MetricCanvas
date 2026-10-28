@@ -1,0 +1,14 @@
+[
+  { "id": "C1-A", "title": "按对象聚合", "decision": "保留", "note": "" },
+  { "id": "C1-B", "title": "按指标对照", "decision": "调整", "note": "数字需要增加颜色" },
+  { "id": "C2-A", "title": "双组并列", "decision": "保留", "note": "" },
+  { "id": "C2-B", "title": "原因随行的明细表", "decision": "保留", "note": "" },
+  { "id": "C3-A", "title": "一张分组表头表", "decision": "保留", "note": "" },
+  { "id": "C3-B", "title": "阶段拆成相邻小表", "decision": "不采用", "note": "" },
+  { "id": "C4-A", "title": "紧凑环图 + 右侧明细", "decision": "调整", "note": "一个环形图不能独立一行" },
+  { "id": "C4-B", "title": "窄卡环图 + 下方明细", "decision": "保留", "note": "" },
+  { "id": "C4-C", "title": "横向条形图 + 精确值", "decision": "保留", "note": "" },
+  { "id": "C4-D", "title": "仅保留分类明细", "decision": "保留", "note": "" },
+  { "id": "C5-A", "title": "概览 / 明细页签", "decision": "保留", "note": "" },
+  { "id": "C5-B", "title": "趋势与明细连续展开", "decision": "保留", "note": "" }
+]

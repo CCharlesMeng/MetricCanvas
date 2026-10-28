@@ -6916,7 +6916,7 @@
     },
     {
       "file": "mc-content/index.json",
-      "sha256": "47a9e742f0aedf64637e7d6e271b178754b672ec9415ed220a94564774c546f1"
+      "sha256": "4896a08fdf3619bc6cd5b251046cc48559f0eaafff3cf5f9307679e072c62707"
     },
     {
       "file": "mc-content/knowledge/actions-and-navigation.overview.json",
@@ -7680,11 +7680,15 @@
     },
     {
       "file": "mc-content/layouts/reading.md",
-      "sha256": "5f98360b8423232a35df7ac9927062ff773dbffb9bc6ecc2b23dff792f285fbb"
+      "sha256": "e535bb814ca5363ec37c8de20d587cd70cd35152a2062ba3468c26ac13375180"
+    },
+    {
+      "file": "mc-content/layouts/report-composition.md",
+      "sha256": "002b0ad8ca21360cde57f7d9b656a285d08027252b7ce6916e77ce006934f261"
     },
     {
       "file": "mc-content/layouts/report.md",
-      "sha256": "7f53185b6a1247136b665fccd577e0773772c573b424d8e0272b73a01adc0813"
+      "sha256": "ce0acbce18be2794c84a91e0dcecc03d8ae66ef8aee81f2e9132b669ee125f52"
     },
     {
       "file": "mc-content/layouts/standards/business-report-compact.json",
@@ -7720,7 +7724,7 @@
     },
     {
       "file": "mc-content/mc-content.version.json",
-      "sha256": "6c6021426b3385f66bac5ff86c1788b239bf20c0f5b4cde2670b73ef11c50f24"
+      "sha256": "9d1aebf02faa6b410628a3d9ecc5e6515e66f468cea59f64eaa691da6520ad41"
     },
     {
       "file": "mc-content/product-contracts/authoring/publication-conformance.json",
@@ -10136,7 +10140,7 @@
     },
     {
       "file": "mc-content/README.md",
-      "sha256": "b661f8d52c2a47c6c422c897aefd368e6a76c2f52ea647c89f5ab9afc512ee08"
+      "sha256": "57a8bc546220c32e9ec9c4f8346e65eb9f2be691de015cb7d9bbfa742f407381"
     },
     {
       "file": "mc-content/references/authoring-knowledge/model.json",
@@ -12832,7 +12836,7 @@
     },
     {
       "file": "mc-content/runtime/source-identity.json",
-      "sha256": "31e14c554d8043d738b26315b48affee8edbda04701091d0b36afab929cecfc7"
+      "sha256": "101b8936c57243a5bfbf80054395c8883103bada46197580e01024b1a136f083"
     },
     {
       "file": "mc-content/runtime/tool-behavior.md",
@@ -12844,11 +12848,11 @@
     },
     {
       "file": "mc-content/scenarios/business-report.md",
-      "sha256": "9bd27d7abfd873020ae683cc497794c6e02f05878c82c488a5ba4c7d9415d443"
+      "sha256": "5b22b378bb639119ecfdec53f2a548c358daac024416b4b32f67fc1c726f30ad"
     },
     {
       "file": "mc-content/scenarios/usage-report.md",
-      "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55"
+      "sha256": "d553fe62ee08fb97b058c5600dd5851180d38866332eaa0b731d19123e97ba4e"
     },
     {
       "file": "mc-content/scripts/inspect-page.mjs",
@@ -13012,11 +13016,11 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/knowledge.json",
-      "sha256": "aeb3e316b33a8608a6c1dac07f24b54314c0be7fa5e8852ce2751ecbcbc35daa"
+      "sha256": "72c10a40e9bc054d37a5865766129793d4021a1b95e57ca32009d4a5d7a32745"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/local-workflow.md",
-      "sha256": "aa48763d6d90086fbea909c4789c028d97581ddca5c132da42cea7a2ce2bb8f3"
+      "sha256": "01183bb3bb377042caf6609394fa048eb2b74b8a019ecc7f4165ed66898e6b36"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/maintenance.md",
@@ -15703,6 +15707,10 @@
       "sha256": "4a8284bdbc8772363fdae0df7409e05e94780fff7619b98502cf1bba676386c1"
     },
     {
+      "file": "skill/metriccanvas-local-authoring/references/page-patterns/report-composition.md",
+      "sha256": "002b0ad8ca21360cde57f7d9b656a285d08027252b7ce6916e77ce006934f261"
+    },
+    {
       "file": "skill/metriccanvas-local-authoring/references/page-patterns/report-monthly.json",
       "sha256": "e1dcf21cdd208b95452d3bac781f4d4cd9aff1333cd741b330045ac3e036cc7a"
     },
@@ -15716,7 +15724,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/report-patterns.md",
-      "sha256": "c14adda234a63c0a1f3b6229d6061ffb07f2b5e9a25ea56525a72e1524fa345a"
+      "sha256": "16e8205750ef146d01ccc3a42ae9fff1a5716b432a8a527e8122c82038ba952d"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/scenario-index.md",
@@ -15748,7 +15756,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/SKILL.md",
-      "sha256": "6db19167f1d15fd9790da1fcb19a8a23b63a9672da77d93879f3e5113a4616a4"
+      "sha256": "29f42f2f6736d6901fe10c2f9c1e9a9f1677d078957deb954d5fe08787495aef"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/actions-and-navigation.md",
@@ -18423,8 +18431,12 @@
       "sha256": "abf82fa9c069a3fc2999986754ef198f9fa327bbc473ebb88c04ee8220227df2"
     },
     {
+      "file": "skill/metriccanvas-platform-authoring/references/layouts/report-composition.md",
+      "sha256": "002b0ad8ca21360cde57f7d9b656a285d08027252b7ce6916e77ce006934f261"
+    },
+    {
       "file": "skill/metriccanvas-platform-authoring/references/layouts/report.md",
-      "sha256": "a1df1e8bd53669e03db6ea6e00ad4ebadbe3c437fab56b449ab03e97e749d233"
+      "sha256": "1fc97e6386b7d189e6e1f5999d213e26d1e35bbf6def5d770d1c15196e0095e5"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/numeric-format.md",
@@ -18448,15 +18460,15 @@
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/scenarios.md",
-      "sha256": "5f98360b8423232a35df7ac9927062ff773dbffb9bc6ecc2b23dff792f285fbb"
+      "sha256": "10e797714e6c5f62e5f37770a67b29e09a87f2349db2db8bec048d3096089904"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
-      "sha256": "9bd27d7abfd873020ae683cc497794c6e02f05878c82c488a5ba4c7d9415d443"
+      "sha256": "5b22b378bb639119ecfdec53f2a548c358daac024416b4b32f67fc1c726f30ad"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/scenarios/usage-report.md",
-      "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55"
+      "sha256": "d553fe62ee08fb97b058c5600dd5851180d38866332eaa0b731d19123e97ba4e"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/tools.md",
@@ -18468,7 +18480,7 @@
     },
     {
       "file": "skill/metriccanvas-platform-authoring/workflows/create.md",
-      "sha256": "023b4ddbf8dd6c8182303c2564a84ed3b354ecea86f00e00d5d4a90e381f444b"
+      "sha256": "bd66f2237c91c87cea3444d7ed22aa2dfae33c70044c551e80368928b7dbabbb"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/workflows/data-analysis.md",
@@ -18484,7 +18496,7 @@
     },
     {
       "file": "SOURCES.md",
-      "sha256": "12b620c4a62b22a57857e023db889124ece2bf117cbd325af14e0422cd8eb174"
+      "sha256": "9f8dac00bdb11abfb8886e2a971bddcc7ee84c9939424ab22a5a15a2359d4476"
     },
     {
       "file": "test-harness/adapters/__init__.py",
@@ -18908,7 +18920,7 @@
     },
     {
       "file": "test-harness/tests/test_mc_content.py",
-      "sha256": "deae5853341e758a6204f0e3b24e4ff36a818f5dfc248cb4a8f93c202d8f38f4"
+      "sha256": "06202dc8476e7def0f1da55bb8c6ece91e97912eb842bf53c2288b09de4c2f5f"
     },
     {
       "file": "test-harness/tests/test_metadata_processes.py",

@@ -1,0 +1,200 @@
+{
+  "status": "pass",
+  "schemaVersion": "6.69",
+  "layout": "report",
+  "url": "http://localhost:5173/pages/service-operations-report-202609-structured",
+  "changes": [
+    "章节使用plain，标题位于卡片之外，蓝色底色形成卡片间隔",
+    "两个团队各用独立compositeCard，卡内无额外分隔线",
+    "趋势图与月度精确表分别成卡，真实表格保留6行",
+    "客户与阶段分别使用自带白色卡面的普通table及内容高度",
+    "两个饼图分别成卡，保留原生数量及占比图例"
+  ],
+  "dataSourcesUnchanged": true,
+  "finalSha256": "36504ea39a5c2b2db6f09a4530d2636b2f1f6f84baeb8fc4c8b122598d2734a8",
+  "viewports": [
+    {
+      "cards": [
+        {
+          "background": "rgb(255, 255, 255)",
+          "title": " 东区服务团队"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "title": " 西区服务团队"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "title": " 工单走势（件）"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "title": " 业务类型构成"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "title": " 办结状态构成"
+        }
+      ],
+      "dividers": 0,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "sections": [
+        {
+          "classes": "page-section svelte-1jzn1hh container-card"
+        },
+        {
+          "classes": "page-section svelte-1jzn1hh container-plain",
+          "title": " 01 团队月度表现 "
+        },
+        {
+          "classes": "metric-panel svelte-1vxoqkp"
+        },
+        {
+          "classes": "metric-panel svelte-1vxoqkp"
+        },
+        {
+          "classes": "metric-panel svelte-1vxoqkp"
+        },
+        {
+          "classes": "metric-panel svelte-1vxoqkp"
+        },
+        {
+          "classes": "page-section svelte-1jzn1hh container-plain",
+          "title": " 02 近半年工单走势 "
+        },
+        {
+          "classes": "page-section svelte-1jzn1hh container-plain",
+          "title": " 03 重点客户变化及原因 "
+        },
+        {
+          "classes": "page-section svelte-1jzn1hh container-plain",
+          "title": " 04 服务阶段表现 "
+        },
+        {
+          "classes": "page-section svelte-1jzn1hh container-plain",
+          "title": " 05 业务构成与办结情况 "
+        }
+      ],
+      "tables": [
+        {
+          "clientWidth": 439,
+          "rows": 6,
+          "scrollWidth": 439
+        },
+        {
+          "clientWidth": 1126,
+          "rows": 6,
+          "scrollWidth": 1126
+        },
+        {
+          "clientWidth": 1126,
+          "rows": 2,
+          "scrollWidth": 1126
+        },
+        {
+          "clientWidth": 215,
+          "rows": 3,
+          "scrollWidth": 215
+        },
+        {
+          "clientWidth": 203,
+          "rows": 2,
+          "scrollWidth": 203
+        }
+      ],
+      "width": 1440
+    },
+    {
+      "dividers": 0,
+      "height": 1000,
+      "scrollWidth": 1280,
+      "tables": [
+        {
+          "clientWidth": 439,
+          "rows": 6,
+          "scrollWidth": 439
+        },
+        {
+          "clientWidth": 1126,
+          "rows": 6,
+          "scrollWidth": 1126
+        },
+        {
+          "clientWidth": 1126,
+          "rows": 2,
+          "scrollWidth": 1126
+        },
+        {
+          "clientWidth": 215,
+          "rows": 3,
+          "scrollWidth": 215
+        },
+        {
+          "clientWidth": 203,
+          "rows": 2,
+          "scrollWidth": 203
+        }
+      ],
+      "whiteCards": 5,
+      "width": 1280
+    }
+  ],
+  "console": [],
+  "validation": {
+    "file": "/tmp/report-layout-outer-cards-20261027-qtlle05j/attempt-01/service-operations-report-202609-structured.json",
+    "ok": true,
+    "errors": []
+  },
+  "complexity": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "/tmp/report-layout-outer-cards-20261027-qtlle05j/outputs/outer-cards.mjs",
+        "functions": [
+          {
+            "name": "<anonymous@8:33>",
+            "qualifiedName": "<anonymous@8:33>",
+            "line": 8,
+            "endLine": 8,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@8:195>",
+            "qualifiedName": "<anonymous@8:33>/<anonymous@8:195>",
+            "line": 8,
+            "endLine": 8,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@16:45>",
+            "qualifiedName": "<anonymous@16:45>",
+            "line": 16,
+            "endLine": 16,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "notes": [
+    "仅保留真实表格行线、表头分隔与图表网格线",
+    "饼图图例按现有协议排在绘图区下方",
+    "本轮不改产品代码、协议或现有Report主题",
+    "临时转换脚本新增3个回调，selfCC及subtreeCC均为1，无复杂度未关闭项"
+  ],
+  "currentEvidence": "/tmp/report-layout-outer-cards-20261027-qtlle05j",
+  "externalModelCalls": 0,
+  "productCodeChanged": false,
+  "commitOrPush": false
+}
