@@ -1,14 +1,9 @@
 import {copyFieldFallback,dqeDefaultSort,calendarEndpoint,objectDateBoundary,timeFilterBoundaryError,validateCalendarTimeRange,validateTimePointValue,type Row,type EffectiveQuery} from '@metriccanvas/page/internal';
 import type {PagedJoinPlan} from './plan';
 import {rowFailure} from './rows';
+import {memberKey} from './member-diagnostics';
 import {validateRecordRows} from './record-batches';
 type Key=string|number;
-export function associationKey(plan:PagedJoinPlan,id:string,row:Row):Key{
-  const field=plan.source.source.members[id].key.field,key=row[field];
-  const type=plan.members.get(id)!.fields[field].type;
-  if(typeof key!==type||(typeof key!=='string'&&typeof key!=='number')||(typeof key==='string'&&!key.trim())||(typeof key==='number'&&!Number.isFinite(key)))throw rowFailure('记录关联键缺失或类型错误');
-  return key;
-}
 /** Read ordering is independent from the table view and respects the DQE sort contract. */
 export function recordReadOrder(plan:PagedJoinPlan,id:string,query:EffectiveQuery):EffectiveQuery{
   if(query.sort?.length || dqeDefaultSort(query.body.dsl_list[0]).length)return query;
@@ -17,7 +12,7 @@ export function recordReadOrder(plan:PagedJoinPlan,id:string,query:EffectiveQuer
 export function projectRecordRows(plan:PagedJoinPlan,domain:Row[],members:Map<string,Map<Key,Row>>):Row[]{
   const source=plan.source.source,seen=new Set<unknown>();
   const rows=domain.map((input,index)=>{
-    const key=associationKey(plan,source.domainMember,input),row:Row={};
+    const key=memberKey(plan,source.domainMember,input,index),row:Row={};
     for(const [field,projection] of Object.entries(source.projection)){
       const raw=projection.member===source.domainMember?input:members.get(projection.member)?.get(key);
       row[field]=raw?.[projection.field]??null;

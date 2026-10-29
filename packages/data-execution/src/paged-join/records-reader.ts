@@ -6,8 +6,9 @@ import type {QueryRunner} from '../query-runner';
 import type {PagedJoinPlan} from './plan';
 import {memberQuery,restrictKeys} from './member-query';
 import {ordinalRows,rowFailure} from './rows';
+import {memberFailure,memberKey} from './member-diagnostics';
 import {chargeRows,readRecordBatches,type RecordBudget} from './record-batches';
-import {associationKey,recordReadOrder,projectRecordRows,filterRecordTimes} from './record-rows';
+import {recordReadOrder,projectRecordRows,filterRecordTimes} from './record-rows';
 const readers=new WeakMap<QueryRunner,ReturnType<typeof createRecordReader>>();
 export function recordJoinReader(runner:QueryRunner){
   let reader=readers.get(runner);
@@ -47,7 +48,7 @@ async function collectRecords(plan:PagedJoinPlan,runner:QueryRunner,scope:string
   const budget:RecordBudget={rows:0,bytes:0,maxRows:config.maxRows,maxBytes:config.maxBytes,signal};
   const rawDomain=await readRecordBatches(plan,domainId,recordReadOrder(plan,domainId,memberQuery(plan,domainId)),runner,scope,budget,true);
   const domain=filterRecordTimes(plan,rawDomain,true);
-  const keys=[...new Set(domain.map(row=>associationKey(plan,domainId,row)))];
+  const keys=[...new Set(domain.map((row,index)=>memberKey(plan,domainId,row,index)))];
   const members=new Map<string,Map<string|number,Row>>();
   for(const id of plan.members.keys()){
     if(id===domainId)continue;
@@ -65,9 +66,10 @@ async function supplementRows(plan:PagedJoinPlan,id:string,keys:(string|number)[
     const allowed=restrictKeys(query,member.key.queryField,keys.slice(offset,offset+size));
     if(!allowed.length)continue;
     const rows=await readRecordBatches(plan,id,recordReadOrder(plan,id,query),runner,scope,budget);
-    for(const row of rows){
-      const key=associationKey(plan,id,row);
-      if(!allowed.includes(key)||index.has(key))throw rowFailure('基本信息返回重复关联键或未请求编码');
+    for(const [rowIndex,row] of rows.entries()){
+      const key=memberKey(plan,id,row,rowIndex);
+      if(!allowed.includes(key))throw memberFailure(plan,id,rowFailure(`补充查询第 ${rowIndex+1} 行的关联编号不在本次查询范围内。请检查编号筛选是否生效。`));
+      if(index.has(key))throw memberFailure(plan,id,rowFailure(`补充查询第 ${rowIndex+1} 行的关联编号重复，无法确定该使用哪条记录。请检查是否每个编号只返回一条记录。`));
       index.set(key,row);
     }
   }

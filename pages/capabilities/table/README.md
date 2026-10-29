@@ -2,6 +2,16 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 组合查询错误定位
+
+入口：`/pages/paged-join-diagnostics`；[页面 JSON](paged-join-diagnostics.json)。启动 `pnpm dev:dqe`，或分别运行 `pnpm sim:dqe` 与 `pnpm dev:playground`，保持统计月份 2026-09。页面沿用普通 DQE Sim 的8个代表处合成数据，所有成员关闭远端选页能力，先完整读取目录成员，再按编码补列。
+
+1. 正常打开：第一页3行，上海、北京、广州，匹配总数8；翻页、排序和搜索保持完整关联行为。
+2. 故障回放：执行 `pnpm --filter playground exec playwright test tests/paged-join-diagnostics.browser.ts --workers=1`。测试直接读取本页，通过 HTTP 响应边界分别将目录首行关联键改为 null、令第二行键与首行相同、将总数改为9、将总数改为1001。测试注入合成身份与响应，无需真实服务；使用空闲的5183端口。
+3. 四种异常均显示表格空态，控制台首行先解释原因和处理方法（空键示例：“第1行的代表处编码为空，无法关联其他数据，请检查查询结果”），技术来源在后面的“定位详情”中打印 `office-overview` → 成员 `directory` → 数据源 `office-directory` → 字段 `rep-office-code`（DQE `rep_office_code`），并给出 `/dataSources/office-overview/source/members/directory/key`。空键报第1行及实际null；重复键报第2行与第1行重复；截断报返回8行/总数9；超限报总数1001/上限1000。主成员失败后没有补列查询，错误消息不包含代表处名称或编码值。
+
+浏览器用例覆盖正常和四种故障，并输出截图至Playwright报告目录。记录模式关联键与原有分页、取消、缓存行为由共享执行回归覆盖。本地Sim和HTTP回放不等于真实DQE/Relay验收。
+
 ## 决策意见明细
 
 入口：`/pages/decision-opinion-details`；[页面 JSON](decision-opinion-details.json)。运行 `pnpm dev:playground` 即可，无需 DQE Sim 或 URL 参数。

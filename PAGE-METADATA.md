@@ -133,6 +133,8 @@ IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提
 
 `pagedJoin` 组合查询源复用普通查询定义，通过稳定业务键投影到独占组合表；支持完整行域的排序、跨源数值范围、搜索与分页。声明及边界见[数据源](docs/page-metadata/data-sources.md#多查询组合源-pagedjoin622)和[表格](docs/page-metadata/components/table.md#数值范围和组合表622)。可运行验收页为 [multi-query-table.json](pages/capabilities/table/multi-query-table.json)，打开方式和逐步预期见[页面验收场景](pages/README.md#多查询表格)。页面使用本地 DQE Sim，不证明真实 DQE 能力。
 
+组合成员错误诊断：控制台先用业务字段标签说明问题和处理提示，技术信息另起定位详情，包含组合源、成员、原始查询源、关联字段/DQE 字段、配置路径，以及适用的返回行号、实际类型或结果范围；不打印业务值。验收入口 `/pages/paged-join-diagnostics`，规则见[查询异常与结果总数](docs/page-metadata/data-sources.md#查询异常与结果总数)。
+
 新功能交付须按[必选验收要求](docs/agents/feature-acceptance.md)同步页面场景、本规范对应模块和本地创作 Skill。
 
 验收页同时对照当前排序序号与固定预签金额排名：前者使用 `ordinalField`；后者由普通查询返回排名字段，再通过 `projection` 关联，切换排序和表格筛选时保留原名次。排名范围与并列规则由提供该字段的查询定义，组合源不隐式重算。
