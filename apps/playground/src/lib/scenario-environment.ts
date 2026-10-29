@@ -1,5 +1,6 @@
 import {createZeroTotalPreview} from '../../fixtures/zero-total-gateway';
 import {createPartnerHealthUnionPreview} from '../../fixtures/organization-union/gateway';
+import {createTableRecoveryPreview} from '../../fixtures/table-recovery';
 import {createHierarchyGateway} from '../../fixtures/hierarchy-gateway';
 import {createRejectionPreview} from '../../fixtures/rejection-details/gateway';
 import { createUnionPreview } from '../../fixtures/decision-opinion/union-gateway';
@@ -15,6 +16,7 @@ import { dataGateway } from './services';
 export function scenarioEnvironment(exampleId: string, state = 'ready') {
   const kind = pageExternalInputs(exampleId);
   if (kind === 'organization-union') return createPartnerHealthUnionPreview(state);
+  if (kind === 'table-recovery') return createTableRecoveryPreview(state);
   if (kind === 'zero-total') return createZeroTotalPreview();
   if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
   if (kind === 'record-join') return createRejectionPreview();

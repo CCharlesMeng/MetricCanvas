@@ -1,0 +1,17 @@
+{
+  "page": "multi-source-composite-key",
+  "pageErrors": [],
+  "passed": [
+    "256 rows",
+    "repeated approver across offices",
+    "cross-source same tuple",
+    "page 2",
+    "search",
+    "sort",
+    "filtered Excel download",
+    "empty search",
+    "duplicate tuple first row retained",
+    "null part skipped",
+    "legacy page"
+  ]
+}

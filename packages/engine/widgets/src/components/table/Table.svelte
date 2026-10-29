@@ -5,6 +5,8 @@
 
 <script lang="ts">
   import ColumnCandidateOptions from './ColumnCandidateOptions.svelte';
+  import TableWarnings from './TableWarnings.svelte';
+  import { tableDataWarnings } from './warnings';
   import type { TableColumnCandidates } from './view-state';
   import type {TablePaginationState,TableSelectedCell} from './view-state';
   import { getContext, type Snippet } from 'svelte';
@@ -367,6 +369,7 @@
       {/if}
     {/snippet}
   </TableHeading>
+  <TableWarnings warnings={tableDataWarnings(data)} />
   {#if leaves.length===0}
     <Empty message="当前条件下无可见列" />
   {:else}

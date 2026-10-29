@@ -36,7 +36,7 @@
 {:else if snapshot.status === 'error'}
   <div class="content-state" role="status">明细暂不可用{#if instance.stream}<button type="button" onclick={onretry}>重试</button>{/if}</div>
 {:else}
-  <Table nested data={{ main: { fields: resolveDataSourceFields(instance.page.dataSources[table.data.main]!), snapshot: { status: 'ready', rows } } }}
+  <Table nested data={{ main: { fields: resolveDataSourceFields(instance.page.dataSources[table.data.main]!), snapshot: { status: 'ready', rows }, diagnostics: {snapshot} } }}
     props={table.props} {view} {pagination}
     searchOption={binding.searchOption} onsearchoption={binding.onsearchoption}
     searchDraft={binding.searchDraft} onsearchdraft={binding.onsearchdraft} onsearch={binding.onsearch}

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "80a39a861283018af22b74376d78280b650277be562993beb21e5dda13de4444",
+  "sha256": "32a1412bc27d7fc2e4d93a08b1e3bb1b414a42b5ba2ae364ae6a00e0541e3c8b",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -92,7 +92,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "78f95f13746bf72550b454fee867a570000477146493b6d398ad29c8d4b8c96c"
+      "sha256": "850fee40d6c9fde574a963453f0fffd9b6c48786cfc3fd1631d43fa997c68cca"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "70e0037bddbd7d2a031f1bcd473e47bd67fdf752ca52456f0e8707ff1a68c18a"
+      "sha256": "d181c50881d9e83b1c8f5bcd9123c825701fe132a312173132a1475c93e7b0f6"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "a28a96ffe7bfb81b5e09e4f3af778f7ce4d1b2aee69c05265d432bfbdb6d6e81"
+      "sha256": "c3468fe7114a3ced30431e3b6121ce2dbf907ebcf02f85f25c4e3bec9ddf0388"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1351,6 +1351,10 @@
       "sha256": "5c19f6610483c42feb4509891fdc64623e166473ae7c957d861ecc5640d3e67b"
     },
     {
+      "file": "packages/page/src/display-query-rows.ts",
+      "sha256": "ed67b180f30d19d998fc976ccdd380d5ed3c250e993dbd7a697089a454d2cba5"
+    },
+    {
       "file": "packages/page/src/dqe-object.ts",
       "sha256": "2d7c3bbeff933f4cddbe3891996301f9f3a91cbda96345a1c8ea58d5301b4a22"
     },
@@ -1404,7 +1408,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "35eb5c6523c208149ac32d37bc62a5dc8698ec8639f380e668f272ad5fdffc77"
+      "sha256": "7f16e820b8b98b5a12cfdeed9fa6f81fc9f79eebedcb19061d084b4b43162ef3"
     },
     {
       "file": "packages/page/src/ioc-header.ts",
@@ -1548,7 +1552,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "ab17f29eed7e6c97da557aae8839a61423fa0c4a05ea86b74f0dd384759682ae"
+      "sha256": "a48f561ba01ae5c5627488c3ed4c1b06889d54b42a5e197f7233e3c7234f3a64"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -1708,7 +1712,7 @@
     },
     {
       "file": "packages/page/src/snapshot.ts",
-      "sha256": "389c6a021cc2b5a8856b77af859771e2086a13e61a62c5f56f3939d805293fe6"
+      "sha256": "b385f441496aa1e92517b5e19a7ece6c2538924b8fc6cc677d78b17bce4aed8c"
     },
     {
       "file": "packages/page/src/tab-state.ts",
@@ -1832,7 +1836,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "ae303a9f0b629c9d99bb719b364073661930313f0f0a93f22caf09fd9e7926e0"
+      "sha256": "40e6b6f648ee2e8bad21845b1aa1cb499d2195497f8f971f66055dca03827e58"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2196,7 +2200,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "a4f6d6680b3049fbadab074ae60f7d1f1d57433b93c94a67d8b4630e6ed4fdd3"
+      "sha256": "12826a6e1ceea1303441ae9f610f1ba832efa3488b5c4264a65fcd02fdc3442b"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
@@ -2284,7 +2288,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "4bccd4158cd50760ac9643fd67b91c75117f41eb2cad124a673483b5ce4aa480"
+      "sha256": "b8900125f15ede2f497ba39a9f34b8c01fb0fa89f4346407b7a059835ded846c"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2349,6 +2353,10 @@
     {
       "file": "pages/capabilities/table/table-column-visibility.json",
       "sha256": "9418624fe91103d5db7d27baa13ab5e98c97b6b87fd958c2f5cc00c5bb2cd10f"
+    },
+    {
+      "file": "pages/capabilities/table/table-data-recovery.json",
+      "sha256": "cb3245d00ade1d56eb5ee9eeb775060fa28999bda620418b8c57493f5ed09e88"
     },
     {
       "file": "pages/capabilities/table/table-detail-overlay.json",

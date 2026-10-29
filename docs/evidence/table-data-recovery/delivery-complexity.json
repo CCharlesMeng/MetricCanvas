@@ -1,0 +1,500 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "baseline": "60c2a93558d064f34e433162fea1ee37f854bf1e",
+  "before": [
+    {
+      "file": "apps/playground/fixtures/preview-inputs.ts",
+      "functions": [
+        {
+          "name": "<anonymous@2:123>",
+          "qualifiedName": "<anonymous@2:123>",
+          "line": 2,
+          "endLine": 2,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageExternalInputs",
+          "qualifiedName": "pageExternalInputs",
+          "line": 5,
+          "endLine": 18,
+          "selfCC": 14,
+          "optionalChains": 0,
+          "subtreeCC": 14,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rejectionPreviewRowCount",
+          "qualifiedName": "rejectionPreviewRowCount",
+          "line": 22,
+          "endLine": 24,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/scenario-environment.ts",
+      "functions": [
+        {
+          "name": "scenarioEnvironment",
+          "qualifiedName": "scenarioEnvironment",
+          "line": 15,
+          "endLine": 31,
+          "selfCC": 11,
+          "optionalChains": 0,
+          "subtreeCC": 11,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/data-execution/src/compute/snapshots.ts",
+      "functions": [
+        {
+          "name": "computedSnapshots",
+          "qualifiedName": "computedSnapshots",
+          "line": 9,
+          "endLine": 32,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "visit",
+          "qualifiedName": "computedSnapshots/visit",
+          "line": 16,
+          "endLine": 29,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fail",
+          "qualifiedName": "fail",
+          "line": 36,
+          "endLine": 36,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "collectDependencies",
+          "qualifiedName": "collectDependencies",
+          "line": 38,
+          "endLine": 49,
+          "selfCC": 9,
+          "optionalChains": 1,
+          "subtreeCC": 10,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@40:63>",
+          "qualifiedName": "collectDependencies/<anonymous@40:63>",
+          "line": 40,
+          "endLine": 40,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "computeSnapshot",
+          "qualifiedName": "computeSnapshot",
+          "line": 51,
+          "endLine": 58,
+          "selfCC": 6,
+          "optionalChains": 2,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "evaluateRows",
+          "qualifiedName": "evaluateRows",
+          "line": 60,
+          "endLine": 68,
+          "selfCC": 9,
+          "optionalChains": 0,
+          "subtreeCC": 10,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@64:54>",
+          "qualifiedName": "evaluateRows/<anonymous@64:54>",
+          "line": 64,
+          "endLine": 64,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "restoreSnapshot",
+          "qualifiedName": "restoreSnapshot",
+          "line": 70,
+          "endLine": 73,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "completeDependency",
+          "qualifiedName": "completeDependency",
+          "line": 76,
+          "endLine": 82,
+          "selfCC": 8,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "canRenderZeroTotal",
+          "qualifiedName": "canRenderZeroTotal",
+          "line": 84,
+          "endLine": 86,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+      "functions": [
+        {
+          "name": "<anonymous@62:53>",
+          "qualifiedName": "<anonymous@62:53>",
+          "line": 62,
+          "endLine": 88,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "resolveTargetInputs",
+          "qualifiedName": "<anonymous@62:53>/resolveTargetInputs",
+          "line": 64,
+          "endLine": 70,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "replaceSearch",
+          "qualifiedName": "<anonymous@62:53>/replaceSearch",
+          "line": 71,
+          "endLine": 76,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "navigate",
+          "qualifiedName": "<anonymous@62:53>/navigate",
+          "line": 77,
+          "endLine": 84,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "back",
+          "qualifiedName": "<anonymous@62:53>/back",
+          "line": 87,
+          "endLine": 87,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@90:11>",
+          "qualifiedName": "<anonymous@90:11>",
+          "line": 90,
+          "endLine": 98,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "loadPage",
+          "qualifiedName": "loadPage",
+          "line": 100,
+          "endLine": 119,
+          "selfCC": 14,
+          "optionalChains": 0,
+          "subtreeCC": 14,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ],
+  "after": [
+    {
+      "file": "apps/playground/fixtures/preview-inputs.ts",
+      "functions": [
+        {
+          "name": "<anonymous@2:123>",
+          "qualifiedName": "<anonymous@2:123>",
+          "line": 2,
+          "endLine": 2,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageExternalInputs",
+          "qualifiedName": "pageExternalInputs",
+          "line": 5,
+          "endLine": 19,
+          "selfCC": 15,
+          "optionalChains": 0,
+          "subtreeCC": 15,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rejectionPreviewRowCount",
+          "qualifiedName": "rejectionPreviewRowCount",
+          "line": 23,
+          "endLine": 25,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/scenario-environment.ts",
+      "functions": [
+        {
+          "name": "scenarioEnvironment",
+          "qualifiedName": "scenarioEnvironment",
+          "line": 16,
+          "endLine": 33,
+          "selfCC": 12,
+          "optionalChains": 0,
+          "subtreeCC": 12,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/data-execution/src/compute/snapshots.ts",
+      "functions": [
+        {
+          "name": "computedSnapshots",
+          "qualifiedName": "computedSnapshots",
+          "line": 9,
+          "endLine": 32,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "visit",
+          "qualifiedName": "computedSnapshots/visit",
+          "line": 16,
+          "endLine": 29,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fail",
+          "qualifiedName": "fail",
+          "line": 36,
+          "endLine": 36,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "collectDependencies",
+          "qualifiedName": "collectDependencies",
+          "line": 38,
+          "endLine": 49,
+          "selfCC": 9,
+          "optionalChains": 1,
+          "subtreeCC": 10,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@40:63>",
+          "qualifiedName": "collectDependencies/<anonymous@40:63>",
+          "line": 40,
+          "endLine": 40,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "computeSnapshot",
+          "qualifiedName": "computeSnapshot",
+          "line": 51,
+          "endLine": 58,
+          "selfCC": 6,
+          "optionalChains": 2,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "evaluateRows",
+          "qualifiedName": "evaluateRows",
+          "line": 60,
+          "endLine": 68,
+          "selfCC": 9,
+          "optionalChains": 0,
+          "subtreeCC": 10,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@64:54>",
+          "qualifiedName": "evaluateRows/<anonymous@64:54>",
+          "line": 64,
+          "endLine": 64,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "restoreSnapshot",
+          "qualifiedName": "restoreSnapshot",
+          "line": 70,
+          "endLine": 73,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "completeDependency",
+          "qualifiedName": "completeDependency",
+          "line": 76,
+          "endLine": 82,
+          "selfCC": 8,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "canRenderZeroTotal",
+          "qualifiedName": "canRenderZeroTotal",
+          "line": 84,
+          "endLine": 86,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+      "functions": [
+        {
+          "name": "<anonymous@63:53>",
+          "qualifiedName": "<anonymous@63:53>",
+          "line": 63,
+          "endLine": 89,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "resolveTargetInputs",
+          "qualifiedName": "<anonymous@63:53>/resolveTargetInputs",
+          "line": 65,
+          "endLine": 71,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "replaceSearch",
+          "qualifiedName": "<anonymous@63:53>/replaceSearch",
+          "line": 72,
+          "endLine": 77,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "navigate",
+          "qualifiedName": "<anonymous@63:53>/navigate",
+          "line": 78,
+          "endLine": 85,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "back",
+          "qualifiedName": "<anonymous@63:53>/back",
+          "line": 88,
+          "endLine": 88,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@91:11>",
+          "qualifiedName": "<anonymous@91:11>",
+          "line": 91,
+          "endLine": 99,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "previewDataGateway",
+          "qualifiedName": "previewDataGateway",
+          "line": 101,
+          "endLine": 113,
+          "selfCC": 11,
+          "optionalChains": 0,
+          "subtreeCC": 11,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "loadPage",
+          "qualifiedName": "loadPage",
+          "line": 115,
+          "endLine": 134,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ],
+  "note": "Svelte script only; callbacks measured independently. Main unionKeys refactor preserved; evaluateRows adds warning propagation without branches."
+}

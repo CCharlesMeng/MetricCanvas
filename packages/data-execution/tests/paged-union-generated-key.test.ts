@@ -34,10 +34,10 @@ describe('generated UUID rows through shared SourceProgram',()=>{
       }
     } finally { program.dispose(); }
   });
-  it('still rejects upstream ordering errors in UUID mode', async () => {
+  it('sorts complete results after upstream ordering errors in UUID mode', async () => {
     const p = page(), preview = createUnionPreview({ rowFailure: 'order' });
     const program = createSourceProgram(p, { gateway: preview.dataGateway });
-    try { await expect(read(program, p)).rejects.toThrow('顺序不符合'); }
+    try { expect(await read(program, p)).toMatchObject({status:'ready',warnings:expect.any(Array)}); }
     finally { program.dispose(); }
   });
   it('keeps null dimensions and duplicate business records without changing the row count or sorting',async()=>{

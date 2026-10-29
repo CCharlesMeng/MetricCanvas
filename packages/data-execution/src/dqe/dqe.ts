@@ -3,6 +3,7 @@ import { normalizeQueryTime, QueryTimeRangeError, dqeDefaultSort, validateCalend
 import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
 import { validateCandidatePage } from '../column-candidates';
 import type { ColumnCandidatesQuery } from '../ports';
+import { normalizeDisplayQueryRows } from '@metriccanvas/page/internal';
 import {
   assertNoQueryParamReferences,
   normalizeQueryRows,
@@ -331,18 +332,8 @@ export function createDqeGateway(
             );
           }
           const normalized = normalizeRows(rawResult.data, call.query);
-          if (
-            typeof rawResult.total_count !== 'number' ||
-            !Number.isInteger(rawResult.total_count) ||
-            rawResult.total_count < 0
-          ) {
-            throw new DqeGatewayError(
-              'DQE_ITEM_ERROR',
-              'DQE 成功查询项的 total_count 必须是非负整数',
-              { totalCountType: describeType(rawResult.total_count) }
-            );
-          }
-          settleSuccess(call, { ...normalized, totalCount: rawResult.total_count }, batchId, requestId);
+          const totalCount = resultTotal(rawResult.total_count, call.query.resultPolicy);
+          settleSuccess(call, { ...normalized, totalCount }, batchId, requestId);
         } catch (cause) {
           settleFailure(call, cause, batchId, requestId);
         }
@@ -833,7 +824,14 @@ function ensureRecord(parent: JsonObject, key: string): JsonObject {
   return copy;
 }
 
+function resultTotal(value: unknown, policy?: 'display'): number | undefined {
+  if (typeof value === 'number' && Number.isSafeInteger(value) && value >= 0) return value;
+  if (policy === 'display') return;
+  throw new DqeGatewayError('DQE_ITEM_ERROR', 'DQE 成功查询项的 total_count 必须是非负整数', { totalCountType: describeType(value) });
+}
+
 function normalizeRows(value: unknown, query: EffectiveQuery): DataGatewayResult {
+  if (query.resultPolicy === 'display') return normalizeDisplayQueryRows(value, query.fieldMappings);
   const normalized = normalizeQueryRows(value, query.fieldMappings);
   if (normalized.ok) return { rows: normalized.rows, ...(normalized.cellFallbacks ? { cellFallbacks: normalized.cellFallbacks } : {}), ...(normalized.warnings ? { warnings: normalized.warnings } : {}) };
   throw gatewayNormalizationError(normalized.issues[0]!);

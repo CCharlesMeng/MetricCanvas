@@ -58,8 +58,8 @@ describe('record-preserving pagedJoin',()=>{
   it('exports approval records without treating repeated business IDs as duplicate rows',async()=>{
     const test=setup();try{const result=await test.read({}, {purpose:'complete'});expect(rows(result)).toHaveLength(1205);expect(new Set(rows(result).map(row=>row['record-id'])).size).toBe(1205);}finally{test.program.dispose();}
   });
-  it('rejects conflicting basic rows',async()=>{
-    const test=setup({rows:6,duplicateBasic:true});try{expect(await test.read()).toMatchObject({status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR'}});}finally{test.program.dispose();}
+  it('keeps first conflicting basic row with a warning',async()=>{
+    const test=setup({rows:6,duplicateBasic:true});try{expect(await test.read()).toMatchObject({status:'ready',totalCount:6,warnings:expect.any(Array)});}finally{test.program.dispose();}
   });
   it.each(['maxRows','maxBytes'] as const)('rejects %s limits without partial results',async key=>{
     const page=parsed(),source=page.dataSources[root].source;if(source.type!=='pagedJoin')throw Error('join');source.records![key]=key==='maxRows'?10:1024;
@@ -82,7 +82,7 @@ describe('record-preserving pagedJoin',()=>{
       await expect(test.read({}, {purpose:'complete'})).rejects.toMatchObject({code:'EXPORT_ROW_LIMIT'});
     }finally{test.program.dispose();}
   });
-  it.each(['truncated','changed-total'] as const)('rejects %s during the main scan',async fault=>{
+  it.each(['truncated','changed-total'] as const)('warns about %s during the main scan',async fault=>{
     const page=parsed(),preview=createRejectionPreview({rows:1205});
     const gateway={async fetchData(query:Parameters<typeof preview.dataGateway.fetchData>[0]){
       const result=await preview.dataGateway.fetchData(query);
@@ -96,7 +96,7 @@ describe('record-preserving pagedJoin',()=>{
     try{
       let snapshot:DataSnapshot|undefined;
       for await(const update of program.read({roots:[root],conditions:initialFilterValues(page.filters??[])}))snapshot=update.snapshot;
-      expect(snapshot).toMatchObject({status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR'}});
+      expect(snapshot).toMatchObject({status:'ready',warnings:expect.any(Array)});
     }finally{program.dispose();}
   });
   it('fails timed-out reads without caching partial results',async()=>{
@@ -119,7 +119,7 @@ describe('record-preserving pagedJoin',()=>{
     try{
       let snapshot:DataSnapshot|undefined;
       for await(const update of program.read({roots:[root],conditions:initialFilterValues(page.filters??[])}))snapshot=update.snapshot;
-      if(format==='invalid')expect(snapshot).toMatchObject({status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR'}});
+      if(format==='invalid')expect(snapshot).toMatchObject({status:'empty',totalCount:0,warnings:expect.any(Array)});
       else expect(snapshot).toMatchObject({status:'ready',totalCount:6});
     }finally{program.dispose();}
   });

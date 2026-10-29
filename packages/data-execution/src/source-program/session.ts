@@ -1,4 +1,7 @@
 import {clearRecordJoinCache} from '../paged-join/records-reader';
+import { readRecoverableJoin } from '../table-recovery/join';
+import { recoverUnion } from '../table-recovery/union';
+import { withTableRecovery } from '../table-recovery/read';
 import {sourceFilterIds} from '@metriccanvas/page/internal';
 import { snapshotCellFallbacks } from '@metriccanvas/page/internal';
 import { createUnionReader } from '../paged-union/execute';
@@ -14,7 +17,6 @@ import { createColumnCandidatesReader, type ColumnCandidatesRead } from './colum
 import { initialFilterValues } from '../filter-values';
 import { compilePagedJoin } from '../paged-join/plan';
 import { executePagedJoin } from '../paged-join/execute';
-import { exportPagedJoin } from '../paged-join/export';
 import { preservedQueryError } from '../query-error';
 import { cascadeSourceIds, conditionSourceIds, canonicalizeJson, isBoundedResultSource, queryResultDependencies, tableHeaders, declaredPaginationLimit, type DataSource, type PagedJoinDataSource, type PagedUnionDataSource, type Page, type DataSnapshot, type EffectiveQuery, type TableQueryView, type QueryDataSource, type EmbeddedInitialRows } from '@metriccanvas/page/internal';
 import { createQueryRunner } from '../query-runner';
@@ -224,7 +226,9 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         async function executeUnion(id: string, source: PagedUnionDataSource, view: TableQueryView): Promise<void> {
           const plan = compileUnion(page, id, request.conditions, view, request.now);
           const signal = AbortSignal.any([request.signal, AbortSignal.timeout(60_000)]);
-          const result = await union.read(plan, scope, signal, request.purpose === 'complete');
+          const complete = request.purpose === 'complete';
+          const result = await withTableRecovery(() => union.read(plan, scope, signal, complete),
+            () => recoverUnion(plan, runner, scope, signal, complete), signal);
           const applied = result.viewCorrection ?? plan.view;
           raw.set(id, result.snapshot);
           if (canonicalizeJson(applied) !== canonicalizeJson(view)) corrections.set(id, applied);
@@ -240,11 +244,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           return index !== undefined && request.purpose !== 'complete';
         }
         function captureUnionInitial(id: string, source: PagedUnionDataSource, view: TableQueryView, snapshot: DataSnapshot): void {
-          if (!defaultJoinedView(id, source, view) || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) return;
+          if (!defaultJoinedView(id, source, view) || (snapshot.status !== 'ready' && snapshot.status !== 'empty') || snapshot.warnings?.length) return;
           initials.set(id, { capturedAt: new Date().toISOString(), rows: snapshot.status === 'ready' ? snapshot.rows : [], ...(snapshot.status === 'ready' ? snapshotCellFallbacks(snapshot.rows) : {}), totalCount: snapshot.totalCount!, view });
         }
         function readJoined(plan: ReturnType<typeof compilePagedJoin>) {
-          return request.purpose === 'complete' ? exportPagedJoin(plan, runner, scope, request.signal, request.allowPartial) : executePagedJoin(plan, runner, scope, request.signal);
+          return readRecoverableJoin(plan, runner, scope, request.signal, request.purpose === 'complete', request.allowPartial);
         }
         function reportSourceState(id: string, snapshots: ReadonlyMap<string, DataSnapshot>): void {
           reportError(id, raw.get(id)!);
@@ -290,7 +294,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         function captureJoinedResult(id: string, source: PagedJoinDataSource, view: TableQueryView, plan: ReturnType<typeof compilePagedJoin>, result: Awaited<ReturnType<typeof executePagedJoin>>): void {
           const applied = result.viewCorrection ?? plan.view;
           if (canonicalizeJson(applied) !== canonicalizeJson(view)) corrections.set(id, applied);
-          if (defaultJoinedView(id, source, applied) && (result.snapshot.status === 'ready' || result.snapshot.status === 'empty')) initials.set(id, { capturedAt: new Date().toISOString(), rows: result.snapshot.status === 'ready' ? result.snapshot.rows : [], ...(result.snapshot.status === 'ready' ? snapshotCellFallbacks(result.snapshot.rows) : {}), totalCount: result.snapshot.totalCount!, view: result.viewCorrection ?? { ...view, sort: plan.view.sort } });
+          if (defaultJoinedView(id, source, applied) && (result.snapshot.status === 'ready' || result.snapshot.status === 'empty') && !result.snapshot.warnings?.length) initials.set(id, { capturedAt: new Date().toISOString(), rows: result.snapshot.status === 'ready' ? result.snapshot.rows : [], ...(result.snapshot.status === 'ready' ? snapshotCellFallbacks(result.snapshot.rows) : {}), totalCount: result.snapshot.totalCount!, view: result.viewCorrection ?? { ...view, sort: plan.view.sort } });
         }
         function defaultJoinedView(id: string, source: PagedJoinDataSource | PagedUnionDataSource, applied: TableQueryView): boolean {
           return request.purpose !== 'complete' && defaultConditions(id, request.conditions, false) && applied.pageIndex === 0 && applied.pageSize === source.source.pagination.pageSize && !applied.predicates.length && !applied.search?.query.trim() && canonicalizeJson(applied.sort) === canonicalizeJson(source.source.ordering.default);

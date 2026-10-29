@@ -1,0 +1,58 @@
+{
+  "productTests": {
+    "files": 261,
+    "passed": 2196
+  },
+  "localAuthoringTests": {
+    "files": 5,
+    "passed": 193
+  },
+  "mcContentTests": {
+    "passed": 33,
+    "coverage": "current",
+    "fixtures": "current"
+  },
+  "publicSurfaceTests": {
+    "passed": 8
+  },
+  "typeChecks": {
+    "tests": "passed",
+    "engine": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "playground": {
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "browser": {
+    "diagnosticsPassed": 5,
+    "composition": "passed",
+    "compositeKeys": "passed",
+    "uuid": "passed"
+  },
+  "standaloneSkill": "passed",
+  "realDqeRelay": "not_run",
+  "ci": "not_run",
+  "gitDelivery": "uncommitted isolated worktree",
+  "evidencePhase": "initial implementation on d24a417; final main integration follows",
+  "mainIntegration": {
+    "baseline": "60c2a93558d064f34e433162fea1ee37f854bf1e",
+    "schema": "6.74",
+    "localAuthoring": "1.11.0",
+    "productTests": {
+      "files": 264,
+      "passed": 2224
+    },
+    "authoringAndPublicApiTests": {
+      "files": 6,
+      "passed": 202
+    },
+    "typeChecks": "passed",
+    "browser": "passed",
+    "mcContentTests": 33,
+    "contracts": "1295 product, 4 authoring, 1 interface",
+    "complexity": "delivery-complexity.json"
+  }
+}

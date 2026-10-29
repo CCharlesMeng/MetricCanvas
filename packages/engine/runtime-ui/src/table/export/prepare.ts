@@ -66,5 +66,5 @@ function assertPinnedExport(component: TableComponent, snapshots: ReadonlyMap<st
 }
 
 function detailSnapshot(snapshot: Extract<import('@metriccanvas/page/internal').DataSnapshot, {status:'ready'|'empty'}>): Extract<import('@metriccanvas/page/internal').DataSnapshot, {status:'ready'}> {
-  return snapshot.status === 'ready' ? projectSnapshotRows(snapshot, snapshot.rows) : {status:'ready',rows:[]};
+  return snapshot.status === 'ready' ? projectSnapshotRows(snapshot, snapshot.rows) : {status:'ready',rows:[],warnings:snapshot.warnings};
 }

@@ -94,9 +94,9 @@ it('refreshes bound approval dates, region and amount without dropping the suppl
   }finally{test.program.dispose();}
 });
 
-it.each(['truncated','changed-total'] as const)('fails the full object join on %s instead of publishing partial records',async fault=>{
+it.each(['truncated','changed-total'] as const)('warns about %s and publishes usable object records',async fault=>{
   const test=setup(fault);
-  try{expect(await test.read()).toMatchObject({status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR'}});}
+  try{expect(await test.read()).toMatchObject({status:'ready',warnings:expect.any(Array)});}
   finally{test.program.dispose();}
 });
 

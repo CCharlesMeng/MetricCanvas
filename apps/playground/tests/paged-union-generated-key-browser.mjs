@@ -37,11 +37,11 @@ try {
     expect(consoleErrors).toEqual([]);
   }
   await page.goto(`${base}/pages/multi-source-generated-key?rowFailure=order`);
-  await expect.poll(() => consoleErrors.some(text => text.includes('DQE_ROW_CONTRACT_ERROR') && text.includes('rowKeyGeneration'))).toBe(true);
-  expect(consoleErrors.join('\n')).toContain('顺序不符合');
-  await expect(table.locator('.empty-state')).toBeVisible();
+  await expect(table.locator('.total')).toContainText('256');
+  await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toBeVisible();
+  expect(consoleErrors).toEqual([]);
   await page.screenshot({ path: path.join(output, 'order-error.png'), fullPage: true });
   expect(pageErrors).toEqual([]);
-  await writeFile(path.join(output, 'result.json'), JSON.stringify({ page: 'multi-source-generated-key', pageErrors, passed: ['256 rows', 'page 2', 'search', 'sort', 'complete filtered Excel', 'nullable business field retained', 'duplicate business tuple retained', 'ordering error still rejected'] }, null, 2));
+  await writeFile(path.join(output, 'result.json'), JSON.stringify({ page: 'multi-source-generated-key', pageErrors, passed: ['256 rows', 'page 2', 'search', 'sort', 'complete filtered Excel', 'nullable business field retained', 'duplicate business tuple retained', 'ordering restored with warning'] }, null, 2));
   console.log('Generated key browser acceptance passed');
 } finally { await browser.close(); }

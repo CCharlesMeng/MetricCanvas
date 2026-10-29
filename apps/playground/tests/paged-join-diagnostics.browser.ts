@@ -5,10 +5,10 @@ requireTs('tsx/cjs');
 const {executeDqeItem}=requireTs('../../../tools/dqe-sim/src/execute.ts') as typeof import('../../../tools/dqe-sim/src/execute');
 
 for(const mode of ['ready','null','duplicate','truncated','budget'] as const){
-  test(`pagedJoin ${mode}: console locates the member and the component retains its empty state`,async({page},info)=>{
+  test(`pagedJoin ${mode}: shows usable data warnings or retains a resource failure`,async({page},info)=>{
     const requests:string[][]=[],logs:Array<Promise<unknown[]>>=[];
     page.on('console',message=>{
-      if(message.type()==='error')logs.push(Promise.all(message.args().map(arg=>arg.jsonValue())));
+      if(message.type()==='error'||message.type()==='warning')logs.push(Promise.all(message.args().map(arg=>arg.jsonValue())));
     });
     await page.addInitScript(()=>Object.assign(window,{__METRICCANVAS__:{
       dqeEndpoint:'/synthetic-join-dqe',pageMetadataBaseUrl:'/pages',authToken:'synthetic',operatorId:'synthetic',workspaceId:'synthetic'
@@ -34,21 +34,20 @@ for(const mode of ['ready','null','duplicate','truncated','budget'] as const){
       await expect(table.locator('tbody tr')).toHaveCount(3);
       await expect(table.getByRole('cell',{name:'上海代表处',exact:true})).toBeVisible();
       expect(requests.flat()).toHaveLength(6);
+    }else if(mode!=='budget'){
+      await expect(table.locator('tbody tr')).toHaveCount(3);
+      await expect(table.locator('.total')).toContainText(mode==='truncated'?'8':'7');
+      await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toBeVisible();
+      await expect.poll(async()=>JSON.stringify(await Promise.all(logs))).toContain('TABLE_RESULT_RECOVERED');
+      const text=JSON.stringify(await Promise.all(logs));
+      expect(text).toContain('office-directory');expect(text).not.toContain('上海');expect(text).not.toContain('SH-01');
     }else{
       await expect(table.getByRole('cell',{name:'暂无数据',exact:true})).toBeVisible();
-      const code=mode==='budget'?'DQE_QUERY_REJECTED':'DQE_ROW_CONTRACT_ERROR';
+      const code='DQE_QUERY_REJECTED';
       await expect.poll(async()=>JSON.stringify(await Promise.all(logs))).toContain(code);
       const output=await Promise.all(logs),text=JSON.stringify(output);
       for(const locator of ['office-overview','directory','office-directory','rep-office-code','rep_office_code','/dataSources/office-overview/source/members/directory/key'])expect(text).toContain(locator);
-      if(mode==='null'){
-        expect(text).toContain('第 1 行');expect(text).toContain('实际 null');
-        const message=output.find(args=>String(args[0]).includes(code))![0] as string;
-        expect(message.split('\n')[0]).toContain('无法合并表格数据：第 1 行的“代表处编码”为空，无法关联其他数据。请检查查询是否返回了有效的“代表处编码”。');
-        expect(message.split('\n')[0]).not.toContain('office-directory');
-      }
-      if(mode==='duplicate'){expect(text).toContain('第 2 行');expect(text).toContain('第 1 行');}
-      if(mode==='truncated'){expect(text).toContain('返回 8 行');expect(text).toContain('totalCount=9');}
-      if(mode==='budget')expect(text).toContain('maxRows=1000');
+      expect(text).toContain('maxRows=1000');
       expect(text).not.toContain('上海');expect(text).not.toContain('SH-01');
       expect(requests.flat()).toHaveLength(1);
       await expect(table.getByText(code)).toHaveCount(0);

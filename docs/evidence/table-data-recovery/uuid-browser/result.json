@@ -1,0 +1,14 @@
+{
+  "page": "multi-source-generated-key",
+  "pageErrors": [],
+  "passed": [
+    "256 rows",
+    "page 2",
+    "search",
+    "sort",
+    "complete filtered Excel",
+    "nullable business field retained",
+    "duplicate business tuple retained",
+    "ordering restored with warning"
+  ]
+}

@@ -5,6 +5,7 @@ import { projectTableRows, tableRowColumn, alignedFallback, alignedFieldValue } 
 import { buildTableColumnLayout } from '../../../../widgets/src/components/table/columns';
 import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/components/table/cell-presentation';
 import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
+import { tableDataWarnings } from '../../../../widgets/src/components/table/warnings';
 
 export function tableExportFilename(component: TableComponent): string {
   const name = component.props.toolbar?.export?.filename || component.props.title || '表格数据';
@@ -39,6 +40,7 @@ export async function encodeWorkbookTables(tables:readonly {component:TableCompo
   const ExcelJS=(await import('exceljs')).default;
   const workbook=new ExcelJS.Workbook();
   for(const table of tables)writeTableSheet(workbook.addWorksheet(table.name),table.component,table.data,signal);
+  writeWarningSheet(workbook, tables);
   const buffer=await workbook.xlsx.writeBuffer();signal.throwIfAborted();return new Uint8Array(buffer);
 }
 function writeTableSheet(sheet:import('exceljs').Worksheet,component:TableComponent,data:NamedDataSlots,signal:AbortSignal):void{
@@ -82,6 +84,7 @@ function writeTableSheet(sheet:import('exceljs').Worksheet,component:TableCompon
     if (headerCount > 1) sheet.mergeCells(1, 1, headerCount, 1);
   }
   const rows = projectTableRows(data, component.props);
+  const recoveredMissingText = tableDataWarnings(data).length ? '—' : null;
   rows.forEach((row, index) => {
     signal.throwIfAborted();
     if (leadingColumns) sheet.getCell(headerCount + index + 1, 1).value = row.kind === 'pinnedTop' ? null : (row.bodyIndex ?? index) + 1;
@@ -92,7 +95,7 @@ function writeTableSheet(sheet:import('exceljs').Worksheet,component:TableCompon
       const cell = sheet.getCell(headerCount + index + 1, columnIndex + 1 + leadingColumns);
       const fallback = alignedFallback(column.field, data, row);
       if (fallback) { cell.value = String(fallback.raw); return; }
-      if (!hasDisplayValue(value)) { cell.value = resolved.missingText ?? null; return; }
+      if (!hasDisplayValue(value)) { cell.value = resolved.missingText ?? recoveredMissingText; return; }
       if (resolved.format && !compatibleTableFormat(value, resolved.format)) { cell.value = formatTableCell(value, resolved.format); return; }
       if (typeof value === 'number') {
         cell.value = value; cell.numFmt = numberFormat(value, resolved.format);
@@ -108,6 +111,21 @@ function writeTableSheet(sheet:import('exceljs').Worksheet,component:TableCompon
   sheet.columns.forEach((column, index) => { column.width = Math.min(60, Math.max(14, (index < leadingColumns ? component.props.rowNumber?.width ?? 64 : layout.leaves[index - leadingColumns]?.width ?? 150) / 7)); });
   sheet.views = [{ state: 'frozen', ySplit: headerCount }];
 
+}
+
+function writeWarningSheet(workbook: import('exceljs').Workbook, tables: readonly {data: NamedDataSlots; name: string}[]): void {
+  const warnings = tables.flatMap(table => tableDataWarnings(table.data).map(warning => [table.name, warning.sourceId, warning.message, warning.count]));
+  if (!warnings.length) return;
+  let name = '数据异常说明', suffix = 1;
+  while (workbook.getWorksheet(name)) name = `数据异常说明${suffix++}`;
+  const sheet = workbook.addWorksheet(name);
+  sheet.addRow(['本文件包含经过容错整理的可用数据，可能存在缺项；空值显示为 —。']);
+  sheet.addRow(['数据表', '数据源', '异常及处理方式', '次数']);
+  sheet.addRows(warnings);
+  sheet.columns = [{width:24}, {width:30}, {width:68}, {width:12}];
+  sheet.getRow(1).font = {bold:true,color:{argb:'FF8A5700'}};
+  sheet.getRow(2).font = {bold:true};
+  sheet.views = [{state:'frozen',ySplit:2}];
 }
 
 export async function downloadTableWorkbook(component: TableComponent, data: NamedDataSlots, signal: AbortSignal): Promise<void> {

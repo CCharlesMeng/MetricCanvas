@@ -6,6 +6,7 @@ import { ExportViewError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from 
 import type { RuntimeDataGateway } from '../../../../runtime/src';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { abortable, prepareTableExport } from './prepare';
+import { tableDataWarnings } from '../../../../widgets/src/components/table/warnings';
 export interface WorkbookTable {component:TableComponent;data:NamedDataSlots;name:string;}
 /** One frozen job owns timeout, cancellation and a total row budget across all parents. */
 export async function prepareHierarchyExport(input:Parameters<typeof prepareTableExport>[0]&{params:HierarchyContext['params']}):Promise<WorkbookTable[]>{
@@ -62,10 +63,11 @@ async function collectChildren(page:Page,parent:TableComponent,rows:Row[],gatewa
     return {...column,field:{...(typeof column.field==='object'?column.field:{}),data:'parent',field},title:column.title,secondaryField:undefined,badgeField:undefined};
   });
   const childRows=tables.flatMap(t=>t.data.main?.snapshot.rows??[]);
+  const warnings=tables.flatMap(t=>tableDataWarnings(t.data));
   const parentRows=tables.flatMap(t=>(t.data.main?.snapshot.rows??[]).map(()=>t.row));
   const fields=page.dataSources[scope.table.data.main]!.fields;
   return {name:'子表明细',component:{...model.component,data:{...model.component.data,parent:parent.data.main},props:{...model.component.props,rowKey:undefined,columns:[...associations,...model.component.props.columns]}},
-    data:{main:{fields,snapshot:{status:'ready',rows:childRows}},parent:{fields:page.dataSources[parent.data.main]!.fields,snapshot:{status:'ready',rows:parentRows}}}};
+    data:{main:{fields,snapshot:{status:'ready',rows:childRows,warnings}},parent:{fields:page.dataSources[parent.data.main]!.fields,snapshot:{status:'ready',rows:parentRows}}}};
 }
 async function mapParents<T>(rows:Row[],read:(row:Row)=>Promise<T>,controller:AbortController):Promise<T[]>{
   let index=0;const result:T[]=[];

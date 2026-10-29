@@ -1,0 +1,54 @@
+{
+  "isolatedDirectory": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-table-recovery-skill-6w7brnn6/skill",
+  "runtime": "Node only",
+  "linkClosure": true,
+  "checks": [
+    {
+      "command": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-table-recovery-skill-6w7brnn6/skill/scripts/validate-page.mjs",
+        "--version"
+      ],
+      "exitCode": 0,
+      "bytes": 59,
+      "result": {
+        "schemaVersion": "6.73",
+        "validation": "page-and-file-name"
+      }
+    },
+    {
+      "command": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-table-recovery-skill-6w7brnn6/skill/scripts/validate-page.mjs",
+        "--expected-layout",
+        "dashboard",
+        "/Users/moon/.codex/worktrees/table-result-tolerance/DataDashboard/pages/capabilities/table/table-data-recovery.json"
+      ],
+      "exitCode": 0,
+      "bytes": 149,
+      "result": {
+        "file": "/Users/moon/.codex/worktrees/table-result-tolerance/DataDashboard/pages/capabilities/table/table-data-recovery.json",
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "command": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-table-recovery-skill-6w7brnn6/skill/scripts/read-knowledge.mjs",
+        "show",
+        "--topic",
+        "data.recovery"
+      ],
+      "exitCode": 0,
+      "bytes": 10284,
+      "result": {
+        "topic": "data.recovery",
+        "containsWarning": true,
+        "bytes": 10284
+      }
+    }
+  ],
+  "invalidRejected": true,
+  "globalSkillInstallationChanged": false
+}

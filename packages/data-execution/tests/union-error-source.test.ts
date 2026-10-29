@@ -22,55 +22,47 @@ async function failure(transform: (rows: Row[], offset: number) => void, generat
     for await (const update of program.read({ roots: ['opinions'], conditions: new Map(), views: new Map([
       ['opinions', { ...defaultSourceView(parsed.page, 'opinions'), pageSize }]
     ]) })) snapshot = update.snapshot;
-    expect(snapshot?.status).toBe('error');
-    if (snapshot?.status !== 'error') throw Error('expected error');
-    expect(snapshot.error.code).toBe('DQE_ROW_CONTRACT_ERROR');
-    expect(log).toHaveBeenCalledWith(expect.stringContaining(snapshot.error.message), expect.objectContaining({ message: snapshot.error.message }));
-    return snapshot.error.message;
+    expect(snapshot).toMatchObject({status:'ready',warnings:expect.any(Array)});
+    if (snapshot?.status !== 'ready') throw Error('expected recovered result');
+    expect(log).not.toHaveBeenCalled();
+    return JSON.stringify(snapshot.warnings);
   } finally { program.dispose(); log.mockRestore(); }
 }
 
-describe('pagedUnion errors locate the member without exposing row values', () => {
-  it('identifies both source row numbers and the rowKey declaration for a duplicate within a batch', async () => {
+describe('pagedUnion recovery warnings locate the source without exposing row values', () => {
+  it('reports duplicate recovery for its source', async () => {
     const message = await failure(rows => {
       rows[0]['commercial-localRowId'] = 'PRIVATE-KEY';
       rows[1]['commercial-localRowId'] = 'PRIVATE-KEY';
     });
-    const summary = message.split('\n')[0];
-    expect(summary).toBe('“审批统计明细”无法合并数据。同一个查询返回的第 1 条和第 2 条记录，“来源内编码”相同。页面用这个字段区分每条记录，因此不能重复。请改用能区分每条记录的字段。');
-    expect(summary).not.toMatch(/commercial|rowKey|offset|queryField/);
-    for (const part of ['合并源 opinions', '成员 commercial', '来源 commercial', 'commercial-localRowId', 'commercial_local_row_id', '/dataSources/opinions/source/members/commercial/rowKey', 'offset=0']) expect(message).toContain(part);
+    expect(message).toContain('commercial');
+    expect(message).toContain('重复行标识仅保留第一条');
     expect(message).not.toContain('PRIVATE-KEY');
   });
-  it('distinguishes overlap across 200-row batches and retains the first source row number', async () => {
+  it('reports overlap across 200-row batches', async () => {
     const message = await failure((rows, offset) => {
       rows[0]['commercial-localRowId'] = 'PRIVATE-CROSS-BATCH';
       if (offset === 0) return;
       rows[0]['commercial-decisionCount'] = 0;
     }, 230, 1000);
-    expect(message).toContain('第 1 条和第 201 条记录，“来源内编码”相同');
-    expect(message).toContain('请检查查询是否重复返回了数据');
-    expect(message).toContain('offset=200');
+    expect(message).toContain('重复行标识仅保留第一条');
+    expect(message).toContain('commercial');
     expect(message).not.toContain('PRIVATE-CROSS-BATCH');
   });
   it('locates missing source keys', async () => {
     const message = await failure(rows => { rows[1]['commercial-localRowId'] = null; });
-    expect(message).toContain('第 2 条记录没有有效的“来源内编码”');
-    expect(message).toContain('成员 commercial');
-    expect(message).toContain('commercial-localRowId');
+    expect(message).toContain('已跳过无效行或缺失行标识');
+    expect(message).toContain('commercial');
   });
-  it('locates incompatible source order', async () => {
+  it('reports complete sorting after incompatible source order', async () => {
     const message = await failure(rows => { rows.reverse(); });
-    expect(message).toContain('第 1 条和第 2 条记录顺序不符合表格要求');
-    expect(message).toContain('“决策总次数”从大到小');
-    expect(message).toContain('成员 commercial');
-    expect(message).toContain('decisionCount');
+    expect(message).toContain('已按可用数据重新整理');
+    expect(message).toContain('commercial');
   });
   it('locates a malformed key rejected before row projection', async () => {
     const message = await failure(rows => { rows[1]['commercial-localRowId'] = 42; });
-    expect(message).toContain('第 2 条记录中的“来源内编码”不符合页面要求的数据格式');
-    expect(message).toContain('TYPE_MISMATCH');
-    expect(message).toContain('来源 commercial');
-    expect(message).toContain('/dataSources/opinions/source/members/commercial/rowKey');
+    expect(message).toContain('已跳过无效行或缺失行标识');
+    expect(message).toContain('commercial');
+    expect(message).not.toContain('42');
   });
 });

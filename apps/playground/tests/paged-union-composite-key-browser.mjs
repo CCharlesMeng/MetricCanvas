@@ -39,15 +39,14 @@ try {
   for (const failure of ['duplicate-composite', 'missing-composite-key']) {
     consoleErrors.length = 0;
     await page.goto(`${base}/pages/multi-source-composite-key?rowFailure=${failure}`);
-    await expect.poll(() => consoleErrors.some(text => text.includes('DQE_ROW_CONTRACT_ERROR') && text.includes('rowKeyFields'))).toBe(true);
-    await expect(table.locator('.empty-state')).toBeVisible();
-    const message = consoleErrors.join('\n');
-    expect(message).toContain(failure === 'duplicate-composite' ? '第 1 条和第 2 条' : '代表处');
+    await expect(table.locator('.total')).toContainText('255');
+    await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toBeVisible();
+    expect(consoleErrors).toEqual([]);
     await page.screenshot({ path: path.join(output, `${failure}.png`), fullPage: true });
   }
   await page.goto(`${base}/pages/multi-source-table`);
   await expect(table.locator('.total')).toContainText('256');
   expect(pageErrors).toEqual([]);
-  await writeFile(path.join(output, 'result.json'), JSON.stringify({ page: 'multi-source-composite-key', pageErrors, passed: ['256 rows', 'repeated approver across offices', 'cross-source same tuple', 'page 2', 'search', 'sort', 'filtered Excel download', 'empty search', 'duplicate tuple rejection', 'null part rejection', 'legacy page'] }, null, 2));
+  await writeFile(path.join(output, 'result.json'), JSON.stringify({ page: 'multi-source-composite-key', pageErrors, passed: ['256 rows', 'repeated approver across offices', 'cross-source same tuple', 'page 2', 'search', 'sort', 'filtered Excel download', 'empty search', 'duplicate tuple first row retained', 'null part skipped', 'legacy page'] }, null, 2));
   console.log('Composite key browser acceptance passed');
 } finally { await browser.close(); }

@@ -8,7 +8,7 @@
 
 1. 正常打开：第一页3行，上海、北京、广州，匹配总数8；翻页、排序和搜索保持完整关联行为。
 2. 故障回放：执行 `pnpm --filter playground exec playwright test tests/paged-join-diagnostics.browser.ts --workers=1`。测试直接读取本页，通过 HTTP 响应边界分别将目录首行关联键改为 null、令第二行键与首行相同、将总数改为9、将总数改为1001。测试注入合成身份与响应，无需真实服务；使用空闲的5183端口。
-3. 四种异常均显示表格空态，控制台首行先解释原因和处理方法（空键示例：“第1行的代表处编码为空，无法关联其他数据，请检查查询结果”），技术来源在后面的“定位详情”中打印 `office-overview` → 成员 `directory` → 数据源 `office-directory` → 字段 `rep-office-code`（DQE `rep_office_code`），并给出 `/dataSources/office-overview/source/members/directory/key`。空键报第1行及实际null；重复键报第2行与第1行重复；截断报返回8行/总数9；超限报总数1001/上限1000。主成员失败后没有补列查询，错误消息不包含代表处名称或编码值。
+3. null 与重复键均跳过一行并显示可用7行；总数9/返回8行保留8行并提示可能缺项。表格上方可展开 warning 定位 office-directory，控制台打印 TABLE_RESULT_RECOVERED，不包含真实业务值。总数1001超过fallback预算时仍报 DQE_QUERY_REJECTED，保留完整来源定位。
 
 浏览器用例覆盖正常和四种故障，并输出截图至Playwright报告目录。记录模式关联键与原有分页、取消、缓存行为由共享执行回归覆盖。本地Sim和HTTP回放不等于真实DQE/Relay验收。
 
@@ -322,7 +322,7 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 5. 点击导出：无筛选时得到 256 行的 Excel，带一行表头，排序保持当前提交视图；搜索或筛选后只导出全部匹配行。容量与异常沿用 10000 行/60 秒上限，不输出部分文件。
 6. 点击合同、商务记录中的审批人，分别进入对应来源详情；URL 保留原始 `record-id`。浏览器后退可回到原页面。
 7. 访问 `/pages/multi-source-table?sourceFailure=commercial`：任一参与来源失败，整表报错，不展示合同半份记录。非法投影、单位冲突、缺失行键和旧协议版本有产品契约反例；取消、总数变化重试、缓存检查点和大规模按需源由行为测试补充。
-8. 访问 `/pages/multi-source-table?rowFailure=duplicate`：合成商务响应第二行复用第一行行键，整表报错；页面显示整表失败，控制台首段说明“审批统计明细”中第1、2条记录的“来源内编码”相同、该字段用于区分记录及修改建议；后续技术定位指出 `opinions` → `commercial`、`commercial-localRowId` / `commercial_local_row_id`、配置路径及来源第 1、2 行和 `offset=0`。`?rowFailure=missing-key` 定位第二行缺失行键；`?rowFailure=order` 定位相邻来源行排序错误。行号从 1 开始，offset 从 0 开始；不回显实际行键或业务行。清除参数恢复正常表格。跨200行批次重复及检查点由行为测试覆盖；这些合成故障不证明真实 DQE 分页稳定性。
+8. 访问 `/pages/multi-source-table?rowFailure=duplicate`：同一商务来源重复行键仅保留第一条，总数255；`?rowFailure=missing-key` 跳过空键记录，总数255；`?rowFailure=order` 有界完整整理后全局排序，总数256。均显示可展开来源 warning，Excel 附数据异常说明。清除参数恢复正常；跨200行批次重复及检查点由行为测试覆盖，合成故障不证明真实 DQE 分页稳定性。
 
 验收记录：[paged-union](../../../docs/evidence/paged-union/acceptance.md)。模拟、真实浏览器、静态协议及真实 DQE 分层报告；本页不证明真实服务具有稳定排序、NULL 规则、搜索编码、准确计数或候选接口。
 
@@ -380,8 +380,8 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 
 - 合同来源的“审批人甲”同时出现在“示例一处”和“示例二处”，两行都保留；商审与合同的相同组合按来源分别保留，合计256行。成员使用 `rowKeyFields:["contract-approver","contract-office"]` 等对应字段，最终行键仍为字符串。
 - 切换页码与排序、搜索“审批人甲”、筛选类型，并导出 Excel，观察统一结果；来源详情导航继续使用原始记录编码，与行身份分开。
-- `?rowFailure=duplicate-composite` 使商务来源第2行复用第1行的审批人与代表处，整表失败；控制台指出第1、2行组合相同，定位 `/dataSources/opinions/source/members/commercial/rowKeyFields`，不回显业务值。
-- `?rowFailure=missing-composite-key` 使第2行代表处为null，整表失败，控制台定位“代表处”及组合声明；清除参数恢复正常。空白字符串、缺字段、类型错误、跨200行批次重复、旧声明及initial回放由契约和行为测试覆盖。
+- `?rowFailure=duplicate-composite` 使商务来源第2行复用第1行的审批人与代表处，保留第一条并显示来源 warning，总数255，不回显业务值。
+- `?rowFailure=missing-composite-key` 使第2行代表处为null，跳过无效记录并显示来源 warning，总数255；清除参数恢复正常。空白字符串、缺字段、类型错误、跨200行批次重复、旧声明及initial回放由契约和行为测试覆盖。
 
 这些场景只验证本地合成数据与统一运行时，不证明真实DQE的指标、权限、排序或跨批稳定性；组合键不会自动追加排序字段。
 
@@ -389,6 +389,18 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 
 入口：`http://127.0.0.1:5197/pages/multi-source-generated-key`。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5197`。完整 JSON 使用 Dashboard，两个成员显式选择 `rowKeyGeneration: "uuid"`，数据由 `apps/playground/fixtures/decision-opinion/union-gateway.ts` 合成。
 
-默认显示256行。操作翻页、搜索、排序和导出应保持完整有序结果。追加 `?rowFailure=missing-composite-key`，第二条商务记录的代表处为空但仍显示；追加 `?rowFailure=duplicate-composite`，重复业务组合仍保留256行；追加 `?rowFailure=order`，仍应显示空态并在控制台定位排序错误与rowKeyGeneration。对照 `/pages/multi-source-composite-key`，其空组合分量和重复组合仍报错。
+默认显示256行。操作翻页、搜索、排序和导出应保持完整有序结果。追加 `?rowFailure=missing-composite-key`，第二条商务记录的代表处为空但仍显示；追加 `?rowFailure=duplicate-composite`，重复业务组合仍保留256行；追加 `?rowFailure=order`，完整整理后显示有序256行及 warning。对照 `/pages/multi-source-composite-key`，其空组合分量跳行、重复组合保留第一条。
 
 成员可分别选择单键、组合键、UUID；后者只给返回行分配临时身份，刷新或重新取数可能变化。业务字段需按实际可空性声明，业务正确性及分页无重叠由上游保证。此页面和测试只证明本地共享执行链与合成网关，不证明真实DQE/Relay数据契约。
+
+
+## 异常数据兼容与缺项导出
+
+入口 `/pages/table-data-recovery`；[完整页面](table-data-recovery.json)。运行 `pnpm --filter playground dev --host 127.0.0.1 --port 5198 --strictPort`，访问 http://127.0.0.1:5198/pages/table-data-recovery，无需 DQE Sim。
+
+- 默认混合故障：多来源合并保留6条可用记录（不规则行跳过、重复 key 留首条），记录关联保留8条审批记录（重复基本信息留首条）。缺字段和不可用对象值显示 —；两表均有可展开来源 warning。
+- 合并表每页3条，第二页仍3条，总数6；搜索、筛选和排序作用于整理后的匹配范围。分别导出两表，数据工作表分别为6/8行，不受当前页影响，另有“数据异常说明”工作表。
+- 访问 `?recoveryState=ready` 模拟数据准备好后刷新：两表恢复8条，warning 消失；正常导出不附说明表。
+- 合成数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`，基础种子在 `decision-opinion/model.ts` 与 `rejection-details/gateway.ts`。自动浏览器检查执行 `node apps/playground/tests/table-data-recovery-browser.mjs`，输出到 `docs/evidence/table-data-recovery/browser/`。
+
+静态合法、模拟网关、实际浏览器和下载回读属于本地证据；真实 DQE/Relay、真实模型和线上部署不在本轮证据内。预算、权限、网络和取消仍明确失败；异常整理限制见[数据源说明](../../../docs/page-metadata/data-sources.md#table-result-recovery)。

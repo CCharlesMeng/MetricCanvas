@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
         "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
-        "## 完整父子 Excel（6.70）\n\n声明 `toolbar.export.rowExpansion:{scope:\"all\",parentFields:[\"父关联字段\"]}`，要求已启用 `rowExpansion.selection`。\n\nExcel 固定“父表汇总”“子表明细”两个工作表。父表搜索和表头条件限制导出父行，父页不限制。导出忽略子表局部搜索、排序、页码及展开状态，按声明默认顺序完整读取所有匹配子表。parentFields 加入独立父列数据槽，同名父子字段不覆盖；所有父实例的子表有效列必须一致。冻结条件，任务合计最多10000行、准备60秒、父行子任务最多并发4个；任一查询/完整性/预算失败不下载部分文件。空子表合法，接受实时 offset 跨请求语义。PDF/PNG 本批保持禁用。\n\n旧页面即使只升 schemaVersion 也不自动获得新语义；旧 recordList、数字行键、远程父分页与普通 Excel 保持。新字段在6.69及更旧版本中由能力下限拒绝。决策见 ADR-0123；真实服务与 Relay 边界见验收证据。"
+        "## 完整父子 Excel（6.70）\n\n声明 `toolbar.export.rowExpansion:{scope:\"all\",parentFields:[\"父关联字段\"]}`，要求已启用 `rowExpansion.selection`。\n\nExcel 默认使用“父表汇总”“子表明细”两个数据工作表；组合源容错结果另附“数据异常说明”。父表搜索和表头条件限制导出父行，父页不限制。导出忽略子表局部搜索、排序、页码及展开状态，按声明默认顺序完整读取所有匹配子表。parentFields 加入独立父列数据槽，同名父子字段不覆盖；所有父实例的子表有效列必须一致。冻结条件，任务合计最多10000行、准备60秒、父行子任务最多并发4个；普通查询/完整性/预算失败不下载部分文件；组合源可恢复的结果异常按组合表格规则附 warning。空子表合法，接受实时 offset 跨请求语义。PDF/PNG 本批保持禁用。\n\n旧页面即使只升 schemaVersion 也不自动获得新语义；旧 recordList、数字行键、远程父分页与普通 Excel 保持。新字段在6.69及更旧版本中由能力下限拒绝。决策见 ADR-0123；真实服务与 Relay 边界见验收证据。"
       ],
       "rules": [
         {

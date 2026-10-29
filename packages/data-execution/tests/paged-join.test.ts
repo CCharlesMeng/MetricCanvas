@@ -64,11 +64,12 @@ describe('SourceProgram pagedJoin behavior',()=>{
   expect(output.dataSources['office-bidding'].source).not.toHaveProperty('initial');
   expect(parsePage(output).errors).toEqual([]);
  });
- it('rejects truncated, duplicate and extra keys and propagates errors',async()=>{
+ it('recovers truncated, duplicate and extra keys while propagating permission errors',async()=>{
   for(const mode of ['truncated','duplicate','extra','failure']) {
    const gateway=officeGateway();
    const failed=await read({sort:[{field:'analysis-meeting-rate',direction:'desc'}]},'screen',{async fetchData(query){const data=await gateway.fetchData(query);if('bidding-amount' in query.fieldMappings){if(mode==='failure')throw Object.assign(new Error('failed'),{code:'DQE_FORBIDDEN'});if(mode==='truncated')data.totalCount=data.rows.length+1;if(mode==='duplicate')data.rows.push(data.rows[0]);if(mode==='extra')data.rows.push({...data.rows[0],'rep-office-code':'EXTRA'});}return data;}});
-   expect(failed.get(root)?.status).toBe('error');
+   if(mode==='failure')expect(failed.get(root)).toMatchObject({status:'error',error:{code:'DQE_FORBIDDEN'}});
+   else expect(failed.get(root)).toMatchObject({status:'ready',warnings:expect.any(Array)});
   }
  });
  it('uses stable key ties and null-last sorting on the complete path; handles missing rows and empty domains',async()=>{
@@ -83,12 +84,12 @@ describe('SourceProgram pagedJoin behavior',()=>{
   const emptyCalls:EffectiveQuery[]=[];const empty=await read({search:{fields:['rep-office-name'],query:'any'}},'screen',{async fetchData(query){emptyCalls.push(query);return {rows:[],totalCount:0};}});expect(empty.get(root)).toMatchObject({status:'empty',totalCount:0});expect(emptyCalls.filter(q=>!('analysis-meeting-rate' in q.fieldMappings))).toHaveLength(1);
   const missing=await read({sort:[{field:'analysis-meeting-rate',direction:'desc'}]},'screen',{async fetchData(query){const result=await gateway.fetchData(query);if('support-rate' in query.fieldMappings){result.rows=[];result.totalCount=0;}return result;}});expect(rows(missing).every(row=>row['support-rate']===null)).toBe(true);
  });
- it('rejects fallback limits and export total changes rather than returning partial data',async()=>{
+ it('rejects fallback limits and warns about changing export totals',async()=>{
   const page=parsed();const source=page.dataSources[root];if(source.source.type!=='pagedJoin')throw Error('join');source.source.fallback.maxRows=7;
   const program=createSourceProgram(page,{gateway:officeGateway()});let result:DataSnapshot|undefined;
   try{for await(const update of program.read({roots:[root],conditions:new Map(),views:new Map([[root,{...defaultSourceView(page,root),search:{fields:['rep-office-name'],query:'上海'}}]])}))result=update.snapshot;}finally{program.dispose();}
   expect(result).toMatchObject({status:'error',error:{code:'DQE_QUERY_REJECTED'}});
-  const gateway=officeGateway();await expect(read({sort:[{field:'analysis-meeting-rate',direction:'desc'}]},'complete',{async fetchData(query){const result=await gateway.fetchData(query);if((query.pagination?.offset??0)>0)result.totalCount=9;return result;}})).rejects.toMatchObject({code:'EXPORT_INCOMPLETE_DATA'});
+  const gateway=officeGateway();const recovered=await read({sort:[{field:'analysis-meeting-rate',direction:'desc'}]},'complete',{async fetchData(query){const result=await gateway.fetchData(query);if((query.pagination?.offset??0)>0)result.totalCount=9;return result;}});expect(recovered.get(root)).toMatchObject({status:'ready',totalCount:8,warnings:expect.any(Array)});
  });
 
  it('propagates materialized parameter invalidation through definition references into combination initial',async()=>{

@@ -1,4 +1,4 @@
-import {bindingOwnedDqeBody} from '@metriccanvas/page/internal';
+import {bindingOwnedDqeBody, normalizeDisplayQueryRows, restoreCellFallbacks} from '@metriccanvas/page/internal';
 import {resolvePeriodQuery} from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from './intersect-filters';
 import {selectQuerySource,requiresTimeValidation,timeFilterBoundaryError} from '@metriccanvas/page/internal';
@@ -142,8 +142,13 @@ export async function executeQuery(
     if (!combined) return { status: 'empty', totalCount: 0 };
     const result = await gateway.fetchData(combined, diagnosticContext, signal);
     if (result.warnings?.length) console.warn('[MetricCanvas][QUERY_VALUE_FALLBACK] 查询标量异常；保留可用数据', { ...diagnosticContext, warnings: result.warnings });
-    if (query.pagination && result.totalCount === undefined) {
+    if (query.pagination && result.totalCount === undefined && query.resultPolicy !== 'display') {
       throw Object.assign(new Error('查询分页结果缺少 totalCount'), { code:'DQE_ROW_CONTRACT_ERROR' });
+    }
+    if (query.resultPolicy === 'display') {
+      restoreCellFallbacks(result.rows, result.cellFallbacks);
+      const normalized = normalizeDisplayQueryRows(result.rows, query.fieldMappings, true);
+      return rawSnapshot(normalized.rows, result.totalCount, normalized.cellFallbacks);
     }
     return rawSnapshot(result.rows, result.totalCount, result.cellFallbacks);
   } catch (cause) {

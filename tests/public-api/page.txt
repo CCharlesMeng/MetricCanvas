@@ -71,6 +71,7 @@ DataSnapshot
 DataSource
 DataSourceMode
 DataSources
+DataWarning
 DeltaOperator
 DetailRecord
 DetailRecordList
@@ -428,6 +429,7 @@ matchesTimeValue
 materializePageParams
 modeRangeIssue
 navigationErrors
+normalizeDisplayQueryRows
 normalizePageDocument
 normalizeQueryRows
 normalizeQueryTime

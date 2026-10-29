@@ -115,7 +115,7 @@ describe('pagedUnion through the shared SourceProgram', () => {
     expect(output.dataSources.contract.source).not.toHaveProperty('initial');
     expect(parsePage(output).errors).toEqual([]);
   });
-  it('rejects duplicate source keys, missing count, and streams ordered with incompatible null placement', async () => {
+  it('recovers duplicate source keys, missing count, and incompatible ordering through complete sorting', async () => {
     for (const failure of ['duplicate', 'count', 'order']) {
       const p = page(), preview = createUnionPreview({ generatedCount: 0 });
       const gateway: DataGateway = { async fetchData(query) {
@@ -126,7 +126,7 @@ describe('pagedUnion through the shared SourceProgram', () => {
         return result;
       } };
       const program = createSourceProgram(p, { gateway });
-      try { expect(await read(program, p)).toMatchObject({ status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR' } }); } finally { program.dispose(); }
+      try { expect(await read(program, p)).toMatchObject({ status: 'ready', totalCount: failure === 'duplicate' ? 6 : 8, warnings: expect.any(Array) }); } finally { program.dispose(); }
     }
   });
   it('exports all matched rows and rejects over-limit exports without a partial file', async () => {
@@ -140,7 +140,7 @@ describe('pagedUnion through the shared SourceProgram', () => {
     const pending = read(program, p, {}, 'screen', controller.signal); controller.abort();
     try { await expect(pending).rejects.toBeDefined(); } finally { program.dispose(); }
   });
-  it('retries a changed member count once using fresh batches, then fails repeated changes', async () => {
+  it('retries changed counts once, then rebuilds usable results with warnings', async () => {
     for (const persistent of [false, true]) {
       const p = page(), preview = createUnionPreview({ generatedCount: 430 });
       let changes = 0;
@@ -152,7 +152,7 @@ describe('pagedUnion through the shared SourceProgram', () => {
       const program = createSourceProgram(p, { gateway });
       try {
         const result = await read(program, p, { pageIndex: 40 });
-        if (persistent) expect(result).toMatchObject({ status: 'error', error: { code: 'DQE_QUERY_REJECTED' } });
+        if (persistent) expect(result).toMatchObject({ status: 'ready', totalCount: 868, warnings: expect.any(Array) });
         else expect(result).toMatchObject({ status: 'ready', totalCount: 868 });
         expect(changes).toBeGreaterThan(0);
       } finally { program.dispose(); }

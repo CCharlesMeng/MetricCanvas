@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.10.0"
+  version: "1.11.0"
 ---
 
 # 本地页面创作
@@ -38,7 +38,7 @@ node "<skill-dir>/scripts/read-knowledge.mjs" list --module table
 node "<skill-dir>/scripts/read-knowledge.mjs" show --topic table.width
 ```
 
-已知主题直接 show，可重复 --topic 合并查阅。常用入口：page.core、layout.core、data.inline/query/pagedJoin/pagedUnion、fields.core/format、query.core、table.columns/width/search/pagination/export、metricCard.core/title、text.core、filters.time、reportHeader.export。斜杠表示分别独立的主题，如 data.query。
+已知主题直接 show，可重复 --topic 合并查阅。常用入口：page.core、layout.core、data.inline/query/pagedJoin/pagedUnion/recovery、fields.core/format、query.core、table.columns/width/search/pagination/export、metricCard.core/title、text.core、filters.time、reportHeader.export。斜杠表示分别独立的主题，如 data.query。
 
 脚本返回语义原文、局部约束、未展开引用和完整参考路径；需要引用类型时继续检索所属模块。其他能力从[专题查阅](references/protocol-routing.md)或[协议索引](references/page-metadata/README.md)定位。完整示例按实际变体读取；概览需要时读[布局](references/overview-layouts.md)和[短写法](references/component-recipes.md)，涉及地图再读[地图绑定](references/map-bindings.md)。主题不存在/工具失败时深查完整参考，说明精确读取未执行，不能当成没有约束。运行时不兼容时说明差异，不降版本绕过能力下限。
 

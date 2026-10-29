@@ -43,19 +43,19 @@ describe('pagedUnion composite keys through SourceProgram', () => {
       expect(preview.requests.some(query=>(query.pagination?.offset??0)>=200)).toBe(true);
     } finally {program.dispose();}
   });
-  it.each(['commercial-approver','commercial-office'])('rejects null or blank %s and locates the composite declaration', async field => {
+  it.each(['commercial-approver','commercial-office'])('skips null or blank %s and reports its source', async field => {
     for (const value of [null,'','  ']) {
       const p=page(),preview=createUnionPreview({generatedCount:0});
       const gateway:DataGateway={async fetchData(query){const result=await preview.dataGateway.fetchData(query);if (Object.hasOwn(query.fieldMappings,field)) result.rows[0][field]=value;return result;}};
       const program=createSourceProgram(p,{gateway});
-      try {const result=await read(program,p);expect(result).toMatchObject({status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:expect.stringContaining('/members/commercial/rowKeyFields')}});}finally{program.dispose();}
+      try {const result=await read(program,p);expect(result).toMatchObject({status:'ready',totalCount:7,warnings:expect.arrayContaining([expect.objectContaining({sourceId:'commercial'})])});}finally{program.dispose();}
     }
   });
-  it.each([0,200])('rejects an entire repeated tuple at offset %s without echoing its values',async offset => {
+  it.each([0,200])('keeps first repeated tuple at offset %s without echoing its values',async offset => {
     const p=page(),preview=createUnionPreview({generatedCount:230});
     const gateway:DataGateway={async fetchData(query){const result=await preview.dataGateway.fetchData(query);if (Object.hasOwn(query.fieldMappings,'commercial-approver')) {result.rows[0]['commercial-approver']='PRIVATE-APPROVER';result.rows[0]['commercial-office']='PRIVATE-OFFICE';if(offset===0){result.rows[1]['commercial-approver']='PRIVATE-APPROVER';result.rows[1]['commercial-office']='PRIVATE-OFFICE';}}return result;}};
     const program=createSourceProgram(p,{gateway});
-    try {const result=await read(program,p,{pageSize:1000});expect(result?.status).toBe('error');if(result?.status!=='error')throw Error('expected error');expect(result.error.code).toBe('DQE_ROW_CONTRACT_ERROR');expect(result.error.message).toContain('rowKeyFields');expect(result.error.message).toContain(offset===0?'第 1 条和第 2 条':'第 1 条和第 201 条');expect(result.error.message).not.toContain('PRIVATE-');}finally{program.dispose();}
+    try {const result=await read(program,p,{pageSize:1000});expect(result?.status).toBe('ready');if(result?.status!=='ready')throw Error('expected recovered result');expect(result.warnings).toEqual(expect.arrayContaining([expect.objectContaining({sourceId:'commercial',message:'重复行标识仅保留第一条'})]));expect(JSON.stringify(result.warnings)).not.toContain('PRIVATE-');}finally{program.dispose();}
   });
   it('encodes string separators without collisions',async()=>{
     const p=page(),preview=createUnionPreview({generatedCount:0});

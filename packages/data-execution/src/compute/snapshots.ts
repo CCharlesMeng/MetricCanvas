@@ -63,7 +63,7 @@ function evaluateRows(source: DataSource, snapshot: Extract<DataSnapshot,{status
     const output = applyComputation(source.compute ?? [], rows, dependencies, context);
     const changesCount = (source.compute ?? []).some(op => op.op === 'timeFill' || op.op === 'unionKeys');
     const total = changesCount ? {totalCount:output.length} : snapshot.totalCount === undefined ? {} : {totalCount:snapshot.totalCount};
-    return output.length ? {status:'ready',rows:output,...snapshotCellFallbacks(output),...total} : {status:'empty',...total};
+    return output.length ? {status:'ready',rows:output,...snapshotCellFallbacks(output),...total,warnings:snapshot.warnings} : {status:'empty',...total,warnings:snapshot.warnings};
   } catch (cause) { return fail(cause instanceof ComputationError ? cause.message : '页面数据源计算失败'); }
 }
 

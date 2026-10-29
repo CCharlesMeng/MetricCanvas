@@ -5,6 +5,7 @@ const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capab
 export function pageExternalInputs(id: string | undefined) {
   if (!id) return undefined;
   if (id === 'partner-health-union-null-probe') return 'organization-union';
+  if (id === 'table-data-recovery') return 'table-recovery';
   if (id === 'query-zero-total-demo') return 'zero-total';
   if (id === 'table-hierarchy-selection') return 'hierarchy';
   if (id === 'record-join-demo' || id === 'record-join-no-row-limit') return 'record-join';

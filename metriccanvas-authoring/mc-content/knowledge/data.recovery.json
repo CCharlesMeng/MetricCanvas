@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "6.74",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "data.recovery"
+  ],
+  "semantics": [
+    {
+      "module": "data-sources",
+      "reference": "references/page-metadata/data-sources.md",
+      "blocks": [
+        "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。 局部修改已有可信绑定时，只核对受影响对象、共享消费者和源依赖；指标匹配报告按任务需要形成。独立 Skill 的组件范围仅缩小读取输出，全页校验与真实查询验真要求保持不变。`local-authoring-scoped-data-demo` 展示两表共享同一合成指标与独立内容，便于核对相关消费者和修改范围。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nquery.initial保存捕获时间和匹配该查询的初始行，只能在当前条件与声明初值匹配时使用；变更后由网关查询。执行bootstrap初始结果另走执行端口，条件标识与查询定义一致才复用，不与旧initial混用。非查询分页数据源即使 initial.rows.length 小于 initial.totalCount，也直接呈现内嵌初始行，不为补齐数据自动查询；组件提示当前载入条数与总数，不将部分数据当成完整结果。空 initial.rows 同样是可复用快照；未知总数不推断完整性。查询分页的持久化initial仍需有效totalCount与完整第一页，动态结果的总数不一致不阻止显示已有行。跨数据源计算继续使用本轮返回行。\n\n可选compute作用于已归一化行集。inline行使用页面字段id；query结果经queryField映射。静态JSON通过校验不证明真实DQE成功。\n\n查询数值度量在进入快照和 compute 前归一化为有限数字或 `null`，单个异常值不再拒绝整份查询；首屏 initial、动态响应和一层嵌套明细使用同一规则，详见[结果字段契约](fields.md#查询数值度量的容错)。`nullable: false` 的数值度量缺失只告警，普通 query 的缺字段和结构错误仍会失败；组合源可在有界整理阶段兼容，见下文。`query-numeric-tolerance` 是对应完整合成验收示例。",
+        "## 组合表格异常兼容\n\n`pagedUnion` 与 `pagedJoin`（含 records）默认兼容动态结果异常，已有页面无需新增配置或改写版本。页面声明、inline 行和持久化 initial 的结构校验保持严格。普通 query 独立消费者仍使用原契约；内部 `resultPolicy` 不是页面字段，也不发送到 DQE 请求体。\n\n正常数据继续使用既有选页、补列或有序流。发现缺字段、非对象行、无效/重复键、窗口截断、缺少/矛盾总数或来源排序异常后，按原查询的业务、权限和静态条件重新有界读取；原始窗口长度先用于推进 offset，然后才做清理。标量字段缺失或不可用对象补 null，页面显示既有 missingText（默认 —）；已有可展示标量原文回退保持。null 或非对象行无有效身份时跳过，不生成假的业务键。单键、组合键及关联键始终使用真实有效类型值；同一来源重复身份保留最先返回的一条，不合计、不覆盖；跨来源同内容不去重。UUID 模式仍保留有内容的重复业务记录。\n\n普通关联先按 domainMember 形成可用业务行域，补列缺匹配时主行保留、补充字段为 null；补充结果中的额外键忽略。records 保留同一关联键的多条不同记录，仅按最终记录身份去重，无效本地审批时间跳行。不可用来源若只发生结果形状错误，可以保留其他可用来源；权限拒绝、配置错误、网络错误、取消与超时保持原失败语义。\n\n整理完成后，才按当前视图进行全局筛选、搜索、排序、计数和分页；totalCount 表示本轮可用匹配行数，不是已验证的上游原始总数。短窗口、总数不可确认或变化会另行提示“结果可能有缺项”。来源未加载部分的异常无法由快速路径提前发现；同总数内容变化仍不能证明事务一致性。\n\n表格上方以一条可展开提示呈现“部分数据异常，当前展示可用结果”，其中列明来源、处理方式及次数。数据快照的 warnings 与控制台 `TABLE_RESULT_RECOVERED` 保留同一脱值诊断；错误日志、告警和导出说明都不带原始业务值。存在 warning 的结果不采集为可复用组合 initial；数据准备好后刷新会重新请求，正常数据恢复原路径并移除 warning。\n\nExcel 允许缺项，数据工作表导出整理后的全部匹配行，而非当前页；缺值默认 —，另附“数据异常说明”工作表，说明文件可能有缺项、来源、处理方式和次数。正常文件不额外增加说明表。导出不会把缺项结果冒充完整原始数据，也不自动产生聚合补值。资源上限、授权、过滤条件和取消规则不放宽。\n\n异常整理使用最多200行的来源批次和64MiB默认字节预算；普通 pagedJoin 仍受 fallback.maxRows 限制。records 保留声明的 maxRows/maxBytes/timeoutMs，未声明主行预算时异常整理最多100000行；正常无预算记录路径不变。pagedUnion 整理时全来源原始扫描合计最多100000行，导出最多扫描10000行；导出的可用匹配结果仍最多10000行。默认60秒、记录模式声明的超时、取消和过期回执均有效，超限明确失败。\n\n合成入口 `/pages/table-data-recovery` 同时展示缺字段、对象值、不规则行、重复来源 key 与重复补充记录；`?recoveryState=ready` 演示数据准备好后恢复无告警。页面位于 `pages/capabilities/table/table-data-recovery.json`，模拟数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`；无需 DQE Sim。真实 DQE/Relay 行为须另验。"
+      ],
+      "rules": [
+        {
+          "id": "paged-union-composite-key",
+          "description": "6.72来源内有序非空组合行键，旧单字段声明保持",
+          "valid": [
+            "paged-union-composite-key",
+            "paged-union-composite-branches"
+          ],
+          "invalid": [
+            "union-composite-before-version",
+            "union-composite-repeated-field",
+            "union-composite-nullable-field",
+            "union-composite-unknown-field",
+            "union-composite-measure-field",
+            "union-composite-empty-fields",
+            "union-composite-scalar-conflict"
+          ]
+        },
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches",
+            "paged-union-generated-key"
+          ],
+          "invalid": [
+            "union-uuid-old",
+            "union-uuid-conflict",
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
+          ]
+        },
+        {
+          "id": "paged-join",
+          "description": "6.22 组合表全局视图与普通查询定义引用",
+          "valid": [
+            "paged-join-page",
+            "table-number-range-page"
+          ],
+          "invalid": [
+            "table-number-range-before-6.22",
+            "paged-join-initial-predicate-in",
+            "paged-join-initial-predicate-numeric",
+            "paged-join-initial-predicate-date",
+            "paged-join-before-6.22",
+            "paged-join-unknown-member",
+            "paged-join-invalid-key",
+            "paged-join-invalid-projection",
+            "paged-join-member-topn",
+            "paged-join-shared-root",
+            "paged-join-invalid-initial",
+            "table-number-range-non-numeric"
+          ]
+        },
+        {
+          "id": "query-initial-rows-normalize",
+          "description": "DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验",
+          "valid": [
+            "table-scalar-fallback-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page",
+            "query-numeric-tolerance"
+          ],
+          "invalid": [
+            "initial-row-missing-query-field",
+            "initial-row-scalar-object",
+            "initial-row-scalar-array",
+            "initial-row-date-object",
+            "initial-row-semantic-html-too-large",
+            "initial-row-detail-missing-query-field",
+            "initial-row-detail-null-not-allowed",
+            "initial-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "inline-rows-contract",
+          "description": "inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "compute-page",
+            "params-page",
+            "composite-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "inline-row-undeclared-field",
+            "inline-row-missing-field",
+            "inline-row-null-not-allowed",
+            "inline-row-type-mismatch",
+            "inline-row-date-invalid",
+            "inline-row-datetime-invalid",
+            "inline-row-semantic-html-type",
+            "inline-row-detail-undeclared-field",
+            "inline-row-detail-missing-field",
+            "inline-row-detail-null-not-allowed",
+            "inline-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "captured-at-valid",
+          "description": "内嵌初始行的 capturedAt 须为有效的 RFC 3339 日期时间",
+          "valid": [
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "captured-at-invalid-month"
+          ]
+        },
+        {
+          "id": "pagination-initial-rows",
+          "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-initial-without-total-count",
+            "pagination-initial-not-full-page"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/query-dashboard.json",
+        "references/page-metadata/examples/paged-join-page.json",
+        "references/page-metadata/examples/paged-join-fixed-rank-page.json",
+        "references/page-metadata/examples/query-numeric-tolerance.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/record-join-page.json",
+        "references/page-metadata/examples/paged-union-composite-key.json",
+        "references/page-metadata/examples/paged-union-composite-branches.json",
+        "references/page-metadata/examples/paged-union-generated-key.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

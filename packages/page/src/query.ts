@@ -193,6 +193,8 @@ export function isDqeQueryDefinition(
 /** 统一运行时交给数据网关的一次确定性 DQE 执行请求(生效查询的 dqe 分支)。 */
 export interface DqeEffectiveQuery {
   language: 'dqe';
+  /** Internal bounded composition recovery; never part of the DQE wire body. */
+  resultPolicy?: 'display';
   body: DqeRequestBody;
   fieldMappings: Record<string, QueryDataSourceFieldDefinition>;
   /** Omitted match preserves literal substring search; equals uses native dimension equality. */

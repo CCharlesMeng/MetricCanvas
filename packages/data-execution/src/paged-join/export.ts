@@ -19,7 +19,7 @@ export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, 
       code: 'EXPORT_PARTIAL_DATA', pageId: plan.page.id, ...describeExportSource(plan.page, plan.sourceId),
       accumulatedRowCount: rows.length, expectedTotalCount: expected, completeness: 'unverified'
     });
-    return { snapshot: rawSnapshot(rows, rows.length) };
+    return { snapshot: { ...rawSnapshot(rows, rows.length), warnings: [{code:'TABLE_RESULT_RECOVERED' as const,sourceId:plan.sourceId,message:'后续分页不可用，导出仅包含已取得的数据',count:1}] } };
   }
   for (let pageIndex = 0; ; pageIndex++) {
     signal?.throwIfAborted();

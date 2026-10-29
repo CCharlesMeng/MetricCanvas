@@ -118,6 +118,7 @@ function compareHeads(left: Cursor, right: Cursor, plan: UnionPlan): number {
 
 class CountChanged extends Error {
   readonly code = 'DQE_QUERY_REJECTED';
+  readonly resultIssue = true;
   constructor() { super('读取中来源总数持续变化，请刷新重试'); }
 }
 

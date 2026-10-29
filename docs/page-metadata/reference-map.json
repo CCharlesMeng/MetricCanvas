@@ -2287,7 +2287,8 @@
         "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export"
       ],
       "headings": [
-        "Excel 导出（6.21）"
+        "Excel 导出（6.21）",
+        "组合源数据异常提示与导出"
       ],
       "dependencies": []
     },
@@ -2558,6 +2559,15 @@
         "分页合并成员行键策略（6.73）"
       ],
       "dependencies": []
+    },
+    "data.recovery": {
+      "module": "data-sources",
+      "title": "组合表格异常兼容与缺项导出",
+      "roots": [],
+      "headings": [
+        "组合表格异常兼容"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2583,7 +2593,8 @@
       "当前序号与固定业务排名",
       "分页合并源 pagedUnion（6.61）",
       "分页合并成员行键策略（6.73）",
-      "审批记录与当前信息补列（6.66）"
+      "审批记录与当前信息补列（6.66）",
+      "组合表格异常兼容"
     ],
     "fields.md": [
       "DQE 直接输出的数值作为度量（6.56）",
@@ -2698,7 +2709,8 @@
       "多来源整体排序与来源导航（6.61）",
       "期间模式列显隐（6.67）",
       "层级筛选联动（6.70）",
-      "完整父子 Excel（6.70）"
+      "完整父子 Excel（6.70）",
+      "组合源数据异常提示与导出"
     ],
     "components/mapChart.md": [
       "查阅方式",
