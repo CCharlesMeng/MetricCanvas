@@ -6,6 +6,28 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。
 
+## 组织键并集（6.74）
+
+完整声明见 `/pages/union-keys-demo`。以下 `scores` 是 `dataSources` 中的一项，`a`、`b` 是页面已声明的完整来源，各含相同类型、单位的 `org` 标量维度：
+
+```json
+{
+  "fields": {"org":{"type":"string","role":"dimension"}},
+  "source": {"type":"inline","rows":[]},
+  "compute": [{"op":"unionKeys","sources":["a","b"],"keys":["org"]}]
+}
+```
+
+`sources` 是非空、无重复的数据源 ID 数组，`keys` 是非空、无重复的同名页面维度字段数组，可组成组合键；均为显式引用，不猜测字段或组织名称。unionKeys 只能是空 inline 数据源的首个算子，产出只含键，键须在本源 fields 声明且不得带 queryField。其余字段可由后续 joinAggregate、sumFields 等产出。6.73 及以下不得使用。
+
+按 sources 顺序及各来源行首次出现顺序生成唯一键并集；跨来源相同键合并，单来源重复键报错。键保持原始类型，数值0和布尔false有效；null、空/空白文本、非有限值、复杂值和已降级的异常维度不能作为键。多个来源都空则无行，不制造组织。所有来源均无某组织时，并集不会产生该组织，需要完整组织目录时另行声明该目录来源。
+
+查询依赖须 resultScope: complete，无分页窗口，不能使用 pagedJoin/pagedUnion 的窗口结果；使用完整快照及同轮筛选条件。依赖未完成时等待，失败时传播错误。已知 totalCount 与行数不一致时拒绝并集，不输出伪造完整总分。依赖图不得成环，筛选改变及迟到回执沿统一运行时的批次隔离与取消规则处理。产出 totalCount 为并集行数。
+
+随后用 joinAggregate 的 unique 关联补单项，缺行输出 null，再用 sumFields.onMissing: zero 算分类与总分。**单项保留 null 以显示 `--`，不能先把单项覆盖成0**；全缺项总分0，真实0及负分保留。查询数值空/空白字符串经归一化成为 null，不保留空文本展示回退。非空非法文本仍有告警和原文证据；字段属性省略是映射错误，不等于业务缺项。
+
+页面试验场 `/pages/union-keys-demo` 用 inline 合成结果显示3个组织，单项缺失 `--`、真实0、全缺总分0及负数；`/pages/partner-health-union-null-probe` 为明确标注的查询响应 Mock，复用正式 partner-health 的11项查询及计算声明，验证1/10/13行形成15个组织。正式 `/pages/partner-health` 保持真实 DQE 网关。数据源计算产物可统一供表格、图表和导出消费，不改变表格默认主集合左对齐规则。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
@@ -24,10 +46,10 @@ pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不
 
 最小声明：`{"op":"sumFields","fields":["a","b"],"output":"category","onMissing":"zero"}`。输出字段须声明为数值度量，不能带 queryField 或嵌入输入行。多个算子顺序执行，可先算分类、再算总分。单字段分类可用同一策略将缺项归零。
 
-Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 使用整体、地区部、代表处三种后端粒度后逐行计算，真实 DQE 需单独验真。
+Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 的地区部、代表处使用现有各项查询的组织键并集逐行计算；顶部整体查询尚未配置，不把组织得分纵向相加冒充整体分。真实 DQE 需单独验真。
 
 
-页面协议 6.73。结构真源为本册[schema.json](schema.json)，SHA256 `5746e4ce5ba4823452f4dfdfc6258798d2e4db3ed03d22131f4abd30af4d0b2a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.74。结构真源为本册[schema.json](schema.json)，SHA256 `d7527d07711d9f6d1ece4d65422d403b5b941a78fdb47a1484ace6a3f46d745d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1104,6 +1126,70 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items
 |---|---|---|---|---|
 | "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f3130"></a>
+
+### `@computeOperator · oneOf[10]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/10`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","sources","keys"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f31302f70726f706572746965732f6f70"></a>
+
+### `@computeOperator · oneOf[10].op`
+
+Schema位置：`#/definitions/computeOperator/oneOf/10/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="unionKeys" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "unionKeys" | 用于选择@computeOperator · oneOf[10].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f31302f70726f706572746965732f736f7572636573"></a>
+
+### `@computeOperator · oneOf[10].sources`
+
+Schema位置：`#/definitions/computeOperator/oneOf/10/properties/sources`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 按声明顺序参与组织键并集的完整结果数据源 ID |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f31302f70726f706572746965732f736f75726365732f6974656d73"></a>
+
+### `@computeOperator · oneOf[10].sources[]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/10/properties/sources/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f31302f70726f706572746965732f6b657973"></a>
+
+### `@computeOperator · oneOf[10].keys`
+
+Schema位置：`#/definitions/computeOperator/oneOf/10/properties/keys`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 各来源及产出字段契约中同名、类型与单位相容的标量维度键；只投影键 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f31302f70726f706572746965732f6b6579732f6974656d73"></a>
+
+### `@computeOperator · oneOf[10].keys[]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/10/properties/keys/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `compute-operator-inputs`：算子引用的字段已声明、角色相容、数值算子输入为数值类型。反例：[compute-undeclared-field](errors/compute-undeclared-field.json)、[compute-role-mismatch](errors/compute-role-mismatch.json)、[compute-non-numeric-input](errors/compute-non-numeric-input.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1117,6 +1203,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items
 
 - [compute-page](examples/compute-page.json)：完整合法页面；查询仅为静态契约证据。
 - [cross-source-page](examples/cross-source-page.json)：完整合法页面；查询仅为静态契约证据。
+- [union-keys-demo](examples/union-keys-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-compute-branches](examples/reference-export-compute-branches.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
@@ -1134,3 +1221,4 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items
 - `#/definitions/computeOperator/oneOf/7`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/2`。
 - `#/definitions/computeOperator/oneOf/8`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/3`。
 - `#/definitions/computeOperator/oneOf/9`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5-stages/compute/0`。
+- `#/definitions/computeOperator/oneOf/10`：[合法完整页面](examples/union-keys-demo.json)，JSON Pointer `#/dataSources/combined/compute/0`。

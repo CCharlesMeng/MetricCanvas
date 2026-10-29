@@ -1,6 +1,7 @@
 import { copyRowFallbacks, copyFieldFallback } from '@metriccanvas/page/internal';
 import { timeFill, type ComputationContext } from './time-fill';
 import { joinAggregate, ComputationError } from './join-aggregate';
+import {unionKeys} from './union-keys';
 import type {
   ComputeOperator,
   DataRow,
@@ -29,7 +30,7 @@ export function applyComputation(
 ): DataRow[] {
   let current: DataRow[] = rows as DataRow[];
   for (const operator of operators) {
-    current = operator.op === 'joinAggregate'
+    current = operator.op === 'unionKeys' ? unionKeys(operator, dependencies) : operator.op === 'joinAggregate'
       ? joinAggregate(operator, current, dependencyRows(dependencies, operator.source))
       : operator.op === 'timeFill' ? timeFill(operator, current, context)
       : operator.op === 'selectField' ? selectField(operator, current, context)
@@ -38,7 +39,7 @@ export function applyComputation(
   return current;
 }
 
-function applyOperator(operator: Exclude<ComputeOperator, { op: 'joinAggregate' | 'timeFill' | 'selectField' }>, rows: DataRow[]): DataRow[] {
+function applyOperator(operator: Exclude<ComputeOperator, { op: 'unionKeys' | 'joinAggregate' | 'timeFill' | 'selectField' }>, rows: DataRow[]): DataRow[] {
   switch (operator.op) {
     case 'sumFields':
       return rows.map(row => copyRowFallbacks(row, { ...row, [operator.output]: sumFields(operator, row) }));

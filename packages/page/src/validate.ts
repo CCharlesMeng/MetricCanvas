@@ -1172,6 +1172,7 @@ function computeErrors(dataSource: DataSource, sourcePath: string): TypedError[]
   }
   function checkOperatorType(operator: (typeof operators)[number], path: string): void {
     switch (operator.op) {
+      case 'unionKeys': operator.keys.forEach((key, index) => output(key, `${path}/keys/${index}`, 'dimension')); return;
       case 'timeFill': checkTimeFill(operator, path); return;
       case 'selectField': checkSelectField(operator, path); return;
       case 'sumFields': checkSumFields(operator, path); return;

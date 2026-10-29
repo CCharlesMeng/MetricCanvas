@@ -96,8 +96,15 @@ export interface JoinAggregateOperator {
   onMissing: 'null';
 }
 
+/** 从完整依赖行集投影唯一键并集；仅允许作为空 inline 源的首个算子。 */
+export interface UnionKeysOperator {
+  op: 'unionKeys';
+  sources: string[];
+  keys: string[];
+}
+
 export function computeDependencies(operators: readonly ComputeOperator[]): string[] {
-  return [...new Set(operators.flatMap(operator => operator.op === 'joinAggregate' ? [operator.source] : []))];
+  return [...new Set(operators.flatMap(operator => operator.op === 'unionKeys' ? operator.sources : operator.op === 'joinAggregate' ? [operator.source] : []))];
 }
 
 /** 字段相加，缺项策略逐消费者声明；没有任意表达式。 */
@@ -139,6 +146,7 @@ export interface SelectFieldOperator {
 }
 
 export type ComputeOperator =
+  | UnionKeysOperator
   | TimeFillOperator
   | SelectFieldOperator
   | SumFieldsOperator
@@ -166,6 +174,9 @@ export function computeOutputFields(operators: readonly ComputeOperator[]): stri
   const outputs = new Set<string>();
   for (const operator of operators) {
     switch (operator.op) {
+      case 'unionKeys':
+        for (const key of operator.keys) outputs.add(key);
+        break;
       case 'selectField':
       case 'sumFields':
       case 'cagr':

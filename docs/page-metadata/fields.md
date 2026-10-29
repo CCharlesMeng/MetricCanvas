@@ -55,6 +55,8 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 
 ## 查询标量的原文展示证据（6.60）
 
+查询数值度量（number/money）的空字符串及仅空白字符串按业务缺项归一化为 null，不产生空文本原文回退，单元格按字段绑定 missingText 展示；真实数值0与有效数字字符串0保持0。nullable:false 的非空预期仍产生缺项告警。非空非法数值文本继续保留原文证据和告警。此修复不改变文本维度内容、缺少声明属性的映射错误或 inline 的严格类型校验。验收 `/pages/partner-health-union-null-probe`（Mock）。
+
 查询顶层 string、number、money、boolean、date、datetime 标量值失配时，可展示的原始有限标量独立保留为 cellFallbacks；有效值通道取 null。表格按 String(raw) 展示原文并告警，计算、查询输入、行键和其他组件仍使用有效类型值。合法数值字符串继续采用既有数值归一化规则，非数字文本不参与计算。
 
 真正空值及非有限数字继续缺失处理，不显示字符串 null 或 NaN；非标量对象不走通用 String。nullable:false 在查询顶层标量上表示非空预期，实际缺失告警；inline、字面量、嵌套明细非数值项及结构规则保持严格。数值维度失配可在表格展示，但关联和结果绑定仍会因有效键缺失而拒绝执行，不能删掉输入条件后改查全量。

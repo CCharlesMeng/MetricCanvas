@@ -1,0 +1,191 @@
+{
+  "schemaVersion": "6.74",
+  "id": "union-keys-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "组织键并集（合成数据）"
+  },
+  "dataSources": {
+    "a": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "org": "甲",
+            "value": 0
+          }
+        ]
+      }
+    },
+    "b": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "org": "乙",
+            "value": null
+          },
+          {
+            "org": "丙",
+            "value": -2
+          }
+        ]
+      }
+    },
+    "combined": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "a": {
+          "type": "number",
+          "role": "measure"
+        },
+        "b": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": []
+      },
+      "compute": [
+        {
+          "op": "unionKeys",
+          "sources": [
+            "a",
+            "b"
+          ],
+          "keys": [
+            "org"
+          ]
+        },
+        {
+          "op": "joinAggregate",
+          "source": "a",
+          "keys": [
+            {
+              "local": "org",
+              "foreign": "org"
+            }
+          ],
+          "values": [
+            {
+              "field": "value",
+              "output": "a",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "b",
+          "keys": [
+            {
+              "local": "org",
+              "foreign": "org"
+            }
+          ],
+          "values": [
+            {
+              "field": "value",
+              "output": "b",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "a",
+            "b"
+          ],
+          "output": "total",
+          "onMissing": "zero"
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "scores",
+      "components": [
+        {
+          "id": "scores-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "combined"
+          },
+          "props": {
+            "rowKey": "org",
+            "columns": [
+              {
+                "title": "org",
+                "field": {
+                  "data": "main",
+                  "field": "org",
+                  "missingText": "--"
+                }
+              },
+              {
+                "title": "a",
+                "field": {
+                  "data": "main",
+                  "field": "a",
+                  "missingText": "--"
+                }
+              },
+              {
+                "title": "b",
+                "field": {
+                  "data": "main",
+                  "field": "b",
+                  "missingText": "--"
+                }
+              },
+              {
+                "title": "total",
+                "field": {
+                  "data": "main",
+                  "field": "total",
+                  "missingText": "--"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

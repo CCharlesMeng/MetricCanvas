@@ -1,5 +1,6 @@
 <script lang="ts">
   import {zeroTotalPreviewGateway} from "../../../../../fixtures/zero-total-gateway";
+  import {partnerHealthUnionGateway} from '../../../../../fixtures/organization-union/gateway';
   import {createHierarchyGateway} from '../../../../../fixtures/hierarchy-gateway';
   import {createRejectionPreview} from '../../../../../fixtures/rejection-details/gateway';
   import { createUnionPreview } from '../../../../../fixtures/decision-opinion/union-gateway';
@@ -107,6 +108,7 @@
         document,
         dataGateway: zeroTotalPreviewGateway(pageId, pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: rejectionPreviewRowCount(pageId), failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined, rowFailure: page.url.searchParams.get('rowFailure') }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : pageExternalInputs(pageId)==='hierarchy'?createHierarchyGateway():dataGateway)
       };
+      pageState.dataGateway = partnerHealthUnionGateway(pageId, pageState.dataGateway, page.url.searchParams.get('state') ?? 'ready');
     } catch (cause) {
       if (session !== loadSession) return;
       pageState = {

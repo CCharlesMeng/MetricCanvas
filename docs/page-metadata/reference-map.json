@@ -275,11 +275,13 @@
       "examples": [
         "compute-page",
         "cross-source-page",
+        "union-keys-demo",
         "reference-export-compute-branches"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/compute.ts",
+        "packages/page/src/validate-compute-dependencies.ts",
         "tools/scripts/page-conformance-vectors.ts"
       ],
       "rules": [
@@ -1998,7 +2000,8 @@
     "#/properties/schemaVersion=\"6.70\"": "显式层级联动、私有选择输入与完整父子 Excel。",
     "6.71": "字段求和可按零处理缺项和全部缺项，并支持单字段分类；原有缺项策略保持。",
     "6.72": "分页合并成员支持多个非空原始维度组成唯一行键；旧单字段身份与分页排序保持。",
-    "6.73": "分页合并成员显式选择前端UUID行键；不保证跨请求业务身份。"
+    "6.73": "分页合并成员显式选择前端UUID行键；不保证跨请求业务身份。",
+    "6.74": "完整结果按稳定维度键取组织并集，再关联单项并计算分类与总分。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2602,6 +2605,7 @@
       "查询时间精度与执行前校验"
     ],
     "compute.md": [
+      "组织键并集（6.74）",
       "查阅方式",
       "汇总的全空结果（6.12）",
       "多度量透视与有限主集合左关联 6.14",

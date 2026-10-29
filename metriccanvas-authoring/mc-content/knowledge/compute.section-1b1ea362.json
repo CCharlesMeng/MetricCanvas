@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.73",
+  "schemaVersion": "6.74",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "compute.section-1b1ea362"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/compute.md",
       "blocks": [
         "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。",
-        "## 字段求和与缺项归零（6.71）\n\n`sumFields` 的 `fields` 是有序、不重复的数值字段列表；6.71 起允许单个输入，`onMissing:\"zero\"` 将 null 或缺失按 0 相加，全部缺失也输出数值 0。负分直接相加，不重新计算权重、不折叠不同行。非法非空值和溢出仍取 null；空行集不生成行，查询失败不等于缺项。旧 `null`（任一缺项为空）与 `ignore`（部分缺项忽略、全部缺项为空）保持原行为。新策略和单字段列表在 6.70 及以下拒绝。\n\n最小声明：`{\"op\":\"sumFields\",\"fields\":[\"a\",\"b\"],\"output\":\"category\",\"onMissing\":\"zero\"}`。输出字段须声明为数值度量，不能带 queryField 或嵌入输入行。多个算子顺序执行，可先算分类、再算总分。单字段分类可用同一策略将缺项归零。\n\nPlayground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 使用整体、地区部、代表处三种后端粒度后逐行计算，真实 DQE 需单独验真。"
+        "## 字段求和与缺项归零（6.71）\n\n`sumFields` 的 `fields` 是有序、不重复的数值字段列表；6.71 起允许单个输入，`onMissing:\"zero\"` 将 null 或缺失按 0 相加，全部缺失也输出数值 0。负分直接相加，不重新计算权重、不折叠不同行。非法非空值和溢出仍取 null；空行集不生成行，查询失败不等于缺项。旧 `null`（任一缺项为空）与 `ignore`（部分缺项忽略、全部缺项为空）保持原行为。新策略和单字段列表在 6.70 及以下拒绝。\n\n最小声明：`{\"op\":\"sumFields\",\"fields\":[\"a\",\"b\"],\"output\":\"category\",\"onMissing\":\"zero\"}`。输出字段须声明为数值度量，不能带 queryField 或嵌入输入行。多个算子顺序执行，可先算分类、再算总分。单字段分类可用同一策略将缺项归零。\n\nPlayground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 的地区部、代表处使用现有各项查询的组织键并集逐行计算；顶部整体查询尚未配置，不把组织得分纵向相加冒充整体分。真实 DQE 需单独验真。"
       ],
       "rules": [
         {
@@ -81,6 +81,7 @@
       "examples": [
         "references/page-metadata/examples/compute-page.json",
         "references/page-metadata/examples/cross-source-page.json",
+        "references/page-metadata/examples/union-keys-demo.json",
         "references/page-metadata/examples/reference-export-compute-branches.json"
       ]
     }

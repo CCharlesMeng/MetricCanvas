@@ -1,0 +1,259 @@
+{
+  "dsl_list": [
+    {
+      "query_type": "object",
+      "object_type": "Partner Health/Cooperate Willingness Score",
+      "output_fields": [
+        "data_site_type",
+        "合作意愿感知评分"
+      ],
+      "order": {},
+      "filter": {
+        "fields": [
+          {
+            "field_name": "data_site_type",
+            "value_list": [
+              "中国区"
+            ],
+            "operator": "="
+          }
+        ]
+      }
+    },
+    {
+      "query_type": "object",
+      "object_type": "Partner Health/Custormer Partner Evaluation Score",
+      "output_fields": [
+        "data_site_type",
+        "客户对伙伴的评价得分"
+      ],
+      "order": {},
+      "filter": {
+        "fields": [
+          {
+            "field_name": "data_site_type",
+            "value_list": [
+              "中国区"
+            ],
+            "operator": "="
+          }
+        ]
+      }
+    },
+    {
+      "query_type": "object",
+      "object_type": "Partner Health/Partner Core Income Score",
+      "output_fields": [
+        "data_site_type",
+        "收入得分"
+      ],
+      "order": {},
+      "filter": {
+        "fields": [
+          {
+            "field_name": "data_site_type",
+            "value_list": [
+              "中国区"
+            ],
+            "operator": "="
+          }
+        ]
+      }
+    },
+    {
+      "query_type": "object",
+      "object_type": "Partner Health/Partner Deduction Score",
+      "output_fields": [
+        "data_site_type",
+        "扣分"
+      ],
+      "order": {},
+      "filter": {
+        "fields": [
+          {
+            "field_name": "data_site_type",
+            "value_list": [
+              "中国区"
+            ],
+            "operator": "="
+          }
+        ]
+      }
+    },
+    {
+      "output_dims": [
+        "data_site_type"
+      ],
+      "output_metrics": [
+        "伙伴声音闭环率得分"
+      ],
+      "filter": {
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-10",
+          "end": "2026-10"
+        },
+        "dims": [
+          {
+            "dim_name": "data_site_type",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "metrics": []
+      }
+    },
+    {
+      "output_dims": [
+        "data_site_type"
+      ],
+      "output_metrics": [
+        "伙伴健康度-区域专职团队认证达标率得分"
+      ],
+      "filter": {
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-10",
+          "end": "2026-10"
+        },
+        "dims": [
+          {
+            "dim_name": "data_site_type",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "metrics": []
+      }
+    },
+    {
+      "output_dims": [
+        "data_site_type"
+      ],
+      "output_metrics": [
+        "伙伴健康度-区域价值客户付费占比得分"
+      ],
+      "filter": {
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-10",
+          "end": "2026-10"
+        },
+        "dims": [
+          {
+            "dim_name": "data_site_type",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "metrics": []
+      }
+    },
+    {
+      "output_dims": [
+        "data_site_type"
+      ],
+      "output_metrics": [
+        "伙伴健康度-区域价值客户数增长得分"
+      ],
+      "filter": {
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-10",
+          "end": "2026-10"
+        },
+        "dims": [
+          {
+            "dim_name": "data_site_type",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "metrics": []
+      }
+    },
+    {
+      "output_dims": [
+        "data_site_type"
+      ],
+      "output_metrics": [
+        "伙伴健康度-区域价值云经销商付费占比得分"
+      ],
+      "filter": {
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-10",
+          "end": "2026-10"
+        },
+        "dims": [
+          {
+            "dim_name": "data_site_type",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "metrics": []
+      }
+    },
+    {
+      "output_dims": [
+        "data_site_type"
+      ],
+      "output_metrics": [
+        "伙伴健康度-区域价值云经销商数增长得分"
+      ],
+      "filter": {
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-10",
+          "end": "2026-10"
+        },
+        "dims": [
+          {
+            "dim_name": "data_site_type",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "metrics": []
+      }
+    },
+    {
+      "output_dims": [
+        "data_site_type"
+      ],
+      "output_metrics": [
+        "伙伴健康度-区域能力标签伙伴得分"
+      ],
+      "filter": {
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-10",
+          "end": "2026-10"
+        },
+        "dims": [
+          {
+            "dim_name": "data_site_type",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "metrics": []
+      }
+    }
+  ]
+}

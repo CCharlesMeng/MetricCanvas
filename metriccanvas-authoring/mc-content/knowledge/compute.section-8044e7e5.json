@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.73",
+  "schemaVersion": "6.74",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "compute.section-8044e7e5"
@@ -81,6 +81,7 @@
       "examples": [
         "references/page-metadata/examples/compute-page.json",
         "references/page-metadata/examples/cross-source-page.json",
+        "references/page-metadata/examples/union-keys-demo.json",
         "references/page-metadata/examples/reference-export-compute-branches.json"
       ]
     }

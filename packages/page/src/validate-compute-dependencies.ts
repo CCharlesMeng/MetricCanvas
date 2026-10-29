@@ -1,4 +1,4 @@
-import {ordinaryQuery} from './time-mode';
+import {queryLeaves} from './query-selection';
 import { isBoundedResultSource } from './query-dependencies';
 import type { Page } from './page';
 import type { TypedError } from './errors';
@@ -27,10 +27,12 @@ export function crossSourceComputeErrors(page: Page): TypedError[] {
 function fullRowsErrors(id: string, source: DataSource, path: string, paged: ReadonlySet<string>, error: ErrorReporter): void {
   if (source.source.type === 'inline') return;
   if ((source.source.type === 'pagedJoin' || source.source.type === 'pagedUnion')) { error(path, '组合源是窗口结果，不能用于完整跨源计算'); return; }
-  const query = ordinaryQuery(source.source.query).body.dsl_list[0];
-  const order = query?.order;
+  const hasWindow = queryLeaves(source.source.query).some(query => {
+    const order = query.body.dsl_list[0].order;
+    return order && typeof order === 'object' && ('limit' in order || 'offset' in order);
+  });
   if (source.source.resultScope !== 'complete' || paged.has(id) ||
-    (order && typeof order === 'object' && ('limit' in order || 'offset' in order))) {
+    hasWindow) {
     error(path, `跨源计算要求完整行集；查询源 ${id} 必须声明 resultScope: complete，且不得带查询分页窗口`);
   }
 }
@@ -42,16 +44,32 @@ function compatible(a: FieldDefinition, b: FieldDefinition): boolean {
 
 function sourceComputeErrors(page: Page, id: string, source: DataSource, full: FullRowsCheck, error: ErrorReporter): void {
   const operators = source.compute ?? [];
-  if (!operators.some(op => ['joinAggregate', 'sumFields', 'cagr', 'timeFill', 'selectField'].includes(op.op))) return;
+  if (!operators.some(op => ['unionKeys', 'joinAggregate', 'sumFields', 'cagr', 'timeFill', 'selectField'].includes(op.op))) return;
   if (operators.some(op => op.op === 'timeFill' || (op.op === 'joinAggregate' && !isBoundedResultSource(page.dataSources, id)))) full(id, source, pointer(id));
   const produced = new Set(computeOutputFields(operators));
   const available = new Set(Object.keys(source.fields).filter(field => !produced.has(field)));
   for (const [index, op] of operators.entries()) {
     const path = `${pointer(id)}/compute/${index}`;
     operatorFilterErrors(page, op, path, error);
+    if (op.op === 'unionKeys') unionErrors(page, source, op, index, path, full, error);
     if (op.op === 'joinAggregate') joinErrors(page, source, op, available, path, full, error);
     for (const field of operatorInputs(op)) if (!available.has(field)) error(path, `算子输入尚不可用:${field}`);
     for (const field of computeOutputFields([op])) available.add(field);
+  }
+}
+
+function unionErrors(page: Page, source: DataSource, op: Extract<ComputeOperator, {op:'unionKeys'}>, index: number, path: string, full: FullRowsCheck, error: ErrorReporter): void {
+  if (index !== 0 || source.source.type !== 'inline' || source.source.rows.length !== 0) error(path, 'unionKeys 必须为无输入行 inline 数据源的首个算子');
+  for (const [position, id] of op.sources.entries()) {
+    const reference = `${path}/sources/${position}`;
+    const dependency = Object.hasOwn(page.dataSources, id) ? page.dataSources[id] : undefined;
+    if (!dependency) { error(reference, `未知数据依赖:${id}`); continue; }
+    full(id, dependency, reference);
+    for (const key of op.keys) {
+      const local = source.fields[key], foreign = dependency.fields[key];
+      if (!local || !foreign || local.role !== 'dimension' || foreign.role !== 'dimension' ||
+        !['string','number','boolean','date','datetime'].includes(local.type) || !compatible(local, foreign)) error(reference, `并集键必须引用同名且类型、单位相容的标量维度:${key}`);
+    }
   }
 }
 

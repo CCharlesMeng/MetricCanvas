@@ -159,7 +159,7 @@ UUID 随已取回的行保存在缓冲区、检查点和 initial 中，复用时
 合成验收入口：`/pages/record-join-demo` 为1205条审批；`/pages/object-record-join-demo` 为对象主表分批读取、指标补列及全局表格操作。`pages/business-rejection-details.json` 是业务配置；真实DQE字段、数据粒度、区域语义、HCS排除和服务完整性须真实环境确认。
 
 
-页面协议 6.73。结构真源为本册[schema.json](schema.json)，SHA256 `5746e4ce5ba4823452f4dfdfc6258798d2e4db3ed03d22131f4abd30af4d0b2a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.74。结构真源为本册[schema.json](schema.json)，SHA256 `d7527d07711d9f6d1ece4d65422d403b5b941a78fdb47a1484ace6a3f46d745d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

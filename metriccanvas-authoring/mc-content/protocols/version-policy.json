@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 73,
-  "current": "6.73",
+  "minor": 74,
+  "current": "6.74",
   "capabilities": {
+    "compute-union-keys": {
+      "minor": 74,
+      "description": "完整依赖结果按稳定维度键取并集，统一组织行集合",
+      "legacyReadable": false
+    },
     "paged-union-generated-key": {
       "minor": 73,
       "description": "分页合并成员显式由前端生成UUID行身份，信任上游记录与分页正确性",
@@ -763,6 +768,7 @@
     "6.70",
     "6.71",
     "6.72",
-    "6.73"
+    "6.73",
+    "6.74"
   ]
 }

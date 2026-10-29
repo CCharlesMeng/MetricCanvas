@@ -74,8 +74,8 @@ describe('完整页面的查询数值容错', () => {
     const records = transport.diagnostics.records();
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({ status: 'success', rowCount: 8, totalCount: 8,
-      warnings: expect.arrayContaining([{ fieldId: 'value', queryField: '容错数值', code: 'INVALID_NUMERIC_VALUE', count: 3 },
-        { fieldId: 'value', queryField: '容错数值', code: 'NUMERIC_NULL_NOT_ALLOWED', count: 1 }]) });
+      warnings: expect.arrayContaining([{ fieldId: 'value', queryField: '容错数值', code: 'INVALID_NUMERIC_VALUE', count: 2 },
+        { fieldId: 'value', queryField: '容错数值', code: 'NUMERIC_NULL_NOT_ALLOWED', count: 2 }]) });
     expect(JSON.stringify(records)).not.toContain('占位符');
     expect(JSON.stringify(records)).not.toContain('示例');
   });

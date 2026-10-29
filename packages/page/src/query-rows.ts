@@ -224,6 +224,8 @@ function displayScalar(value: unknown): value is string | number | boolean {
 }
 function normalizeScalar(value: unknown, field: QueryFieldDefinition, context: WarningContext, warnings: Warnings, fallbacks: RowCellFallbacks): unknown {
   if (field.type === 'recordList' || field.type === 'semanticHtml') return value;
+  // 空数值文本是缺项，保持 null 参与计算，不生成会绕过 missingText 的原文回退。
+  if (isNumericMeasure(field) && typeof value === 'string' && !value.trim()) return normalizeNumeric(null, field, context, warnings);
   const normalized = normalizeNumeric(value, field, context, warnings);
   if (isNumericMeasure(field)) {
     if (normalized === null && displayScalar(value)) fallbacks[context.fieldId] = { raw: value, reason: 'INVALID_NUMERIC_VALUE' };

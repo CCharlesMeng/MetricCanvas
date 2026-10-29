@@ -101,6 +101,12 @@ const joinAggregateOperatorZ = z.object({
   onMissing: z.literal('null')
 }).strict();
 
+const unionKeysOperatorZ = z.object({
+  op: z.literal('unionKeys'),
+  sources: z.array(idZ).min(1).meta({uniqueItems: true, description:'按声明顺序参与组织键并集的完整结果数据源 ID'}),
+  keys: z.array(fieldNameZ).min(1).meta({uniqueItems: true, description:'各来源及产出字段契约中同名、类型与单位相容的标量维度键；只投影键'})
+}).strict();
+
 const sumFieldsOperatorZ = z.object({
   op: z.literal('sumFields'), fields: z.array(fieldNameZ).min(1).meta({ uniqueItems: true }),
   output: fieldNameZ, onMissing: z.enum(['null', 'ignore', 'zero'])
@@ -137,7 +143,8 @@ export const computeOperatorZ = z
     deltaOperatorZ,
     groupSubtotalOperatorZ,
     grandTotalOperatorZ,
-    pivotOperatorZ
+    pivotOperatorZ,
+    unionKeysOperatorZ
   ])
   .meta({ id: 'computeOperator' });
 

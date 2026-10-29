@@ -13,7 +13,6 @@ export function computedSnapshots(
 ): Map<string, DataSnapshot> {
   const result = new Map<string, DataSnapshot>();
   const visiting = new Set<string>();
-  const fail = (message: string): DataSnapshot => ({ status: 'error', error: { code: 'UNKNOWN', message } });
   function visit(id: string): DataSnapshot {
     const known = result.get(id);
     if (known) return known;
@@ -22,34 +21,8 @@ export function computedSnapshots(
     const snapshot = restoreSnapshot(raw.get(id));
     if (!source || !snapshot) return fail('页面数据源计算依赖不存在');
     visiting.add(id);
-    let computed: DataSnapshot = snapshot;
-    const dependencies = new Map<string, readonly DataRow[]>();
-    let dependencyState: DataSnapshot | undefined;
-    for (const dependency of computeDependencies(source.compute ?? [])) {
-      const value = completeDependency(sources.get(dependency), visit(dependency));
-      if (value.status === 'error') dependencyState = value;
-      else if (value.status === 'loading' && dependencyState?.status !== 'error') dependencyState = value;
-      else if (value.status === 'ready') dependencies.set(dependency, value.rows);
-      else if (value.status === 'empty') dependencies.set(dependency, []);
-    }
-    if (snapshot.status !== 'error') {
-      if (dependencyState?.status === 'error') computed = { status: 'error', error: { code: dependencyState.error.code, message: '依赖数据源执行或计算失败' } };
-      else if (snapshot.status === 'loading' || dependencyState?.status === 'loading') computed = { status: 'loading' };
-      else if (snapshot.status === 'ready' || snapshot.status === 'empty') {
-        const rows = snapshot.status === 'ready' ? snapshot.rows : [];
-        const checked = checkOrdinaryRange(source,snapshot,undefined,undefined,{allowZeroTotal:canRenderZeroTotal(source)});
-        if (checked.status==='error') {
-          computed = checked;
-        } else try {
-          const output = applyComputation(source.compute ?? [], rows, dependencies, context);
-          const changesCount = (source.compute ?? []).some(op => op.op === 'timeFill');
-          const total = changesCount ? { totalCount: output.length } : snapshot.totalCount === undefined ? {} : { totalCount: snapshot.totalCount };
-          computed = output.length ? { status: 'ready', rows: output, ...snapshotCellFallbacks(output), ...total } : { status: 'empty', ...total };
-        } catch (cause) {
-          computed = fail(cause instanceof ComputationError ? cause.message : '页面数据源计算失败');
-        }
-      }
-    }
+    const dependencies = collectDependencies(source, sources, visit);
+    const computed = computeSnapshot(source, snapshot, dependencies, context);
     visiting.delete(id);
     result.set(id, computed);
     return computed;
@@ -58,13 +31,53 @@ export function computedSnapshots(
   return result;
 }
 
+
+interface Dependencies { rows: Map<string, readonly DataRow[]>; state?: DataSnapshot }
+function fail(message: string): DataSnapshot { return {status:'error',error:{code:'UNKNOWN',message}}; }
+
+function collectDependencies(source: DataSource, sources: ReadonlyMap<string, DataSource>, visit: (id:string)=>DataSnapshot): Dependencies {
+  const result: Dependencies = {rows:new Map()};
+  const unionSources = new Set((source.compute ?? []).flatMap(op => op.op === 'unionKeys' ? op.sources : []));
+  for (const dependency of computeDependencies(source.compute ?? [])) {
+    const snapshot = completeDependency(sources.get(dependency), visit(dependency), unionSources.has(dependency));
+    if (snapshot.status === 'error') result.state = snapshot;
+    else if (snapshot.status === 'loading' && result.state?.status !== 'error') result.state = snapshot;
+    else if (snapshot.status === 'ready') result.rows.set(dependency, snapshot.rows);
+    else if (snapshot.status === 'empty') result.rows.set(dependency, []);
+  }
+  return result;
+}
+
+function computeSnapshot(source: DataSource, snapshot: DataSnapshot, dependencies: Dependencies, context?: ComputationContext): DataSnapshot {
+  if (snapshot.status === 'error') return snapshot;
+  if (dependencies.state?.status === 'error') return {status:'error',error:{code:dependencies.state.error.code,message:'依赖数据源执行或计算失败'}};
+  if (snapshot.status === 'loading' || dependencies.state?.status === 'loading') return {status:'loading'};
+  const checked = checkOrdinaryRange(source,snapshot,undefined,undefined,{allowZeroTotal:canRenderZeroTotal(source)});
+  if (checked.status === 'error') return checked;
+  return evaluateRows(source, snapshot, dependencies.rows, context);
+}
+
+function evaluateRows(source: DataSource, snapshot: Extract<DataSnapshot,{status:'ready'|'empty'}>, dependencies: ReadonlyMap<string,readonly DataRow[]>, context?: ComputationContext): DataSnapshot {
+  try {
+    const rows = snapshot.status === 'ready' ? snapshot.rows : [];
+    const output = applyComputation(source.compute ?? [], rows, dependencies, context);
+    const changesCount = (source.compute ?? []).some(op => op.op === 'timeFill' || op.op === 'unionKeys');
+    const total = changesCount ? {totalCount:output.length} : snapshot.totalCount === undefined ? {} : {totalCount:snapshot.totalCount};
+    return output.length ? {status:'ready',rows:output,...snapshotCellFallbacks(output),...total} : {status:'empty',...total};
+  } catch (cause) { return fail(cause instanceof ComputationError ? cause.message : '页面数据源计算失败'); }
+}
+
 function restoreSnapshot(snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
   if (snapshot?.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
   return snapshot;
 }
 
 /** Cross-source computation cannot promote a provisional display receipt to a complete input. */
-function completeDependency(source: DataSource | undefined, snapshot: DataSnapshot): DataSnapshot {
+function completeDependency(source: DataSource | undefined, snapshot: DataSnapshot, requireCompleteCount = false): DataSnapshot {
+  if (requireCompleteCount && (snapshot.status === 'ready' || snapshot.status === 'empty') &&
+    snapshot.totalCount !== undefined && snapshot.totalCount !== (snapshot.status === 'ready' ? snapshot.rows.length : 0)) {
+    return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'并集依赖结果与 totalCount 不一致，不能证明完整行集'}};
+  }
   return source ? checkOrdinaryRange(source, snapshot) : snapshot;
 }
 

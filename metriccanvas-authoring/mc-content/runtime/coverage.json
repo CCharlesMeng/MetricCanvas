@@ -768,6 +768,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/union-keys-demo.json",
+      "target": "product-contracts/page/conformance/valid/union-keys-demo.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/url-navigation-page.json",
       "target": "product-contracts/page/conformance/valid/url-navigation-page.json",
       "scope": "exact product contract"
@@ -5868,6 +5873,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/union-keys-demo.json",
+      "target": "references/page-metadata/examples/union-keys-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/reference-export-compute-branches.json",
       "target": "references/page-metadata/examples/reference-export-compute-branches.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6624,11 +6634,11 @@
     }
   ],
   "counts": {
-    "product": 1293,
+    "product": 1295,
     "authoring": 31,
     "modules": 33,
-    "topics": 198,
-    "nodes": 2416,
+    "topics": 199,
+    "nodes": 2422,
     "tools": 9,
     "components": 19
   },

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.73",
-  "schemaSha256": "5746e4ce5ba4823452f4dfdfc6258798d2e4db3ed03d22131f4abd30af4d0b2a",
+  "schemaVersion": "6.74",
+  "schemaSha256": "d7527d07711d9f6d1ece4d65422d403b5b941a78fdb47a1484ace6a3f46d745d",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -227,6 +227,7 @@
       "examples": [
         "compute-page",
         "cross-source-page",
+        "union-keys-demo",
         "reference-export-compute-branches"
       ],
       "rules": [
@@ -1176,7 +1177,8 @@
         "6.70",
         "6.71",
         "6.72",
-        "6.73"
+        "6.73",
+        "6.74"
       ]
     },
     {
@@ -3211,6 +3213,43 @@
     {
       "pointer": "#/definitions/computeOperator/oneOf/9/properties/keyFields/items",
       "path": "@computeOperator · oneOf[9].keyFields[]",
+      "required": "每个数组项",
+      "module": "compute.md"
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/10",
+      "path": "@computeOperator · oneOf[10]",
+      "required": "独立分支（不合并required）",
+      "module": "compute.md"
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/10/properties/op",
+      "path": "@computeOperator · oneOf[10].op",
+      "required": "本分支必填",
+      "module": "compute.md",
+      "const": "unionKeys"
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/10/properties/sources",
+      "path": "@computeOperator · oneOf[10].sources",
+      "required": "本分支必填",
+      "module": "compute.md"
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/10/properties/sources/items",
+      "path": "@computeOperator · oneOf[10].sources[]",
+      "required": "每个数组项",
+      "module": "compute.md"
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/10/properties/keys",
+      "path": "@computeOperator · oneOf[10].keys",
+      "required": "本分支必填",
+      "module": "compute.md"
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/10/properties/keys/items",
+      "path": "@computeOperator · oneOf[10].keys[]",
       "required": "每个数组项",
       "module": "compute.md"
     },
@@ -18238,6 +18277,12 @@
       "pointer": "#/dataSources/project-efficiency-bottom5-stages/compute/0"
     },
     {
+      "schemaPointer": "#/definitions/computeOperator/oneOf/10",
+      "module": "compute.md",
+      "file": "examples/union-keys-demo.json",
+      "pointer": "#/dataSources/combined/compute/0"
+    },
+    {
       "schemaPointer": "#/definitions/fieldValue/anyOf/0",
       "module": "fields.md",
       "file": "examples/component-metricCard.json",
@@ -20212,5 +20257,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "889b4a3e21f005908c8302464ac486061313a79cfd98f06162672b79457aafe5"
+  "semanticSourceDigest": "6e17edd7984a68e2c9cbafec9f5455971131964b46195758194bed28bf79bec1"
 }

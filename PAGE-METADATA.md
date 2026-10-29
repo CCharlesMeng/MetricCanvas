@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.74 增加受控计算 `unionKeys`：从多个完整结果按同名稳定维度键取并集，再用 `joinAggregate` 补齐单项、`sumFields` 计算总分。单项缺失保留 null；查询数值空文本归为缺项并使用 missingText，真实 0 保留。见[组织键并集](docs/page-metadata/compute.md#组织键并集674)，验收入口 `/pages/union-keys-demo`、`/pages/partner-health-union-null-probe`（Mock）。
+
 6.73 为 `pagedUnion` 成员增加显式 `rowKeyGeneration: "uuid"`，与 `rowKey`、`rowKeyFields` 三选一。UUID 标识本次返回行，允许可空业务字段；业务重复及分页重叠由上游保证，计数、排序和完整批次校验保持。见[成员行键策略](docs/page-metadata/data-sources.md#分页合并成员行键策略673)，合成验收入口 `/pages/multi-source-generated-key`。
 
 6.72 为 `pagedUnion` 成员增加 `rowKeyFields` 组合行键，与旧 `rowKey` 二选一；组合字段全部非空、整个组合唯一，保留旧身份编码且不改变排序和分页规则。见[分页合并源](docs/page-metadata/data-sources.md#分页合并源-pagedunion661)，合成验收入口 `/pages/multi-source-composite-key`。
@@ -14,7 +16,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.73**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.74**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 

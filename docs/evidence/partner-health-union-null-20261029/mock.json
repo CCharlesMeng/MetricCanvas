@@ -1,0 +1,134 @@
+{
+  "description": "合成响应，仅用于伙伴健康度行域与缺项诊断；未接管正式页面",
+  "expectedOrganizations": [
+    "ORG-01",
+    "ORG-02",
+    "ORG-03",
+    "ORG-04",
+    "ORG-05",
+    "ORG-06",
+    "ORG-07",
+    "ORG-08",
+    "ORG-09",
+    "ORG-10",
+    "ORG-11",
+    "ORG-12",
+    "ORG-13",
+    "ORG-14",
+    "ORG-15"
+  ],
+  "sources": {
+    "voice-closure-score": [
+      {
+        "region": "ORG-01",
+        "value": 0
+      }
+    ],
+    "customer-eval-score": [
+      {
+        "region": "ORG-02",
+        "value": 10
+      },
+      {
+        "region": "ORG-03",
+        "value": null
+      },
+      {
+        "region": "ORG-04",
+        "value": ""
+      },
+      {
+        "region": "ORG-05",
+        "value": " "
+      },
+      {
+        "region": "ORG-06",
+        "value": 8
+      },
+      {
+        "region": "ORG-07",
+        "value": "0"
+      },
+      {
+        "region": "ORG-08",
+        "value": 0
+      },
+      {
+        "region": "ORG-09",
+        "value": 3
+      },
+      {
+        "region": "ORG-10",
+        "value": 4
+      },
+      {
+        "region": "ORG-11",
+        "value": 5
+      }
+    ],
+    "perception-willingness-score": [
+      {
+        "region": "ORG-03",
+        "value": null
+      },
+      {
+        "region": "ORG-04",
+        "value": 7
+      },
+      {
+        "region": "ORG-05",
+        "value": 0
+      },
+      {
+        "region": "ORG-06",
+        "value": -2
+      },
+      {
+        "region": "ORG-07",
+        "value": 2
+      },
+      {
+        "region": "ORG-08",
+        "value": null
+      },
+      {
+        "region": "ORG-09",
+        "value": 1
+      },
+      {
+        "region": "ORG-10",
+        "value": 2
+      },
+      {
+        "region": "ORG-11",
+        "value": 9
+      },
+      {
+        "region": "ORG-12",
+        "value": 4
+      },
+      {
+        "region": "ORG-13",
+        "value": 6
+      },
+      {
+        "region": "ORG-14",
+        "value": 8
+      },
+      {
+        "region": "ORG-15",
+        "value": 10
+      }
+    ]
+  },
+  "expectedSelectedTotals": {
+    "ORG-01": 0,
+    "ORG-02": 10,
+    "ORG-03": 0,
+    "ORG-04": 7,
+    "ORG-05": 0,
+    "ORG-06": 6,
+    "ORG-07": 2,
+    "ORG-15": 10
+  }
+}

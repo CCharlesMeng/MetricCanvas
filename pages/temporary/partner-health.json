@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.73",
+  "schemaVersion": "6.74",
   "id": "partner-health",
   "layout": "dashboard",
   "meta": {
@@ -2094,6 +2094,720 @@
           }
         }
       }
+    },
+    "health-scores-region": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部"
+        },
+        "perception-willingness": {
+          "type": "number",
+          "role": "measure",
+          "label": "合作意愿感知评分"
+        },
+        "perception-feedback": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴声音闭环率得分"
+        },
+        "satisfaction-evaluation": {
+          "type": "number",
+          "role": "measure",
+          "label": "客户对伙伴的评价得分"
+        },
+        "contribution-business": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入得分"
+        },
+        "contribution-human": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域专职团队认证达标率得分"
+        },
+        "csp-customer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户付费占比得分"
+        },
+        "csp-customer-growth": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户数增长得分"
+        },
+        "cloud-dealer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商付费占比得分"
+        },
+        "cloud-dealer-growth": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商数增长得分"
+        },
+        "service-capability-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域能力标签伙伴得分"
+        },
+        "risk-control": {
+          "type": "number",
+          "role": "measure",
+          "label": "扣分"
+        },
+        "perception-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "satisfaction-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "contribution-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total-score": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": []
+      },
+      "compute": [
+        {
+          "op": "unionKeys",
+          "sources": [
+            "perception-willingness-score-region",
+            "voice-closure-score-region",
+            "customer-eval-score-region",
+            "contribution-business-score-region",
+            "cert-compliance-score-region",
+            "csp-customer-payment-score-region",
+            "csp-customer-growth-score-region",
+            "cloud-dealer-payment-score-region",
+            "cloud-dealer-growth-score-region",
+            "service-capability-score-region",
+            "risk-control-score-region"
+          ],
+          "keys": [
+            "region"
+          ]
+        },
+        {
+          "op": "joinAggregate",
+          "source": "perception-willingness-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "perception-willingness-rate",
+              "output": "perception-willingness",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "voice-closure-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "closure-rate",
+              "output": "perception-feedback",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "customer-eval-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "customer-eval-rate",
+              "output": "satisfaction-evaluation",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "contribution-business-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "contribution-business-rate",
+              "output": "contribution-business",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cert-compliance-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "cert-compliance-rate",
+              "output": "contribution-human",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "csp-customer-payment-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "csp-customer-payment-rate",
+              "output": "csp-customer-payment-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "csp-customer-growth-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "csp-customer-growth-rate",
+              "output": "csp-customer-growth",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cloud-dealer-payment-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "cloud-dealer-payment-rate",
+              "output": "cloud-dealer-payment-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cloud-dealer-growth-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "cloud-dealer-growth-rate",
+              "output": "cloud-dealer-growth",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "service-capability-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "service-capability-rate",
+              "output": "service-capability-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "risk-control-score-region",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "risk-control-rate",
+              "output": "risk-control",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "perception-willingness",
+            "perception-feedback"
+          ],
+          "output": "perception-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "satisfaction-evaluation"
+          ],
+          "output": "satisfaction-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "contribution-business",
+            "contribution-human",
+            "csp-customer-payment-ratio",
+            "csp-customer-growth",
+            "cloud-dealer-payment-ratio",
+            "cloud-dealer-growth",
+            "service-capability-ratio"
+          ],
+          "output": "contribution-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "risk-control"
+          ],
+          "output": "risk-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "perception-score",
+            "satisfaction-score",
+            "contribution-score",
+            "risk-score"
+          ],
+          "output": "total-score",
+          "onMissing": "zero"
+        }
+      ]
+    },
+    "health-scores-representative": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "perception-willingness": {
+          "type": "number",
+          "role": "measure",
+          "label": "合作意愿感知评分"
+        },
+        "perception-feedback": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴声音闭环率得分"
+        },
+        "satisfaction-evaluation": {
+          "type": "number",
+          "role": "measure",
+          "label": "客户对伙伴的评价得分"
+        },
+        "contribution-business": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入得分"
+        },
+        "contribution-human": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域专职团队认证达标率得分"
+        },
+        "csp-customer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户付费占比得分"
+        },
+        "csp-customer-growth": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户数增长得分"
+        },
+        "cloud-dealer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商付费占比得分"
+        },
+        "cloud-dealer-growth": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商数增长得分"
+        },
+        "service-capability-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域能力标签伙伴得分"
+        },
+        "risk-control": {
+          "type": "number",
+          "role": "measure",
+          "label": "扣分"
+        },
+        "perception-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "satisfaction-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "contribution-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total-score": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": []
+      },
+      "compute": [
+        {
+          "op": "unionKeys",
+          "sources": [
+            "perception-willingness-score-representative",
+            "voice-closure-score-representative",
+            "customer-eval-score-representative",
+            "contribution-business-score-representative",
+            "cert-compliance-score-representative",
+            "csp-customer-payment-score-representative",
+            "csp-customer-growth-score-representative",
+            "cloud-dealer-payment-score-representative",
+            "cloud-dealer-growth-score-representative",
+            "service-capability-score-representative",
+            "risk-control-score-representative"
+          ],
+          "keys": [
+            "region"
+          ]
+        },
+        {
+          "op": "joinAggregate",
+          "source": "perception-willingness-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "perception-willingness-rate",
+              "output": "perception-willingness",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "voice-closure-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "closure-rate",
+              "output": "perception-feedback",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "customer-eval-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "customer-eval-rate",
+              "output": "satisfaction-evaluation",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "contribution-business-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "contribution-business-rate",
+              "output": "contribution-business",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cert-compliance-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "cert-compliance-rate",
+              "output": "contribution-human",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "csp-customer-payment-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "csp-customer-payment-rate",
+              "output": "csp-customer-payment-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "csp-customer-growth-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "csp-customer-growth-rate",
+              "output": "csp-customer-growth",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cloud-dealer-payment-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "cloud-dealer-payment-rate",
+              "output": "cloud-dealer-payment-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cloud-dealer-growth-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "cloud-dealer-growth-rate",
+              "output": "cloud-dealer-growth",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "service-capability-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "service-capability-rate",
+              "output": "service-capability-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "risk-control-score-representative",
+          "keys": [
+            {
+              "local": "region",
+              "foreign": "region"
+            }
+          ],
+          "values": [
+            {
+              "field": "risk-control-rate",
+              "output": "risk-control",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "perception-willingness",
+            "perception-feedback"
+          ],
+          "output": "perception-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "satisfaction-evaluation"
+          ],
+          "output": "satisfaction-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "contribution-business",
+            "contribution-human",
+            "csp-customer-payment-ratio",
+            "csp-customer-growth",
+            "cloud-dealer-payment-ratio",
+            "cloud-dealer-growth",
+            "service-capability-ratio"
+          ],
+          "output": "contribution-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "risk-control"
+          ],
+          "output": "risk-score",
+          "onMissing": "zero"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "perception-score",
+            "satisfaction-score",
+            "contribution-score",
+            "risk-score"
+          ],
+          "output": "total-score",
+          "onMissing": "zero"
+        }
+      ]
     }
   },
   "sections": [
@@ -2284,7 +2998,7 @@
                       "span": 12
                     },
                     "data": {
-                      "main": "regional-comparison"
+                      "main": "health-scores-region"
                     },
                     "props": {
                       "categoryField": {
@@ -2341,7 +3055,7 @@
                       "span": 12
                     },
                     "data": {
-                      "main": "representative-comparison"
+                      "main": "health-scores-representative"
                     },
                     "props": {
                       "categoryField": {
@@ -2417,18 +3131,7 @@
                       "span": 12
                     },
                     "data": {
-                      "main": "voice-closure-score-region",
-                      "pending": "health-detail-region",
-                      "cert-compliance-score": "cert-compliance-score-region",
-                      "cloud-dealer-payment-score": "cloud-dealer-payment-score-region",
-                      "service-capability-score": "service-capability-score-region",
-                      "csp-customer-payment-score": "csp-customer-payment-score-region",
-                      "risk-control-score": "risk-control-score-region",
-                      "customer-eval-score": "customer-eval-score-region",
-                      "contribution-business-score": "contribution-business-score-region",
-                      "perception-willingness-score": "perception-willingness-score-region",
-                      "cloud-dealer-growth-score": "cloud-dealer-growth-score-region",
-                      "csp-customer-growth-score": "csp-customer-growth-score-region"
+                      "main": "health-scores-region"
                     },
                     "props": {
                       "rowKey": "region",
@@ -2440,9 +3143,10 @@
                         },
                         {
                           "field": {
-                            "data": "pending",
+                            "data": "main",
                             "field": "total-score",
-                            "format": "number-1"
+                            "format": "number-1",
+                            "missingText": "--"
                           },
                           "title": "伙伴健康度得分",
                           "width": 150,
@@ -2460,9 +3164,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "perception-willingness-score",
-                                    "field": "perception-willingness-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "perception-willingness",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "合作感知+合作意愿(25%)",
                                   "width": 200,
@@ -2478,8 +3183,9 @@
                                 {
                                   "field": {
                                     "data": "main",
-                                    "field": "closure-rate",
-                                    "format": "number-1"
+                                    "field": "perception-feedback",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "伙伴声音闭环率(5%)",
                                   "width": 180,
@@ -2507,9 +3213,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "customer-eval-score",
-                                    "field": "customer-eval-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "satisfaction-evaluation",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "客户对伙伴的整体评(30%)",
                                   "width": 200,
@@ -2531,9 +3238,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "contribution-business-score",
-                                    "field": "contribution-business-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "contribution-business",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "伙伴商业市场Core收入增长(5%)",
                                   "width": 250,
@@ -2548,9 +3256,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "cert-compliance-score",
-                                    "field": "cert-compliance-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "contribution-human",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "专职团队认证达标率(5%)",
                                   "width": 220,
@@ -2565,9 +3274,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "csp-customer-payment-score",
-                                    "field": "csp-customer-payment-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "csp-customer-payment-ratio",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "CSP价值客户付费占比(5%)",
                                   "width": 220,
@@ -2581,9 +3291,10 @@
                                 },
                                 {
                                   "field": {
-                                    "data": "csp-customer-growth-score",
-                                    "field": "csp-customer-growth-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "csp-customer-growth",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "CSP价值客户数量增长(5%)",
                                   "width": 220,
@@ -2604,9 +3315,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "cloud-dealer-payment-score",
-                                    "field": "cloud-dealer-payment-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "cloud-dealer-payment-ratio",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "价值云经销商付费占比(5%)",
                                   "width": 220,
@@ -2620,9 +3332,10 @@
                                 },
                                 {
                                   "field": {
-                                    "data": "cloud-dealer-growth-score",
-                                    "field": "cloud-dealer-growth-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "cloud-dealer-growth",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "价值云经销商数量增长(5%)",
                                   "width": 220,
@@ -2643,9 +3356,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "service-capability-score",
-                                    "field": "service-capability-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "service-capability-ratio",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "具备服务能力标签的伙伴数量占比(10%)",
                                   "width": 280,
@@ -2673,9 +3387,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "risk-control-score",
-                                    "field": "risk-control-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "risk-control",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "扣分项",
                                   "width": 120,
@@ -2705,18 +3420,7 @@
                       "span": 12
                     },
                     "data": {
-                      "main": "voice-closure-score-representative",
-                      "pending": "health-detail-representative",
-                      "cert-compliance-score": "cert-compliance-score-representative",
-                      "cloud-dealer-payment-score": "cloud-dealer-payment-score-representative",
-                      "service-capability-score": "service-capability-score-representative",
-                      "csp-customer-payment-score": "csp-customer-payment-score-representative",
-                      "risk-control-score": "risk-control-score-representative",
-                      "customer-eval-score": "customer-eval-score-representative",
-                      "contribution-business-score": "contribution-business-score-representative",
-                      "perception-willingness-score": "perception-willingness-score-representative",
-                      "cloud-dealer-growth-score": "cloud-dealer-growth-score-representative",
-                      "csp-customer-growth-score": "csp-customer-growth-score-representative"
+                      "main": "health-scores-representative"
                     },
                     "props": {
                       "rowKey": "region",
@@ -2728,9 +3432,10 @@
                         },
                         {
                           "field": {
-                            "data": "pending",
+                            "data": "main",
                             "field": "total-score",
-                            "format": "number-1"
+                            "format": "number-1",
+                            "missingText": "--"
                           },
                           "title": "伙伴健康度得分",
                           "width": 150,
@@ -2748,9 +3453,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "perception-willingness-score",
-                                    "field": "perception-willingness-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "perception-willingness",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "合作感知+合作意愿(25%)",
                                   "width": 200,
@@ -2766,8 +3472,9 @@
                                 {
                                   "field": {
                                     "data": "main",
-                                    "field": "closure-rate",
-                                    "format": "number-1"
+                                    "field": "perception-feedback",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "伙伴声音闭环率(5%)",
                                   "width": 180,
@@ -2795,9 +3502,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "customer-eval-score",
-                                    "field": "customer-eval-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "satisfaction-evaluation",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "客户对伙伴的整体评(30%)",
                                   "width": 200,
@@ -2819,9 +3527,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "contribution-business-score",
-                                    "field": "contribution-business-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "contribution-business",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "伙伴商业市场Core收入增长(5%)",
                                   "width": 250,
@@ -2836,9 +3545,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "cert-compliance-score",
-                                    "field": "cert-compliance-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "contribution-human",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "专职团队认证达标率(5%)",
                                   "width": 220,
@@ -2853,9 +3563,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "csp-customer-payment-score",
-                                    "field": "csp-customer-payment-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "csp-customer-payment-ratio",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "CSP价值客户付费占比(5%)",
                                   "width": 220,
@@ -2869,9 +3580,10 @@
                                 },
                                 {
                                   "field": {
-                                    "data": "csp-customer-growth-score",
-                                    "field": "csp-customer-growth-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "csp-customer-growth",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "CSP价值客户数量增长(5%)",
                                   "width": 220,
@@ -2892,9 +3604,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "cloud-dealer-payment-score",
-                                    "field": "cloud-dealer-payment-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "cloud-dealer-payment-ratio",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "价值云经销商付费占比(5%)",
                                   "width": 220,
@@ -2908,9 +3621,10 @@
                                 },
                                 {
                                   "field": {
-                                    "data": "cloud-dealer-growth-score",
-                                    "field": "cloud-dealer-growth-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "cloud-dealer-growth",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "价值云经销商数量增长(5%)",
                                   "width": 220,
@@ -2931,9 +3645,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "service-capability-score",
-                                    "field": "service-capability-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "service-capability-ratio",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "具备服务能力标签的伙伴数量占比(10%)",
                                   "width": 280,
@@ -2961,9 +3676,10 @@
                               "children": [
                                 {
                                   "field": {
-                                    "data": "risk-control-score",
-                                    "field": "risk-control-rate",
-                                    "format": "number-1"
+                                    "data": "main",
+                                    "field": "risk-control",
+                                    "format": "number-1",
+                                    "missingText": "--"
                                   },
                                   "title": "扣分项",
                                   "width": 120,
