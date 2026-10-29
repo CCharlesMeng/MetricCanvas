@@ -498,6 +498,8 @@ MC 内容包随本协议同步生成，包含同源字段语义、规则、例�
 
 6.61 新增 `pagedUnion` 分页合并源：按成员显式字段/常量/null 投影统一列，逐行保留全部记录，在完整匹配范围整体排序、搜索、筛选、计数、分页和导出；表格可按来源选择详情导航。声明、执行限制与真实接入边界见[数据源](docs/page-metadata/data-sources.md#paged-union)和[表格](docs/page-metadata/components/table.md#source-navigation)，验收页为 [multi-source-table.json](pages/capabilities/table/multi-source-table.json)。
 
+`pagedUnion` 行契约诊断补充（2026-10-29）：重复/缺失行键与来源排序错误先用表格标题、字段标签说明原因和处理建议，后附技术定位中的合并源、成员、来源数据源、行键/查询字段和配置路径；重复错误区分批内重复与跨批重复并定位两次来源行号及 offset，不回显业务字段值。见[数据源](docs/page-metadata/data-sources.md#paged-union)，合成故障入口为 `/pages/multi-source-table?rowFailure=duplicate`、`missing-key`、`order`。
+
 6.66 增量：`pagedJoin.records` 支持主表逐条审批记录与多对一当前信息补列、独立记录标识、本地审批期间筛选和有预算的分批完整关联；成员可显式声明不适用的业务筛选。旧组合源行为保持。配置与限制见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，合成验收入口 `/pages/record-join-demo`。
 
 记录模式的 object 成员保留显式查询排序；无排序时仅按关联键升序，不自动生成多字段排序。完整关联后的表格排序与扫描顺序分别处理；对应合成验收页为 [object-record-join-demo](pages/capabilities/query/object-record-join-demo.json)，支持审批记录保留、指标补列及全局表格操作。

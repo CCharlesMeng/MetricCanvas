@@ -1,12 +1,12 @@
-import { queryResultFieldContract, restoreCellFallbacks, validateContractRows, type Row } from '@metriccanvas/page/internal';
+import { queryResultFieldContract, restoreCellFallbacks, validateContractRows, type Row, type RowContractIssue } from '@metriccanvas/page/internal';
 import { rawSnapshot } from '../snapshots';
 import { intersectQueryFilters } from '../intersect-filters';
 import type { QueryRunner } from '../query-runner';
 import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
-import { unionError, unionRow, type UnionMemberPlan, type UnionPlan } from './plan';
+import { unionError, unionMemberError, unionKeyLabel, unionSortLabel, unionRow, type UnionMemberPlan, type UnionPlan } from './plan';
 import { compareUnionRows } from './order';
 
-interface Cursor { member: UnionMemberPlan; rows: Row[]; index: number; offset: number; total: number; previous?: Row; seen: Set<string>; }
+interface Cursor { member: UnionMemberPlan; rows: Row[]; index: number; offset: number; total: number; previous?: Row; seen: Map<string, number>; }
 interface Progress { cursors: Cursor[]; position: number; total: number; }
 const BATCH = 200, MAX_SCAN = 100_000;
 export function createUnionReader(runner: QueryRunner) {
@@ -50,7 +50,7 @@ export function createUnionReader(runner: QueryRunner) {
   return { read, clear() { checkpoints.clear(); } };
   async function open(plan: UnionPlan, scope: string, signal: AbortSignal): Promise<Progress> {
     const cursors = await Promise.all(plan.members.map(async member => {
-      const cursor: Cursor = { member, rows: [], index: 0, offset: 0, total: -1, seen: new Set() };
+      const cursor: Cursor = { member, rows: [], index: 0, offset: 0, total: -1, seen: new Map() };
       await refill(plan, cursor, runner, scope, signal);
       return cursor;
     }));
@@ -63,7 +63,7 @@ function trim<K, V>(map: Map<K, V>, size: number): void {
   while (map.size > size) map.delete(map.keys().next().value!);
 }
 function cloneProgress(progress: Progress): Progress {
-  return { ...progress, cursors: progress.cursors.map(cursor => ({ ...cursor, rows: [...cursor.rows], seen: new Set(cursor.seen) })) };
+  return { ...progress, cursors: progress.cursors.map(cursor => ({ ...cursor, rows: [...cursor.rows], seen: new Map(cursor.seen) })) };
 }
 async function refill(plan: UnionPlan, cursor: Cursor, runner: QueryRunner, scope: string, signal: AbortSignal): Promise<void> {
   if (cursor.index < cursor.rows.length || (cursor.total >= 0 && cursor.offset >= cursor.total)) return;
@@ -76,8 +76,8 @@ async function refill(plan: UnionPlan, cursor: Cursor, runner: QueryRunner, scop
   restoreCellFallbacks(raw, result.status === 'ready' ? result.cellFallbacks : undefined);
   assertBatch(cursor, raw.length, result.totalCount);
   cursor.total = result.totalCount!;
-  const rows = projectedRows(plan, cursor.member, raw);
-  for (const row of rows) validateRowOrder(plan, cursor, row);
+  const rows = projectedRows(plan, cursor, raw);
+  for (const [index, row] of rows.entries()) validateRowOrder(plan, cursor, row, cursor.offset + index + 1);
   cursor.rows = rows; cursor.index = 0; cursor.offset += rows.length;
 }
 function assertBatch(cursor: Cursor, length: number, total: number | undefined): void {
@@ -85,12 +85,18 @@ function assertBatch(cursor: Cursor, length: number, total: number | undefined):
   if (cursor.total >= 0 && total !== cursor.total) throw new CountChanged();
   if (length !== Math.min(BATCH, Math.max(0, total - cursor.offset))) throw unionError('来源未返回完整分页');
 }
-function validateRowOrder(plan: UnionPlan, cursor: Cursor, row: Row): void {
+function validateRowOrder(plan: UnionPlan, cursor: Cursor, row: Row, rowNumber: number): void {
   const key = String(row[plan.data.source.rowKey]);
-  if (cursor.seen.has(key)) throw unionError('来源内行键重复或实时分页发生重叠，请刷新');
+  const firstRow = cursor.seen.get(key);
+  if (firstRow !== undefined) {
+    const advice = firstRow > cursor.offset
+      ? '页面用这个字段区分每条记录，因此不能重复。请改用能区分每条记录的字段。'
+      : '这次翻页返回的数据与前面有重复标识。请检查查询是否重复返回了数据，以及这个字段是否能区分每条记录。';
+    throw unionMemberError(plan, cursor.member, `同一个查询返回的第 ${firstRow} 条和第 ${rowNumber} 条记录，“${unionKeyLabel(cursor.member)}”相同。${advice}\n分页定位：offset=${cursor.offset}`);
+  }
   if (cursor.seen.size >= MAX_SCAN + BATCH) throw unionError('来源扫描超过资源限制', 'DQE_QUERY_REJECTED');
-  cursor.seen.add(key);
-  if (cursor.previous && compareUnionRows(cursor.previous, row, plan.view.sort) > 0) throw unionError('来源排序与合并比较规则不一致');
+  cursor.seen.set(key, rowNumber);
+  if (cursor.previous && compareUnionRows(cursor.previous, row, plan.view.sort) > 0) throw unionMemberError(plan, cursor.member, `查询返回的第 ${rowNumber - 1} 条和第 ${rowNumber} 条记录顺序不符合表格要求。请检查查询是否按${unionSortLabel(plan)}返回，并把空值放在最后。\n排序定位：offset=${cursor.offset}，排序=${JSON.stringify(plan.view.sort)}`);
   cursor.previous = row;
 }
 function first(cursors: Cursor[], plan: UnionPlan): Cursor | undefined {
@@ -119,11 +125,20 @@ function assertScanSize(end: number): void {
   if (end > MAX_SCAN) throw unionError('首次深页扫描超过 100000 行，请缩小筛选范围', 'DQE_QUERY_REJECTED');
 }
 
-function projectedRows(plan: UnionPlan, member: UnionMemberPlan, raw: Row[]): Row[] {
+function projectedRows(plan: UnionPlan, cursor: Cursor, raw: Row[]): Row[] {
+  const member = cursor.member;
   const fields = Object.fromEntries(Object.entries(member.input.fields).map(([id, field]) => [id, queryResultFieldContract(field)]));
-  if (!validateContractRows(raw, fields).ok) throw unionError('来源行违反原始结果字段契约');
-  const rows = raw.map(row => unionRow(plan, member, row));
+  const inputResult = validateContractRows(raw, fields);
+  if (!inputResult.ok) throw unionMemberError(plan, member, contractIssueMessage('来源行违反原始结果字段契约', inputResult.issues[0], cursor.offset, fields));
+  const rows = raw.map((row, index) => unionRow(plan, member, row, cursor.offset + index + 1));
   const output = Object.fromEntries(Object.entries(plan.data.fields).map(([id, field]) => [id, queryResultFieldContract(field)]));
-  if (!validateContractRows(rows, output).ok) throw unionError('合并行违反最终结果字段契约');
+  const outputResult = validateContractRows(rows, output);
+  if (!outputResult.ok) throw unionMemberError(plan, member, contractIssueMessage('合并行违反最终结果字段契约', outputResult.issues[0], cursor.offset, output));
   return rows;
+}
+
+function contractIssueMessage(message: string, issue: RowContractIssue, offset: number, fields: Readonly<Record<string, { label?: string }>>): string {
+  const row = 'rowIndex' in issue ? `第 ${offset + issue.rowIndex + 1} 条记录` : '记录';
+  const field = 'fieldId' in issue ? `中的“${fields[issue.fieldId]?.label ?? '字段'}”` : '';
+  return `查询返回的${row}${field}不符合页面要求的数据格式。请检查查询返回的数据。\n格式定位：${message}，${JSON.stringify(issue)}（offset=${offset}）`;
 }

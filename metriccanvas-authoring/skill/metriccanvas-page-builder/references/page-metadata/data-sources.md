@@ -62,6 +62,8 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 `source.rowKey` 和 `source.sourceField` 分别命名最终行键与来源标识；两者声明为非空 string 维度且不得重名。`members` 的键是稳定来源 ID。每个成员引用已有查询定义，声明非空 string/number 维度 `rowKey`；来源内唯一性由上游保证，运行时检查已读取范围，重复或缺失时报错。最终行键是来源 ID 与原始行键的结构化编码，来源标识无需展示。
 
+行键重复、缺失/类型错误及来源排序不一致时，`DQE_ROW_CONTRACT_ERROR` 的消息先用实际表格标题和字段标签说明哪两条查询记录冲突、为什么不能继续以及应检查什么；首段不出现内部 ID、rowKey、offset 或 queryField。后续“技术定位”段保留合并源、成员 ID、来源页面数据源、行键字段及其 `queryField`、成员行键配置的 JSON Pointer。重复错误区分本批内重复和跨批次重复（可能分页重叠），给出首次与当前来源行号（从 1 开始）及当前批次 `offset`（从 0 开始）；行号属于该成员当前生效查询的返回序列，不是表格合并后序号。排序错误给出相邻来源行号和当前排序规则。消息不包含实际行键值或业务行内容。验收入口：`/pages/multi-source-table?rowFailure=duplicate`、`?rowFailure=missing-key`、`?rowFailure=order`；均为合成响应故障。
+
 每个成员的 `projection` 必须覆盖所有非身份输出字段；每项恰好声明 `{ "field": "成员页面字段" }` 或 `{ "value": "常量" }`，缺字段显式写 `{ "value": null }`。类型、角色、单位、币种和可空性必须兼容；比例刻度由上游契约统一，不换算货币、重算比例或执行表达式。外部响应字段仍由成员的 `queryField` 归一化。首期只合并标量字段；成员无 compute、resultBindings、业务 TopN/分页窗口及嵌套组合。普通成员可供独立组件消费，合并视图不会覆盖成员快照。
 
 ```json

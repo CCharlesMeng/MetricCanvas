@@ -2,10 +2,25 @@ import { canonicalizeJson, copyFieldFallback, selectQuerySource, tableHeaders, t
 import { composeEffectiveQuery } from '../effective-query';
 import { filterTableRows, searchTableRows } from '../table-view';
 import type { FilterValues } from '../filter-values';
+import { describeExportSource } from '../source-program/export-diagnostics';
 
 export const unionError = (message: string, code = 'DQE_ROW_CONTRACT_ERROR') => Object.assign(new Error(message), { code });
 export interface UnionMemberPlan { id: string; member: PagedUnionMember; input: QueryDataSource; query: EffectiveQuery; }
 export interface UnionPlan { page: Page; id: string; data: PagedUnionDataSource; view: TableQueryView; members: UnionMemberPlan[]; key: string; }
+export function unionKeyLabel(member: UnionMemberPlan): string {
+  return member.input.fields[member.member.rowKey].label ?? '记录标识';
+}
+export function unionSortLabel(plan: UnionPlan): string {
+  return plan.view.sort.map(rule => `“${plan.data.fields[rule.field].label ?? '排序字段'}”${rule.direction === 'desc' ? '从大到小' : '从小到大'}`).join('、');
+}
+/** Metadata and row positions only: never include the offending key or row contents. */
+export function unionMemberError(plan: UnionPlan, member: UnionMemberPlan, message: string, code = 'DQE_ROW_CONTRACT_ERROR'): Error {
+  const field = member.input.fields[member.member.rowKey];
+  const queryField = 'queryField' in field ? field.queryField : member.member.rowKey;
+  const pointer = [plan.id, 'source', 'members', member.id, 'rowKey'].map(part => part.replaceAll('~', '~0').replaceAll('/', '~1')).join('/');
+  const title = describeExportSource(plan.page, plan.id).components.find(component => component.relation === 'direct' && component.componentTitle)?.componentTitle ?? plan.page.meta?.title ?? '当前表格';
+  return unionError(`“${title}”无法合并数据。${message}\n技术定位：合并源 ${plan.id}，成员 ${member.id}，来源 ${member.member.source}，行键 ${member.member.rowKey}（queryField=${queryField}）；配置 /dataSources/${pointer}`, code);
+}
 export function compileUnion(page: Page, id: string, conditions: FilterValues, input: TableQueryView, now?: Date): UnionPlan {
   const data = page.dataSources[id] as PagedUnionDataSource, view = structuredClone(input);
   if (!view.sort.length) view.sort = structuredClone(data.source.ordering.default);
@@ -45,10 +60,10 @@ function memberSearch(view: TableQueryView, member: PagedUnionMember, literals: 
   const fields = search.fields.filter(field => !Object.hasOwn(literals, field)).map(field => mappedField(member, field));
   return fields.length ? { ...search, fields } : false;
 }
-export function unionRow(plan: UnionPlan, member: UnionMemberPlan, raw: Row): Row {
+export function unionRow(plan: UnionPlan, member: UnionMemberPlan, raw: Row, rowNumber: number): Row {
   const key = raw[member.member.rowKey];
   const keyType = member.input.fields[member.member.rowKey].type;
-  if (typeof key !== keyType || (typeof key === 'string' && !key.trim()) || (typeof key === 'number' && !Number.isFinite(key))) throw unionError('来源内行键缺失或类型错误');
+  if (typeof key !== keyType || (typeof key === 'string' && !key.trim()) || (typeof key === 'number' && !Number.isFinite(key))) throw unionMemberError(plan, member, `查询返回的第 ${rowNumber} 条记录没有有效的“${unionKeyLabel(member)}”。页面用这个字段区分每条记录，它必须是非空的${keyType === 'string' ? '文字' : '数字'}。请检查查询返回的数据。`);
   const row: Row = Object.fromEntries([[plan.data.source.rowKey, JSON.stringify([member.id, key])], [plan.data.source.sourceField, member.id],
     ...Object.entries(member.member.projection).map(([field, projection]) => [field, 'field' in projection ? raw[projection.field] : projection.value])]);
   for (const [field, projection] of Object.entries(member.member.projection)) {

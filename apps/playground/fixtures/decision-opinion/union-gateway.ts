@@ -6,7 +6,7 @@ import { filterTableRows, searchTableRows, sortTableRows } from '../../../../pac
 import { createMemberRows, type MemberId } from './model';
 
 /** Ordinary independent pageable query endpoints; the product SourceProgram owns merging. */
-export function createUnionPreview(options: { generatedCount?: number; failMember?: MemberId; delayMs?: number } = {}) {
+export function createUnionPreview(options: { generatedCount?: number; failMember?: MemberId; delayMs?: number; rowFailure?: string | null } = {}) {
   const requests: EffectiveQuery[] = [];
   const data = { contract: createMemberRows('contract', options.generatedCount), commercial: createMemberRows('commercial', options.generatedCount) };
   function rows(query: EffectiveQuery): Row[] {
@@ -31,7 +31,9 @@ export function createUnionPreview(options: { generatedCount?: number; failMembe
       if (options.delayMs) await new Promise(resolve => setTimeout(resolve, options.delayMs));
       signal?.throwIfAborted(); requests.push(structuredClone(query));
       const matching = rows(query), window = query.pagination;
-      return { rows: window ? matching.slice(window.offset, window.offset + window.limit) : matching, totalCount: matching.length };
+      const batch = window ? matching.slice(window.offset, window.offset + window.limit) : matching;
+      injectRowFailure(batch, options.rowFailure);
+      return { rows: batch, totalCount: matching.length };
     },
     async fetchColumnCandidates(request, _diagnostics, signal) {
       signal?.throwIfAborted();
@@ -45,4 +47,14 @@ export function createUnionPreview(options: { generatedCount?: number; failMembe
     }
   };
   return { dataGateway, requests, data };
+}
+
+/** Faults affect synthetic response rows only; page metadata and real adapters are unchanged. */
+function injectRowFailure(rows: Row[], failure: string | null | undefined): void {
+  if (rows.length < 2 || !Object.hasOwn(rows[0], 'commercial-localRowId')) return;
+  switch (failure) {
+    case 'duplicate': rows[1]['commercial-localRowId'] = rows[0]['commercial-localRowId']; break;
+    case 'missing-key': rows[1]['commercial-localRowId'] = null; break;
+    case 'order': rows.reverse(); break;
+  }
 }

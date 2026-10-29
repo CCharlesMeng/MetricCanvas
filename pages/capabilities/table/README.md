@@ -312,6 +312,7 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 5. 点击导出：无筛选时得到 256 行的 Excel，带一行表头，排序保持当前提交视图；搜索或筛选后只导出全部匹配行。容量与异常沿用 10000 行/60 秒上限，不输出部分文件。
 6. 点击合同、商务记录中的审批人，分别进入对应来源详情；URL 保留原始 `record-id`。浏览器后退可回到原页面。
 7. 访问 `/pages/multi-source-table?sourceFailure=commercial`：任一参与来源失败，整表报错，不展示合同半份记录。非法投影、单位冲突、缺失行键和旧协议版本有产品契约反例；取消、总数变化重试、缓存检查点和大规模按需源由行为测试补充。
+8. 访问 `/pages/multi-source-table?rowFailure=duplicate`：合成商务响应第二行复用第一行行键，整表报错；页面显示整表失败，控制台首段说明“审批统计明细”中第1、2条记录的“来源内编码”相同、该字段用于区分记录及修改建议；后续技术定位指出 `opinions` → `commercial`、`commercial-localRowId` / `commercial_local_row_id`、配置路径及来源第 1、2 行和 `offset=0`。`?rowFailure=missing-key` 定位第二行缺失行键；`?rowFailure=order` 定位相邻来源行排序错误。行号从 1 开始，offset 从 0 开始；不回显实际行键或业务行。清除参数恢复正常表格。跨200行批次重复及检查点由行为测试覆盖；这些合成故障不证明真实 DQE 分页稳定性。
 
 验收记录：[paged-union](../../../docs/evidence/paged-union/acceptance.md)。模拟、真实浏览器、静态协议及真实 DQE 分层报告；本页不证明真实服务具有稳定排序、NULL 规则、搜索编码、准确计数或候选接口。
 
