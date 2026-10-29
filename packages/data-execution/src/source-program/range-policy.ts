@@ -21,7 +21,8 @@ export function reusableInitialSnapshot(source: DataSource, view?: TableQueryVie
   if(incompleteInitialWindow(source,initial,view,windowed))return undefined;
   return rawSnapshot(initial.rows, initial.totalCount, initial.cellFallbacks);
 }
-export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, limit?: number, diagnostics?: QueryDiagnosticContext & { pagination?: EffectiveQuery['pagination'] }): DataSnapshot {
+interface RangeReadOptions { allowZeroTotal?: boolean; describeSource?: () => ExportSourceDetails }
+export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, limit?: number, diagnostics?: QueryDiagnosticContext & { pagination?: EffectiveQuery['pagination'] }, options?: RangeReadOptions): DataSnapshot {
   if (snapshot.status === 'error' || snapshot.status === 'loading' || source.source.type !== 'query') return snapshot;
   const count = snapshot.status === 'ready' ? snapshot.rows.length : 0;
   if (snapshot.totalCount !== undefined && (!Number.isSafeInteger(snapshot.totalCount) || snapshot.totalCount < 0)) {
@@ -30,11 +31,11 @@ export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, l
   if (limit !== undefined && count > limit) {
     return { status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: `查询返回 ${count} 行，超过请求上限 ${limit} 行` } };
   }
-  if (incompleteObjectSource(source,count,snapshot.totalCount)) return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'object complete 结果与 totalCount 不一致'}};
+  if (incompleteObjectSource(source,count,snapshot.totalCount,options?.allowZeroTotal)) return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'object complete 结果与 totalCount 不一致'}};
   if (diagnostics && snapshot.totalCount !== undefined &&
     totalCountMismatch(count, snapshot.totalCount, source.source.resultScope, diagnostics)) {
     console.warn('[MetricCanvas][TOTAL_COUNT_MISMATCH] 查询结果总数与返回行数不一致；继续使用已返回数据', {
-      code: 'TOTAL_COUNT_MISMATCH', ...diagnostics, rowCount: count,
+      code: 'TOTAL_COUNT_MISMATCH', ...diagnostics, ...options?.describeSource?.(), completeness: 'unverified', rowCount: count,
       totalCount: snapshot.totalCount, resultScope: source.source.resultScope
     });
   }
@@ -54,7 +55,7 @@ export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot
   if (total === undefined || (total > 0 && query.pagination.offset < total) || (total === 0 && query.pagination.offset === 0)) return undefined;
   return Math.max(0, Math.ceil(total / query.pagination.limit) - 1);
 }
-export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails, allowPartial = false): Promise<DataSnapshot> {
+export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails, allowPartial = false, allowZeroTotal?: boolean): Promise<DataSnapshot> {
   const { frozen, declared, limit } = exportReadWindow(query);
   const strict = isObjectDqeItem(query.body.dsl_list[0]);
   let paged = declared !== undefined, offset = 0, expected: number | undefined;
@@ -91,6 +92,8 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
     return rawSnapshot(rows, rows.length);
   }
   function excessRows(pageRowCount: number): DataSnapshot {
+    // Screen reads retain the contradictory total; strict full reads still fail.
+    if (allowZeroTotal && expected === 0) return rawSnapshot(rows, expected);
     if(strict)throw new SourceRangeError('EXPORT_INCOMPLETE_DATA','object 完整结果行数超过 totalCount');
     const sourceDetails = describeSource?.();
     const location = sourceDetails ? ` [数据源 ${sourceDetails.dataSourceId}；组件 ${sourceDetails.components.map(component => `${component.componentTitle ?? component.componentType} (${component.componentId})`).join('、') || '无组件引用'}]` : '';
@@ -143,7 +146,8 @@ function assertExportCompleteness(paged: boolean, expected: number | undefined, 
   if (!paged && expected === undefined && !trusted) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '完整导出需要 totalCount 或显式完整结果契约');
 }
 
-function incompleteObjectSource(source: DataSource, count: number, total: number | undefined): boolean {
+function incompleteObjectSource(source: DataSource, count: number, total: number | undefined, allowZeroTotal?: boolean): boolean {
+  if (allowZeroTotal && total === 0 && count > 0) return false;
   return source.source.type==='query' && source.source.resultScope==='complete' && total!==undefined && count!==total && queryLeaves(source.source.query).some(query=>isObjectDqeItem(query.body.dsl_list[0]));
 }
 

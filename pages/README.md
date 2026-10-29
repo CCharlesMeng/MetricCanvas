@@ -569,3 +569,4 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 - [层级筛选联动父子表格](capabilities/table/README.md#层级筛选联动父子表格)：显式归属定位、共同条件刷新及完整双工作表 Excel，入口 `/pages/table-hierarchy-selection`。
 
 - 缺项得分归零能力：`/pages/sum-fields-missing-values`（inline合成），说明见[数据计算](capabilities/data/README.md)；伙伴健康度业务计算见[临时业务页面](temporary/README.md)。
+- 查询总数为0但已有行：`/pages/query-zero-total-demo`（本地合成HTTP），展示主槽/辅助槽保留返回行及控制台定位告警；步骤见[查询场景](capabilities/query/README.md#零总数与已有行)。

@@ -26,7 +26,7 @@ export function computedSnapshots(
     const dependencies = new Map<string, readonly DataRow[]>();
     let dependencyState: DataSnapshot | undefined;
     for (const dependency of computeDependencies(source.compute ?? [])) {
-      const value = visit(dependency);
+      const value = completeDependency(sources.get(dependency), visit(dependency));
       if (value.status === 'error') dependencyState = value;
       else if (value.status === 'loading' && dependencyState?.status !== 'error') dependencyState = value;
       else if (value.status === 'ready') dependencies.set(dependency, value.rows);
@@ -37,7 +37,7 @@ export function computedSnapshots(
       else if (snapshot.status === 'loading' || dependencyState?.status === 'loading') computed = { status: 'loading' };
       else if (snapshot.status === 'ready' || snapshot.status === 'empty') {
         const rows = snapshot.status === 'ready' ? snapshot.rows : [];
-        const checked = checkOrdinaryRange(source,snapshot);
+        const checked = checkOrdinaryRange(source,snapshot,undefined,undefined,{allowZeroTotal:canRenderZeroTotal(source)});
         if (checked.status==='error') {
           computed = checked;
         } else try {
@@ -61,4 +61,13 @@ export function computedSnapshots(
 function restoreSnapshot(snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
   if (snapshot?.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
   return snapshot;
+}
+
+/** Cross-source computation cannot promote a provisional display receipt to a complete input. */
+function completeDependency(source: DataSource | undefined, snapshot: DataSnapshot): DataSnapshot {
+  return source ? checkOrdinaryRange(source, snapshot) : snapshot;
+}
+
+function canRenderZeroTotal(source: DataSource): boolean {
+  return computeDependencies(source.compute ?? []).length === 0;
 }

@@ -189,7 +189,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
             let query = preparedQuery(id, source as QueryDataSource, view, input.values);
             const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
             const preserveWindow = preserveBusinessWindow(id, source);
-            if (requiresCompleteRead(preserveWindow,source,query)) { resultLimit = undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, querySource.source.resultScope === 'complete', () => describeExportSource(page, id), request.allowPartial); }
+            if (requiresCompleteRead(preserveWindow,source,query)) { resultLimit = undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, querySource.source.resultScope === 'complete', () => describeExportSource(page, id), request.allowPartial, request.purpose !== 'complete'); }
             else {
               snapshot = await runner.run(query, diagnostics, scope, request.signal);
               const corrected = correctedPageIndex(query, snapshot);
@@ -203,7 +203,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
             }
           }
           request.signal?.throwIfAborted();
-          snapshot = checkOrdinaryRange(source, snapshot, resultLimit, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id], pagination: queries.get(id)?.pagination });
+          snapshot = checkOrdinaryRange(source, snapshot, resultLimit, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id], pagination: queries.get(id)?.pagination }, { allowZeroTotal: request.purpose !== 'complete', describeSource: () => describeExportSource(page, id) });
           finishQueryRead(id, source as QueryDataSource, view, snapshot);
         }
         async function executeCombined(id: string, source: PagedJoinDataSource | PagedUnionDataSource, view: TableQueryView): Promise<void> {
@@ -324,7 +324,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
             try {
               const rows = queryRowsFromPageRows(snapshot.status === 'ready' ? snapshot.rows : [], source.fields);
               // Keep inconsistent live rows visible without persisting an invalid first-page initial.
-              const validInitialWindow = !compiled.limits.has(id) || (snapshot.totalCount !== undefined && rows.length === Math.min(view.pageSize, snapshot.totalCount));
+              const validInitialWindow = captureConsistentInitial(rows.length, snapshot.totalCount, compiled.limits.has(id), view.pageSize, isObjectDqeItem(source.source.query.body?.dsl_list[0]));
               if (validInitialWindow && defaultQueryView(id, view)) initials.set(id, { capturedAt: new Date().toISOString(), rows, ...(snapshot.totalCount === undefined ? {} : { totalCount: snapshot.totalCount }) });
             }
             catch (cause) { snapshot = { status: 'error', error: preservedQueryError(cause) }; }
@@ -370,4 +370,10 @@ export type SourceProgram = ReturnType<typeof createSourceProgram>;
 
 function objectCompleteSource(source: DataSource, query: EffectiveQuery): boolean {
   return source.source.type==='query' && source.source.resultScope==='complete' && isObjectDqeItem(query.body.dsl_list[0]);
+}
+
+/** Never freeze provisional zero-total rows as a trusted complete initial. */
+function captureConsistentInitial(count: number, total: number | undefined, windowed: boolean, pageSize: number, strict: boolean): boolean {
+  if (strict && total === 0 && count > 0) return false;
+  return !windowed || (total !== undefined && count === Math.min(pageSize, total));
 }

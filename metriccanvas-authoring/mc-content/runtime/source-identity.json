@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "515dc9479d9ae710cef9f6c73731a5c309615ca6438585de0efe917bb103f530",
+  "sha256": "2b41e2f0a5ecab56dabf75f33b8ac33a60b2acf010c99baa32c2cd0dbee53cda",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "6fe34878f88b844efb95caf8f99e86d8ffb8a7b387f6322dff2700915ce0bff4"
+      "sha256": "04c4ab0ab63fd9e8c94275acef9bdbf53267be4fc1f2fa765482d4c75b61945b"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -1812,7 +1812,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "7165efbe3f3932610b796046d6e9f614bb9b9910431e3052ec514116d9dd9b86"
+      "sha256": "7ed4b32976909c314fc528a1dfa607965277533a6e82384c11196e744300bc28"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2228,7 +2228,7 @@
     },
     {
       "file": "pages/capabilities/query/README.md",
-      "sha256": "7206a7b65da7a1f7c7882a0e0a39e487ecbfd6591c30f75bb2405047604a7ef6"
+      "sha256": "c5ff6df1f4550dce4c5f7a42aefafc4b12aa67587be5366ad9524eaeade11f03"
     },
     {
       "file": "pages/capabilities/query/authoring-contract-reliability.json",
@@ -2249,6 +2249,10 @@
     {
       "file": "pages/capabilities/query/query-result-where-page.json",
       "sha256": "1d2707b95360080bc40ee5cc72eb9c3a180d46799e603be1b0144e7694841c6b"
+    },
+    {
+      "file": "pages/capabilities/query/query-zero-total-demo.json",
+      "sha256": "87aafcdb1c23742277cc529e150c2a19742fa4ea58d2ab8192aed708c576c974"
     },
     {
       "file": "pages/capabilities/query/stored-count-measures.json",

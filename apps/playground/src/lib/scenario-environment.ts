@@ -1,3 +1,4 @@
+import {createZeroTotalPreview} from '../../fixtures/zero-total-gateway';
 import {createHierarchyGateway} from '../../fixtures/hierarchy-gateway';
 import { createPartnerHealthPreview } from '../../fixtures/partner-preview/gateway';
 import {createRejectionPreview} from '../../fixtures/rejection-details/gateway';
@@ -13,6 +14,7 @@ import { dataGateway } from './services';
 /** Called only with an example ID resolved from the trusted scenario index, never from edited JSON. */
 export function scenarioEnvironment(exampleId: string, state = 'ready') {
   const kind = pageExternalInputs(exampleId);
+  if (kind === 'zero-total') return createZeroTotalPreview();
   if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
   if (kind === 'partner-preview') return createPartnerHealthPreview();
   if (kind === 'record-join') return createRejectionPreview();

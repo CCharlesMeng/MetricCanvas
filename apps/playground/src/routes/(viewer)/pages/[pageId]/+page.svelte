@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {zeroTotalPreviewGateway} from "../../../../../fixtures/zero-total-gateway";
   import {createHierarchyGateway} from '../../../../../fixtures/hierarchy-gateway';
   import {partnerHealthPreviewGateway} from "../../../../../fixtures/partner-preview/gateway";
   import {createRejectionPreview} from '../../../../../fixtures/rejection-details/gateway';
@@ -105,7 +106,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: partnerHealthPreviewGateway(pageId, pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: rejectionPreviewRowCount(pageId), failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : pageExternalInputs(pageId)==='hierarchy'?createHierarchyGateway():dataGateway)
+        dataGateway: zeroTotalPreviewGateway(pageId, partnerHealthPreviewGateway(pageId, pageExternalInputs(pageId) === 'record-join' ? createRejectionPreview({ rows: rejectionPreviewRowCount(pageId), failure: page.url.searchParams.get('sourceFailure') === 'true' }).dataGateway : pageExternalInputs(pageId) === 'paged-union' ? createUnionPreview({ failMember: page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined }).dataGateway : pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : pageExternalInputs(pageId)==='hierarchy'?createHierarchyGateway():dataGateway))
       };
     } catch (cause) {
       if (session !== loadSession) return;

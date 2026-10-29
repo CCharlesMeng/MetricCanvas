@@ -1,0 +1,224 @@
+{
+  "schemaVersion": "6.69",
+  "id": "query-zero-total-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "查询总数为零｜保留返回行与控制台告警",
+    "description": "本地合成响应：每项2行但总数为0时保留行并打印TOTAL_COUNT_MISMATCH；空结果不告警。"
+  },
+  "dataSources": {
+    "zero": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Zero Total/zero",
+                "output_fields": [
+                  "地区部",
+                  "得分"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "normal": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "base-score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Zero Total/normal",
+                "output_fields": [
+                  "地区部",
+                  "得分"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "empty": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Zero Total/empty",
+                "output_fields": [
+                  "地区部",
+                  "得分"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "counts",
+      "title": "合成数据：总数异常不阻断显示",
+      "container": "card",
+      "components": [
+        {
+          "id": "zero-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "zero"
+          },
+          "props": {
+            "title": "主查询：总数0，实际2行",
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "score",
+                  "format": "number-1"
+                },
+                "title": "得分"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        },
+        {
+          "id": "aux-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "normal",
+            "aux": "zero"
+          },
+          "props": {
+            "title": "辅助查询：总数0，仍按地区部对齐",
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "base-score",
+                  "format": "number-1"
+                },
+                "title": "得分"
+              },
+              {
+                "field": {
+                  "data": "aux",
+                  "field": "score",
+                  "format": "number-1"
+                },
+                "title": "辅助查询得分"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        },
+        {
+          "id": "empty-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "empty"
+          },
+          "props": {
+            "title": "正常空结果：总数0，实际0行",
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "score",
+                  "format": "number-1"
+                },
+                "title": "得分"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

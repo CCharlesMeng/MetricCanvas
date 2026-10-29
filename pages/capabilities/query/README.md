@@ -105,3 +105,13 @@
 ### 分页级联的等价月份格式
 
 `/pages/query-result-where-page`沿用既有DQE Sim场景：页面可保存紧凑年月202610，共享执行器的实际请求会规范为2026-10。仿真夹具接受这两个等价表示，仅接受该夹具月份；其他月份、日期精度值仍拒绝。原有按全部可排序列切换、全局排序后分页、结果行集合驱动下游查询和冻结窗口导出规则保持。验证由tools/dqe-sim/tests/query-result-where.test.ts经真实本地HTTP和共享运行时执行；不代表真实内网DQE格式验收。
+## 零总数与已有行
+
+启动 `pnpm dev:playground`，打开 `/pages/query-zero-total-demo`。页面自动发现，使用页面试验场专属合成HTTP响应，不需要业务DQE；普通业务页面和平台网关不变。
+
+- 第一张表：主查询返回甲地区部0.0、乙地区部-2.0，服务总数仍为0；显示两行。
+- 第二张表：主查询总数正常，辅助查询返回相同两行但总数0；辅助得分按region正确对齐，整表不清空。
+- 第三张表：总数0、返回0行，呈现正常空表头和空态。
+- 打开浏览器控制台，异常源仅输出一次 `TOTAL_COUNT_MISMATCH`，包含pageId、dataSourceId/Path、引用组件和bindingPath、rowCount=2、totalCount=0、completeness=unverified，不包含原始行。正常空结果不告警。
+
+页面只展示已返回数据，不证明完整结果。完整导出仍拒绝该矛盾响应；非法字段、非零对象完整总数矛盾与完整输入边界由 `tests/zero-total-rendering.test.ts` 验证。此场景不证明业务DQE已修正总数。
