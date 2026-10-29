@@ -3,7 +3,8 @@ import {describe, expect, it} from 'vitest';
 import {parsePage} from '../packages/page/src/index';
 import {applyComputation} from '../packages/data-execution/src/compute';
 
-const document = JSON.parse(readFileSync(new URL('../pages/temporary/partner-health.json', import.meta.url), 'utf8'));
+// 冻结原得分计算修订；当前业务页面由用户提供的完整新文档替换。
+const document = JSON.parse(readFileSync(new URL('./fixtures/partner-health-scoring.json', import.meta.url), 'utf8'));
 const parsed = parsePage(document);
 if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
 const page = parsed.page;

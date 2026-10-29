@@ -2,11 +2,12 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parsePage} from '../packages/page/src/index';
 import {applyComputation} from '../packages/data-execution/src/compute';
-import {partnerHealthResult,createPartnerHealthPreview,partnerHealthPreviewGateway,type PartnerHealthQuery} from '../apps/playground/fixtures/partner-preview/gateway';
-import {scoreMetrics} from '../apps/playground/fixtures/partner-preview/data';
+import {partnerHealthResult,createPartnerHealthPreview,type PartnerHealthQuery} from './fixtures/partner-health/gateway';
+import {scoreMetrics} from './fixtures/partner-health/data';
 import {pageExternalInputs} from '../apps/playground/fixtures/preview-inputs';
 
-const document=JSON.parse(readFileSync('pages/temporary/partner-health.json','utf8'));
+// 冻结原得分计算修订；用户覆盖业务页面不应改变已有计算能力的回归输入。
+const document=JSON.parse(readFileSync('tests/fixtures/partner-health-scoring.json','utf8'));
 const parsed=parsePage(document);
 if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
 const source=parsed.page.dataSources['health-overview']!;
@@ -46,10 +47,8 @@ describe('伙伴健康度完整预览使用页面协议',()=>{
   expect(partnerHealthResult({output_dims:['region_dept_name_cn'],output_metrics:[]}).data).toHaveLength(4);
   expect(partnerHealthResult({output_dims:['rep_office_name_cn_fin'],output_metrics:[]}).data).toHaveLength(8);
  });
- it('只在指定预览入口启用，不影响其他页面，不为未知查询伪造成功',async()=>{
-  const fallback={async fetchData(){throw Error('unused')}};
-  expect(partnerHealthPreviewGateway('other',fallback)).toBe(fallback);
-  expect(pageExternalInputs('partner-health')).toBe('partner-preview');
+ it('测试夹具不接管业务入口，不为未知查询伪造成功',async()=>{
+  expect(pageExternalInputs('partner-health')).toBeUndefined();
   expect(partnerHealthResult({output_dims:[],output_metrics:['未知指标']}).code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
   const controller=new AbortController();controller.abort();
   await expect(createPartnerHealthPreview().dataGateway.fetchDimensionValues('geo_pc_name_cn',{signal:controller.signal})).rejects.toMatchObject({code:'DQE_CANCELLED'});

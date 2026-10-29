@@ -1,6 +1,5 @@
 import {createZeroTotalPreview} from '../../fixtures/zero-total-gateway';
 import {createHierarchyGateway} from '../../fixtures/hierarchy-gateway';
-import { createPartnerHealthPreview } from '../../fixtures/partner-preview/gateway';
 import {createRejectionPreview} from '../../fixtures/rejection-details/gateway';
 import { createUnionPreview } from '../../fixtures/decision-opinion/union-gateway';
 import { createIocHeaderPreview } from './ioc-header-preview-inputs';
@@ -16,7 +15,6 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
   const kind = pageExternalInputs(exampleId);
   if (kind === 'zero-total') return createZeroTotalPreview();
   if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
-  if (kind === 'partner-preview') return createPartnerHealthPreview();
   if (kind === 'record-join') return createRejectionPreview();
   if (kind === 'ioc-header') return createIocHeaderPreview();
   if (kind === 'ioc-business') return createIocBusinessPreview(exampleId, state, 'catalog-preview');

@@ -6,7 +6,6 @@ export function pageExternalInputs(id: string | undefined) {
   if (!id) return undefined;
   if (id === 'query-zero-total-demo') return 'zero-total';
   if (id === 'table-hierarchy-selection') return 'hierarchy';
-  if (id === 'partner-health') return 'partner-preview';
   if (id === 'record-join-demo' || id === 'record-join-no-row-limit') return 'record-join';
   if (unionPages.has(id)) return 'paged-union';
   if (id === 'decision-opinion-details') return 'decision-opinion';

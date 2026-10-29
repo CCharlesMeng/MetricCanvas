@@ -1,0 +1,62 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run apps/playground/tests/partner-health-dqe.test.ts
+
+ RUN  v4.1.11 /Users/moon/Documents/Code/公司项目/DataDashboard
+
+ ❯ apps/playground/tests/partner-health-dqe.test.ts (3 tests | 3 failed) 32ms
+     × voice-closure-score-region发送页面声明的execute请求，空结果不回填演示行 29ms
+     × customer-eval-score-region发送页面声明的execute请求，空结果不回填演示行 2ms
+     × 伙伴健康度不再注册模拟输入，传输失败向页面报告 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/playground/tests/partner-health-dqe.test.ts > 伙伴健康度使用共享DQE传输 > voice-closure-score-region发送页面声明的execute请求，空结果不回填演示行
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ apps/playground/tests/partner-health-dqe.test.ts:31:23
+     29|       fieldMappings: definition.fields, filterValues: []
+     30|     });
+     31|     expect(transport).toHaveBeenCalledTimes(1);
+       |                       ^
+     32|     const [url, init] = transport.mock.calls[0]!;
+     33|     expect(url).toBe(endpoint);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  apps/playground/tests/partner-health-dqe.test.ts > 伙伴健康度使用共享DQE传输 > customer-eval-score-region发送页面声明的execute请求，空结果不回填演示行
+DqeGatewayError: DQE 请求不可达:TypeError: Cannot read properties of undefined (reading 'length')
+ ❯ classifiedFetchError packages/data-execution/src/dqe/dqe.ts:643:10
+    641|     return new DqeGatewayError('DQE_CANCELLED', 'DQE 请求已被取消');
+    642|   }
+    643|   return new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${Strin…
+       |          ^
+    644| }
+    645|
+ ❯ executeBatch packages/data-execution/src/dqe/dqe.ts:351:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  apps/playground/tests/partner-health-dqe.test.ts > 伙伴健康度使用共享DQE传输 > 伙伴健康度不再注册模拟输入，传输失败向页面报告
+AssertionError: expected 'partner-preview' to be undefined
+
+- Expected:
+undefined
+
++ Received:
+"partner-preview"
+
+ ❯ apps/playground/tests/partner-health-dqe.test.ts:40:50
+     38|
+     39|   it('伙伴健康度不再注册模拟输入，传输失败向页面报告', async () => {
+     40|     expect(pageExternalInputs('partner-health')).toBeUndefined();
+       |                                                  ^
+     41|     transport.mockRejectedValue(new Error('DQE unavailable'));
+     42|     const definition = document.dataSources['voice-closure-score-regio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  11:28:41
+   Duration  1.14s (transform 545ms, setup 0ms, import 934ms, tests 32ms, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

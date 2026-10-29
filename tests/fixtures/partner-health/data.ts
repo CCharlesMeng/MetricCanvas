@@ -1,4 +1,4 @@
-/** 仅用于伙伴健康度页面试验场；各粒度分数是预设演示值，不代表业务聚合公式。 */
+/** 仅用于伙伴健康度自动化测试；各粒度分数是预设演示值，不代表业务聚合公式。 */
 export const scoreMetrics = [
   '助手-现网-合同商务看板-对象-合作意愿感知得分', '伙伴声音闭环率得分',
   '助手-现网-合同商务看板-对象-客户对伙伴的评价得分', '助手-现网-合同商务看板-对象-伙伴商业市场Core收入得分',
@@ -30,5 +30,5 @@ export const offices: readonly Office[] = [
 ];
 export function organizationFields(office: Office): Record<string,string> {
   return {data_site_type:office.site,geo_pc_name_cn:office.site,'地区部':office.department,
-    region_dept_name_cn:office.department,rep_office_name_cn_fin:office.name,rep_office_name_cn:office.name};
+    region_dept_name_cn:office.department,'代表处':office.name,rep_office_name_cn_fin:office.name,rep_office_name_cn:office.name};
 }

@@ -1,10 +1,46 @@
-# main交付版本说明
+# 2026-10-29 当前版本：同步main并关闭.length异常
 
-本次交付基于ce0aa79b4，既有层级表格占用6.70，伙伴健康度缺项求和顺延为6.71，local-authoring为1.7.0。下面开发过程中的6.70/1.6.0为隔离前历史版本；最终能力、页面和独立校验器均使用6.71。独立工作树重新生成契约并复验，真实DQE仍未执行。
+本地主分支从9ee7e6ac6快进至5c084bffb，产品协议与生成知识对齐6.73。恢复用户本轮partner-health修订，除schemaVersion从6.70迁移为6.73外，24个查询定义、字段、筛选、组件和13个空inline源均与同步前逐对象相同。没有将远端旧业务页的计算修订覆盖回用户页面。
 
-# 2026-10-28 当前版本：两层得分相加
+在同步后的main上复现原始报错：生产入口仍接入partner-preview，模拟器对object查询读取不存在的output_metrics.length，在HTTP前抛TypeError，被网关包装成DQE_TRANSPORT_ERROR。移除两处生产接管和模拟登记，删除应用目录中的旧模拟器，合成夹具只保留在测试目录。原有层级、零总数及分页合并等其他演示接线保留。
 
-已按本轮附件覆盖页面并接入两层横向加法。后端提供整体/地区部/代表处粒度的已加权子项；前端先生成四类得分，再生成总分。风险按负数，缺项按0，顶部不再读取旧inline示例分数。中国区/海外只作用顶部，日期/区域共享，上下页签独立。页面Schema6.71，所需sumFields归零策略已同步运行时与local-authoring。
+修复前3项回归失败，浏览器复现同一.length报错；修复后106项相关测试通过，覆盖28个查询分支、完整页面默认条件、空结果和传输失败。完整页面实际HTTP探针发出5次execute，记录11次生效查询，服务返回DQE_QUERY_REJECTED / DQE_SIM_UNSUPPORTED_QUERY，未再发生.length异常。浏览器默认页和代表处切换复核通过。真实业务DQE及凭据尚待对应环境验证。
+
+135个页面全部通过产品校验，页面试验场类型检查和生产构建通过。完整记录、原始失败日志、截图和复杂度报告见[本轮验收](../../docs/evidence/partner-health-real-dqe-20261029/README.md)。原始本地文件、补丁和冲突决策保留于 `/Users/moon/.codex/backups/metriccanvas-main-sync-20261029-4fr90u6x/`，Git恢复快照1620dcaf2a42d07abe95bc46241361151729cbd8保留；此段为提交前记录；本次范围交付与skip ci边界见本轮验收记录。
+
+---
+
+# 历史修订（2026-10-29）：移除页面专属模拟网关
+
+独立页面与场景预览均恢复共享DQE网关，删除partner-health专属网关分支、模拟输入登记及模拟提示。合成夹具移至 `tests/fixtures/partner-health/`，仅自动化测试使用。页面的24个query源、字段映射、筛选与详情配置未变；所有inline行仍为空。
+
+回归命令：`pnpm exec vitest run apps/playground/tests/partner-health-dqe.test.ts apps/playground/tests/runtime-config.test.ts tests/partner-health-preview.test.ts tests/partner-health-object-preview.test.ts tests/partner-health-scores.test.ts`，36项通过。新测试在修复前复现指标/对象查询HTTP调用均为0；修复后按页面声明向execute端点POST，覆盖空结果和传输失败不回填演示数据。页面试验场类型检查通过。
+
+浏览器入口 `http://localhost:5193/pages/partner-health` 已移除模拟提示，不再显示预设地区行；收到服务返回 `DQE_QUERY_REJECTED / DQE_SIM_UNSUPPORTED_QUERY`。本机默认开发代理仍连接本地DQE Sim，故这只证明页面已恢复HTTP查询，真实业务服务的成功返回及鉴权仍待对应环境验收。真实端点与凭据由既有运行配置供给，Windows gray开发代理配置不受本次修改影响。未修改页面协议或本地创作Skill的声明规则。
+
+复杂度口径为 `metriccanvas-ts-ast/1`、TypeScript 5.9.3，Svelte仅提取script测量；`pageExternalInputs` 12→11，`scenarioEnvironment` 9→8，`loadPage` 13→13。新增回归文件的7个函数/回调均为1；迁移夹具的全部函数最大9，调整的预览测试最大3，无本次超限项。测量报告位于 `/tmp/partner-health-real-dqe-20261029/complexity-{before,after}.json`。
+
+---
+
+# 历史修订（2026-10-29）：清空全部inline数据
+
+按用户要求清空13个inline源的所有数据行，共删除18行静态示例；保留字段、组件、筛选和详情引用。概览、对比图及未接数明细显示空态，24个query源完整保留。页面试验场仍使用专属模拟网关，因此查询区域的演示数据不代表真实业务结果。本地创作升级将schemaVersion从6.58迁移至6.70，未改变查询与交互配置。完整页面通过local-authoring独立校验器；本次只修改页面文档与说明，没有修改可执行函数或分支。
+
+浏览器验收入口为 `http://localhost:5193/pages/partner-health`：五个概览分数均显示“—”，对比图没有数据点；点击华东地区部的CSP价值客户付费占比明细，弹层显示“暂无数据”、总条数0。查询主表仍显示4个地区部的模拟结果。升级原件与报告保留于 `/tmp/partner-health-inline-removal-20261029/migration/`。
+
+---
+
+# 历史修订（2026-10-28）：按最新两段附件全文替换
+
+当前页面为用户最新提供的Schema6.58文档，前后两段直接拼接即可解析。两表以声音得分查询为main，其他得分按region对齐；总分仍绑定空pending槽，顶部与图表仍为inline示例，没有补写未经确认的汇总计算或查询映射。以下“两层得分相加”及更早章节均为被替换修订的历史记录。
+
+本地页面试验场专用模拟网关原先只处理指标查询，遇到本次object查询读取output_metrics.length时报TypeError；任一辅助槽失败按现有整表策略清空成功槽，因此出现“主查询成功但整表暂无数据”。本次修复该模拟适配器并补代表处维度别名，浏览器验证地区部4行、代表处8行。没有修改全局错误策略、业务DQE或页面字段映射。columns:null不参与当前网关字段映射，新增回归证明其正常消费；data缺失声明的queryField仍明确失败。真实客户评价响应尚待提供，不能把本地模拟故障当成真实环境根因。完整记录见[附件替换与预览修复](../../docs/evidence/partner-health-pasted-repair-20261028/README.md)。
+
+---
+
+# 历史修订：两层得分相加
+
+已按本轮附件覆盖页面并接入两层横向加法。后端提供整体/地区部/代表处粒度的已加权子项；前端先生成四类得分，再生成总分。风险按负数，缺项按0，顶部不再读取旧inline示例分数。中国区/海外只作用顶部，日期/区域共享，上下页签独立。页面Schema6.70，所需sumFields归零策略已同步运行时与local-authoring。
 
 当前查询将11项合为同粒度多指标请求，业务服务可执行性、整体口径和组织/站点筛选映射尚未取得真实DQE证据。其他明细的inline示例未变。验收与复杂度见[本轮记录](../../docs/evidence/partner-health-scores-20261028/acceptance.md)。下面内容为历史版本记录，其中“顶部仍为inline”“无前端总分计算”等已被本轮替换，不作为当前状态。
 

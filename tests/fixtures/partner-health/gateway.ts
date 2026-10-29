@@ -1,5 +1,4 @@
-import {createDqeGateway} from '@metriccanvas/engine/dqe';
-import type {DataGateway} from '@metriccanvas/engine';
+import {createDqeGateway} from '../../../packages/engine/data-gateway/src/dqe';
 import {offices,organizationFields,scopeScores,scoreMetrics,type Office,type ScoreVector} from './data';
 
 interface Predicate {dim_name:string;dim_value_list:string[]}
@@ -7,6 +6,18 @@ export interface PartnerHealthQuery {
   output_dims:string[];output_metrics:string[];
   filter?:{dims?:Predicate[];time?:{start?:string;end?:string;period?:string}};
 }
+interface PartnerHealthObjectQuery {
+  query_type:'object';object_type:string;output_fields:string[];
+  filter?:{fields?:{field_name:string;value_list:string[];operator?:string}[]};
+}
+type PreviewQuery = PartnerHealthQuery | PartnerHealthObjectQuery;
+/** 仅定义合成预览里的对象字段到预设分数的对应，不修改页面或业务DQE。 */
+const objectScores:Record<string,{field:string;metric:string}> = {
+  'Partner Health/Partner Deduction Score':{field:'扣分',metric:scoreMetrics[10]!},
+  'Partner Health/Custormer Partner Evaluation Score':{field:'客户对伙伴的评价得分',metric:scoreMetrics[2]!},
+  'Partner Health/Partner Core Income Score':{field:'收入得分',metric:scoreMetrics[3]!},
+  'Partner Health/Cooperate Willingness Score':{field:'合作意愿感知评分',metric:scoreMetrics[0]!}
+};
 type RawRow = Record<string,string|number|null>;
 const organizationDimensions = new Set(Object.keys(organizationFields(offices[0]!)));
 const unsupported = () => ({code:'DQE_SIM_UNSUPPORTED_QUERY',data:[],total_count:0,retDesc:'伙伴健康度本地模拟未配置此查询'});
@@ -59,8 +70,23 @@ function detailRows(item:PartnerHealthQuery, selected:Office[]):RawRow[] {
   return rows.map(row=>Object.fromEntries(fields.map(field=>[field,row[field]??null])));
 }
 
+function objectResult(item:PartnerHealthObjectQuery) {
+  const score=objectScores[item.object_type];
+  if (!score || !item.output_fields.every(field=>field===score.field || organizationDimensions.has(field))) return unsupported();
+  const conditions=item.filter?.fields ?? [];
+  if (conditions.some(condition=>condition.operator!==undefined && condition.operator!=='in')) return unsupported();
+  const metricQuery:PartnerHealthQuery={
+    output_dims:item.output_fields.filter(field=>field!==score.field),output_metrics:[score.metric],
+    filter:{dims:conditions.map(condition=>({dim_name:condition.field_name,dim_value_list:condition.value_list}))}
+  };
+  return result(scoreRows(metricQuery,selectedOffices(metricQuery)).map(row=>Object.fromEntries(
+    item.output_fields.map(field=>[field,row[field===score.field?score.metric:field]!])
+  )));
+}
+
 /** 模拟后端返回原始queryField，仍经过真实DQE归一化和页面compute，不在此处计算页面总分。 */
-export function partnerHealthResult(item:PartnerHealthQuery) {
+export function partnerHealthResult(item:PreviewQuery) {
+  if ('query_type' in item) return objectResult(item);
   const selected=selectedOffices(item);
   if (item.output_metrics.length && item.output_metrics.every(metric=>scoreMetrics.includes(metric))) {
     if (!item.output_dims.every(dim=>organizationDimensions.has(dim))) return unsupported();
@@ -77,13 +103,9 @@ export function partnerHealthResult(item:PartnerHealthQuery) {
 }
 const previewFetch:typeof fetch=async (_input,init)=>{
   init?.signal?.throwIfAborted();
-  const body=JSON.parse(String(init?.body)) as {dsl_list:PartnerHealthQuery[]};
+  const body=JSON.parse(String(init?.body)) as {dsl_list:PreviewQuery[]};
   return Response.json({retCode:'CBC.0000',results:body.dsl_list.map(partnerHealthResult)});
 };
 export function createPartnerHealthPreview() {
   return {dataGateway:createDqeGateway({fetchImpl:previewFetch})};
-}
-/** 仅受信任的页面入口选择模拟网关，不由编辑中的JSON决定，也不访问真实服务。 */
-export function partnerHealthPreviewGateway(pageId:string,fallback:DataGateway):DataGateway {
-  return pageId==='partner-health'?createPartnerHealthPreview().dataGateway:fallback;
 }

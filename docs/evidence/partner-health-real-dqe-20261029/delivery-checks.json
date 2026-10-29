@@ -1,0 +1,20 @@
+{
+  "checkout": "/Users/moon/.codex/worktrees/partner-health-dqe-delivery/DataDashboard",
+  "base": "5c084bffb690409556df4b35a8f813a52145c862",
+  "scope": "partner-health only",
+  "testFiles": 9,
+  "testsPassed": 106,
+  "pagesPassed": 134,
+  "typecheck": "passed",
+  "build": "passed",
+  "contracts": "passed",
+  "complexity": "all changed/new functions selfCC <= 15",
+  "browserEvidence": "page and runtime wiring byte-identical to prior browser-verified input",
+  "excluded": [
+    "AGENTS.md",
+    "apps/platform/README.md",
+    "pages/capabilities/data/sum-fields-zero.json"
+  ],
+  "ci": "skip requested",
+  "realBusinessDqe": "not_run"
+}

@@ -1,0 +1,20 @@
+{
+  "main": "5c084bffb690409556df4b35a8f813a52145c862",
+  "stash": "1620dcaf2a42d07abe95bc46241361151729cbd8",
+  "backup": "/Users/moon/.codex/backups/metriccanvas-main-sync-20261029-4fr90u6x",
+  "schemaVersion": "6.73",
+  "querySources": 24,
+  "inlineRows": 0,
+  "localUserPagePreserved": true,
+  "regressionTests": 106,
+  "validatedPages": 135,
+  "realBusinessDqe": "not_run",
+  "committed": false,
+  "pushed": false,
+  "phase": "pre_commit_validation",
+  "deliveryPolicy": {
+    "scope": "partner-health only",
+    "ci": "skip requested",
+    "unrelatedChanges": "preserved in original workspace"
+  }
+}

@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run apps/playground/tests/partner-health-dqe.test.ts apps/playground/tests/runtime-config.test.ts tests/partner-health-preview.test.ts tests/partner-health-object-preview.test.ts tests/partner-health-scores.test.ts packages/data-execution/tests/dqe-object-query.test.ts packages/data-execution/tests/dqe-result-compatibility.test.ts packages/page/tests/version.test.ts packages/engine/data-gateway/tests/dqe.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/partner-health-dqe-delivery/DataDashboard
+
+
+ Test Files  9 passed (9)
+      Tests  106 passed (106)
+   Start at  11:39:50
+   Duration  1.04s (transform 2.78s, setup 0ms, import 6.20s, tests 256ms, environment 0ms)
