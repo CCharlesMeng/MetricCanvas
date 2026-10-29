@@ -69,6 +69,6 @@
 
 local-authoring采用远端1.7.1为基线，修订到1.7.2，并从最新产品真源重新生成契约、MC与Skill产物及诊断夹具。未带入旧隔离基线的旧版本快照。
 
-换基线后复验：pnpm test运行数据执行与本次回归、local-authoring/page-reference相关测试，共30文件308项通过；data-execution、Playground与根tests类型检查通过；MC完整检查及32项Python测试通过；浏览器再次验证主槽/辅助槽保留行及正常空结果。原始回执在/tmp/zero-total-delivery-*.txt，提交、远端SHA及CI最终结论以本次交付回复为准。
+换基线后复验：pnpm test运行数据执行与本次回归、local-authoring/page-reference相关测试，共30文件308项通过；data-execution、Playground与根tests类型检查通过；MC完整检查及33项Python测试通过；浏览器再次验证主槽/辅助槽保留行及正常空结果。原始回执在/tmp/zero-total-delivery-*.txt，提交、远端SHA及CI最终结论以本次交付回复为准。
 
 复杂度仍采用同一AST口径；远端新增路由后，pageExternalInputs为13→14，scenarioEnvironment为10→11，viewer.loadPage仍13→13。三个核心执行文件与原基线相同，其前后测量维持上表；存量visit=27保持不变，无本次新增超限函数。CI通过后按仓库标准归档本任务工作树与忽略的验收产物。
