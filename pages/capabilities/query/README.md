@@ -115,3 +115,14 @@
 - 打开浏览器控制台，异常源仅输出一次 `TOTAL_COUNT_MISMATCH`，包含pageId、dataSourceId/Path、引用组件和bindingPath、rowCount=2、totalCount=0、completeness=unverified，不包含原始行。正常空结果不告警。
 
 页面只展示已返回数据，不证明完整结果。完整导出仍拒绝该矛盾响应；非法字段、非零对象完整总数矛盾与完整输入边界由 `tests/zero-total-rendering.test.ts` 验证。此场景不证明业务DQE已修正总数。
+
+## 父子表的零总数兼容
+
+启动 `pnpm dev:playground`，打开 `/pages/query-zero-total-hierarchy`，无需参数或业务 DQE。页面 JSON 为 `query-zero-total-hierarchy.json`，专属合成 HTTP 响应和候选位于 `apps/playground/fixtures/zero-total-gateway.ts`。
+
+1. 父查询实际返回甲地区部0、乙地区部-2，原始 `total_count` 保持0。首屏显示甲地区部；本地下一页显示乙地区部，不出现“父汇总结果不完整”。
+2. 地区范围选择乙地区部，仅显示该父行；切回全部后展开甲地区部，子表显示甲代表处、得分7，父表得分保持0。选择甲代表处时，完整归属查询定位甲地区部并自动展开。
+3. 控制台保留 `TOTAL_COUNT_MISMATCH` 定位告警，返回行没有被改写为可信 initial；导出完整父子 Excel 仍失败，不下载部分数据。
+4. 重复/缺失父行键和非零总数矛盾仍失败，见 `tests/hierarchy-zero-total-rendering.test.ts`；取消、迟到响应、查找歧义与导出边界复用 hierarchy-selection/hierarchy-export 回归。
+
+以上为本地合成查询链路与统一运行时验收，不证明真实 DQE 总数已更正。用户捕获响应仅用于本机忽略目录回放，不写入本示例或分发知识。

@@ -573,6 +573,7 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 - [层级筛选联动父子表格](capabilities/table/README.md#层级筛选联动父子表格)：显式归属定位、共同条件刷新及完整双工作表 Excel，入口 `/pages/table-hierarchy-selection`。
 
 - 缺项得分归零能力：`/pages/sum-fields-missing-values`、组织键并集 `/pages/union-keys-demo`（inline合成），说明见[数据计算](capabilities/data/README.md)；伙伴健康度真实查询页 `/pages/partner-health` 与独立 Mock 验收 `/pages/partner-health-union-null-probe` 见[临时业务页面](temporary/README.md)。
+- 父子表总数为0但已有父行：`/pages/query-zero-total-hierarchy`（本地合成HTTP），验证本地分页、层级选择、展开与严格完整导出；步骤见[查询场景](capabilities/query/README.md#父子表的零总数兼容)。
 - 查询总数为0但已有行：`/pages/query-zero-total-demo`（本地合成HTTP），展示主槽/辅助槽保留返回行及控制台定位告警；步骤见[查询场景](capabilities/query/README.md#零总数与已有行)。
 
 组合表格异常兼容：`/pages/table-data-recovery`，合成空值、不规则行、重复 key、缺项 Excel 与恢复后刷新；步骤见[表格示例](capabilities/table/README.md#异常数据兼容与缺项导出)。

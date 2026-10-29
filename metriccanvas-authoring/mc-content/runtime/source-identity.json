@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "32a1412bc27d7fc2e4d93a08b1e3bb1b414a42b5ba2ae364ae6a00e0541e3c8b",
+  "sha256": "1dc46f08b4f8e6d8e24577e82aa183327f8d17faf87ec91efe5581aff732eca6",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -92,7 +92,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "850fee40d6c9fde574a963453f0fffd9b6c48786cfc3fd1631d43fa997c68cca"
+      "sha256": "443c4b72bede5169dc701cbccff65445d29b7e8234d3c18dbeb6e492be8db7f1"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "d181c50881d9e83b1c8f5bcd9123c825701fe132a312173132a1475c93e7b0f6"
+      "sha256": "ed83a3632545a599cd78119f8ddf21fa85bd0ca725c6cea58752659f35234e9b"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -1836,7 +1836,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "40e6b6f648ee2e8bad21845b1aa1cb499d2195497f8f971f66055dca03827e58"
+      "sha256": "6bdfac41870f46313b24333c25dfe99b3e6c301948e6418eb03cbde7c46ce071"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2256,7 +2256,7 @@
     },
     {
       "file": "pages/capabilities/query/README.md",
-      "sha256": "c5ff6df1f4550dce4c5f7a42aefafc4b12aa67587be5366ad9524eaeade11f03"
+      "sha256": "cb12987102cf839d675ab2cf83f2157c1a557aa58d1d47d820ef213854be9f24"
     },
     {
       "file": "pages/capabilities/query/authoring-contract-reliability.json",
@@ -2281,6 +2281,10 @@
     {
       "file": "pages/capabilities/query/query-zero-total-demo.json",
       "sha256": "87aafcdb1c23742277cc529e150c2a19742fa4ea58d2ab8192aed708c576c974"
+    },
+    {
+      "file": "pages/capabilities/query/query-zero-total-hierarchy.json",
+      "sha256": "3f6bee0dbc507b431e1d2380728f6addf079c87ae6d26c3fbf1da9e647890728"
     },
     {
       "file": "pages/capabilities/query/stored-count-measures.json",

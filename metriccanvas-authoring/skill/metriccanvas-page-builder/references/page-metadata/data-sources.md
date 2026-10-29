@@ -24,6 +24,8 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 通过 `console.warn` 输出 `TOTAL_COUNT_MISMATCH`：页面、数据源及JSON路径、引用组件/绑定路径、实际返回条数、原始总数和 `completeness: "unverified"`。页面不显示技术报错或伪称无数据，辅助数据槽同样能按已有rowKey关联；正常0行/总数0不告警。告警不包含业务数据行、筛选值或凭据。
 
+父子表格的 `rowExpansion.selection` 同样保留这些父行，按已有行进行层级父行投影与本地分页，允许展开已有父行；继续校验行键和父级匹配，完整父子导出仍拒绝矛盾总数。合成验收入口 `/pages/query-zero-total-hierarchy`。
+
 此对象查询兼容仅允许已有行的显示与无跨源依赖的本源计算；对象完整结果的非零总数矛盾仍失败。完整导出、结果绑定、跨源计算和组合源不将此回执认定为完整输入；字段映射、结构、请求上限、取消及授权边界保持。独立的本地验收入口 `/pages/query-zero-total-demo` 展示主槽异常、辅助槽异常及正常空结果，具体步骤见`pages/capabilities/query/README.md`。本地合成响应和捕获响应重放不等于真实服务联调。
 
 验收使用完整合成页面 `query-numeric-tolerance`：正常返回八行；测试在 DQE HTTP 边界分别注入缺字段、维度类型错误、总数小于或大于返回行数，核对空组件、全部返回行及控制台诊断。对应浏览器测试为 `result-diagnostics.spec.ts`；本地证据不代表真实 DQE 或部署验收。

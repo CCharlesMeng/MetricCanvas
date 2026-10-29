@@ -1,0 +1,292 @@
+{
+  "schemaVersion": "6.70",
+  "id": "query-zero-total-hierarchy",
+  "layout": "dashboard",
+  "meta": {
+    "title": "父子表零总数回归（合成数据）",
+    "description": "合成 HTTP 响应：父表返回2行但 total_count=0，保留父行、层级筛选和展开；完整父子导出仍拒绝。"
+  },
+  "dataSources": {
+    "zero": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Zero Total/zero",
+                "output_fields": [
+                  "地区部",
+                  "得分"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "lookup": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Zero Total/lookup",
+                "output_fields": [
+                  "地区部"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "lookup-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "detail": {
+      "fields": {
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Zero Total/detail",
+                "output_fields": [
+                  "代表处",
+                  "得分"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 2
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "detail-region": {
+              "target": "dimension",
+              "queryField": "地区部"
+            },
+            "detail-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "counts",
+      "title": "合成数据：总数异常不阻断显示",
+      "container": "card",
+      "components": [
+        {
+          "id": "zero-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "zero"
+          },
+          "props": {
+            "title": "父表总数0，实际2行：可翻页、筛选和展开",
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "score",
+                  "format": "number-1"
+                },
+                "title": "得分"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 1,
+              "numbered": true
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "零总数完整性回归",
+                "rowExpansion": {
+                  "scope": "all",
+                  "parentFields": [
+                    "region"
+                  ]
+                }
+              }
+            },
+            "rowExpansion": {
+              "mode": "multiple",
+              "selection": {
+                "filter": "region",
+                "parentLevel": "region-dept",
+                "parentField": "region",
+                "childLevel": "office",
+                "parentLookup": {
+                  "source": "lookup",
+                  "field": "region",
+                  "filters": [
+                    "lookup-office"
+                  ],
+                  "bindings": {
+                    "lookup-office": {
+                      "source": "filter",
+                      "id": "region"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "type": "query",
+                "source": "detail",
+                "filters": [
+                  "detail-region",
+                  "detail-office"
+                ],
+                "bindings": {
+                  "detail-region": {
+                    "source": "row",
+                    "field": "region"
+                  },
+                  "detail-office": {
+                    "source": "selection"
+                  }
+                }
+              },
+              "table": {
+                "title": "代表处（合成数据）",
+                "rowKey": "office",
+                "columns": [
+                  {
+                    "field": "office",
+                    "title": "代表处"
+                  },
+                  {
+                    "field": "score",
+                    "title": "得分"
+                  }
+                ],
+                "pagination": {
+                  "mode": "query"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "父子表零总数回归（合成数据）"
+    },
+    "filterIds": [
+      "region"
+    ]
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo-region",
+      "label": "地区范围",
+      "display": "tree",
+      "treeSelection": "level",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "region-dept",
+          "dimension": "demo-region",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "demo-office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept"
+    },
+    {
+      "id": "lookup-office",
+      "type": "dimension",
+      "dimension": "demo-office",
+      "visible": false
+    },
+    {
+      "id": "detail-region",
+      "type": "dimension",
+      "dimension": "demo-region",
+      "visible": false
+    },
+    {
+      "id": "detail-office",
+      "type": "dimension",
+      "dimension": "demo-office",
+      "visible": false
+    }
+  ]
+}
