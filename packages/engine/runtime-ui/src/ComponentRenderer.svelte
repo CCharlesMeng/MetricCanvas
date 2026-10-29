@@ -285,6 +285,7 @@
           selectedCell={table.selectedCell}
           sortReset={table.sortReset}
           columnCandidates={table.columnCandidates}
+          oncandidatepreloadvisible={table.oncandidatepreloadvisible}
           oncandidateopen={table.oncandidateopen}
           oncandidatesearch={table.oncandidatesearch}
           oncandidatemore={table.oncandidatemore}

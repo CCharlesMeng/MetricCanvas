@@ -5,6 +5,21 @@ import { orchestrate } from '../../runtime/src/orchestrator';
 import type { FilterValue } from '@metriccanvas/data-execution/runtime';
 import { createTableController } from '../src/table/controller';
 
+it('preloads actual main-field IDs, including explicit bindings, without opening a filter', async () => {
+  const parsed = parsePage(fixture); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  const table = parsed.page.sections.flatMap(section => section.components).find(component => component.type === 'table'); if (!table || table.type !== 'table') throw Error('table');
+  const column = table.props.columns.find(value => 'field' in value && value.field === 'office');
+  if (!column || !('field' in column)) throw Error('office');
+  column.field = { data: 'main', field: 'office' };
+  const stream = orchestrate(parsed.page, { fetchData: async () => { throw Error('inline must not query'); } });
+  const stop = stream.subscribe(() => {}), controller = createTableController(parsed.page, () => stream, () => {});
+  try {
+    controller.candidateBinding(table).oncandidatepreloadvisible(true);
+    await vi.waitFor(() => expect(controller.candidateBinding(table).columnCandidates.office?.totalCount).toBe(64));
+    expect(controller.candidateBinding(table).columnCandidates.office.status).toBe('ready');
+  } finally { controller.dispose(); stop(); }
+});
+
 it('refreshes only affected candidates and isolates same-source table state', async () => {
   const parsed = parsePage(fixture); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
   const page = parsed.page, tables = page.sections.flatMap(section => section.components).filter(component => component.type === 'table');

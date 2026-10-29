@@ -58,4 +58,5 @@ export interface TableColumnCandidates {
   candidates: { value: string | number; label: string }[];
   search: string;
   totalCount?: number;
+  error?: import('@metriccanvas/page/internal').QueryError;
 }

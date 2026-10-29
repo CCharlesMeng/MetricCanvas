@@ -6,13 +6,14 @@ import { validateCandidatePage } from './column-candidates';
 type Result = DataSnapshot | ColumnCandidatesPage;
 type Consumer = { resolve(value: Result): void; reject(cause: unknown): void; detach(): void };
 type Request = { key: string; query: EffectiveQuery; candidates?: ColumnCandidatesQuery; diagnostics: QueryDiagnosticContext;
-  controller: AbortController; consumers: Set<Consumer> };
+  controller: AbortController; consumers: Set<Consumer>; background: boolean };
 const cancelled = (): DataSnapshot => ({ status: 'error', error: { code: 'DQE_CANCELLED', message: '查询已取消' } });
 
 /** Request resources only. Data and candidate operations share concurrency and consumer cancellation. */
 export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: DataGateway; maxConcurrent?: number }) {
   const pending = new Map<string, Request>(), cache = new Map<string, Result>(), queue: Request[] = [];
-  let active = 0, disposed = false;
+  const running = new Set<Request>();
+  let disposed = false;
   async function execute(request: Request): Promise<Result> {
     if (!request.candidates) return executeQuery(request.query, gateway, request.diagnostics, request.controller.signal);
     const page = await gateway.fetchColumnCandidates?.(request.candidates, request.diagnostics, request.controller.signal) ?? { kind: 'unavailable' as const };
@@ -23,10 +24,13 @@ export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: Dat
     while (cache.size > 256) cache.delete(cache.keys().next().value!);
   }
   function pump() {
-    while (!disposed && active < maxConcurrent && queue.length) {
-      const request = queue.shift()!;
+    while (!disposed && running.size < maxConcurrent && queue.length) {
+      const foreground = queue.findIndex(request => !request.background);
+      // Preloads run serially, only after interactive data/candidate reads have settled.
+      if (foreground < 0 && running.size) break;
+      const request = queue.splice(Math.max(0, foreground), 1)[0];
       if (!request.consumers.size || request.controller.signal.aborted) continue;
-      active++;
+      running.add(request);
       void execute(request).then(result => {
         if (!request.controller.signal.aborted && ('kind' in result || result.status === 'ready' || result.status === 'empty')) remember(request.key, result);
         for (const consumer of [...request.consumers]) { consumer.detach(); consumer.resolve(result); }
@@ -34,11 +38,21 @@ export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: Dat
         for (const consumer of [...request.consumers]) { consumer.detach(); consumer.reject(cause); }
       }).finally(() => {
         if (pending.get(request.key) === request) pending.delete(request.key);
-        active--; pump();
+        running.delete(request); pump();
       });
     }
   }
-  function run(query: EffectiveQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, candidates?: ColumnCandidatesQuery): Promise<Result> {
+  function prioritizeForeground(except: Request | undefined, includeInteractiveCandidates: boolean) {
+    for (const request of running) {
+      if (request === except) continue;
+      if (!request.background && !(includeInteractiveCandidates && request.candidates)) continue;
+      request.controller.abort();
+      if (pending.get(request.key) === request) pending.delete(request.key);
+      running.delete(request);
+      for (const consumer of [...request.consumers]) { consumer.detach(); consumer.resolve(cancelled()); }
+    }
+  }
+  function run(query: EffectiveQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, candidates?: ColumnCandidatesQuery, background = false): Promise<Result> {
     if (disposed || signal?.aborted) return Promise.resolve(cancelled());
     const normalize = (values: EffectiveQuery['filterValues']) => values.map(value => value.target === 'dimension' ? { ...value, values: [...new Map(value.values.map(item => [JSON.stringify([typeof item, item]), item])).entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([, item]) => item) } : value);
     const normalized = { ...query, filterValues: normalize(query.filterValues), ...(query.bindingValues ? { bindingValues: normalize(query.bindingValues) } : {}), ...(query.tableFilters ? { tableFilters: normalize(query.tableFilters) } : {}) };
@@ -46,8 +60,12 @@ export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: Dat
     const hit = cache.get(key);
     if (hit) { cache.delete(key); cache.set(key, hit); return Promise.resolve(hit); }
     let request = pending.get(key);
+    if (!background) {
+      if (request) request.background = false;
+      prioritizeForeground(request, candidates === undefined);
+    }
     if (!request) {
-      request = { key, query, ...(candidates ? { candidates: structuredClone(candidates) } : {}), diagnostics: { ...diagnostics }, controller: new AbortController(), consumers: new Set() };
+      request = { key, query, ...(candidates ? { candidates: structuredClone(candidates) } : {}), background, diagnostics: { ...diagnostics }, controller: new AbortController(), consumers: new Set() };
       pending.set(key, request); queue.push(request);
     }
     request.diagnostics.dataSourceIds = [...new Set([...(request.diagnostics.dataSourceIds ?? []), ...(diagnostics.dataSourceIds ?? [])])];
@@ -62,13 +80,13 @@ export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: Dat
     });
   }
   return {
-    async run(query: EffectiveQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal): Promise<DataSnapshot> {
-      const result = await run(query, diagnostics, scope, signal);
+    async run(query: EffectiveQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, background = false): Promise<DataSnapshot> {
+      const result = await run(query, diagnostics, scope, signal, undefined, background);
       if ('status' in result) return result;
       throw new Error('查询结果类型不匹配');
     },
-    async runCandidates(request: ColumnCandidatesQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal): Promise<ColumnCandidatesPage> {
-      const result = await run(request.query, diagnostics, scope, signal, request);
+    async runCandidates(request: ColumnCandidatesQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, background = false): Promise<ColumnCandidatesPage> {
+      const result = await run(request.query, diagnostics, scope, signal, request, background);
       if ('kind' in result) return result;
       throw Object.assign(new Error('候选读取已取消'), { code: 'DQE_CANCELLED' });
     },

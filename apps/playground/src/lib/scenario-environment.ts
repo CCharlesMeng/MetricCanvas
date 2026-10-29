@@ -1,3 +1,4 @@
+import { createFullQueryCandidatesPreview } from '../../fixtures/full-query-candidates';
 import {createZeroTotalPreview} from '../../fixtures/zero-total-gateway';
 import {createPartnerHealthUnionPreview} from '../../fixtures/organization-union/gateway';
 import {createTableRecoveryPreview} from '../../fixtures/table-recovery';
@@ -15,6 +16,7 @@ import { dataGateway } from './services';
 /** Called only with an example ID resolved from the trusted scenario index, never from edited JSON. */
 export function scenarioEnvironment(exampleId: string, state = 'ready') {
   const kind = pageExternalInputs(exampleId);
+  if (kind === 'full-query-candidates') return createFullQueryCandidatesPreview(state);
   if (kind === 'organization-union') return createPartnerHealthUnionPreview(state);
   if (kind === 'table-recovery') return createTableRecoveryPreview(state);
   if (kind === 'zero-total') return createZeroTotalPreview();

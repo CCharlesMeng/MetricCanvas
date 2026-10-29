@@ -5,6 +5,7 @@
 
 <script lang="ts">
   import ColumnCandidateOptions from './ColumnCandidateOptions.svelte';
+  import { visibleAfterPaint } from '../../shared/visible-after-paint';
   import TableWarnings from './TableWarnings.svelte';
   import { tableDataWarnings } from './warnings';
   import type { TableColumnCandidates } from './view-state';
@@ -65,6 +66,7 @@
     view: TableViewState;
     /** select 模式表头筛选候选项（兼容静态输入；运行时候选由列候选会话供给）,key = 列 field */
     columnCandidates?: Record<string, TableColumnCandidates>;
+    oncandidatepreloadvisible?: (visible: boolean) => void;
     oncandidateopen?: (field: string, open: boolean) => void;
     oncandidatesearch?: (field: string, query: string) => void;
     oncandidatemore?: (field: string) => void;
@@ -100,7 +102,7 @@
     nested = false, expansion, expandedRow,
     interactive = true,
     view,
-    columnCandidates, oncandidateopen, oncandidatesearch, oncandidatemore, oncandidateretry,
+    columnCandidates, oncandidatepreloadvisible, oncandidateopen, oncandidatesearch, oncandidatemore, oncandidateretry,
     filterOptions = {}, filterOptionsStatus = {},
     pagination,
     searchDraft, searchOption, onsearchoption, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
@@ -345,6 +347,7 @@
 
 <div
   bind:this={root}
+  use:visibleAfterPaint={interactive && !staticExport && (data.main.snapshot.status === 'ready' || data.main.snapshot.status === 'empty') ? oncandidatepreloadvisible : undefined}
   use:tableGeometry={props.variant !== 'reportCompact' && !staticExport && leaves.length>0}
   class:os-theme={props.variant !== 'reportCompact'}
   class:fit-container={props.fit === 'container'}

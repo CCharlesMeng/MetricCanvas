@@ -9,9 +9,10 @@
   const key = (value: string | number) => JSON.stringify([typeof value, value]);
   const complete = $derived(snapshot?.status === 'ready' && !snapshot.search && snapshot.totalCount === snapshot.candidates.length);
   const missing = $derived(selected.filter(value => !snapshot?.candidates.some(c => c.value === value)));
+  const limited = $derived(snapshot?.status === 'error' && snapshot.error?.code === 'DQE_CANDIDATE_LIMIT_EXCEEDED');
 </script>
 <div class="candidates">
-  <input type="search" aria-label="搜索筛选候选值" placeholder="搜索选项"
+  <input type="search" aria-label="搜索筛选候选值" placeholder="搜索选项" disabled={limited}
     value={snapshot?.search ?? ''} oninput={event => onsearch?.(field, event.currentTarget.value)} />
   {#each missing as value (key(value))}
     <label class="candidate candidate-option selected">
@@ -32,8 +33,12 @@
   {:else if snapshot?.status === 'unavailable'}
     <span role="status">候选值能力不可用</span>
   {:else if snapshot?.status === 'error'}
-    <span role="status">候选项加载失败</span>
-    <button type="button" onclick={() => onretry?.(field)}>重试</button>
+    {#if limited}
+      <span role="status">{snapshot.error?.message}</span>
+    {:else}
+      <span role="status">候选项加载失败</span>
+      <button type="button" onclick={() => onretry?.(field)}>重试</button>
+    {/if}
   {:else if snapshot?.status === 'empty'}
     <span role="status">没有候选项</span>
   {:else if snapshot?.status === 'ready' && snapshot.candidates.length < snapshot.totalCount!}

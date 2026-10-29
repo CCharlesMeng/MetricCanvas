@@ -18,6 +18,8 @@ export interface InjectedRuntimeConfig {
   authToken: string;
   operatorId: string;
   workspaceId: string;
+  /** 列候选完整读取上限，默认1000；超过默认值须显式配置。 */
+  columnCandidatesMaxRows?: number;
 }
 
 const DQE_REQUIRED_FIELDS = [
@@ -65,7 +67,12 @@ export function readRuntimeConfig(source: RuntimeConfigSource = globalConfigSour
   }
   const cftk = trimmedField(raw, 'cftk');
   return { dqeEndpoint, pageMetadataBaseUrl, authToken, operatorId, workspaceId,
+    ...candidateRuntimeConfig(raw),
     ...(cftk ? { cftk } : {}) };
+}
+
+function candidateRuntimeConfig(source: Partial<InjectedRuntimeConfig>): Pick<InjectedRuntimeConfig, 'columnCandidatesMaxRows'> {
+  return source.columnCandidatesMaxRows === undefined ? {} : { columnCandidatesMaxRows: source.columnCandidatesMaxRows };
 }
 
 /** Page asset reads do not require a DQE endpoint. */
@@ -78,7 +85,7 @@ export function readPageAssetsRuntimeConfig(source: RuntimeConfigSource = global
   const workspaceId = trimmedField(raw, 'workspaceId');
   if (!pageMetadataBaseUrl || !authToken || !operatorId || !workspaceId) return null;
   const cftk = trimmedField(raw, 'cftk');
-  return {pageMetadataBaseUrl, authToken, operatorId, workspaceId, dqeEndpoint: trimmedField(raw,'dqeEndpoint') ?? '', ...(cftk ? {cftk} : {})};
+  return {pageMetadataBaseUrl, authToken, operatorId, workspaceId, dqeEndpoint: trimmedField(raw,'dqeEndpoint') ?? '', ...candidateRuntimeConfig(raw), ...(cftk ? {cftk} : {})};
 }
 
 /** 读取页面元数据基址；静态平台不再提供同源 Node 回退。 */
@@ -105,6 +112,7 @@ export function installLocalDevRuntimeConfig(overrides: Partial<InjectedRuntimeC
     authToken: trimmedField(overrides, 'authToken') ?? 'local-dev',
     operatorId: trimmedField(overrides, 'operatorId') ?? 'developer-1',
     workspaceId: trimmedField(overrides, 'workspaceId') ?? 'local',
+    ...candidateRuntimeConfig(overrides),
     ...(trimmedField(overrides, 'cftk') ? { cftk: trimmedField(overrides, 'cftk') } : {})
   });
 }
@@ -130,6 +138,7 @@ export function createInjectedDqeGateway(
   source: RuntimeConfigSource = globalConfigSource
 ): DataGateway & DimensionValuesGateway {
   return createDqeGateway({
+    get columnCandidates() { return { mode: 'fullQuery' as const, maxRows: source()?.columnCandidatesMaxRows }; },
     devDetail,
     fetchImpl: (async (_input, init) => {
       const config = requireDqeRuntimeConfig(source);

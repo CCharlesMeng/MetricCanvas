@@ -48,6 +48,8 @@
 
 <div hidden={snapshot.status === 'loading' || Boolean(component.props.rowExpansion?.selection && snapshot.status === 'error')}>
 <Table data={renderedData} props={{ ...component.props, pagination: binding.paginationConfig }} view={binding.view}
+  columnCandidates={binding.columnCandidates} oncandidatepreloadvisible={binding.oncandidatepreloadvisible}
+  oncandidateopen={binding.oncandidateopen} oncandidatesearch={binding.oncandidatesearch} oncandidatemore={binding.oncandidatemore} oncandidateretry={binding.oncandidateretry}
   interactionGate={binding.interactionGate} toolbarEnabled={binding.toolbarEnabled} searchOption={binding.searchOption} onsearchoption={binding.onsearchoption}
   selectedCell={binding.selectedCell} sortReset={binding.sortReset} filterOptions={binding.filterOptions} filterOptionsStatus={binding.filterOptionsStatus}
   pagination={binding.pagination} searchDraft={binding.searchDraft} exporting={binding.exporting} exportError={binding.exportError}

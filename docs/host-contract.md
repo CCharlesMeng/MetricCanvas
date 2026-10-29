@@ -31,6 +31,7 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 | `authToken` | 随请求发出的 `X-Auth-Token`，用户态 token |
 | `operatorId` | 随请求发出的 `X-Operator-Id` |
 | `workspaceId` | 随请求发出的 `X-Workspace-Id` |
+| `columnCandidatesMaxRows` | 可选正安全整数，表格列候选原始结果扫描上限，默认1000；更大范围须显式提高 |
 
 归档内 `portal-contract.d.ts` 可直接供门户 TypeScript 使用，不依赖 npm 包或 Svelte 插件；可选可信创作扩展仍须对齐其程序契约；基础部署声明以泛型留出类型位置，当前不把仓内 AuthoringIntegration 深导入当成独立交付方式。AI 接线与完整声明分发需单列验收。微前端 props 的完整正式类型见 [`portal-config.ts`](../apps/platform/src/microfrontend/portal-config.ts)。读取源由门户转换，业务不读取门户变量。独立入口配置更新后派发 `metriccanvas:config-changed`；页面试验场的既有全局读取语义不变。
 
@@ -243,4 +244,8 @@ Report页头通过`pdfExport: {label?, filename?}`启用引擎内置PDF下载，
 
 表格列候选与页面维度取值域分开。DataGateway 可实现 fetchColumnCandidates(request, diagnosticContext?, signal?)；request 包含保留原查询定义及业务条件的生效查询、目标页面字段和查询字段、独立候选 search/offset/limit。返回 unavailable 或 candidates/totalCount；totalCount 必须是当前候选搜索范围的去重数量，单页长度与总数须一致，稳定值保留 string/number 类型，label 独立。
 
-createDqeGateway 的 encodeColumnCandidates 是可信部署配置函数，输入上述受控请求，返回 query、valueField 及可选 labelField。query 必须由部署方按真实 DQE 契约编码，保留原业务查询粒度、权限链路及固定窗口，并映射候选字段；不得仅改输出维度就宣称已实现聚合后去重。未配置不发候选 HTTP 请求，显示能力不可用；不把函数放入页面 JSON。经该路径的响应沿用既有 NO_PERMISSION 非空数据消费规则，完整性另验。具体对接问题见[DQE 说明](plan/table-column-candidates/dqe-handoff.md)。
+平台和 Playground 的 `createInjectedDqeGateway` 已注册 `columnCandidates: {mode: 'fullQuery'}`。独立集成应用可在 `createDqeGateway` 使用同一配置，`batchSize` 可选、默认200；`maxRows` 可选、默认1000（最多5批）。两者必须为正安全整数，批次不超过剩余扫描预算。平台注入源（门户 `readConfig()` 或独立入口 `__METRICCANVAS__`）可通过 `columnCandidatesMaxRows: 2000` 显式提高上限，每次候选读取现读；独立网关使用 `columnCandidates: {mode: "fullQuery", maxRows: 2000}`。该配置只控制候选，既有表格分页不变。每批调用同一网关的 fetchData，复用原查询编码、端点、身份头、并发、取消和诊断；保留全部输出指标和维度，前端按目标页面字段去重。原始结果 total_count 与去重候选 totalCount 分别计算；首批拿到准确总数后，实际候选原始行域（保留业务 TopN）若超出上限，返回 `DQE_CANDIDATE_LIMIT_EXCEEDED`，停止后续批次并提示缩小筛选范围或显式提高上限，不返回部分候选；只有原始批次完整性通过后才提供候选搜索和分页。此方式按完整结果传输数据，未命中候选页缓存时重新读取，不要求 DQE 支持 DISTINCT，也不宣称跨批事务快照。
+
+预加载由运行时按可见性、完成绘制和空闲时机触发，执行优先级不写入页面JSON或DQE业务条件。后台读取串行，主查询及显式菜单请求优先；主查询可取消在途候选并释放执行位置，取消信号传给同一网关。候选快照与主数据快照分开，候选等待/失败不参与整表loading门禁。只复用同一生效作用域的候选页或在途请求；身份与权限约束仍沿用原集成会话。
+
+有专用去重能力的部署仍可提供 encodeColumnCandidates（优先于 fullQuery），输入上述受控请求，返回 query、valueField 及可选 labelField。query 必须按真实 DQE 契约编码，保留原业务查询粒度、权限链路及固定窗口，并映射候选字段；不得仅改输出维度就宣称已实现聚合后去重。独立网关未配置任一方式时不发候选 HTTP 请求，显示能力不可用；配置函数不放入页面 JSON。两条路径沿用既有 NO_PERMISSION 非空数据消费规则，完整性另验。参数示例与真实服务验证边界见[DQE 说明](plan/table-column-candidates/dqe-handoff.md)。

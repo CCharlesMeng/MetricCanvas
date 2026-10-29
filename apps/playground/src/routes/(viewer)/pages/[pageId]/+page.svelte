@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
   import {createTableRecoveryPreview} from '../../../../../fixtures/table-recovery';
   import {zeroTotalPreviewGateway} from "../../../../../fixtures/zero-total-gateway";
   import {partnerHealthUnionGateway} from '../../../../../fixtures/organization-union/gateway';
@@ -100,6 +101,7 @@
 
   function previewDataGateway(pageId: string): DataGateway {
     switch (pageExternalInputs(pageId)) {
+      case 'full-query-candidates': return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;
       case 'record-join': return createRejectionPreview({rows:rejectionPreviewRowCount(pageId),delayMs:rejectionPreviewDelay(pageId,page.url.searchParams),failure:page.url.searchParams.get('sourceFailure') === 'true'}).dataGateway;
       case 'paged-union': return createUnionPreview({failMember:page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined,rowFailure:page.url.searchParams.get('rowFailure')}).dataGateway;

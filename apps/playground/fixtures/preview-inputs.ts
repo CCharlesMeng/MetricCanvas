@@ -1,20 +1,26 @@
-const recordJoinPages = new Set(['record-join-demo', 'record-join-no-row-limit', 'record-join-batch-timeout']);
 const zeroTotalPages = new Set(['query-zero-total-demo', 'query-zero-total-hierarchy']);
 const unionPages = new Set(['multi-source-table', 'multi-source-composite-key', 'multi-source-generated-key']);
 const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capabilities/ioc-header/business/*.json')).map(path => path.split('/').pop()!.slice(0, -5)));
+const exactInputs = new Map([
+  ['table-column-candidates-query', 'full-query-candidates'],
+  ['partner-health-union-null-probe', 'organization-union'],
+  ['table-data-recovery', 'table-recovery'],
+  ['table-hierarchy-selection', 'hierarchy'],
+  ['record-join-demo', 'record-join'],
+  ['record-join-no-row-limit', 'record-join'],
+  ['record-join-batch-timeout', 'record-join'],
+  ['decision-opinion-details', 'decision-opinion'],
+  ['page-visibility-inputs', 'visibility'],
+  ['ioc-header-selection', 'selection']
+]);
 
 /** Fixture routing belongs to preview adapters; directory discovery has no registrations. */
 export function pageExternalInputs(id: string | undefined) {
   if (!id) return undefined;
-  if (id === 'partner-health-union-null-probe') return 'organization-union';
-  if (id === 'table-data-recovery') return 'table-recovery';
+  const exact = exactInputs.get(id);
+  if (exact) return exact;
   if (zeroTotalPages.has(id)) return 'zero-total';
-  if (id === 'table-hierarchy-selection') return 'hierarchy';
-  if (recordJoinPages.has(id)) return 'record-join';
   if (unionPages.has(id)) return 'paged-union';
-  if (id === 'decision-opinion-details') return 'decision-opinion';
-  if (id === 'page-visibility-inputs') return 'visibility';
-  if (id === 'ioc-header-selection') return 'selection';
   if (businessPages.has(id)) return 'ioc-business';
   if (id.startsWith('ioc-header-') && id.endsWith('-demo')) return 'ioc-header';
   return undefined;

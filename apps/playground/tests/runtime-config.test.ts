@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import { DqeGatewayError } from '@metriccanvas/engine/dqe';
+import { createPlatformSession } from '../../platform/src/lib/integration/session';
 import {
   MISSING_RUNTIME_CONFIG_MESSAGE,
   createInjectedDqeGateway,
@@ -121,6 +122,38 @@ describe('运行配置注入面', () => {
     expect(readRuntimeConfig()).toEqual(completeConfig);
     installRuntimeConfig({ ...completeConfig, authToken: 'token-2' });
     expect(readRuntimeConfig()?.authToken).toBe('token-2');
+  });
+
+  it('列候选扫描上限由注入源现读，非法配置不发请求', async () => {
+    installLocalDevRuntimeConfig({ columnCandidatesMaxRows: 1200 });
+    expect(readRuntimeConfig()?.columnCandidatesMaxRows).toBe(1200);
+    const fetchImpl = vi.fn(async () => successResponse());
+    const gateway = createInjectedDqeGateway(fetchImpl);
+    const candidates = { query, field: 'customer-level', queryField: '客户级别', search: '', offset: 0, limit: 50 };
+    expect(await gateway.fetchColumnCandidates?.(candidates)).toMatchObject({ kind: 'values' });
+    installRuntimeConfig({ ...completeConfig, columnCandidatesMaxRows: -1 });
+    expect(readRuntimeConfig()?.columnCandidatesMaxRows).toBe(-1);
+    fetchImpl.mockClear();
+    await expect(gateway.fetchColumnCandidates?.(candidates)).rejects.toMatchObject({ code: 'DQE_CONFIG_ERROR' });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('平台会话保留候选上限并传给同一注入网关，调整上限不影响普通表格查询', async () => {
+    let config = { ...completeConfig, columnCandidatesMaxRows: 1200 };
+    const fetchImpl = vi.fn(async () => successResponse());
+    const session = createPlatformSession({ readConfig: () => config, fetchImpl });
+    const gateway = createInjectedDqeGateway(session.fetchImpl, undefined, session.readConfig);
+    const candidates = { query, field: 'customer-level', queryField: '客户级别', search: '', offset: 0, limit: 50 };
+    try {
+      expect(session.readConfig()?.columnCandidatesMaxRows).toBe(1200);
+      expect(await gateway.fetchColumnCandidates?.(candidates)).toMatchObject({ kind: 'values' });
+      config = { ...config, columnCandidatesMaxRows: 0 };
+      fetchImpl.mockClear();
+      await expect(gateway.fetchColumnCandidates?.(candidates)).rejects.toMatchObject({ code: 'DQE_CONFIG_ERROR' });
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(await gateway.fetchData(query)).toMatchObject({ totalCount: 1 });
+      expect(session.isActive()).toBe(true);
+    } finally { session.destroy(); }
   });
 
   it('缺任一字段视为未注入', () => {

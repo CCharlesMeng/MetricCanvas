@@ -1,4 +1,5 @@
 import { unionCandidates } from '../paged-union/candidates';
+import { candidateQueryRunner } from './candidate-priority';
 import { createCandidateValidator } from '../candidate-validation';
 import { selectQuerySource, canonicalizeJson, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../ports';
@@ -23,6 +24,8 @@ function appliedInputSources(page:Page,source:QueryDataSource,conditions:FilterV
 }
 
 export interface ColumnCandidatesRead {
+  /** Idle speculative work; ordinary reads and explicit menu requests take precedence. */
+  preload?: boolean;
   displayInputs?: DisplayInputsSnapshot; filterRevision?: number; now?: Date;
   sourceId: string; field: string; conditions: FilterValues; view: TableQueryView;
   views?: ReadonlyMap<string, TableQueryView>; seeds?: ReadonlyMap<string, DataSnapshot>;
@@ -40,6 +43,7 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
     const request = structuredClone({ ...input, signal: undefined, now: input.now ?? context.now ?? context.clock?.() ?? new Date(),
       displayInputs: input.displayInputs ?? context.displayInputs?.(), filterRevision: input.filterRevision ?? context.filterRevision?.() });
     const signal = input.signal;
+    const execution = candidateQueryRunner(runner, request.preload);
     signal?.throwIfAborted();
     const source = page.dataSources[request.sourceId], field = source?.fields[request.field];
     const offset = request.offset ?? 0, limit = request.pageSize ?? 50;
@@ -64,17 +68,17 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
         throw Object.assign(new Error('候选查询的业务输入不可用'), { code: 'DQE_QUERY_REJECTED' });
       }
       bindQueryResultValues(query, inputs.values);
-      return runner.runCandidates({ query, field: request.field, queryField: mappedField.queryField, search: request.candidateSearch ?? '', offset, limit },
+      return execution.runCandidates({ query, field: request.field, queryField: mappedField.queryField, search: request.candidateSearch ?? '', offset, limit },
         { pageId: page.id, dataSourceIds: [request.sourceId] }, scope, signal);
     }
-    if (source.source.type === 'pagedUnion') return unionCandidates(page, request, runner, scope, signal);
-    if (source.source.type === 'pagedJoin') return joinedCandidates(page, request, view, runner, scope, signal);
+    if (source.source.type === 'pagedUnion') return unionCandidates(page, request, execution, scope, signal);
+    if (source.source.type === 'pagedJoin') return joinedCandidates(page, request, view, execution, scope, signal);
     // Preserve upstream declared windows. Only the target local view loses table predicates.
     views.set(request.sourceId, { ...view, predicates: [], search: undefined });
     const seeds = new Map(request.seeds); seeds.delete(request.sourceId);
     // Compute dependencies must retain their own captured snapshots and windows.
     let final: DataSnapshot | undefined, evidence: DataSnapshot | undefined;
-    for await (const update of read({ roots: [request.sourceId], conditions: request.conditions, views, seeds, currentYear: request.currentYear, now: request.now, displayInputs: request.displayInputs, filterRevision: request.filterRevision, signal })) {
+    for await (const update of read({ roots: [request.sourceId], conditions: request.conditions, views, seeds, currentYear: request.currentYear, now: request.now, displayInputs: request.displayInputs, filterRevision: request.filterRevision, signal, background: request.preload })) {
       if (update.sourceId === request.sourceId) { final = update.snapshot; evidence = update.raw; }
     }
     signal?.throwIfAborted();

@@ -1,5 +1,5 @@
 import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
-import {columnBindingKey,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
+import {columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
 import { tableColumnPresentation } from '../../../runtime/src/table/column-presentation';
 import { fieldSelectionIds, sourceFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
@@ -54,12 +54,12 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     function candidateSession(table: TableComponent) {
         let session = candidates.get(table.id);
         if (!session) {
-            session = createColumnCandidatesSession(async (field, search, offset, signal) => {
+            session = createColumnCandidatesSession(async (field, search, offset, signal, preload) => {
                 const current = stream(), program = current?.getSourceProgram();
                 if (!current || !program)
                     return { kind: 'unavailable' };
                 return program.readColumnCandidates({ ...candidateContext(), sourceId: table.data.main, field, conditions: conditions(), view: view(table),
-                    views: current.captureViews(), seeds: current.captureRawSnapshots(), candidateSearch: search, offset, pageSize: 50, currentYear: current.captureComputeYear(), signal });
+                    views: current.captureViews(), seeds: current.captureRawSnapshots(), candidateSearch: search, offset, pageSize: 50, currentYear: current.captureComputeYear(), signal, preload });
             }, field => {
                 const current = view(table), ids = conditionSourceIds(page, table.data.main), raw = stream()?.captureRawSnapshots();
                 const filterIds = new Set([...ids].flatMap(id => {
@@ -71,7 +71,8 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                     .map(([id, value]) => [id, value.type === 'timeRange' ? { type: value.type, from: value.from, to: value.to } : value]);
                 return canonicalizeJson({ context: candidateContext(), conditions: inputs, predicates: current.predicates.filter(p => p.field !== field), search: current.search,
                     dependencies: [...ids].filter(id => id !== table.data.main).map(id => [id, raw?.get(id) ?? null]) });
-            }, changed);
+            }, changed, { fields: () => tableColumnLeaves(columns(table).component.props.columns)
+                .filter(column => column.filterable?.mode === 'select').flatMap(column => { const field = mainColumnField(column.field); return field === undefined ? [] : [field]; }) });
             candidates.set(table.id, session);
         }
         return session;
@@ -119,7 +120,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
             session.sync(); },
         candidateBinding(table: TableComponent) {
             const session = candidateSession(table);
-            return { columnCandidates: session.snapshots(),
+            return { columnCandidates: session.snapshots(), oncandidatepreloadvisible: session.preloadVisible,
                 oncandidateopen: (field: string, open: boolean) => open && (!columns(table).enabled || columns(table).fields.has(field)) ? session.open(field) : session.close(field),
                 oncandidatesearch: (field: string, query: string) => { if (!columns(table).enabled || columns(table).fields.has(field))
                     session.search(field, query); },

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+表格 select 表头候选的共用 DQE 网关已接入完整结果分批读取及前端去重：保留原指标与维度，默认最多扫描1000条原始结果、每批200条（最多5批），更大范围须在集成配置中显式提高上限；超限、缺总数或截断不展示部分选项，完整后独立搜索和分页。表格可见且绘制后空闲预加载、点击菜单按需获取；主查询可抢占后台候选，候选状态不阻塞整表渲染。页面声明不变。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成 DQE 验收入口 `/pages/table-column-candidates-query`。
+
 6.74 增加受控计算 `unionKeys`：从多个完整结果按同名稳定维度键取并集，再用 `joinAggregate` 补齐单项、`sumFields` 计算总分。单项缺失保留 null；查询数值空文本归为缺项并使用 missingText，真实 0 保留。见[组织键并集](docs/page-metadata/compute.md#组织键并集674)，验收入口 `/pages/union-keys-demo`、`/pages/partner-health-union-null-probe`（Mock）。
 
 6.73 为 `pagedUnion` 成员增加显式 `rowKeyGeneration: "uuid"`，与 `rowKey`、`rowKeyFields` 三选一。UUID 标识本次返回行，允许可空业务字段；业务重复及分页重叠由上游保证，计数、排序和完整批次校验保持。见[成员行键策略](docs/page-metadata/data-sources.md#分页合并成员行键策略673)，合成验收入口 `/pages/multi-source-generated-key`。

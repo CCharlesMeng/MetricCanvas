@@ -6,6 +6,8 @@ export interface PlatformRuntimeConfig {
   operatorId: string;
   workspaceId: string;
   cftk?: string;
+  /** 列候选原始结果扫描上限；默认1000，批次默认200。 */
+  columnCandidatesMaxRows?: number;
 }
 export interface PlatformEvent {
   code: 'ready' | 'login-required' | 'session-invalidated';

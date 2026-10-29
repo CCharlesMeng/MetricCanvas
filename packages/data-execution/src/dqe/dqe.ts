@@ -1,4 +1,5 @@
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
+import { fullQueryColumnCandidates } from './full-query-candidates';
 import { normalizeQueryTime, QueryTimeRangeError, dqeDefaultSort, validateCalendarTimeRange, calendarEndpoint, objectDateBoundary, isObjectDqeItem } from '@metriccanvas/page/internal';
 import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
 import { validateCandidatePage } from '../column-candidates';
@@ -96,9 +97,11 @@ export function createInMemoryDqeDiagnostics(limit = 100): InMemoryDqeDiagnostic
 }
 
 export interface DqeGatewayConfig {
+  /** Explicit fallback for services without original-result DISTINCT; retains all query outputs. */
+  columnCandidates?: import('./full-query-candidates').FullQueryCandidatesConfig;
   /** Deployment-verified multi-field object ordering; single-field uses native order_by_field. */
   encodeObjectSort?: ObjectSortEncoder;
-  /** Trusted, deployment-verified original-result DISTINCT encoding; absent means unavailable. */
+  /** Trusted original-result DISTINCT encoding; takes precedence over the explicit fullQuery fallback. */
   encodeColumnCandidates?: (request: ColumnCandidatesQuery) => { query: EffectiveQuery; valueField: string; labelField?: string };
 
   /** Encode a verified upstream search predicate; absent capability fails explicitly. */
@@ -487,7 +490,11 @@ export function createDqeGateway(
     },
     async fetchColumnCandidates(request, context, signal) {
       if (signal?.aborted) throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
-      if (!config.encodeColumnCandidates) return { kind: 'unavailable' };
+      if (!config.encodeColumnCandidates) {
+        const candidatesConfig = config.columnCandidates;
+        if (!candidatesConfig) return { kind: 'unavailable' };
+        return fullQueryColumnCandidates(request, gateway.fetchData, candidatesConfig, context, signal);
+      }
       const encoded = config.encodeColumnCandidates(structuredClone(request));
       let result: DataGatewayResult;
       try { result = await gateway.fetchData(encoded.query, context, signal); }

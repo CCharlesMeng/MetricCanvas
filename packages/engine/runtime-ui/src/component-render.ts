@@ -8,6 +8,7 @@ import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,Table
  * 抽成显式契约,使 `ComponentRenderer` 不需要认识运行时的表格状态实现。
  */
 export interface TableRenderBinding {
+  oncandidatepreloadvisible?: (visible: boolean) => void;
   failureNotice?: string;
   expansion?: { page: import('@metriccanvas/page').Page; gateway: import('../../runtime/src').RuntimeDataGateway;
     selection?: import('../../runtime/src/table/hierarchy-selection').HierarchySelection;

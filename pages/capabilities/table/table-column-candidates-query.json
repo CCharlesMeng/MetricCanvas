@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "6.74",
+  "id": "table-column-candidates-query",
+  "layout": "dashboard",
+  "meta": { "title": "表头候选全量读取（合成 DQE 响应）" },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "id": { "queryField": "编号", "type": "number", "role": "dimension", "label": "编号" },
+        "region": { "queryField": "区域", "type": "string", "role": "dimension", "label": "区域" },
+        "office": { "queryField": "代表处", "type": "string", "role": "dimension", "label": "代表处" },
+        "amount": { "queryField": "收入", "type": "number", "role": "measure", "label": "收入" }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": { "dsl_list": [{
+            "output_dims": ["编号", "区域", "代表处"],
+            "output_metrics": ["收入"],
+            "filter": { "time": { "period": "month", "start": "202601", "end": "202609", "is_aggregate": true }, "dims": [], "metrics": [] },
+            "order": { "order_by_field": "编号", "type": "ASC", "offset": 0, "limit": 20 }
+          }] }
+        }
+      }
+    }
+  },
+  "sections": [{
+    "id": "main",
+    "title": "表头筛选",
+    "components": [{
+      "id": "records-table",
+      "type": "table",
+      "layout": { "span": 12 },
+      "data": { "main": "records" },
+      "props": {
+        "rowKey": "id",
+        "columns": [
+          { "field": "id", "title": "编号" },
+          { "field": "region", "title": "区域", "filterable": { "mode": "select" } },
+          { "field": "office", "title": "代表处", "filterable": { "mode": "select" } },
+          { "field": "amount", "title": "收入", "filterable": { "mode": "numberRange" } }
+        ],
+        "pagination": { "mode": "query" }
+      }
+    }]
+  }]
+}

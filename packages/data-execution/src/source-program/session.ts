@@ -20,6 +20,7 @@ import { executePagedJoin } from '../paged-join/execute';
 import { preservedQueryError } from '../query-error';
 import { cascadeSourceIds, conditionSourceIds, canonicalizeJson, isBoundedResultSource, queryResultDependencies, tableHeaders, declaredPaginationLimit, type DataSource, type PagedJoinDataSource, type PagedUnionDataSource, type Page, type DataSnapshot, type EffectiveQuery, type TableQueryView, type QueryDataSource, type EmbeddedInitialRows } from '@metriccanvas/page/internal';
 import { createQueryRunner } from '../query-runner';
+import { candidateQueryRunner, candidateUnionReader } from './candidate-priority';
 import type { RuntimeDataGateway, QueryDiagnosticContext } from '../ports';
 import type { FilterValues } from '../filter-values';
 import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
@@ -33,6 +34,8 @@ import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
 
 export interface SourceRead {
+  /** Speculative reads share caches but yield execution priority to interactive reads. */
+  background?: boolean;
   displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date;
   roots: readonly string[]; conditions: FilterValues;
   views?: ReadonlyMap<string, TableQueryView>;
@@ -127,6 +130,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const controller = new AbortController();
       const signals = readSignals(controller, input);
       const request = freezeReadRequest(input, signals);
+      const execution = candidateQueryRunner(runner, request.background);
+      const currentUnion = candidateUnionReader(union, execution, request.background);
       const frozenInputs = request.displayInputs ?? config.displayInputs?.(); const frozenRevision = request.filterRevision ?? config.filterRevision?.();
       const candidates = createCandidateValidator(page, config.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: request.now });
       const scope = sourceReadScope(request.freshness, frozenInputs);
@@ -191,16 +196,16 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
             let query = preparedQuery(id, source as QueryDataSource, view, input.values);
             const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
             const preserveWindow = preserveBusinessWindow(id, source);
-            if (requiresCompleteRead(preserveWindow,source,query)) { resultLimit = undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, querySource.source.resultScope === 'complete', () => describeExportSource(page, id), request.allowPartial, request.purpose !== 'complete'); }
+            if (requiresCompleteRead(preserveWindow,source,query)) { resultLimit = undefined; snapshot = await fetchComplete(query, execution, scope, request.signal, diagnostics, querySource.source.resultScope === 'complete', () => describeExportSource(page, id), request.allowPartial, request.purpose !== 'complete'); }
             else {
-              snapshot = await runner.run(query, diagnostics, scope, request.signal);
+              snapshot = await execution.run(query, diagnostics, scope, request.signal);
               const corrected = correctedPageIndex(query, snapshot);
               if (canCorrectPage(corrected)) {
                 const correctedView = { ...view, pageIndex: corrected };
                 corrections.set(id, correctedView);
                 query = { ...query, pagination: { offset: corrected * view.pageSize, limit: view.pageSize } };
                 queries.set(id, query);
-                snapshot = await runner.run(query, diagnostics, scope, request.signal);
+                snapshot = await execution.run(query, diagnostics, scope, request.signal);
               }
             }
           }
@@ -227,8 +232,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const plan = compileUnion(page, id, request.conditions, view, request.now);
           const signal = AbortSignal.any([request.signal, AbortSignal.timeout(60_000)]);
           const complete = request.purpose === 'complete';
-          const result = await withTableRecovery(() => union.read(plan, scope, signal, complete),
-            () => recoverUnion(plan, runner, scope, signal, complete), signal);
+          const result = await withTableRecovery(() => currentUnion.read(plan, scope, signal, complete),
+            () => recoverUnion(plan, execution, scope, signal, complete), signal);
           const applied = result.viewCorrection ?? plan.view;
           raw.set(id, result.snapshot);
           if (canonicalizeJson(applied) !== canonicalizeJson(view)) corrections.set(id, applied);
@@ -248,7 +253,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           initials.set(id, { capturedAt: new Date().toISOString(), rows: snapshot.status === 'ready' ? snapshot.rows : [], ...(snapshot.status === 'ready' ? snapshotCellFallbacks(snapshot.rows) : {}), totalCount: snapshot.totalCount!, view });
         }
         function readJoined(plan: ReturnType<typeof compilePagedJoin>) {
-          return readRecoverableJoin(plan, runner, scope, request.signal, request.purpose === 'complete', request.allowPartial);
+          return readRecoverableJoin(plan, execution, scope, request.signal, request.purpose === 'complete', request.allowPartial);
         }
         function reportSourceState(id: string, snapshots: ReadonlyMap<string, DataSnapshot>): void {
           reportError(id, raw.get(id)!);
