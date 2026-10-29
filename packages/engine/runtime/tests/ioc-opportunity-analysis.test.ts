@@ -1,7 +1,7 @@
 import { versionPolicy } from '@metriccanvas/page';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { parsePage, type Page } from '@metriccanvas/page';
 import { flattenPageComponents, requiredMinorVersion } from '@metriccanvas/page/internal';
 import { orchestrate, type PageDataSnapshots } from '../src';
@@ -19,16 +19,25 @@ function loadPage(): Page {
   return parsed.page;
 }
 
-function snapshotsOf(page: Page): PageDataSnapshots {
+async function snapshotsOf(page: Page): Promise<PageDataSnapshots> {
   let snapshots: PageDataSnapshots = new Map();
-  orchestrate(page, {
-    // 默认筛选下编排器直接用 source.initial 的内嵌行，不发请求。
-    async fetchData() {
-      throw new Error('默认筛选下不应发起查询');
+  const gateway:import('../src').RuntimeDataGateway={
+    async fetchFilterCandidates(){return {kind:'values',candidates:[{value:'R',label:'合成地区部',level:'region-dept'}]};},
+    // Structural Region candidates must authorize a fresh query, even at the default scope.
+    async fetchData(_query,context) {
+      const source=page.dataSources[context?.dataSourceIds?.[0]??''];
+      if(source?.source.type!=='query'||!source.source.initial)throw new Error('Missing synthetic source');
+      const rows=source.source.initial.rows;
+      return {rows,totalCount:rows.length};
     }
-  }).subscribe((next) => {
-    snapshots = next;
-  });
+  };
+  const stream=orchestrate(page,gateway);
+  const stop=stream.subscribe(next=>{for(const [id,snapshot] of next)if(snapshot.status==='ready')snapshots=new Map(snapshots).set(id,snapshot);});
+  try {
+    await vi.waitFor(()=>expect(snapshots.get('region-analysis')?.status).toBe('ready'));
+    stream.setActiveTabs({'opportunity-region-tabs':'office'});
+    await vi.waitFor(()=>expect(snapshots.get('office-analysis')?.status).toBe('ready'));
+  } finally {stop();}
   return snapshots;
 }
 
@@ -52,14 +61,14 @@ describe('ioc-opportunity-analysis 页面契约', () => {
     ]);
   });
 
-  it('页面数据源全部走受控查询，默认筛选下用内嵌初始行渲染', () => {
+  it('页面数据源全部走受控查询，默认筛选取得完整候选后执行查询并渲染', async () => {
     const page = loadPage();
     expect(Object.keys(page.dataSources)).toEqual([
       'opportunity-metrics', 'region-analysis', 'office-analysis'
     ]);
     expect(Object.values(page.dataSources).every((source) => source.source.type === 'query')).toBe(true);
 
-    const snapshots = snapshotsOf(page);
+    const snapshots = await snapshotsOf(page);
     for (const sourceId of Object.keys(page.dataSources)) {
       expect(snapshots.get(sourceId)?.status, sourceId).toBe('ready');
     }

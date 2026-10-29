@@ -110,6 +110,8 @@ export interface FilterCandidatesRequest {
   constraints:{
     dimensions:Readonly<Record<string,readonly string[]>>;
     times:Readonly<Record<string,{from:string;to:string;mode?:'day'|'month'|'isoWeek'}>>;
+    /** Only declared boolean dependencies; keys are filter IDs, false is explicit. */
+    booleans?:Readonly<Record<string,boolean>>;
   };
 }
 export type FilterCandidatesResult =

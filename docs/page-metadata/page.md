@@ -38,6 +38,8 @@ report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHead
 
 `filterIds`依序认领已声明且静态可见的页级筛选。重复、不存在、隐藏、图表独立或详情私有筛选，以及与reportHeader重复认领均拒绝。已认领项从通用FilterBar排除，其余可见项保留。期间筛选原有Dashboard位置继续有效；report中的period须由IOC认领，期间语义和查询精度不变。详情单月仍用timePoint，不截断年季月来伪造单月；离散月份仍用dimension绑定，不能扩成连续区间。
 
+IOC 业务页的公共 `region` 输入只允许页头中的一个组织树：`display:"tree"`、`selection.mode:"single"`、`treeSelection:"level"`，声明真实 hierarchy，并由 iocHeader.filterIds 认领。树内可搜索并直接选择地区部或代表处节点，原子提交值与层级。平面 Region、hierarchyPicker 的 tabs/hidden、Region 多选、不可搜索树和拆开的地区部/代表处筛选都被拒绝；旧 schemaVersion 不绕过该规则。普通维度筛选不受此 IOC 约束。
+
 `presentation.density`为normal/compact；`collapse`为none/firstRow，缺省normal/none。firstRow按直接容器实际换行测量，折叠保留首行，隐藏项inert并关闭弹层；展开不改值、不查询。日期复用DatePicker/PeriodFilter；月→季→年→月保留月份锚点，近一年为当前月之前12完整月。锚点与展开是实例局部状态，不写入Page。
 
 `back:true`只表达返回意图。集成应用须同时提供非空`navigation.returnContext.entryId`与back函数才显示；直接打开无来源隐藏。B1没有完整视图快照或导航栈恢复。可选actions、有限枚举/单选、条件启用、V2候选、最新期上限和全页操作分别保留B2–B6规划，6.36不接受这些尚未交付字段。
@@ -64,7 +66,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 
 `readOnly:true` 统一限制用户筛选写入，包括更多面板与组件动作；初始化与合法恢复保持原有机制。`note` 是页头纯文本说明。只读不阻止合法返回；显式 `back:true` 仍要求集成应用提供合法 returnContext 和 back。未声明 back 的新页头不接管返回，避免隐藏集成应用的返回入口。
 
-所有筛选通过同一 FilterBar 接收候选重试、只读和时间事实；没有 IOC 专属筛选状态。 IOC Region 默认使用单选树形下拉，在同一棵树内选择地区部或代表处，不增加前置层级按钮；默认单选层级筛选省略 `hierarchyPicker` 即使用树形下拉；有真实父子候选时声明 `display:"tree"`、`treeSelection:"level"`、`selection.mode:"single"`，交互和候选契约见[结构树](filters.md#business-filters)。未认领的筛选留在内容区，已被 reportHeader 或图表认领的筛选不会再次进入页头。静态呈现复用 IocHeader，移除交互而保留身份与已应用条件。B6 的主题、全屏和附加操作仍未启用。
+所有筛选通过同一 FilterBar 接收候选重试、只读和时间事实；没有 IOC 专属筛选状态。 IOC Region 必须使用页头内单个可搜索的单选结构树，在同一棵树内选择地区部或代表处，不增加前置层级按钮；声明 `display:"tree"`、`treeSelection:"level"`、`selection.mode:"single"`，交互和候选契约见[结构树](filters.md#business-filters)。未认领的筛选留在内容区，已被 reportHeader 或图表认领的筛选不会再次进入页头。静态呈现复用 IocHeader，移除交互而保留身份与已应用条件。B6 的主题、全屏和附加操作仍未启用。
 
 实际页面复用既有 `ioc-project-overview`、`ioc-opportunity-list`、`ioc-opportunity-analysis`：分别验证普通、更多筛选及紧凑呈现。`dashboard-period-filter` 使用同一页头且仅保留一个年份入口。旧文档回归使用完整兼容夹具，不再新增演示入口。筛选声明见[筛选模块](filters.md)。
 

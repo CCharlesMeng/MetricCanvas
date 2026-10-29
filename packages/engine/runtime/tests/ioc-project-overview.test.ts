@@ -1,7 +1,7 @@
 import { versionPolicy } from '@metriccanvas/page';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { parsePage, type Page } from '@metriccanvas/page';
 import { requiredMinorVersion, sectionBackdrop } from '@metriccanvas/page/internal';
 import {
@@ -11,6 +11,7 @@ import {
   orchestrate,
   initializePageParams,
   resolvePageParams,
+  type RuntimeDataGateway,
   type PageDataSnapshots
 } from '../src';
 
@@ -59,8 +60,11 @@ describe('ioc-project-overview 骨架', () => {
       type: 'dimension', dimension: 'cloud-class', emptyLabel: '全部产业'
     });
     expect(filters.find((filter) => filter.id === 'region')).toMatchObject({
-      type: 'dimension', hierarchyPicker: 'hidden', defaultLevel: 'geo', emptyLabel: '区域'
+      type: 'dimension', display: 'tree', treeSelection: 'level',
+      selection: { mode: 'single' }, defaultLevel: 'geo', emptyLabel: '区域'
     });
+
+    expect(filters.find((filter) => filter.id === 'region')).not.toHaveProperty('hierarchyPicker');
 
     const candidateDimensions = new Set<string>();
     for (const filter of filters) {
@@ -273,16 +277,35 @@ describe('ioc-project-overview 骨架', () => {
     }
   });
 
-  it('编排后嵌套叶子的数据源都就绪且比率按百分数刻度产出', () => {
+  it('完整 Region 候选授权查询后，各页签数据源就绪且比率按百分数刻度产出', async () => {
     const page = loadPage();
     let snapshots: PageDataSnapshots = new Map();
-    orchestrate(page, {
-      async fetchData() {
-        throw new Error('默认筛选下不应发起查询');
+    const gateway: RuntimeDataGateway = {
+      async fetchFilterCandidates() {
+        return { kind: 'values', candidates: [{ value: 'R99', label: '合成中国', level: 'geo' }] };
+      },
+      async fetchData(_query, context) {
+        const source = page.dataSources[context?.dataSourceIds?.[0] ?? ''];
+        if (source?.source.type !== 'query' || !source.source.initial) throw new Error('缺少合成数据源');
+        const rows = source.source.initial.rows;
+        return { rows, totalCount: rows.length };
       }
-    }).subscribe((next) => {
-      snapshots = next;
+    };
+    const stream = orchestrate(page, gateway);
+    const stop = stream.subscribe(next => {
+      for (const [id, snapshot] of next) {
+        if (snapshot.status === 'ready') snapshots = new Map(snapshots).set(id, snapshot);
+      }
     });
+    try {
+      await vi.waitFor(() => expect(snapshots.get('overview-by-office')?.status).toBe('ready'));
+      stream.setActiveTabs({ 'overview-tabs': 'pre-approval-project' });
+      await vi.waitFor(() => expect(snapshots.get('top-initiated')?.status).toBe('ready'));
+      stream.setActiveTabs({ 'overview-tabs': 'lost-order-project' });
+      await vi.waitFor(() => expect(snapshots.get('lost-orders')?.status).toBe('ready'));
+    } finally {
+      stop();
+    }
     for (const sourceId of [
       'kpi-summary',
       'map-regions',

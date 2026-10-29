@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "39bcdcb57e77ecd0921ec8e1fb05eb2ad724bbd27845cc286fdedf1382546e01",
+  "sha256": "f79ff36052addea9b19d411f4454a77a54cb9e28abae4f94b9ee82d61c61c4e7",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/conditions.md",
-      "sha256": "cf7f2f6975e26bbe218e9a484e85f25b74c86d45f900ddc246a70414d8752e5b"
+      "sha256": "d70c4cf0198f86fd5e24310079b7cff98b9d751f40e3ae867da241890e6922ae"
     },
     {
       "file": "docs/page-metadata/data-sources.md",
@@ -124,7 +124,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "968fc5a351a4ac60bc99b3f028e5da931b73ffcb0ebf2fb0ec8f56ffcb22720d"
+      "sha256": "22b326a4029ac2d4d07d4f4b05ae919acd2f52dbbb097bc6b4701608505b7e8e"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -132,7 +132,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "8839fe55510b30ec1e586d780f8720f3b82d3c2f29b6f759935427e42c6caa09"
+      "sha256": "a35d92383d1cf5af646d9cc75a4f5fd59fadc230700f87f14e1ee09d16e05329"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "26ea3735c8ce06006252227e7fa6a3149bd7c73fdba09a65d29f1ddf1a606422"
+      "sha256": "dd03c3926d798d25fb8fe40fa1ec58f3d048076e1395d9e4108915bf78c9ffa6"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -852,7 +852,7 @@
     },
     {
       "file": "packages/page/fixtures/contract-valid/ioc-header-page.json",
-      "sha256": "8b6bfe9101953135a6796be13ba160adef6f252884c7348baa248ccd83b82e17"
+      "sha256": "4771b84c202c347da3ca77e7fd194d60488e67dfff7ae7a2a63dd792ee6d8177"
     },
     {
       "file": "packages/page/fixtures/contract-valid/ioc-header-standard.json",
@@ -1260,7 +1260,7 @@
     },
     {
       "file": "packages/page/fixtures/contract-valid/unified-overflow-header.json",
-      "sha256": "d61f03cf0ca988a87e5484de123ac560bd9e35bdfbd8bd91261866ceef2d2cab"
+      "sha256": "819be772fe419a94d92180d15845e0588da237cd644840bd2a3bba7a489a2199"
     },
     {
       "file": "packages/page/fixtures/contract-valid/unified-year-header.json",
@@ -1384,7 +1384,7 @@
     },
     {
       "file": "packages/page/src/filter-dependencies.ts",
-      "sha256": "dea324c4ab6e7d73632ed6b80109a9fb7a23692787f454cbbbabc91f431d2782"
+      "sha256": "69c3e714029d76775f90f00566c88ff3b77958d6b9c4f50a28e0ee9c70068b1d"
     },
     {
       "file": "packages/page/src/filter-group.ts",
@@ -1396,7 +1396,7 @@
     },
     {
       "file": "packages/page/src/filter.ts",
-      "sha256": "25a22459084e6c41459e3e64a736d3e640b08c2b458b04e0db181b52088c8b9c"
+      "sha256": "7619c183fae8b07a75bb83a57779eddf6d4a1b571fc09a8abdadfc896797645f"
     },
     {
       "file": "packages/page/src/index.ts",
@@ -1412,7 +1412,7 @@
     },
     {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "a969b84ca2c8c6f0e047603cd8e94829c3f3cb3ba093ff096d7b8091e5b2bbf6"
+      "sha256": "5b820b7e5b6aae14d34f75c7ddd4ae8ed7cf1652b31cb61a9f7d8926f4bc45ce"
     },
     {
       "file": "packages/page/src/layout-compatibility.ts",
@@ -1668,7 +1668,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "f06129746f310c06c26a3078a165760313b158d8f5c21f941146b1bd4fce38fa"
+      "sha256": "cf8dbf1a96abfd9d9a7da1db76bf6936f6d767a69d2cc86daf1fe23743ed46aa"
     },
     {
       "file": "packages/page/src/schema/index.ts",
@@ -1832,7 +1832,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "10a7f96e4c08cad61d4f13f7f01c05fe0569901eacf0a6faf26a0be43e6a828f"
+      "sha256": "522a586fcaf34f2bf4fcea2990f4b568296de61d08dc92648ed9c10b385d99fa"
     },
     {
       "file": "pages/README.md",
@@ -1848,11 +1848,11 @@
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/ioc-opportunity-analysis.json",
-      "sha256": "cf2bb971d64429da7118efae29802c512495f2cc6f54b38529e1c3d5f54279d3"
+      "sha256": "5910aeb08d19baf3c321e20857e834b06f0fa8574a8ec53753834c851a18bdeb"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json",
-      "sha256": "464cc00d99a228d49a160013746f34d9332e4a2734989f1144d948883be5449d"
+      "sha256": "fc6693819f05127b6c755344fb427bef2f2867d821e73959e682cf53a8640965"
     },
     {
       "file": "pages/business/dashboard/ioc/project/README.md",
@@ -1864,7 +1864,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/project/ioc-project-overview.json",
-      "sha256": "02de54f0ffe424e2b4c9c35763998165750dd3d639db3dda972358b19865d3e9"
+      "sha256": "b0e9682eb9b553b7c2452a563a3b73a35d50212e50b2a1f54e9d38920449df8e"
     },
     {
       "file": "pages/business/report/customer/README.md",
@@ -2004,7 +2004,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "cf35f62a861c915b2507b5eebdfe5cecc340d879e201586bbb7851060787be33"
+      "sha256": "c981a313193cafdd8a707f34cc54ff563c168fc84d8ffcaa9b25a49677c90bda"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",
@@ -2021,6 +2021,14 @@
     {
       "file": "pages/capabilities/filters/filter-group-state-page.json",
       "sha256": "d61b96b3986ce102cedc695a9111218277c17d6cff987c032ba619e795496ba2"
+    },
+    {
+      "file": "pages/capabilities/filters/key-office-filter-demo.json",
+      "sha256": "3bce0db4333936fbec0ea052fda85e66f56472918d116b325334a303fe5f1e24"
+    },
+    {
+      "file": "pages/capabilities/filters/key-office-filter-target.json",
+      "sha256": "b10325df1722375f62a959dc21278f17fc04bad222f4eb25704928fa20a16a21"
     },
     {
       "file": "pages/capabilities/filters/page-visibility-inputs.json",
@@ -2060,7 +2068,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/business/ioc-header-demo.json",
-      "sha256": "b515922725c7733acc71682190606162cc99225affdda19910ea84802482f7a8"
+      "sha256": "3c3c0f8a8c8ef0817427fd676eb2fc0c42563cc7752eb40bf671f9384f0ee57c"
     },
     {
       "file": "pages/capabilities/ioc-header/business/ioc-header-dense.json",
@@ -2132,7 +2140,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/ioc-header-dense-filter-demo.json",
-      "sha256": "4fda37b44d7ee3c48e41c4e78da6384e2f19e255e5941e2cb9cf1df38680ff2c"
+      "sha256": "bcc7f11e7ff851ee570a999ff525e74af232a7fc4830123acfd6c94bc7a4d956"
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json",
@@ -2156,7 +2164,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json",
-      "sha256": "130e9af6c24ff3eda57f45a9de92a82dadf15da01e9cb499ee7e00a77a3c9b4d"
+      "sha256": "eef6de81eaa63e64170a138e5e1a00c7d3b56d2a2a5976c16b464c4b1902371c"
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/ioc-header-time-modes-demo.json",
@@ -2200,15 +2208,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "12826a6e1ceea1303441ae9f610f1ba832efa3488b5c4264a65fcd02fdc3442b"
+      "sha256": "c6d6999145027f3e08f8f0acde806551f776d2a28949a035cfdf358426d62e0d"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "6458071805563e54fc661a3f64684485c37d103f1ba0c0301aad8292c1529c03"
+      "sha256": "4c2968d76953c9ade5b946877c1bf731b6dcc117c626c61aae60ae2687865ee5"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "b476c6554b649cf7dcb0ae450a333053b574f3297142f40a146a8b05710ccc1e"
+      "sha256": "88aa06916ce81d800fc31a71504bd706404c967b6b1a712bde1c7a187797a0e4"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2368,7 +2376,7 @@
     },
     {
       "file": "pages/capabilities/table/table-data-recovery.json",
-      "sha256": "cb3245d00ade1d56eb5ee9eeb775060fa28999bda620418b8c57493f5ed09e88"
+      "sha256": "b725325d5debf85ce99bb7156232b0c8e6544b550224061e0bdd95ef9c2b30d2"
     },
     {
       "file": "pages/capabilities/table/table-detail-overlay.json",
@@ -2444,7 +2452,7 @@
     },
     {
       "file": "pages/temporary/contract-maturity-linkage-20261027/contract-maturity-score-linked.json",
-      "sha256": "2343c3cfc907765fcd675c588b6f25f28eade0a9a247e17a7486641f4ed5e589"
+      "sha256": "a52b0522d6c948ae730c00e6342d4d03ca2d622c9dab22434af232c280af3dbf"
     },
     {
       "file": "pages/temporary/contract-maturity-score-20261027/README.md",
@@ -2452,7 +2460,7 @@
     },
     {
       "file": "pages/temporary/contract-maturity-score-20261027/contract-maturity-score.json",
-      "sha256": "13ff83fec7e1d11e7a1299ee897502117bf71fbae074b78953f21d5a793a0331"
+      "sha256": "20007c7abbfafae8c41256c31e8d7606b6915ea8e4f8816ca5ccbffca7a7e723"
     },
     {
       "file": "pages/temporary/governance-compliance-20261027/README.md",
@@ -2792,7 +2800,7 @@
     },
     {
       "file": "tools/scripts/export-authoring-contracts.ts",
-      "sha256": "d7c2b1d9984a1aeba7305a0c119518d6bd10182c7edcacd113168e5a8d3cd7f1"
+      "sha256": "e179098020a8e12552f9924ec4255014a3b2e076661b1f4049ed6db1d5f9d9b2"
     },
     {
       "file": "tools/scripts/local-authoring-data-analysis.ts",
@@ -2884,7 +2892,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "13af7dec25ae2c12850875de4048969301bf3d261f5bba58a9a9d86751f11e17"
+      "sha256": "9d3acc6862ebc9fb11e6c15b507eda8f4e9f2a8d3299d4ef10a8e02bba9d694a"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

@@ -1,4 +1,6 @@
 import { createFullQueryCandidatesPreview } from '../../fixtures/full-query-candidates';
+import {withIocRegionCandidates} from './ioc-region-preview';
+import {createKeyOfficeGateway} from '../../fixtures/key-office-filter/gateway';
 import {createZeroTotalPreview} from '../../fixtures/zero-total-gateway';
 import {createPartnerHealthUnionPreview} from '../../fixtures/organization-union/gateway';
 import {createTableRecoveryPreview} from '../../fixtures/table-recovery';
@@ -19,6 +21,8 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
   if (kind === 'full-query-candidates') return createFullQueryCandidatesPreview(state);
   if (kind === 'organization-union') return createPartnerHealthUnionPreview(state);
   if (kind === 'table-recovery') return createTableRecoveryPreview(state);
+  if (kind === 'ioc-region') return {dataGateway:withIocRegionCandidates(dataGateway)};
+  if (kind === 'key-office') return {dataGateway:createKeyOfficeGateway()};
   if (kind === 'zero-total') return createZeroTotalPreview();
   if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
   if (kind === 'record-join') return createRejectionPreview({rows:rejectionPreviewRowCount(exampleId,'catalog'),delayMs:rejectionPreviewDelay(exampleId)});

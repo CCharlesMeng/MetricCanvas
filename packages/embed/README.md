@@ -251,3 +251,12 @@ ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行
 在报表顶层页头统一配置`exportButtons: [{format, label?, filename?, scale?}]`，每项一个直接下载按钮；PNG默认3倍、支持3/4倍，PDF默认2倍、支持2/3/4倍；结果始终为一张完整PNG。单张长图由独立文档和Worker行流式编码生成，不提供多文件或其他图片格式回退。既有PDF独立保留；完整声明及运行限制见[报告页头](../../docs/page-metadata/components/reportHeader.md#导出按钮631)和[报告导出](../../docs/report-export.md)。[HTML例子](examples/report-image-download.html)直接消费`pages/capabilities/export/report-png-export.json`，不需集成应用安装截图/编码依赖。正常父文档水印被隔离，主动向frame注入的门户脚本仍需真实接入验收。
 
 Tab混合内容的活动项使用 `tab.<组件id>` 查询参数。`navigation.replaceSearch` 接收筛选与页签更新；仅使用事件同步URL的集成应用同时处理 `filter-change` 与 `tab-change`，替换当前历史记录且不立即回灌 update。既有对事件联合做穷尽switch的消费者需要补充tab-change分支。组件局部筛选沿用既有筛选URL；表格分页、排序、搜索草稿和滚动不新增URL编码。
+
+
+## 宿主共享筛选值示例
+
+`examples/shared-filter-bridge.ts` 是可复制的宿主 Adapter 示例，复用 initialSearch 和 filter-change。应用创建一个 bridge，使用 projectNavigationInputs(document).filters 与显式 `{共享键:页面筛选器id}` 映射初始化查询串；合法的显式 URL 值优先。每次 filter-change 调用 recordSearch，切页时用同一 bridge 生成下一页输入，false 与清空都回写。clear 取消继承该值，目标页继续应用自身默认值。仅支持 boolean、dimension 和 timePoint 的公共项，并检查维度、层级声明和精度兼容；私有筛选不传入。
+
+示例不通过 update 回灌每次页内变化，不创建跨页 FilterState 单例。未声明映射的筛选值留在各页，候选回执、表格与导出状态也不共享。应用负责 bridge 的用户会话生命周期；一个活动页面以外的实时同步需要额外宿主契约。execution 快照模式不叠加这层初始化。
+
+运行 `MC_EMBED_EXAMPLE_PORT=4177 pnpm --filter @metriccanvas/embed preview:examples`，访问 `/pages/key-office-filter-demo`，其“切换页面”跳到目标页。两页只用合成 Adapter，sessionStorage 模拟宿主跨整页会话。接入真实 HeaderOptionService 时由宿主替换存储与候选逻辑，并验证真实字段、权限与编码。

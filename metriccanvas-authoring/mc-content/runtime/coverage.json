@@ -778,6 +778,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/key-office-filter-demo.json",
+      "target": "product-contracts/page/conformance/valid/key-office-filter-demo.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/key-office-filter-target.json",
+      "target": "product-contracts/page/conformance/valid/key-office-filter-target.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/chart-constant-values-page.json",
       "target": "product-contracts/page/conformance/valid/chart-constant-values-page.json",
       "scope": "exact product contract"
@@ -850,6 +860,26 @@
     {
       "source": "product:page/conformance/parameter-extraction.json",
       "target": "product-contracts/page/conformance/parameter-extraction.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-region-flat.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-region-flat.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-region-external-picker.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-region-external-picker.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-region-multiple.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-region-multiple.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-region-outside-header.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-region-outside-header.json",
       "scope": "exact product contract"
     },
     {
@@ -3355,6 +3385,26 @@
     {
       "source": "product:page/reference/examples/component-filterGroup.json",
       "target": "references/page-metadata/examples/component-filterGroup.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-region-flat.json",
+      "target": "references/page-metadata/errors/ioc-region-flat.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-region-external-picker.json",
+      "target": "references/page-metadata/errors/ioc-region-external-picker.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-region-multiple.json",
+      "target": "references/page-metadata/errors/ioc-region-multiple.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-region-outside-header.json",
+      "target": "references/page-metadata/errors/ioc-region-outside-header.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -5963,6 +6013,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/key-office-filter-demo.json",
+      "target": "references/page-metadata/examples/key-office-filter-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/key-office-filter-target.json",
+      "target": "references/page-metadata/examples/key-office-filter-target.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/filters.md",
       "target": "references/page-metadata/filters.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6634,11 +6694,11 @@
     }
   ],
   "counts": {
-    "product": 1295,
+    "product": 1307,
     "authoring": 31,
     "modules": 33,
-    "topics": 202,
-    "nodes": 2422,
+    "topics": 203,
+    "nodes": 2424,
     "tools": 9,
     "components": 19
   },

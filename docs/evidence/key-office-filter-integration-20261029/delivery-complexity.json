@@ -1,0 +1,375 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "baseline": "96e7166b7307f1d4adbd0dfae1d72db9d5a13c50",
+  "files": [
+    {
+      "file": "apps/playground/fixtures/preview-inputs.ts",
+      "before": [
+        {
+          "name": "<anonymous@3:123>",
+          "qualifiedName": "<anonymous@3:123>",
+          "line": 3,
+          "endLine": 3,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageExternalInputs",
+          "qualifiedName": "pageExternalInputs",
+          "line": 18,
+          "endLine": 27,
+          "selfCC": 8,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rejectionPreviewRowCount",
+          "qualifiedName": "rejectionPreviewRowCount",
+          "line": 31,
+          "endLine": 35,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rejectionPreviewDelay",
+          "qualifiedName": "rejectionPreviewDelay",
+          "line": 38,
+          "endLine": 41,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ],
+      "after": [
+        {
+          "name": "<anonymous@3:123>",
+          "qualifiedName": "<anonymous@3:123>",
+          "line": 3,
+          "endLine": 3,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageExternalInputs",
+          "qualifiedName": "pageExternalInputs",
+          "line": 20,
+          "endLine": 29,
+          "selfCC": 8,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rejectionPreviewRowCount",
+          "qualifiedName": "rejectionPreviewRowCount",
+          "line": 33,
+          "endLine": 37,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rejectionPreviewDelay",
+          "qualifiedName": "rejectionPreviewDelay",
+          "line": 40,
+          "endLine": 43,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/scenario-environment.ts",
+      "before": [
+        {
+          "name": "scenarioEnvironment",
+          "qualifiedName": "scenarioEnvironment",
+          "line": 17,
+          "endLine": 35,
+          "selfCC": 13,
+          "optionalChains": 0,
+          "subtreeCC": 13,
+          "nestedFunctions": 0
+        }
+      ],
+      "after": [
+        {
+          "name": "scenarioEnvironment",
+          "qualifiedName": "scenarioEnvironment",
+          "line": 19,
+          "endLine": 39,
+          "selfCC": 15,
+          "optionalChains": 0,
+          "subtreeCC": 15,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+      "before": [
+        {
+          "name": "<anonymous@64:53>",
+          "qualifiedName": "<anonymous@64:53>",
+          "line": 64,
+          "endLine": 90,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "resolveTargetInputs",
+          "qualifiedName": "<anonymous@64:53>/resolveTargetInputs",
+          "line": 66,
+          "endLine": 72,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "replaceSearch",
+          "qualifiedName": "<anonymous@64:53>/replaceSearch",
+          "line": 73,
+          "endLine": 78,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "navigate",
+          "qualifiedName": "<anonymous@64:53>/navigate",
+          "line": 79,
+          "endLine": 86,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "back",
+          "qualifiedName": "<anonymous@64:53>/back",
+          "line": 89,
+          "endLine": 89,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@92:11>",
+          "qualifiedName": "<anonymous@92:11>",
+          "line": 92,
+          "endLine": 100,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "previewDataGateway",
+          "qualifiedName": "previewDataGateway",
+          "line": 102,
+          "endLine": 115,
+          "selfCC": 13,
+          "optionalChains": 0,
+          "subtreeCC": 13,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "loadPage",
+          "qualifiedName": "loadPage",
+          "line": 117,
+          "endLine": 136,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        }
+      ],
+      "after": [
+        {
+          "name": "<anonymous@68:53>",
+          "qualifiedName": "<anonymous@68:53>",
+          "line": 68,
+          "endLine": 94,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "resolveTargetInputs",
+          "qualifiedName": "<anonymous@68:53>/resolveTargetInputs",
+          "line": 70,
+          "endLine": 76,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "replaceSearch",
+          "qualifiedName": "<anonymous@68:53>/replaceSearch",
+          "line": 77,
+          "endLine": 82,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "navigate",
+          "qualifiedName": "<anonymous@68:53>/navigate",
+          "line": 83,
+          "endLine": 90,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "back",
+          "qualifiedName": "<anonymous@68:53>/back",
+          "line": 93,
+          "endLine": 93,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@96:11>",
+          "qualifiedName": "<anonymous@96:11>",
+          "line": 96,
+          "endLine": 104,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "previewDataGateway",
+          "qualifiedName": "previewDataGateway",
+          "line": 106,
+          "endLine": 121,
+          "selfCC": 15,
+          "optionalChains": 0,
+          "subtreeCC": 15,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "recordSharedFilters",
+          "qualifiedName": "recordSharedFilters",
+          "line": 123,
+          "endLine": 126,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "loadPage",
+          "qualifiedName": "loadPage",
+          "line": 128,
+          "endLine": 152,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/fixtures/table-recovery.ts",
+      "before": [
+        {
+          "name": "createTableRecoveryPreview",
+          "qualifiedName": "createTableRecoveryPreview",
+          "line": 6,
+          "endLine": 21,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "fetchData",
+          "qualifiedName": "createTableRecoveryPreview/fetchData",
+          "line": 10,
+          "endLine": 19,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@11:59>",
+          "qualifiedName": "createTableRecoveryPreview/fetchData/<anonymous@11:59>",
+          "line": 11,
+          "endLine": 11,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ],
+      "after": [
+        {
+          "name": "createTableRecoveryPreview",
+          "qualifiedName": "createTableRecoveryPreview",
+          "line": 7,
+          "endLine": 27,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "fetchFilterCandidates",
+          "qualifiedName": "createTableRecoveryPreview/fetchFilterCandidates",
+          "line": 12,
+          "endLine": 15,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fetchData",
+          "qualifiedName": "createTableRecoveryPreview/fetchData",
+          "line": 16,
+          "endLine": 25,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@17:59>",
+          "qualifiedName": "createTableRecoveryPreview/fetchData/<anonymous@17:59>",
+          "line": 17,
+          "endLine": 17,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

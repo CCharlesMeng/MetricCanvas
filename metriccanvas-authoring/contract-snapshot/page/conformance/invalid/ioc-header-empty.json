@@ -2,7 +2,7 @@
   "case": "ioc-header-empty",
   "invariant": "ioc-header",
   "input": {
-    "schemaVersion": "6.36",
+    "schemaVersion": "6.37",
     "id": "ioc-header-page",
     "layout": "dashboard",
     "dashboardToolbar": "hidden",
@@ -28,7 +28,30 @@
         "id": "region",
         "type": "dimension",
         "dimension": "geo-pc-code",
-        "label": "区域"
+        "label": "区域",
+        "hierarchy": [
+          {
+            "id": "geo",
+            "dimension": "geo-pc-code",
+            "label": "全球"
+          },
+          {
+            "id": "region-dept",
+            "dimension": "region-dept-code",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "rep-office-code",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "geo",
+        "display": "tree",
+        "treeSelection": "level",
+        "selection": {
+          "mode": "single"
+        }
       }
     ],
     "dataSources": {
@@ -78,7 +101,11 @@
               },
               "region": {
                 "target": "dimension",
-                "queryField": "geo_pc_code"
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "region_dept_code",
+                  "office": "rep_office_code"
+                }
               }
             }
           }

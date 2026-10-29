@@ -1,0 +1,188 @@
+{
+  "case": "ioc-region-outside-header",
+  "invariant": "ioc-region-single-tree",
+  "input": {
+    "schemaVersion": "6.75",
+    "id": "key-office-filter-demo",
+    "layout": "dashboard",
+    "meta": {
+      "title": "重点国代联动 合成数据"
+    },
+    "filters": [
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "demo_region",
+        "label": "Region",
+        "selection": {
+          "mode": "single"
+        },
+        "display": "tree",
+        "treeSelection": "level",
+        "hierarchy": [
+          {
+            "id": "region-dept",
+            "dimension": "demo_region",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "demo_office",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "region-dept",
+        "candidateContext": {
+          "filterIds": [
+            "key-office"
+          ],
+          "reconcile": "intersection"
+        }
+      },
+      {
+        "id": "key-office",
+        "type": "boolean",
+        "label": "仅看重点国代",
+        "enabledWhen": {
+          "filter": "region",
+          "part": "values",
+          "op": "isNotEmpty"
+        }
+      },
+      {
+        "id": "mtime",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "数据月份"
+      }
+    ],
+    "iocHeader": {
+      "identity": {
+        "title": "重点国代联动"
+      },
+      "filterIds": [
+        "key-office",
+        "mtime"
+      ]
+    },
+    "dataSources": {
+      "offices": {
+        "fields": {
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "demo_office"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "demo_amount"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "demo_office"
+                  ],
+                  "output_metrics": [
+                    "demo_amount"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "region-dept": "demo_region",
+                  "office": "demo_office"
+                }
+              },
+              "key-office": {
+                "target": "boolean",
+                "queryField": "demo_key_office",
+                "whenTrue": [
+                  "true"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "results",
+        "components": [
+          {
+            "id": "office-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "rowKey": "office",
+              "columns": [
+                {
+                  "title": "代表处",
+                  "field": {
+                    "data": "main",
+                    "field": "office"
+                  }
+                },
+                {
+                  "title": "金额",
+                  "field": {
+                    "data": "main",
+                    "field": "amount"
+                  }
+                }
+              ],
+              "toolbar": {
+                "export": {
+                  "format": "xlsx"
+                }
+              }
+            }
+          },
+          {
+            "id": "next-page",
+            "type": "button",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "label": "切换页面",
+              "action": {
+                "navigate": {
+                  "href": "/pages/key-office-filter-target"
+                },
+                "on": "click"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/id",
+      "message": "IOC Region 必须由 iocHeader.filterIds 认领"
+    }
+  ]
+}

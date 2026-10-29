@@ -11,6 +11,7 @@ export const consumerFixturePaths = [
   "packages/embed/tests/dqe-fixture-endpoint.mjs",
   "tools/dqe-sim/fixtures/ioc-opportunity-list.json",
   "tools/dqe-sim/fixtures/ioc-dimension-values.json",
+  "tools/dqe-sim/fixtures/ioc-region-candidates.mjs",
   "tools/dqe-sim/fixtures/ioc-page-datasets.json",
   "tools/dqe-sim/fixtures/chart-local-filter.json",
   "tools/dqe-sim/fixtures/ioc-header-query.mjs",

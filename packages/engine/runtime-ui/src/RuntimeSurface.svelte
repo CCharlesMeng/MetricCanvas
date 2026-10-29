@@ -273,6 +273,7 @@
 
   let snapshots = $state<PageDataSnapshots>(new Map());
   let blockedFilters = $state<string[]>([]);
+  let confirmationFilters = $state<string[]>([]);
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
   let displaySnapshot=$state.raw<DisplaySnapshot|undefined>();
@@ -534,7 +535,7 @@
       state.subscribe((values) => {
         const previous = filterValues;
         filterValues = values;filterRevision=state.revision;candidateClock=state.clock();
-        blockedFilters = [...state.blocked()];
+        blockedFilters = [...state.blocked()];confirmationFilters=[...state.confirmation()];
         if (blockedFilters.length) {
           for (const component of flattenPageComponents(loaded)) if (component.type==='table' && sourceBlocked(loaded,component.data.main)) exportController.cancel(component.id);
           if (Object.keys(loaded.dataSources).some(id=>sourceBlocked(loaded,id))) exportController.cancel(pageExportTask);
@@ -779,6 +780,8 @@
 
   function writeBoolean(filterId: string, checked: boolean) {
     if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
+    const declaration=declarations.find(item=>item.id===filterId);
+    if(declaration?.type!=='boolean' || !presentation?.gate(declaration).enabled) return;
     filterState?.write(filterId, { type: 'boolean', value: checked });
   }
 
@@ -1334,13 +1337,13 @@
         readOnly={pageReadOnly} note={blockedFilters.length ? `等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label ?? id).join('、')}` : pageReadOnly ? filterEditing?.reason ?? header.note ?? '筛选只读' : header.note}/>
     {/if}
     {#snippet iocHeaderControls(id: string, readOnly: boolean)}
-      <FilterBar {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
+      <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
         {readOnly} ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
         onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
     {/snippet}
     {#if pageState.capabilities.filters && hasVisibleFilters(header.content)}
       <div data-dashboard-content-filters={layoutForm==='dashboard'?true:undefined} class:dashboard-content-filters={layoutForm==='dashboard'}>
-        <FilterBar {timeContext} onretry={retryCandidates} readOnly={pageReadOnly}
+        <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={pageReadOnly}
           declarations={header.content} values={filterValues} candidates={dimensionCandidates}
           ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
           onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
@@ -1362,7 +1365,7 @@
     {/if}
     <div class="page-sections">
       {#snippet headerControls(ids: string[])}
-        <FilterBar {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
+        <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
           candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange}
           ontimepoint={writeTimePoint} onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       {/snippet}

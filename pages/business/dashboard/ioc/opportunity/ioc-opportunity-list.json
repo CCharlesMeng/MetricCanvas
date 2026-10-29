@@ -49,7 +49,9 @@
       "defaultLevel": "geo",
       "selection": {
         "mode": "single"
-      }
+      },
+      "display": "tree",
+      "treeSelection": "level"
     },
     {
       "id": "na-type",

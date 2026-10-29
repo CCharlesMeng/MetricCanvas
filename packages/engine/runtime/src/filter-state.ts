@@ -34,6 +34,7 @@ interface CoordinatedFilterState extends FilterState, FilterCoordinator {
   /** A legality gate, independent of visibility. The owning runtime feeds candidate receipts. */
   blocked(): ReadonlySet<string>;
   refreshContext():void;
+  confirmation():ReadonlySet<string>;
   readonly revision:number;
   clock():Date;
   candidate(filterId: string, status: 'loading' | 'ready' | 'empty' | 'error' | 'unavailable' | 'denied' | 'unconfigured', values?: readonly string[]): void;
@@ -145,6 +146,21 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     return { ok: true, filterRevision: revision, changedIds };
   }
 
+  /** An unset optional selection does not require confirmation; a lost selection does. */
+  function reconcileCandidates(filterId: string, values?: readonly string[]): boolean {
+    const selected = current.get(filterId);
+    if (selected?.type !== 'dimension' || !selected.values.length) return false;
+    const kept = selected.values.filter(value => values?.includes(value));
+    if (kept.length) confirmation.delete(filterId); else confirmation.add(filterId);
+    if (kept.length === selected.values.length) return false;
+    const normalized = new Map<string, FilterValue | null>([[filterId, kept.length ? { ...selected, values: kept } : null]]);
+    invalidate([filterId], normalized, false);
+    const next = new Map(current);
+    for (const [id, value] of normalized) { if (value) next.set(id, value); else next.delete(id); }
+    revision++; replace(next);
+    return true;
+  }
+
   function restoreMissingDates(next: Map<string, FilterValue>, declarations: readonly FilterDeclaration[]): void {
     for (const declaration of declarations) {
       if (next.has(declaration.id) || !requiresURLFallback(declaration)) continue;
@@ -180,22 +196,13 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
 
     commit,
     blocked,
+    confirmation:()=>new Set(confirmation),
     get revision() { return revision; }, clock: () => new Date(operationClock),
     refreshContext() { operationClock = editing.now?.() ?? new Date(); replace(new Map(current)); },
     candidate(filterId, status, values) {
       const previous = [...blocked()].sort().join('\0');
       receipts.set(filterId, { status, values });
-      if (status === 'ready' && intersections.delete(filterId)) {
-        const selected = current.get(filterId);
-        const kept = selected?.type === 'dimension' ? selected.values.filter(value => values?.includes(value)) : [];
-        if (!kept.length) confirmation.add(filterId); else confirmation.delete(filterId);
-        if (selected?.type === 'dimension' && kept.length !== selected.values.length) {
-          const normalized = new Map<string, FilterValue | null>([[filterId, kept.length ? { ...selected, values: kept } : null]]);
-          invalidate([filterId], normalized, false);
-          const next = new Map(current); for (const [id, value] of normalized) if (value) next.set(id, value); else next.delete(id);
-          revision++; replace(next); return;
-        }
-      }
+      if (status === 'ready' && intersections.delete(filterId) && reconcileCandidates(filterId, values)) return;
       if ([...blocked()].sort().join('\0') !== previous) replace(new Map(current));
     },
     write(filterId, value) { commit({ type: 'applyDraft', changes: [[filterId, value]] }); },

@@ -1,0 +1,23 @@
+{
+  "case": "ioc-region-multiple",
+  "invariant": "ioc-region-single-tree",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC Region 只允许单选树节点",
+      "paths": [
+        "/filters/0/selection/mode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "selection": {
+          "mode": "multiple"
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-region-multiple.json"
+}

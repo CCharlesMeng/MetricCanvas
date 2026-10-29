@@ -127,7 +127,7 @@ export function createDimensionValuesLoader(
       start(dimension, constraints, true, scope);
     },
     loadFilter(request,context,levels,force=false) {
-      const normalized={...request,constraints:{dimensions:Object.fromEntries(Object.keys(request.constraints.dimensions).sort().map(id=>[id,[...new Set(request.constraints.dimensions[id])].sort()])),times:Object.fromEntries(Object.keys(request.constraints.times).sort().map(id=>[id,request.constraints.times[id]]))}};
+      const normalized={...request,constraints:{...(request.constraints.booleans?{booleans:Object.fromEntries(Object.keys(request.constraints.booleans).sort().map(id=>[id,request.constraints.booleans![id]!]))}:{}),dimensions:Object.fromEntries(Object.keys(request.constraints.dimensions).sort().map(id=>[id,[...new Set(request.constraints.dimensions[id])].sort()])),times:Object.fromEntries(Object.keys(request.constraints.times).sort().map(id=>[id,request.constraints.times[id]]))}};
       start(request.dimension,normalized.constraints.dimensions,force,{filterId:request.filterId,level:request.level,context},normalized,levels);
     },
     unavailable(dimension, scope) {

@@ -1,0 +1,21 @@
+{
+  "case": "ioc-region-outside-header",
+  "invariant": "ioc-region-single-tree",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC Region 必须由 iocHeader.filterIds 认领",
+      "paths": [
+        "/filters/0/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "region"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

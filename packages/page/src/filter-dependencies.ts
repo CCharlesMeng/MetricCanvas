@@ -39,7 +39,7 @@ export function filterExtensionErrors(filters: readonly FilterDeclaration[]): Ty
       if(cyclic(filter.id))error(path,'合并筛选依赖存在循环');
     }
     if(filter.type!=='dimension')continue;
-    if(filter.candidateContext?.filterIds.some(id=>!['dimension','timePoint','timeRange'].includes(byId.get(id)?.type??'')))error(path+'/candidateContext','候选依赖只支持维度及已应用期间');
+    if(filter.candidateContext?.filterIds.some(id=>!['dimension','timePoint','timeRange','boolean'].includes(byId.get(id)?.type??'')))error(path+'/candidateContext','候选依赖只支持维度、已应用期间及布尔筛选');
     if(filter.selection?.mode==='multiple'&&filter.display==='tabs')error(path+'/selection','tabs不能声明多选');
     if(filter.treeSelection==='level' && (filter.display!=='tree'||!filter.hierarchy))error(path+'/treeSelection','结构树必须声明tree与hierarchy');
     if(filter.treeSelection && filter.display!=='tree')error(path+'/treeSelection','树选择规则仅用于tree展示');

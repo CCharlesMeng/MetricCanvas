@@ -218,3 +218,14 @@
 4. 查询体保留 is_aggregate，不写 period/start/end；协议测试覆盖固定年扩大范围、按选择的能力拒绝、未应用选择、非法混写与旧声明兼容。工作台验收入口 `apps/platform/tests/browser/report-date-editor.html?dashboard`，逐查询主动迁移、选择固定策略或按选择策略，预览实际请求期间。
 
 自动浏览器入口：`node apps/playground/tests/period-query-policy-browser.mjs <证据目录>`，默认页面试验场端口 5198、编辑器端口 5199，支持 PERIOD_POLICY_BASE_URL / PERIOD_EDITOR_BASE_URL。真实 DQE/Relay 未验收；直接季度编码尚未确认，季度可显式固定日/月覆盖整季。
+
+
+## 重点国代筛选集成
+
+入口：[重点国代联动](./key-office-filter-demo.json) `/pages/key-office-filter-demo`；[目标页](./key-office-filter-target.json) `/pages/key-office-filter-target`。Region 必须为单个可搜索的单选组织树，不存在第二个地区部或代表处下拉。两页均为 Dashboard，查询和候选完全使用 `apps/playground/fixtures/key-office-filter/gateway.ts` 的合成数据：A1 重点 10、A2 普通 20、B1 重点 30、B2 普通 40。
+
+启动 `pnpm dev:playground -- --host 127.0.0.1 --port 5183 --strictPort`，按实际启动日志确认端口。无地区时勾选框禁用；在 IOC Header 唯一 Region 树中选择地区 A 后启用，全部代表处查询显示 A1/A2。勾选后候选和结果收窄为 A1，取消后恢复 A1/A2。在同一个 Region 树中选择普通代表处 A2 再勾选，选择失效后等待确认，在树中重新选择地区 A 恢复其重点范围查询；候选错误或为空时不扩大查询。导出 XLSX 使用当前合法条件。
+
+选择地区 A、月份 2026-09、勾选重点国代，点击“切换页面”：目标页回填三项共享值，重新验证候选后显示 A1；返回时继续继承。显式 URL `?key-office=false` 优先于宿主保存的 true；取消勾选、清空地区也写回共享值。禁用本身保留已有 true。Playground 的两页共用局部宿主示例实例；刷新视为新会话。嵌入浏览器夹具则以 sessionStorage 模拟跨整页导航的宿主会话。
+
+可复用宿主示例是 `packages/embed/examples/shared-filter-bridge.ts`，两个挂载入口使用相同实例。只将 projectNavigationInputs 投影出的公共筛选声明传给它。MC 每页持有独立候选与查询状态；本示例不接入真实 HeaderOptionService，不证明真实 DQE 或门户部署。

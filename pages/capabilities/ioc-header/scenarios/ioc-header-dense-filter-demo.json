@@ -35,8 +35,6 @@
     "filterIds": [
       "period",
       "region",
-      "department",
-      "office",
       "month",
       "flag",
       "amount",
@@ -64,24 +62,27 @@
       "id": "region",
       "type": "dimension",
       "dimension": "geo-pc-code",
-      "label": "区域"
-    },
-    {
-      "id": "department",
-      "type": "dimension",
-      "dimension": "region-dept-code",
-      "label": "地区部",
-      "dependsOn": "region",
-      "selection": {
-        "mode": "single"
-      }
-    },
-    {
-      "id": "office",
-      "type": "dimension",
-      "dimension": "rep-office-code",
-      "label": "代表处",
-      "dependsOn": "department",
+      "label": "区域",
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "geo-pc-code",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "geo",
+      "display": "tree",
+      "treeSelection": "level",
       "selection": {
         "mode": "single"
       }
@@ -161,15 +162,11 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_code"
-            },
-            "department": {
-              "target": "dimension",
-              "queryField": "region_dept_code"
-            },
-            "office": {
-              "target": "dimension",
-              "queryField": "rep_office_code"
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
             },
             "month": {
               "target": "timePoint",

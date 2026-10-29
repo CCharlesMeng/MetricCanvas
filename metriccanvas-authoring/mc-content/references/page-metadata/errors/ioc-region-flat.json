@@ -1,0 +1,59 @@
+{
+  "case": "ioc-region-flat",
+  "invariant": "ioc-region-single-tree",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "defaultLevel 只能用于声明了 hierarchy 的维度筛选器",
+      "paths": [
+        "/filters/0/defaultLevel"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "结构树必须声明tree与hierarchy",
+      "paths": [
+        "/filters/0/treeSelection"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC Region 必须声明地区部与代表处等真实层级",
+      "paths": [
+        "/filters/0/hierarchy"
+      ]
+    },
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "levelQueryFields 只能绑定层级维度筛选器:region",
+      "paths": [
+        "/dataSources/offices/source/query/filterBindings/region/levelQueryFields"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "defaultLevel": "region-dept",
+        "treeSelection": "level"
+      }
+    ],
+    "dataSources": {
+      "offices": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "region": {
+                "levelQueryFields": {
+                  "region-dept": "demo_region",
+                  "office": "demo_office"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

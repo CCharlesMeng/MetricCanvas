@@ -4,6 +4,13 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "页级单多选、封闭枚举及显式结构树 由 6.37 引入，文档声明的是 6.31",
+      "paths": [
+        "/filters/1"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "页级 IOC 身份、筛选归属与实际首行折叠 由 6.36 引入，文档声明的是 6.31",
       "paths": [
         "/iocHeader"
@@ -11,6 +18,29 @@
     }
   ],
   "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "geo-pc-code",
+        "label": "区域",
+        "hierarchy": [
+          {
+            "…": "共3个键"
+          },
+          {
+            "…": "共3个键"
+          }
+        ],
+        "defaultLevel": "geo",
+        "display": "tree",
+        "treeSelection": "level",
+        "selection": {
+          "mode": "single"
+        }
+      }
+    ],
     "iocHeader": {
       "identity": {
         "title": "项目概览",

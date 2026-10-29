@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.74",
+  "schemaVersion": "6.75",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-1124728a"
@@ -326,7 +326,9 @@
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
         "references/page-metadata/examples/ioc-header-unconfigured.json",
-        "references/page-metadata/examples/period-query-columns-demo.json"
+        "references/page-metadata/examples/period-query-columns-demo.json",
+        "references/page-metadata/examples/key-office-filter-demo.json",
+        "references/page-metadata/examples/key-office-filter-target.json"
       ]
     }
   ],

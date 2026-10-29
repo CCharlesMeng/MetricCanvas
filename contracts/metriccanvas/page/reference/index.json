@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.74",
-  "schemaSha256": "d7527d07711d9f6d1ece4d65422d403b5b941a78fdb47a1484ace6a3f46d745d",
+  "schemaVersion": "6.75",
+  "schemaSha256": "4ae829f6f7cbb4f8d7b8a7bccb99481142eb12fb49354cd6092b95a61aa67408",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -112,7 +112,7 @@
     },
     {
       "file": "packages/page/src/filter-dependencies.ts",
-      "sha256": "dea324c4ab6e7d73632ed6b80109a9fb7a23692787f454cbbbabc91f431d2782"
+      "sha256": "69c3e714029d76775f90f00566c88ff3b77958d6b9c4f50a28e0ee9c70068b1d"
     },
     {
       "file": "packages/page/src/filter-group.ts",
@@ -124,7 +124,7 @@
     },
     {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "a969b84ca2c8c6f0e047603cd8e94829c3f3cb3ba093ff096d7b8091e5b2bbf6"
+      "sha256": "5b820b7e5b6aae14d34f75c7ddd4ae8ed7cf1652b31cb61a9f7d8926f4bc45ce"
     },
     {
       "file": "packages/page/src/metric-before.ts",
@@ -264,7 +264,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "f06129746f310c06c26a3078a165760313b158d8f5c21f941146b1bd4fce38fa"
+      "sha256": "cf8dbf1a96abfd9d9a7da1db76bf6936f6d767a69d2cc86daf1fe23743ed46aa"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
@@ -364,7 +364,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "13af7dec25ae2c12850875de4048969301bf3d261f5bba58a9a9d86751f11e17"
+      "sha256": "9d3acc6862ebc9fb11e6c15b507eda8f4e9f2a8d3299d4ef10a8e02bba9d694a"
     }
   ],
   "modules": {
@@ -706,7 +706,9 @@
         "ioc-header-models",
         "ioc-header-months",
         "ioc-header-unconfigured",
-        "period-query-columns-demo"
+        "period-query-columns-demo",
+        "key-office-filter-demo",
+        "key-office-filter-target"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1764,7 +1766,8 @@
         "6.71",
         "6.72",
         "6.73",
-        "6.74"
+        "6.74",
+        "6.75"
       ]
     },
     {
@@ -9276,6 +9279,19 @@
     {
       "pointer": "#/definitions/booleanFilter/properties/visibleWhen/allOf/0",
       "path": "@booleanFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/enabledWhen",
+      "path": "@booleanFilter.enabledWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/enabledWhen/allOf/0",
+      "path": "@booleanFilter.enabledWhen · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "filters.md",
       "ref": "#/definitions/condition"
@@ -19167,8 +19183,8 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "module": "queries-and-bindings.md",
-      "file": "examples/unified-overflow-header.json",
-      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/region"
+      "file": "examples/ioc-header-page.json",
+      "pointer": "#/dataSources/bound/source/query/filterBindings/region"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
@@ -19657,8 +19673,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/7",
       "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
+      "file": "examples/key-office-filter-demo.json",
+      "pointer": "#/filters/1/enabledWhen"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/8",

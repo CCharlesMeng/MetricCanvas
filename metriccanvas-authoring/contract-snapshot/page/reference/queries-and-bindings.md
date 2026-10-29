@@ -243,7 +243,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 可观察入口：`/pages/authoring-contract-reliability`，使用说明见同目录 README。共享跨语言向量由产品测试维护。
 
 
-页面协议 6.74。结构真源为本册[schema.json](schema.json)，SHA256 `d7527d07711d9f6d1ece4d65422d403b5b941a78fdb47a1484ace6a3f46d745d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.75。结构真源为本册[schema.json](schema.json)，SHA256 `4ae829f6f7cbb4f8d7b8a7bccb99481142eb12fb49354cd6092b95a61aa67408`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2544,7 +2544,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dataSources/sales/source/query/paramBindings/regions`。
 - `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/current/source/query/paramBindings/report-month`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/component-filterGroup.json)，JSON Pointer `#/dataSources/map-data/source/query/filterBindings/map-region`。
-- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/dataSources/opportunity-list/source/query/filterBindings/region`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/dataSources/bound/source/query/filterBindings/region`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/report-date-filters-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/period-filter`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/0`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/dataSources/query-day/source/query/filterBindings/statistics-period/periodPolicy`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodPolicy/anyOf/1`：[合法完整页面](examples/period-query-branches.json)，JSON Pointer `#/dataSources/query-month/source/query/filterBindings/statistics-period/periodPolicy`。

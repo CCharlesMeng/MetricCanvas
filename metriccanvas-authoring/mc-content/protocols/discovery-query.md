@@ -1,6 +1,6 @@
 # 发现与查询字段契约
 
-平台协议 2.0，页面写出 6.74。公开模型参数的精确类型、required、分支和默认值见 `tool/discover_data_context`、`tool/query_data` 的 inputSchema；数据上下文完整结构见 `product/data-context/schema`，发现信封各定义见 `authoring/authored/discovery.schema`。业务元数据不是本包固定数据。
+平台协议 2.0，页面写出 6.75。公开模型参数的精确类型、required、分支和默认值见 `tool/discover_data_context`、`tool/query_data` 的 inputSchema；数据上下文完整结构见 `product/data-context/schema`，发现信封各定义见 `authoring/authored/discovery.schema`。业务元数据不是本包固定数据。
 
 | 字段 | 方向、形状与含义 | 前提、错误与例子 |
 |---|---|---|

@@ -31,18 +31,36 @@
     {
       "id": "region",
       "type": "dimension",
-      "dimension": "demo_region",
+      "dimension": "demo_global",
       "label": "Region",
       "emptyLabel": "Region",
       "display": "tree",
-      "treeSelection": "independent",
+      "treeSelection": "level",
       "selection": {
         "mode": "single",
         "required": true
       },
       "default": [
         "GLOBAL"
-      ]
+      ],
+      "hierarchy": [
+        {
+          "id": "global",
+          "dimension": "demo_global",
+          "label": "全球"
+        },
+        {
+          "id": "department",
+          "dimension": "demo_department",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "demo_office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "global"
     },
     {
       "id": "customer-type",
@@ -144,7 +162,11 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "demo_region"
+              "levelQueryFields": {
+                "global": "demo_region",
+                "department": "demo_department",
+                "office": "demo_office"
+              }
             },
             "customer-type": {
               "target": "dimension",
@@ -228,7 +250,11 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "demo_region"
+              "levelQueryFields": {
+                "global": "demo_region",
+                "department": "demo_department",
+                "office": "demo_office"
+              }
             },
             "customer-type": {
               "target": "dimension",
@@ -318,7 +344,11 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "demo_region"
+              "levelQueryFields": {
+                "global": "demo_region",
+                "department": "demo_department",
+                "office": "demo_office"
+              }
             },
             "customer-type": {
               "target": "dimension",
@@ -385,7 +415,11 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "demo_region"
+              "levelQueryFields": {
+                "global": "demo_region",
+                "department": "demo_department",
+                "office": "demo_office"
+              }
             },
             "customer-type": {
               "target": "dimension",

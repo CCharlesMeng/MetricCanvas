@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| 重点国代与 IOC Region 约束 | 本仓实现与本地验收完成，真实宿主与服务待验 | [实施计划](2026-10-29-key-office-filter-integration.md)、[验收结果](../evidence/key-office-filter-integration-20261029/result.md)：Region 仅允许 Header 单个组织树，普通维度保留 |
 | partner-health 组织并集与缺项求和 | 本仓实施及 Mock/页面试验场验收完成；真实 DQE 返回待验 | [整改方案](2026-10-29-partner-health-union-and-missing-scores.md)、[诊断证据](../evidence/partner-health-union-null-20261029/README.md)；统一组织行集合、空文本呈现及总分数据源接线 |
 | 已开发能力同步与 main 合并 | B1已提交main；B2与配套文档、实例正在收口，真实内部部署另验 | [集成计划](2026-10-27-unmerged-capability-integration.md)、[B1验收](../evidence/local-capability-integration-20261027/b1.md)、[B2验收](../evidence/local-capability-integration-20261027/b2.md)；Schema6.67→6.68，Skill1.1.0→1.2.0 |
 | Platform 画布交互审计整改 | 先行五项本仓实现与本地验收完成；多步撤销/重做与编辑预览连续性待专项 | [审计与唯一执行计划](2026-10-25-platform-interaction-audit.md)、[实施与验收](../evidence/platform-interaction-audit/result.md)：首次实施验收与[当前 main 交付复验](../evidence/platform-interaction-audit/delivery.md)分别记录；保留全部问题与采纳边界 |

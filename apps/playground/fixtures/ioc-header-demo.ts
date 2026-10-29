@@ -34,6 +34,11 @@ function aggregate(rows:Row[]) {
 /** Uses the normal effective query and candidate ports; never contacts a service. */
 export function createIocHeaderDemoGateway():RuntimeDataGateway {
   return {
+    async fetchFilterCandidates(){return {kind:'values',candidates:[
+      {value:'GLOBAL',label:'全球',level:'global'},
+      ...offices.filter((_,index)=>index%2===0).map(office=>({value:office.department,label:office.departmentName,level:'department',parent:{level:'global',value:'GLOBAL'}})),
+      ...offices.map(office=>({value:office.code,label:office.name,level:'office',parent:{level:'department',value:office.department}}))
+    ]};},
     async fetchDimensionValues(dimension,options) {
       options?.signal?.throwIfAborted();
       return dimension==='demo_region'?{kind:'values',candidates:structuredClone(candidates)}:{kind:'unavailable'};

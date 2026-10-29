@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/canonical-writers.test.ts packages/page/tests/flow-report-components.test.ts packages/engine/runtime/tests/key-office-filter.test.ts packages/page/tests/ioc-header.test.ts apps/playground/tests/ioc-header-showcase.test.ts --maxWorkers=4
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/key-office-filter/DataDashboard
+
+
+ Test Files  5 passed (5)
+      Tests  54 passed (54)
+   Start at  21:59:22
+   Duration  2.65s (transform 1.75s, setup 0ms, import 5.60s, tests 3.04s, environment 0ms)

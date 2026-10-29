@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.74",
+  "schemaVersion": "6.75",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-e50ee65a"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/filters.md",
       "blocks": [
         "# 筛选声明与运行状态",
-        "## IOC 业务批量场景与必选多选（6.46）\n\n`selection.mode` 与 `required` 分别约束基数上限和是否允许空值。`{mode:\"multiple\",required:true}` 允许一个或多个合法且不重复的候选；控件保留多选和单项移除，最后一项不能移除。程序写入、URL恢复、默认值、查询门禁均使用相同规则；不存在默认值时只阻断相关查询。6.45及更早文档不能声明这一组合。`single` 原有最多一个值的规则保持，单选必选仍只允许一个。月份使用普通维度与重复 URL 键保存离散 YYYYMM 集合，不能补齐中间月或改成连续期间。\n\n主线迁移示例统一使用 `iocHeader.identity`、`selection.mode`、`candidateContext`、`clearOnChangeOf` 和 `FilterCandidatesGateway` / `DisplayInputs`，不接受旧的 `inputResources`、`multiple` 或 `presetGroups` 页面字段。地区部和代表处显式 single，结构树逐级绑定各自 queryField；它们的生产谓词和权限含义需 Adapter 确认。模型候选只依赖 range，重试读取当前日期，其他筛选不进入候选约束。\n\n[币种档位页](examples/ioc-header-currency.json)复用单个 numberRange 与主线 units.cases / metricByFilter；每个单位 case 可声明 presets，分别冻结 RMB 五档和 USD 四档，金额 clearOnChangeOf currency。按币种预设必须覆盖全部单位case，且与公共presets互斥；每个case的范围按其自己的scale与约束校验。币种变化在同一事务清除旧范围；自动清空继续沿主线等待用户确认的门禁，选择新档位或“全部”并确定后继续。RangePicker 预设填入草稿，确定才应用，取消保留已应用值；自定义双边严格递增。不换汇，不把两个币种的业务字段当作已接通。\n\n[业务组合](examples/ioc-header-business.json)、[模型联动](examples/ioc-header-models.json)、[协同小组](examples/ioc-header-groups.json)、[激励策略](examples/ioc-header-incentives.json)、[币种金额](examples/ioc-header-currency.json)、[最近月份](examples/ioc-header-months.json)、[缺配置](examples/ioc-header-unconfigured.json)均可从 Playground `/ioc-header-review` 打开。协同小组只加工明确完整的组织权限输入；不完整在 Adapter 归一为 unconfigured，不提供全量授权兜底。激励候选固定演示日历月2026-10，正文选择月2026-08变化不重取；是否改变生产行为待定。月份固定锚点2026-10，清空回退10/12个月的生产差异仍未裁决。\n\n正常/慢请求/失败重试/空/拒绝/缺配置/不完整/只读均为本地合成输入。只读使用主线 `filterEditing` 统一限制编辑，没有恢复旧版每个筛选器的 readOnly 字段。局部查询门禁不影响无关 inline。真实候选字典、组织 payload、逐源查询字段、金额单位、导出及 IOC/DQE/Relay 尚未接通或验收。\n\n6.46起 `candidateContext:{filterIds:[],reconcile:\"clear\"}` 显式声明无筛选依赖的外部候选，仍走完整 `FilterCandidatesGateway` 状态、重试及门禁。适用于权限组织加工、日历月预拉等；月份选择或无关筛选变化不重取。未声明 candidateContext 的旧页面继续既有候选端口，不自动改变路由。\n\n普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。"
+        "## IOC 业务批量场景与必选多选（6.46）\n\n`selection.mode` 与 `required` 分别约束基数上限和是否允许空值。`{mode:\"multiple\",required:true}` 允许一个或多个合法且不重复的候选；控件保留多选和单项移除，最后一项不能移除。程序写入、URL恢复、默认值、查询门禁均使用相同规则；不存在默认值时只阻断相关查询。6.45及更早文档不能声明这一组合。`single` 原有最多一个值的规则保持，单选必选仍只允许一个。月份使用普通维度与重复 URL 键保存离散 YYYYMM 集合，不能补齐中间月或改成连续期间。\n\n主线迁移示例统一使用 `iocHeader.identity`、`selection.mode`、`candidateContext`、`clearOnChangeOf` 和 `FilterCandidatesGateway` / `DisplayInputs`，不接受旧的 `inputResources`、`multiple` 或 `presetGroups` 页面字段。地区部和代表处显式 single，结构树逐级绑定各自 queryField；它们的生产谓词和权限含义需 Adapter 确认。模型候选只依赖 range，重试读取当前日期，其他筛选不进入候选约束。\n\n[币种档位页](examples/ioc-header-currency.json)复用单个 numberRange 与主线 units.cases / metricByFilter；每个单位 case 可声明 presets，分别冻结 RMB 五档和 USD 四档，金额 clearOnChangeOf currency。按币种预设必须覆盖全部单位case，且与公共presets互斥；每个case的范围按其自己的scale与约束校验。币种变化在同一事务清除旧范围；自动清空继续沿主线等待用户确认的门禁，选择新档位或“全部”并确定后继续。RangePicker 预设填入草稿，确定才应用，取消保留已应用值；自定义双边严格递增。不换汇，不把两个币种的业务字段当作已接通。\n\n[业务组合](examples/ioc-header-business.json)、[模型联动](examples/ioc-header-models.json)、[协同小组](examples/ioc-header-groups.json)、[激励策略](examples/ioc-header-incentives.json)、[币种金额](examples/ioc-header-currency.json)、[最近月份](examples/ioc-header-months.json)、[缺配置](examples/ioc-header-unconfigured.json)均可从 Playground `/ioc-header-review` 打开。协同小组只加工明确完整的组织权限输入；不完整在 Adapter 归一为 unconfigured，不提供全量授权兜底。激励候选固定演示日历月2026-10，正文选择月2026-08变化不重取；是否改变生产行为待定。月份固定锚点2026-10，清空回退10/12个月的生产差异仍未裁决。\n\n正常/慢请求/失败重试/空/拒绝/缺配置/不完整/只读均为本地合成输入。只读使用主线 `filterEditing` 统一限制编辑，没有恢复旧版每个筛选器的 readOnly 字段。局部查询门禁不影响无关 inline。真实候选字典、组织 payload、逐源查询字段、金额单位、导出及 IOC/DQE/Relay 尚未接通或验收。\n\n6.46起 `candidateContext:{filterIds:[],reconcile:\"clear\"}` 显式声明无筛选依赖的外部候选，仍走完整 `FilterCandidatesGateway` 状态、重试及门禁。适用于权限组织加工、日历月预拉等；月份选择或无关筛选变化不重取。未声明 candidateContext 的旧页面继续既有候选端口，不自动改变路由。\n\n普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。\n\n\n<a id=\"boolean-candidate-context\"></a>"
       ],
       "rules": [
         {
@@ -326,7 +326,9 @@
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
         "references/page-metadata/examples/ioc-header-unconfigured.json",
-        "references/page-metadata/examples/period-query-columns-demo.json"
+        "references/page-metadata/examples/period-query-columns-demo.json",
+        "references/page-metadata/examples/key-office-filter-demo.json",
+        "references/page-metadata/examples/key-office-filter-target.json"
       ]
     }
   ],

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.75 增加 boolean 筛选器的 enabledWhen 和 boolean 候选依赖；候选约束传递显式 true/false，原本未选代表处时不因交集更新要求额外确认。跨页共享值由宿主显式接入，各页面独立管理候选与查询状态。见[重点国代筛选集成](docs/page-metadata/filters.md#boolean-candidate-context)，合成验收入口 `/pages/key-office-filter-demo` 和 `/pages/key-office-filter-target`。
+
 表格 select 表头候选的共用 DQE 网关已接入完整结果分批读取及前端去重：保留原指标与维度，默认最多扫描1000条原始结果、每批200条（最多5批），更大范围须在集成配置中显式提高上限；超限、缺总数或截断不展示部分选项，完整后独立搜索和分页。表格可见且绘制后空闲预加载、点击菜单按需获取；主查询可抢占后台候选，候选状态不阻塞整表渲染。页面声明不变。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成 DQE 验收入口 `/pages/table-column-candidates-query`。
 
 6.74 增加受控计算 `unionKeys`：从多个完整结果按同名稳定维度键取并集，再用 `joinAggregate` 补齐单项、`sumFields` 计算总分。单项缺失保留 null；查询数值空文本归为缺项并使用 missingText，真实 0 保留。见[组织键并集](docs/page-metadata/compute.md#组织键并集674)，验收入口 `/pages/union-keys-demo`、`/pages/partner-health-union-null-probe`（Mock）。
@@ -18,7 +20,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.74**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.75**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 

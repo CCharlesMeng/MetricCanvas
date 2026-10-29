@@ -176,6 +176,7 @@ export interface BooleanFilterDeclaration extends FilterInteractionExtension {
   type: 'boolean';
   label?: string;
   visible?: boolean;
+  enabledWhen?: import('./schema/condition').Condition;
   visibleWhen?: import('./schema/condition').Condition;
   /** true 表示打开时勾选;未勾选不占位(无条件)。 */
   default?: boolean;

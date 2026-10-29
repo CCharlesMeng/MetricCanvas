@@ -1,4 +1,5 @@
 import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
+import {iocRegionCandidates} from '../../../tools/dqe-sim/fixtures/ioc-region-candidates.mjs';
 import {iocTimeCandidates} from './fixtures/ioc-time-candidates.mjs';
 import {iocBusinessCandidates} from './fixtures/ioc-header-business-candidates.mjs';
 import { createReadStream } from 'node:fs';
@@ -31,6 +32,7 @@ createServer(async (request, response) => {
     const pathname = decodeURIComponent(
       new URL(request.url ?? '/', 'http://127.0.0.1').pathname
     );
+    if(pathname==='/__fixtures/key-office-filter.js'){response.writeHead(200,{'content-type':'text/javascript'});createReadStream(resolve(root,'tests/fixtures/key-office-filter.mjs')).pipe(response);return;}
     if (pathname === '/favicon.ico') {
       response.writeHead(204).end();
       return;
@@ -41,9 +43,8 @@ createServer(async (request, response) => {
       return;
     }
     if(pathname==='/__fixtures/filter-candidates' && request.method==='POST'){
-      const chunks=[];for await(const chunk of request)chunks.push(chunk);
-      const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));
-      response.writeHead(200,{'content-type':'application/json'}).end(JSON.stringify(iocTimeCandidates(value)??iocBusinessCandidates(value)));return;
+      await respondCandidates(request, response);
+      return;
     }
     if (pathname === DQE_EXECUTE_PATH) {
       await respondDqe(request, response);
@@ -82,6 +83,13 @@ function pageIds() {
   } catch {
     return [];
   }
+}
+
+async function respondCandidates(request, response) {
+  const chunks = [];
+  for await (const chunk of request) chunks.push(chunk);
+  const value = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  json(response, 200, iocTimeCandidates(value) ?? iocRegionCandidates(value) ?? iocBusinessCandidates(value));
 }
 
 async function respondDqe(request, response) {

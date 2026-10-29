@@ -57,7 +57,30 @@
         "id": "region",
         "type": "dimension",
         "dimension": "geo-pc-code",
-        "label": "区域"
+        "label": "区域",
+        "hierarchy": [
+          {
+            "id": "geo",
+            "dimension": "geo-pc-code",
+            "label": "全球"
+          },
+          {
+            "id": "region-dept",
+            "dimension": "region-dept-code",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "rep-office-code",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "geo",
+        "display": "tree",
+        "treeSelection": "level",
+        "selection": {
+          "mode": "single"
+        }
       }
     ],
     "dataSources": {
@@ -107,7 +130,11 @@
               },
               "region": {
                 "target": "dimension",
-                "queryField": "geo_pc_code"
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "region_dept_code",
+                  "office": "rep_office_code"
+                }
               }
             }
           }
@@ -227,6 +254,11 @@
     ]
   },
   "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1",
+      "message": "页级单多选、封闭枚举及显式结构树 由 6.37 引入，文档声明的是 6.31"
+    },
     {
       "type": "SCHEMA_ERROR",
       "path": "/iocHeader",

@@ -1,3 +1,4 @@
+import {iocRegionCandidates} from '../../../../tools/dqe-sim/fixtures/ioc-region-candidates.mjs';
 import { createDqeGateway } from '@metriccanvas/engine/dqe';
 import type { DisplayInputs, DisplaySnapshot, FilterCandidatesGateway, FilterCandidatesRequest, FilterCandidatesResult } from '@metriccanvas/engine';
 import type { JsonObject } from '@metriccanvas/page/internal';
@@ -35,21 +36,28 @@ const previewFetch: typeof fetch = async (_input, init) => {
 };
 
 function candidates(request: FilterCandidatesRequest): FilterCandidatesResult {
+  const region=iocRegionCandidates(request);if(region)return region;
   if (['b2_department', 'b2_office'].includes(request.dimension) && request.filterId === 'region') return { kind: 'values', candidates: [
     { level: 'department', value: 'same', label: '北部地区部' }, { level: 'department', value: 'south', label: '南部地区部' },
     { level: 'office', value: 'same', label: '北京代表处', parent: { level: 'department', value: 'same' } },
     { level: 'office', value: 'office-south', label: '深圳代表处', parent: { level: 'department', value: 'south' } }
   ] };
-  if (request.dimension === 'ioc_b4_month' && request.filterId === 'months') {
-    const window = request.calendarWindow;
-    if (!window || !/^\d{4}-(0[1-9]|1[0-2])$/.test(window.from) || !/^\d{4}-(0[1-9]|1[0-2])$/.test(window.to)) return { kind: 'unconfigured' };
-    const [year, month] = window.from.split('-').map(Number);
-    return { kind: 'values', candidates: Array.from({ length: 12 }, (_, i) => {
-      const offset = month! - 1 + i;
-      const value = `${year! + Math.floor(offset / 12)}-${String(offset % 12 + 1).padStart(2, '0')}`;
-      return { value, label: value };
-    }).filter(item => item.value <= window.to) };
-  }
+  if (request.dimension === 'ioc_b4_month' && request.filterId === 'months') return calendarCandidates(request);
+  return modelCandidates(request);
+}
+
+function calendarCandidates(request: FilterCandidatesRequest): FilterCandidatesResult {
+  const window = request.calendarWindow;
+  if (!window || !/^\d{4}-(0[1-9]|1[0-2])$/.test(window.from) || !/^\d{4}-(0[1-9]|1[0-2])$/.test(window.to)) return { kind: 'unconfigured' };
+  const [year, month] = window.from.split('-').map(Number);
+  return { kind: 'values', candidates: Array.from({ length: 12 }, (_, i) => {
+    const offset = month! - 1 + i;
+    const value = `${year! + Math.floor(offset / 12)}-${String(offset % 12 + 1).padStart(2, '0')}`;
+    return { value, label: value };
+  }).filter(item => item.value <= window.to) };
+}
+
+function modelCandidates(request: FilterCandidatesRequest): FilterCandidatesResult {
   if (request.filterId !== 'model' || !['b2_model', 'ioc_b4_model'].includes(request.dimension)) return { kind: 'unconfigured' };
   const period = request.constraints.times.period;
   if (!period) return { kind: 'unconfigured' };

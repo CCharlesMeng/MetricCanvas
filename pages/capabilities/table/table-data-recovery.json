@@ -19,7 +19,11 @@
     "presentation": {
       "layout": "inline",
       "collapse": "none"
-    }
+    },
+    "filterIds": [
+      "mtime",
+      "region"
+    ]
   },
   "dataSources": {
     "contract": {
@@ -1117,7 +1121,9 @@
           "label": "代表处"
         }
       ],
-      "defaultLevel": "geo"
+      "defaultLevel": "geo",
+      "display": "tree",
+      "treeSelection": "level"
     }
   ]
 }

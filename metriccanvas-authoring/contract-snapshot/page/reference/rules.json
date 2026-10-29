@@ -1,6 +1,19 @@
 {
   "invariants": [
     {
+      "id": "ioc-region-single-tree",
+      "description": "IOC Region 仅允许 Header 单个可搜索单选组织树，普通维度不收紧",
+      "valid": [
+        "key-office-filter-demo"
+      ],
+      "invalid": [
+        "ioc-region-flat",
+        "ioc-region-external-picker",
+        "ioc-region-multiple",
+        "ioc-region-outside-header"
+      ]
+    },
+    {
       "id": "metric-card-primary-detail",
       "description": "主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约",
       "valid": [

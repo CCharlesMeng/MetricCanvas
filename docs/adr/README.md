@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 122 份 ADR（0001–0123）：现行 115、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 123 份 ADR（0001–0124）：现行 116、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -68,7 +68,7 @@
 | [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由，统一运行时只上抛导航意图 | 现行；部分由 [0067](./0067-url-navigation-with-explicit-parameter-bindings.md)、[0068](./0068-plain-url-navigation-protocol.md) 修订；导航目标与强制宿主接管已完成 #109 迁移；导航栈与回跳所有权仍有效 |
 | [0049](./0049-table-server-side-and-presentation-capabilities.md) | 表格的服务端能力按数据源模式整体下推，呈现能力只识别不计算 | 现行；部分由 [0086](./0086-server-side-sorting-and-header-filters-under-query-pagination.md) 修订；呈现已落地；查询分页与排序/表头筛选的互斥已由 0086 解除，改由上游执行 |
 | [0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) | 筛选器类型闭集扩展，层级维度成为地图下钻的声明式来源 | 现行；部分由 [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md)、[0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md) 修订；闭集与层级本身成立；六类筛选器在查询侧的绑定形状由 0084/0085 补齐，层级筛选器不再允许恒定 queryField |
-| [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进，主版本递增须论证无法增量表达 | 现行；部分由 [0114](./0114-table-column-candidates-use-matching-results.md)、[0115](./0115-standalone-filter-groups-and-controlled-migration.md) 修订；零使用收紧例外仍有效；0115另记录用户明确批准的6.45图表筛选受控迁移，不构成通用豁免 |
+| [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进，主版本递增须论证无法增量表达 | 现行；部分由 [0114](./0114-table-column-candidates-use-matching-results.md)、[0115](./0115-standalone-filter-groups-and-controlled-migration.md)、[0124](./0124-ioc-region-single-tree.md) 修订；零使用收紧例外仍有效；0115另记录用户明确批准的6.45图表筛选受控迁移，不构成通用豁免 |
 | [0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) | 看板形态的满幅布局、铺底层与安全区通道 | 现行；协议与运行时安全区通道已实现 |
 | [0053](./0053-composite-card-component-level-grouping-container.md) | 组件级分组容器「组合卡」,与分区容器按层次分工 | 现行；部分由 [0115](./0115-standalone-filter-groups-and-controlled-migration.md) 修订；协议、widget 与统一运行时已实现；同批附带叶子组件「分类明细」 |
 | [0054](./0054-section-weighted-column-tracks.md) | 内容分区可声明受控权重列轨 | 现行；部分由 [0111](./0111-metric-card-before-connection-layout.md) 修订；Schema 5.3，部分修订 0038 的恒定等权列前提 |
@@ -140,6 +140,7 @@
 | [0121](./0121-paged-union-field-projection-and-global-order.md) | 分页合并源显式投影字段并在全部来源上整体排序 | 现行；用户确认逐行保留重复记录、通用配置、整体默认排序、实时查询分页和 Skill 配置引导，并授权实施 |
 | [0122](./0122-table-column-visibility-and-view-reconciliation.md) | 表格列展示条件与已有会话视图调和 | 现行；用户逐轮确认列显隐、搜索、状态清理、作用域与导出；要求文件组织高内聚、低耦合及真源归一 |
 | [0123](./0123-explicit-hierarchy-selection-and-complete-child-export.md) | 层级选择通过显式父级定位驱动父行视图与完整子表导出 | 现行；用户确认层级筛选的父整体口径、显式归属定位、展开会话保留与完整双工作表 Excel，并授权正式实现 |
+| [0124](./0124-ioc-region-single-tree.md) | IOC Region 只允许页头中的单个组织树 | 现行；用户要求 IOC Region 只允许 Header 中单个树形下拉，并明确普通维度筛选保留；本次按已确认范围受控迁移，不保留 IOC Region 的旧写法 |
 
 <!-- adr-index:end -->
 
@@ -151,7 +152,7 @@
 
 | 主题 | 讲什么 | 覆盖的 ADR |
 |---|---|---|
-| [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 0095 0096 |
+| [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 0095 0096 0124 |
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 0110 |
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 0111 0112 0113 0115 0116 0119 0120 0122 0123 |

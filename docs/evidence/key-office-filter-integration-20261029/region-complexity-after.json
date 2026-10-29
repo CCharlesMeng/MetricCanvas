@@ -1,0 +1,2486 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "functions": [
+        {
+          "name": "iocHeaderErrors",
+          "qualifiedName": "iocHeaderErrors",
+          "line": 7,
+          "endLine": 34,
+          "selfCC": 7,
+          "optionalChains": 3,
+          "subtreeCC": 16,
+          "nestedFunctions": 6
+        },
+        {
+          "name": "issue",
+          "qualifiedName": "iocHeaderErrors/issue",
+          "line": 11,
+          "endLine": 11,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@16:30>",
+          "qualifiedName": "iocHeaderErrors/<anonymous@16:30>",
+          "line": 16,
+          "endLine": 19,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@23:29>",
+          "qualifiedName": "iocHeaderErrors/<anonymous@23:29>",
+          "line": 23,
+          "endLine": 26,
+          "selfCC": 3,
+          "optionalChains": 1,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@24:39>",
+          "qualifiedName": "iocHeaderErrors/<anonymous@23:29>/<anonymous@24:39>",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@27:28>",
+          "qualifiedName": "iocHeaderErrors/<anonymous@27:28>",
+          "line": 27,
+          "endLine": 32,
+          "selfCC": 7,
+          "optionalChains": 1,
+          "subtreeCC": 7,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@31:41>",
+          "qualifiedName": "iocHeaderErrors/<anonymous@27:28>/<anonymous@31:41>",
+          "line": 31,
+          "endLine": 31,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "iocRegionErrors",
+          "qualifiedName": "iocRegionErrors",
+          "line": 37,
+          "endLine": 52,
+          "selfCC": 12,
+          "optionalChains": 5,
+          "subtreeCC": 12,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@38:39>",
+          "qualifiedName": "iocRegionErrors/<anonymous@38:39>",
+          "line": 38,
+          "endLine": 38,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fail",
+          "qualifiedName": "iocRegionErrors/fail",
+          "line": 41,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "duplicatedRegionLevel",
+          "qualifiedName": "duplicatedRegionLevel",
+          "line": 54,
+          "endLine": 57,
+          "selfCC": 2,
+          "optionalChains": 2,
+          "subtreeCC": 5,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@55:50>",
+          "qualifiedName": "duplicatedRegionLevel/<anonymous@55:50>",
+          "line": 55,
+          "endLine": 55,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@56:29>",
+          "qualifiedName": "duplicatedRegionLevel/<anonymous@56:29>",
+          "line": 56,
+          "endLine": 56,
+          "selfCC": 4,
+          "optionalChains": 2,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/ioc-header-preview-inputs.ts",
+      "functions": [
+        {
+          "name": "currencyRows",
+          "qualifiedName": "currencyRows",
+          "line": 11,
+          "endLine": 28,
+          "selfCC": 11,
+          "optionalChains": 3,
+          "subtreeCC": 13,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@24:24>",
+          "qualifiedName": "currencyRows/<anonymous@24:24>",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@27:74>",
+          "qualifiedName": "currencyRows/<anonymous@27:74>",
+          "line": 27,
+          "endLine": 27,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "previewFetch",
+          "qualifiedName": "previewFetch",
+          "line": 31,
+          "endLine": 36,
+          "selfCC": 1,
+          "optionalChains": 3,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@34:37>",
+          "qualifiedName": "previewFetch/<anonymous@34:37>",
+          "line": 34,
+          "endLine": 34,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "candidates",
+          "qualifiedName": "candidates",
+          "line": 38,
+          "endLine": 47,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "calendarCandidates",
+          "qualifiedName": "calendarCandidates",
+          "line": 49,
+          "endLine": 58,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@53:69>",
+          "qualifiedName": "calendarCandidates/<anonymous@53:69>",
+          "line": 53,
+          "endLine": 57,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@57:15>",
+          "qualifiedName": "calendarCandidates/<anonymous@57:15>",
+          "line": 57,
+          "endLine": 57,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "modelCandidates",
+          "qualifiedName": "modelCandidates",
+          "line": 60,
+          "endLine": 70,
+          "selfCC": 13,
+          "optionalChains": 0,
+          "subtreeCC": 13,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@69:51>",
+          "qualifiedName": "modelCandidates/<anonymous@69:51>",
+          "line": 69,
+          "endLine": 69,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "createIocHeaderPreview",
+          "qualifiedName": "createIocHeaderPreview",
+          "line": 73,
+          "endLine": 94,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 11,
+          "nestedFunctions": 10
+        },
+        {
+          "name": "fetchDimensionValues",
+          "qualifiedName": "createIocHeaderPreview/fetchDimensionValues",
+          "line": 77,
+          "endLine": 85,
+          "selfCC": 8,
+          "optionalChains": 5,
+          "subtreeCC": 11,
+          "nestedFunctions": 5
+        },
+        {
+          "name": "<anonymous@79:109>",
+          "qualifiedName": "createIocHeaderPreview/fetchDimensionValues/<anonymous@79:109>",
+          "line": 79,
+          "endLine": 79,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@80:119>",
+          "qualifiedName": "createIocHeaderPreview/fetchDimensionValues/<anonymous@80:119>",
+          "line": 80,
+          "endLine": 80,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@82:105>",
+          "qualifiedName": "createIocHeaderPreview/fetchDimensionValues/<anonymous@82:105>",
+          "line": 82,
+          "endLine": 82,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@84:66>",
+          "qualifiedName": "createIocHeaderPreview/fetchDimensionValues/<anonymous@84:66>",
+          "line": 84,
+          "endLine": 84,
+          "selfCC": 3,
+          "optionalChains": 1,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@84:129>",
+          "qualifiedName": "createIocHeaderPreview/fetchDimensionValues/<anonymous@84:129>",
+          "line": 84,
+          "endLine": 84,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fetchFilterCandidates",
+          "qualifiedName": "createIocHeaderPreview/fetchFilterCandidates",
+          "line": 86,
+          "endLine": 86,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "getSnapshot",
+          "qualifiedName": "createIocHeaderPreview/getSnapshot",
+          "line": 92,
+          "endLine": 92,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "subscribe",
+          "qualifiedName": "createIocHeaderPreview/subscribe",
+          "line": 92,
+          "endLine": 92,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@92:105>",
+          "qualifiedName": "createIocHeaderPreview/subscribe/<anonymous@92:105>",
+          "line": 92,
+          "endLine": 92,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/fixtures/ioc-header-demo.ts",
+      "functions": [
+        {
+          "name": "<anonymous@16:21>",
+          "qualifiedName": "<anonymous@16:21>",
+          "line": 16,
+          "endLine": 16,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@16:49>",
+          "qualifiedName": "<anonymous@16:49>",
+          "line": 16,
+          "endLine": 16,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@17:18>",
+          "qualifiedName": "<anonymous@17:18>",
+          "line": 17,
+          "endLine": 17,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@21:19>",
+          "qualifiedName": "<anonymous@21:19>",
+          "line": 21,
+          "endLine": 27,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@21:57>",
+          "qualifiedName": "<anonymous@21:19>/<anonymous@21:57>",
+          "line": 21,
+          "endLine": 27,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "aggregate",
+          "qualifiedName": "aggregate",
+          "line": 29,
+          "endLine": 33,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "sum",
+          "qualifiedName": "aggregate/sum",
+          "line": 30,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@30:41>",
+          "qualifiedName": "aggregate/sum/<anonymous@30:41>",
+          "line": 30,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "createIocHeaderDemoGateway",
+          "qualifiedName": "createIocHeaderDemoGateway",
+          "line": 35,
+          "endLine": 71,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 19,
+          "nestedFunctions": 13
+        },
+        {
+          "name": "fetchFilterCandidates",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchFilterCandidates",
+          "line": 37,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@39:25>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchFilterCandidates/<anonymous@39:25>",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@39:53>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchFilterCandidates/<anonymous@39:53>",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@40:22>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchFilterCandidates/<anonymous@40:22>",
+          "line": 40,
+          "endLine": 40,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fetchDimensionValues",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchDimensionValues",
+          "line": 42,
+          "endLine": 45,
+          "selfCC": 2,
+          "optionalChains": 2,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fetchData",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData",
+          "line": 46,
+          "endLine": 69,
+          "selfCC": 15,
+          "optionalChains": 2,
+          "subtreeCC": 18,
+          "nestedFunctions": 7
+        },
+        {
+          "name": "<anonymous@52:60>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData/<anonymous@52:60>",
+          "line": 52,
+          "endLine": 52,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@54:105>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData/<anonymous@54:105>",
+          "line": 54,
+          "endLine": 54,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@54:129>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData/<anonymous@54:105>/<anonymous@54:129>",
+          "line": 54,
+          "endLine": 54,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@55:70>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData/<anonymous@55:70>",
+          "line": 55,
+          "endLine": 55,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@63:55>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData/<anonymous@63:55>",
+          "line": 63,
+          "endLine": 63,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:39>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData/<anonymous@64:39>",
+          "line": 64,
+          "endLine": 66,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@66:44>",
+          "qualifiedName": "createIocHeaderDemoGateway/fetchData/<anonymous@64:39>/<anonymous@66:44>",
+          "line": 66,
+          "endLine": 66,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/ioc-region-preview.ts",
+      "functions": [
+        {
+          "name": "withIocRegionCandidates",
+          "qualifiedName": "withIocRegionCandidates",
+          "line": 4,
+          "endLine": 9,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "fetchFilterCandidates",
+          "qualifiedName": "withIocRegionCandidates/fetchFilterCandidates",
+          "line": 5,
+          "endLine": 8,
+          "selfCC": 3,
+          "optionalChains": 1,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/fixtures/preview-inputs.ts",
+      "functions": [
+        {
+          "name": "<anonymous@2:123>",
+          "qualifiedName": "<anonymous@2:123>",
+          "line": 2,
+          "endLine": 2,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageExternalInputs",
+          "qualifiedName": "pageExternalInputs",
+          "line": 5,
+          "endLine": 19,
+          "selfCC": 15,
+          "optionalChains": 0,
+          "subtreeCC": 15,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rejectionPreviewRowCount",
+          "qualifiedName": "rejectionPreviewRowCount",
+          "line": 23,
+          "endLine": 25,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/scenario-environment.ts",
+      "functions": [
+        {
+          "name": "scenarioEnvironment",
+          "qualifiedName": "scenarioEnvironment",
+          "line": 16,
+          "endLine": 33,
+          "selfCC": 12,
+          "optionalChains": 0,
+          "subtreeCC": 12,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/runtime/tests/ioc-project-overview.test.ts",
+      "functions": [
+        {
+          "name": "loadPage",
+          "qualifiedName": "loadPage",
+          "line": 25,
+          "endLine": 29,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "instantiate",
+          "qualifiedName": "instantiate",
+          "line": 32,
+          "endLine": 34,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@36:37>",
+          "qualifiedName": "<anonymous@36:37>",
+          "line": 36,
+          "endLine": 462,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 67,
+          "nestedFunctions": 68
+        },
+        {
+          "name": "<anonymous@37:33>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@37:33>",
+          "line": 37,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@43:46>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>",
+          "line": 43,
+          "endLine": 82,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 8
+        },
+        {
+          "name": "<anonymous@46:27>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@46:27>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@46:69>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@46:69>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@49:25>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@49:25>",
+          "line": 49,
+          "endLine": 49,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@52:25>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@52:25>",
+          "line": 52,
+          "endLine": 52,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@55:25>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@55:25>",
+          "line": 55,
+          "endLine": 55,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@59:25>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@59:25>",
+          "line": 59,
+          "endLine": 59,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@62:25>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@62:25>",
+          "line": 62,
+          "endLine": 62,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@67:25>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@43:46>/<anonymous@67:25>",
+          "line": 67,
+          "endLine": 67,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@84:50>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>",
+          "line": 84,
+          "endLine": 139,
+          "selfCC": 2,
+          "optionalChains": 4,
+          "subtreeCC": 3,
+          "nestedFunctions": 13
+        },
+        {
+          "name": "<anonymous@88:34>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@88:34>",
+          "line": 88,
+          "endLine": 88,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@91:38>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@91:38>",
+          "line": 91,
+          "endLine": 91,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@102:15>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@102:15>",
+          "line": 102,
+          "endLine": 102,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@103:12>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@103:12>",
+          "line": 103,
+          "endLine": 103,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@112:7>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@112:7>",
+          "line": 112,
+          "endLine": 112,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@114:27>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@114:27>",
+          "line": 114,
+          "endLine": 114,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@119:34>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@119:34>",
+          "line": 119,
+          "endLine": 119,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@121:27>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@121:27>",
+          "line": 121,
+          "endLine": 121,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@124:27>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@124:27>",
+          "line": 124,
+          "endLine": 124,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@127:27>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@127:27>",
+          "line": 127,
+          "endLine": 127,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@127:73>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@127:27>/<anonymous@127:73>",
+          "line": 127,
+          "endLine": 127,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@133:27>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@133:27>",
+          "line": 133,
+          "endLine": 133,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@133:73>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@84:50>/<anonymous@133:27>/<anonymous@133:73>",
+          "line": 133,
+          "endLine": 133,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@141:40>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>",
+          "line": 141,
+          "endLine": 247,
+          "selfCC": 22,
+          "optionalChains": 6,
+          "subtreeCC": 23,
+          "nestedFunctions": 15
+        },
+        {
+          "name": "<anonymous@143:38>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@143:38>",
+          "line": 143,
+          "endLine": 143,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@147:7>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@147:7>",
+          "line": 147,
+          "endLine": 147,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@151:7>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@151:7>",
+          "line": 151,
+          "endLine": 151,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@156:46>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@156:46>",
+          "line": 156,
+          "endLine": 156,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@162:46>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@162:46>",
+          "line": 162,
+          "endLine": 162,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@175:7>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@175:7>",
+          "line": 175,
+          "endLine": 175,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@193:7>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@193:7>",
+          "line": 193,
+          "endLine": 193,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@196:54>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@196:54>",
+          "line": 196,
+          "endLine": 196,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@197:52>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@197:52>",
+          "line": 197,
+          "endLine": 197,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@214:7>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@214:7>",
+          "line": 214,
+          "endLine": 214,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@231:53>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@231:53>",
+          "line": 231,
+          "endLine": 231,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@238:42>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@238:42>",
+          "line": 238,
+          "endLine": 238,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@240:49>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@240:49>",
+          "line": 240,
+          "endLine": 240,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@243:35>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@243:35>",
+          "line": 243,
+          "endLine": 243,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@246:35>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>/<anonymous@246:35>",
+          "line": 246,
+          "endLine": 246,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@249:43>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@249:43>",
+          "line": 249,
+          "endLine": 278,
+          "selfCC": 3,
+          "optionalChains": 4,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@280:47>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@280:47>",
+          "line": 280,
+          "endLine": 329,
+          "selfCC": 3,
+          "optionalChains": 2,
+          "subtreeCC": 8,
+          "nestedFunctions": 6
+        },
+        {
+          "name": "fetchFilterCandidates",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@280:47>/fetchFilterCandidates",
+          "line": 284,
+          "endLine": 286,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fetchData",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@280:47>/fetchData",
+          "line": 287,
+          "endLine": 292,
+          "selfCC": 4,
+          "optionalChains": 3,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@295:35>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@280:47>/<anonymous@295:35>",
+          "line": 295,
+          "endLine": 299,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@301:24>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@280:47>/<anonymous@301:24>",
+          "line": 301,
+          "endLine": 301,
+          "selfCC": 1,
+          "optionalChains": 1,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@303:24>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@280:47>/<anonymous@303:24>",
+          "line": 303,
+          "endLine": 303,
+          "selfCC": 1,
+          "optionalChains": 1,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@305:24>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@280:47>/<anonymous@305:24>",
+          "line": 305,
+          "endLine": 305,
+          "selfCC": 1,
+          "optionalChains": 1,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@331:45>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>",
+          "line": 331,
+          "endLine": 398,
+          "selfCC": 11,
+          "optionalChains": 7,
+          "subtreeCC": 13,
+          "nestedFunctions": 11
+        },
+        {
+          "name": "<anonymous@333:38>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@333:38>",
+          "line": 333,
+          "endLine": 333,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@334:40>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@334:40>",
+          "line": 334,
+          "endLine": 334,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@347:41>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@347:41>",
+          "line": 347,
+          "endLine": 347,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@352:7>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@352:7>",
+          "line": 352,
+          "endLine": 352,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@354:32>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@354:32>",
+          "line": 354,
+          "endLine": 354,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@360:41>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@360:41>",
+          "line": 360,
+          "endLine": 360,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@363:32>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@363:32>",
+          "line": 363,
+          "endLine": 363,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@374:39>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@374:39>",
+          "line": 374,
+          "endLine": 374,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@385:41>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@385:41>",
+          "line": 385,
+          "endLine": 385,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@392:29>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@392:29>",
+          "line": 392,
+          "endLine": 392,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@393:42>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@331:45>/<anonymous@393:42>",
+          "line": 393,
+          "endLine": 393,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@400:59>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>",
+          "line": 400,
+          "endLine": 461,
+          "selfCC": 17,
+          "optionalChains": 4,
+          "subtreeCC": 17,
+          "nestedFunctions": 7
+        },
+        {
+          "name": "<anonymous@403:16>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>/<anonymous@403:16>",
+          "line": 403,
+          "endLine": 403,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@404:13>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>/<anonymous@404:13>",
+          "line": 404,
+          "endLine": 404,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@418:23>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>/<anonymous@418:23>",
+          "line": 418,
+          "endLine": 420,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@432:24>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>/<anonymous@432:24>",
+          "line": 432,
+          "endLine": 434,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@442:16>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>/<anonymous@442:16>",
+          "line": 442,
+          "endLine": 442,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@443:13>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>/<anonymous@443:13>",
+          "line": 443,
+          "endLine": 443,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@445:47>",
+          "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>/<anonymous@445:47>",
+          "line": 445,
+          "endLine": 445,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/runtime/tests/ioc-opportunity-analysis.test.ts",
+      "functions": [
+        {
+          "name": "loadPage",
+          "qualifiedName": "loadPage",
+          "line": 16,
+          "endLine": 20,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "snapshotsOf",
+          "qualifiedName": "snapshotsOf",
+          "line": 22,
+          "endLine": 42,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 5
+        },
+        {
+          "name": "fetchFilterCandidates",
+          "qualifiedName": "snapshotsOf/fetchFilterCandidates",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fetchData",
+          "qualifiedName": "snapshotsOf/fetchData",
+          "line": 27,
+          "endLine": 32,
+          "selfCC": 4,
+          "optionalChains": 3,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@35:31>",
+          "qualifiedName": "snapshotsOf/<anonymous@35:31>",
+          "line": 35,
+          "endLine": 35,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@37:22>",
+          "qualifiedName": "snapshotsOf/<anonymous@37:22>",
+          "line": 37,
+          "endLine": 37,
+          "selfCC": 1,
+          "optionalChains": 1,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@39:22>",
+          "qualifiedName": "snapshotsOf/<anonymous@39:22>",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 1,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@44:43>",
+          "qualifiedName": "<anonymous@44:43>",
+          "line": 44,
+          "endLine": 151,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 17,
+          "nestedFunctions": 23
+        },
+        {
+          "name": "<anonymous@45:31>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@45:31>",
+          "line": 45,
+          "endLine": 62,
+          "selfCC": 1,
+          "optionalChains": 1,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@59:30>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@45:31>/<anonymous@59:30>",
+          "line": 59,
+          "endLine": 59,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:41>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@64:41>",
+          "line": 64,
+          "endLine": 75,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@69:50>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@64:41>/<anonymous@69:50>",
+          "line": 69,
+          "endLine": 69,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@77:49>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>",
+          "line": 77,
+          "endLine": 122,
+          "selfCC": 5,
+          "optionalChains": 6,
+          "subtreeCC": 12,
+          "nestedFunctions": 10
+        },
+        {
+          "name": "<anonymous@79:40>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@79:40>",
+          "line": 79,
+          "endLine": 79,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@84:7>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@84:7>",
+          "line": 84,
+          "endLine": 84,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@92:34>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@92:34>",
+          "line": 92,
+          "endLine": 94,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@93:35>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@92:34>/<anonymous@93:35>",
+          "line": 93,
+          "endLine": 93,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@99:31>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@99:31>",
+          "line": 99,
+          "endLine": 101,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@100:35>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@99:31>/<anonymous@100:35>",
+          "line": 100,
+          "endLine": 100,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@107:54>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@107:54>",
+          "line": 107,
+          "endLine": 110,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@109:46>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@107:54>/<anonymous@109:46>",
+          "line": 109,
+          "endLine": 109,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@113:21>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@113:21>",
+          "line": 113,
+          "endLine": 113,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@119:21>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@77:49>/<anonymous@119:21>",
+          "line": 119,
+          "endLine": 119,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@124:27>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@124:27>",
+          "line": 124,
+          "endLine": 139,
+          "selfCC": 4,
+          "optionalChains": 3,
+          "subtreeCC": 4,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@127:13>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@124:27>/<anonymous@127:13>",
+          "line": 127,
+          "endLine": 127,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@132:32>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@124:27>/<anonymous@132:32>",
+          "line": 132,
+          "endLine": 132,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@135:33>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@124:27>/<anonymous@135:33>",
+          "line": 135,
+          "endLine": 135,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@141:30>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@141:30>",
+          "line": 141,
+          "endLine": 150,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@144:27>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@141:30>/<anonymous@144:27>",
+          "line": 144,
+          "endLine": 144,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@147:29>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@141:30>/<anonymous@147:29>",
+          "line": 147,
+          "endLine": 148,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@148:69>",
+          "qualifiedName": "<anonymous@44:43>/<anonymous@141:30>/<anonymous@147:29>/<anonymous@148:69>",
+          "line": 148,
+          "endLine": 148,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/page/tests/ioc-header.test.ts",
+      "functions": [
+        {
+          "name": "load",
+          "qualifiedName": "load",
+          "line": 9,
+          "endLine": 9,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@10:59>",
+          "qualifiedName": "<anonymous@10:59>",
+          "line": 10,
+          "endLine": 34,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 13
+        },
+        {
+          "name": "<anonymous@11:135>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@11:135>",
+          "line": 11,
+          "endLine": 13,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@14:65>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@14:65>",
+          "line": 14,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@17:55>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@14:65>/<anonymous@17:55>",
+          "line": 17,
+          "endLine": 17,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@19:84>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@19:84>",
+          "line": 19,
+          "endLine": 23,
+          "selfCC": 2,
+          "optionalChains": 6,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@20:75>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@19:84>/<anonymous@20:75>",
+          "line": 20,
+          "endLine": 20,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@24:105>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@24:105>",
+          "line": 24,
+          "endLine": 27,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 6
+        },
+        {
+          "name": "<anonymous@25:22>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@24:105>/<anonymous@25:22>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:60>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@24:105>/<anonymous@25:60>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:84>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@24:105>/<anonymous@25:84>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:131>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@24:105>/<anonymous@25:131>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:177>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@24:105>/<anonymous@25:177>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:213>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@24:105>/<anonymous@25:213>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@28:92>",
+          "qualifiedName": "<anonymous@10:59>/<anonymous@28:92>",
+          "line": 28,
+          "endLine": 33,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@36:59>",
+          "qualifiedName": "<anonymous@36:59>",
+          "line": 36,
+          "endLine": 67,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 15
+        },
+        {
+          "name": "page",
+          "qualifiedName": "<anonymous@36:59>/page",
+          "line": 37,
+          "endLine": 37,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@39:11>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@39:11>",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@40:13>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@40:13>",
+          "line": 40,
+          "endLine": 40,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@41:11>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@41:11>",
+          "line": 41,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@42:15>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@42:15>",
+          "line": 42,
+          "endLine": 42,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@43:22>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@43:22>",
+          "line": 43,
+          "endLine": 43,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@44:20>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@44:20>",
+          "line": 44,
+          "endLine": 44,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@45:23>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@45:23>",
+          "line": 45,
+          "endLine": 45,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@46:16>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@46:16>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@47:29>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@47:29>",
+          "line": 47,
+          "endLine": 49,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@50:53>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@50:53>",
+          "line": 50,
+          "endLine": 52,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@51:75>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@50:53>/<anonymous@51:75>",
+          "line": 51,
+          "endLine": 51,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@53:73>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@53:73>",
+          "line": 53,
+          "endLine": 56,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@57:77>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@57:77>",
+          "line": 57,
+          "endLine": 60,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@61:69>",
+          "qualifiedName": "<anonymous@36:59>/<anonymous@61:69>",
+          "line": 61,
+          "endLine": 66,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/embed/tests/browser/ioc-header.spec.ts",
+      "functions": [
+        {
+          "name": "<anonymous@4:17>",
+          "qualifiedName": "<anonymous@4:17>",
+          "line": 4,
+          "endLine": 4,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@6:89>",
+          "qualifiedName": "<anonymous@6:89>",
+          "line": 6,
+          "endLine": 18,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 6
+        },
+        {
+          "name": "<anonymous@7:45>",
+          "qualifiedName": "<anonymous@6:89>/<anonymous@7:45>",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@13:21>",
+          "qualifiedName": "<anonymous@6:89>/<anonymous@13:21>",
+          "line": 13,
+          "endLine": 13,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@13:41>",
+          "qualifiedName": "<anonymous@6:89>/<anonymous@13:21>/<anonymous@13:41>",
+          "line": 13,
+          "endLine": 13,
+          "selfCC": 2,
+          "optionalChains": 2,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@14:26>",
+          "qualifiedName": "<anonymous@6:89>/<anonymous@14:26>",
+          "line": 14,
+          "endLine": 14,
+          "selfCC": 3,
+          "optionalChains": 3,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@16:40>",
+          "qualifiedName": "<anonymous@6:89>/<anonymous@16:40>",
+          "line": 16,
+          "endLine": 16,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@17:113>",
+          "qualifiedName": "<anonymous@6:89>/<anonymous@17:113>",
+          "line": 17,
+          "endLine": 17,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@19:83>",
+          "qualifiedName": "<anonymous@19:83>",
+          "line": 19,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 5
+        },
+        {
+          "name": "<anonymous@20:45>",
+          "qualifiedName": "<anonymous@19:83>/<anonymous@20:45>",
+          "line": 20,
+          "endLine": 20,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@30:81>",
+          "qualifiedName": "<anonymous@19:83>/<anonymous@30:81>",
+          "line": 30,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@32:40>",
+          "qualifiedName": "<anonymous@19:83>/<anonymous@32:40>",
+          "line": 32,
+          "endLine": 32,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@35:56>",
+          "qualifiedName": "<anonymous@19:83>/<anonymous@35:56>",
+          "line": 35,
+          "endLine": 35,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@36:30>",
+          "qualifiedName": "<anonymous@19:83>/<anonymous@36:30>",
+          "line": 36,
+          "endLine": 36,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@40:83>",
+          "qualifiedName": "<anonymous@40:83>",
+          "line": 40,
+          "endLine": 47,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "<anonymous@44:23>",
+          "qualifiedName": "<anonymous@40:83>/<anonymous@44:23>",
+          "line": 44,
+          "endLine": 44,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "back",
+          "qualifiedName": "<anonymous@40:83>/<anonymous@44:23>/back",
+          "line": 44,
+          "endLine": 44,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@45:241>",
+          "qualifiedName": "<anonymous@40:83>/<anonymous@45:241>",
+          "line": 45,
+          "endLine": 45,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@46:81>",
+          "qualifiedName": "<anonymous@40:83>/<anonymous@46:81>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@48:66>",
+          "qualifiedName": "<anonymous@48:66>",
+          "line": 48,
+          "endLine": 50,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@52:108>",
+          "qualifiedName": "<anonymous@52:108>",
+          "line": 52,
+          "endLine": 64,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@54:54>",
+          "qualifiedName": "<anonymous@52:108>/<anonymous@54:54>",
+          "line": 54,
+          "endLine": 57,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@58:34>",
+          "qualifiedName": "<anonymous@52:108>/<anonymous@58:34>",
+          "line": 58,
+          "endLine": 61,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@60:35>",
+          "qualifiedName": "<anonymous@52:108>/<anonymous@58:34>/<anonymous@60:35>",
+          "line": 60,
+          "endLine": 60,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@66:81>",
+          "qualifiedName": "<anonymous@66:81>",
+          "line": 66,
+          "endLine": 76,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "<anonymous@68:61>",
+          "qualifiedName": "<anonymous@66:81>/<anonymous@68:61>",
+          "line": 68,
+          "endLine": 68,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@68:93>",
+          "qualifiedName": "<anonymous@66:81>/<anonymous@68:61>/<anonymous@68:93>",
+          "line": 68,
+          "endLine": 68,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@72:23>",
+          "qualifiedName": "<anonymous@66:81>/<anonymous@72:23>",
+          "line": 72,
+          "endLine": 72,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@75:23>",
+          "qualifiedName": "<anonymous@66:81>/<anonymous@75:23>",
+          "line": 75,
+          "endLine": 75,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/embed/tests/browser/key-office-filter.spec.ts",
+      "functions": [
+        {
+          "name": "rows",
+          "qualifiedName": "rows",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "chooseRegion",
+          "qualifiedName": "chooseRegion",
+          "line": 8,
+          "endLine": 11,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@13:76>",
+          "qualifiedName": "<anonymous@13:76>",
+          "line": 13,
+          "endLine": 29,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 8
+        },
+        {
+          "name": "<anonymous@14:47>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@14:47>",
+          "line": 14,
+          "endLine": 14,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@18:144>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@18:144>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@21:37>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@21:37>",
+          "line": 21,
+          "endLine": 21,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@22:23>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@22:23>",
+          "line": 22,
+          "endLine": 22,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@23:23>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@23:23>",
+          "line": 23,
+          "endLine": 23,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@23:78>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@23:23>/<anonymous@23:78>",
+          "line": 23,
+          "endLine": 23,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:235>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@25:235>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@25:262>",
+          "qualifiedName": "<anonymous@13:76>/<anonymous@25:235>/<anonymous@25:262>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@31:88>",
+          "qualifiedName": "<anonymous@31:88>",
+          "line": 31,
+          "endLine": 37,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@39:86>",
+          "qualifiedName": "<anonymous@39:86>",
+          "line": 39,
+          "endLine": 43,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@45:83>",
+          "qualifiedName": "<anonymous@45:83>",
+          "line": 45,
+          "endLine": 47,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "tools/dqe-sim/fixtures/ioc-region-candidates.mjs",
+      "functions": [
+        {
+          "name": "iocRegionCandidates",
+          "qualifiedName": "iocRegionCandidates",
+          "line": 3,
+          "endLine": 13,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@8:34>",
+          "qualifiedName": "iocRegionCandidates/<anonymous@8:34>",
+          "line": 8,
+          "endLine": 11,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@8:105>",
+          "qualifiedName": "iocRegionCandidates/<anonymous@8:34>/<anonymous@8:105>",
+          "line": 8,
+          "endLine": 11,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

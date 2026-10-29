@@ -1,6 +1,10 @@
 <script lang="ts">
   import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
   import {createTableRecoveryPreview} from '../../../../../fixtures/table-recovery';
+  import {withIocRegionCandidates} from '$lib/ioc-region-preview';
+  import {createKeyOfficeGateway} from '../../../../../fixtures/key-office-filter/gateway';
+  import {sharedKeyOfficeFilters} from '$lib/key-office-shared';
+  const sharedBindings={'key-office':'key-office',region:'region',mtime:'mtime'};
   import {zeroTotalPreviewGateway} from "../../../../../fixtures/zero-total-gateway";
   import {partnerHealthUnionGateway} from '../../../../../fixtures/organization-union/gateway';
   import {createHierarchyGateway} from '../../../../../fixtures/hierarchy-gateway';
@@ -25,7 +29,7 @@
   import {projectNavigationInputs,type DataGateway} from '@metriccanvas/engine';
   import {
     RuntimeView,
-    type RuntimeNavigation
+    type RuntimeNavigation, type RuntimeViewEvent
   } from '@metriccanvas/engine/ui';
   import {
     pageReturnHref,
@@ -102,6 +106,8 @@
   function previewDataGateway(pageId: string): DataGateway {
     switch (pageExternalInputs(pageId)) {
       case 'full-query-candidates': return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
+      case 'key-office': return createKeyOfficeGateway();
+      case 'ioc-region': return withIocRegionCandidates(dataGateway);
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;
       case 'record-join': return createRejectionPreview({rows:rejectionPreviewRowCount(pageId),delayMs:rejectionPreviewDelay(pageId,page.url.searchParams),failure:page.url.searchParams.get('sourceFailure') === 'true'}).dataGateway;
       case 'paged-union': return createUnionPreview({failMember:page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined,rowFailure:page.url.searchParams.get('rowFailure')}).dataGateway;
@@ -114,12 +120,22 @@
     }
   }
 
+  function recordSharedFilters(event:RuntimeViewEvent) {
+    if(event.type!=='filter-change'||pageState.phase!=='ready'||pageExternalInputs(page.params.pageId)!=='key-office')return;
+    sharedKeyOfficeFilters.recordSearch(projectNavigationInputs(pageState.document).filters,event.search,sharedBindings);
+  }
+
   async function loadPage(pageId: string) {
     const session = ++loadSession;
     pageState = { phase: 'loading' };
     try {
       const document = await pageRepository.load(pageId);
       if (session !== loadSession) return;
+      if(pageExternalInputs(pageId)==='key-office') {
+        const filters=projectNavigationInputs(document).filters;
+        initialSearch=sharedKeyOfficeFilters.initialSearch(filters,initialSearch,sharedBindings);
+        sharedKeyOfficeFilters.recordSearch(filters,initialSearch,sharedBindings);
+      }
       pageState = {
         phase: 'ready',
         document,
@@ -172,6 +188,7 @@
       document={pageState.document}
       dataGateway={pageState.dataGateway}
       {aiSummary}
+      onevent={recordSharedFilters}
       {initialSearch}
       {navigation}
       {pageRevisionId}

@@ -33,7 +33,6 @@
       "dimension": "geo-pc-code",
       "label": "区域",
       "emptyLabel": "区域",
-      "hierarchyPicker": "hidden",
       "hierarchy": [
         {
           "id": "geo",
@@ -54,7 +53,9 @@
       "defaultLevel": "geo",
       "selection": {
         "mode": "single"
-      }
+      },
+      "display": "tree",
+      "treeSelection": "level"
     },
     {
       "id": "project-level",

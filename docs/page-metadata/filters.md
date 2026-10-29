@@ -80,11 +80,11 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 - dimension.selection声明mode为single/multiple；缺省保持旧多选，tabs交互继续单选。旧页未声明selection时，initialParam仍可用多值数组初始化tabs的已应用条件；后续点选替换为单值。显式selection.mode=single始终严格校验初值及后续写入。single至多一个值；required要求非空，single与required组合恰好一个值，6.46起multiple与required组合允许非空多值，缺失时相关查询等待选择，非法整组写入拒绝。options是创作期确认的穷尽枚举，稳定value与label分开，可显式disabled；有options不请求候选网关，不允许同时配置动态依赖或hierarchy。disabled值不参与选择或默认值。
 - allBehavior缺省values。只有multiple+显式options可用unrestricted：选中全部有效枚举后仅省略对应动态查询谓词，UI/URL保留实际值，查询体原有静态条件仍保留。禁用项不算必须选中。boolean与枚举分别处理：勾选走whenTrue，明确false走whenFalse；省略whenFalse仍为无条件。default:false仍保留旧的不加初始化条件行为；需要确定的否值谓词时，使用显式false输入或用户取消勾选，并声明whenFalse。
-- display:tree带treeSelection:level为结构树，必须有hierarchy。候选显式提供level和parent，不从业务码拆斜杠；不同层可使用相同value。`selection.mode:"single"` 且省略 `hierarchyPicker` 时，默认仅呈现一个树形下拉，不附加地区部／代表处按钮或返回按钮。在树内直接选择任意有效层级的节点，原子提交该节点的level与原始业务值，替换旧选择并关闭弹层；父节点只选择自身，不批量选择子节点。清空保留当前level，不写入UI内部节点标识。各层完整候选均就绪且一致后才展示可选树，失败／拒绝／未配置不降级为部分树；重复同码以level区分，禁用节点不可选。显式 `hierarchyPicker:"tabs"` 保留层级按钮，`"hidden"` 保留由地图等交互切层及原有返回入口；多选结构树仍只选择当前层级，其他层只展开。旧tree不带该字段仍按父节点批量选择叶子。
+- display:tree带treeSelection:level为结构树，必须有hierarchy。候选显式提供level和parent，不从业务码拆斜杠；不同层可使用相同value。`selection.mode:"single"` 且省略 `hierarchyPicker` 时，默认仅呈现一个树形下拉，不附加地区部／代表处按钮或返回按钮。在树内直接选择任意有效层级的节点，原子提交该节点的level与原始业务值，替换旧选择并关闭弹层；父节点只选择自身，不批量选择子节点。清空保留当前level，不写入UI内部节点标识。各层完整候选均就绪且一致后才展示可选树，失败／拒绝／未配置不降级为部分树；重复同码以level区分，禁用节点不可选。普通维度的显式 `hierarchyPicker:"tabs"` 保留层级按钮，`"hidden"` 保留由地图等交互切层及原有返回入口；多选结构树仍只选择当前层级，其他层只展开。旧tree不带该字段仍按父节点批量选择叶子。
 
-层级维度只要声明 `hierarchy`、`selection.mode:"single"`，且 `display` 省略或为 `select`／`tree`，省略 `hierarchyPicker` 就默认使用单个树形下拉。旧候选端口仅提供各层平面值时，按已声明的层级展示不可选择的分组节点；各业务节点直接提交所属层级与原始值，不虚构跨层父子归属，也不强制旧页切换到V2候选端口。显式 `hierarchyPicker`、多选和 `display:"tabs"` 保留既有行为。旧页入口 `ioc-opportunity-list` 与 `contract-maturity-score` 同样没有前置层级按钮；`ioc-project-overview` 显式 hidden 仍由地图接管切层。
+层级维度只要声明 `hierarchy`、`selection.mode:"single"`，且 `display` 省略或为 `select`／`tree`，省略 `hierarchyPicker` 就默认使用单个树形下拉。旧候选端口仅提供各层平面值时，按已声明的层级展示不可选择的分组节点；各业务节点直接提交所属层级与原始值，不虚构跨层父子归属，也不强制旧页切换到V2候选端口。普通维度的显式 `hierarchyPicker`、多选和 `display:"tabs"` 保留既有行为。IOC 业务 Region 另受[页头约束](page.md)限制：必须显式声明单选结构树，不允许旧切层写法。`ioc-opportunity-list`、`contract-maturity-score` 与 `ioc-project-overview` 的 Region 均已迁移为页头内单个组织树。
 
-IOC Region 新页面默认采用单选树形下拉：`{id:"region",type:"dimension",dimension:"地区部编码",display:"tree",treeSelection:"level",selection:{mode:"single"},hierarchy:[{id:"region-dept",dimension:"地区部编码",label:"地区部"},{id:"office",dimension:"代表处编码",label:"代表处"}],defaultLevel:"region-dept"}`。字段名及业务值须按实际数据契约替换，候选必须由集成应用提供显式父子关系；不因需要树形外观伪造归属，不把 `hierarchyPicker:"hidden"` 当作单树替代。完整联动验收入口为 `ioc-header-standard`；同码样例为 `ioc-header-business-tree-demo`。`table-hierarchy-selection` 补充验证同一个树形下拉内选择代表处后，通过独立父级定位查询联动父子表格；其候选父子关系来自明确标注的合成夹具。本次修复不新增页面字段或版本，显式按钮、地图切层及旧多选行为保留。
+IOC 业务 Region 必须采用单选树形下拉：`{id:"region",type:"dimension",dimension:"地区部编码",display:"tree",treeSelection:"level",selection:{mode:"single"},hierarchy:[{id:"region-dept",dimension:"地区部编码",label:"地区部"},{id:"office",dimension:"代表处编码",label:"代表处"}],defaultLevel:"region-dept"}`。字段名及业务值须按实际数据契约替换，候选必须由集成应用提供显式父子关系；不因需要树形外观伪造归属，不把 `hierarchyPicker:"hidden"` 当作单树替代。完整联动验收入口为 `ioc-header-standard`；同码样例为 `ioc-header-business-tree-demo`。`table-hierarchy-selection` 补充验证同一个树形下拉内选择代表处后，通过独立父级定位查询联动父子表格；其候选父子关系来自明确标注的合成夹具。普通维度继续支持显式层级按钮、地图切层及多选；这些写法不适用于 IOC Region。
 - candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，等用户显式确认；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
 - 共用hint为TextValue，可引用不可变参数或已应用筛选，缺值省略；clearOnChangeOf是明确失效关系，不伪装成候选请求约束。普通只读不清合法条件。
 
@@ -150,3 +150,20 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 6.46起 `candidateContext:{filterIds:[],reconcile:"clear"}` 显式声明无筛选依赖的外部候选，仍走完整 `FilterCandidatesGateway` 状态、重试及门禁。适用于权限组织加工、日历月预拉等；月份选择或无关筛选变化不重取。未声明 candidateContext 的旧页面继续既有候选端口，不自动改变路由。
 
 普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。
+
+
+<a id="boolean-candidate-context"></a>
+
+## 布尔候选依赖与条件启用（6.75）
+
+boolean 筛选器可声明 enabledWhen，使用既有 Condition，例如 `{filter:"region",part:"values",op:"isNotEmpty"}`。条件在统一运行时集中求值；允许时可用，拒绝、未知或错误时禁止鼠标和键盘操作，全页只读仍优先。省略时保持原行为。禁用不清除已有值，不撤销查询谓词；需要清值时另行声明业务状态规则，不能从启用条件推导。visibleWhen 继续只控制显隐。
+
+维度筛选器的 candidateContext.filterIds 从 6.75 起可引用 boolean。候选网关请求 constraints.booleans 使用筛选器 id 为键，传递明确 true/false，只收集声明及传递依赖，不包含其他页面筛选。default:false 保持既有不生成初始化筛选值的兼容行为；缺席和 false 不在引擎中混同。本示例的宿主 Adapter 对二者都返回当前地区下的全部合法代表处，true 时再收窄重点名单。候选上下文及缓存区分 true、false 与缺席，旧回执不得覆盖新条件。
+
+reconcile:intersection 等完整候选就绪后保留交集。原本没有选择的可选维度，在候选有效且非空后保持不限，不额外要求确认；已有选择全部失效时进入确认状态，只有显式选择或清空才能解除，继续变化上游不能绕过确认。空候选、加载失败、不可用、拒绝或无配置均不能当作“不限”。已有 required 选择限制继续适用。
+
+宿主跨页共享值通过 initialSearch 和 filter-change 示例 Adapter 接入，不共享整份 FilterState。只向目标公共筛选器投影，显式 URL 输入优先于共享值，再由页面默认值补足；字段映射、维度和时间精度不匹配时不自动继承。清空表示取消该共享值的继承，目标页仍遵守自身默认值；示例地区部和月份不设默认值。执行快照模式不合并这层输入。示例按一个活动页面设计，不提供多实例实时互控或外部持续推送。
+
+IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区部或代表处，不另设 rep-office 下拉；其他 IOC Region 形态在校验阶段拒绝。重点国代作为该树的候选依赖，勾选时保留地区部结构、收窄代表处节点；已选普通代表处失效后，须在同一棵树重新选择节点或显式确认不限。普通维度的平面、多选及显式切层能力保留。
+
+完整声明：[来源页](examples/key-office-filter-demo.json)、[目标页](examples/key-office-filter-target.json)。两页使用合成地区与代表处；浏览器操作、宿主示例和数据环境见仓库 pages/capabilities/filters/README.md 的重点国代场景。真实字段名、取值编码、权限和重点名单须由集成应用确认。

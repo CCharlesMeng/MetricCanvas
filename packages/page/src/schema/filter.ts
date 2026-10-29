@@ -1,4 +1,4 @@
-import { visibilityShape } from './condition';
+import { interactionShape, visibilityShape } from './condition';
 import { z } from 'zod';
 import { fieldNameZ, idZ, textValueZ } from './primitives';
 const interaction = {hint:textValueZ.optional(),clearOnChangeOf:z.array(idZ).min(1).optional()};
@@ -125,7 +125,7 @@ const booleanFilterZ = z
     type: z.literal('boolean'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
-    ...visibilityShape,
+    ...interactionShape,
     default: z.boolean().optional()
   })
   .meta({ id: 'booleanFilter' });

@@ -22,7 +22,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 74;
+const CURRENT_MINOR = 75;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -46,6 +46,8 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'boolean-filter-enabled': {minor:75,legacyReadable:false,description:'布尔筛选器复用统一条件控制编辑资格',usedAt:document=>filterPaths(document,f=>f.type==='boolean'&&has(f,'enabledWhen'))},
+  'boolean-candidate-context': {minor:75,legacyReadable:false,description:'布尔筛选值参与维度候选约束',usedAt:booleanCandidatePaths},
   'compute-union-keys': {minor:74,legacyReadable:false,description:'完整依赖结果按稳定维度键取并集，统一组织行集合',
     usedAt:document=>dataSourcePaths(document,data=>Array.isArray(data.compute)&&data.compute.some(op=>record(op)?.op==='unionKeys'))},
   'paged-union-generated-key': { minor:73, legacyReadable:false, description:'分页合并成员显式由前端生成UUID行身份，信任上游记录与分页正确性',
@@ -965,6 +967,13 @@ function ratioScalePaths(document: unknown): string[] {
         : [];
     });
   });
+}
+
+function booleanCandidatePaths(document:unknown):string[] {
+  const filters=record(document)?.filters;
+  if(!Array.isArray(filters))return [];
+  const ids=new Set(filters.filter(f=>record(f)?.type==='boolean').map(f=>record(f)?.id));
+  return filterPaths(document,f=>f.type==='dimension'&&Array.isArray(record(f.candidateContext)?.filterIds)&&(record(f.candidateContext)!.filterIds as unknown[]).some(id=>ids.has(id)));
 }
 
 function filterPaths(document: unknown, matches: (filter: Json) => boolean): string[] {

@@ -1,0 +1,21 @@
+{
+  "case": "ioc-region-external-picker",
+  "invariant": "ioc-region-single-tree",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC Region 不再允许外部层级切换或隐藏切层写法",
+      "paths": [
+        "/filters/0/hierarchyPicker"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "hierarchyPicker": "tabs"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-region-external-picker.json"
+}

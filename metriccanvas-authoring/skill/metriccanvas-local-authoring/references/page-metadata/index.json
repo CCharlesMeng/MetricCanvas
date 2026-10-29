@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.74",
-  "schemaSha256": "d7527d07711d9f6d1ece4d65422d403b5b941a78fdb47a1484ace6a3f46d745d",
+  "schemaVersion": "6.75",
+  "schemaSha256": "4ae829f6f7cbb4f8d7b8a7bccb99481142eb12fb49354cd6092b95a61aa67408",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -284,7 +284,9 @@
         "ioc-header-models",
         "ioc-header-months",
         "ioc-header-unconfigured",
-        "period-query-columns-demo"
+        "period-query-columns-demo",
+        "key-office-filter-demo",
+        "key-office-filter-target"
       ],
       "rules": [
         "filter-id-unique",
@@ -1178,7 +1180,8 @@
         "6.71",
         "6.72",
         "6.73",
-        "6.74"
+        "6.74",
+        "6.75"
       ]
     },
     {
@@ -8690,6 +8693,19 @@
     {
       "pointer": "#/definitions/booleanFilter/properties/visibleWhen/allOf/0",
       "path": "@booleanFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/enabledWhen",
+      "path": "@booleanFilter.enabledWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/enabledWhen/allOf/0",
+      "path": "@booleanFilter.enabledWhen · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "filters.md",
       "ref": "#/definitions/condition"
@@ -18525,8 +18541,8 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "module": "queries-and-bindings.md",
-      "file": "examples/unified-overflow-header.json",
-      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/region"
+      "file": "examples/ioc-header-page.json",
+      "pointer": "#/dataSources/bound/source/query/filterBindings/region"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
@@ -19005,8 +19021,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/7",
       "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
+      "file": "examples/key-office-filter-demo.json",
+      "pointer": "#/filters/1/enabledWhen"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/8",
@@ -20257,5 +20273,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "93e1bb17e169b0a168734a879a99a9b2bcdf11f3a77f311af30e44c8e0b038fa"
+  "semanticSourceDigest": "cb942f664704bdbad5a5fcac7790d4a8260e8e2780405f7a289a31fe5943bac3"
 }

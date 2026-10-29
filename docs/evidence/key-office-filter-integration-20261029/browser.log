@@ -1,0 +1,22 @@
+[WebServer] (node:91603) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 11 tests using 2 workers
+
+(node:91614) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91615) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/ioc-header.spec.ts:6:1 › ordinary header consumes its real page, period anchor and queries; narrow layout (921ms)
+  ✓   2 tests/browser/key-office-filter.spec.ts:13:1 › checkbox gate, boolean candidates, query rows and frozen XLSX agree (2.0s)
+  ✓   3 tests/browser/ioc-header.spec.ts:19:1 › dense measured collapse, candidate retry, recursive gate and export safety (1.3s)
+  ✓   5 tests/browser/ioc-header.spec.ts:41:1 › detail single month, optional facts, legal back intent and readonly update (693ms)
+  ✓   6 tests/browser/ioc-header.spec.ts:49:1 › titleless header keeps a discrete January/March predicate (619ms)
+  ✓   4 tests/browser/key-office-filter.spec.ts:31:1 › host retains true, explicit false and month through mount navigation and return (1.6s)
+  ✓   7 tests/browser/ioc-header.spec.ts:53:1 › selected URL value waits for candidates; failed candidates retry current request without broadening (576ms)
+  ✓   8 tests/browser/key-office-filter.spec.ts:39:1 › losing an existing office selection waits for confirmation without broadening (751ms)
+  ✓   9 tests/browser/ioc-header.spec.ts:67:1 › two embedded instances own their month anchors and destroy independently (712ms)
+  ✓  10 tests/browser/key-office-filter.spec.ts:45:1 › clearing the region disables editing and preserves an already applied true (601ms)
+  ✓  11 tests/browser/key-office-filter.spec.ts:49:1 › lost Region selection is confirmed inside the same tree dropdown (581ms)
+
+  11 passed (6.4s)

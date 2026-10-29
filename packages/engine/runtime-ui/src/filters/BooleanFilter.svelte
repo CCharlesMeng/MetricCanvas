@@ -7,14 +7,15 @@
   interface Props {
     label?: string;
     value: boolean;
+    disabled?: boolean;
     onchange: (checked: boolean) => void;
   }
 
-  let { label, value, onchange }: Props = $props();
+  let { label, value, disabled = false, onchange }: Props = $props();
 </script>
 
 <label class="filter">
-  <input type="checkbox" checked={value} onchange={(e) => onchange(e.currentTarget.checked)} />
+  <input type="checkbox" checked={value} {disabled} onchange={(e) => onchange(e.currentTarget.checked)} />
   {#if label}<span class="label">{label}</span>{/if}
 </label>
 
@@ -29,6 +30,7 @@
     color: #18181b;
     cursor: pointer;
   }
+  .filter:has(input:disabled) { cursor: not-allowed; opacity: 0.55; }
   .label {
     color: #3f3f46;
     white-space: nowrap;

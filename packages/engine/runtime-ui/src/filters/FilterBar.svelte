@@ -3,6 +3,10 @@
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>
 <script lang="ts">
+  import {getContext} from 'svelte';
+  import {usesHierarchyTree} from './hierarchy-tree';
+  import {PRESENTATION_CONTEXT,type PresentationReader} from '../presentation-context';
+  const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
   import {selectedCase,appliedAmountRange} from '@metriccanvas/page/internal';
   import { candidateScopeKey } from '../../../runtime/src/dimension-values';
   /**
@@ -46,6 +50,7 @@
 
   interface Props {
     declarations: FilterDeclaration[];
+    confirmationIds?: readonly string[];
     timeContext?:TimeControlContext;
     values: FilterValues;
     candidates: DimensionValuesSnapshots;
@@ -63,6 +68,7 @@
 
   let {
     declarations,
+    confirmationIds = [],
     timeContext={},
     values,
     candidates,
@@ -203,6 +209,7 @@
       <BooleanFilter
         label={declaration.label}
         value={booleanValue(declaration.id)}
+        disabled={declaration.enabledWhen ? presentation?.()?.gate(declaration).enabled !== true : false}
         onchange={(checked) => onboolean(declaration.id, checked)}
       />
     {:else if declaration.type === 'numberRange'&&declaration.units&&dimensionValueOf(values,declaration.units.filterId).values.length!==1}
@@ -221,6 +228,9 @@
         value={searchValue(declaration.id)}
         onchange={(query) => onsearch(declaration.id, query)}
       />
+    {/if}
+    {#if declaration.type==='dimension' && confirmationIds.includes(declaration.id) && !declaration.selection?.required && !(declaration.hierarchy && usesHierarchyTree(declaration.display??'select',declaration.selection?.mode,declaration.hierarchyPicker))}
+      <button type="button" disabled={readOnly} onclick={()=>ondimension(declaration,[],dimensionValueOf(values,declaration.id).level)}>确认不限</button>
     {/if}
     {#if limits.reason}<span role="status">{limits.reason}</span>{/if}
     {#if declaration.type==='timeRange'&&declaration.presets&&!readOnly}<div class="time-presets" role="group" aria-label="时间快捷预设">{#each declaration.presets as item}<button type="button" disabled={!!limits.reason} onclick={()=>preset(declaration,item.range)}>{item.label}</button>{/each}</div>{/if}

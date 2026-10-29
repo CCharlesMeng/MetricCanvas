@@ -1,0 +1,12 @@
+{"schemaVersion":"6.75","validation":"page-and-file-name"}
+exit=0; expected=0
+{"file":"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-key-office-region-ijh54afo/key-office-filter-demo.json","ok":true,"errors":[]}
+exit=0; expected=0
+{"file":"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-key-office-region-ijh54afo/key-office-filter-target.json","ok":true,"errors":[]}
+exit=0; expected=0
+{"file":"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-key-office-region-ijh54afo/flat/key-office-filter-demo.json","ok":false,"errors":[{"type":"SCHEMA_ERROR","path":"/filters/0/defaultLevel","message":"defaultLevel 只能用于声明了 hierarchy 的维度筛选器"},{"type":"SCHEMA_ERROR","path":"/filters/0/treeSelection","message":"结构树必须声明tree与hierarchy"},{"type":"SCHEMA_ERROR","path":"/filters/0/hierarchy","message":"IOC Region 必须声明地区部与代表处等真实层级"},{"type":"FILTER_BINDING_ERROR","path":"/dataSources/offices/source/query/filterBindings/region/levelQueryFields","message":"levelQueryFields 只能绑定层级维度筛选器:region"}]}
+exit=1; expected=1
+{"file":"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-key-office-region-ijh54afo/external-picker/key-office-filter-demo.json","ok":false,"errors":[{"type":"SCHEMA_ERROR","path":"/filters/0/hierarchyPicker","message":"IOC Region 不再允许外部层级切换或隐藏切层写法"},{"type":"SCHEMA_ERROR","path":"/filters/0/hierarchyPicker","message":"隐藏层级切换器要求同页地图通过 hierarchyFilter 承担下钻:region"}]}
+exit=1; expected=1
+{"file":"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-key-office-region-ijh54afo/multiple/key-office-filter-demo.json","ok":false,"errors":[{"type":"SCHEMA_ERROR","path":"/filters/0/selection/mode","message":"IOC Region 只允许单选树节点"}]}
+exit=1; expected=1

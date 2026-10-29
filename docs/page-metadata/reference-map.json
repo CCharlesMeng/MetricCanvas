@@ -338,7 +338,9 @@
         "ioc-header-models",
         "ioc-header-months",
         "ioc-header-unconfigured",
-        "period-query-columns-demo"
+        "period-query-columns-demo",
+        "key-office-filter-demo",
+        "key-office-filter-target"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2001,7 +2003,8 @@
     "6.71": "字段求和可按零处理缺项和全部缺项，并支持单字段分类；原有缺项策略保持。",
     "6.72": "分页合并成员支持多个非空原始维度组成唯一行键；旧单字段身份与分页排序保持。",
     "6.73": "分页合并成员显式选择前端UUID行键；不保证跨请求业务身份。",
-    "6.74": "完整结果按稳定维度键取组织并集，再关联单项并计算分类与总分。"
+    "6.74": "完整结果按稳定维度键取组织并集，再关联单项并计算分类与总分。",
+    "6.75": "6.75：boolean 候选依赖与统一条件启用。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2634,7 +2637,8 @@
       "金额范围（6.38）",
       "6.39 复杂时间与候选",
       "下拉搜索与普通树（6.43）",
-      "IOC 业务批量场景与必选多选（6.46）"
+      "IOC 业务批量场景与必选多选（6.46）",
+      "布尔候选依赖与条件启用（6.75）"
     ],
     "sections-and-layout.md": [
       "Report 与 Dashboard 标题",

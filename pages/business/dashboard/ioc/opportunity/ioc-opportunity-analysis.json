@@ -31,7 +31,25 @@
       "type": "dimension",
       "dimension": "region-code",
       "label": "区域",
-      "emptyLabel": "全球"
+      "emptyLabel": "全球",
+      "hierarchy": [
+        {
+          "id": "region-dept",
+          "dimension": "region-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept",
+      "display": "tree",
+      "treeSelection": "level",
+      "selection": {
+        "mode": "single"
+      }
     },
     {
       "id": "customer-category",
@@ -296,7 +314,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "region_code"
+              "levelQueryFields": {
+                "region-dept": "region_code",
+                "office": "rep_office_code"
+              }
             },
             "customer-category": {
               "target": "dimension",
@@ -732,7 +753,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "region_code"
+              "levelQueryFields": {
+                "region-dept": "region_code",
+                "office": "rep_office_code"
+              }
             },
             "customer-category": {
               "target": "dimension",
@@ -1128,7 +1152,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "region_code"
+              "levelQueryFields": {
+                "region-dept": "region_code",
+                "office": "rep_office_code"
+              }
             },
             "customer-category": {
               "target": "dimension",

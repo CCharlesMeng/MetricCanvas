@@ -55,6 +55,12 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'ioc-region-single-tree',description:'IOC Region 仅允许 Header 单个可搜索单选组织树，普通维度不收紧',valid:['key-office-filter-demo'],cases:[
+    {case:'ioc-region-flat',base:'key-office-filter-demo',expect:/IOC Region 必须声明/,mutate:d=>{delete d.filters[0].hierarchy;}},
+    {case:'ioc-region-external-picker',base:'key-office-filter-demo',expect:/IOC Region 不再允许/,mutate:d=>{d.filters[0].hierarchyPicker='tabs';}},
+    {case:'ioc-region-multiple',base:'key-office-filter-demo',expect:/IOC Region 只允许单选/,mutate:d=>{d.filters[0].selection.mode='multiple';}},
+    {case:'ioc-region-outside-header',base:'key-office-filter-demo',expect:/IOC Region 必须由/,mutate:d=>{d.iocHeader.filterIds=d.iocHeader.filterIds.filter((id:string)=>id!=='region');}}
+  ]},
   {
     id: 'metric-card-primary-detail',
     description: '主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约',

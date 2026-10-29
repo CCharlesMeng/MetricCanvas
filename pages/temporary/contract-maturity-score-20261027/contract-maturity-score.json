@@ -46,7 +46,9 @@
       "dimension": "geo-pc-code",
       "label": "区域",
       "emptyLabel": "区域",
-      "selection": { "mode": "single" },
+      "selection": {
+        "mode": "single"
+      },
       "hierarchy": [
         {
           "id": "geo",
@@ -64,7 +66,9 @@
           "label": "代表处"
         }
       ],
-      "defaultLevel": "geo"
+      "defaultLevel": "geo",
+      "display": "tree",
+      "treeSelection": "level"
     },
     {
       "id": "region-scope",

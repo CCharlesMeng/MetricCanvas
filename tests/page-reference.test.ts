@@ -14,7 +14,7 @@ const skills: Array<{id:string;entrypoint:string;referenceProjection?:string}> =
 const authorMap = JSON.parse(await readFile('docs/page-metadata/reference-map.json', 'utf8')) as ReferenceMap;
 const inputs = new Map<string,string>();
 for(const example of new Set(Object.values(authorMap.modules).flatMap(module=>module.examples))){
-  if(['chart-constant-values-page','page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles'].includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(pageFilesById('pages').get(`${example}`)!,'utf8'));
+  if(['key-office-filter-demo','key-office-filter-target','chart-constant-values-page','page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles'].includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(pageFilesById('pages').get(`${example}`)!,'utf8'));
 }
 
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
