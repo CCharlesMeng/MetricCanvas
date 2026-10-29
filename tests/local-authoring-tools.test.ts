@@ -98,7 +98,8 @@ describe('局部读取保持共享消费者与完整验收边界',()=>{
       expect(rejected.stderr).toContain('full-page coverage');
     }
     expect(readFileSync(file,'utf8')).toBe(content);
-  });
+  // Four isolated CLI launches retain their individual 10s process deadlines.
+  },40_000);
 });
 
 describe('按需协议知识',()=>{
