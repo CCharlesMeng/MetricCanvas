@@ -373,3 +373,22 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 未选择且只展开华东、子表搜索上海时导出，Excel仍为两个工作表、父4行子17行。选华东为1/5行，选上海为1/1行。父搜索和表头条件限定父域，父页与子局部状态不限制完整范围；不展开也可导出。
 
 异常候选含“定位无结果”“归属不唯一”“定位失败”，均显示诊断，不展示全量、不发目标子查询。URL初值：`?region=O101&region.level=office&year=2026&product=all`。合成搜索编码仅支持示例代表处名称；实际服务需提供候选与归属查询，真实 DQE/Relay/权限未由此场景证明。正式证据在 `docs/evidence/hierarchical-row-expansion/result.md`。
+
+## 分页合并组合行键（6.72）
+
+入口：`/pages/multi-source-composite-key`。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5197`，访问 `http://127.0.0.1:5197/pages/multi-source-composite-key`。页面来自实际 JSON 自动发现，沿用 Dashboard 与共享表格；两个来源由 `apps/playground/fixtures/decision-opinion/union-gateway.ts` 提供合成数据。
+
+- 合同来源的“审批人甲”同时出现在“示例一处”和“示例二处”，两行都保留；商审与合同的相同组合按来源分别保留，合计256行。成员使用 `rowKeyFields:["contract-approver","contract-office"]` 等对应字段，最终行键仍为字符串。
+- 切换页码与排序、搜索“审批人甲”、筛选类型，并导出 Excel，观察统一结果；来源详情导航继续使用原始记录编码，与行身份分开。
+- `?rowFailure=duplicate-composite` 使商务来源第2行复用第1行的审批人与代表处，整表失败；控制台指出第1、2行组合相同，定位 `/dataSources/opinions/source/members/commercial/rowKeyFields`，不回显业务值。
+- `?rowFailure=missing-composite-key` 使第2行代表处为null，整表失败，控制台定位“代表处”及组合声明；清除参数恢复正常。空白字符串、缺字段、类型错误、跨200行批次重复、旧声明及initial回放由契约和行为测试覆盖。
+
+这些场景只验证本地合成数据与统一运行时，不证明真实DQE的指标、权限、排序或跨批稳定性；组合键不会自动追加排序字段。
+
+## 分页合并可选UUID行键（6.73）
+
+入口：`http://127.0.0.1:5197/pages/multi-source-generated-key`。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5197`。完整 JSON 使用 Dashboard，两个成员显式选择 `rowKeyGeneration: "uuid"`，数据由 `apps/playground/fixtures/decision-opinion/union-gateway.ts` 合成。
+
+默认显示256行。操作翻页、搜索、排序和导出应保持完整有序结果。追加 `?rowFailure=missing-composite-key`，第二条商务记录的代表处为空但仍显示；追加 `?rowFailure=duplicate-composite`，重复业务组合仍保留256行；追加 `?rowFailure=order`，仍应显示空态并在控制台定位排序错误与rowKeyGeneration。对照 `/pages/multi-source-composite-key`，其空组合分量和重复组合仍报错。
+
+成员可分别选择单键、组合键、UUID；后者只给返回行分配临时身份，刷新或重新取数可能变化。业务字段需按实际可空性声明，业务正确性及分页无重叠由上游保证。此页面和测试只证明本地共享执行链与合成网关，不证明真实DQE/Relay数据契约。

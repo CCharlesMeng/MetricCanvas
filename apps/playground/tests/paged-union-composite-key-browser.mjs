@@ -1,0 +1,53 @@
+import { chromium, expect } from '../../../packages/embed/node_modules/@playwright/test/index.mjs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+const base = process.env.PLAYGROUND_BASE_URL ?? 'http://127.0.0.1:5197';
+const output = process.argv[2] ?? '/tmp/metriccanvas-union-composite-key/browser';
+await mkdir(output, { recursive: true });
+const browser = await chromium.launch({ headless: true, channel: 'chrome' });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1050 }, acceptDownloads: true });
+const pageErrors = [], consoleErrors = [];
+page.on('pageerror', error => pageErrors.push(error.message));
+page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
+await page.route('**/favicon.ico', route => route.fulfill({ status: 204 }));
+const table = page.locator('.table-widget');
+try {
+  await page.goto(`${base}/pages/multi-source-composite-key`);
+  await expect(table.locator('.total')).toContainText('256', { timeout: 45000 });
+  await expect(table.getByRole('cell', { name: '审批人甲', exact: true })).toHaveCount(3);
+  await page.screenshot({ path: path.join(output, 'ready.png'), fullPage: true });
+  await table.getByRole('button', { name: '下一页', exact: true }).click();
+  await expect(table.locator('button[aria-current="page"]')).toHaveText('2');
+  await table.getByRole('searchbox', { name: '表格搜索' }).fill('审批人甲');
+  await table.getByRole('searchbox', { name: '表格搜索' }).press('Enter');
+  await expect(table.locator('.total')).toContainText('3');
+  await expect(table.locator('tbody tr')).toHaveCount(3);
+  await expect(table.getByRole('cell', { name: '示例二处', exact: true })).toHaveCount(1);
+  await table.locator('th').filter({ hasText: '决策总次数' }).click();
+  await expect(table.locator('tbody tr')).toHaveCount(3);
+  const pending = page.waitForEvent('download');
+  await table.getByRole('button', { name: '导出', exact: true }).click();
+  const download = await pending;
+  const filename = path.join(output, 'filtered-approver.xlsx');
+  await download.saveAs(filename);
+  expect((await readFile(filename)).subarray(0, 2).toString()).toBe('PK');
+  expect(consoleErrors).toEqual([]);
+  await table.getByRole('searchbox', { name: '表格搜索' }).fill('不存在的审批人');
+  await table.getByRole('searchbox', { name: '表格搜索' }).press('Enter');
+  await expect(table.locator('.empty-state')).toBeVisible();
+  await expect(table.locator('.total')).toContainText('0');
+  for (const failure of ['duplicate-composite', 'missing-composite-key']) {
+    consoleErrors.length = 0;
+    await page.goto(`${base}/pages/multi-source-composite-key?rowFailure=${failure}`);
+    await expect.poll(() => consoleErrors.some(text => text.includes('DQE_ROW_CONTRACT_ERROR') && text.includes('rowKeyFields'))).toBe(true);
+    await expect(table.locator('.empty-state')).toBeVisible();
+    const message = consoleErrors.join('\n');
+    expect(message).toContain(failure === 'duplicate-composite' ? '第 1 条和第 2 条' : '代表处');
+    await page.screenshot({ path: path.join(output, `${failure}.png`), fullPage: true });
+  }
+  await page.goto(`${base}/pages/multi-source-table`);
+  await expect(table.locator('.total')).toContainText('256');
+  expect(pageErrors).toEqual([]);
+  await writeFile(path.join(output, 'result.json'), JSON.stringify({ page: 'multi-source-composite-key', pageErrors, passed: ['256 rows', 'repeated approver across offices', 'cross-source same tuple', 'page 2', 'search', 'sort', 'filtered Excel download', 'empty search', 'duplicate tuple rejection', 'null part rejection', 'legacy page'] }, null, 2));
+  console.log('Composite key browser acceptance passed');
+} finally { await browser.close(); }

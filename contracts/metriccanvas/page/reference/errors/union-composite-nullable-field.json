@@ -1,0 +1,42 @@
+{
+  "case": "union-composite-nullable-field",
+  "invariant": "paged-union-composite-key",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "来源内行键必须是非空 string/number 原始维度",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/rowKeyFields/1"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "投影类型、角色、单位、币种及可空性必须相容",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/projection/office"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "rowKeyFields": [
+                "…",
+                "contract-office"
+              ],
+              "projection": {
+                "office": {
+                  "field": "contract-office"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-composite-nullable-field.json"
+}

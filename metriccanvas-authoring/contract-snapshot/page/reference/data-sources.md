@@ -46,15 +46,15 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 验收场景 `multi-query-table` 使用 8 个代表处合成数据：预签金额降序第一页为上海、北京、广州，切换召开率降序后为上海、深圳、北京，独立图表仍使用全部 8 行。本节生成的 `paged-join-page` 完整示例展示成员引用与投影；可运行场景另含搜索、导出和独立完整表，分别验证结果隔离与全部匹配行。
 
-### 当前序号与固定业务排名
+6.44查询子表格引用的专属query源从首屏取数中排除；展开后在父行独立作用域中执行。分页、搜索和排序仅改变该实例的生效查询，不改变页面数据源定义、主页面快照或全页筛选。详见[行内子表格](components/table.md#row-expansion)。
+
+6.59 的表格置顶行复用独立普通 query 源，显式 complete 且不使用查询窗口；不改变 main 的明细行域或 pagedJoin 语义。数据网关结果、缓存及计算快照同步保留 cellFallbacks 展示证据，普通查询回填 initial 时恢复原始标量；字段仍按有效类型值参与计算和结果绑定。完整声明见[表格置顶行](components/table.md#table-pinned-top)。
+
+## 当前序号与固定业务排名
 
 `ordinalField` 只产出当前排序、筛选后的行序号，分页连续编号，不能声明某个指标的固定业务排名。固定业务排名由普通查询提供独立结果字段，例如预签金额查询同时返回 `bidding_amount` 和 `bidding_rank`；组合源通过 `projection` 按业务键关联该字段，不将其指定为 `ordinalField`。排名范围、指标方向和并列规则由上游查询负责，完整行域取数与页内补列须返回一致的名次；当前页内重新编号不能替代业务排名。
 
 `paged-join-fixed-rank-page` 完整示例使用这一配置。运行场景的两张表独占不同组合源，共用普通查询定义：召开率降序第一页相同，但当前序号为 1、2、3，预签金额排名为 1、4、2。Sim 在完整月份行域按金额降序、编码升序生成名次，表格筛选与搜索保留它；这只是示范查询契约，不证明真实 DQE 已支持排名算子。
-
-6.44查询子表格引用的专属query源从首屏取数中排除；展开后在父行独立作用域中执行。分页、搜索和排序仅改变该实例的生效查询，不改变页面数据源定义、主页面快照或全页筛选。详见[行内子表格](components/table.md#row-expansion)。
-
-6.59 的表格置顶行复用独立普通 query 源，显式 complete 且不使用查询窗口；不改变 main 的明细行域或 pagedJoin 语义。数据网关结果、缓存及计算快照同步保留 cellFallbacks 展示证据，普通查询回填 initial 时恢复原始标量；字段仍按有效类型值参与计算和结果绑定。完整声明见[表格置顶行](components/table.md#table-pinned-top)。
 
 <a id="paged-union"></a>
 
@@ -63,6 +63,8 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 `pagedUnion` 引用两个或更多页内普通查询页面数据源，将各来源字段显式投影到同一份结果字段契约，逐行合并后整体排序、计数和查询分页。内容相同的记录照常保留，不聚合、不去重。Table 只绑定该合并源的 `data.main`，并由一张单槽查询分页表独占。
 
 `source.rowKey` 和 `source.sourceField` 分别命名最终行键与来源标识；两者声明为非空 string 维度且不得重名。`members` 的键是稳定来源 ID。每个成员引用已有查询定义，声明非空 string/number 维度 `rowKey`；来源内唯一性由上游保证，运行时检查已读取范围，重复或缺失时报错。最终行键是来源 ID 与原始行键的结构化编码，来源标识无需展示。
+
+成员也可选择组合键（6.72）或显式 UUID（6.73），见[成员行键策略](#分页合并成员行键策略673)。
 
 行键重复、缺失/类型错误及来源排序不一致时，`DQE_ROW_CONTRACT_ERROR` 的消息先用实际表格标题和字段标签说明哪两条查询记录冲突、为什么不能继续以及应检查什么；首段不出现内部 ID、rowKey、offset 或 queryField。后续“技术定位”段保留合并源、成员 ID、来源页面数据源、行键字段及其 `queryField`、成员行键配置的 JSON Pointer。重复错误区分本批内重复和跨批次重复（可能分页重叠），给出首次与当前来源行号（从 1 开始）及当前批次 `offset`（从 0 开始）；行号属于该成员当前生效查询的返回序列，不是表格合并后序号。排序错误给出相邻来源行号和当前排序规则。消息不包含实际行键值或业务行内容。验收入口：`/pages/multi-source-table?rowFailure=duplicate`、`?rowFailure=missing-key`、`?rowFailure=order`；均为合成响应故障。
 
@@ -98,6 +100,34 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 可运行 `multi-source-table` 使用两个合成普通分页端点，覆盖异字段、来源常量、null、默认整体排序、搜索、候选筛选、分页、Excel 导出与来源详情导航。静态校验、模拟网关与浏览器不证明真实 DQE 已满足上述能力。
 
+
+<a id="分页合并成员行键策略673"></a>
+
+## 分页合并成员行键策略（6.73）
+
+每个 `pagedUnion.members` 成员必须且只能选择一种策略：单字段 `rowKey`、组合字段 `rowKeyFields`、或 `rowKeyGeneration: "uuid"`。按成员独立选择，可在同一合并源中混用；不配置时仍按既有契约报错，不会遇到 null 后自动切换。
+
+6.72 起，成员可改用 `rowKeyFields` 声明有序组合行键，与 `rowKey` 或 `rowKeyGeneration` 三选一。数组至少包含两个不同的来源原始页面字段 id；每个字段均须有 `queryField`、`role: "dimension"`、`type: "string" | "number"` 和 `nullable: false`。例如按“审批人 × 代表处”返回的结果应声明 `"rowKeyFields": ["commercial-approver", "commercial-office"]`，不能只用审批人作行键。它组合现有结果字段，不新增查询字段、不改变查询粒度、不生成 DQE 表达式，也不改变 `pagedJoin` 的关联键。
+
+每个分量必须是符合声明类型的非空字符串或有限数字；null、缺字段、空字符串和纯空白字符串均失败，不补值、不裁剪原值、不将数字转换为文字。整个组合须在来源完整匹配范围内唯一，同一审批人跨代表处可保留，同一组合重复仍报错；跨来源相同组合因来源 ID 不同而分别保留。字段顺序就是身份顺序，变更顺序会改变身份。组合身份编码为 `[来源ID, [分量1, 分量2, ...]]` 的 JSON 字符串，避免分隔符碰撞并保留类型；旧 `rowKey` 继续编码为 `[来源ID, 单值]`，历史页面与 initial 身份不变。
+
+`initial` 继续使用最终字符串行键，并按成员声明核对身份中的来源、分量数量、每个位置的类型及非空值。组合键不自动参与排序，不追加第二排序字段，也不提供事务快照；现有实时 offset 分页的排序稳定性要求保持。可观察入口为 `/pages/multi-source-composite-key`，包含同人跨代表处、跨来源相同组合及组合重复/空分量故障场景。
+
+
+6.73 起，信任上游保证业务行正确性、稳定分页、无重叠及无漏行时，可显式声明 `rowKeyGeneration: "uuid"`，不再要求来源提供业务行键。UUID v4 由执行端安全随机源为每条已取回记录生成，最终行键为 `[来源ID, UUID]` 的 JSON 字符串。它只标识本次读取中的返回行，不是审批人编码或业务主键。
+
+```json
+{ "source": "contract", "rowKeyGeneration": "uuid", "projection": {
+  "name": { "field": "contract-name" }, "amount": { "field": "contract-amount" }, "kind": { "value": "合同" }
+} }
+```
+
+此策略允许参与展示的审批人、代表处为 null，但来源字段和最终投影字段须按实际数据声明可空；UUID 不填充业务列、不放宽其他字段类型和非空约束。相同业务行（包括分页重叠返回的行）都会保留并计数，不能依靠 UUID 检测它们；组合键和单键模式继续拒绝空键与重复键。仍校验每批长度、准确总数、全局排序和资源限制；切换 UUID 不会修复上游排序或分页问题，也不改变 `pagedJoin` 的关联键。
+
+UUID 随已取回的行保存在缓冲区、检查点和 initial 中，复用时保持原值；重新取数、视图变化、缓存失效、刷新和完整导出可产生新 UUID，不保证跨请求一致。`initial` 校验来源、UUID v4 结构及唯一性。运行环境没有安全随机源时返回 `DQE_CONFIG_ERROR`，不退化为索引或弱随机数。不要将临时行键用作详情页业务定位、持久化引用或跨刷新身份；这些场景应投影上游业务标识。
+
+完整示例 `paged-union-generated-key`；合成浏览器入口 `/pages/multi-source-generated-key`，`?rowFailure=missing-composite-key` 仍显示含 null 代表处的行，`?rowFailure=duplicate-composite` 保留重复业务组合，`?rowFailure=order` 仍报告排序错误。旧组合示例在前两项故障下仍失败。此验收不代表真实 DQE/Relay 已保证数据正确性。
+
 ## 审批记录与当前信息补列（6.66）
 
 `pagedJoin.source.records` 显式启用记录模式，保留主表每条原始记录，成员 `key` 仅为关联键。旧页面不声明 `records`，继续使用原有一键一行、选页补列及最大1000行完整关联规则。
@@ -129,7 +159,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 合成验收入口：`/pages/record-join-demo` 为1205条审批；`/pages/object-record-join-demo` 为对象主表分批读取、指标补列及全局表格操作。`pages/business-rejection-details.json` 是业务配置；真实DQE字段、数据粒度、区域语义、HCS排除和服务完整性须真实环境确认。
 
 
-页面协议 6.71。结构真源为本册[schema.json](schema.json)，SHA256 `532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194`。字段表自动生成；可选不等于有默认值。
+页面协议 6.73。结构真源为本册[schema.json](schema.json)，SHA256 `5746e4ce5ba4823452f4dfdfc6258798d2e4db3ed03d22131f4abd30af4d0b2a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1492,137 +1522,441 @@ Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProp
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 动态键的值 | required=["source","rowKey","projection"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| anyOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f736f75726365"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f30"></a>
 
-### `@pagedUnionSource.members{key}.source`
+### `@pagedUnionSource.members{key} · anyOf[0]`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/source`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","projection","rowKey"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f736f75726365"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[0].source`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/source`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f726f774b6579"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e"></a>
 
-### `@pagedUnionSource.members{key}.rowKey`
+### `@pagedUnionSource.members{key} · anyOf[0].projection`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/rowKey`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 多数据槽对齐的维度键，各槽字段类型须一致。 |
-
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e"></a>
-
-### `@pagedUnionSource.members{key}.projection`
-
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 本分支必填 | propertyNames={"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_-]*$"} | Schema未设默认；装配/运行时默认见语义说明 | 覆盖全部非身份输出列；每列显式映射字段、常量或 null。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f70657274696573"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f70657274696573"></a>
 
-### `@pagedUnionSource.members{key}.projection{key}`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key}`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | anyOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f30"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f30"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[0]`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[0]`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 独立分支（不合并required） | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6669656c64"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[0].field`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[0].field`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0/properties/field`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/0/properties/field`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f31"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f31"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[1]`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1]`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 独立分支（不合并required） | required=["value"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c7565"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c7565"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[1].value`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f30"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f30"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[0]`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[0]`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f31"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f31"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[1]`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[1]`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f32"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f32"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[2]`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[2]`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f33"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f33"></a>
 
-### `@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[3]`
+### `@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[3]`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "null" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726f6a656374696f6e2f70726f70657274794e616d6573"></a>
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f70726f6a656374696f6e2f70726f70657274794e616d6573"></a>
 
-### `@pagedUnionSource.members{key}.projection · propertyNames`
+### `@pagedUnionSource.members{key} · anyOf[0].projection · propertyNames`
 
-Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/propertyNames`。
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/propertyNames`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 条件结构 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f726f774b6579"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[0].rowKey`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/rowKey`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 多数据槽对齐的维度键，各槽字段类型须一致。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f31"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","projection","rowKeyFields"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f736f75726365"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].source`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_-]*$"} | Schema未设默认；装配/运行时默认见语义说明 | 覆盖全部非身份输出列；每列显式映射字段、常量或 null。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key}`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f30"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[0]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6669656c64"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[0].field`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/0/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f31"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["value"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c7565"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f30"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[0]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f31"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[1]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f32"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[2]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f33"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[3]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "null" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f70726f6a656374696f6e2f70726f70657274794e616d6573"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].projection · propertyNames`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f726f774b65794669656c6473"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].rowKeyFields`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/rowKeyFields`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=2 | Schema未设默认；装配/运行时默认见语义说明 | 6.72起可用，与rowKey和rowKeyGeneration三选一；至少两个不同的来源原始非空string/number维度，按声明顺序组成来源内唯一身份，不参与排序。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f726f774b65794669656c64732f6974656d73"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[1].rowKeyFields[]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/rowKeyFields/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f32"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","projection","rowKeyGeneration"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f736f75726365"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].source`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_-]*$"} | Schema未设默认；装配/运行时默认见语义说明 | 覆盖全部非身份输出列；字段类型和可空性仍须兼容。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key}`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f30"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[0]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6669656c64"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[0].field`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/0/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f31"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["value"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c7565"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f30"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[0]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f31"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[1]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f32"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[2]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f33"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[3]`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "null" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f70726f6a656374696f6e2f70726f70657274794e616d6573"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].projection · propertyNames`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f726f774b657947656e65726174696f6e"></a>
+
+### `@pagedUnionSource.members{key} · anyOf[2].rowKeyGeneration`
+
+Schema位置：`#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/rowKeyGeneration`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="uuid" | Schema未设默认；装配/运行时默认见语义说明 | 6.73起显式选择uuid，与rowKey和rowKeyFields三选一；仅标识本次返回行，业务重复与分页重叠由上游保证。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "uuid" | 用于选择@pagedUnionSource.members{key} · anyOf[2].rowKeyGeneration分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f7061676564556e696f6e536f757263652f70726f706572746965732f6d656d626572732f70726f70657274794e616d6573"></a>
 
@@ -2162,7 +2496,8 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - `captured-at-valid`：内嵌初始行的 capturedAt 须为有效的 RFC 3339 日期时间。反例：[captured-at-invalid-month](errors/captured-at-invalid-month.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `pagination-initial-rows`：查询分页的内嵌初始行必须声明 totalCount 且是完整第一页。反例：[pagination-initial-without-total-count](errors/pagination-initial-without-total-count.json)、[pagination-initial-not-full-page](errors/pagination-initial-not-full-page.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `paged-join`：6.22 组合表全局视图与普通查询定义引用。反例：[table-number-range-before-6.22](errors/table-number-range-before-6.22.json)、[paged-join-initial-predicate-in](errors/paged-join-initial-predicate-in.json)、[paged-join-initial-predicate-numeric](errors/paged-join-initial-predicate-numeric.json)、[paged-join-initial-predicate-date](errors/paged-join-initial-predicate-date.json)、[paged-join-before-6.22](errors/paged-join-before-6.22.json)、[paged-join-unknown-member](errors/paged-join-unknown-member.json)、[paged-join-invalid-key](errors/paged-join-invalid-key.json)、[paged-join-invalid-projection](errors/paged-join-invalid-projection.json)、[paged-join-member-topn](errors/paged-join-member-topn.json)、[paged-join-shared-root](errors/paged-join-shared-root.json)、[paged-join-invalid-initial](errors/paged-join-invalid-initial.json)、[table-number-range-non-numeric](errors/table-number-range-non-numeric.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `paged-union`：多来源逐行合并、显式字段投影与全局视图。反例：[union-initial-predicate-date](errors/union-initial-predicate-date.json)、[union-initial-predicate-numeric](errors/union-initial-predicate-numeric.json)、[union-initial-predicate-in](errors/union-initial-predicate-in.json)、[union-before-6.61](errors/union-before-6.61.json)、[union-missing-source](errors/union-missing-source.json)、[union-missing-mapping](errors/union-missing-mapping.json)、[union-incompatible-unit](errors/union-incompatible-unit.json)、[union-null-required](errors/union-null-required.json)、[union-source-window](errors/union-source-window.json)、[union-invalid-key](errors/union-invalid-key.json)、[union-source-navigation-field](errors/union-source-navigation-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `paged-union`：多来源逐行合并、显式字段投影与全局视图。反例：[union-uuid-old](errors/union-uuid-old.json)、[union-uuid-conflict](errors/union-uuid-conflict.json)、[union-initial-predicate-date](errors/union-initial-predicate-date.json)、[union-initial-predicate-numeric](errors/union-initial-predicate-numeric.json)、[union-initial-predicate-in](errors/union-initial-predicate-in.json)、[union-before-6.61](errors/union-before-6.61.json)、[union-missing-source](errors/union-missing-source.json)、[union-missing-mapping](errors/union-missing-mapping.json)、[union-incompatible-unit](errors/union-incompatible-unit.json)、[union-null-required](errors/union-null-required.json)、[union-source-window](errors/union-source-window.json)、[union-invalid-key](errors/union-invalid-key.json)、[union-source-navigation-field](errors/union-source-navigation-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `paged-union-composite-key`：6.72来源内有序非空组合行键，旧单字段声明保持。反例：[union-composite-before-version](errors/union-composite-before-version.json)、[union-composite-repeated-field](errors/union-composite-repeated-field.json)、[union-composite-nullable-field](errors/union-composite-nullable-field.json)、[union-composite-unknown-field](errors/union-composite-unknown-field.json)、[union-composite-measure-field](errors/union-composite-measure-field.json)、[union-composite-empty-fields](errors/union-composite-empty-fields.json)、[union-composite-scalar-conflict](errors/union-composite-scalar-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2173,11 +2508,15 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - [paged-union-page](examples/paged-union-page.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-union-branches](examples/paged-union-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-page](examples/record-join-page.json)：完整合法页面；查询仅为静态契约证据。
+- [paged-union-composite-key](examples/paged-union-composite-key.json)：完整合法页面；查询仅为静态契约证据。
+- [paged-union-composite-branches](examples/paged-union-composite-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [paged-union-generated-key](examples/paged-union-generated-key.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/data-source.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/paged-union.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/validate-paged-union.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/paged-union-identity.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
@@ -2192,12 +2531,27 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/1`：[语义拒绝反例](errors/paged-join-initial-predicate-numeric.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/2`：[语义拒绝反例](errors/paged-join-initial-predicate-date.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。
 - `#/definitions/dataSource/anyOf/3`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions`。
-- `#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/localRowId`。
-- `#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType`。
-- `#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType/value`。
-- `#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`：[合法完整页面](examples/paged-union-branches.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/constantNumber/value`。
-- `#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`：[合法完整页面](examples/paged-union-branches.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/constantFlag/value`。
-- `#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/commercial/projection/missingNote/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/0`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/localRowId`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`：[合法完整页面](examples/paged-union-branches.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/constantNumber/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`：[合法完整页面](examples/paged-union-branches.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/constantFlag/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/commercial/projection/missingNote/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1`：[合法完整页面](examples/paged-union-composite-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/0`：[合法完整页面](examples/paged-union-composite-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/localRowId`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1`：[合法完整页面](examples/paged-union-composite-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`：[合法完整页面](examples/paged-union-composite-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`：[合法完整页面](examples/paged-union-composite-branches.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/constantNumber/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`：[合法完整页面](examples/paged-union-composite-branches.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/constantFlag/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`：[合法完整页面](examples/paged-union-composite-key.json)，JSON Pointer `#/dataSources/opinions/source/members/commercial/projection/missingNote/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2`：[合法完整页面](examples/paged-union-generated-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/0`：[合法完整页面](examples/paged-union-generated-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/localRowId`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1`：[合法完整页面](examples/paged-union-generated-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0`：[合法完整页面](examples/paged-union-generated-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/businessType/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1`：[合法完整页面](examples/paged-union-generated-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/literalNumber/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2`：[合法完整页面](examples/paged-union-generated-key.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/literalFlag/value`。
+- `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3`：[合法完整页面](examples/paged-union-generated-key.json)，JSON Pointer `#/dataSources/opinions/source/members/commercial/projection/missingNote/value`。
 - `#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0`：[语义拒绝反例](errors/union-initial-predicate-in.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-union`）。此项不计入合法示例覆盖。
 - `#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/0`：[语义拒绝反例](errors/union-initial-predicate-in.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-union`）。此项不计入合法示例覆盖。
 - `#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/1`：[语义拒绝反例](errors/union-initial-predicate-in.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-union`）。此项不计入合法示例覆盖。

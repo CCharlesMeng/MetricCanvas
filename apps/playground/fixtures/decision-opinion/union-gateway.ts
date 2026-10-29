@@ -55,6 +55,11 @@ function injectRowFailure(rows: Row[], failure: string | null | undefined): void
   switch (failure) {
     case 'duplicate': rows[1]['commercial-localRowId'] = rows[0]['commercial-localRowId']; break;
     case 'missing-key': rows[1]['commercial-localRowId'] = null; break;
+    case 'duplicate-composite':
+      rows[1]['commercial-approver'] = rows[0]['commercial-approver'];
+      rows[1]['commercial-office'] = rows[0]['commercial-office'];
+      break;
+    case 'missing-composite-key': rows[1]['commercial-office'] = null; break;
     case 'order': rows.reverse(); break;
   }
 }

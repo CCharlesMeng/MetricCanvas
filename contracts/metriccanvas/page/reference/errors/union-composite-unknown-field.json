@@ -1,0 +1,30 @@
+{
+  "case": "union-composite-unknown-field",
+  "invariant": "paged-union-composite-key",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "来源内行键必须是非空 string/number 原始维度",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/rowKeyFields/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "rowKeyFields": [
+                "…",
+                "missing"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-composite-unknown-field.json"
+}

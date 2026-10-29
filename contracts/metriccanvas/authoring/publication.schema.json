@@ -862,9 +862,11 @@
             "6.68",
             "6.69",
             "6.70",
-            "6.71"
+            "6.71",
+            "6.72",
+            "6.73"
           ],
-          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71"
+          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73"
         },
         "id": {
           "type": "string",
@@ -5127,72 +5129,216 @@
                 "pattern": "^[a-z0-9][a-z0-9-]*$"
               },
               "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "source": {
-                    "type": "string",
-                    "pattern": "^[a-z0-9][a-z0-9-]*$"
-                  },
-                  "rowKey": {
-                    "type": "string",
-                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
-                  },
-                  "projection": {
+                "anyOf": [
+                  {
                     "type": "object",
-                    "propertyNames": {
-                      "type": "string",
-                      "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
-                    },
-                    "additionalProperties": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "field": {
-                              "type": "string",
-                              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
-                            }
-                          },
-                          "required": [
-                            "field"
-                          ],
-                          "additionalProperties": false
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "projection": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
                         },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "value": {
-                              "anyOf": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "number"
-                                },
-                                {
-                                  "type": "boolean"
-                                },
-                                {
-                                  "type": "null"
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "field": {
+                                  "type": "string",
+                                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
                                 }
-                              ]
+                              },
+                              "required": [
+                                "field"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "boolean"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "value"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "value"
-                          ],
-                          "additionalProperties": false
+                          ]
                         }
-                      ]
-                    }
+                      },
+                      "rowKey": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "projection",
+                      "rowKey"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "projection": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                        },
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "field": {
+                                  "type": "string",
+                                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                                }
+                              },
+                              "required": [
+                                "field"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "boolean"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "value"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "rowKeyFields": {
+                        "minItems": 2,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                        }
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "projection",
+                      "rowKeyFields"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "projection": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                        },
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "field": {
+                                  "type": "string",
+                                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                                }
+                              },
+                              "required": [
+                                "field"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "boolean"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "value"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "rowKeyGeneration": {
+                        "type": "string",
+                        "const": "uuid"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "projection",
+                      "rowKeyGeneration"
+                    ],
+                    "additionalProperties": false
                   }
-                },
-                "required": [
-                  "source",
-                  "rowKey",
-                  "projection"
-                ],
-                "additionalProperties": false
+                ]
               },
               "minProperties": 2
             },

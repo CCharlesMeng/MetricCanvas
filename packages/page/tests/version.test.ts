@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVersions, versionErrors, versionPolicy } from '../src/version';
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
+  "paged-union-generated-key":73,
+  "paged-union-composite-key":72,
   "table-row-hierarchy-selection":70,
   "table-private-selection-input":70,
   "table-complete-hierarchy-export":70,

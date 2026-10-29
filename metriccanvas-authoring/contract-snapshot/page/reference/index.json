@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.71",
-  "schemaSha256": "532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194",
+  "schemaVersion": "6.73",
+  "schemaSha256": "5746e4ce5ba4823452f4dfdfc6258798d2e4db3ed03d22131f4abd30af4d0b2a",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -137,6 +137,10 @@
     {
       "file": "packages/page/src/object-query-params.ts",
       "sha256": "442c6b7fbd05443b81e87ab83b6802e4f80d2021fd67c05212f3adfa29f66acc"
+    },
+    {
+      "file": "packages/page/src/paged-union-identity.ts",
+      "sha256": "41da624cccb541512de4eb6ff6b2558073af5c358693cf858fedfdf302937001"
     },
     {
       "file": "packages/page/src/param-bindings.ts",
@@ -276,7 +280,7 @@
     },
     {
       "file": "packages/page/src/schema/paged-union.ts",
-      "sha256": "85a4f760ba0b6509bb94bd3169086f952b04cc223d3008f7616ef77e8c216a27"
+      "sha256": "3fa3c85bf8886b6119df55a0f3772af2c382b719de032f8d27cb6f2eeffb2510"
     },
     {
       "file": "packages/page/src/schema/presentation.ts",
@@ -340,7 +344,7 @@
     },
     {
       "file": "packages/page/src/validate-paged-union.ts",
-      "sha256": "8559c2cd5ba9f911fe3731849d83bb1d0149638bfb2cc091d4f494ebe53b63a9"
+      "sha256": "bc910c994ec7f2849456d43df3fdfd75c80139cca7bfcd6ae0131c9193f05fa1"
     },
     {
       "file": "packages/page/src/validate-query-results.ts",
@@ -356,7 +360,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "21bd59d7d8c9628fcf6a75b675b1009098cecf73aa8d6b82b63180fa669873eb"
+      "sha256": "13af7dec25ae2c12850875de4048969301bf3d261f5bba58a9a9d86751f11e17"
     }
   ],
   "modules": {
@@ -491,14 +495,18 @@
         "query-numeric-tolerance",
         "paged-union-page",
         "paged-union-branches",
-        "record-join-page"
+        "record-join-page",
+        "paged-union-composite-key",
+        "paged-union-composite-branches",
+        "paged-union-generated-key"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/data-source.ts",
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/schema/paged-union.ts",
-        "packages/page/src/validate-paged-union.ts"
+        "packages/page/src/validate-paged-union.ts",
+        "packages/page/src/paged-union-identity.ts"
       ],
       "rules": [
         "query-initial-rows-normalize",
@@ -506,7 +514,8 @@
         "captured-at-valid",
         "pagination-initial-rows",
         "paged-join",
-        "paged-union"
+        "paged-union",
+        "paged-union-composite-key"
       ]
     },
     "fields.md": {
@@ -1746,7 +1755,9 @@
         "6.68",
         "6.69",
         "6.70",
-        "6.71"
+        "6.71",
+        "6.72",
+        "6.73"
       ]
     },
     {
@@ -6831,82 +6842,263 @@
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/source",
-      "path": "@pagedUnionSource.members{key}.source",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0",
+      "path": "@pagedUnionSource.members{key} · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/source",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].source",
       "required": "本分支必填",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/rowKey",
-      "path": "@pagedUnionSource.members{key}.rowKey",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection",
       "required": "本分支必填",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection",
-      "path": "@pagedUnionSource.members{key}.projection",
-      "required": "本分支必填",
-      "module": "data-sources.md"
-    },
-    {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties",
-      "path": "@pagedUnionSource.members{key}.projection{key}",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key}",
       "required": "动态键的值",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[0]",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/0",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[0]",
       "required": "独立分支（不合并required）",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0/properties/field",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[0].field",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/0/properties/field",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[0].field",
       "required": "本分支必填",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1]",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1]",
       "required": "独立分支（不合并required）",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value",
       "required": "本分支必填",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[0]",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[0]",
       "required": "独立分支（不合并required）",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[1]",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[1]",
       "required": "独立分支（不合并required）",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[2]",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[2]",
       "required": "独立分支（不合并required）",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
-      "path": "@pagedUnionSource.members{key}.projection{key} · anyOf[1].value · anyOf[3]",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection{key} · anyOf[1].value · anyOf[3]",
       "required": "独立分支（不合并required）",
       "module": "data-sources.md"
     },
     {
-      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/propertyNames",
-      "path": "@pagedUnionSource.members{key}.projection · propertyNames",
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/propertyNames",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].projection · propertyNames",
       "required": "条件结构",
       "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/rowKey",
+      "path": "@pagedUnionSource.members{key} · anyOf[0].rowKey",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1",
+      "path": "@pagedUnionSource.members{key} · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/source",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].source",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key}",
+      "required": "动态键的值",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/0",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/0/properties/field",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[0].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection{key} · anyOf[1].value · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/propertyNames",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].projection · propertyNames",
+      "required": "条件结构",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/rowKeyFields",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].rowKeyFields",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/rowKeyFields/items",
+      "path": "@pagedUnionSource.members{key} · anyOf[1].rowKeyFields[]",
+      "required": "每个数组项",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2",
+      "path": "@pagedUnionSource.members{key} · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/source",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].source",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key}",
+      "required": "动态键的值",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/0",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/0/properties/field",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[0].field",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection{key} · anyOf[1].value · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/propertyNames",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].projection · propertyNames",
+      "required": "条件结构",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/rowKeyGeneration",
+      "path": "@pagedUnionSource.members{key} · anyOf[2].rowKeyGeneration",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "const": "uuid"
     },
     {
       "pointer": "#/definitions/pagedUnionSource/properties/members/propertyNames",
@@ -19129,39 +19321,129 @@
       "pointer": "#/dataSources/opinions"
     },
     {
-      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/0",
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-page.json",
+      "pointer": "#/dataSources/opinions/source/members/contract"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/0",
       "module": "data-sources.md",
       "file": "examples/paged-union-page.json",
       "pointer": "#/dataSources/opinions/source/members/contract/projection/localRowId"
     },
     {
-      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1",
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1",
       "module": "data-sources.md",
       "file": "examples/paged-union-page.json",
       "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType"
     },
     {
-      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
       "module": "data-sources.md",
       "file": "examples/paged-union-page.json",
       "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType/value"
     },
     {
-      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
       "module": "data-sources.md",
       "file": "examples/paged-union-branches.json",
       "pointer": "#/dataSources/opinions/source/members/contract/projection/constantNumber/value"
     },
     {
-      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
       "module": "data-sources.md",
       "file": "examples/paged-union-branches.json",
       "pointer": "#/dataSources/opinions/source/members/contract/projection/constantFlag/value"
     },
     {
-      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
       "module": "data-sources.md",
       "file": "examples/paged-union-page.json",
+      "pointer": "#/dataSources/opinions/source/members/commercial/projection/missingNote/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-composite-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/0",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-composite-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/localRowId"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-composite-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-composite-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-composite-branches.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/constantNumber/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-composite-branches.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/constantFlag/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-composite-key.json",
+      "pointer": "#/dataSources/opinions/source/members/commercial/projection/missingNote/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-generated-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/0",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-generated-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/localRowId"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-generated-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/0",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-generated-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/businessType/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/1",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-generated-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/literalNumber/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/2",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-generated-key.json",
+      "pointer": "#/dataSources/opinions/source/members/contract/projection/literalFlag/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection/additionalProperties/anyOf/1/properties/value/anyOf/3",
+      "module": "data-sources.md",
+      "file": "examples/paged-union-generated-key.json",
       "pointer": "#/dataSources/opinions/source/members/commercial/projection/missingNote/value"
     },
     {

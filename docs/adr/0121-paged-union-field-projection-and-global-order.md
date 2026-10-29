@@ -11,3 +11,11 @@ note: 用户确认逐行保留重复记录、通用配置、整体默认排序�
 为复用既有查询服务，选择 SourceProgram 内的有界有序归并：先向各成员下推统一视图，再归并、计数并取全局窗口。默认排序由合并源 ordering.default 唯一持有。接受首次深页扫描前缀和实时 offset 的跨请求变化，不承诺事务快照。检查点、缓冲、请求缓存和扫描量有上限，来源失败整轮失败，完整导出沿用 10000 行/60 秒。不能用各来源第 N 页拼接替代全局分页，也不能以模拟端点证明真实 DQE 比较规则和总数能力。
 
 成员普通结果与合并内部读取隔离；本次扩展 [0108](0108-paged-join-and-unified-source-program.md) 的共享执行边界，保留独立消费者、请求去重和取消所有权。协议真源见[数据源](../page-metadata/data-sources.md#paged-union)，验收分层见[实施记录](../evidence/paged-union/acceptance.md)。
+
+## 6.72 组合行身份增量（2026-10-29）
+
+用户确认只扩展pagedUnion成员身份，新增与rowKey互斥的rowKeyFields有序原始维度列表，以“审批人 × 代表处”等结果粒度区分来源内记录；所有分量非空，整个组合重复仍报错。单字段编码保持，组合编码为[来源,[分量...]]，initial同步校验。此增量不扩展pagedJoin关联语义，不引入计算表达式，不改变业务排序、实时offset或上游稳定流要求。协议和验收入口见数据源文档与multi-source-composite-key。
+
+## 6.73 显式临时UUID身份增量（2026-10-29）
+
+成员可显式选择rowKeyGeneration:"uuid"，与rowKey、rowKeyFields三选一。该选择信任上游提供正确行域及稳定无重叠分页，为每条取回行生成临时UUID；允许可空业务字段，不推断业务唯一性、不去重，原始与最终字段契约保持。ID随行缓冲与initial保存，重新取数/刷新/完整导出可变化；不用于跨请求定位。排序、完整批次、总数及资源限制继续校验。此能力限于pagedUnion，不改变pagedJoin关联语义。可观察入口multi-source-generated-key，真实DQE/Relay保证单列验收。

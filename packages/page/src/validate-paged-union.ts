@@ -7,6 +7,7 @@ import type { PagedUnionDataSource, PagedUnionMember } from './paged-union';
 import type { TypedError } from './errors';
 import { queryFilterIds } from './amount-filter';
 import { consumerErrors, initialErrors } from './validate-paged-join';
+import { unionMemberKeyFields, validGeneratedUnionKey, validUnionKeyPart } from './paged-union-identity';
 
 type Fail = (path: string, message: string) => void;
 const ptr = (value: string) => value.replaceAll('~', '~0').replaceAll('/', '~1');
@@ -93,26 +94,43 @@ function unionOrderingErrors(data: PagedUnionDataSource, path: string, fail: Fai
 }
 
 function memberInputErrors(ref: QueryDataSource, member: PagedUnionMember, path: string, fail: Fail): void {
-  const key = ref.fields[member.rowKey];
-  if (!key || !hasQueryFieldMapping(key) || key.role !== 'dimension' || !['string', 'number'].includes(key.type) || key.nullable !== false) fail(`${path}/rowKey`, '来源内行键必须是非空 string/number 原始维度');
+  const fields = unionMemberKeyFields(member);
+  if (new Set(fields).size !== fields.length) fail(`${path}/rowKeyFields`, '组合行键字段不得重复');
+  fields.forEach((id, index) => {
+    const key = ref.fields[id];
+    const keyPath = 'rowKeyFields' in member ? `rowKeyFields/${index}` : 'rowKey';
+    if (!key || !hasQueryFieldMapping(key) || key.role !== 'dimension' || !['string', 'number'].includes(key.type) || key.nullable !== false) fail(`${path}/${keyPath}`, '来源内行键必须是非空 string/number 原始维度');
+  });
   if (ref.compute?.length || ref.source.query.resultBindings?.length || queryLeaves(ref.source.query).some(query => hasWindow(query.body.dsl_list[0].order))) fail(`${path}/source`, '成员不允许计算、结果绑定或业务分页窗口');
  }
 
 function initialIdentityErrors(page: Page, data: PagedUnionDataSource, path: string, fail: Fail): void {
+  const seen = new Set<string>();
   for (const row of data.source.initial?.rows ?? []) {
     const identity = parsedIdentity(row[data.source.rowKey]);
     const member = identity && Object.hasOwn(data.source.members, identity[0]) ? data.source.members[identity![0]] : undefined;
-    const expected = member && page.dataSources[member.source]?.fields[member.rowKey]?.type;
-    if (!identity || !member || row[data.source.sourceField] !== identity[0] || typeof identity[1] !== expected) fail(`${path}/source/initial/rows`, '初始合并行键必须编码已声明来源及正确类型的来源内键');
+    if (!identity || !member || row[data.source.sourceField] !== identity[0] || !initialKeyMatches(page, member, identity[1])) fail(`${path}/source/initial/rows`, '初始合并行键必须编码已声明来源及正确类型的来源内键');
+    else if (!('rowKey' in member)) {
+      const key = JSON.stringify(identity);
+      const label = 'rowKeyFields' in member ? '组合行键' : 'UUID行键';
+      if (seen.has(key)) fail(`${path}/source/initial/rows`, `初始合并${label}不得重复`);
+      seen.add(key);
+    }
   }
 }
-function parsedIdentity(value: unknown): [string, string | number] | undefined {
+function initialKeyMatches(page: Page, member: PagedUnionMember, key: unknown): boolean {
+  if ('rowKeyGeneration' in member) return validGeneratedUnionKey(key);
+  const fields = unionMemberKeyFields(member);
+  const values = 'rowKeyFields' in member ? key : [key];
+  if (!Array.isArray(values) || values.length !== fields.length) return false;
+  const source = page.dataSources[member.source];
+  return fields.every((id, index) => validUnionKeyPart(values[index], source?.fields[id]?.type));
+}
+function parsedIdentity(value: unknown): [string, unknown] | undefined {
   if (typeof value !== 'string') return;
   try {
     const pair: unknown = JSON.parse(value);
     if (!Array.isArray(pair) || pair.length !== 2 || typeof pair[0] !== 'string') return;
-    const key: unknown = pair[1];
-    if (typeof key === 'string' && key.trim()) return [pair[0], key];
-    if (typeof key === 'number' && Number.isFinite(key)) return [pair[0], key];
+    return [pair[0], pair[1]];
   } catch { return; }
 }

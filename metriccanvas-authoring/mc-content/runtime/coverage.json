@@ -353,6 +353,21 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/paged-union-composite-branches.json",
+      "target": "product-contracts/page/conformance/valid/paged-union-composite-branches.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/paged-union-composite-key.json",
+      "target": "product-contracts/page/conformance/valid/paged-union-composite-key.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/paged-union-generated-key.json",
+      "target": "product-contracts/page/conformance/valid/paged-union-generated-key.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/paged-union-page.json",
       "target": "product-contracts/page/conformance/valid/paged-union-page.json",
       "scope": "exact product contract"
@@ -1720,6 +1735,51 @@
     {
       "source": "product:page/conformance/invalid/text-composition-nested.json",
       "target": "product-contracts/page/conformance/invalid/text-composition-nested.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-composite-before-version.json",
+      "target": "product-contracts/page/conformance/invalid/union-composite-before-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-composite-repeated-field.json",
+      "target": "product-contracts/page/conformance/invalid/union-composite-repeated-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-composite-nullable-field.json",
+      "target": "product-contracts/page/conformance/invalid/union-composite-nullable-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-composite-unknown-field.json",
+      "target": "product-contracts/page/conformance/invalid/union-composite-unknown-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-composite-measure-field.json",
+      "target": "product-contracts/page/conformance/invalid/union-composite-measure-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-composite-empty-fields.json",
+      "target": "product-contracts/page/conformance/invalid/union-composite-empty-fields.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-composite-scalar-conflict.json",
+      "target": "product-contracts/page/conformance/invalid/union-composite-scalar-conflict.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-uuid-old.json",
+      "target": "product-contracts/page/conformance/invalid/union-uuid-old.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/union-uuid-conflict.json",
+      "target": "product-contracts/page/conformance/invalid/union-uuid-conflict.json",
       "scope": "exact product contract"
     },
     {
@@ -4183,6 +4243,51 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/union-composite-before-version.json",
+      "target": "references/page-metadata/errors/union-composite-before-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-composite-repeated-field.json",
+      "target": "references/page-metadata/errors/union-composite-repeated-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-composite-nullable-field.json",
+      "target": "references/page-metadata/errors/union-composite-nullable-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-composite-unknown-field.json",
+      "target": "references/page-metadata/errors/union-composite-unknown-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-composite-measure-field.json",
+      "target": "references/page-metadata/errors/union-composite-measure-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-composite-empty-fields.json",
+      "target": "references/page-metadata/errors/union-composite-empty-fields.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-composite-scalar-conflict.json",
+      "target": "references/page-metadata/errors/union-composite-scalar-conflict.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-uuid-old.json",
+      "target": "references/page-metadata/errors/union-uuid-old.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/union-uuid-conflict.json",
+      "target": "references/page-metadata/errors/union-uuid-conflict.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/union-initial-predicate-date.json",
       "target": "references/page-metadata/errors/union-initial-predicate-date.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -5648,6 +5753,21 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/paged-union-composite-key.json",
+      "target": "references/page-metadata/examples/paged-union-composite-key.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/paged-union-composite-branches.json",
+      "target": "references/page-metadata/examples/paged-union-composite-branches.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/paged-union-generated-key.json",
+      "target": "references/page-metadata/examples/paged-union-generated-key.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/data-sources.md",
       "target": "references/page-metadata/data-sources.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6504,11 +6624,11 @@
     }
   ],
   "counts": {
-    "product": 1269,
+    "product": 1293,
     "authoring": 31,
     "modules": 33,
-    "topics": 194,
-    "nodes": 2386,
+    "topics": 198,
+    "nodes": 2416,
     "tools": 9,
     "components": 19
   },

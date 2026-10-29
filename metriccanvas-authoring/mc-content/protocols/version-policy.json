@@ -1,8 +1,18 @@
 {
   "major": 6,
-  "minor": 71,
-  "current": "6.71",
+  "minor": 73,
+  "current": "6.73",
   "capabilities": {
+    "paged-union-generated-key": {
+      "minor": 73,
+      "description": "分页合并成员显式由前端生成UUID行身份，信任上游记录与分页正确性",
+      "legacyReadable": false
+    },
+    "paged-union-composite-key": {
+      "minor": 72,
+      "description": "分页合并成员以多个非空原始维度组成唯一行键",
+      "legacyReadable": false
+    },
     "table-row-hierarchy-selection": {
       "minor": 70,
       "description": "显式父级定位与层级筛选联动子表格",
@@ -751,6 +761,8 @@
     "6.68",
     "6.69",
     "6.70",
-    "6.71"
+    "6.71",
+    "6.72",
+    "6.73"
   ]
 }

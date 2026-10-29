@@ -27,7 +27,7 @@ pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不
 Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 使用整体、地区部、代表处三种后端粒度后逐行计算，真实 DQE 需单独验真。
 
 
-页面协议 6.71。结构真源为本册[schema.json](schema.json)，SHA256 `532a0b97ddd9a62fd15d49e5a9752e6e334eceacc5d5fc00e06e8e9a280e8194`。字段表自动生成；可选不等于有默认值。
+页面协议 6.73。结构真源为本册[schema.json](schema.json)，SHA256 `5746e4ce5ba4823452f4dfdfc6258798d2e4db3ed03d22131f4abd30af4d0b2a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

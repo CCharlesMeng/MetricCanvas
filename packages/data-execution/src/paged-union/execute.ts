@@ -89,9 +89,12 @@ function validateRowOrder(plan: UnionPlan, cursor: Cursor, row: Row, rowNumber: 
   const key = String(row[plan.data.source.rowKey]);
   const firstRow = cursor.seen.get(key);
   if (firstRow !== undefined) {
-    const advice = firstRow > cursor.offset
-      ? '页面用这个字段区分每条记录，因此不能重复。请改用能区分每条记录的字段。'
-      : '这次翻页返回的数据与前面有重复标识。请检查查询是否重复返回了数据，以及这个字段是否能区分每条记录。';
+    const subject = 'rowKeyFields' in cursor.member.member ? '这组字段' : '这个字段';
+    const advice = 'rowKeyGeneration' in cursor.member.member
+      ? '生成的临时行标识发生冲突，请刷新重试。'
+      : firstRow > cursor.offset
+      ? `页面用${subject}区分每条记录，因此不能重复。请改用能区分每条记录的字段。`
+      : `这次翻页返回的数据与前面有重复标识。请检查查询是否重复返回了数据，以及${subject}是否能区分每条记录。`;
     throw unionMemberError(plan, cursor.member, `同一个查询返回的第 ${firstRow} 条和第 ${rowNumber} 条记录，“${unionKeyLabel(cursor.member)}”相同。${advice}\n分页定位：offset=${cursor.offset}`);
   }
   if (cursor.seen.size >= MAX_SCAN + BATCH) throw unionError('来源扫描超过资源限制', 'DQE_QUERY_REJECTED');

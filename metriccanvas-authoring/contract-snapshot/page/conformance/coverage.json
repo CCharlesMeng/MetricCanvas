@@ -518,13 +518,33 @@
       ]
     },
     {
+      "id": "paged-union-composite-key",
+      "description": "6.72来源内有序非空组合行键，旧单字段声明保持",
+      "valid": [
+        "paged-union-composite-key",
+        "paged-union-composite-branches"
+      ],
+      "invalid": [
+        "union-composite-before-version",
+        "union-composite-repeated-field",
+        "union-composite-nullable-field",
+        "union-composite-unknown-field",
+        "union-composite-measure-field",
+        "union-composite-empty-fields",
+        "union-composite-scalar-conflict"
+      ]
+    },
+    {
       "id": "paged-union",
       "description": "多来源逐行合并、显式字段投影与全局视图",
       "valid": [
         "paged-union-page",
-        "paged-union-branches"
+        "paged-union-branches",
+        "paged-union-generated-key"
       ],
       "invalid": [
+        "union-uuid-old",
+        "union-uuid-conflict",
         "union-initial-predicate-date",
         "union-initial-predicate-numeric",
         "union-initial-predicate-in",

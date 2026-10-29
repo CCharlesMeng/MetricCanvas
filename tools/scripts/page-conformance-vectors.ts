@@ -352,7 +352,18 @@ export const invariants: InvariantDefinition[] = [
       { case: 'text-composition-nested', base: 'text-composition-page', expect: /type|match|additional|must/, mutate: d => { firstComponent(d).props.title = { parts: [{ parts: ['nested'] }] }; } }
     ]
   },
-  { id: 'paged-union', description: '多来源逐行合并、显式字段投影与全局视图', valid: ['paged-union-page', 'paged-union-branches'], cases: [
+  { id: 'paged-union-composite-key', description: '6.72来源内有序非空组合行键，旧单字段声明保持', valid: ['paged-union-composite-key', 'paged-union-composite-branches'], cases: [
+    { case: 'union-composite-before-version', base: 'paged-union-composite-key', expect: /由 6.72 引入/, mutate: d => { d.schemaVersion = '6.71'; } },
+    { case: 'union-composite-repeated-field', base: 'paged-union-composite-key', expect: /组合行键字段不得重复/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKeyFields = ['contract-approver', 'contract-approver']; } },
+    { case: 'union-composite-nullable-field', base: 'paged-union-composite-key', expect: /来源内行键/, mutate: d => { d.dataSources.contract.fields['contract-office'].nullable = true; } },
+    { case: 'union-composite-unknown-field', base: 'paged-union-composite-key', expect: /来源内行键/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKeyFields[1] = 'missing'; } },
+    { case: 'union-composite-measure-field', base: 'paged-union-composite-key', expect: /来源内行键/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKeyFields[1] = 'contract-decisionCount'; } },
+    { case: 'union-composite-empty-fields', base: 'paged-union-composite-key', expect: /minItems|fewer|match|至少/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKeyFields = []; } },
+    { case: 'union-composite-scalar-conflict', base: 'paged-union-composite-key', expect: /未定义字段|additional|match/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKey = 'contract-localRowId'; } }
+  ] },
+  { id: 'paged-union', description: '多来源逐行合并、显式字段投影与全局视图', valid: ['paged-union-page', 'paged-union-branches', 'paged-union-generated-key'], cases: [
+    { case: 'union-uuid-old', base: 'paged-union-generated-key', expect: /由 6.73 引入/, mutate: d => { d.schemaVersion = '6.72'; } },
+    { case: 'union-uuid-conflict', base: 'paged-union-generated-key', expect: /未定义字段|additional|match/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKey = 'contract-localRowId'; } },
     { case: 'union-initial-predicate-date', base: 'paged-union-branches', expect: /默认视图/, mutate: d => { d.dataSources.opinions.source.initial.view.predicates = [{ field: 'approver', op: 'dateRange', from: '2026-01-01', to: '2026-02-01' }]; } },
     { case: 'union-initial-predicate-numeric', base: 'paged-union-branches', expect: /默认视图/, mutate: d => { d.dataSources.opinions.source.initial.view.predicates = [{ field: 'decisionCount', op: 'gte', value: 1 }, { field: 'decisionCount', op: 'lte', value: 2 }]; } },
     { case: 'union-initial-predicate-in', base: 'paged-union-branches', expect: /默认视图/, mutate: d => { d.dataSources.opinions.source.initial.view.predicates = [{ field: 'approver', op: 'in', values: ['甲', 1] }]; } },

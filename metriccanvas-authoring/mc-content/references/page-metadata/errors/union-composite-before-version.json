@@ -1,0 +1,84 @@
+{
+  "case": "union-composite-before-version",
+  "invariant": "paged-union-composite-key",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "分页合并成员以多个非空原始维度组成唯一行键 由 6.72 引入，文档声明的是 6.71",
+      "paths": [
+        "/dataSources/opinions"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "fields": {
+          "rowKey": {
+            "…": "共4个键"
+          },
+          "localRowId": {
+            "…": "共4个键"
+          },
+          "memberId": {
+            "…": "共4个键"
+          },
+          "approverId": {
+            "…": "共4个键"
+          },
+          "approver": {
+            "…": "共4个键"
+          },
+          "regionId": {
+            "…": "共4个键"
+          },
+          "region": {
+            "…": "共4个键"
+          },
+          "officeId": {
+            "…": "共4个键"
+          },
+          "office": {
+            "…": "共4个键"
+          },
+          "roleId": {
+            "…": "共4个键"
+          },
+          "role": {
+            "…": "共4个键"
+          },
+          "businessType": {
+            "…": "共4个键"
+          },
+          "decisionCount": {
+            "…": "共5个键"
+          },
+          "validOpinionCount": {
+            "…": "共5个键"
+          },
+          "validOpinionRate": {
+            "…": "共5个键"
+          },
+          "missingNote": {
+            "…": "共3个键"
+          }
+        },
+        "source": {
+          "type": "pagedUnion",
+          "rowKey": "rowKey",
+          "sourceField": "memberId",
+          "members": {
+            "…": "共2个键"
+          },
+          "ordering": {
+            "…": "共3个键"
+          },
+          "pagination": {
+            "…": "共1个键"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

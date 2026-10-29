@@ -1,0 +1,30 @@
+{
+  "case": "union-composite-repeated-field",
+  "invariant": "paged-union-composite-key",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "组合行键字段不得重复",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/rowKeyFields"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "source": {
+          "members": {
+            "contract": {
+              "rowKeyFields": [
+                "contract-approver",
+                "contract-approver"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/union-composite-repeated-field.json"
+}

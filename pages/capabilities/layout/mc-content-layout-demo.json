@@ -1,6 +1,6 @@
 {
   "id": "mc-content-layout-demo",
-  "schemaVersion": "6.71",
+  "schemaVersion": "6.73",
   "layout": "dashboard",
   "meta": {
     "title": "MC 内容包：布局与版本检查",
@@ -41,7 +41,7 @@
           {
             "case": "来源覆盖对账",
             "result": "ok",
-            "detail": "194 主题 / 9 工具 / 19 组件；独立分母检查"
+            "detail": "198 主题 / 9 工具 / 19 组件；独立分母检查"
           },
           {
             "case": "正常编译",

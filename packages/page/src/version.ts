@@ -22,7 +22,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 71;
+const CURRENT_MINOR = 73;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -46,6 +46,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'paged-union-generated-key': { minor:73, legacyReadable:false, description:'分页合并成员显式由前端生成UUID行身份，信任上游记录与分页正确性',
+    usedAt:document=>dataSourcePaths(document,data=>record(data.source)?.type==='pagedUnion'&&Object.values(record(record(data.source)?.members)??{}).some(member=>has(record(member),'rowKeyGeneration'))) },
+  'paged-union-composite-key': { minor:72, legacyReadable:false, description:'分页合并成员以多个非空原始维度组成唯一行键',
+    usedAt:document=>dataSourcePaths(document,data=>record(data.source)?.type==='pagedUnion'&&Object.values(record(record(data.source)?.members)??{}).some(member=>has(record(member),'rowKeyFields'))) },
   'table-row-hierarchy-selection': { minor:70, legacyReadable:false, description:'显式父级定位与层级筛选联动子表格',
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(record(props(c)?.rowExpansion),'selection')).map(p=>p+'/props/rowExpansion/selection') },
   'table-private-selection-input': { minor:70, legacyReadable:false, description:'子表格私有选择输入的明确不适用语义',

@@ -50,6 +50,6 @@
 
 [ADR-0112](../0112-unified-presentation-conditions.md) 保持现行执行根集合，隐藏不自动停查；筛选通过既有绑定刷新。层级空选保留显式level且不生成空谓词，URL可只恢复层级。完整本地表格行条件是组件私有展示投影，不改变raw/compute/resultBindings；远程分页使用查询条件改变全局范围。权限会话修订先硬失效旧初始化、缓存、详情和导出，再由集成应用重建。
 
-[ADR-0121](../0121-paged-union-field-projection-and-global-order.md) 引入 6.61 分页合并源 `pagedUnion`：成员显式投影到统一字段，逐行保留重复内容，默认排序作用全部来源，再归并计数并取全局页。SourceProgram 复用稳定有序流，接受实时 offset 和冷深页开销，并对检查点、缓存、扫描及完整导出设置限制；真实服务验收单列。
+[ADR-0121](../0121-paged-union-field-projection-and-global-order.md) 引入 6.61 分页合并源 `pagedUnion`：成员显式投影到统一字段，逐行保留重复内容，默认排序作用全部来源，再归并计数并取全局页。SourceProgram 复用稳定有序流，接受实时 offset 和冷深页开销，并对检查点、缓存、扫描及完整导出设置限制；6.72增加成员rowKeyFields非空组合身份，旧编码及排序保持；6.73允许成员显式选择临时UUID，业务行与分页正确性由上游保证；真实服务验收单列。
 
 [ADR-0123](../0123-explicit-hierarchy-selection-and-complete-child-export.md) 在6.70以显式 `rowExpansion.selection` 声明独立父级定位和父行私有投影，父整体指标不绑定层级选择。仅启用分支保留共同条件刷新的展开/收起与合法会话，显式完整 Excel 补齐未展开子表；旧页面、旧输入失败语义和页面 PDF/PNG 限制保持。

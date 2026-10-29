@@ -1,0 +1,90 @@
+{
+  "case": "union-uuid-old",
+  "invariant": "paged-union",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "分页合并成员显式由前端生成UUID行身份，信任上游记录与分页正确性 由 6.73 引入，文档声明的是 6.72",
+      "paths": [
+        "/dataSources/opinions"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "opinions": {
+        "fields": {
+          "rowKey": {
+            "…": "共4个键"
+          },
+          "localRowId": {
+            "…": "共4个键"
+          },
+          "memberId": {
+            "…": "共4个键"
+          },
+          "approverId": {
+            "…": "共4个键"
+          },
+          "approver": {
+            "…": "共4个键"
+          },
+          "regionId": {
+            "…": "共4个键"
+          },
+          "region": {
+            "…": "共4个键"
+          },
+          "officeId": {
+            "…": "共4个键"
+          },
+          "office": {
+            "…": "共4个键"
+          },
+          "roleId": {
+            "…": "共4个键"
+          },
+          "role": {
+            "…": "共4个键"
+          },
+          "businessType": {
+            "…": "共4个键"
+          },
+          "decisionCount": {
+            "…": "共5个键"
+          },
+          "validOpinionCount": {
+            "…": "共5个键"
+          },
+          "validOpinionRate": {
+            "…": "共5个键"
+          },
+          "missingNote": {
+            "…": "共3个键"
+          },
+          "literalNumber": {
+            "…": "共3个键"
+          },
+          "literalFlag": {
+            "…": "共3个键"
+          }
+        },
+        "source": {
+          "type": "pagedUnion",
+          "rowKey": "rowKey",
+          "sourceField": "memberId",
+          "members": {
+            "…": "共2个键"
+          },
+          "ordering": {
+            "…": "共3个键"
+          },
+          "pagination": {
+            "…": "共1个键"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.71",
+  "schemaVersion": "6.73",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-8044e7e5"
@@ -81,9 +81,12 @@
           "description": "多来源逐行合并、显式字段投影与全局视图",
           "valid": [
             "paged-union-page",
-            "paged-union-branches"
+            "paged-union-branches",
+            "paged-union-generated-key"
           ],
           "invalid": [
+            "union-uuid-old",
+            "union-uuid-conflict",
             "union-initial-predicate-date",
             "union-initial-predicate-numeric",
             "union-initial-predicate-in",

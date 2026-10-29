@@ -131,14 +131,18 @@
         "query-numeric-tolerance",
         "paged-union-page",
         "paged-union-branches",
-        "record-join-page"
+        "record-join-page",
+        "paged-union-composite-key",
+        "paged-union-composite-branches",
+        "paged-union-generated-key"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/data-source.ts",
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/schema/paged-union.ts",
-        "packages/page/src/validate-paged-union.ts"
+        "packages/page/src/validate-paged-union.ts",
+        "packages/page/src/paged-union-identity.ts"
       ],
       "rules": [
         "query-initial-rows-normalize",
@@ -146,7 +150,8 @@
         "captured-at-valid",
         "pagination-initial-rows",
         "paged-join",
-        "paged-union"
+        "paged-union",
+        "paged-union-composite-key"
       ]
     },
     "fields.md": {
@@ -1667,7 +1672,6 @@
     "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/search": "已提交文本搜索；首版组合搜索使用有界完整关联，草稿不进入。",
     "#/definitions/pagedUnionSource/properties/sourceField": "最终来源标识字段；由成员 ID 生成的非空 string 维度。",
     "#/definitions/pagedUnionSource/properties/members": "至少两个普通查询来源，逐行保留全部记录；来源 ID 不随显示名变化。",
-    "#/definitions/pagedUnionSource/properties/members/additionalProperties/properties/projection": "覆盖全部非身份输出列；每列显式映射字段、常量或 null。",
     "#/definitions/tableColumn/properties/navigateBySource": "按行来源维度选择导航目标；未配置的来源显示普通文本。",
     "#/definitions/pagedUnionSource/properties/initial/properties/cellFallbacks": "已归一化组合快照的原文证据；随行序保存与恢复。",
     "#/definitions/tableColumn/properties/visibleWhen": "6.62 列展示条件，不支持 row；隐藏后退出搜索并清理用户列操作。",
@@ -1691,7 +1695,12 @@
     "#/definitions/tableRowExpansion/properties/selection/properties/parentLevel": "层级筛选器的父层级 id。",
     "#/definitions/tableRowExpansion/properties/selection/properties/childLevel": "同一层级筛选器的子层级 id，与父层级不同。",
     "#/definitions/tableRowExpansion/properties/selection/properties/parentLookup": "专属 complete 普通父级定位查询，不依赖候选或子明细携带 parent。",
-    "#/definitions/tableRowExpansion/properties/selection/properties/parentLookup/properties/bindings": "定位私有输入完整显式绑定；只读公共筛选或页面参数，恰好一次读取所选子级 values。"
+    "#/definitions/tableRowExpansion/properties/selection/properties/parentLookup/properties/bindings": "定位私有输入完整显式绑定；只读公共筛选或页面参数，恰好一次读取所选子级 values。",
+    "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection": "覆盖全部非身份输出列；每列显式映射字段、常量或 null。",
+    "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection": "覆盖全部非身份输出列；每列显式映射字段、常量或 null。",
+    "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/rowKeyFields": "6.72起可用，与rowKey和rowKeyGeneration三选一；至少两个不同的来源原始非空string/number维度，按声明顺序组成来源内唯一身份，不参与排序。",
+    "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection": "覆盖全部非身份输出列；字段类型和可空性仍须兼容。",
+    "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/rowKeyGeneration": "6.73起显式选择uuid，与rowKey和rowKeyFields三选一；仅标识本次返回行，业务重复与分页重叠由上游保证。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1987,7 +1996,9 @@
     "6.68": "普通DQE显式时间字段绑定，下推日/月范围并保留统计时间槽行为。",
     "6.69": "记录关联可省略maxRows以取消行数限制；显式预算保持，字节、超时及完整性检查不变。",
     "#/properties/schemaVersion=\"6.70\"": "显式层级联动、私有选择输入与完整父子 Excel。",
-    "6.71": "字段求和可按零处理缺项和全部缺项，并支持单字段分类；原有缺项策略保持。"
+    "6.71": "字段求和可按零处理缺项和全部缺项，并支持单字段分类；原有缺项策略保持。",
+    "6.72": "分页合并成员支持多个非空原始维度组成唯一行键；旧单字段身份与分页排序保持。",
+    "6.73": "分页合并成员显式选择前端UUID行键；不保证跨请求业务身份。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2524,6 +2535,26 @@
         "完整父子 Excel（6.70）"
       ],
       "dependencies": []
+    },
+    "data.pagedJoin.rank": {
+      "module": "data-sources",
+      "title": "当前序号与固定业务排名",
+      "roots": [],
+      "headings": [
+        "当前序号与固定业务排名"
+      ],
+      "dependencies": []
+    },
+    "data.pagedUnion.identity": {
+      "module": "data-sources",
+      "title": "分页合并成员的组合键与临时UUID",
+      "roots": [
+        "#/definitions/pagedUnionSource/properties/members"
+      ],
+      "headings": [
+        "分页合并成员行键策略（6.73）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2546,7 +2577,9 @@
       "查询异常与结果总数",
       "查阅方式",
       "多查询组合源 pagedJoin（6.22）",
+      "当前序号与固定业务排名",
       "分页合并源 pagedUnion（6.61）",
+      "分页合并成员行键策略（6.73）",
       "审批记录与当前信息补列（6.66）"
     ],
     "fields.md": [

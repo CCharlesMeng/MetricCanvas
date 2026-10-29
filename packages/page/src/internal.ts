@@ -89,6 +89,7 @@ export * from './component-value';
 export * from './table-pinned';
 
 export type { PagedUnionDataSource, PagedUnionSource, PagedUnionMember } from './paged-union';
+export { unionMemberKeyFields, validUnionKeyPart } from './paged-union-identity';
 
 export * from './table/columns';
 
