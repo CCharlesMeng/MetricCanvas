@@ -22,8 +22,8 @@ function createRecordReader(runner:QueryRunner){
   return {
     clear(){revision++;cache.clear();},
     async read(plan:PagedJoinPlan,scope:string,inputSignal?:AbortSignal,complete=false,exportLimit=false){
-      const config=plan.source.source.records!,generation=revision;
-      const signal=AbortSignal.any([...(inputSignal?[inputSignal]:[]),AbortSignal.timeout(config.timeoutMs)]);
+      const generation=revision;
+      const signal=inputSignal??new AbortController().signal;
       const key=canonicalizeJson([scope,plan.page.id,plan.sourceId,plan.source,[...plan.conditions].sort(([a],[b])=>a.localeCompare(b)),[...plan.members.keys()].map(id=>memberQuery(plan,id))]);
       let rows=cache.get(key);
       try{

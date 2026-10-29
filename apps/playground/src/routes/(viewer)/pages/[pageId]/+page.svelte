@@ -7,7 +7,7 @@
   import { createUnionPreview } from '../../../../../fixtures/decision-opinion/union-gateway';
   import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
-  import {pageExternalInputs,rejectionPreviewRowCount} from '../../../../../fixtures/preview-inputs';
+  import {pageExternalInputs,rejectionPreviewRowCount,rejectionPreviewDelay} from '../../../../../fixtures/preview-inputs';
   import {browser} from '$app/environment';
   const framed = browser && window.self !== window.top;
   import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
@@ -101,7 +101,7 @@
   function previewDataGateway(pageId: string): DataGateway {
     switch (pageExternalInputs(pageId)) {
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;
-      case 'record-join': return createRejectionPreview({rows:rejectionPreviewRowCount(pageId),failure:page.url.searchParams.get('sourceFailure') === 'true'}).dataGateway;
+      case 'record-join': return createRejectionPreview({rows:rejectionPreviewRowCount(pageId),delayMs:rejectionPreviewDelay(pageId,page.url.searchParams),failure:page.url.searchParams.get('sourceFailure') === 'true'}).dataGateway;
       case 'paged-union': return createUnionPreview({failMember:page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined,rowFailure:page.url.searchParams.get('rowFailure')}).dataGateway;
       case 'decision-opinion': return createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway;
       case 'ioc-business': return businessPreview.dataGateway;

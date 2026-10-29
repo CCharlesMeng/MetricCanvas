@@ -1689,7 +1689,7 @@
     "#/definitions/pagedJoinSource/properties/records/properties/batchSize": "每次单表分页及关联键集合的批次大小，1至1000。",
     "#/definitions/pagedJoinSource/properties/records/properties/maxRows": "可选；6.69起省略表示不限制行数。显式值1至100000，限制本地时间筛选前的主表读取量；字节与超时保持。",
     "#/definitions/pagedJoinSource/properties/records/properties/maxBytes": "原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。",
-    "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs": "完整读取的超时预算，1至120000毫秒，取消和超时不保存部分快照。",
+    "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs": "主表/补列表每次分页请求的超时预算（含排队）；每批重置，不限整轮耗时。超时整轮失败且不缓存部分结果。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeFilters": "本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion": "6.70：显式开启完整父子双工作表 Excel；未声明保留旧导出限制。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion/properties/scope": "首期仅 all，补齐未展开子表并忽略子表局部视图。",

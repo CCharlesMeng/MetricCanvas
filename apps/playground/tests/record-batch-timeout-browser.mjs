@@ -1,0 +1,38 @@
+import {chromium,expect} from '../../../packages/embed/node_modules/@playwright/test/index.mjs';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+const base=process.env.RECORD_TIMEOUT_BASE_URL??'http://127.0.0.1:5203';
+const output=process.argv[2]??'/tmp/metriccanvas-record-batch-timeout/browser';
+const fixture=JSON.parse(await readFile(new URL('../../../pages/capabilities/table/record-join-batch-timeout.json',import.meta.url),'utf8'));
+const timeoutMs=fixture.dataSources['rejection-overview'].source.records.timeoutMs;
+await mkdir(output,{recursive:true});
+const browser=await chromium.launch({headless:true,channel:'chrome'});
+const page=await browser.newPage({viewport:{width:1440,height:1000}});
+await page.route('**/favicon.ico',route=>route.fulfill({status:204}));
+const errors=[],consoleErrors=[];
+page.on('pageerror',error=>errors.push(error.message));
+page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text());});
+const table=page.locator('.table-widget');
+try{
+  const started=Date.now();
+  await page.goto(`${base}/pages/${fixture.id}`);
+  await expect(table.locator('.total')).toContainText('12',{timeout:15000});
+  const elapsedMs=Date.now()-started;
+  expect(elapsedMs).toBeGreaterThan(timeoutMs);
+  const search=table.getByRole('searchbox',{name:'表格搜索'});
+  await search.fill('BIZ-00005');await search.press('Enter');
+  await expect(table.locator('tbody tr')).toHaveCount(2);
+  await expect(table.getByRole('cell',{name:'测试责任人1',exact:true})).toHaveCount(2);
+  await page.screenshot({path:path.join(output,'complete.png'),fullPage:true});
+  expect(consoleErrors).toEqual([]);
+  await page.goto(`${base}/pages/${fixture.id}?sourceTimeout=true`);
+  await expect.poll(()=>consoleErrors.some(text=>text.includes('DQE_TIMEOUT')),{timeout:10000}).toBe(true);
+  await expect(table.getByRole('cell',{name:/^BIZ-/})).toHaveCount(0);
+  await expect(table.locator('.empty-state')).toBeVisible();
+  await page.screenshot({path:path.join(output,'timeout.png'),fullPage:true});
+  await page.goto(`${base}/pages/${fixture.id}`);
+  await expect(table.locator('.total')).toContainText('12',{timeout:15000});
+  expect(errors).toEqual([]);
+  await writeFile(path.join(output,'result.json'),JSON.stringify({page:fixture.id,timeoutMs,elapsedMs,errors,consoleErrors,passed:['cumulative wait exceeds per-batch timeout','complete supplement join','global search','single batch timeout without partial rows','recovery']},null,2));
+  console.log('Record batch timeout browser acceptance passed');
+}finally{await browser.close();}

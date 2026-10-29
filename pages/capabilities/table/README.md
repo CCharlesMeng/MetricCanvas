@@ -359,7 +359,7 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 
 ### 记录关联省略行数预算（6.69）
 
-入口 `/pages/record-join-no-row-limit`，使用完整页面 `record-join-no-row-limit.json`。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5202`；无需URL参数或真实DQE。现有合成Adapter提供100001条审批记录，页面不声明 `records.maxRows`，保留128 MiB和60秒限制。默认9月完整读取后显示100001条；搜索 `BIZ-50000` 能找到末尾的一条审批及当前责任人，证明全局查询未截在十万条。清空搜索、排序和翻页复用完整关联结果；8月为0条。添加 `?sourceFailure=true` 模拟上游失败，不能显示部分成功。完整导出仍有独立10000行限制。
+入口 `/pages/record-join-no-row-limit`，使用完整页面 `record-join-no-row-limit.json`。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5202`；无需URL参数或真实DQE。现有合成Adapter提供100001条审批记录，页面不声明 `records.maxRows`，保留128 MiB累计字节限制和单批60秒超时。默认9月完整读取后显示100001条；搜索 `BIZ-50000` 能找到末尾的一条审批及当前责任人，证明全局查询未截在十万条。清空搜索、排序和翻页复用完整关联结果；8月为0条。添加 `?sourceFailure=true` 模拟上游失败，不能显示部分成功。完整导出仍有独立10000行限制。
 
 `business-rejection-details.json` 与 `record-join-demo.json` 也省略行数预算，保留各自字节和超时配置。旧页面显式 `maxRows` 继续执行；把它移除需同版6.69运行时和校验器。自动回归覆盖跨十万行关联及末尾搜索、显式行数拒绝、字节拒绝、超时、取消、截断及计数变化。本场景使用合成数据，不证明真实内网性能和最终业务查询成功。
 
@@ -404,3 +404,9 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 - 合成数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`，基础种子在 `decision-opinion/model.ts` 与 `rejection-details/gateway.ts`。自动浏览器检查执行 `node apps/playground/tests/table-data-recovery-browser.mjs`，输出到 `docs/evidence/table-data-recovery/browser/`。
 
 静态合法、模拟网关、实际浏览器和下载回读属于本地证据；真实 DQE/Relay、真实模型和线上部署不在本轮证据内。预算、权限、网络和取消仍明确失败；异常整理限制见[数据源说明](../../../docs/page-metadata/data-sources.md#table-result-recovery)。
+
+## 记录关联单批超时
+
+入口 `/pages/record-join-batch-timeout`，完整页面 `record-join-batch-timeout.json`，无需 URL 参数。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5203`。合成适配器位于 `apps/playground/fixtures/rejection-details/gateway.ts`，12条审批、每批2条，主表与补列请求每次延迟250ms，`records.timeoutMs: 1000`。整轮耗时超过1秒后仍应显示12条完整记录；搜索 `BIZ-00005` 应找到两条审批及当前责任人，翻页和搜索复用完整结果。
+
+加 `?sourceTimeout=true` 将每次请求延迟改为1500ms，单批超过1000ms后出现错误态，无审批行；去掉参数可重新完整读取。字节仍整轮累计，已有字节拒绝回归保持。自动浏览器验收 `node apps/playground/tests/record-batch-timeout-browser.mjs <证据目录>`（`RECORD_TIMEOUT_BASE_URL` 可覆盖默认地址）。本场景仅证明合成适配器下的超时、完整性及缓存行为，不证明真实 DQE/Relay 性能。

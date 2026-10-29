@@ -27,13 +27,26 @@ export function validateRecordRows(rows:Row[],fields:Record<string,FieldDefiniti
   const contract=Object.fromEntries(Object.entries(fields).map(([id,field])=>[id,queryResultFieldContract(field)]));
   if(!validateContractRows(rows,contract).ok)throw rowFailure('记录结果违反字段契约');
 }
+async function readRecordBatch(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,budget:RecordBudget){
+  const timeout=AbortSignal.timeout(plan.source.source.records!.timeoutMs);
+  const signal=AbortSignal.any([budget.signal,timeout]);
+  try{
+    const result=await runner.run(query,{pageId:plan.page.id,dataSourceIds:[plan.sourceId,plan.source.source.members[id].source]},scope,signal);
+    signal.throwIfAborted();
+    return result;
+  }catch(cause){
+    budget.signal.throwIfAborted();
+    if(timeout.aborted)throw Object.assign(new Error('记录关联单批读取超时'),{code:'DQE_TIMEOUT'});
+    throw cause;
+  }
+}
 export async function readRecordBatches(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,budget:RecordBudget,domain=false):Promise<Row[]>{
   if(!intersectQueryFilters(query))return [];
   const rows:Row[]=[],limit=plan.source.source.records!.batchSize;
   let expected:number|undefined;
   do{
     budget.signal.throwIfAborted();
-    const result=await runner.run({...query,pagination:{offset:rows.length,limit}},{pageId:plan.page.id,dataSourceIds:[plan.sourceId,plan.source.source.members[id].source]},scope,budget.signal);
+    const result=await readRecordBatch(plan,id,{...query,pagination:{offset:rows.length,limit}},runner,scope,budget);
     budget.signal.throwIfAborted();
     const batch=batchRows(result,rows.length,limit,expected);
     expected=batch.total;

@@ -7,7 +7,7 @@ import { createUnionPreview } from '../../fixtures/decision-opinion/union-gatewa
 import { createIocHeaderPreview } from './ioc-header-preview-inputs';
 import { createIocBusinessPreview } from './ioc-business-preview';
 import { createVisibilityDemoInputs } from './visibility-inputs';
-import { pageExternalInputs } from '../../fixtures/preview-inputs';
+import { pageExternalInputs,rejectionPreviewRowCount,rejectionPreviewDelay } from '../../fixtures/preview-inputs';
 import { iocSelectionGateway } from '../../fixtures/selection-gateway';
 import { createDecisionOpinionPreview } from '../../fixtures/decision-opinion/preview';
 import { dataGateway } from './services';
@@ -19,7 +19,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
   if (kind === 'table-recovery') return createTableRecoveryPreview(state);
   if (kind === 'zero-total') return createZeroTotalPreview();
   if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
-  if (kind === 'record-join') return createRejectionPreview();
+  if (kind === 'record-join') return createRejectionPreview({rows:exampleId==='record-join-batch-timeout'?rejectionPreviewRowCount(exampleId):undefined,delayMs:rejectionPreviewDelay(exampleId)});
   if (kind === 'ioc-header') return createIocHeaderPreview();
   if (kind === 'ioc-business') return createIocBusinessPreview(exampleId, state, 'catalog-preview');
   if (kind === 'selection') return { dataGateway: iocSelectionGateway };
