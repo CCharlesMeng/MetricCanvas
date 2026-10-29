@@ -22,8 +22,9 @@ export function pageExternalInputs(id: string | undefined) {
 
 
 /** Synthetic record volume is owned by the preview fixture, not the page route. */
-export function rejectionPreviewRowCount(id:string|undefined):number|undefined {
+export function rejectionPreviewRowCount(id:string|undefined,mode:'page'|'catalog'='page'):number|undefined {
   if(id==='record-join-batch-timeout')return 12;
+  if(mode==='catalog')return undefined;
   return id==='record-join-no-row-limit'?100001:undefined;
 }
 

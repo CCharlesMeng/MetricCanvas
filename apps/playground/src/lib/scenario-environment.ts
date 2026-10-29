@@ -19,7 +19,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
   if (kind === 'table-recovery') return createTableRecoveryPreview(state);
   if (kind === 'zero-total') return createZeroTotalPreview();
   if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
-  if (kind === 'record-join') return createRejectionPreview({rows:exampleId==='record-join-batch-timeout'?rejectionPreviewRowCount(exampleId):undefined,delayMs:rejectionPreviewDelay(exampleId)});
+  if (kind === 'record-join') return createRejectionPreview({rows:rejectionPreviewRowCount(exampleId,'catalog'),delayMs:rejectionPreviewDelay(exampleId)});
   if (kind === 'ioc-header') return createIocHeaderPreview();
   if (kind === 'ioc-business') return createIocBusinessPreview(exampleId, state, 'catalog-preview');
   if (kind === 'selection') return { dataGateway: iocSelectionGateway };
