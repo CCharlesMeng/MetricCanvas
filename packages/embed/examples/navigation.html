@@ -25,7 +25,6 @@
     };
     let sharedBridge;
     const sharedBindings={'key-office':'key-office',region:'region',mtime:'mtime'};
-    const publicFilters=MetricCanvas.projectNavigationInputs(window.pageDocument).filters;
     if(id==='key-office-filter-demo'||id==='key-office-filter-target'){
       const fixture=await import('/__fixtures/key-office-filter.js');
       let saved={};try{saved=JSON.parse(sessionStorage.getItem('mc-key-office-demo')??'{}');}catch{}
@@ -33,6 +32,7 @@
       window.keyOfficeRequests=[];
       window.dataGateway=fixture.createKeyOfficeGateway((kind,request)=>window.keyOfficeRequests.push({kind,request}));
     }
+    const publicFilters=sharedBridge?MetricCanvas.projectNavigationInputs(window.pageDocument).filters:[];
     const initialSearch=sharedBridge?.initialSearch(publicFilters,location.search,sharedBindings)??location.search;
     function recordShared(search){if(!sharedBridge)return;sharedBridge.recordSearch(publicFilters,search,sharedBindings);sessionStorage.setItem('mc-key-office-demo',JSON.stringify(sharedBridge.snapshot()));}
     recordShared(initialSearch);

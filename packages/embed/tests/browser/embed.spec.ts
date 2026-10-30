@@ -68,7 +68,16 @@ async function runtimeShellSnapshot(page: Page) {
  * DQE 端点。函数体在页面里求值，因此走 addInitScript 注入而不是闭包捕获。
  */
 const INSTALL_IOC_GATEWAY = `window.iocGateway = function () {
-  return (window.__iocGateway ??= MetricCanvas.createDqeGateway());
+  if (!window.__iocGateway) {
+    const gateway = MetricCanvas.createDqeGateway();
+    gateway.fetchFilterCandidates = async (request, {signal}) => {
+      const response = await fetch('/__fixtures/filter-candidates', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(request), signal});
+      if (!response.ok) throw new Error('Synthetic candidate service unavailable');
+      return response.json();
+    };
+    window.__iocGateway = gateway;
+  }
+  return window.__iocGateway;
 };`;
 
 test.beforeEach(async ({ page }) => {

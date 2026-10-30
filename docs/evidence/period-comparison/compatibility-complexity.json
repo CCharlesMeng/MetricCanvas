@@ -1,0 +1,3277 @@
+{
+  "scope": "metriccanvas-ts-ast/1, TypeScript from workspace; changed TS files, HTML module script, and executable INSTALL_IOC_GATEWAY string. Compare HEAD 50ba76eba with working tree.",
+  "before": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/embed/examples/navigation.html",
+        "functions": [
+          {
+            "qualifiedName": "window.dataGateway.fetchFilterCandidates",
+            "line": 17,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@29:57>",
+            "line": 29,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "recordShared",
+            "line": 32,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@35:171>",
+            "line": 35,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "mountPage",
+            "line": 36,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "mountPage/resolveTargetInputs",
+            "line": 41,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "mountPage/onEvent",
+            "line": 47,
+            "selfCC": 3,
+            "optionalChains": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/embed/tests/browser/embed.spec.ts",
+        "functions": [
+          {
+            "qualifiedName": "runtimeShellSnapshot",
+            "line": 29,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "runtimeShellSnapshot/<anonymous@38:33>",
+            "line": 38,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "runtimeShellSnapshot/<anonymous@47:37>",
+            "line": 47,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "runtimeShellSnapshot/<anonymous@55:31>",
+            "line": 55,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@74:17>",
+            "line": 74,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "iocPageDocument",
+            "line": 78,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@85:47>",
+            "line": 85,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@99:37>",
+            "line": 99,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@119:30>",
+            "line": 119,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@119:30>/<anonymous@125:46>",
+            "line": 125,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@119:30>/<anonymous@135:23>",
+            "line": 135,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@119:30>/<anonymous@158:52>",
+            "line": 158,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@172:35>",
+            "line": 172,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@172:35>/<anonymous@176:23>",
+            "line": 176,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@189:44>",
+            "line": 189,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@189:44>/<anonymous@192:23>",
+            "line": 192,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@189:44>/<anonymous@210:25>",
+            "line": 210,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@189:44>/<anonymous@217:39>",
+            "line": 217,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@234:36>",
+            "line": 234,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@234:36>/<anonymous@236:23>",
+            "line": 236,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@234:36>/<anonymous@252:25>",
+            "line": 252,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@234:36>/<anonymous@274:37>",
+            "line": 274,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@234:36>/<anonymous@283:42>",
+            "line": 283,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@234:36>/<anonymous@306:23>",
+            "line": 306,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@319:43>",
+            "line": 319,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@319:43>/<anonymous@322:23>",
+            "line": 322,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@319:43>/captureTopOffsets",
+            "line": 331,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@319:43>/captureTopOffsets/<anonymous@334:7>",
+            "line": 334,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@319:43>/captureTopOffsets/<anonymous@338:26>",
+            "line": 338,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@319:43>/captureTopOffsets/<anonymous@338:26>/<anonymous@342:28>",
+            "line": 342,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@319:43>/captureTopOffsets/<anonymous@338:26>/<anonymous@342:28>/<anonymous@343:14>",
+            "line": 343,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>",
+            "line": 373,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@376:23>",
+            "line": 376,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@387:5>",
+            "line": 387,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@390:39>",
+            "line": 390,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@412:23>",
+            "line": 412,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@417:40>",
+            "line": 417,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@417:40>/<anonymous@427:31>",
+            "line": 427,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@417:40>/<anonymous@429:32>",
+            "line": 429,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@440:37>",
+            "line": 440,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@441:38>",
+            "line": 441,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@373:39>/<anonymous@442:37>",
+            "line": 442,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@445:35>",
+            "line": 445,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@445:35>/<anonymous@449:23>",
+            "line": 449,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@445:35>/capture",
+            "line": 462,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@445:35>/capture/<anonymous@462:39>",
+            "line": 462,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@445:35>/capture/<anonymous@462:39>/<anonymous@473:36>",
+            "line": 473,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@445:35>/<anonymous@518:5>",
+            "line": 518,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@524:28>",
+            "line": 524,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@524:28>/<anonymous@526:23>",
+            "line": 526,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@524:28>/<anonymous@526:23>/onEvent",
+            "line": 561,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@524:28>/<anonymous@573:21>",
+            "line": 573,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@524:28>/<anonymous@573:21>/<anonymous@573:41>",
+            "line": 573,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@524:28>/<anonymous@573:21>/<anonymous@573:41>/<anonymous@574:31>",
+            "line": 574,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@583:39>",
+            "line": 583,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@583:39>/<anonymous@585:23>",
+            "line": 585,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@583:39>/<anonymous@585:23>/table",
+            "line": 588,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@656:35>",
+            "line": 656,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@656:35>/<anonymous@659:23>",
+            "line": 659,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@656:35>/<anonymous@705:5>",
+            "line": 705,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@656:35>/<anonymous@705:5>/<anonymous@705:34>",
+            "line": 705,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@656:35>/<anonymous@709:48>",
+            "line": 709,
+            "selfCC": 2,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@656:35>/<anonymous@709:48>/<anonymous@713:12>",
+            "line": 713,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@656:35>/<anonymous@709:48>/<anonymous@720:16>",
+            "line": 720,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@731:42>",
+            "line": 731,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@731:42>/<anonymous@734:23>",
+            "line": 734,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@731:42>/<anonymous@804:49>",
+            "line": 804,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@731:42>/<anonymous@804:49>/<anonymous@804:76>",
+            "line": 804,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@731:42>/<anonymous@804:49>/<anonymous@804:76>/<anonymous@807:12>",
+            "line": 807,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@731:42>/<anonymous@818:29>",
+            "line": 818,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@731:42>/<anonymous@819:29>",
+            "line": 819,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@822:40>",
+            "line": 822,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@822:40>/<anonymous@824:23>",
+            "line": 824,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@822:40>/<anonymous@876:30>",
+            "line": 876,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@822:40>/<anonymous@893:30>",
+            "line": 893,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@922:29>",
+            "line": 922,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@922:29>/<anonymous@924:23>",
+            "line": 924,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1016:27>",
+            "line": 1016,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1016:27>/<anonymous@1019:23>",
+            "line": 1019,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1016:27>/<anonymous@1019:23>/<anonymous@1039:61>",
+            "line": 1039,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1016:27>/<anonymous@1074:90>",
+            "line": 1074,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1016:27>/<anonymous@1074:90>/<anonymous@1075:17>",
+            "line": 1075,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1016:27>/<anonymous@1104:25>",
+            "line": 1104,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1110:38>",
+            "line": 1110,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1110:38>/<anonymous@1119:30>",
+            "line": 1119,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1110:38>/<anonymous@1122:30>",
+            "line": 1122,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1110:38>/<anonymous@1127:11>",
+            "line": 1127,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1110:38>/<anonymous@1127:11>/<anonymous@1128:21>",
+            "line": 1128,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1110:38>/<anonymous@1127:11>/<anonymous@1128:21>/<anonymous@1129:33>",
+            "line": 1129,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1135:37>",
+            "line": 1135,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1135:37>/<anonymous@1141:23>",
+            "line": 1141,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1135:37>/<anonymous@1141:23>/onEvent",
+            "line": 1146,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1135:37>/<anonymous@1156:11>",
+            "line": 1156,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1135:37>/<anonymous@1156:11>/<anonymous@1157:21>",
+            "line": 1157,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1135:37>/<anonymous@1156:11>/<anonymous@1157:21>/<anonymous@1159:11>",
+            "line": 1159,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>",
+            "line": 1168,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1195:23>",
+            "line": 1195,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1199:22>",
+            "line": 1199,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1202:7>",
+            "line": 1202,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1202:7>/fetchData",
+            "line": 1211,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1202:7>/onEvent",
+            "line": 1215,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1229:23>",
+            "line": 1229,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1229:23>/<anonymous@1229:41>",
+            "line": 1229,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1231:13>",
+            "line": 1231,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1231:13>/<anonymous@1232:23>",
+            "line": 1232,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1231:13>/<anonymous@1232:23>/<anonymous@1233:37>",
+            "line": 1233,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1168:43>/<anonymous@1245:23>",
+            "line": 1245,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1250:24>",
+            "line": 1250,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1259:50>",
+            "line": 1259,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1259:50>/<anonymous@1264:39>",
+            "line": 1264,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1272:35>",
+            "line": 1272,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1272:35>/<anonymous@1274:23>",
+            "line": 1274,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1272:35>/<anonymous@1350:21>",
+            "line": 1350,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1272:35>/<anonymous@1367:21>",
+            "line": 1367,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1272:35>/<anonymous@1387:21>",
+            "line": 1387,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1405:28>",
+            "line": 1405,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1405:28>/<anonymous@1408:23>",
+            "line": 1408,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1405:28>/<anonymous@1472:21>",
+            "line": 1472,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1405:28>/<anonymous@1479:21>",
+            "line": 1479,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1405:28>/<anonymous@1483:21>",
+            "line": 1483,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1405:28>/<anonymous@1483:21>/<anonymous@1483:51>",
+            "line": 1483,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1488:37>",
+            "line": 1488,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1488:37>/<anonymous@1491:70>",
+            "line": 1491,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1488:37>/<anonymous@1495:23>",
+            "line": 1495,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1488:37>/<anonymous@1495:23>/<anonymous@1497:56>",
+            "line": 1497,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1488:37>/<anonymous@1495:23>/fetchData",
+            "line": 1501,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1488:37>/<anonymous@1519:21>",
+            "line": 1519,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1488:37>/<anonymous@1519:21>/<anonymous@1520:35>",
+            "line": 1520,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>",
+            "line": 1537,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1540:70>",
+            "line": 1540,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1544:23>",
+            "line": 1544,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1544:23>/<anonymous@1546:56>",
+            "line": 1546,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1544:23>/fetchData",
+            "line": 1550,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1582:21>",
+            "line": 1582,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1582:21>/<anonymous@1582:59>",
+            "line": 1582,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1588:46>",
+            "line": 1588,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1599:50>",
+            "line": 1599,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1599:50>/<anonymous@1600:18>",
+            "line": 1600,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1607:50>",
+            "line": 1607,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1607:50>/<anonymous@1608:15>",
+            "line": 1608,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1607:50>/<anonymous@1608:15>/<anonymous@1608:72>",
+            "line": 1608,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1647:55>",
+            "line": 1647,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1647:55>/<anonymous@1648:16>",
+            "line": 1648,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1537:35>/<anonymous@1647:55>/<anonymous@1648:16>/<anonymous@1649:52>",
+            "line": 1649,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>",
+            "line": 1661,
+            "selfCC": 2,
+            "optionalChains": 3
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>/<anonymous@1664:70>",
+            "line": 1664,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>/<anonymous@1669:14>",
+            "line": 1669,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>/<anonymous@1670:11>",
+            "line": 1670,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>/<anonymous@1674:23>",
+            "line": 1674,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>/<anonymous@1674:23>/<anonymous@1676:56>",
+            "line": 1676,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>/<anonymous@1674:23>/fetchData",
+            "line": 1680,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1661:29>/<anonymous@1690:50>",
+            "line": 1690,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>",
+            "line": 1737,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1740:70>",
+            "line": 1740,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1740:70>/isRecord",
+            "line": 1743,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1740:70>/isFlowReportDocument",
+            "line": 1745,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1740:70>/isFlowReportDocument/<anonymous@1749:9>",
+            "line": 1749,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1740:70>/isFlowReportDocument/<anonymous@1756:9>",
+            "line": 1756,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1740:70>/isFlowReportDocument/<anonymous@1756:9>/<anonymous@1760:13>",
+            "line": 1760,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1774:23>",
+            "line": 1774,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1774:23>/<anonymous@1777:9>",
+            "line": 1777,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1774:23>/<anonymous@1783:56>",
+            "line": 1783,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1774:23>/fetchData",
+            "line": 1792,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1847:21>",
+            "line": 1847,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1847:21>/<anonymous@1848:43>",
+            "line": 1848,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1869:21>",
+            "line": 1869,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1876:21>",
+            "line": 1876,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1876:21>/<anonymous@1877:33>",
+            "line": 1877,
+            "selfCC": 8,
+            "optionalChains": 5
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1919:11>",
+            "line": 1919,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1919:11>/<anonymous@1920:40>",
+            "line": 1920,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1919:11>/<anonymous@1920:40>/<anonymous@1921:22>",
+            "line": 1921,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1951:21>",
+            "line": 1951,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1951:21>/<anonymous@1952:27>",
+            "line": 1952,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1951:21>/<anonymous@1952:27>/<anonymous@1953:22>",
+            "line": 1953,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1983:21>",
+            "line": 1983,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1983:21>/<anonymous@1984:36>",
+            "line": 1984,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1983:21>/<anonymous@1984:36>/<anonymous@1988:31>",
+            "line": 1988,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1983:21>/<anonymous@1984:36>/<anonymous@1992:24>",
+            "line": 1992,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@1983:21>/<anonymous@1984:36>/<anonymous@1992:67>",
+            "line": 1992,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2022:21>",
+            "line": 2022,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2022:21>/<anonymous@2022:62>",
+            "line": 2022,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2025:21>",
+            "line": 2025,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2025:21>/<anonymous@2025:54>",
+            "line": 2025,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2033:21>",
+            "line": 2033,
+            "selfCC": 10,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2058:21>",
+            "line": 2058,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2073:55>",
+            "line": 2073,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2109:21>",
+            "line": 2109,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2109:21>/<anonymous@2109:64>",
+            "line": 2109,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2109:21>/<anonymous@2109:64>/<anonymous@2109:89>",
+            "line": 2109,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2122:21>",
+            "line": 2122,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2122:21>/<anonymous@2122:59>",
+            "line": 2122,
+            "selfCC": 7,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2135:21>",
+            "line": 2135,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2135:21>/<anonymous@2135:55>",
+            "line": 2135,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2159:21>",
+            "line": 2159,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2159:21>/<anonymous@2159:57>",
+            "line": 2159,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2159:21>/<anonymous@2159:57>/<anonymous@2159:84>",
+            "line": 2159,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2178:48>",
+            "line": 2178,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2186:9>",
+            "line": 2186,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2186:9>/<anonymous@2188:13>",
+            "line": 2188,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2193:65>",
+            "line": 2193,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2212:21>",
+            "line": 2212,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2212:21>/<anonymous@2212:60>",
+            "line": 2212,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2221:23>",
+            "line": 2221,
+            "selfCC": 4,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2221:23>/<anonymous@2230:16>",
+            "line": 2230,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2221:23>/<anonymous@2231:13>",
+            "line": 2231,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2221:23>/fetchData",
+            "line": 2239,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2252:23>",
+            "line": 2252,
+            "selfCC": 4,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2252:23>/<anonymous@2261:16>",
+            "line": 2261,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2252:23>/<anonymous@2262:13>",
+            "line": 2262,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2252:23>/fetchData",
+            "line": 2270,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2278:23>",
+            "line": 2278,
+            "selfCC": 4,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2278:23>/<anonymous@2287:16>",
+            "line": 2287,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2278:23>/<anonymous@2288:13>",
+            "line": 2288,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1737:34>/<anonymous@2278:23>/fetchData",
+            "line": 2296,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2308:27>",
+            "line": 2308,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2308:27>/<anonymous@2310:23>",
+            "line": 2310,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2395:47>",
+            "line": 2395,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2395:47>/<anonymous@2397:23>",
+            "line": 2397,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>",
+            "line": 2460,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2463:23>",
+            "line": 2463,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2463:23>/<anonymous@2471:50>",
+            "line": 2471,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2463:23>/source",
+            "line": 2476,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2463:23>/source/<anonymous@2484:27>",
+            "line": 2484,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2550:21>",
+            "line": 2550,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2550:21>/<anonymous@2551:26>",
+            "line": 2551,
+            "selfCC": 7,
+            "optionalChains": 4
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2588:21>",
+            "line": 2588,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2588:21>/<anonymous@2590:30>",
+            "line": 2590,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2588:21>/<anonymous@2590:30>/<anonymous@2590:49>",
+            "line": 2590,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2588:21>/<anonymous@2591:31>",
+            "line": 2591,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2588:21>/<anonymous@2591:31>/<anonymous@2591:50>",
+            "line": 2591,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2588:21>/<anonymous@2593:30>",
+            "line": 2593,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2604:21>",
+            "line": 2604,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2604:21>/<anonymous@2606:35>",
+            "line": 2606,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2460:32>/<anonymous@2604:21>/<anonymous@2607:36>",
+            "line": 2607,
+            "selfCC": 1,
+            "optionalChains": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/embed/tests/browser/embed.spec.ts:INSTALL_IOC_GATEWAY",
+        "functions": [
+          {
+            "qualifiedName": "window.iocGateway",
+            "line": 1,
+            "selfCC": 2,
+            "optionalChains": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/embed/tests/browser/ioc-header-business.spec.ts",
+        "functions": [
+          {
+            "qualifiedName": "<anonymous@4:17>",
+            "line": 4,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>",
+            "line": 6,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@7:68>",
+            "line": 7,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@10:30>",
+            "line": 10,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@10:89>",
+            "line": 10,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@16:72>",
+            "line": 16,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@16:72>/<anonymous@16:90>",
+            "line": 16,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@18:98>",
+            "line": 18,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@18:98>/<anonymous@23:72>",
+            "line": 23,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@18:98>/<anonymous@23:72>/<anonymous@23:90>",
+            "line": 23,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>",
+            "line": 25,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@26:78>",
+            "line": 26,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@30:202>",
+            "line": 30,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@31:31>",
+            "line": 31,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@31:180>",
+            "line": 31,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@36:77>",
+            "line": 36,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:94>",
+            "line": 40,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:94>/<anonymous@41:66>",
+            "line": 41,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:94>/<anonymous@41:66>/<anonymous@41:177>",
+            "line": 41,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:94>/<anonymous@42:44>",
+            "line": 42,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@48:89>",
+            "line": 48,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@48:89>/<anonymous@49:66>",
+            "line": 49,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@48:89>/<anonymous@49:66>/<anonymous@49:164>",
+            "line": 49,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@48:89>/<anonymous@50:44>",
+            "line": 50,
+            "selfCC": 3,
+            "optionalChains": 0
+          }
+        ]
+      }
+    ]
+  },
+  "after": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/embed/examples/navigation.html",
+        "functions": [
+          {
+            "qualifiedName": "window.dataGateway.fetchFilterCandidates",
+            "line": 17,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@28:57>",
+            "line": 28,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "recordShared",
+            "line": 32,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@35:171>",
+            "line": 35,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "mountPage",
+            "line": 36,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "mountPage/resolveTargetInputs",
+            "line": 41,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "mountPage/onEvent",
+            "line": 47,
+            "selfCC": 3,
+            "optionalChains": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/embed/tests/browser/embed.spec.ts",
+        "functions": [
+          {
+            "qualifiedName": "runtimeShellSnapshot",
+            "line": 29,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "runtimeShellSnapshot/<anonymous@38:33>",
+            "line": 38,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "runtimeShellSnapshot/<anonymous@47:37>",
+            "line": 47,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "runtimeShellSnapshot/<anonymous@55:31>",
+            "line": 55,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@83:17>",
+            "line": 83,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "iocPageDocument",
+            "line": 87,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@94:47>",
+            "line": 94,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@108:37>",
+            "line": 108,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@128:30>",
+            "line": 128,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@128:30>/<anonymous@134:46>",
+            "line": 134,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@128:30>/<anonymous@144:23>",
+            "line": 144,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@128:30>/<anonymous@167:52>",
+            "line": 167,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@181:35>",
+            "line": 181,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@181:35>/<anonymous@185:23>",
+            "line": 185,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@198:44>",
+            "line": 198,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@198:44>/<anonymous@201:23>",
+            "line": 201,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@198:44>/<anonymous@219:25>",
+            "line": 219,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@198:44>/<anonymous@226:39>",
+            "line": 226,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@243:36>",
+            "line": 243,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@243:36>/<anonymous@245:23>",
+            "line": 245,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@243:36>/<anonymous@261:25>",
+            "line": 261,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@243:36>/<anonymous@283:37>",
+            "line": 283,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@243:36>/<anonymous@292:42>",
+            "line": 292,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@243:36>/<anonymous@315:23>",
+            "line": 315,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@328:43>",
+            "line": 328,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@328:43>/<anonymous@331:23>",
+            "line": 331,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@328:43>/captureTopOffsets",
+            "line": 340,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@328:43>/captureTopOffsets/<anonymous@343:7>",
+            "line": 343,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@328:43>/captureTopOffsets/<anonymous@347:26>",
+            "line": 347,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@328:43>/captureTopOffsets/<anonymous@347:26>/<anonymous@351:28>",
+            "line": 351,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@328:43>/captureTopOffsets/<anonymous@347:26>/<anonymous@351:28>/<anonymous@352:14>",
+            "line": 352,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>",
+            "line": 382,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@385:23>",
+            "line": 385,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@396:5>",
+            "line": 396,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@399:39>",
+            "line": 399,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@421:23>",
+            "line": 421,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@426:40>",
+            "line": 426,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@426:40>/<anonymous@436:31>",
+            "line": 436,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@426:40>/<anonymous@438:32>",
+            "line": 438,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@449:37>",
+            "line": 449,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@450:38>",
+            "line": 450,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@382:39>/<anonymous@451:37>",
+            "line": 451,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@454:35>",
+            "line": 454,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@454:35>/<anonymous@458:23>",
+            "line": 458,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@454:35>/capture",
+            "line": 471,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@454:35>/capture/<anonymous@471:39>",
+            "line": 471,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@454:35>/capture/<anonymous@471:39>/<anonymous@482:36>",
+            "line": 482,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@454:35>/<anonymous@527:5>",
+            "line": 527,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@533:28>",
+            "line": 533,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@533:28>/<anonymous@535:23>",
+            "line": 535,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@533:28>/<anonymous@535:23>/onEvent",
+            "line": 570,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@533:28>/<anonymous@582:21>",
+            "line": 582,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@533:28>/<anonymous@582:21>/<anonymous@582:41>",
+            "line": 582,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@533:28>/<anonymous@582:21>/<anonymous@582:41>/<anonymous@583:31>",
+            "line": 583,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@592:39>",
+            "line": 592,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@592:39>/<anonymous@594:23>",
+            "line": 594,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@592:39>/<anonymous@594:23>/table",
+            "line": 597,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@665:35>",
+            "line": 665,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@665:35>/<anonymous@668:23>",
+            "line": 668,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@665:35>/<anonymous@714:5>",
+            "line": 714,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@665:35>/<anonymous@714:5>/<anonymous@714:34>",
+            "line": 714,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@665:35>/<anonymous@718:48>",
+            "line": 718,
+            "selfCC": 2,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@665:35>/<anonymous@718:48>/<anonymous@722:12>",
+            "line": 722,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@665:35>/<anonymous@718:48>/<anonymous@729:16>",
+            "line": 729,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@740:42>",
+            "line": 740,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@740:42>/<anonymous@743:23>",
+            "line": 743,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@740:42>/<anonymous@813:49>",
+            "line": 813,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@740:42>/<anonymous@813:49>/<anonymous@813:76>",
+            "line": 813,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@740:42>/<anonymous@813:49>/<anonymous@813:76>/<anonymous@816:12>",
+            "line": 816,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@740:42>/<anonymous@827:29>",
+            "line": 827,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@740:42>/<anonymous@828:29>",
+            "line": 828,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@831:40>",
+            "line": 831,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@831:40>/<anonymous@833:23>",
+            "line": 833,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@831:40>/<anonymous@885:30>",
+            "line": 885,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@831:40>/<anonymous@902:30>",
+            "line": 902,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@931:29>",
+            "line": 931,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@931:29>/<anonymous@933:23>",
+            "line": 933,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1025:27>",
+            "line": 1025,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1025:27>/<anonymous@1028:23>",
+            "line": 1028,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1025:27>/<anonymous@1028:23>/<anonymous@1048:61>",
+            "line": 1048,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1025:27>/<anonymous@1083:90>",
+            "line": 1083,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1025:27>/<anonymous@1083:90>/<anonymous@1084:17>",
+            "line": 1084,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1025:27>/<anonymous@1113:25>",
+            "line": 1113,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1119:38>",
+            "line": 1119,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1119:38>/<anonymous@1128:30>",
+            "line": 1128,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1119:38>/<anonymous@1131:30>",
+            "line": 1131,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1119:38>/<anonymous@1136:11>",
+            "line": 1136,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1119:38>/<anonymous@1136:11>/<anonymous@1137:21>",
+            "line": 1137,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1119:38>/<anonymous@1136:11>/<anonymous@1137:21>/<anonymous@1138:33>",
+            "line": 1138,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1144:37>",
+            "line": 1144,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1144:37>/<anonymous@1150:23>",
+            "line": 1150,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1144:37>/<anonymous@1150:23>/onEvent",
+            "line": 1155,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1144:37>/<anonymous@1165:11>",
+            "line": 1165,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1144:37>/<anonymous@1165:11>/<anonymous@1166:21>",
+            "line": 1166,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1144:37>/<anonymous@1165:11>/<anonymous@1166:21>/<anonymous@1168:11>",
+            "line": 1168,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>",
+            "line": 1177,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1204:23>",
+            "line": 1204,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1208:22>",
+            "line": 1208,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1211:7>",
+            "line": 1211,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1211:7>/fetchData",
+            "line": 1220,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1211:7>/onEvent",
+            "line": 1224,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1238:23>",
+            "line": 1238,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1238:23>/<anonymous@1238:41>",
+            "line": 1238,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1240:13>",
+            "line": 1240,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1240:13>/<anonymous@1241:23>",
+            "line": 1241,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1240:13>/<anonymous@1241:23>/<anonymous@1242:37>",
+            "line": 1242,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1177:43>/<anonymous@1254:23>",
+            "line": 1254,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1259:24>",
+            "line": 1259,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1268:50>",
+            "line": 1268,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1268:50>/<anonymous@1273:39>",
+            "line": 1273,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1281:35>",
+            "line": 1281,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1281:35>/<anonymous@1283:23>",
+            "line": 1283,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1281:35>/<anonymous@1359:21>",
+            "line": 1359,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1281:35>/<anonymous@1376:21>",
+            "line": 1376,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1281:35>/<anonymous@1396:21>",
+            "line": 1396,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1414:28>",
+            "line": 1414,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1414:28>/<anonymous@1417:23>",
+            "line": 1417,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1414:28>/<anonymous@1481:21>",
+            "line": 1481,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1414:28>/<anonymous@1488:21>",
+            "line": 1488,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1414:28>/<anonymous@1492:21>",
+            "line": 1492,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1414:28>/<anonymous@1492:21>/<anonymous@1492:51>",
+            "line": 1492,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1497:37>",
+            "line": 1497,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1497:37>/<anonymous@1500:70>",
+            "line": 1500,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1497:37>/<anonymous@1504:23>",
+            "line": 1504,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1497:37>/<anonymous@1504:23>/<anonymous@1506:56>",
+            "line": 1506,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1497:37>/<anonymous@1504:23>/fetchData",
+            "line": 1510,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1497:37>/<anonymous@1528:21>",
+            "line": 1528,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1497:37>/<anonymous@1528:21>/<anonymous@1529:35>",
+            "line": 1529,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>",
+            "line": 1546,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1549:70>",
+            "line": 1549,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1553:23>",
+            "line": 1553,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1553:23>/<anonymous@1555:56>",
+            "line": 1555,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1553:23>/fetchData",
+            "line": 1559,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1591:21>",
+            "line": 1591,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1591:21>/<anonymous@1591:59>",
+            "line": 1591,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1597:46>",
+            "line": 1597,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1608:50>",
+            "line": 1608,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1608:50>/<anonymous@1609:18>",
+            "line": 1609,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1616:50>",
+            "line": 1616,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1616:50>/<anonymous@1617:15>",
+            "line": 1617,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1616:50>/<anonymous@1617:15>/<anonymous@1617:72>",
+            "line": 1617,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1656:55>",
+            "line": 1656,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1656:55>/<anonymous@1657:16>",
+            "line": 1657,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1546:35>/<anonymous@1656:55>/<anonymous@1657:16>/<anonymous@1658:52>",
+            "line": 1658,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>",
+            "line": 1670,
+            "selfCC": 2,
+            "optionalChains": 3
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>/<anonymous@1673:70>",
+            "line": 1673,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>/<anonymous@1678:14>",
+            "line": 1678,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>/<anonymous@1679:11>",
+            "line": 1679,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>/<anonymous@1683:23>",
+            "line": 1683,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>/<anonymous@1683:23>/<anonymous@1685:56>",
+            "line": 1685,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>/<anonymous@1683:23>/fetchData",
+            "line": 1689,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1670:29>/<anonymous@1699:50>",
+            "line": 1699,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>",
+            "line": 1746,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1749:70>",
+            "line": 1749,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1749:70>/isRecord",
+            "line": 1752,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1749:70>/isFlowReportDocument",
+            "line": 1754,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1749:70>/isFlowReportDocument/<anonymous@1758:9>",
+            "line": 1758,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1749:70>/isFlowReportDocument/<anonymous@1765:9>",
+            "line": 1765,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1749:70>/isFlowReportDocument/<anonymous@1765:9>/<anonymous@1769:13>",
+            "line": 1769,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1783:23>",
+            "line": 1783,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1783:23>/<anonymous@1786:9>",
+            "line": 1786,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1783:23>/<anonymous@1792:56>",
+            "line": 1792,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1783:23>/fetchData",
+            "line": 1801,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1856:21>",
+            "line": 1856,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1856:21>/<anonymous@1857:43>",
+            "line": 1857,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1878:21>",
+            "line": 1878,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1885:21>",
+            "line": 1885,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1885:21>/<anonymous@1886:33>",
+            "line": 1886,
+            "selfCC": 8,
+            "optionalChains": 5
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1928:11>",
+            "line": 1928,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1928:11>/<anonymous@1929:40>",
+            "line": 1929,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1928:11>/<anonymous@1929:40>/<anonymous@1930:22>",
+            "line": 1930,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1960:21>",
+            "line": 1960,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1960:21>/<anonymous@1961:27>",
+            "line": 1961,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1960:21>/<anonymous@1961:27>/<anonymous@1962:22>",
+            "line": 1962,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1992:21>",
+            "line": 1992,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1992:21>/<anonymous@1993:36>",
+            "line": 1993,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1992:21>/<anonymous@1993:36>/<anonymous@1997:31>",
+            "line": 1997,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1992:21>/<anonymous@1993:36>/<anonymous@2001:24>",
+            "line": 2001,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@1992:21>/<anonymous@1993:36>/<anonymous@2001:67>",
+            "line": 2001,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2031:21>",
+            "line": 2031,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2031:21>/<anonymous@2031:62>",
+            "line": 2031,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2034:21>",
+            "line": 2034,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2034:21>/<anonymous@2034:54>",
+            "line": 2034,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2042:21>",
+            "line": 2042,
+            "selfCC": 10,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2067:21>",
+            "line": 2067,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2082:55>",
+            "line": 2082,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2118:21>",
+            "line": 2118,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2118:21>/<anonymous@2118:64>",
+            "line": 2118,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2118:21>/<anonymous@2118:64>/<anonymous@2118:89>",
+            "line": 2118,
+            "selfCC": 5,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2131:21>",
+            "line": 2131,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2131:21>/<anonymous@2131:59>",
+            "line": 2131,
+            "selfCC": 7,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2144:21>",
+            "line": 2144,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2144:21>/<anonymous@2144:55>",
+            "line": 2144,
+            "selfCC": 6,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2168:21>",
+            "line": 2168,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2168:21>/<anonymous@2168:57>",
+            "line": 2168,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2168:21>/<anonymous@2168:57>/<anonymous@2168:84>",
+            "line": 2168,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2187:48>",
+            "line": 2187,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2195:9>",
+            "line": 2195,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2195:9>/<anonymous@2197:13>",
+            "line": 2197,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2202:65>",
+            "line": 2202,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2221:21>",
+            "line": 2221,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2221:21>/<anonymous@2221:60>",
+            "line": 2221,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2230:23>",
+            "line": 2230,
+            "selfCC": 4,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2230:23>/<anonymous@2239:16>",
+            "line": 2239,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2230:23>/<anonymous@2240:13>",
+            "line": 2240,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2230:23>/fetchData",
+            "line": 2248,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2261:23>",
+            "line": 2261,
+            "selfCC": 4,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2261:23>/<anonymous@2270:16>",
+            "line": 2270,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2261:23>/<anonymous@2271:13>",
+            "line": 2271,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2261:23>/fetchData",
+            "line": 2279,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2287:23>",
+            "line": 2287,
+            "selfCC": 4,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2287:23>/<anonymous@2296:16>",
+            "line": 2296,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2287:23>/<anonymous@2297:13>",
+            "line": 2297,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@1746:34>/<anonymous@2287:23>/fetchData",
+            "line": 2305,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2317:27>",
+            "line": 2317,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2317:27>/<anonymous@2319:23>",
+            "line": 2319,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2404:47>",
+            "line": 2404,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2404:47>/<anonymous@2406:23>",
+            "line": 2406,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>",
+            "line": 2469,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2472:23>",
+            "line": 2472,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2472:23>/<anonymous@2480:50>",
+            "line": 2480,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2472:23>/source",
+            "line": 2485,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2472:23>/source/<anonymous@2493:27>",
+            "line": 2493,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2559:21>",
+            "line": 2559,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2559:21>/<anonymous@2560:26>",
+            "line": 2560,
+            "selfCC": 7,
+            "optionalChains": 4
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2597:21>",
+            "line": 2597,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2597:21>/<anonymous@2599:30>",
+            "line": 2599,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2597:21>/<anonymous@2599:30>/<anonymous@2599:49>",
+            "line": 2599,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2597:21>/<anonymous@2600:31>",
+            "line": 2600,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2597:21>/<anonymous@2600:31>/<anonymous@2600:50>",
+            "line": 2600,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2597:21>/<anonymous@2602:30>",
+            "line": 2602,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2613:21>",
+            "line": 2613,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2613:21>/<anonymous@2615:35>",
+            "line": 2615,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@2469:32>/<anonymous@2613:21>/<anonymous@2616:36>",
+            "line": 2616,
+            "selfCC": 1,
+            "optionalChains": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/embed/tests/browser/embed.spec.ts:INSTALL_IOC_GATEWAY",
+        "functions": [
+          {
+            "qualifiedName": "window.iocGateway",
+            "line": 1,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "window.iocGateway/gateway.fetchFilterCandidates",
+            "line": 4,
+            "selfCC": 2,
+            "optionalChains": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/embed/tests/browser/ioc-header-business.spec.ts",
+        "functions": [
+          {
+            "qualifiedName": "<anonymous@4:17>",
+            "line": 4,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>",
+            "line": 6,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@7:68>",
+            "line": 7,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@10:30>",
+            "line": 10,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@10:89>",
+            "line": 10,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@16:72>",
+            "line": 16,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@6:91>/<anonymous@16:72>/<anonymous@16:90>",
+            "line": 16,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@18:98>",
+            "line": 18,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@18:98>/<anonymous@23:72>",
+            "line": 23,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@18:98>/<anonymous@23:72>/<anonymous@23:90>",
+            "line": 23,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>",
+            "line": 25,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@26:78>",
+            "line": 26,
+            "selfCC": 4,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@30:202>",
+            "line": 30,
+            "selfCC": 2,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@31:31>",
+            "line": 31,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@25:130>/<anonymous@31:180>",
+            "line": 31,
+            "selfCC": 1,
+            "optionalChains": 1
+          },
+          {
+            "qualifiedName": "<anonymous@36:77>",
+            "line": 36,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>",
+            "line": 40,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>/<anonymous@41:66>",
+            "line": 41,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>/<anonymous@41:66>/<anonymous@43:22>",
+            "line": 43,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>/<anonymous@47:21>",
+            "line": 47,
+            "selfCC": 3,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>/<anonymous@48:23>",
+            "line": 48,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>/<anonymous@50:21>",
+            "line": 50,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>/<anonymous@50:21>/<anonymous@50:39>",
+            "line": 50,
+            "selfCC": 2,
+            "optionalChains": 2
+          },
+          {
+            "qualifiedName": "<anonymous@40:74>/<anonymous@50:21>/<anonymous@50:39>/<anonymous@50:77>",
+            "line": 50,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@54:89>",
+            "line": 54,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@54:89>/<anonymous@55:66>",
+            "line": 55,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@54:89>/<anonymous@55:66>/<anonymous@55:164>",
+            "line": 55,
+            "selfCC": 1,
+            "optionalChains": 0
+          },
+          {
+            "qualifiedName": "<anonymous@54:89>/<anonymous@56:44>",
+            "line": 56,
+            "selfCC": 3,
+            "optionalChains": 0
+          }
+        ]
+      }
+    ]
+  }
+}
