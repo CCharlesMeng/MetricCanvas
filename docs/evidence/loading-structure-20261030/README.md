@@ -116,3 +116,5 @@ local-authoring版本1.14.3→1.14.4；从当前main真源重新导出1317 produ
 复杂度沿用metriccanvas-ts-ast/1、TypeScript5.9.3，在交付基线重新测量全部相关Svelte实例脚本、快照投影、Sim分发和server：`componentData`12→11、详情`data`7→6、`renderableDataSnapshot`5→5、新增`displayDataSnapshot`2、`executeLocalDemo`3→3、`route`11→14。新增Sim辅助最高9、浏览器辅助最高6；AI `summaryBody`5→5。模板新增诊断快照的缺省表达式与转圈分支单独核对，不冒充脚本测量。原未改函数的超限不在本批处理，相关清单见前文；本次无新增超限。原始报告：delivery-complexity-before.json / delivery-complexity-after.json。
 
 稳定生成后，local-authoring与页面参考5文件197项通过；MC完整检查结果见本次交付说明，未运行真实DQE/Relay/模型。
+
+首次交付CI的完整测试为411文件3734项通过、1项页面id中立性失败；原因是总览路由直接导入示例JSON。示例引用移入 `apps/playground/fixtures/loading-review-documents.ts`，路由只使用该fixture模块，保留原总览及重播行为；不放宽中立性检查。该修复没有新增函数或分支，TS函数复杂度不变。随后定向复测中立性、浏览器和类型，再推送补交并按新SHA等待CI。

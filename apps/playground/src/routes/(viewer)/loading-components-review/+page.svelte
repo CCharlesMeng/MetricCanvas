@@ -2,8 +2,7 @@
   import { Button } from '@metriccanvas/ui';
   import { RuntimeView } from '@metriccanvas/engine/ui';
   import { dataGateway, aiSummary } from '$lib/services';
-  import dashboard from '../../../../../../pages/capabilities/layout/loading-structure-demo.json';
-  import report from '../../../../../../pages/capabilities/layout/loading-ai-summary-demo.json';
+  import { dashboard, report } from '../../../../fixtures/loading-review-documents';
 
   let replay = $state(0);
 </script>
