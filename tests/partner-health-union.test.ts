@@ -31,22 +31,24 @@ async function readScores(grain:string,state='ready') {
 describe('partner-health 正式页面使用完整组织并集',()=>{
   it.each(['region','representative'])('%s：1/10/13 => 15，缺项 --、真实0和负数保留',async grain=>{
     const {table,sourceId,snapshot}=await readScores(grain);
+    const fixture=grain==='representative'?mock.representative:mock;
+    const prefix=grain==='representative'?'REP':'ORG';
     expect(snapshot?.status).toBe('ready');
     if (snapshot?.status!=='ready') throw Error(JSON.stringify(snapshot));
-    expect(snapshot.rows.map(r=>r.region).sort()).toEqual(mock.expectedOrganizations);
+    expect(snapshot.rows.map(r=>r.region).sort()).toEqual(fixture.expectedOrganizations);
     expect(snapshot.totalCount).toBe(15);
     const rows=new Map(snapshot.rows.map(row=>[row.region,row]));
-    for (const [id,total] of Object.entries(mock.expectedSelectedTotals)) expect(rows.get(id)?.['total-score']).toBe(total);
-    expect(rows.get('ORG-03')).toMatchObject({'perception-willingness':null,'satisfaction-evaluation':null,'total-score':0});
-    expect(rows.get('ORG-01')?.['perception-feedback']).toBe(0);
-    expect(rows.get('ORG-06')?.['risk-control']).toBeNull();
+    for (const [id,total] of Object.entries(fixture.expectedSelectedTotals)) expect(rows.get(id)?.['total-score']).toBe(total);
+    expect(rows.get(`${prefix}-03`)).toMatchObject({'perception-willingness':null,'satisfaction-evaluation':null,'total-score':0});
+    expect(rows.get(`${prefix}-01`)?.['perception-feedback']).toBe(0);
+    expect(rows.get(`${prefix}-06`)?.['risk-control']).toBeNull();
     const data={main:{fields:resolveDataSourceFields(page.dataSources[sourceId]),snapshot}};
     const aligned=projectTableRows(data,table.props);
     const columns=tableColumnLeaves(table.props.columns);
     const total=columns.find(c=>typeof c.field==='object'&&'field' in c.field&&c.field.field==='total-score')!;
-    expect(alignedCellText(total.field,data,aligned.find(r=>r.main.region==='ORG-03')!)).toBe('0.0');
+    expect(alignedCellText(total.field,data,aligned.find(r=>r.main.region===`${prefix}-03`)!)).toBe('0.0');
     const missing=columns.find(c=>typeof c.field==='object'&&'field' in c.field&&c.field.field==='satisfaction-evaluation')!;
-    expect(alignedCellText(missing.field,data,aligned.find(r=>r.main.region==='ORG-04')!)).toBe('--');
+    expect(alignedCellText(missing.field,data,aligned.find(r=>r.main.region===`${prefix}-04`)!)).toBe('--');
   });
   it.each([['emptyMain',14],['empty',0]])('%s 不依赖主查询构造行集合',async(state,count)=>{
     const {snapshot}=await readScores('region',state);
@@ -65,7 +67,9 @@ describe('partner-health 正式页面使用完整组织并集',()=>{
     for (const [id, source] of Object.entries(document.dataSources)) {
       if (id !== 'health-overview') expect(preview.dataSources[id]).toEqual(source);
     }
-    expect(document.dataSources['health-overview'].source).toEqual({type:'inline',rows:[]});
+    expect(document.dataSources['health-overview'].compute[0]).toMatchObject({op:'unionKeys',keys:['china-overseas']});
+    expect(preview.dataSources).toEqual(document.dataSources);
+    expect(preview.sections).toEqual(document.sections);
   });
 });
 

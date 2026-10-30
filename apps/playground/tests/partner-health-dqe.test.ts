@@ -59,7 +59,7 @@ describe('伙伴健康度使用共享DQE传输', () => {
   });
 
   it('完整页面默认条件通过批量execute，保持空结果且不修改输入', async () => {
-    expect(queryCases).toHaveLength(28);
+    expect(queryCases).toHaveLength(35);
     const before = structuredClone(document);
     transport.mockImplementation(async (_input, init) => {
       const body = JSON.parse(String(init?.body));

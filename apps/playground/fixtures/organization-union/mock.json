@@ -132,21 +132,8 @@
     "ORG-15": 10
   },
   "overview": {
-    "description": "人为构造的中国区/海外整体得分；与ORG行无聚合关系；data_site_type为待后端确认的查询候选字段",
+    "description": "独立国内/海外整体得分合成记录，与ORG/REP组织行不聚合；每项查询同时返回国内、海外两行。",
     "scopes": {
-      "中国区": {
-        "perception-willingness-score": 20,
-        "voice-closure-score": 0,
-        "customer-eval-score": null,
-        "contribution-business-score": "",
-        "cert-compliance-score": 4,
-        "csp-customer-payment-score": 3,
-        "csp-customer-growth-score": "0",
-        "cloud-dealer-payment-score": 2,
-        "cloud-dealer-growth-score": null,
-        "service-capability-score": 8,
-        "risk-control-score": -2
-      },
       "海外": {
         "perception-willingness-score": null,
         "voice-closure-score": 4,
@@ -159,6 +146,19 @@
         "cloud-dealer-growth-score": 1,
         "service-capability-score": 5,
         "risk-control-score": -3
+      },
+      "国内": {
+        "perception-willingness-score": 20,
+        "voice-closure-score": 0,
+        "customer-eval-score": null,
+        "contribution-business-score": "",
+        "cert-compliance-score": 4,
+        "csp-customer-payment-score": 3,
+        "csp-customer-growth-score": "0",
+        "cloud-dealer-payment-score": 2,
+        "cloud-dealer-growth-score": null,
+        "service-capability-score": 8,
+        "risk-control-score": -2
       }
     },
     "expected": {
@@ -176,6 +176,157 @@
         "risk-score": -3,
         "total-score": 30
       }
+    }
+  },
+  "representative": {
+    "description": "独立代表处合成数据，REP 组织键及不同得分分布；保留 null、空字符串、字符串0和真实0。",
+    "expectedOrganizations": [
+      "REP-01",
+      "REP-02",
+      "REP-03",
+      "REP-04",
+      "REP-05",
+      "REP-06",
+      "REP-07",
+      "REP-08",
+      "REP-09",
+      "REP-10",
+      "REP-11",
+      "REP-12",
+      "REP-13",
+      "REP-14",
+      "REP-15"
+    ],
+    "sources": {
+      "voice-closure-score": [
+        {
+          "region": "REP-01",
+          "value": 0.0
+        }
+      ],
+      "customer-eval-score": [
+        {
+          "region": "REP-02",
+          "value": 5.0
+        },
+        {
+          "region": "REP-03",
+          "value": null
+        },
+        {
+          "region": "REP-04",
+          "value": ""
+        },
+        {
+          "region": "REP-05",
+          "value": " "
+        },
+        {
+          "region": "REP-06",
+          "value": 4.0
+        },
+        {
+          "region": "REP-07",
+          "value": "0"
+        },
+        {
+          "region": "REP-08",
+          "value": 0.0
+        },
+        {
+          "region": "REP-09",
+          "value": 1.5
+        },
+        {
+          "region": "REP-10",
+          "value": 2.0
+        },
+        {
+          "region": "REP-11",
+          "value": 2.5
+        }
+      ],
+      "perception-willingness-score": [
+        {
+          "region": "REP-03",
+          "value": null
+        },
+        {
+          "region": "REP-04",
+          "value": 3.5
+        },
+        {
+          "region": "REP-05",
+          "value": 0.0
+        },
+        {
+          "region": "REP-06",
+          "value": -1.0
+        },
+        {
+          "region": "REP-07",
+          "value": 1.0
+        },
+        {
+          "region": "REP-08",
+          "value": null
+        },
+        {
+          "region": "REP-09",
+          "value": 0.5
+        },
+        {
+          "region": "REP-10",
+          "value": 1.0
+        },
+        {
+          "region": "REP-11",
+          "value": 4.5
+        },
+        {
+          "region": "REP-12",
+          "value": 9
+        },
+        {
+          "region": "REP-13",
+          "value": 1
+        },
+        {
+          "region": "REP-14",
+          "value": 3
+        },
+        {
+          "region": "REP-15",
+          "value": 5.0
+        }
+      ]
+    },
+    "expectedSelectedTotals": {
+      "REP-01": 0.0,
+      "REP-02": 5.0,
+      "REP-03": 0.0,
+      "REP-04": 3.5,
+      "REP-05": 0.0,
+      "REP-06": 3.0,
+      "REP-07": 1.0,
+      "REP-15": 5.0
+    },
+    "parents": {
+      "REP-01": "ORG-01",
+      "REP-02": "ORG-01",
+      "REP-03": "ORG-01",
+      "REP-04": "ORG-06",
+      "REP-05": "ORG-06",
+      "REP-06": "ORG-06",
+      "REP-07": "ORG-04",
+      "REP-08": "ORG-04",
+      "REP-09": "ORG-04",
+      "REP-10": "ORG-12",
+      "REP-11": "ORG-12",
+      "REP-12": "ORG-12",
+      "REP-13": "ORG-15",
+      "REP-14": "ORG-15",
+      "REP-15": "ORG-15"
     }
   }
 }

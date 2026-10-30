@@ -3,7 +3,7 @@
 | 页面 | 入口 | 数据与验收边界 |
 |---|---|---|
 | 成熟度得分 | /pages/contract-maturity-score | 四种期间同步切换KPI与列组；inline合成得分，日期重查待接入 |
-| 伙伴健康度 | /pages/partner-health | 6.73页面；全部inline行为空；指标与对象查询均使用共享DQE网关，按运行配置发送execute请求，不再使用页面专属模拟网关。真实业务返回待验，见partner-health-data-analysis.md |
+| 伙伴健康度 | /pages/partner-health | 6.77页面；组织与顶部中国区/海外分别取键并集、关联单项并计算分类与总分；全部inline行为空；指标与对象查询均使用共享DQE网关，按运行配置发送execute请求，不再使用页面专属模拟网关。真实业务返回待验，见partner-health-data-analysis.md |
 | 治理合规 | /pages/governance-compliance | 多图区域筛选保持独立filterId；输入查询与真实DQE映射仍待验 |
 
 启动 `pnpm dev:playground`；各子目录README与数据分析说明保留操作和数据性质。页面通过结构校验不等于真实取数。报表实验和未完视觉原型另见本批保留清单，不复制进正式能力目录。
@@ -19,3 +19,7 @@
 合成数据夹具已移至 `tests/fixtures/partner-health/`，只供自动化测试，页面入口不再引用。历史替换及故障证据见[修复记录](../../docs/evidence/partner-health-pasted-repair-20261028/README.md)；[历史预览验收](../../docs/evidence/partner-health-preview-20261028/README.md)对应旧页面。
 
 同步main后的复验见[HTTP查询与.length异常验收](../../docs/evidence/partner-health-real-dqe-20261029/README.md)：已复现旧模拟器读取对象查询output_metrics.length的异常并移除其生产入口；全部28个查询分支、完整页面执行、空结果和传输失败均有回归。当前本机服务仍为DQE Sim，拒答不代表真实业务DQE验真。
+
+正式伙伴健康度已移植 probe 的顶部11项整体查询与计算声明，5张卡片缺项显示 `--`，总分对缺项按0相加。保留正式 id `partner-health`，不会命中 probe 专属网关。顶部查询使用 `国内或海外` 同时取国内、海外两组记录，每范围应为唯一整体记录；该数据契约尚待内网验真，页面不会把组织明细相加或注入合成行来替代。
+
+下方地区部/代表处查询不消费顶部中国区/海外。全球显示范围按钮及图表两个页签；选择区域树中的具体地区部或代表处后隐藏范围按钮，卡片复用对应组织计算结果，图表只保留代表处；表格两个页签一直展示。组织条件通过levelQueryFields按地区部/代表处下推，空选择恢复全球。分类缺项保留null、真实0保留，总分按0处理缺项。顶部11项整体查询同时获取国内/海外，按钮切换复用结果，不触发下方重查。真实组织候选、字段、整体粒度仍待内网验证。

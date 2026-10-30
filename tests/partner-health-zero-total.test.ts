@@ -38,7 +38,7 @@ it.each(['region', 'representative'])('%s：零总数响应仍生成组织、分
   const actual = await readScores(grain, 'zeroTotal');
   expect(rows(actual.snapshot)).toEqual(rows(expected.snapshot));
   expect(actual.snapshot).toMatchObject({status: 'ready', totalCount: 15});
-  expect(rows(actual.snapshot).find(row => row.region === 'ORG-06')?.['total-score']).toBe(6);
+  expect(rows(actual.snapshot).find(row => row.region === (grain === 'representative' ? 'REP-06' : 'ORG-06'))?.['total-score']).toBe(grain === 'representative' ? 3 : 6);
   const source = actual.updates.get(`perception-willingness-score-${grain}`);
   expect(source?.raw).toMatchObject({status: 'ready', totalCount: 0});
   expect(source?.initial).toBeUndefined();

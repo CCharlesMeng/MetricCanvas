@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { executeDqeItem } from './execute';
+import { executePartnerHealth } from './partner-health';
 
 export const DQE_EXECUTE_PATH =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
@@ -133,10 +134,17 @@ async function route(request: IncomingMessage): Promise<RouteResult> {
     body: {
       retCode: 'CBC.0000',
       retDesc: null,
-      results: parsed.value.dsl_list.map(executeDqeItem)
+      results: parsed.value.dsl_list.map(item => executeHttpItem(item, url))
     },
     requestBody: parsed.value
   };
+}
+
+function executeHttpItem(item: unknown, url: URL) {
+  if (url.searchParams.get('fixture') === 'partner-health') {
+    return executePartnerHealth(item, url.searchParams.get('state') ?? 'ready');
+  }
+  return executeDqeItem(item);
 }
 
 function writeResponse(

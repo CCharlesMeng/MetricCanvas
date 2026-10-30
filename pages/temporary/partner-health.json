@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.74",
+  "schemaVersion": "6.77",
   "id": "partner-health",
   "layout": "dashboard",
   "meta": {
@@ -20,10 +20,27 @@
     {
       "id": "region",
       "type": "dimension",
-      "dimension": "geo_pc_name_cn",
+      "dimension": "region-dept",
       "label": "区域",
       "default": [],
-      "display": "select"
+      "display": "tree",
+      "emptyLabel": "全球",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "region-dept",
+          "dimension": "region-dept",
+          "label": "地区部"
+        },
+        {
+          "id": "representative",
+          "dimension": "representative",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept"
     },
     {
       "id": "china-overseas",
@@ -41,19 +58,67 @@
       "label": "层级",
       "default": [
         "地区部"
-      ]
+      ],
+      "visible": false
     }
   ],
   "dataSources": {
     "health-overview": {
       "fields": {
-        "china-overseas": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "total-score": {
+        "perception-willingness": {
           "type": "number",
-          "role": "measure"
+          "role": "measure",
+          "label": "合作意愿感知评分"
+        },
+        "perception-feedback": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴声音闭环率得分"
+        },
+        "satisfaction-evaluation": {
+          "type": "number",
+          "role": "measure",
+          "label": "客户对伙伴的评价得分"
+        },
+        "contribution-business": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入得分"
+        },
+        "contribution-human": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域专职团队认证达标率得分"
+        },
+        "csp-customer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户付费占比得分"
+        },
+        "csp-customer-growth": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户数增长得分"
+        },
+        "cloud-dealer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商付费占比得分"
+        },
+        "cloud-dealer-growth": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商数增长得分"
+        },
+        "service-capability-ratio": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域能力标签伙伴得分"
+        },
+        "risk-control": {
+          "type": "number",
+          "role": "measure",
+          "label": "扣分"
         },
         "perception-score": {
           "type": "number",
@@ -70,12 +135,478 @@
         "risk-score": {
           "type": "number",
           "role": "measure"
+        },
+        "total-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外"
+        },
+        "perception-score-china": {
+          "type": "number",
+          "role": "measure"
+        },
+        "perception-score-overseas": {
+          "type": "number",
+          "role": "measure"
+        },
+        "satisfaction-score-china": {
+          "type": "number",
+          "role": "measure"
+        },
+        "satisfaction-score-overseas": {
+          "type": "number",
+          "role": "measure"
+        },
+        "contribution-score-china": {
+          "type": "number",
+          "role": "measure"
+        },
+        "contribution-score-overseas": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk-score-china": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk-score-overseas": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total-score-china": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total-score-overseas": {
+          "type": "number",
+          "role": "measure"
+        },
+        "perception-score-by-scope": {
+          "type": "number",
+          "role": "measure"
+        },
+        "satisfaction-score-by-scope": {
+          "type": "number",
+          "role": "measure"
+        },
+        "contribution-score-by-scope": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk-score-by-scope": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total-score-by-scope": {
+          "type": "number",
+          "role": "measure"
         }
       },
       "source": {
         "type": "inline",
         "rows": []
-      }
+      },
+      "compute": [
+        {
+          "op": "unionKeys",
+          "sources": [
+            "perception-willingness-score-overview",
+            "voice-closure-score-overview",
+            "customer-eval-score-overview",
+            "contribution-business-score-overview",
+            "cert-compliance-score-overview",
+            "csp-customer-payment-score-overview",
+            "csp-customer-growth-score-overview",
+            "cloud-dealer-payment-score-overview",
+            "cloud-dealer-growth-score-overview",
+            "service-capability-score-overview",
+            "risk-control-score-overview"
+          ],
+          "keys": [
+            "china-overseas"
+          ]
+        },
+        {
+          "op": "joinAggregate",
+          "source": "perception-willingness-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "perception-willingness-rate",
+              "output": "perception-willingness",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "voice-closure-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "closure-rate",
+              "output": "perception-feedback",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "customer-eval-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "customer-eval-rate",
+              "output": "satisfaction-evaluation",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "contribution-business-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "contribution-business-rate",
+              "output": "contribution-business",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cert-compliance-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "cert-compliance-rate",
+              "output": "contribution-human",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "csp-customer-payment-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "csp-customer-payment-rate",
+              "output": "csp-customer-payment-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "csp-customer-growth-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "csp-customer-growth-rate",
+              "output": "csp-customer-growth",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cloud-dealer-payment-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "cloud-dealer-payment-rate",
+              "output": "cloud-dealer-payment-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "cloud-dealer-growth-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "cloud-dealer-growth-rate",
+              "output": "cloud-dealer-growth",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "service-capability-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "service-capability-rate",
+              "output": "service-capability-ratio",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "risk-control-score-overview",
+          "keys": [
+            {
+              "local": "china-overseas",
+              "foreign": "china-overseas"
+            }
+          ],
+          "values": [
+            {
+              "field": "risk-control-rate",
+              "output": "risk-control",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "perception-willingness",
+            "perception-feedback"
+          ],
+          "output": "perception-score-by-scope",
+          "onMissing": "ignore"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "satisfaction-evaluation"
+          ],
+          "output": "satisfaction-score-by-scope",
+          "onMissing": "ignore"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "contribution-business",
+            "contribution-human",
+            "csp-customer-payment-ratio",
+            "csp-customer-growth",
+            "cloud-dealer-payment-ratio",
+            "cloud-dealer-growth",
+            "service-capability-ratio"
+          ],
+          "output": "contribution-score-by-scope",
+          "onMissing": "ignore"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "risk-control"
+          ],
+          "output": "risk-score-by-scope",
+          "onMissing": "ignore"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "perception-score-by-scope",
+            "satisfaction-score-by-scope",
+            "contribution-score-by-scope",
+            "risk-score-by-scope"
+          ],
+          "output": "total-score-by-scope",
+          "onMissing": "zero"
+        },
+        {
+          "op": "pivot",
+          "categoryField": "china-overseas",
+          "valueField": "total-score-by-scope",
+          "keyFields": [],
+          "columns": [
+            {
+              "valueField": "perception-score-by-scope",
+              "output": "perception-score-china",
+              "categories": [
+                "国内"
+              ]
+            },
+            {
+              "valueField": "perception-score-by-scope",
+              "output": "perception-score-overseas",
+              "categories": [
+                "海外"
+              ]
+            },
+            {
+              "valueField": "satisfaction-score-by-scope",
+              "output": "satisfaction-score-china",
+              "categories": [
+                "国内"
+              ]
+            },
+            {
+              "valueField": "satisfaction-score-by-scope",
+              "output": "satisfaction-score-overseas",
+              "categories": [
+                "海外"
+              ]
+            },
+            {
+              "valueField": "contribution-score-by-scope",
+              "output": "contribution-score-china",
+              "categories": [
+                "国内"
+              ]
+            },
+            {
+              "valueField": "contribution-score-by-scope",
+              "output": "contribution-score-overseas",
+              "categories": [
+                "海外"
+              ]
+            },
+            {
+              "valueField": "risk-score-by-scope",
+              "output": "risk-score-china",
+              "categories": [
+                "国内"
+              ]
+            },
+            {
+              "valueField": "risk-score-by-scope",
+              "output": "risk-score-overseas",
+              "categories": [
+                "海外"
+              ]
+            },
+            {
+              "valueField": "total-score-by-scope",
+              "output": "total-score-china",
+              "categories": [
+                "国内"
+              ]
+            },
+            {
+              "valueField": "total-score-by-scope",
+              "output": "total-score-overseas",
+              "categories": [
+                "海外"
+              ]
+            }
+          ]
+        },
+        {
+          "op": "selectField",
+          "filter": "china-overseas",
+          "cases": {
+            "中国区": "perception-score-china",
+            "海外": "perception-score-overseas"
+          },
+          "defaultMode": "中国区",
+          "output": "perception-score"
+        },
+        {
+          "op": "selectField",
+          "filter": "china-overseas",
+          "cases": {
+            "中国区": "satisfaction-score-china",
+            "海外": "satisfaction-score-overseas"
+          },
+          "defaultMode": "中国区",
+          "output": "satisfaction-score"
+        },
+        {
+          "op": "selectField",
+          "filter": "china-overseas",
+          "cases": {
+            "中国区": "contribution-score-china",
+            "海外": "contribution-score-overseas"
+          },
+          "defaultMode": "中国区",
+          "output": "contribution-score"
+        },
+        {
+          "op": "selectField",
+          "filter": "china-overseas",
+          "cases": {
+            "中国区": "risk-score-china",
+            "海外": "risk-score-overseas"
+          },
+          "defaultMode": "中国区",
+          "output": "risk-score"
+        },
+        {
+          "op": "selectField",
+          "filter": "china-overseas",
+          "cases": {
+            "中国区": "total-score-china",
+            "海外": "total-score-overseas"
+          },
+          "defaultMode": "中国区",
+          "output": "total-score"
+        }
+      ]
     },
     "regional-comparison": {
       "fields": {
@@ -393,7 +924,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             },
             "china-overseas": {
               "target": "dimension",
@@ -506,7 +1040,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -558,7 +1095,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -584,70 +1124,35 @@
         "resultScope": "complete",
         "query": {
           "language": "dqe",
-          "queryModes": {
-            "filterId": "china-overseas",
-            "cases": {
-              "中国区": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域专职团队认证达标率得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域专职团队认证达标率得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
                   },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
+                  "dims": [],
+                  "metrics": []
                 }
-              },
-              "海外": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域专职团队认证达标率得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
-                  },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
-                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
               }
             }
           }
@@ -700,7 +1205,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -719,6 +1227,12 @@
           "role": "measure",
           "label": "扣分",
           "queryField": "扣分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -733,7 +1247,8 @@
                 "object_type": "Partner Health/Partner Deduction Score",
                 "output_fields": [
                   "地区部",
-                  "扣分"
+                  "扣分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -742,7 +1257,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -761,6 +1279,12 @@
           "role": "measure",
           "label": "扣分",
           "queryField": "扣分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -775,7 +1299,8 @@
                 "object_type": "Partner Health/Partner Deduction Score",
                 "output_fields": [
                   "代表处",
-                  "扣分"
+                  "扣分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -784,7 +1309,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -803,6 +1331,12 @@
           "role": "measure",
           "label": "客户对伙伴的评价得分",
           "queryField": "客户对伙伴的评价得分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -817,7 +1351,8 @@
                 "object_type": "Partner Health/Custormer Partner Evaluation Score",
                 "output_fields": [
                   "地区部",
-                  "客户对伙伴的评价得分"
+                  "客户对伙伴的评价得分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -826,7 +1361,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -845,6 +1383,12 @@
           "role": "measure",
           "label": "客户对伙伴的评价得分",
           "queryField": "客户对伙伴的评价得分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -859,7 +1403,8 @@
                 "object_type": "Partner Health/Custormer Partner Evaluation Score",
                 "output_fields": [
                   "代表处",
-                  "客户对伙伴的评价得分"
+                  "客户对伙伴的评价得分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -868,7 +1413,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -887,6 +1435,12 @@
           "role": "measure",
           "label": "收入得分",
           "queryField": "收入得分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -901,7 +1455,8 @@
                 "object_type": "Partner Health/Partner Core Income Score",
                 "output_fields": [
                   "地区部",
-                  "收入得分"
+                  "收入得分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -910,7 +1465,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -929,6 +1487,12 @@
           "role": "measure",
           "label": "收入得分",
           "queryField": "收入得分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -943,7 +1507,8 @@
                 "object_type": "Partner Health/Partner Core Income Score",
                 "output_fields": [
                   "代表处",
-                  "收入得分"
+                  "收入得分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -952,7 +1517,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -971,6 +1539,12 @@
           "role": "measure",
           "label": "合作意愿感知评分",
           "queryField": "合作意愿感知评分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -985,7 +1559,8 @@
                 "object_type": "Partner Health/Cooperate Willingness Score",
                 "output_fields": [
                   "地区部",
-                  "合作意愿感知评分"
+                  "合作意愿感知评分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -994,7 +1569,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1013,6 +1591,12 @@
           "role": "measure",
           "label": "合作意愿感知评分",
           "queryField": "合作意愿感知评分"
+        },
+        "domestic-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1027,7 +1611,8 @@
                 "object_type": "Partner Health/Cooperate Willingness Score",
                 "output_fields": [
                   "代表处",
-                  "合作意愿感知评分"
+                  "合作意愿感知评分",
+                  "国内或海外"
                 ],
                 "order": {}
               }
@@ -1036,7 +1621,10 @@
           "filterBindings": {
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1088,7 +1676,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1140,7 +1731,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1192,7 +1786,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1244,7 +1841,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1659,7 +2259,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             },
             "china-overseas": {
               "target": "dimension",
@@ -1689,70 +2292,35 @@
         "resultScope": "complete",
         "query": {
           "language": "dqe",
-          "queryModes": {
-            "filterId": "china-overseas",
-            "cases": {
-              "中国区": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域价值云经销商付费占比得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域价值云经销商付费占比得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
                   },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
+                  "dims": [],
+                  "metrics": []
                 }
-              },
-              "海外": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域价值云经销商付费占比得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
-                  },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
-                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
               }
             }
           }
@@ -1805,7 +2373,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1831,70 +2402,35 @@
         "resultScope": "complete",
         "query": {
           "language": "dqe",
-          "queryModes": {
-            "filterId": "china-overseas",
-            "cases": {
-              "中国区": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域能力标签伙伴得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域能力标签伙伴得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
                   },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
+                  "dims": [],
+                  "metrics": []
                 }
-              },
-              "海外": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域能力标签伙伴得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
-                  },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
-                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
               }
             }
           }
@@ -1947,7 +2483,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -1973,70 +2512,35 @@
         "resultScope": "complete",
         "query": {
           "language": "dqe",
-          "queryModes": {
-            "filterId": "china-overseas",
-            "cases": {
-              "中国区": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域价值客户付费占比得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域价值客户付费占比得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
                   },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
+                  "dims": [],
+                  "metrics": []
                 }
-              },
-              "海外": {
-                "body": {
-                  "dsl_list": [
-                    {
-                      "output_dims": [
-                        "地区部"
-                      ],
-                      "output_metrics": [
-                        "伙伴健康度-区域价值客户付费占比得分"
-                      ],
-                      "filter": {
-                        "time": {
-                          "period": "month",
-                          "is_aggregate": true
-                        },
-                        "dims": [],
-                        "metrics": []
-                      }
-                    }
-                  ]
-                },
-                "filterBindings": {
-                  "stat-year": {
-                    "target": "time"
-                  },
-                  "region": {
-                    "target": "dimension",
-                    "queryField": "geo_pc_name_cn"
-                  }
-                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
               }
             }
           }
@@ -2089,7 +2593,10 @@
             },
             "region": {
               "target": "dimension",
-              "queryField": "geo_pc_name_cn"
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "representative": "代表处"
+              }
             }
           }
         }
@@ -2407,7 +2914,7 @@
             "perception-feedback"
           ],
           "output": "perception-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2415,7 +2922,7 @@
             "satisfaction-evaluation"
           ],
           "output": "satisfaction-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2429,7 +2936,7 @@
             "service-capability-ratio"
           ],
           "output": "contribution-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2437,7 +2944,7 @@
             "risk-control"
           ],
           "output": "risk-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2764,7 +3271,7 @@
             "perception-feedback"
           ],
           "output": "perception-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2772,7 +3279,7 @@
             "satisfaction-evaluation"
           ],
           "output": "satisfaction-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2786,7 +3293,7 @@
             "service-capability-ratio"
           ],
           "output": "contribution-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2794,7 +3301,7 @@
             "risk-control"
           ],
           "output": "risk-score",
-          "onMissing": "zero"
+          "onMissing": "ignore"
         },
         {
           "op": "sumFields",
@@ -2808,6 +3315,601 @@
           "onMissing": "zero"
         }
       ]
+    },
+    "perception-willingness-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "perception-willingness-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合作意愿感知评分",
+          "queryField": "合作意愿感知评分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Partner Health/Cooperate Willingness Score",
+                "output_fields": [
+                  "合作意愿感知评分",
+                  "国内或海外"
+                ],
+                "order": {},
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "国内或海外",
+                      "value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "filterBindings": {}
+        }
+      }
+    },
+    "voice-closure-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "closure-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴声音闭环率得分",
+          "queryField": "伙伴声音闭环率得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "国内或海外"
+                ],
+                "output_metrics": [
+                  "伙伴声音闭环率得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "customer-eval-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "customer-eval-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "客户对伙伴的评价得分",
+          "queryField": "客户对伙伴的评价得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Partner Health/Custormer Partner Evaluation Score",
+                "output_fields": [
+                  "客户对伙伴的评价得分",
+                  "国内或海外"
+                ],
+                "order": {},
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "国内或海外",
+                      "value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "filterBindings": {}
+        }
+      }
+    },
+    "contribution-business-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "contribution-business-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入得分",
+          "queryField": "收入得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Partner Health/Partner Core Income Score",
+                "output_fields": [
+                  "收入得分",
+                  "国内或海外"
+                ],
+                "order": {},
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "国内或海外",
+                      "value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "filterBindings": {}
+        }
+      }
+    },
+    "cert-compliance-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "cert-compliance-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域专职团队认证达标率得分",
+          "queryField": "伙伴健康度-区域专职团队认证达标率得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "国内或海外"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域专职团队认证达标率得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            }
+          },
+          "language": "dqe"
+        }
+      }
+    },
+    "csp-customer-payment-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "csp-customer-payment-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户付费占比得分",
+          "queryField": "伙伴健康度-区域价值客户付费占比得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "国内或海外"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域价值客户付费占比得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            }
+          },
+          "language": "dqe"
+        }
+      }
+    },
+    "csp-customer-growth-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "csp-customer-growth-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值客户数增长得分",
+          "queryField": "伙伴健康度-区域价值客户数增长得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "国内或海外"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域价值客户数增长得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "cloud-dealer-payment-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "cloud-dealer-payment-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商付费占比得分",
+          "queryField": "伙伴健康度-区域价值云经销商付费占比得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "国内或海外"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域价值云经销商付费占比得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            }
+          },
+          "language": "dqe"
+        }
+      }
+    },
+    "cloud-dealer-growth-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "cloud-dealer-growth-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域价值云经销商数增长得分",
+          "queryField": "伙伴健康度-区域价值云经销商数增长得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "国内或海外"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域价值云经销商数增长得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "service-capability-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "service-capability-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴健康度-区域能力标签伙伴得分",
+          "queryField": "伙伴健康度-区域能力标签伙伴得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "国内或海外"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域能力标签伙伴得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            }
+          },
+          "language": "dqe"
+        }
+      }
+    },
+    "risk-control-score-overview": {
+      "fields": {
+        "china-overseas": {
+          "type": "string",
+          "role": "dimension",
+          "label": "国内或海外",
+          "queryField": "国内或海外"
+        },
+        "risk-control-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "扣分",
+          "queryField": "扣分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Partner Health/Partner Deduction Score",
+                "output_fields": [
+                  "扣分",
+                  "国内或海外"
+                ],
+                "order": {},
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "国内或海外",
+                      "value_list": [
+                        "国内",
+                        "海外"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "filterBindings": {}
+        }
+      }
     }
   },
   "sections": [
@@ -2834,13 +3936,18 @@
                 "value": "海外"
               }
             ]
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "values",
+            "op": "isEmpty"
           }
         },
         {
           "id": "total-score-card",
           "type": "metricCard",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "health-overview"
@@ -2853,11 +3960,17 @@
                 "valueField": {
                   "data": "main",
                   "field": "total-score",
-                  "format": "number-1"
+                  "format": "number-1",
+                  "missingText": "--"
                 },
                 "unit": "分"
               }
             ]
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "values",
+            "op": "isEmpty"
           }
         },
         {
@@ -2881,11 +3994,17 @@
                 "valueField": {
                   "data": "main",
                   "field": "perception-score",
-                  "format": "number-1"
+                  "format": "number-1",
+                  "missingText": "--"
                 },
                 "unit": "分"
               }
             ]
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "values",
+            "op": "isEmpty"
           }
         },
         {
@@ -2909,11 +4028,17 @@
                 "valueField": {
                   "data": "main",
                   "field": "satisfaction-score",
-                  "format": "number-1"
+                  "format": "number-1",
+                  "missingText": "--"
                 },
                 "unit": "分"
               }
             ]
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "values",
+            "op": "isEmpty"
           }
         },
         {
@@ -2937,11 +4062,17 @@
                 "valueField": {
                   "data": "main",
                   "field": "contribution-score",
-                  "format": "number-1"
+                  "format": "number-1",
+                  "missingText": "--"
                 },
                 "unit": "分"
               }
             ]
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "values",
+            "op": "isEmpty"
           }
         },
         {
@@ -2965,9 +4096,447 @@
                 "valueField": {
                   "data": "main",
                   "field": "risk-score",
-                  "format": "number-1"
+                  "format": "number-1",
+                  "missingText": "--"
                 },
                 "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "values",
+            "op": "isEmpty"
+          }
+        },
+        {
+          "id": "total-score-card-region",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "health-scores-region"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "伙伴健康度",
+                "valueField": {
+                  "data": "main",
+                  "field": "total-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "region-dept"
+              }
+            ]
+          }
+        },
+        {
+          "id": "perception-card-region",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "=",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-region"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "伙伴对华为的感知",
+                "valueField": {
+                  "data": "main",
+                  "field": "perception-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "region-dept"
+              }
+            ]
+          }
+        },
+        {
+          "id": "satisfaction-card-region",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-region"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "客户对伙伴的满意度",
+                "valueField": {
+                  "data": "main",
+                  "field": "satisfaction-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "region-dept"
+              }
+            ]
+          }
+        },
+        {
+          "id": "contribution-card-region",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-region"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "伙伴能力与贡献",
+                "valueField": {
+                  "data": "main",
+                  "field": "contribution-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "region-dept"
+              }
+            ]
+          }
+        },
+        {
+          "id": "risk-card-region",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-region"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "风险管控",
+                "valueField": {
+                  "data": "main",
+                  "field": "risk-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "region-dept"
+              }
+            ]
+          }
+        },
+        {
+          "id": "total-score-card-representative",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "health-scores-representative"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "伙伴健康度",
+                "valueField": {
+                  "data": "main",
+                  "field": "total-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "representative"
+              }
+            ]
+          }
+        },
+        {
+          "id": "perception-card-representative",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "=",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-representative"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "伙伴对华为的感知",
+                "valueField": {
+                  "data": "main",
+                  "field": "perception-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "representative"
+              }
+            ]
+          }
+        },
+        {
+          "id": "satisfaction-card-representative",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-representative"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "客户对伙伴的满意度",
+                "valueField": {
+                  "data": "main",
+                  "field": "satisfaction-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "representative"
+              }
+            ]
+          }
+        },
+        {
+          "id": "contribution-card-representative",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-representative"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "伙伴能力与贡献",
+                "valueField": {
+                  "data": "main",
+                  "field": "contribution-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "representative"
+              }
+            ]
+          }
+        },
+        {
+          "id": "risk-card-representative",
+          "type": "metricCard",
+          "layout": {
+            "span": 2,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "health-scores-representative"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "风险管控",
+                "valueField": {
+                  "data": "main",
+                  "field": "risk-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "分"
+              }
+            ]
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isNotEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "representative"
               }
             ]
           }
@@ -3042,7 +4611,12 @@
                       "stacked": true
                     }
                   }
-                ]
+                ],
+                "visibleWhen": {
+                  "filter": "region",
+                  "part": "values",
+                  "op": "isEmpty"
+                }
               },
               {
                 "id": "representative",

@@ -1,5 +1,14 @@
 # DQE Sim
 
+## 伙伴健康度 HTTP Mock
+
+启动 `pnpm dev:dqe` 后访问 `/pages/partner-health-union-null-probe?state=zeroTotal`。
+页面通过标准 execute HTTP 路径请求，附带开发场景选择器 `fixture=partner-health` 和 `state`。
+服务端读取 `apps/playground/fixtures/organization-union/mock.json`，按页面中的查询签名返回独立原始行；未知查询拒绝执行。
+1、10、13条返回由浏览器运行时合并为15个组织，覆盖null、真实0、缺项和零总数。
+普通请求不携带选择器，继续使用原有DQE Sim路由。场景是HTTP链路验收，不代表内网真实DQE验收。
+完整状态及操作见 `pages/temporary/partner-health-union-null-probe/README.md`。
+
 ## 商务驳回明细的原始元数据模拟验收
 
 `/pages/business-rejection-details` 使用用户原始object元数据，通过标准HTTP网关运行。专用合成分支仅认领 `Business/Commercial Review Rejection Details` 和输出“商务ID、责任人名称、商务状态”的基本信息查询；不修改生产接口或写入initial。

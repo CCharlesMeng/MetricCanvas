@@ -14,7 +14,7 @@
 
 6.72 为 `pagedUnion` 成员增加 `rowKeyFields` 组合行键，与旧 `rowKey` 二选一；组合字段全部非空、整个组合唯一，保留旧身份编码且不改变排序和分页规则。见[分页合并源](docs/page-metadata/data-sources.md#分页合并源-pagedunion661)，合成验收入口 `/pages/multi-source-composite-key`。
 
-6.71 为 `sumFields` 增加 `onMissing:"zero"` 与单字段列表；缺项及全部缺项按 0 相加，旧策略保持。声明与边界见[字段求和](docs/page-metadata/compute.md#字段求和与缺项归零671)，合成场景 `/pages/sum-fields-missing-values`，业务页 `/pages/partner-health`。
+6.71 为 `sumFields` 增加 `onMissing:"zero"` 与单字段列表；缺项及全部缺项按 0 相加，旧策略保持。声明与边界见[字段求和](docs/page-metadata/compute.md#字段求和与缺项归零671)，合成场景 `/pages/sum-fields-missing-values`，业务页 `/pages/partner-health`（组织并集及顶部国内/海外整体记录统一取回，分类与总分同范围计算，顶部切换只影响卡片；具体组织复用组织得分，图表仅保留代表处，表格双页签始终保留）。
 
 Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期）与展示条件 `part:"mode"`。新策略独占时间粒度和起止，旧绑定保持行为；表格字段列及分组列复用 `visibleWhen` 读取已应用的期间模式。声明、映射与兼容规则见[查询独立期间策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)、[期间选择](docs/page-metadata/filters.md#期间选择与查询消费)，验收页为 `period-query-columns-demo`。
 
