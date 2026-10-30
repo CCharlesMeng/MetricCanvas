@@ -31,3 +31,7 @@
 同一metriccanvas-ts-ast/1、TypeScript5.9.3口径：encodeObjectQuery自身CC11→11；createDqeGateway自身1→1，内部fetchColumnCandidates自身8→10；新增projectedQuery=6、assertActive=2、objectColumnCandidates=6，所有新增测试函数/回调≤3。Sim行生成函数自身1→1、内部回调6→6。未改gatewayNormalizationError自身CC16为存量项，未在本批拆分。详见[实测函数](complexity.json)。
 
 CI由推送后的准确SHA运行，完整authoring:check、全量测试、构建与兼容性结论以该次CI为准，不用本地静态检查代替。早期旧基线曾停止过宽的导出故障注入回归，未将其声明为通过；本批已换最新main重跑上述检查。
+
+## CI诊断快照修复
+
+首轮CI的完整local-authoring回归227项已通过，但MC快照检查报diagnostics.json漂移。官方mc-content-fixtures.py生成器确认只有三份诊断/布局回执中的内容与清单哈希需要同步，页面JSON和运行逻辑没有变化。已重新生成这三份回执，mc-content-fixtures.py --check通过；MC来源覆盖、33项Python内容包回归、7项TypeScript覆盖回归及独立MC打包均通过。最终CI结论以补推后的准确SHA为准。
