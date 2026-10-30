@@ -539,3 +539,5 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 `pagedJoin.records.timeoutMs` 按每次主表或补列表分页请求独立计时，每批重新获得完整预算，不再限制整轮累计耗时；任一批超时仍整轮失败且不缓存部分结果。`maxBytes` 继续整轮累计。配置形状与 Schema 版本不变，旧页面随运行时更新采用该语义。合成验收入口 `/pages/record-join-batch-timeout`（`?sourceTimeout=true` 为单批超时）；详见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)。
 
 6.77：组合查询源通过 `pagination:{mode:"query",pageSize:10,batchSize:10}` 显式按需分页，后操作成员覆盖其他成员表格状态；记录模式需真实记录标识，不自动完整回退。候选自动预热仅在新模式关闭。`isNull` 声明为空语义，未确认后端完整能力时明确不可用。见[按需查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand`、`/pages/record-join-on-demand`。
+
+对象查询参数确认（2026-10-30）：所有对象调用统一使用 query_type/object_type/output_fields、filter.fields 的 field_name/value_list/operator 以及 order；无条件和无排序仍显式发送空结构。对象表头候选通过同一协议仅投影目标字段，完整返回后去重，不读取其余明细输出字段；主查询仍每页10条。声明、限制及用户范例见[对象查询](docs/page-metadata/queries-and-bindings.md#object-query-parameters)，本地HTTP验收入口 `/pages/business-rejection-details-pagination-10`。

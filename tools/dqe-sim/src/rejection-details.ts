@@ -19,10 +19,11 @@ export function rejectionSimRows():Row[]{
   return Array.from({length:1213},(_,index)=>{
     const october=index>=1205,local=october?index-1205:index;
     const business=(october?10000:0)+Math.floor(local/2),office=offices[business%4];
+    const approvalTime=`2026-${october?'10':'09'}-${String(local%28+1).padStart(2,'0')} 12:00:00`;
     return {'商务ID':`SIM-${String(business).padStart(5,'0')}`,'商务编码':`SIM-BIZ-${String(business).padStart(5,'0')}`,
       geo_pc_code:office[0],region_dept_code:office[1],rep_office_code:office[2],'地区部':office[3],'代表处':office[4],
-      '审批完成时间':`2026-${october?'10':'09'}-${String(local%28+1).padStart(2,'0')} 12:00:00`,
-      '审批结果':'驳回','审批意见':local%2?'模拟：请补充审批材料':'模拟：商务方案需完善','审批人姓名':'模拟评审组织人',
+      '审批完成时间':approvalTime,'审批时间':approvalTime,
+      '审批结果':'驳回','审批意见':local%2?'模拟：请补充审批材料':'模拟：商务方案需完善','审批人姓名':'模拟评审组织人','审批人名称':'模拟评审组织人',
       '阶段名称':local%2?'复审':'初审','责任人名称':['模拟张三','模拟李四','模拟王五','模拟赵六'][business%4],
       '商务状态':['进行中','已关闭','已取消'][business%3]};
   });

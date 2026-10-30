@@ -9,6 +9,8 @@ const configError = (message: string) => Object.assign(new Error(message), { cod
 export function encodeObjectQuery(query: EffectiveQuery, encodeSort?: ObjectSortEncoder): JsonObject {
   let item = structuredClone(query.body.dsl_list[0]);
   if (!isObjectDqeItem(item)) throw configError('object 编码要求 query_type:object');
+  item.filter = { ...dqeRecord(item.filter), fields: fields(item) };
+  item.order = { ...dqeRecord(item.order) };
   const defaults = defaultSort(item);
   for (const predicate of query.bindingValues ?? query.filterValues) applyBinding(item, predicate);
   for (const predicate of query.tableFilters ?? []) appendPredicate(item, formattedTablePredicate(query,predicate));

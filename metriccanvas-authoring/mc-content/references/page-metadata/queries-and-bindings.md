@@ -198,6 +198,29 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 对象查询仍使用 `source.type:query` 和 `language:dqe`；原始 `body.dsl_list` 恰好一个查询项，以 `query_type:object` 识别，`object_type` 必须明确。`output_fields` 为非空、不重复的字段名数组，不与 `output_dims/output_metrics` 混用。每项输出仍须有显式 `queryField` 映射；角色、类型、单位、可空性依据已有对象字段信息声明，不能从返回样例猜测。`columns:null` 不影响归一化。上游原始行保留，商务编号不自动成为唯一行键；结果绑定提取集合时才去重。
 
+<a id="object-query-parameters"></a>
+
+### 统一对象调用参数（2026-10-30 用户确认）
+
+全部对象调用，包括明细、筛选后的重查及列候选查询，都使用同一结构；不按调用用途另造参数名。无条件时仍发送 `filter:{fields:[]}`，无排序或分页时仍发送 `order:{}`。`object_type` 与字段名保留数据上下文中的精确名称，不擅自修正拼写。用户提供的参数范例为：
+
+```json
+{
+  "dsl_list": [{
+    "query_type": "object",
+    "object_type": "Partner Health/Custormer Partner Evaluation Score",
+    "output_fields": ["地区部", "客户对伙伴的评价得分", "国内或海外"],
+    "filter": {"fields": [{"field_name": "国内或海外", "value_list": ["国内"], "operator": "="}]},
+    "order": {}
+  }]
+}
+```
+
+该范例确认的是对象参数结构，不是返回字段类型或后端自动去重保证。对象条件统一为 `field_name/value_list/operator`；不发送指标查询的 `filter.dims/filter.metrics`、`dim_name/dim_value_list` 或 `output_dims/output_metrics`。等值条件使用 `=`，既有范围条件和排序分页继续使用本节已定义的运算符及 `order` 字段。传输层可批量多个独立逻辑查询；每个页面数据源仍只声明一个查询项。精确范例由确定性编码回归核对。
+
+
+对象列候选沿同一结构查询原 `object_type`，仅将 `output_fields` 改为目标列的真实查询字段；保留区域、时间、业务条件、搜索和其他列条件，仅移除本列条件及表格排序分页。默认请求 `order:{}`，不读取其他明细输出字段。显式配置 `columnCandidates.maxRows` 或集成配置 `columnCandidatesMaxRows` 时，投影也遵守该上限，使用对应 limit/offset 限制单次返回；超过上限报告 `DQE_CANDIDATE_LIMIT_EXCEEDED`，不返回部分候选。服务可能返回重复值，前端只对这份候选投影去重、搜索和分页；不会改变主查询行数或把当前10条的取值当成完整候选。必须返回准确 `total_count`，与返回行数不符（含缺失总数、默认截断、非空却报0）时不接受部分候选，也不偷偷扩大为全字段扫描。此方式完整读取目标字段的匹配投影，不等于后端 DISTINCT。仅声明 limit 的固定TopN不自动移除业务窗口，配置了 fullQuery 时沿既有完整查询兜底保留业务范围，否则要求可信候选适配；显式 `encodeColumnCandidates` 优先。验收页 `/pages/business-rejection-details-pagination-10` 使用本地HTTP合成数据，真实服务的投影完整性、权限和隐式上限仍单列验真。
+
 对象条件使用 `filter.fields:[{field_name,value_list,operator}]`。静态原始条件保持；显式页面绑定接管其目标字段的默认条件，清空可选筛选后不恢复该字段的静态默认条件；未绑定字段保持。表头筛选、搜索继续以 AND 收窄，日期表头使用同字段已声明的时间格式。维度、层级、布尔、数值区间及查询结果绑定消费现有页面状态；对象数值区间直接落在字段条件，不发送 `filter.metrics`。`operator:'='` 的多值列表按集合等值语义编码，其真实后端行为须验真。原始未知运算符保留给上游，不能由页面端清洗删除。
 
 时间范围仍使用 `target:time`，对象分支必须增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：
@@ -210,7 +233,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。
 
-查询分页继续使用 `order.offset/limit`。子表格、关联选页和分页合并不自动追加第二排序键；没有其他排序时子表格才以行键升序作为唯一排序。单字段排序编码为 `order_by_field/type`；显式多字段排序需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索与列候选沿用可信 encodeSearch/encodeColumnCandidates 能力；缺失时明确不可用，不从当前页生成候选。
+查询分页继续使用 `order.offset/limit`。子表格、关联选页和分页合并不自动追加第二排序键；没有其他排序时子表格才以行键升序作为唯一排序。单字段排序编码为 `order_by_field/type`；显式多字段排序需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索仍需可信 `encodeSearch`；对象列候选使用上文的单字段对象投影或显式 `encodeColumnCandidates`，不能从当前页生成完整候选。
 
 窗口、有限选择、complete 的用途边界及取消、缓存、URL、筛选写入规则与普通 DQE 一致。对象 complete 源经共享范围读取取得完整行集后再计算或关联；显式完整导出使用完整读取入口。分页失败、总数变化或累计行数超出总数时不返回部分对象结果冒充完整结果；不收紧普通指标查询原有兼容规则。导出单表最多 10000 行，结果绑定去重集合最多 1000 值，超限拒绝而不截断。没有真实记录标识时不能从重复投影行推断上游重复翻页，也不能据此删除重复行；稳定分页需真实服务验真。
 

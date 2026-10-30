@@ -1,0 +1,15 @@
+{
+  "dsl_list": [
+    {
+      "query_type": "object",
+      "object_type": "Partner Health/Custormer Partner Evaluation Score",
+      "output_fields": ["地区部", "客户对伙伴的评价得分", "国内或海外"],
+      "filter": {
+        "fields": [
+          {"field_name": "国内或海外", "value_list": ["国内"], "operator": "="}
+        ]
+      },
+      "order": {}
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
 import { fullQueryColumnCandidates } from './full-query-candidates';
+import { objectColumnCandidates } from './object-column-candidates';
 import { normalizeQueryTime, QueryTimeRangeError, dqeDefaultSort, validateCalendarTimeRange, calendarEndpoint, objectDateBoundary, isObjectDqeItem } from '@metriccanvas/page/internal';
 import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
 import { validateCandidatePage } from '../column-candidates';
@@ -491,6 +492,10 @@ export function createDqeGateway(
     async fetchColumnCandidates(request, context, signal) {
       if (signal?.aborted) throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
       if (!config.encodeColumnCandidates) {
+        if (isObjectDqeItem(request.query.body.dsl_list[0])) {
+          const projected = await objectColumnCandidates(request, gateway.fetchData, context, signal, config.columnCandidates?.maxRows);
+          if (projected.kind !== 'unavailable') return projected;
+        }
         const candidatesConfig = config.columnCandidates;
         if (!candidatesConfig) return { kind: 'unavailable' };
         return fullQueryColumnCandidates(request, gateway.fetchData, candidatesConfig, context, signal);

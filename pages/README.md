@@ -583,3 +583,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 记录关联单批超时：`/pages/record-join-batch-timeout`，操作与合成数据边界见 [表格场景](capabilities/table/README.md#记录关联单批超时)。
 
 - [自动同比环比](capabilities/data/period-comparison/README.md)：四种期间、历史对象并集、增长率/百分点、全表排序筛选及导出。
+
+- [对象参数与表头候选HTTP验收](temporary/business-rejection-pagination-10/README.md)：审批结果/审批阶段按单字段对象查询取候选，主表每页10条。

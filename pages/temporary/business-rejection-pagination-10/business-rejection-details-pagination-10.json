@@ -1,0 +1,386 @@
+{
+  "schemaVersion": "6.69",
+  "id": "business-rejection-details-pagination-10",
+  "layout": "dashboard",
+  "dashboardToolbar": {
+    "variant": "compact",
+    "note": "区域和审批期间筛选；责任人及生命状态为当前快照"
+  },
+  "meta": {
+    "title": "商务驳回明细",
+    "description": "商务驳回审批记录明细；审批期间下推主表审批时间范围。主查询每页10条，按当前页商务ID补查责任人和生命状态；真实DQE字段、总数和排序稳定性待接入验真。"
+  },
+  "params": {
+    "display": [
+      {
+        "id": "reviewer-name",
+        "type": "string",
+        "required": false,
+        "value": "全部评审组织人",
+        "label": "评审组织人"
+      }
+    ]
+  },
+  "filters": [
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "label": "审批期间",
+      "precision": "month",
+      "required": true,
+      "default": {
+        "from": "2026-09",
+        "to": "2026-09"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "emptyLabel": "区域",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "geo-pc-code",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "geo"
+    }
+  ],
+  "dataSources": {
+    "rejection-details": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务ID",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部",
+          "nullable": false
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编码",
+          "queryField": "商务编码",
+          "nullable": false
+        },
+        "biz-approve-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务审批通过时间",
+          "queryField": "审批时间",
+          "nullable": false
+        },
+        "approval-opinion": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批意见",
+          "queryField": "审批意见",
+          "nullable": true
+        },
+        "approval-result": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批结果",
+          "queryField": "审批结果",
+          "nullable": false
+        },
+        "review-organizer": {
+          "type": "string",
+          "role": "dimension",
+          "label": "评审组织人",
+          "queryField": "审批人名称",
+          "nullable": false
+        },
+        "approval-stage": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批阶段",
+          "queryField": "阶段名称",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business/Commercial Review Rejection Details",
+                "output_fields": [
+                  "商务ID",
+                  "地区部",
+                  "代表处",
+                  "商务编码",
+                  "审批时间",
+                  "审批意见",
+                  "审批结果",
+                  "审批人名称",
+                  "阶段名称"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {
+                  "order_by_field": "审批时间",
+                  "type": "desc",
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "mtime": {
+              "target": "time",
+              "queryField": "审批时间",
+              "valueFormat": "datetime"
+            }
+          }
+        }
+      }
+    },
+    "business-basic": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务ID",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "biz-owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务责任人",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "life-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生命状态",
+          "queryField": "商务状态",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "商务ID",
+                  "责任人名称",
+                  "商务状态"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            }
+          },
+          "resultBindings": [
+            {
+              "source": "rejection-details",
+              "field": "biz-id",
+              "target": "dimension",
+              "queryField": "商务ID",
+              "maxValues": 1000
+            }
+          ]
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "notice",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-scope-notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "注：不含混合云（HCS）的数据",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "container": "card",
+      "components": [
+        {
+          "id": "rejection-details-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rejection-details",
+            "basic": "business-basic"
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "param": "reviewer-name"
+                },
+                " - 商务驳回明细"
+              ]
+            },
+            "fit": "content",
+            "rowNumber": {
+              "title": "序号",
+              "width": 60,
+              "fixed": "left"
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "biz-code"
+                ],
+                "placeholder": "输入商务编码搜索"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "商务驳回明细"
+              }
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "biz-id",
+            "columns": [
+              {
+                "field": "region-dept-name",
+                "title": "地区部",
+                "width": 110,
+                "fixed": "left"
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 110
+              },
+              {
+                "field": "biz-code",
+                "title": "商务编码",
+                "width": 140,
+                "fixed": "left"
+              },
+              {
+                "field": {
+                  "data": "basic",
+                  "field": "biz-owner-name"
+                },
+                "title": "商务责任人",
+                "width": 110
+              },
+              {
+                "field": "biz-approve-time",
+                "title": "商务审批通过时间",
+                "width": 160,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "basic",
+                  "field": "life-status"
+                },
+                "title": "生命状态",
+                "width": 100
+              },
+              {
+                "field": "approval-opinion",
+                "title": "审批意见",
+                "width": 200
+              },
+              {
+                "field": "approval-result",
+                "title": "审批结果",
+                "width": 100,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "review-organizer",
+                "title": "评审组织人",
+                "width": 110
+              },
+              {
+                "field": "approval-stage",
+                "title": "审批阶段",
+                "width": 120,
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
