@@ -30,6 +30,7 @@ function compareTableCells(left: Row, right: Row, rule: TableSortRule): number {
 export function filterTableRows(rows: readonly Row[], predicates: readonly TablePredicate[]): Row[] {
   return rows.filter(row => predicates.every(p => {
     const value = row[p.field];
+    if(p.op==='isNull')return value==null;
     if (p.op === 'in') return p.values.some(v => v === value);
     if (value == null) return false;
     if (p.op === 'dateRange') return (!p.from || String(value) >= p.from) && (!p.to || String(value) <= p.to);

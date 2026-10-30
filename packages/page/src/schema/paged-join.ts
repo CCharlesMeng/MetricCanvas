@@ -9,11 +9,14 @@ export const pagedJoinSourceZ = z.object({
   }).strict()).refine(value => Object.keys(value).length > 0),
   projection: z.record(fieldNameZ, z.object({ member: idZ, field: fieldNameZ }).strict()),
   ordering: z.object({ default: z.array(tableSortZ).min(1), sortableFields: z.array(fieldNameZ).min(1), nulls: z.literal('last') }).strict(),
-  pagination: z.object({ pageSize: z.int().min(1).max(1000) }).strict(),
-  fallback: z.object({ maxRows: z.int().min(1).max(1000) }).strict(),
+  pagination: z.union([
+    z.object({ pageSize: z.int().min(1).max(1000) }).strict(),
+    z.object({ mode: z.literal('query'), pageSize: z.int().min(1).max(1000), batchSize: z.int().min(1).max(1000) }).strict()
+  ]),
+  fallback: z.object({ maxRows: z.int().min(1).max(1000) }).strict().optional(),
   onMissing: z.literal('null'), ordinalField: fieldNameZ.optional(),
   records: z.object({
-    batchSize: z.int().min(1).max(1000), maxRows: z.int().min(1).max(100000).optional(),
+    batchSize: z.int().min(1).max(1000).optional(), maxRows: z.int().min(1).max(100000).optional(),
     maxBytes: z.int().min(1024).max(134217728), timeoutMs: z.int().min(1).max(120000),
     timeFilters: z.record(idZ, z.object({ field: fieldNameZ, valueFormat: z.enum(['iso', 'compact', 'datetime']) }).strict()).optional()
   }).strict().optional(),

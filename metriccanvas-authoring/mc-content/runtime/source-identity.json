@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f79ff36052addea9b19d411f4454a77a54cb9e28abae4f94b9ee82d61c61c4e7",
+  "sha256": "7f33b598961a3d0167fd57aba2ac0ba1302a5842285e3076882845660c264438",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -92,7 +92,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "67143c1d1f274fb492010d9fda75435753149faac062d81b4019077652302fa0"
+      "sha256": "dfdcbf1cfb6190961c5e8516823e8b6ee9416a1d655e26f462c7f3f5ef15715b"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "2691420401e33ab0a8283c08e2fd4d02d1b456b2b857d19f2107a5747b93e30a"
+      "sha256": "579cdba5b12bdbccdec72cdf54e1285ba9c774ff3a568da7f84b81d74a625346"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "dd03c3926d798d25fb8fe40fa1ec58f3d048076e1395d9e4108915bf78c9ffa6"
+      "sha256": "887ae9e808a1e41607e7f2dfd63949e2ad8e6450096a41d2b4cd742db8ad82fd"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -931,6 +931,10 @@
       "sha256": "e27c4d03e2f11bbf237f2efce48b0cd8822fc906c227e09e56a226f0a82d2d5b"
     },
     {
+      "file": "packages/page/fixtures/contract-valid/paged-join-query-page.json",
+      "sha256": "fddbaafde972e19c5148b2393d23bdf028a2875f4cf74c30c33eb304bf1ec37c"
+    },
+    {
       "file": "packages/page/fixtures/contract-valid/paged-union-branches.json",
       "sha256": "16970e307f55218202ea974a86a0ca16ed699a46a05fdd207afc4982e5e7a1b3"
     },
@@ -1017,6 +1021,10 @@
     {
       "file": "packages/page/fixtures/contract-valid/record-join-page.json",
       "sha256": "d08226d84dce60f25e2d63ccf9495c29388fdd6b9d14b2f0366794db243bc103"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/record-join-query-page.json",
+      "sha256": "248818a124e8a5b79cdb68f2e8d3c674c40c998cec61dac64edffe5d71539f7b"
     },
     {
       "file": "packages/page/fixtures/contract-valid/record-join-unbounded-page.json",
@@ -1408,7 +1416,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "7f16e820b8b98b5a12cfdeed9fa6f81fc9f79eebedcb19061d084b4b43162ef3"
+      "sha256": "49127dad6f05f8c276ffad0a7813eb7f3994e815e78450115486ab6be109d810"
     },
     {
       "file": "packages/page/src/ioc-header.ts",
@@ -1461,6 +1469,10 @@
     {
       "file": "packages/page/src/page.ts",
       "sha256": "52e8564ff41b35ec1bf04ef063fdd8599ed6ab734d84e375810456cd76cc89e5"
+    },
+    {
+      "file": "packages/page/src/paged-join-view.ts",
+      "sha256": "67a50051cd27c7df4c76e66b2e6261aaf3a1bce102fa656b7c6ccae02134631f"
     },
     {
       "file": "packages/page/src/paged-join.ts",
@@ -1688,11 +1700,11 @@
     },
     {
       "file": "packages/page/src/schema/paged-join.ts",
-      "sha256": "53ec0e92c97c44194d33b28a15e6c7ab8f00ee387ad162e69fb0f47bb6238086"
+      "sha256": "9bcc23bc47dad05ae47916ab5674733cb17af5c0c4a940cab41df03eaa15f3ab"
     },
     {
       "file": "packages/page/src/schema/paged-union.ts",
-      "sha256": "3fa3c85bf8886b6119df55a0f3772af2c382b719de032f8d27cb6f2eeffb2510"
+      "sha256": "001bdc5022dcf47e5ad1cbb7f2149b0f944bfc4b63ef3dfdef4715de3884a9d3"
     },
     {
       "file": "packages/page/src/schema/presentation.ts",
@@ -1744,7 +1756,7 @@
     },
     {
       "file": "packages/page/src/table/query-view.ts",
-      "sha256": "266caf0ecb584972fe25a565a7b8440bec0588510573c94e7c07421d3f475ce3"
+      "sha256": "9432b6699d00d91cf0c4906a2f68315130ae9ae20a666df628df362a9f67f171"
     },
     {
       "file": "packages/page/src/table/search.ts",
@@ -1824,7 +1836,7 @@
     },
     {
       "file": "packages/page/src/validate-record-join.ts",
-      "sha256": "049ceef1782fbae82143faadd204f9c34bd0c5595bf7a7c6c97d33f7d53b2dc4"
+      "sha256": "9b817dd21e7e8f8502edf6ef9281ab7c72c95d7de5bf68b4a568fbcd27eff35e"
     },
     {
       "file": "packages/page/src/validate.ts",
@@ -1832,7 +1844,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "522a586fcaf34f2bf4fcea2990f4b568296de61d08dc92648ed9c10b385d99fa"
+      "sha256": "7bc45259314246c21df41a7851c871bccb405612a1ec2395a63aad60b2cbb6f0"
     },
     {
       "file": "pages/README.md",
@@ -2208,15 +2220,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "c6d6999145027f3e08f8f0acde806551f776d2a28949a035cfdf358426d62e0d"
+      "sha256": "e4d685c810d5c17e84c80aa71af5983e72de6659c49d1af3e4592c4ccb909f18"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "4c2968d76953c9ade5b946877c1bf731b6dcc117c626c61aae60ae2687865ee5"
+      "sha256": "b70bb2fbe5e5de82b63361c09b41ac01406a29eb7b6a4769e507da9d24d42d03"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "88aa06916ce81d800fc31a71504bd706404c967b6b1a712bde1c7a187797a0e4"
+      "sha256": "285dee6b7f219dab6efb8d65821d4b28322ef0beaa5d68e26b4cbedb12a7e9f0"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2232,7 +2244,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "a4fe51e47164106ddb588f5c162db1b3881ad870ea79a2a1bdb8f96046bca54c"
+      "sha256": "4f2ba4e6111a9f87c4c544281fe8f1d4144c7a017e25b7c09ee30ad4119911de"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2300,7 +2312,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "9d9d447a0bd3dfe63eba4fa500412a086fddffd35432c1e54ea167d7f40c5449"
+      "sha256": "dade9209e1b6d9c6a1828ab9409ed59037e1bd3b6618608f75e1da15bc52fbba"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2335,6 +2347,10 @@
       "sha256": "8b85ddae0575af5d16cc49c383430b18f397c63a5f8f4613c39df3103f63ad68"
     },
     {
+      "file": "pages/capabilities/table/paged-join-on-demand.json",
+      "sha256": "bf0dfa02afa4e8bde75eec77babc7f3d17d35a87e71dabf7051a23fffefd506d"
+    },
+    {
       "file": "pages/capabilities/table/record-join-batch-timeout.json",
       "sha256": "e47147bc075d23eb43b7a4a7177dd22a267e2674cd76a91cb27d0cd2c3ef9b50"
     },
@@ -2345,6 +2361,10 @@
     {
       "file": "pages/capabilities/table/record-join-no-row-limit.json",
       "sha256": "cec9b4ed3d5ba17ce80990eb11575c4fc3b68f7f0ad262d0c9c28dd922346331"
+    },
+    {
+      "file": "pages/capabilities/table/record-join-on-demand.json",
+      "sha256": "47dcf55e3731f27a6899a6e9a635caaf5fc04469f84986fa5f0e287b5a1991e9"
     },
     {
       "file": "pages/capabilities/table/sales-detail.json",
@@ -2892,7 +2912,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "9d3acc6862ebc9fb11e6c15b507eda8f4e9f2a8d3299d4ef10a8e02bba9d694a"
+      "sha256": "ddaf18a03c22b5ec6c76caa0c139aae3ddfc6c6d3ede66f6d8b89f99c571dfc7"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

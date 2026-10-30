@@ -1,13 +1,14 @@
 import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents,sourceFilterIds} from '@metriccanvas/page/internal';
-import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize } from '@metriccanvas/data-execution/runtime';
+import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, compilePagedJoin } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { executionSourceKey } from './execution';
 import { filterBlockedIds, initialFilterValues, type FilterState, type FilterValues } from './filter-state';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { createTableSession, type TableSession } from './table/session';
+import {isPagedJoinQuery,reconcilePagedJoinView,type PagedJoinDataSource} from '@metriccanvas/page/internal';
 
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
@@ -26,7 +27,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   setQuerySort(dataSourceId: string, sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>): void;
-  setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters): void;
+  setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters, field?:string): void;
   setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string; match?: 'equals' }): void;
 }
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,
@@ -55,7 +56,8 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const views = () => new Map([...tables].map(([id, session]) => [id, session.snapshot()]));
     for (const id of ids) {
       const source = page.dataSources[id];
-      if (source?.source.type !== 'inline') tables.set(id, createTableSession(initialTableView(page,id,compiled.limits.get(id),initialViews), () => refetch(new Set([id]))));
+      if (source?.source.type !== 'inline') tables.set(id, createTableSession(initialTableView(page,id,compiled.limits.get(id),initialViews), () => refetch(new Set([id])),
+        (view,field)=>source?.source.type==='pagedJoin'&&isPagedJoinQuery(source.source)?compilePagedJoin(page,id,values,reconcilePagedJoinView(source as PagedJoinDataSource,view,field)).view:view));
     }
     const reconcileColumns=()=>reconcileTableSources(page,tables,{declarations:page.filters??[],filters:values,displaySnapshot:timeContext.displayInputs?.(),filterRevision:timeContext.filterRevision?.()});
     reconcileColumns();
@@ -176,8 +178,8 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     refreshQuery(id) { if (active?.tables.has(id)) active.refresh(id); },
     setQueryPage(id, value) { if (active?.pageSize(id)) active.tables.get(id)?.setPage(value); },
     setQueryPageSize(id, value) { if((page.dataSources[id]?.source.type === 'pagedJoin' || page.dataSources[id]?.source.type === 'pagedUnion')&&value>1000)return; if (active?.pageSize(id)) active.tables.get(id)?.setPageSize(value); },
-    setQuerySort(id, value) { const source=page.dataSources[id];const sortable=(source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')?source.source.ordering.sortableFields:undefined;if(sortable&&value.some(rule=>!sortable.includes(rule.field)))return; if (active?.mutable(id)) active.tables.get(id)?.setSort(((source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')&&!value.length?source.source.ordering.default:value).map(v => ({ ...v }))); },
-    setQueryHeaderFilters(id, value) { if (active?.mutable(id)) active.tables.get(id)?.setHeaders(value); },
+    setQuerySort(id, value) { const source=page.dataSources[id];const sortable=(source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')?source.source.ordering.sortableFields:undefined;if(sortable&&value.some(rule=>!sortable.includes(rule.field)))return; if (active?.mutable(id)) active.tables.get(id)?.setSort(((source?.source.type === 'pagedUnion' || source?.source.type === 'pagedJoin'&&!isPagedJoinQuery(source.source))&&!value.length?source.source.ordering.default:value).map(v => ({ ...v }))); },
+    setQueryHeaderFilters(id, value, field) { if (active?.mutable(id)) active.tables.get(id)?.setHeaders(value,field); },
     setQuerySearch(id, value) { active?.tables.get(id)?.setSearch({ ...value, fields: [...value.fields], query: value.query }); }
   };
 }

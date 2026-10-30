@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: ['0125']
 date: 2026-10-21
 note: 用户选择现有表格统一升级，并确认失配值保留、稳定值原始类型及保留NO_PERMISSION；本仓引擎实现及本地验收完成；真实DQE/Relay待验
 ---

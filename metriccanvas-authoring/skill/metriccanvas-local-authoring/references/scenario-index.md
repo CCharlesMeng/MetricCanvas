@@ -34,7 +34,7 @@
 
 | 用户需求／选择条件 | 查阅与包内示例 | Playground 对照 |
 |---|---|---|
-| 按同一业务键补列：不同查询提供同一对象的不同指标，要求全局排序与分页 | `data.pagedJoin`；[组合查询源](page-metadata/examples/paged-join-page.json)。固定业务排名另看[排名示例](page-metadata/examples/paged-join-fixed-rank-page.json)。 | `multi-query-table` |
+| 按同一业务键补列：不同查询提供同一对象的不同指标，要求全局排序与分页 | 新建读 `data.pagedJoin.pagination`，历史结构读 `data.pagedJoin`；新建默认query模式10/10，记录需真实记录id，后操作成员覆盖，不支持时列明缺口；[组合查询源](page-metadata/examples/paged-join-page.json)。固定业务排名另看[排名示例](page-metadata/examples/paged-join-fixed-rank-page.json)。 | `multi-query-table` |
 | 多来源逐行合并：合同、商务等记录统一列后混排，保留各来源记录 | [多来源表格](multi-source-table.md)、`data.pagedUnion`；[分页合并源](page-metadata/examples/paged-union-page.json)。 | `multi-source-table` |
 | 查询结果级联：先查对象集合或 TopN，再用其维度值查询下游指标 | [查询结果绑定](page-metadata/queries-and-bindings.md)的 resultBindings；[级联与回填](page-metadata/examples/query-cascade-page.json)。明确上游集合与完整性。 | `business-sdt-cascade-example` |
 | 查询分页／排序驱动级联：下游只跟随上游当前查询窗口，可先用 where 筛行 | [窗口级联](page-metadata/examples/query-result-page-window-page.json)；需完整输入时对照[结果筛行](page-metadata/examples/query-result-where-page.json)。使用查询分页；本地分页／排序不改变绑定输入。当前窗口、TopN 与全量分别核对。 | `query-result-where-page` |

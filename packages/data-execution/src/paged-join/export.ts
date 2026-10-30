@@ -9,10 +9,10 @@ import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-polic
 import { describeExportSource } from '../source-program/export-diagnostics';
 
 export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, allowPartial = false): Promise<Awaited<ReturnType<typeof executePagedJoin>>> {
-  if(plan.source.source.records)return recordJoinReader(runner).read(plan,scope,signal,true,true);
+  if(plan.source.source.records&&plan.strategy!=='queryPage')return recordJoinReader(runner).read(plan,scope,signal,true,true);
   if (!plan.selection) return executePagedJoin(plan, runner, scope, signal, true);
   const rows: Row[] = [], keys = new Set<unknown>();
-  const canReturnPartial=partialAllowed(plan,allowPartial);
+  const canReturnPartial=plan.strategy!=='queryPage'&&partialAllowed(plan,allowPartial);
   let expected: number | undefined;
   function partial() {
     console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续组合分页取数失败；导出已取得的数据，完整性未确认', {

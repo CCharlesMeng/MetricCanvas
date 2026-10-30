@@ -6,7 +6,7 @@ export interface RejectionPreviewOptions {rows?:number;duplicateBasic?:boolean;f
 export function rejectionRows(count=1205):Row[]{
   return Array.from({length:count},(_,index)=>{
     const business=Math.floor(index/2);
-    return {'biz-id':`B-${String(business).padStart(5,'0')}`,'biz-code':`BIZ-${String(business).padStart(5,'0')}`,
+    return {'record-id':`approval-${String(index).padStart(8,'0')}`,'biz-id':`B-${String(business).padStart(5,'0')}`,'biz-code':`BIZ-${String(business).padStart(5,'0')}`,
       'region-dept-name':business%2?'测试东区':'测试西区','rep-office-name':`测试代表处${business%3}`,
       'biz-approve-time':`2026-09-${String(index%28+1).padStart(2,'0')} 12:00:00`,
       'approval-result':'驳回','approval-opinion':index%2?'请补充材料':null,'review-organizer':'测试评审人','approval-stage':index%2?'复审':'初审',

@@ -957,18 +957,47 @@
                   "type": "object"
                 },
                 "pagination": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "pageSize": {
-                      "maximum": 1000,
-                      "minimum": 1,
-                      "type": "integer"
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "pageSize": {
+                          "maximum": 1000,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "pageSize"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "mode": {
+                          "const": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "maximum": 1000,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "batchSize": {
+                          "maximum": 1000,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "mode",
+                        "pageSize",
+                        "batchSize"
+                      ],
+                      "type": "object"
                     }
-                  },
-                  "required": [
-                    "pageSize"
-                  ],
-                  "type": "object"
+                  ]
                 },
                 "fallback": {
                   "additionalProperties": false,
@@ -1046,7 +1075,6 @@
                     }
                   },
                   "required": [
-                    "batchSize",
                     "maxBytes",
                     "timeoutMs"
                   ],
@@ -1288,6 +1316,24 @@
                                   "op"
                                 ],
                                 "type": "object"
+                              },
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "field": {
+                                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                    "type": "string"
+                                  },
+                                  "op": {
+                                    "const": "isNull",
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "field",
+                                  "op"
+                                ],
+                                "type": "object"
                               }
                             ]
                           },
@@ -1345,7 +1391,6 @@
                 "projection",
                 "ordering",
                 "pagination",
-                "fallback",
                 "onMissing"
               ],
               "type": "object"
@@ -2323,18 +2368,47 @@
               "type": "object"
             },
             "pagination": {
-              "additionalProperties": false,
-              "properties": {
-                "pageSize": {
-                  "maximum": 1000,
-                  "minimum": 1,
-                  "type": "integer"
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "pageSize": {
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "pageSize"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "mode": {
+                      "const": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "batchSize": {
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "mode",
+                    "pageSize",
+                    "batchSize"
+                  ],
+                  "type": "object"
                 }
-              },
-              "required": [
-                "pageSize"
-              ],
-              "type": "object"
+              ]
             },
             "fallback": {
               "additionalProperties": false,
@@ -2412,7 +2486,6 @@
                 }
               },
               "required": [
-                "batchSize",
                 "maxBytes",
                 "timeoutMs"
               ],
@@ -2654,6 +2727,24 @@
                               "op"
                             ],
                             "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "field": {
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                                "type": "string"
+                              },
+                              "op": {
+                                "const": "isNull",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "field",
+                              "op"
+                            ],
+                            "type": "object"
                           }
                         ]
                       },
@@ -2711,7 +2802,6 @@
             "projection",
             "ordering",
             "pagination",
-            "fallback",
             "onMissing"
           ],
           "type": "object"

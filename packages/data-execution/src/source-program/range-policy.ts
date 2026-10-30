@@ -1,4 +1,4 @@
-import {isObjectDqeItem,queryLeaves} from '@metriccanvas/page/internal';
+import {isObjectDqeItem,queryLeaves,isPagedJoinQuery} from '@metriccanvas/page/internal';
 import { canonicalizeJson, declaredPaginationLimit, type DataSnapshot, type DataSource, type EffectiveQuery, type TableQueryView, type Row,type EmbeddedInitialRows } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { QueryDiagnosticContext } from '../ports';
@@ -12,7 +12,7 @@ export class SourceRangeError extends Error {
 }
 export function reusableInitialSnapshot(source: DataSource, view?: TableQueryView, windowed = false): DataSnapshot | undefined {
   if (source.source.type === 'inline') return rawSnapshot(source.source.rows);
-  if(source.source.type==='pagedJoin'&&source.source.records)return undefined;
+  if(source.source.type==='pagedJoin'&&source.source.records&&!isPagedJoinQuery(source.source))return undefined;
   const initial = source.source.initial;
   if (!initial) return undefined;
   if ((source.source.type === 'pagedJoin' || source.source.type === 'pagedUnion')) {

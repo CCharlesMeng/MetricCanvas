@@ -10,6 +10,7 @@ import { ordinalRows } from '../paged-join/rows';
 import { recoveryContext, recoveryRows, recoveryView, warn, withTableRecovery, type RecoveryContext } from './read';
 
 export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, allowPartial = false) {
+  if(plan.strategy==='queryPage')return complete?exportPagedJoin(plan,runner,scope,signal):executePagedJoin(plan,runner,scope,signal);
   return withTableRecovery(
     () => complete ? exportPagedJoin(plan, runner, scope, signal, allowPartial) : executePagedJoin(plan, runner, scope, signal),
     () => recoverJoin(plan, runner, scope, signal, complete), signal);
@@ -18,7 +19,7 @@ export async function recoverJoin(plan: PagedJoinPlan, runner: QueryRunner, scop
   const records = plan.source.source.records;
   const context = recoveryContext(plan.page.id, plan.sourceId, signal, records?.timeoutMs, records?.maxBytes);
   const domainId = plan.source.source.domainMember;
-  const maxRows = records ? records.maxRows ?? 100_000 : plan.source.source.fallback.maxRows;
+  const maxRows = records ? records.maxRows ?? 100_000 : (plan.source.source.fallback?.maxRows ?? 1000);
   const raw = await recoveryRows(recordReadOrder(plan, domainId, memberQuery(plan, domainId)), runner, scope, context, plan.source.source.members[domainId].source, maxRows);
   const domain = recoverDomain(plan, context, raw);
   const keys = [...new Set(domain.map((row, index) => memberKey(plan, domainId, row, index)))];
@@ -56,7 +57,7 @@ async function recoverSupplement(plan: PagedJoinPlan, context: RecoveryContext, 
     const query = recordReadOrder(plan, id, memberQuery(plan, id));
     const allowed = restrictKeys(query, plan.source.source.members[id].key.queryField, keys.slice(offset, offset + size));
     if (!allowed.length) continue;
-    const rows = await recoveryRows(query, runner, scope, context, sourceId, plan.source.source.records ? 100_000 : plan.source.source.fallback.maxRows);
+    const rows = await recoveryRows(query, runner, scope, context, sourceId, plan.source.source.records ? 100_000 : (plan.source.source.fallback?.maxRows ?? 1000));
     for (const [rowIndex, row] of rows.entries()) {
       let key: string | number;
       try { key = memberKey(plan, id, row, rowIndex); }

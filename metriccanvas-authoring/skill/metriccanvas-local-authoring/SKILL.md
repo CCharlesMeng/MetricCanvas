@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.12.0"
+  version: "1.13.0"
 ---
 
 # 本地页面创作
@@ -43,6 +43,8 @@ node "<skill-dir>/scripts/read-knowledge.mjs" show --topic table.width
 脚本返回语义原文、局部约束、未展开引用和完整参考路径；需要引用类型时继续检索所属模块。其他能力从[专题查阅](references/protocol-routing.md)或[协议索引](references/page-metadata/README.md)定位。完整示例按实际变体读取；概览需要时读[布局](references/overview-layouts.md)和[短写法](references/component-recipes.md)，涉及地图再读[地图绑定](references/map-bindings.md)。主题不存在/工具失败时深查完整参考，说明精确读取未执行，不能当成没有约束。运行时不兼容时说明差异，不降版本绕过能力下限。
 
 ## 数据与验证
+
+多查询补列表格新建时先读 `data.pagedJoin.pagination`，默认声明 `pagination:{mode:"query",pageSize:10,batchSize:10}`，一行保留基准源一条记录。最后操作成员覆盖其他成员表格排序与过滤；能力不成立明确列出缺口，不生成完整读取回退。记录模式先确认真实唯一记录字段；编辑旧页时检查fallback、records批次、本地时间筛选和生成身份，符合才迁移，不批量重解释其他页。
 
 生成 DQE 查询遵循[数据识别与接数中的中文业务标识规则](references/data-analysis.md)。
 

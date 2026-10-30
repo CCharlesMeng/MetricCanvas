@@ -134,7 +134,9 @@
         "record-join-page",
         "paged-union-composite-key",
         "paged-union-composite-branches",
-        "paged-union-generated-key"
+        "paged-union-generated-key",
+        "paged-join-query-page",
+        "record-join-query-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -804,7 +806,9 @@
         "paged-union-branches",
         "table-column-visibility",
         "table-hierarchy-selection",
-        "table-hierarchy-lookup-param"
+        "table-hierarchy-lookup-param",
+        "paged-join-query-page",
+        "record-join-query-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -1704,7 +1708,8 @@
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/projection": "覆盖全部非身份输出列；每列显式映射字段、常量或 null。",
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/rowKeyFields": "6.72起可用，与rowKey和rowKeyGeneration三选一；至少两个不同的来源原始非空string/number维度，按声明顺序组成来源内唯一身份，不参与排序。",
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection": "覆盖全部非身份输出列；字段类型和可空性仍须兼容。",
-    "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/rowKeyGeneration": "6.73起显式选择uuid，与rowKey和rowKeyFields三选一；仅标识本次返回行，业务重复与分页重叠由上游保证。"
+    "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/rowKeyGeneration": "6.73起显式选择uuid，与rowKey和rowKeyFields三选一；仅标识本次返回行，业务重复与分页重叠由上游保证。",
+    "#/definitions/pagedJoinSource/properties/pagination/anyOf/1/properties/batchSize": "按需补列的编码分组和单次响应窗口上限，1至1000；默认创作显式写10，不扫描完整业务行域。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2004,7 +2009,8 @@
     "6.72": "分页合并成员支持多个非空原始维度组成唯一行键；旧单字段身份与分页排序保持。",
     "6.73": "分页合并成员显式选择前端UUID行键；不保证跨请求业务身份。",
     "6.74": "完整结果按稳定维度键取组织并集，再关联单项并计算分类与总分。",
-    "6.75": "6.75：boolean 候选依赖与统一条件启用。"
+    "6.75": "6.75：boolean 候选依赖与统一条件启用。",
+    "6.76": "6.76：组合源显式按需分页、最后操作成员生效和表格为空条件能力边界。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2150,6 +2156,18 @@
       "rule": "paged-union",
       "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
       "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/3": {
+      "case": "paged-join-initial-predicate-null",
+      "rule": "paged-join",
+      "reason": "显式为空属于已提交运行视图，持久化initial仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedUnionSource/properties/initial/properties/view/properties/predicates/items/anyOf/3": {
+      "case": "union-initial-predicate-null",
+      "rule": "paged-union",
+      "reason": "显式为空属于已提交运行视图，持久化initial仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
     }
   },
   "authoringTopics": {
@@ -2200,8 +2218,7 @@
         "#/definitions/pagedJoinSource"
       ],
       "headings": [
-        "多查询组合源 pagedJoin（6.22）",
-        "审批记录与当前信息补列（6.66）"
+        "多查询组合源 pagedJoin（6.22）"
       ],
       "dependencies": []
     },
@@ -2571,6 +2588,31 @@
         "组合表格异常兼容"
       ],
       "dependencies": []
+    },
+    "data.pagedJoin.pagination": {
+      "module": "data-sources",
+      "title": "组合查询源按需分页",
+      "roots": [
+        "#/definitions/pagedJoinSource"
+      ],
+      "headings": [
+        "按需组合查询分页（6.76）"
+      ],
+      "dependencies": []
+    },
+    "data.pagedJoin.records": {
+      "module": "data-sources",
+      "title": "历史记录关联与预算",
+      "roots": [
+        "#/definitions/pagedJoinSource/properties/records",
+        "#/definitions/pagedJoinSource/properties/rowKey",
+        "#/definitions/pagedJoinSource/properties/members",
+        "#/definitions/pagedJoinSource/properties/projection"
+      ],
+      "headings": [
+        "审批记录与当前信息补列（6.66）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2593,6 +2635,7 @@
       "查询异常与结果总数",
       "查阅方式",
       "多查询组合源 pagedJoin（6.22）",
+      "按需组合查询分页（6.76）",
       "当前序号与固定业务排名",
       "分页合并源 pagedUnion（6.61）",
       "分页合并成员行键策略（6.73）",

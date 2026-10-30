@@ -1,23 +1,45 @@
-import { selectQuerySource, hasQueryFieldMapping, type Page, type PagedJoinDataSource, type QueryDataSource, type TableQueryView } from '@metriccanvas/page/internal';
+import { dqeDefaultSort, isObjectDqeItem, isPagedJoinQuery, pagedJoinViewOwner, reconcilePagedJoinView, pagedJoinUnavailable, selectQuerySource, hasQueryFieldMapping, type Page, type PagedJoinDataSource, type QueryDataSource, type TableQueryView } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../filter-values';
 import { composeEffectiveQuery } from '../effective-query';
 
 export type PagedJoinPlan = { page: Page; sourceId: string; source: PagedJoinDataSource; conditions: FilterValues;now?:Date;
-  view: TableQueryView; strategy:'selectPageThenFill'|'completeJoin'|'recordJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'|'records'; selection?: string; members: Map<string, QueryDataSource> };
+  view: TableQueryView; strategy:'queryPage'|'selectPageThenFill'|'completeJoin'|'recordJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'|'records'; selection?: string; members: Map<string, QueryDataSource> };
 /** Dynamic execution order stays private; resultBindings are never rewritten. */
 export function compilePagedJoin(page: Page, sourceId: string, conditions: FilterValues, input: TableQueryView,now?:Date): PagedJoinPlan {
   const source = page.dataSources[sourceId] as PagedJoinDataSource;
   const view = structuredClone(input);
-  if (!view.sort.length) view.sort = structuredClone(source.source.ordering.default);
+  if (!view.sort.length && (!isPagedJoinQuery(source.source) || !view.predicates.length)) view.sort = structuredClone(source.source.ordering.default);
   if(view.pageSize>1000)throw Object.assign(new Error('组合查询窗口超过 1000 行'),{code:'DQE_QUERY_REJECTED'});
   if (view.sort.some(rule => ![...source.source.ordering.sortableFields,...source.source.ordering.default.map(rule=>rule.field)].includes(rule.field))) throw Object.assign(new Error('未声明的全局排序字段'), { code: 'DQE_QUERY_REJECTED' });
   if (view.predicates.some(p => !source.source.projection[p.field])) throw Object.assign(new Error('未声明的组合筛选字段'), { code: 'DQE_QUERY_REJECTED' });
   if(view.predicates.some(predicate=>{const field=source.fields[predicate.field];return predicate.op==='gte'||predicate.op==='lte'?field.role!=='measure'||!['number','money'].includes(field.type):field.role!=='dimension';}))throw Object.assign(new Error('组合筛选与最终字段类型不相容'),{code:'DQE_QUERY_REJECTED'});
   if (view.search?.fields.some(field => !source.source.projection[field] || source.fields[field]?.type !== 'string')) throw Object.assign(new Error('组合搜索字段必须为已投影文本'), { code: 'DQE_QUERY_REJECTED' });
   const members = new Map(Object.entries(source.source.members).map(([id, member]) => [id, selectQuerySource(page.dataSources[member.source] as QueryDataSource,conditions)]));
+  if(isPagedJoinQuery(source.source))return queryPagePlan({now,page,sourceId,source,conditions,view,members,strategy:'queryPage',reason:'single-owner'});
   if(source.source.records)return {now,page,sourceId,source,conditions,view,members,strategy:'recordJoin',reason:'records'};
   const {selection,reason}=selectPageMember(page,source,members,conditions,view,now);
   return {now,page,sourceId,source,conditions,view,selection,members,strategy:selection?'selectPageThenFill':'completeJoin',reason};
+}
+
+function queryPagePlan(plan:PagedJoinPlan):PagedJoinPlan{
+  const view=reconcilePagedJoinView(plan.source,plan.view),selection=pagedJoinViewOwner(plan.source,view);
+  const definition=plan.members.get(selection)!;
+  const query=composeEffectiveQuery({now:plan.now,filters:plan.page.filters,dataSource:definition},plan.conditions,0,[],{});
+  const sort:{queryField?:string}[]=view.sort.length?view.sort.map(rule=>{
+    const field=definition.fields[plan.source.source.projection[rule.field].field];
+    return {queryField:hasQueryFieldMapping(field)?field.queryField:undefined};
+  }):dqeDefaultSort(query.body.dsl_list[0]);
+  if(!sort.length)sort.push({queryField:plan.source.source.members[selection].key.queryField});
+  if(sort.length>1&&!isObjectDqeItem(query.body.dsl_list[0]))throw pagedJoinUnavailable('指标查询暂不支持同时按多列排序，请选择单列');
+  validateQueryPageSort(definition,sort);
+  return {...plan,view,selection};
+}
+
+function validateQueryPageSort(definition:QueryDataSource,sort:readonly {queryField?:string}[]):void{
+  for(const rule of sort){
+    const field=Object.values(definition.fields).find(field=>hasQueryFieldMapping(field)&&field.queryField===rule.queryField);
+    if(!field||field.nullable!==false)throw pagedJoinUnavailable('该排序字段的后端空值顺序尚未确认，暂不支持查询分页');
+  }
 }
 
 function selectPageMember(page:Page,source:PagedJoinDataSource,members:Map<string,QueryDataSource>,conditions:FilterValues,view:TableQueryView,now?:Date){

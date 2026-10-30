@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 123 份 ADR（0001–0124）：现行 116、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 124 份 ADR（0001–0125）：现行 117、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -124,13 +124,13 @@
 | [0105](./0105-shared-page-data-execution-and-initial-consumption.md) | Relay与浏览器共用页面查询执行，单次入口返回完整页面文档 | 现行；用户完成Q1–Q14裁决并授权实施；真实Relay/DQE接入单列验收 |
 | [0106](./0106-filter-query-result-input-rows-per-binding.md) | 下游查询结果绑定独立筛选上游原始行 | 现行；用户认可现有查询结果绑定上的行过滤方案，并授权落盘和实施 |
 | [0107](./0107-query-page-windows-drive-result-dependencies.md) | 查询分页窗口通过现有结果绑定驱动依赖更新 | 现行；用户确认任意列排序可驱动其他查询，排序回到第一页，并授权实施 |
-| [0108](./0108-paged-join-and-unified-source-program.md) | 组合查询源引用普通查询定义，SourceProgram 统一执行规则 | 现行；用户授权按既定方案连续实施 P0–P5；真实 DQE/Relay 单列验收 |
+| [0108](./0108-paged-join-and-unified-source-program.md) | 组合查询源引用普通查询定义，SourceProgram 统一执行规则 | 现行；部分由 [0125](./0125-paged-join-query-pagination-and-member-operations.md) 修订；用户授权按既定方案连续实施 P0–P5；真实 DQE/Relay 单列验收 |
 | [0109](./0109-explicit-text-value-composition.md) | 文本取值用显式片段组合动态引用与固定文字 | 现行；用户要求报告主标题随时间筛选变化，批准补充动态时间与固定文字组合；6.23 增量 |
 | [0110](./0110-hidden-echarts-presentation-options.md) | 图表以隐含协议入口支持 ECharts 呈现透传，失败单次降级且只向 console 输出诊断 | 现行；Schema 6.32 已在隔离检出完成首批柱/线/饼图实施、分发及本地完整验收；单次降级、console-only |
 | [0111](./0111-metric-card-before-connection-layout.md) | 指标卡前置连接文字由父级统一排布 | 现行；Schema 6.34，受控修订 0038/0054 的间距开放边界 |
 | [0112](./0112-unified-presentation-conditions.md) | 展示条件就地声明并由统一运行时集中求值 | 现行；部分由 [0122](./0122-table-column-visibility-and-view-reconciliation.md) 修订；用户确认就地条件、集中求值和父级单向约束，并授权实施；6.35增量，真实CloudIOC联调单列 |
 | [0113](./0113-isolated-expanded-row-tables.md) | 行内子表格复用Table，以父行拥有独立查询作用域 | 现行；用户确认单层白底、默认干净、独立查询分页及实时offset语义；导出范围仍待确认 |
-| [0114](./0114-table-column-candidates-use-matching-results.md) | 表格列候选值统一取本表匹配结果，已有表格同步升级 | 现行；用户选择现有表格统一升级，并确认失配值保留、稳定值原始类型及保留NO_PERMISSION；本仓引擎实现及本地验收完成；真实DQE/Relay待验 |
+| [0114](./0114-table-column-candidates-use-matching-results.md) | 表格列候选值统一取本表匹配结果，已有表格同步升级 | 现行；部分由 [0125](./0125-paged-join-query-pagination-and-member-operations.md) 修订；用户选择现有表格统一升级，并确认失配值保留、稳定值原始类型及保留NO_PERMISSION；本仓引擎实现及本地验收完成；真实DQE/Relay待验 |
 | [0115](./0115-standalone-filter-groups-and-controlled-migration.md) | 固定筛选按钮组成为独立页面组件，旧图表声明受控迁移 | 现行；用户确认固定单选独立组件、一控多、统一显隐、旧声明全部迁移，并明确批准本次采用6.45的受控迁移例外 |
 | [0116](./0116-tab-mixed-content-and-activation.md) | Tab 混合内容与活动面板生命周期 | 现行；用户确认混合内容、12列布局、独立局部筛选、按需取数、保活、URL恢复及Report导出规则，并授权实施 |
 | [0117](./0117-query-projections-and-page-measure-roles.md) | 查询投影位置与页面数值度量角色分别声明 | 现行；用户确认将通过 output_dims 取得的现成项目数量用于按区域绘制柱状图，并授权实施 |
@@ -141,6 +141,7 @@
 | [0122](./0122-table-column-visibility-and-view-reconciliation.md) | 表格列展示条件与已有会话视图调和 | 现行；用户逐轮确认列显隐、搜索、状态清理、作用域与导出；要求文件组织高内聚、低耦合及真源归一 |
 | [0123](./0123-explicit-hierarchy-selection-and-complete-child-export.md) | 层级选择通过显式父级定位驱动父行视图与完整子表导出 | 现行；用户确认层级筛选的父整体口径、显式归属定位、展开会话保留与完整双工作表 Excel，并授权正式实现 |
 | [0124](./0124-ioc-region-single-tree.md) | IOC Region 只允许页头中的单个组织树 | 现行；用户要求 IOC Region 只允许 Header 中单个树形下拉，并明确普通维度筛选保留；本次按已确认范围受控迁移，不保留 IOC Region 的旧写法 |
+| [0125](./0125-paged-join-query-pagination-and-member-operations.md) | 组合查询源显式启用按需分页并由最后操作成员决定表格条件 | 现行；用户确认默认10条按需分页、最后操作成员生效及能力不足时拒绝；真实DQE单源分页另验 |
 
 <!-- adr-index:end -->
 
@@ -156,7 +157,7 @@
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 0110 |
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 0111 0112 0113 0115 0116 0119 0120 0122 0123 |
-| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 0112 0114 0117 0120 0121 0123 |
+| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 0112 0114 0117 0120 0121 0123 0125 |
 | [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 0118 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |
 | [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 0118 |

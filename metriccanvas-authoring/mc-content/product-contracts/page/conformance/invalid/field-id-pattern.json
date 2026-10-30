@@ -186,11 +186,6 @@
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/dataSources/overview/source/fallback",
-      "message": "缺少必填字段 fallback"
-    },
-    {
-      "type": "SCHEMA_ERROR",
       "path": "/dataSources/overview/source/onMissing",
       "message": "缺少必填字段 onMissing"
     },

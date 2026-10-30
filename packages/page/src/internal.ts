@@ -53,6 +53,7 @@ export * from './query-dependencies';
 export * from './query-result-where';
 
 export * from './paged-join';
+export * from './paged-join-view';
 export * from './table/query-view';
 export * from './table/search';
 export * from './data-source-references';

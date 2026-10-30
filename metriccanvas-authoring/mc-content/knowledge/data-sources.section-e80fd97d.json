@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.75",
+  "schemaVersion": "6.76",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data-sources.section-e80fd97d"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/data-sources.md",
       "blocks": [
         "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。 局部修改已有可信绑定时，只核对受影响对象、共享消费者和源依赖；指标匹配报告按任务需要形成。独立 Skill 的组件范围仅缩小读取输出，全页校验与真实查询验真要求保持不变。`local-authoring-scoped-data-demo` 展示两表共享同一合成指标与独立内容，便于核对相关消费者和修改范围。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nquery.initial保存捕获时间和匹配该查询的初始行，只能在当前条件与声明初值匹配时使用；变更后由网关查询。执行bootstrap初始结果另走执行端口，条件标识与查询定义一致才复用，不与旧initial混用。非查询分页数据源即使 initial.rows.length 小于 initial.totalCount，也直接呈现内嵌初始行，不为补齐数据自动查询；组件提示当前载入条数与总数，不将部分数据当成完整结果。空 initial.rows 同样是可复用快照；未知总数不推断完整性。查询分页的持久化initial仍需有效totalCount与完整第一页，动态结果的总数不一致不阻止显示已有行。跨数据源计算继续使用本轮返回行。\n\n可选compute作用于已归一化行集。inline行使用页面字段id；query结果经queryField映射。静态JSON通过校验不证明真实DQE成功。\n\n查询数值度量在进入快照和 compute 前归一化为有限数字或 `null`，单个异常值不再拒绝整份查询；首屏 initial、动态响应和一层嵌套明细使用同一规则，详见[结果字段契约](fields.md#查询数值度量的容错)。`nullable: false` 的数值度量缺失只告警，普通 query 的缺字段和结构错误仍会失败；组合源可在有界整理阶段兼容，见下文。`query-numeric-tolerance` 是对应完整合成验收示例。",
-        "## 多查询组合源 pagedJoin（6.22）\n\n`pagedJoin` 只引用页内已有普通查询源，复用查询定义，独立产出组合表的公开数据快照。成员必须无 compute、无 resultBindings、无业务 TopN/窗口，并声明 `resultScope: complete`。普通结果与内部选页、补列结果隔离；定义引用只传播参数/筛选失效，不改变固定级联顺序。\n\n`domainMember` 定义业务行域；各成员按显式单个非空 string/number 维度键关联，`projection` 覆盖最终字段。类型、角色、单位和币种一致，可能缺匹配的列允许 null。网络、权限或查询配置错误整轮失败；结果异常按下文兼容。序号由 `ordinalField` 生成，与稳定 `rowKey` 分开。\n\n同源可兑现全部排序/筛选且 `canSelectPage` 已经真实验真时，先选页编码，再取各成员编码内的完整行；否则在最大 1000 行的完整行域上关联、筛选、稳定排序并分页。不能筛当前页冒充全局处理。完整本地路径在排序末尾补业务键升序，远端选页仅请求声明的业务排序；缺值在升降序都排尾；可空原始排序字段未确认上游 null 编码时走完整路径。\n\n每个组合源只由一张单槽查询分页表独占；多个组合源可共用普通成员定义。独立图表仍消费完整普通结果。`initial` 保存最终页面字段与默认第一页视图，不是 DQE 原始行；缺少组合 initial 时不会借成员 ordinary initial 拼页。完整导出冻结已提交视图，取得所有匹配行，最多 10000 行/60 秒；结果异常允许整理可用行并附 warning；导出包含“数据异常说明”工作表，不能将缺项文件称为完整原始结果。\n\n`canSelectPage` 是能力声明，静态校验、仿真和样本不能证明真实行域覆盖、计数、排序或粒度。真实 DQE 接入需单列验收；未兑现能力应设为 false 使用有界完整路径。\n\n验收场景 `multi-query-table` 使用 8 个代表处合成数据：预签金额降序第一页为上海、北京、广州，切换召开率降序后为上海、深圳、北京，独立图表仍使用全部 8 行。本节生成的 `paged-join-page` 完整示例展示成员引用与投影；可运行场景另含搜索、导出和独立完整表，分别验证结果隔离与全部匹配行。\n\n6.44查询子表格引用的专属query源从首屏取数中排除；展开后在父行独立作用域中执行。分页、搜索和排序仅改变该实例的生效查询，不改变页面数据源定义、主页面快照或全页筛选。详见[行内子表格](components/table.md#row-expansion)。\n\n6.59 的表格置顶行复用独立普通 query 源，显式 complete 且不使用查询窗口；不改变 main 的明细行域或 pagedJoin 语义。数据网关结果、缓存及计算快照同步保留 cellFallbacks 展示证据，普通查询回填 initial 时恢复原始标量；字段仍按有效类型值参与计算和结果绑定。完整声明见[表格置顶行](components/table.md#table-pinned-top)。"
+        "## 多查询组合源 pagedJoin（6.22）\n\n\n`pagedJoin` 只引用页内已有普通查询源，复用查询定义，独立产出组合表的公开数据快照。成员必须无 compute、无 resultBindings、无业务 TopN/窗口，并声明 `resultScope: complete`。普通结果与内部选页、补列结果隔离；定义引用只传播参数/筛选失效，不改变固定级联顺序。\n\n`domainMember` 定义业务行域；各成员按显式单个非空 string/number 维度键关联，`projection` 覆盖最终字段。类型、角色、单位和币种一致，可能缺匹配的列允许 null。网络、权限或查询配置错误整轮失败；结果异常按下文兼容。序号由 `ordinalField` 生成，与稳定 `rowKey` 分开。\n\n同源可兑现全部排序/筛选且 `canSelectPage` 已经真实验真时，先选页编码，再取各成员编码内的完整行；否则在最大 1000 行的完整行域上关联、筛选、稳定排序并分页。不能筛当前页冒充全局处理。完整本地路径在排序末尾补业务键升序，远端选页仅请求声明的业务排序；缺值在升降序都排尾；可空原始排序字段未确认上游 null 编码时走完整路径。\n\n每个组合源只由一张单槽查询分页表独占；多个组合源可共用普通成员定义。独立图表仍消费完整普通结果。`initial` 保存最终页面字段与默认第一页视图，不是 DQE 原始行；缺少组合 initial 时不会借成员 ordinary initial 拼页。完整导出冻结已提交视图，取得所有匹配行，最多 10000 行/60 秒；结果异常允许整理可用行并附 warning；导出包含“数据异常说明”工作表，不能将缺项文件称为完整原始结果。\n\n`canSelectPage` 是能力声明，静态校验、仿真和样本不能证明真实行域覆盖、计数、排序或粒度。真实 DQE 接入需单列验收；未兑现能力应设为 false 使用有界完整路径。\n\n验收场景 `multi-query-table` 使用 8 个代表处合成数据：预签金额降序第一页为上海、北京、广州，切换召开率降序后为上海、深圳、北京，独立图表仍使用全部 8 行。本节生成的 `paged-join-page` 完整示例展示成员引用与投影；可运行场景另含搜索、导出和独立完整表，分别验证结果隔离与全部匹配行。\n\n6.44查询子表格引用的专属query源从首屏取数中排除；展开后在父行独立作用域中执行。分页、搜索和排序仅改变该实例的生效查询，不改变页面数据源定义、主页面快照或全页筛选。详见[行内子表格](components/table.md#row-expansion)。\n\n6.59 的表格置顶行复用独立普通 query 源，显式 complete 且不使用查询窗口；不改变 main 的明细行域或 pagedJoin 语义。数据网关结果、缓存及计算快照同步保留 cellFallbacks 展示证据，普通查询回填 initial 时恢复原始标量；字段仍按有效类型值参与计算和结果绑定。完整声明见[表格置顶行](components/table.md#table-pinned-top)。"
       ],
       "rules": [
         {
@@ -41,6 +41,7 @@
           "invalid": [
             "union-uuid-old",
             "union-uuid-conflict",
+            "union-initial-predicate-null",
             "union-initial-predicate-date",
             "union-initial-predicate-numeric",
             "union-initial-predicate-in",
@@ -63,6 +64,7 @@
           ],
           "invalid": [
             "table-number-range-before-6.22",
+            "paged-join-initial-predicate-null",
             "paged-join-initial-predicate-in",
             "paged-join-initial-predicate-numeric",
             "paged-join-initial-predicate-date",
@@ -160,7 +162,9 @@
         "references/page-metadata/examples/record-join-page.json",
         "references/page-metadata/examples/paged-union-composite-key.json",
         "references/page-metadata/examples/paged-union-composite-branches.json",
-        "references/page-metadata/examples/paged-union-generated-key.json"
+        "references/page-metadata/examples/paged-union-generated-key.json",
+        "references/page-metadata/examples/paged-join-query-page.json",
+        "references/page-metadata/examples/record-join-query-page.json"
       ]
     }
   ],

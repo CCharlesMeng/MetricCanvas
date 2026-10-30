@@ -4,7 +4,8 @@ export const tableSortZ = z.object({ field: fieldNameZ, direction: z.enum(['asc'
 export const tablePredicateZ = z.union([
     z.object({ field: fieldNameZ, op: z.literal('in'), values: z.array(z.union([z.string(), z.number()])).min(1) }).strict(),
     z.object({ field: fieldNameZ, op: z.enum(['gte', 'lte']), value: z.number() }).strict(),
-    z.object({ field: fieldNameZ, op: z.literal('dateRange'), from: z.string().optional(), to: z.string().optional() }).strict()
+    z.object({ field: fieldNameZ, op: z.literal('dateRange'), from: z.string().optional(), to: z.string().optional() }).strict(),
+    z.object({ field: fieldNameZ, op: z.literal('isNull') }).strict()
 ]);
 export const tableQueryViewZ = z.object({
     pageIndex: z.int().min(0), pageSize: z.int().min(1),
@@ -16,6 +17,8 @@ export type TableSortRule = z.infer<typeof tableSortZ>;
 export type TablePredicate = z.infer<typeof tablePredicateZ>;
 export type TableQueryView = z.infer<typeof tableQueryViewZ>;
 export type TableHeaderFilters = Readonly<Record<string, {
+    mode:'isNull';
+} | {
     mode: 'select';
     values: readonly (string | number)[];
 } | {
@@ -29,6 +32,7 @@ export type TableHeaderFilters = Readonly<Record<string, {
 }>>;
 export function tablePredicates(filters: TableHeaderFilters): TablePredicate[] {
     return Object.entries(filters).flatMap(([field, filter]): TablePredicate[] => {
+        if(filter.mode==='isNull')return [{field,op:'isNull'}];
         if (filter.mode === 'select')
             return filter.values.length ? [{ field, op: 'in', values: [...filter.values] }] : [];
         if (filter.mode === 'dateRange')
@@ -40,7 +44,8 @@ export function tablePredicates(filters: TableHeaderFilters): TablePredicate[] {
 export function tableHeaders(predicates: readonly TablePredicate[]): TableHeaderFilters {
     const result: Record<string, TableHeaderFilters[string]> = {};
     for (const p of predicates) {
-        if (p.op === 'in')
+        if(p.op==='isNull')result[p.field]={mode:'isNull'};
+        else if (p.op === 'in')
             result[p.field] = { mode: 'select', values: [...p.values] };
         else if (p.op === 'dateRange')
             result[p.field] = { mode: 'dateRange', from: p.from ?? '', to: p.to ?? '' };

@@ -25,6 +25,7 @@ export { intersectQueryFilters } from './intersect-filters';
 export { candidateContextKey, filterCandidatesRequest, validFilterCandidates } from './filter-candidates';
 export { createCandidateGatewaySession } from './candidate-session';
 export { candidateView, candidateKey, localColumnCandidates } from './column-candidates';
+export { compilePagedJoin } from './paged-join/plan';
 export type { ColumnCandidatesRead } from './source-program/column-candidates';
 
 export { createCandidateValidator } from './candidate-validation';

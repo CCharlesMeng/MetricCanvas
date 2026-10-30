@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createPagedJoinPreview } from '../../../../../fixtures/paged-join-on-demand';
   import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
   import {createTableRecoveryPreview} from '../../../../../fixtures/table-recovery';
   import {withIocRegionCandidates} from '$lib/ioc-region-preview';
@@ -103,9 +104,15 @@
     void loadPage(pageId);
   });
 
+  function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='paged-join-on-demand')return createPagedJoinPreview().dataGateway;
+    if(input==='full-query-candidates')return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
+  }
+
   function previewDataGateway(pageId: string): DataGateway {
+    const tableGateway=queryTableGateway(pageExternalInputs(pageId));
+    if(tableGateway)return tableGateway;
     switch (pageExternalInputs(pageId)) {
-      case 'full-query-candidates': return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
       case 'key-office': return createKeyOfficeGateway();
       case 'ioc-region': return withIocRegionCandidates(dataGateway);
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;

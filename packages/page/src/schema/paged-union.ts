@@ -16,7 +16,7 @@ export const pagedUnionSourceZ = z.object({
   type: z.literal('pagedUnion'), rowKey: fieldNameZ, sourceField: fieldNameZ,
   members: z.record(idZ, unionMemberZ).meta({ minProperties: 2 }),
   ordering: pagedJoinSourceZ.shape.ordering,
-  pagination: pagedJoinSourceZ.shape.pagination,
+  pagination: z.object({pageSize:z.int().min(1).max(1000)}).strict(),
   initial: pagedJoinSourceZ.shape.initial
 }).strict().meta({ id: 'pagedUnionSource' });
 export const pagedUnionDataSourceZ = z.object({ fields: fieldsZ, source: pagedUnionSourceZ }).strict().meta({ id: 'pagedUnionDataSource' });

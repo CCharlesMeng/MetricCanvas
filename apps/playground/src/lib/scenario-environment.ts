@@ -1,3 +1,4 @@
+import {createPagedJoinPreview} from '../../fixtures/paged-join-on-demand';
 import { createFullQueryCandidatesPreview } from '../../fixtures/full-query-candidates';
 import {withIocRegionCandidates} from './ioc-region-preview';
 import {createKeyOfficeGateway} from '../../fixtures/key-office-filter/gateway';
@@ -18,7 +19,8 @@ import { dataGateway } from './services';
 /** Called only with an example ID resolved from the trusted scenario index, never from edited JSON. */
 export function scenarioEnvironment(exampleId: string, state = 'ready') {
   const kind = pageExternalInputs(exampleId);
-  if (kind === 'full-query-candidates') return createFullQueryCandidatesPreview(state);
+  const table=tablePreview(kind,state);
+  if(table)return table;
   if (kind === 'organization-union') return createPartnerHealthUnionPreview(state);
   if (kind === 'table-recovery') return createTableRecoveryPreview(state);
   if (kind === 'ioc-region') return {dataGateway:withIocRegionCandidates(dataGateway)};
@@ -36,4 +38,10 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
     return { dataGateway, displayInputs: visibility.source, setFact: visibility.publish };
   }
   return { dataGateway };
+}
+
+function tablePreview(kind:string|undefined,state:string){
+  if(kind==='paged-join-on-demand')return createPagedJoinPreview();
+  if(kind==='full-query-candidates')return createFullQueryCandidatesPreview(state);
+  return undefined;
 }

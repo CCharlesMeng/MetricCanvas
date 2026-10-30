@@ -85,7 +85,7 @@ describe('SourceProgram pagedJoin behavior',()=>{
   const missing=await read({sort:[{field:'analysis-meeting-rate',direction:'desc'}]},'screen',{async fetchData(query){const result=await gateway.fetchData(query);if('support-rate' in query.fieldMappings){result.rows=[];result.totalCount=0;}return result;}});expect(rows(missing).every(row=>row['support-rate']===null)).toBe(true);
  });
  it('rejects fallback limits and warns about changing export totals',async()=>{
-  const page=parsed();const source=page.dataSources[root];if(source.source.type!=='pagedJoin')throw Error('join');source.source.fallback.maxRows=7;
+  const page=parsed();const source=page.dataSources[root];if(source.source.type!=='pagedJoin')throw Error('join');source.source.fallback={maxRows:7};
   const program=createSourceProgram(page,{gateway:officeGateway()});let result:DataSnapshot|undefined;
   try{for await(const update of program.read({roots:[root],conditions:new Map(),views:new Map([[root,{...defaultSourceView(page,root),search:{fields:['rep-office-name'],query:'上海'}}]])}))result=update.snapshot;}finally{program.dispose();}
   expect(result).toMatchObject({status:'error',error:{code:'DQE_QUERY_REJECTED'}});

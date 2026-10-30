@@ -1,8 +1,18 @@
 {
   "major": 6,
-  "minor": 75,
-  "current": "6.75",
+  "minor": 76,
+  "current": "6.76",
   "capabilities": {
+    "table-null-predicate": {
+      "minor": 76,
+      "description": "表格显式为空条件及后端能力拒绝",
+      "legacyReadable": false
+    },
+    "paged-join-query-pagination": {
+      "minor": 76,
+      "description": "组合查询源按需分页与最后操作成员生效",
+      "legacyReadable": false
+    },
     "boolean-filter-enabled": {
       "minor": 75,
       "description": "布尔筛选器复用统一条件控制编辑资格",
@@ -780,6 +790,7 @@
     "6.72",
     "6.73",
     "6.74",
-    "6.75"
+    "6.75",
+    "6.76"
   ]
 }

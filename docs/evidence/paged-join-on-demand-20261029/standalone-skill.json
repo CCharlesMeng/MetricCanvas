@@ -1,0 +1,42 @@
+{
+  "root": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f",
+  "skillVersion": "1.13.0",
+  "schemaVersion": "6.76",
+  "externalLinks": [],
+  "checks": [
+    {
+      "command": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f/skill/scripts/validate-page.mjs",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":\"6.76\",\"validation\":\"page-and-file-name\"}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f/skill/scripts/validate-page.mjs",
+        "--expected-layout",
+        "dashboard",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f/paged-join-on-demand.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"file\":\"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f/paged-join-on-demand.json\",\"ok\":true,\"errors\":[]}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f/skill/scripts/validate-page.mjs",
+        "--expected-layout",
+        "dashboard",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f/record-join-on-demand.json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"file\":\"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/paged-join-skill-final-ta92re6f/record-join-on-demand.json\",\"ok\":true,\"errors\":[]}",
+      "stderr": ""
+    }
+  ]
+}

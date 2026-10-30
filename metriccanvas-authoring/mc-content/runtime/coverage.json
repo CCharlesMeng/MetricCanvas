@@ -348,6 +348,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/paged-join-query-page.json",
+      "target": "product-contracts/page/conformance/valid/paged-join-query-page.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/paged-union-branches.json",
       "target": "product-contracts/page/conformance/valid/paged-union-branches.json",
       "scope": "exact product contract"
@@ -455,6 +460,11 @@
     {
       "source": "product:page/conformance/valid/record-join-page.json",
       "target": "product-contracts/page/conformance/valid/record-join-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/record-join-query-page.json",
+      "target": "product-contracts/page/conformance/valid/record-join-query-page.json",
       "scope": "exact product contract"
     },
     {
@@ -1818,6 +1828,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/invalid/union-initial-predicate-null.json",
+      "target": "product-contracts/page/conformance/invalid/union-initial-predicate-null.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/invalid/union-initial-predicate-date.json",
       "target": "product-contracts/page/conformance/invalid/union-initial-predicate-date.json",
       "scope": "exact product contract"
@@ -1875,6 +1890,11 @@
     {
       "source": "product:page/conformance/invalid/table-number-range-before-6.22.json",
       "target": "product-contracts/page/conformance/invalid/table-number-range-before-6.22.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/paged-join-initial-predicate-null.json",
+      "target": "product-contracts/page/conformance/invalid/paged-join-initial-predicate-null.json",
       "scope": "exact product contract"
     },
     {
@@ -4343,6 +4363,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/union-initial-predicate-null.json",
+      "target": "references/page-metadata/errors/union-initial-predicate-null.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/union-initial-predicate-date.json",
       "target": "references/page-metadata/errors/union-initial-predicate-date.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -4400,6 +4425,11 @@
     {
       "source": "product:page/reference/errors/table-number-range-before-6.22.json",
       "target": "references/page-metadata/errors/table-number-range-before-6.22.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/paged-join-initial-predicate-null.json",
+      "target": "references/page-metadata/errors/paged-join-initial-predicate-null.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -5823,6 +5853,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/paged-join-query-page.json",
+      "target": "references/page-metadata/examples/paged-join-query-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/record-join-query-page.json",
+      "target": "references/page-metadata/examples/record-join-query-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/data-sources.md",
       "target": "references/page-metadata/data-sources.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6694,11 +6734,11 @@
     }
   ],
   "counts": {
-    "product": 1307,
+    "product": 1315,
     "authoring": 31,
     "modules": 33,
-    "topics": 203,
-    "nodes": 2424,
+    "topics": 206,
+    "nodes": 2435,
     "tools": 9,
     "components": 19
   },

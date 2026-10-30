@@ -117,6 +117,7 @@ function metricRangePredicates(metric: string, value: { from?: number; to?: numb
 }
 
 function headerPredicates(queryField: string, filter: QueryHeaderFilters[string]): Predicates {
+  if(filter.mode==='isNull')throw Object.assign(new Error('数据网关未确认完整的为空查询能力'),{code:'DQE_CONFIG_ERROR'});
   if (filter.mode === 'select') return filter.values.length > 0 ? [{ target: 'dimension', queryField, values: [...filter.values] }] : [];
   if (filter.mode === 'numberRange') return metricRangePredicates(queryField, filter);
   if (filter.from.length === 0 && filter.to.length === 0) return [];

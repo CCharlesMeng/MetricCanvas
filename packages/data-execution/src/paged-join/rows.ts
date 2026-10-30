@@ -12,7 +12,7 @@ export function memberRows(plan: PagedJoinPlan, id: string, result: DataSnapshot
     if (result.status === 'loading') throw rowFailure('查询尚未完成，请等待查询返回后重试。');
     const rows = result.status === 'ready' ? result.rows : [], total = result.totalCount;
     if (result.status === 'ready') restoreCellFallbacks(rows, result.cellFallbacks);
-    assertMemberRange(rows.length, total, plan.source.source.fallback.maxRows, window);
+    assertMemberRange(rows.length, total, (plan.source.source.fallback?.maxRows ?? 1000), window);
     const validation=validateContractRows(rows, queryResultFields(plan.members.get(id)!.fields));
     if (!validation.ok) throw rowFailure(`查询返回的数据格式不符合页面要求。请检查下面列出的字段。\n字段检查：${JSON.stringify(validation.issues[0])}`);
     return indexMemberRows(plan,id,rows,keys);

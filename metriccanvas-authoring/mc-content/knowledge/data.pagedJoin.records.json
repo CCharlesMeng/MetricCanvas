@@ -1,0 +1,315 @@
+{
+  "schemaVersion": "6.76",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "data.pagedJoin.records"
+  ],
+  "semantics": [
+    {
+      "module": "data-sources",
+      "reference": "references/page-metadata/data-sources.md",
+      "blocks": [
+        "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。 局部修改已有可信绑定时，只核对受影响对象、共享消费者和源依赖；指标匹配报告按任务需要形成。独立 Skill 的组件范围仅缩小读取输出，全页校验与真实查询验真要求保持不变。`local-authoring-scoped-data-demo` 展示两表共享同一合成指标与独立内容，便于核对相关消费者和修改范围。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nquery.initial保存捕获时间和匹配该查询的初始行，只能在当前条件与声明初值匹配时使用；变更后由网关查询。执行bootstrap初始结果另走执行端口，条件标识与查询定义一致才复用，不与旧initial混用。非查询分页数据源即使 initial.rows.length 小于 initial.totalCount，也直接呈现内嵌初始行，不为补齐数据自动查询；组件提示当前载入条数与总数，不将部分数据当成完整结果。空 initial.rows 同样是可复用快照；未知总数不推断完整性。查询分页的持久化initial仍需有效totalCount与完整第一页，动态结果的总数不一致不阻止显示已有行。跨数据源计算继续使用本轮返回行。\n\n可选compute作用于已归一化行集。inline行使用页面字段id；query结果经queryField映射。静态JSON通过校验不证明真实DQE成功。\n\n查询数值度量在进入快照和 compute 前归一化为有限数字或 `null`，单个异常值不再拒绝整份查询；首屏 initial、动态响应和一层嵌套明细使用同一规则，详见[结果字段契约](fields.md#查询数值度量的容错)。`nullable: false` 的数值度量缺失只告警，普通 query 的缺字段和结构错误仍会失败；组合源可在有界整理阶段兼容，见下文。`query-numeric-tolerance` 是对应完整合成验收示例。",
+        "## 审批记录与当前信息补列（6.66）\n\n`pagedJoin.source.records` 显式启用记录模式，保留主表每条原始记录，成员 `key` 仅为关联键。旧页面不声明 `records`，继续使用原有一键一行、选页补列及最大1000行完整关联规则。\n\n记录模式配置 `batchSize`（1—1000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—120000）。6.69 起 `maxRows` 可省略，表示不限制主表行数；显式值仍为1—100000的正整数预算。旧版本须声明 `maxRows`。`fallback.maxRows` 不限制 records 行数。指标与对象查询均保留显式排序；未声明时仅按成员关联键升序，不追加排序字段。显式对象多字段排序仍需可信 `encodeObjectSort`，否则失败。表格排序在完整关联后执行。执行器检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批补列。主表重复关联键保留，补列表重复键保留第一条，额外编码忽略，截断按可用结果告警；网络、权限、配置和超限仍失败。无事务快照令牌；关联键可重复，单字段排序与总数检查不能证明跨批内容稳定性，仍须真实 DQE 验真。\n\n`timeoutMs` 按批重置，验收 `/pages/record-join-batch-timeout`。\n\n配置示例：\n\n```json\n\"records\": {\n  \"batchSize\": 500,\n  \"maxBytes\": 67108864,\n  \"timeoutMs\": 60000\n}\n```\n\n省略后仍完整读取、补列、全局筛选和排序，不截断结果；字节、超时、取消及总数/窗口检查保持。示例 `/pages/record-join-no-row-limit` 使用100001条合成记录及128 MiB字节预算。\n\n`rowKey` 与关联键分离：可投影主表真实唯一记录字段；若该字段不在 `projection`，必须声明非空string维度，由执行器按完整读取顺序生成快照内标识。该标识仅在此快照内稳定，不作为跨刷新业务ID；完全相同的两条记录仍保留两行。持久化第一页 initial 无法恢复完整内部快照，因此记录模式重新读取，不借第一页推断后续记录。\n\n`records.timeFilters` 显式声明本地时间筛选：键引用日或月精度 `timeRange`，`field` 引用主表的最终投影字段，`valueFormat` 声明 `iso`（YYYY-MM-DD）、`compact`（YYYYMMDD）或 `datetime`（YYYY-MM-DD HH:mm:ss）；返回值须符合声明格式和真实日历，非法值明确失败。`datetime` 对月份、日期展开为起日00:00:00、止日23:59:59，按来源本地日历比较，不做时区转换。主表查询不再声明相同筛选绑定；完整读取后先筛主表，再补列。筛选不伪造 `filter.time`，也不需要补列表存在统计期间字段；本地过滤意味着主表读取预算覆盖区域内所有被读取记录，而非仅期间内结果。\n\n6.68起，已确认可下推的审批时间应使用主表查询 `filterBindings` 的 `target:time + queryField + valueFormat`（见[指定时间字段](queries-and-bindings.md#metric-field-time)），并移除同一筛选的 `records.timeFilters`。先由上游筛选并返回匹配总数，再检查记录预算、分批读取和补列。仍需本地过滤的既有页面继续显式使用 `records.timeFilters`；其预算始终按过滤前读取范围计算。两种声明不能对同一个筛选重复配置。\n\n成员 `notApplicableFilters` 仅用于记录模式的非主表成员，显式列出由其他成员消费、而自己不适用的筛选；不能与已消费筛选重叠、不能引用未知筛选。其余业务筛选仍须消费，成员自己的静态条件和权限条件保留。此声明不绕过权限，也不授予取数范围。\n\n完整关联成功后才对全部匹配审批记录执行搜索、表头筛选、稳定排序和当前页切片，`totalCount` 按记录数计算。同一 SourceProgram 保存一份受已声明资源限制约束的完整快照；翻页、排序、搜索、表头条件复用它，区域、期间、上下文或显式刷新使其失效。表头候选使用该结果，保留其他条件，仅排除自身列条件；不受完整导出10000行限制。导出复用相同规则，仍遵守10000行/60秒限制，不能用部分扫描结果充当完整文件。\n\n合成验收入口：`/pages/record-join-demo` 为1205条审批；`/pages/object-record-join-demo` 为对象主表分批读取、指标补列及全局表格操作。`pages/business-rejection-details.json` 是业务配置；真实DQE字段、数据粒度、区域语义、HCS排除和服务完整性须真实环境确认。\n\n\n<a id=\"table-result-recovery\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "paged-union-composite-key",
+          "description": "6.72来源内有序非空组合行键，旧单字段声明保持",
+          "valid": [
+            "paged-union-composite-key",
+            "paged-union-composite-branches"
+          ],
+          "invalid": [
+            "union-composite-before-version",
+            "union-composite-repeated-field",
+            "union-composite-nullable-field",
+            "union-composite-unknown-field",
+            "union-composite-measure-field",
+            "union-composite-empty-fields",
+            "union-composite-scalar-conflict"
+          ]
+        },
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches",
+            "paged-union-generated-key"
+          ],
+          "invalid": [
+            "union-uuid-old",
+            "union-uuid-conflict",
+            "union-initial-predicate-null",
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
+          ]
+        },
+        {
+          "id": "paged-join",
+          "description": "6.22 组合表全局视图与普通查询定义引用",
+          "valid": [
+            "paged-join-page",
+            "table-number-range-page"
+          ],
+          "invalid": [
+            "table-number-range-before-6.22",
+            "paged-join-initial-predicate-null",
+            "paged-join-initial-predicate-in",
+            "paged-join-initial-predicate-numeric",
+            "paged-join-initial-predicate-date",
+            "paged-join-before-6.22",
+            "paged-join-unknown-member",
+            "paged-join-invalid-key",
+            "paged-join-invalid-projection",
+            "paged-join-member-topn",
+            "paged-join-shared-root",
+            "paged-join-invalid-initial",
+            "table-number-range-non-numeric"
+          ]
+        },
+        {
+          "id": "query-initial-rows-normalize",
+          "description": "DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验",
+          "valid": [
+            "table-scalar-fallback-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page",
+            "query-numeric-tolerance"
+          ],
+          "invalid": [
+            "initial-row-missing-query-field",
+            "initial-row-scalar-object",
+            "initial-row-scalar-array",
+            "initial-row-date-object",
+            "initial-row-semantic-html-too-large",
+            "initial-row-detail-missing-query-field",
+            "initial-row-detail-null-not-allowed",
+            "initial-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "inline-rows-contract",
+          "description": "inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "compute-page",
+            "params-page",
+            "composite-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "inline-row-undeclared-field",
+            "inline-row-missing-field",
+            "inline-row-null-not-allowed",
+            "inline-row-type-mismatch",
+            "inline-row-date-invalid",
+            "inline-row-datetime-invalid",
+            "inline-row-semantic-html-type",
+            "inline-row-detail-undeclared-field",
+            "inline-row-detail-missing-field",
+            "inline-row-detail-null-not-allowed",
+            "inline-row-detail-type-mismatch"
+          ]
+        },
+        {
+          "id": "captured-at-valid",
+          "description": "内嵌初始行的 capturedAt 须为有效的 RFC 3339 日期时间",
+          "valid": [
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "captured-at-invalid-month"
+          ]
+        },
+        {
+          "id": "pagination-initial-rows",
+          "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-initial-without-total-count",
+            "pagination-initial-not-full-page"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/query-dashboard.json",
+        "references/page-metadata/examples/paged-join-page.json",
+        "references/page-metadata/examples/paged-join-fixed-rank-page.json",
+        "references/page-metadata/examples/query-numeric-tolerance.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/record-join-page.json",
+        "references/page-metadata/examples/paged-union-composite-key.json",
+        "references/page-metadata/examples/paged-union-composite-branches.json",
+        "references/page-metadata/examples/paged-union-generated-key.json",
+        "references/page-metadata/examples/paged-join-query-page.json",
+        "references/page-metadata/examples/record-join-query-page.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.76",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource",
+      "path": "@pagedJoinSource",
+      "module": "data-sources",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "type",
+          "rowKey",
+          "domainMember",
+          "members",
+          "projection",
+          "ordering",
+          "pagination",
+          "onMissing"
+        ],
+        "properties": {
+          "type": "#/definitions/pagedJoinSource/properties/type",
+          "rowKey": "#/definitions/pagedJoinSource/properties/rowKey",
+          "domainMember": "#/definitions/pagedJoinSource/properties/domainMember",
+          "members": "#/definitions/pagedJoinSource/properties/members",
+          "projection": "#/definitions/pagedJoinSource/properties/projection",
+          "ordering": "#/definitions/pagedJoinSource/properties/ordering",
+          "pagination": "#/definitions/pagedJoinSource/properties/pagination",
+          "fallback": "#/definitions/pagedJoinSource/properties/fallback",
+          "onMissing": "#/definitions/pagedJoinSource/properties/onMissing",
+          "ordinalField": "#/definitions/pagedJoinSource/properties/ordinalField",
+          "records": "#/definitions/pagedJoinSource/properties/records",
+          "initial": "#/definitions/pagedJoinSource/properties/initial"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/rowKey",
+      "path": "@pagedJoinSource.rowKey",
+      "module": "data-sources",
+      "required": "本分支必填",
+      "note": "多数据槽对齐的维度键，各槽字段类型须一致。",
+      "enums": {},
+      "facts": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+      }
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/members",
+      "path": "@pagedJoinSource.members",
+      "module": "data-sources",
+      "required": "本分支必填",
+      "note": "复用页内普通查询定义的成员映射；定义引用不构成固定级联。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "additionalProperties": "#/definitions/pagedJoinSource/properties/members/additionalProperties"
+      }
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/projection",
+      "path": "@pagedJoinSource.projection",
+      "module": "data-sources",
+      "required": "本分支必填",
+      "note": "最终字段到成员原始字段的显式一对一投影；序号除外。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+        },
+        "additionalProperties": "#/definitions/pagedJoinSource/properties/projection/additionalProperties"
+      }
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/records",
+      "path": "@pagedJoinSource.records",
+      "module": "data-sources",
+      "required": "本分支可选",
+      "note": "显式启用逐条保留审批记录的多对一补列；行键独立于关联键。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "maxBytes",
+          "timeoutMs"
+        ],
+        "properties": {
+          "batchSize": "#/definitions/pagedJoinSource/properties/records/properties/batchSize",
+          "maxRows": "#/definitions/pagedJoinSource/properties/records/properties/maxRows",
+          "maxBytes": "#/definitions/pagedJoinSource/properties/records/properties/maxBytes",
+          "timeoutMs": "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs",
+          "timeFilters": "#/definitions/pagedJoinSource/properties/records/properties/timeFilters"
+        },
+        "additionalProperties": false
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

@@ -1,0 +1,94 @@
+[
+  {
+    "synthetic": true,
+    "sourceRows": 80,
+    "status": "ready",
+    "totalCount": 80,
+    "visibleRows": 10,
+    "calls": [
+      {
+        "pagination": {
+          "offset": 0,
+          "limit": 10
+        },
+        "sort": [
+          {
+            "queryField": "审批次数",
+            "direction": "desc"
+          }
+        ],
+        "filterValues": []
+      },
+      {
+        "pagination": {
+          "offset": 0,
+          "limit": 10
+        },
+        "filterValues": [
+          {
+            "target": "dimension",
+            "queryField": "项目编号",
+            "values": [
+              "P000001",
+              "P000002",
+              "P000003",
+              "P000004",
+              "P000005",
+              "P000006",
+              "P000007",
+              "P000008",
+              "P000009",
+              "P000010"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "synthetic": true,
+    "sourceRows": 100001,
+    "status": "ready",
+    "totalCount": 100001,
+    "visibleRows": 10,
+    "calls": [
+      {
+        "pagination": {
+          "offset": 0,
+          "limit": 10
+        },
+        "sort": [
+          {
+            "queryField": "审批次数",
+            "direction": "desc"
+          }
+        ],
+        "filterValues": []
+      },
+      {
+        "pagination": {
+          "offset": 0,
+          "limit": 10
+        },
+        "filterValues": [
+          {
+            "target": "dimension",
+            "queryField": "项目编号",
+            "values": [
+              "P000001",
+              "P000002",
+              "P000003",
+              "P000004",
+              "P000005",
+              "P000006",
+              "P000007",
+              "P000008",
+              "P000009",
+              "P000010"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

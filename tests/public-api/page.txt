@@ -410,6 +410,7 @@ isLevelDimensionBinding
 isNavigationHref
 isObjectDqeItem
 isPagedJoinDataSource
+isPagedJoinQuery
 isPeriodSelection
 isQueryDataSource
 isQueryErrorCode
@@ -442,6 +443,10 @@ pageListEntry
 pageParamDeclarations
 pageParamErrors
 pageSchema
+pagedJoinCandidateView
+pagedJoinMemberView
+pagedJoinUnavailable
+pagedJoinViewOwner
 parsePage
 periodFact
 periodRangeLabel
@@ -466,6 +471,7 @@ querySelectors
 queryVariants
 rangeContextIssue
 rangeInBaseUnits
+reconcilePagedJoinView
 reportExportScale
 requiredMinorVersion
 requiresQueryContext

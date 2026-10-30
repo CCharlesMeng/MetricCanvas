@@ -1,3 +1,4 @@
+import {isPagedJoinQuery,pagedJoinCandidateView,type PagedJoinDataSource} from '@metriccanvas/page/internal';
 import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
 import {columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
@@ -37,6 +38,20 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     }
     const sessions = new Map<string, TableSession>();
     const candidates = new Map<string, ReturnType<typeof createColumnCandidatesSession>>();
+    const notices = new Map<string,string>();
+    function operate(table:TableComponent,run:()=>void){
+      try{run();notices.delete(table.id);headers.delete(table.id);}
+      catch(cause){notices.set(table.id,cause instanceof Error?cause.message:"该操作暂不可用");headers.delete(table.id);}
+      changed();
+    }
+    function candidateViewFor(table:TableComponent,field:string){
+      const source=page.dataSources[table.data.main];
+      return source.source.type==='pagedJoin'&&isPagedJoinQuery(source.source)?pagedJoinCandidateView(source as PagedJoinDataSource,view(table),field):view(table);
+    }
+    function preloadFields(table:TableComponent){
+      if(isPagedJoinQuery(page.dataSources[table.data.main].source))return [];
+      return tableColumnLeaves(columns(table).component.props.columns).filter(column=>column.filterable?.mode==='select').flatMap(column=>{const field=mainColumnField(column.field);return field===undefined?[]:[field];});
+    }
     const headers = new Map<string, Record<string, TableHeaderFilterValue>>();
     const searches = new Map<string, string>();
     const searchOptions = new Map<string, string>();
@@ -58,10 +73,10 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 const current = stream(), program = current?.getSourceProgram();
                 if (!current || !program)
                     return { kind: 'unavailable' };
-                return program.readColumnCandidates({ ...candidateContext(), sourceId: table.data.main, field, conditions: conditions(), view: view(table),
+                return program.readColumnCandidates({ ...candidateContext(), sourceId: table.data.main, field, conditions: conditions(), view: candidateViewFor(table,field),
                     views: current.captureViews(), seeds: current.captureRawSnapshots(), candidateSearch: search, offset, pageSize: 50, currentYear: current.captureComputeYear(), signal, preload });
             }, field => {
-                const current = view(table), ids = conditionSourceIds(page, table.data.main), raw = stream()?.captureRawSnapshots();
+                const current = candidateViewFor(table,field), ids = conditionSourceIds(page, table.data.main), raw = stream()?.captureRawSnapshots();
                 const filterIds = new Set([...ids].flatMap(id => {
                     const source = page.dataSources[id];
                     return [...(sourceFilterIds(source)),
@@ -71,8 +86,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                     .map(([id, value]) => [id, value.type === 'timeRange' ? { type: value.type, from: value.from, to: value.to } : value]);
                 return canonicalizeJson({ context: candidateContext(), conditions: inputs, predicates: current.predicates.filter(p => p.field !== field), search: current.search,
                     dependencies: [...ids].filter(id => id !== table.data.main).map(id => [id, raw?.get(id) ?? null]) });
-            }, changed, { fields: () => tableColumnLeaves(columns(table).component.props.columns)
-                .filter(column => column.filterable?.mode === 'select').flatMap(column => { const field = mainColumnField(column.field); return field === undefined ? [] : [field]; }) });
+            }, changed, { fields: () => preloadFields(table) });
             candidates.set(table.id, session);
         }
         return session;
@@ -146,7 +160,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         },
         render(table: TableComponent): TableViewState {
             const committed = view(table);
-            return { pageIndex: committed.pageIndex, sort: committed.sort, searchQuery: committed.search?.query, search: committed.search,
+            return { allowEmptyFilter:isPagedJoinQuery(page.dataSources[table.data.main].source), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort: committed.sort, searchQuery: committed.search?.query, search: committed.search,
                 headerFilters: { ...renderHeaders(tableHeaders(committed.predicates)), ...headers.get(table.id) } };
         },
         headers(table: TableComponent) { return tableHeaders(view(table).predicates); },
@@ -187,7 +201,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
             local(table).setPageSize(pageSize); changed(); },
         sort(table: TableComponent, sort: TableQueryView['sort']) { if (columns(table).enabled && sort.some(rule => !columns(table).fields.has(rule.field)))
             return; if (remote(table))
-            stream()?.setQuerySort(table.data.main, sort);
+            operate(table,()=>stream()?.setQuerySort(table.data.main, sort));
         else
             local(table).setSort(sort); changed(); },
         header(table: TableComponent, field: string, value: TableHeaderFilterValue | null) {
@@ -209,7 +223,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
             else
                 applied[field] = normalized;
             if (remote(table))
-                stream()?.setQueryHeaderFilters(table.data.main, applied);
+                operate(table,()=>stream()?.setQueryHeaderFilters(table.data.main, applied,field));
             else
                 local(table).setHeaders(applied);
             changed();

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.75",
+  "schemaVersion": "6.76",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-2c8bf5a7"
@@ -87,6 +87,7 @@
           "invalid": [
             "union-uuid-old",
             "union-uuid-conflict",
+            "union-initial-predicate-null",
             "union-initial-predicate-date",
             "union-initial-predicate-numeric",
             "union-initial-predicate-in",
@@ -109,6 +110,7 @@
           ],
           "invalid": [
             "table-number-range-before-6.22",
+            "paged-join-initial-predicate-null",
             "paged-join-initial-predicate-in",
             "paged-join-initial-predicate-numeric",
             "paged-join-initial-predicate-date",
@@ -291,7 +293,9 @@
         "references/page-metadata/examples/paged-union-branches.json",
         "references/page-metadata/examples/table-column-visibility.json",
         "references/page-metadata/examples/table-hierarchy-selection.json",
-        "references/page-metadata/examples/table-hierarchy-lookup-param.json"
+        "references/page-metadata/examples/table-hierarchy-lookup-param.json",
+        "references/page-metadata/examples/paged-join-query-page.json",
+        "references/page-metadata/examples/record-join-query-page.json"
       ]
     }
   ],

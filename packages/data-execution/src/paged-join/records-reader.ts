@@ -60,7 +60,7 @@ async function collectRecords(plan:PagedJoinPlan,runner:QueryRunner,scope:string
   return projected;
 }
 async function supplementRows(plan:PagedJoinPlan,id:string,keys:(string|number)[],runner:QueryRunner,scope:string,budget:RecordBudget):Promise<Map<string|number,Row>>{
-  const index=new Map<string|number,Row>(),size=plan.source.source.records!.batchSize;
+  const index=new Map<string|number,Row>(),size=(plan.source.source.records!.batchSize ?? 10);
   for(let offset=0;offset<keys.length;offset+=size){
     const query=memberQuery(plan,id),member=plan.source.source.members[id];
     const allowed=restrictKeys(query,member.key.queryField,keys.slice(offset,offset+size));

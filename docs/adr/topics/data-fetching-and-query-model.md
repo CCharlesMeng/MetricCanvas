@@ -55,3 +55,5 @@
 [ADR-0121](../0121-paged-union-field-projection-and-global-order.md) 引入 6.61 分页合并源 `pagedUnion`：成员显式投影到统一字段，逐行保留重复内容，默认排序作用全部来源，再归并计数并取全局页。SourceProgram 复用稳定有序流，接受实时 offset 和冷深页开销，并对检查点、缓存、扫描及完整导出设置限制；6.72增加成员rowKeyFields非空组合身份，旧编码及排序保持；6.73允许成员显式选择临时UUID，业务行与分页正确性由上游保证；真实服务验收单列。
 
 [ADR-0123](../0123-explicit-hierarchy-selection-and-complete-child-export.md) 在6.70以显式 `rowExpansion.selection` 声明独立父级定位和父行私有投影，父整体指标不绑定层级选择。仅启用分支保留共同条件刷新的展开/收起与合法会话，显式完整 Excel 补齐未展开子表；旧页面、旧输入失败语义和页面 PDF/PNG 限制保持。
+
+[ADR-0125](../0125-paged-join-query-pagination-and-member-operations.md)在6.76为组合查询源增加显式按需查询分页、最后操作成员生效与能力不足拒绝；保留原有完整执行分支、固定结果绑定与普通结果隔离。新模式不自动完整预热候选，菜单使用预期提交上下文；显式为空条件在未确认后端完整能力时拒绝。局部修订0108的回退策略与0114的新模式候选规则，真实DQE单源分页另验。

@@ -3,12 +3,15 @@ import type { TableSortRule } from '@metriccanvas/page/internal';
 
 /** 表头筛选当前值:日期范围允许单端草稿,由壳决定何时写入查询通道。 */
 export type TableHeaderFilterValue =
+  | { mode:'isNull' }
   | { mode: 'select'; values: (string | number)[] }
   | { mode: 'dateRange'; from: string; to: string }
   | { mode: 'numberRange'; from: string; to: string };
 
 /** 表格视图状态:由运行时/壳持有,组件只显示当前值并上抛变更。 */
 export interface TableViewState {
+  allowEmptyFilter?:boolean;
+  operationNotice?:string;
   /** Submitted literal search; draft input is held separately by the runtime. */
   searchQuery?: string;
   search?: import('@metriccanvas/page/internal').TableQueryView['search'];
@@ -37,6 +40,7 @@ export function shouldApplyTableHeaderFilter(
   }
   return (
     value === null ||
+    value.mode === 'isNull' ||
     value.mode === 'select' ||
     (value.from.length > 0 && value.to.length > 0)
   );

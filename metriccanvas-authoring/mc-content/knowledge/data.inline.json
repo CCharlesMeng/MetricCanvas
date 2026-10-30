@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.75",
+  "schemaVersion": "6.76",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data.inline"
@@ -40,6 +40,7 @@
           "invalid": [
             "union-uuid-old",
             "union-uuid-conflict",
+            "union-initial-predicate-null",
             "union-initial-predicate-date",
             "union-initial-predicate-numeric",
             "union-initial-predicate-in",
@@ -62,6 +63,7 @@
           ],
           "invalid": [
             "table-number-range-before-6.22",
+            "paged-join-initial-predicate-null",
             "paged-join-initial-predicate-in",
             "paged-join-initial-predicate-numeric",
             "paged-join-initial-predicate-date",
@@ -159,7 +161,9 @@
         "references/page-metadata/examples/record-join-page.json",
         "references/page-metadata/examples/paged-union-composite-key.json",
         "references/page-metadata/examples/paged-union-composite-branches.json",
-        "references/page-metadata/examples/paged-union-generated-key.json"
+        "references/page-metadata/examples/paged-union-generated-key.json",
+        "references/page-metadata/examples/paged-join-query-page.json",
+        "references/page-metadata/examples/record-join-query-page.json"
       ]
     }
   ],
@@ -180,7 +184,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.75",
+        "$id": "https://metriccanvas/page/v6.76",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

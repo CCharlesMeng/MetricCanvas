@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.75",
+  "currentWriter": "6.76",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -706,6 +706,125 @@
           "id": "filter-hierarchy",
           "minor": 0,
           "description": "层级维度筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/paged-join-query-page.json",
+      "requiredVersion": "6.76",
+      "capabilities": [
+        {
+          "id": "paged-join-query-pagination",
+          "minor": 76,
+          "description": "组合查询源按需分页与最后操作成员生效"
+        },
+        {
+          "id": "paged-join",
+          "minor": 22,
+          "description": "多查询组合表格与数值表头范围"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/record-join-query-page.json",
+      "requiredVersion": "6.76",
+      "capabilities": [
+        {
+          "id": "paged-join-query-pagination",
+          "minor": 76,
+          "description": "组合查询源按需分页与最后操作成员生效"
+        },
+        {
+          "id": "paged-join-unbounded-rows",
+          "minor": 69,
+          "description": "记录关联可省略行数预算，保留字节和超时限制"
+        },
+        {
+          "id": "paged-join-records",
+          "minor": 66,
+          "description": "审批记录逐行保留、成员筛选适用性和有界分批补列"
+        },
+        {
+          "id": "dqe-object-query",
+          "minor": 55,
+          "description": "DQE 对象查询、字段条件与显式时间绑定"
+        },
+        {
+          "id": "table-row-ordinal-column",
+          "minor": 48,
+          "description": "表格独立序号列，排序筛选后重编号且跨页连续"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "paged-join",
+          "minor": 22,
+          "description": "多查询组合表格与数值表头范围"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "filter-binding-level-query-fields",
+          "minor": 7,
+          "description": "层级维度筛选绑定逐级声明谓词字段"
+        },
+        {
+          "id": "grouped-params",
+          "minor": 6,
+          "description": "分组参数、多个独立时间区间与查询原位引用"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "text-value-reference",
+          "minor": 0,
+          "description": "文本取值引用页面参数而不是写字面量(ADR-0047)"
+        },
+        {
+          "id": "filter-hierarchy",
+          "minor": 0,
+          "description": "层级维度筛选器(ADR-0050)"
+        },
+        {
+          "id": "filter-empty-label",
+          "minor": 0,
+          "description": "维度筛选器的空选展示文案"
+        },
+        {
+          "id": "dashboard-toolbar-compact-read-only",
+          "minor": 0,
+          "description": "dashboard 紧凑页头与只读筛选说明"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

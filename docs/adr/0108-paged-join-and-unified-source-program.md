@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: ['0125']
 date: 2026-10-14
 note: 用户授权按既定方案连续实施 P0–P5；真实 DQE/Relay 单列验收
 ---

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.75",
+  "schemaVersion": "6.76",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-1f2915eb"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
         "# 明细表 table\n\n展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
-        "## 列筛选候选值\n\n已有和新建表格的 filterable: {mode: \"select\"} 统一枚举本表全部匹配结果中该列实际出现的值，无 candidates.scope 开关。保留固定业务条件、页面筛选、权限、查询结果绑定、已提交表格搜索和其他列表头条件，仅排除当前列自身表头条件。同字段的页面条件与表头条件取交集，空交集不发送无约束请求。\n\n候选采用懒加载与空闲预加载，独立于表格主数据的 loading/ready/error：表格主数据就绪、实际进入视口并完成两帧绘制后，才在浏览器空闲时逐列预加载 select 候选；不可见、未激活或已销毁的表格不预加载。后台候选读取串行执行；主查询优先，并可抢占取消在途候选、立即释放执行位置，不等待迟到响应。显式打开另一列菜单也优先于后台预加载。相同条件的在途请求或已完成候选页可复用；未预加载时点击菜单按需请求，仅菜单显示加载或失败，不将整表切回加载态。表格离开视口停止后台读取，条件改变使相应候选失效；取消可在之后空闲时恢复，失败等待显式打开或重试。\n\n候选拥有独立搜索和分页；默认每页50项。候选搜索不改变表格搜索、页码或已提交条件。翻动本表展示页或改变展示排序不改变候选范围；上游查询窗口作为绑定输入改变时，仍按业务输入变化重取。候选状态按表格和列隔离；相同生效请求可共享执行资源。完整原始结果每批之间让出事件循环，避免快速适配器持续占用微任务队列；后台请求仍有网络与计算成本，但不作为整表渲染的前置条件。\n\n多选筛选弹层按内容自适应宽度，通常介于160—360px，窄屏以视口留白为界；搜索框随弹层伸缩，超长候选换行。无需页面宽度配置。数值和日期区间筛选保留原有宽度。\n\n稳定值保留字符串/数字原始类型，显示名独立。null 不进入首批候选，空字符串不等于 null。失配已选值保持勾选并可移除；完整候选已证实无匹配时标注“已选，当前条件下无匹配”，候选搜索或未加载的后续页不会被误判为失配。\n\ninline 和已声明完整且未截断的 query 从完整行集枚举；计算产出只在完整结果上读取。pagedJoin 按最终组合行域枚举，保留已有完整关联上限（最多1000行），不使用成员字典代替。本表业务 TopN 和上游有限窗口不被自动扩大，当前页也不会冒充完整候选。\n\n普通远程 query 需要数据网关实现可选 fetchColumnCandidates。平台和 Playground 的共用 DQE 网关已注册 `columnCandidates: {mode: \"fullQuery\"}`：保留原查询全部 output_dims/output_metrics、模型、粒度、条件、默认排序及业务 TopN，默认按原始结果每批200行读取、总扫描上限1000行（最多5批）；前端仅保留目标列去重集合，不累积全部原始行。不会为枚举候选清空指标或换成维度字典。候选关键词搜索、稳定排序、分页和去重 totalCount 在完整读取后本地计算，不把候选搜索写入表格查询；已提交表格搜索仍沿用既有 DQE 搜索适配。\n\n原始响应每批必须提供准确且一致的 total_count，并返回请求窗口应有的全部行；缺总数、总数变化、截断或任一批失败均不展示部分候选。扫描上限独立于导出上限：`maxRows` 默认1000，`batchSize` 默认200，均须为正安全整数。首批获取准确总数后，若实际候选原始行域（包含业务 TopN 截止）超过上限，立即停止后续批次，返回 `DQE_CANDIDATE_LIMIT_EXCEEDED`，不展示部分选项，并提示“候选数据超过1000条查询上限…请缩小筛选范围，或联系管理员显式提高上限”；超限时停用候选搜索和重试，缩小原表筛选范围后重新获取；该限制同样作用于懒加载和空闲预加载，表格主查询不受影响。集成配置 `columnCandidatesMaxRows` 可显式提高上限；独立网关使用 `columnCandidates: {mode: \"fullQuery\", maxRows: 2000}`，页面 JSON 不携带此配置。上限不是去重候选数量，默认不会读取一万条再去重；请求可取消。候选搜索或继续加载在候选页缓存未命中时会重新完整读取，网络成本与原表匹配行数相关，不是与候选页50项相关；跨批不承诺服务未提供的事务快照。已有 encodeColumnCandidates 专用去重编码优先；其响应须提供映射后稳定值、可选显示名及准确去重 totalCount。独立使用 createDqeGateway 时须选择上述读取方式或提供专用编码，否则显示“候选值能力不可用”。候选请求与主数据共用网关并发和取消资源。页面顶部维度筛选器继续沿用既有维度／筛选候选端口（fetchDimensionValues、fetchFilterCandidates），不改为列候选。\n\n沿用现有 NO_PERMISSION 等非成功码带非空数据的消费规则，随后独立检查字段、分页长度、去重总数及续页重复；HTTP和信封失败仍按现有规则处理。数据可消费不表示候选已经完整。\n\n可观察示例：table-column-candidates（pages/capabilities/table/table-column-candidates.json），在 Playground 的 /pages/table-column-candidates 打开。使用64行内联合成数据，演示跨页候选、继续加载、搜索、多列联动、数字编码与两表隔离。远程编码通过合成网关契约测试；真实 DQE/Relay 尚待外部服务核验。产品决策与兼容例外见 ADR-0114。\n\n远程完整读取示例：`/pages/table-column-candidates-query`（`pages/capabilities/table/table-column-candidates-query.json`），620条合成 DQE 原始记录、80个去重代表处，部分候选在前三批200行之后才出现。使用平台实际注册的共用网关，以合成 HTTP 信封验证非空指标、跨批读取和多列联动；`?state=over-limit` 演示1001条原始结果在默认1000上限下拒绝候选，`?state=raised-limit` 以显式1200上限完整读取同一1001条记录；`?state=truncated` 演示截断失败，`?state=blocked-candidates` 让候选一直不返回，表格仍显示20行且能翻到第21行，后台候选被抢占取消。不代表真实 DQE/Relay 已验收。操作见页面目录 README。"
+        "## 列筛选候选值\n\n6.76 的 `pagedJoin.pagination.mode:\"query\"` 使用单成员操作规则：后提交列所属成员覆盖其他成员的表格排序与过滤，界面勾选与排序标记同步清除，第一页重新查询。预先不可执行的操作只显示局部能力原因，保留有效页，不触发完整扫描。显式“为空”映射到 `isNull`；缺匹配和字段null均属空，目前后端完整为空能力未确认时明确不可用。\n\n该模式打开另一成员菜单时，用预期提交后的条件计算候选与缓存，菜单打开本身不修改表格状态；自动完整候选预热关闭。其余表格继续下述候选规则及原有可见后空闲预热。默认200条候选读取批次、1000条原结果预算独立于表格每页10条与补列批次10条。\n\n已有和新建表格的 filterable: {mode: \"select\"} 统一枚举本表全部匹配结果中该列实际出现的值，无 candidates.scope 开关。保留固定业务条件、页面筛选、权限、查询结果绑定、已提交表格搜索和其他列表头条件，仅排除当前列自身表头条件。同字段的页面条件与表头条件取交集，空交集不发送无约束请求。\n\n候选采用懒加载与空闲预加载，独立于表格主数据的 loading/ready/error：表格主数据就绪、实际进入视口并完成两帧绘制后，才在浏览器空闲时逐列预加载 select 候选；不可见、未激活或已销毁的表格不预加载。后台候选读取串行执行；主查询优先，并可抢占取消在途候选、立即释放执行位置，不等待迟到响应。显式打开另一列菜单也优先于后台预加载。相同条件的在途请求或已完成候选页可复用；未预加载时点击菜单按需请求，仅菜单显示加载或失败，不将整表切回加载态。表格离开视口停止后台读取，条件改变使相应候选失效；取消可在之后空闲时恢复，失败等待显式打开或重试。\n\n候选拥有独立搜索和分页；默认每页50项。候选搜索不改变表格搜索、页码或已提交条件。翻动本表展示页或改变展示排序不改变候选范围；上游查询窗口作为绑定输入改变时，仍按业务输入变化重取。候选状态按表格和列隔离；相同生效请求可共享执行资源。完整原始结果每批之间让出事件循环，避免快速适配器持续占用微任务队列；后台请求仍有网络与计算成本，但不作为整表渲染的前置条件。\n\n多选筛选弹层按内容自适应宽度，通常介于160—360px，窄屏以视口留白为界；搜索框随弹层伸缩，超长候选换行。无需页面宽度配置。数值和日期区间筛选保留原有宽度。\n\n稳定值保留字符串/数字原始类型，显示名独立。null 不进入首批候选，空字符串不等于 null。失配已选值保持勾选并可移除；完整候选已证实无匹配时标注“已选，当前条件下无匹配”，候选搜索或未加载的后续页不会被误判为失配。\n\ninline 和已声明完整且未截断的 query 从完整行集枚举；计算产出只在完整结果上读取。pagedJoin 按最终组合行域枚举，保留已有完整关联上限（最多1000行），不使用成员字典代替。本表业务 TopN 和上游有限窗口不被自动扩大，当前页也不会冒充完整候选。\n\n普通远程 query 需要数据网关实现可选 fetchColumnCandidates。平台和 Playground 的共用 DQE 网关已注册 `columnCandidates: {mode: \"fullQuery\"}`：保留原查询全部 output_dims/output_metrics、模型、粒度、条件、默认排序及业务 TopN，默认按原始结果每批200行读取、总扫描上限1000行（最多5批）；前端仅保留目标列去重集合，不累积全部原始行。不会为枚举候选清空指标或换成维度字典。候选关键词搜索、稳定排序、分页和去重 totalCount 在完整读取后本地计算，不把候选搜索写入表格查询；已提交表格搜索仍沿用既有 DQE 搜索适配。\n\n原始响应每批必须提供准确且一致的 total_count，并返回请求窗口应有的全部行；缺总数、总数变化、截断或任一批失败均不展示部分候选。扫描上限独立于导出上限：`maxRows` 默认1000，`batchSize` 默认200，均须为正安全整数。首批获取准确总数后，若实际候选原始行域（包含业务 TopN 截止）超过上限，立即停止后续批次，返回 `DQE_CANDIDATE_LIMIT_EXCEEDED`，不展示部分选项，并提示“候选数据超过1000条查询上限…请缩小筛选范围，或联系管理员显式提高上限”；超限时停用候选搜索和重试，缩小原表筛选范围后重新获取；该限制同样作用于懒加载和空闲预加载，表格主查询不受影响。集成配置 `columnCandidatesMaxRows` 可显式提高上限；独立网关使用 `columnCandidates: {mode: \"fullQuery\", maxRows: 2000}`，页面 JSON 不携带此配置。上限不是去重候选数量，默认不会读取一万条再去重；请求可取消。候选搜索或继续加载在候选页缓存未命中时会重新完整读取，网络成本与原表匹配行数相关，不是与候选页50项相关；跨批不承诺服务未提供的事务快照。已有 encodeColumnCandidates 专用去重编码优先；其响应须提供映射后稳定值、可选显示名及准确去重 totalCount。独立使用 createDqeGateway 时须选择上述读取方式或提供专用编码，否则显示“候选值能力不可用”。候选请求与主数据共用网关并发和取消资源。页面顶部维度筛选器继续沿用既有维度／筛选候选端口（fetchDimensionValues、fetchFilterCandidates），不改为列候选。\n\n沿用现有 NO_PERMISSION 等非成功码带非空数据的消费规则，随后独立检查字段、分页长度、去重总数及续页重复；HTTP和信封失败仍按现有规则处理。数据可消费不表示候选已经完整。\n\n可观察示例：table-column-candidates（pages/capabilities/table/table-column-candidates.json），在 Playground 的 /pages/table-column-candidates 打开。使用64行内联合成数据，演示跨页候选、继续加载、搜索、多列联动、数字编码与两表隔离。远程编码通过合成网关契约测试；真实 DQE/Relay 尚待外部服务核验。产品决策与兼容例外见 ADR-0114。\n\n远程完整读取示例：`/pages/table-column-candidates-query`（`pages/capabilities/table/table-column-candidates-query.json`），620条合成 DQE 原始记录、80个去重代表处，部分候选在前三批200行之后才出现。使用平台实际注册的共用网关，以合成 HTTP 信封验证非空指标、跨批读取和多列联动；`?state=over-limit` 演示1001条原始结果在默认1000上限下拒绝候选，`?state=raised-limit` 以显式1200上限完整读取同一1001条记录；`?state=truncated` 演示截断失败，`?state=blocked-candidates` 让候选一直不返回，表格仍显示20行且能翻到第21行，后台候选被抢占取消。不代表真实 DQE/Relay 已验收。操作见页面目录 README。"
       ],
       "rules": [
         {
@@ -87,6 +87,7 @@
           "invalid": [
             "union-uuid-old",
             "union-uuid-conflict",
+            "union-initial-predicate-null",
             "union-initial-predicate-date",
             "union-initial-predicate-numeric",
             "union-initial-predicate-in",
@@ -109,6 +110,7 @@
           ],
           "invalid": [
             "table-number-range-before-6.22",
+            "paged-join-initial-predicate-null",
             "paged-join-initial-predicate-in",
             "paged-join-initial-predicate-numeric",
             "paged-join-initial-predicate-date",
@@ -291,7 +293,9 @@
         "references/page-metadata/examples/paged-union-branches.json",
         "references/page-metadata/examples/table-column-visibility.json",
         "references/page-metadata/examples/table-hierarchy-selection.json",
-        "references/page-metadata/examples/table-hierarchy-lookup-param.json"
+        "references/page-metadata/examples/table-hierarchy-lookup-param.json",
+        "references/page-metadata/examples/paged-join-query-page.json",
+        "references/page-metadata/examples/record-join-query-page.json"
       ]
     }
   ],

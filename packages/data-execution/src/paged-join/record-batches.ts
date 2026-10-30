@@ -42,7 +42,7 @@ async function readRecordBatch(plan:PagedJoinPlan,id:string,query:EffectiveQuery
 }
 export async function readRecordBatches(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,budget:RecordBudget,domain=false):Promise<Row[]>{
   if(!intersectQueryFilters(query))return [];
-  const rows:Row[]=[],limit=plan.source.source.records!.batchSize;
+  const rows:Row[]=[],limit=(plan.source.source.records!.batchSize ?? 10);
   let expected:number|undefined;
   do{
     budget.signal.throwIfAborted();

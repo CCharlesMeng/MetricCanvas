@@ -10,7 +10,7 @@
 - 明确要求 ECharts 定制，或现有属性不能表达且用户已接受时，读[图表高级扩展](page-metadata/chart-option.md)再使用隐含 `props.echartsOption`。常规任务使用已有属性；普通修改保留已有透传，切换图表类型时按协议清除。
 - 组件选型与属性：[组件索引](page-metadata/components/README.md)；先用已有组件，缺少表达能力时记录具体缺口。
 - 数据与字段：[数据源](page-metadata/data-sources.md)、[结果字段契约](page-metadata/fields.md)、[字段绑定与格式](page-metadata/field-bindings-and-formats.md)。
-- 多查询表格：按需核对[数据源](page-metadata/data-sources.md)的 `pagedJoin` 与[表格](page-metadata/components/table.md)的数值范围、查询分页、搜索及完整导出；使用册内完整示例核对成员引用与投影，按模块中的验收预期检查结果隔离。
+- 多查询表格：新建先读 `data.pagedJoin.pagination`；旧记录模式及其预算读 `data.pagedJoin.records`，通用结构读 `data.pagedJoin`。按需核对[数据源](page-metadata/data-sources.md)的 `pagedJoin` 与[表格](page-metadata/components/table.md)的数值范围、查询分页、搜索及完整导出；使用册内完整示例核对成员引用与投影，按模块中的验收预期检查结果隔离。
   固定指标排名使用普通查询返回的独立字段并投影；`ordinalField` 仅为当前结果序号。先明确排名行域、并列规则和筛选后是否保留名次，缺少上游能力依据时只交付明确标识的仿真场景。
 - 用户要求Report下载PDF、修改下载按钮名称或文件名时，读取[报告页头](page-metadata/components/reportHeader.md)的pdfExport声明和完整示例；在页面JSON中配置label和filename，不向集成应用生成截图或编码代码。
 - 用户要求Report导出PDF、图片或高清长图时，读取[报告页头](page-metadata/components/reportHeader.md)的exportButtons声明和完整示例；每项是一个直接下载按钮，配置format、可选label/filename/scale。PDF支持2/3/4倍，PNG支持3/4倍且只输出一张PNG；不支持的scale按未配置处理，PDF默认2倍、PNG默认3倍，不因此拒绝页面；不生成格式菜单、清晰度弹窗、多图或ZIP；新页面不写旧pdfExport/pngExport字段。

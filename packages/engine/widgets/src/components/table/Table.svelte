@@ -373,6 +373,7 @@
     {/snippet}
   </TableHeading>
   <TableWarnings warnings={tableDataWarnings(data)} />
+  {#if view?.operationNotice}<p role="status">{view.operationNotice}</p>{/if}
   {#if leaves.length===0}
     <Empty message="当前条件下无可见列" />
   {:else}
@@ -447,6 +448,7 @@
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">{#if props.variant === 'reportCompact'}▼{:else}<TableControlIcon name="filter" />{/if}</summary>
                         <div class="menu" class:select-menu={column.filterable.mode === 'select'} popover="auto">
                           {#if column.filterable.mode === 'select'}
+                            {#if view?.allowEmptyFilter}<button type="button" onclick={()=>onheaderfilter?.(columnField(column),{mode:'isNull'})}>为空</button>{/if}
                             {#if columnCandidates}
                               <ColumnCandidateOptions field={columnField(column)} snapshot={columnCandidates[columnField(column)]}
                                 selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(columnField(column), value)}

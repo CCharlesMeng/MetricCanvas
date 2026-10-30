@@ -127,7 +127,7 @@ it('does not broaden an empty upstream result binding for remote candidates', as
 it('rejects candidate enumeration above the existing joined row bound', async () => {
   const page = parsed(joined), source = page.dataSources['office-overview'];
   if (source.source.type !== 'pagedJoin') throw Error('expected joined fixture');
-  source.source.fallback.maxRows = 2;
+  source.source.fallback = {maxRows:2};
   const program = createSourceProgram(page, { gateway: officeGateway() });
   try {
     await expect(program.readColumnCandidates({ sourceId: 'office-overview', field: 'rep-office-code', conditions: initialFilterValues(page.filters ?? []), view: defaultSourceView(page, 'office-overview') })).rejects.toMatchObject({ code: 'DQE_QUERY_REJECTED' });

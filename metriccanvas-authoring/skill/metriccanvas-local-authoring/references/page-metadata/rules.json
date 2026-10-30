@@ -558,6 +558,7 @@
       "invalid": [
         "union-uuid-old",
         "union-uuid-conflict",
+        "union-initial-predicate-null",
         "union-initial-predicate-date",
         "union-initial-predicate-numeric",
         "union-initial-predicate-in",
@@ -580,6 +581,7 @@
       ],
       "invalid": [
         "table-number-range-before-6.22",
+        "paged-join-initial-predicate-null",
         "paged-join-initial-predicate-in",
         "paged-join-initial-predicate-numeric",
         "paged-join-initial-predicate-date",

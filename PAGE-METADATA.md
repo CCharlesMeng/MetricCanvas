@@ -529,3 +529,5 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 6.70：表格通过 `rowExpansion.selection` 显式定位父级、投影完整父行与保留共同条件刷新会话；私有 `source:selection` 明确不适用语义，`toolbar.export.rowExpansion` 完整导出父子双工作表。见[层级筛选联动](docs/page-metadata/components/table.md#hierarchy-selection)与 `/pages/table-hierarchy-selection`。
 
 `pagedJoin.records.timeoutMs` 按每次主表或补列表分页请求独立计时，每批重新获得完整预算，不再限制整轮累计耗时；任一批超时仍整轮失败且不缓存部分结果。`maxBytes` 继续整轮累计。配置形状与 Schema 版本不变，旧页面随运行时更新采用该语义。合成验收入口 `/pages/record-join-batch-timeout`（`?sourceTimeout=true` 为单批超时）；详见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)。
+
+6.76：组合查询源通过 `pagination:{mode:"query",pageSize:10,batchSize:10}` 显式按需分页，后操作成员覆盖其他成员表格状态；记录模式需真实记录标识，不自动完整回退。候选自动预热仅在新模式关闭。`isNull` 声明为空语义，未确认后端完整能力时明确不可用。见[按需查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand`、`/pages/record-join-on-demand`。

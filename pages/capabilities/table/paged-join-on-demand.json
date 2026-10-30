@@ -1,0 +1,267 @@
+{
+  "schemaVersion": "6.76",
+  "id": "paged-join-on-demand",
+  "layout": "dashboard",
+  "meta": {
+    "title": "多查询按需分页",
+    "description": "80个合成项目，一键一行，后操作查询源覆盖其他源的表格排序与过滤。"
+  },
+  "dataSources": {
+    "project-approvals": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目编号",
+          "nullable": false,
+          "queryField": "项目编号"
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": false,
+          "queryField": "项目名称"
+        },
+        "approval-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批次数",
+          "nullable": false,
+          "queryField": "审批次数"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号",
+                  "项目名称"
+                ],
+                "output_metrics": [
+                  "审批次数"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "project-information": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目编号",
+          "nullable": false,
+          "queryField": "项目编号"
+        },
+        "project-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目状态",
+          "nullable": false,
+          "queryField": "项目状态"
+        },
+        "contract-amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同金额",
+          "nullable": false,
+          "queryField": "合同金额"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "项目编号",
+                  "项目状态"
+                ],
+                "output_metrics": [
+                  "合同金额"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "projects": {
+      "fields": {
+        "project-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目编号",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": false
+        },
+        "approval-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批次数",
+          "nullable": false
+        },
+        "project-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目状态",
+          "nullable": true
+        },
+        "contract-amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同金额",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "project-id",
+        "domainMember": "a",
+        "members": {
+          "a": {
+            "source": "project-approvals",
+            "key": {
+              "field": "project-id",
+              "queryField": "项目编号"
+            },
+            "canSelectPage": true
+          },
+          "b": {
+            "source": "project-information",
+            "key": {
+              "field": "project-id",
+              "queryField": "项目编号"
+            },
+            "canSelectPage": true
+          }
+        },
+        "projection": {
+          "project-id": {
+            "member": "a",
+            "field": "project-id"
+          },
+          "project-name": {
+            "member": "a",
+            "field": "project-name"
+          },
+          "approval-count": {
+            "member": "a",
+            "field": "approval-count"
+          },
+          "project-status": {
+            "member": "b",
+            "field": "project-status"
+          },
+          "contract-amount": {
+            "member": "b",
+            "field": "contract-amount"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "approval-count",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "approval-count",
+            "contract-amount"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "mode": "query",
+          "pageSize": 10,
+          "batchSize": 10
+        },
+        "onMissing": "null"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "projects-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "projects"
+          },
+          "props": {
+            "title": "项目记录",
+            "rowKey": "project-id",
+            "fit": "container",
+            "pagination": {
+              "mode": "query"
+            },
+            "columns": [
+              {
+                "field": "project-id",
+                "title": "项目编号"
+              },
+              {
+                "field": "project-name",
+                "title": "项目名称",
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "approval-count",
+                "title": "审批次数",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "field": "project-status",
+                "title": "项目状态",
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "contract-amount",
+                "title": "合同金额",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
