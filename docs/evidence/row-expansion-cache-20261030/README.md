@@ -42,4 +42,11 @@
 
 新增foldContext和invalidateCache均为1；折叠缓存工厂及所有辅助函数最大8；仿真网关最大6；新增测试和浏览器回调最大3。修改和新增函数全部≤15，没有本批未关闭项。原始测量保留本机complexity.json。
 
-证据边界：本地运行时、仿真网关、真实浏览器及独立Skill验证；未执行真实DQE/Relay、生产权限联调、CI或部署。用户授权规范页面无需新增JSON缓存字段；需使用本批更新的运行时。
+证据边界：本地运行时、仿真网关、真实浏览器及独立Skill验证；未执行真实DQE/Relay、生产权限联调或部署。用户授权规范页面无需新增JSON缓存字段；需使用本批更新的运行时。
+
+
+## CI 浏览器断言同步
+
+首次提交 `7cdaf7640f624d857785ed06944f1874b0464d8b` 的 [CI](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/41040181346) 中，authoring、build、tests、types通过；独立安装兼容性518项中516项通过，Chrome/Edge各一条旧行内子表用例仍要求折叠重开回第一页而失败。本地运行 `pnpm --filter @metriccanvas/embed exec playwright test table-row-expansion.spec.ts --grep 'query child requests'` 在同一断言复现失败。
+
+后续提交将既有用例同步为保留第2页且请求数维持3次，父行隔离仍检查；离开父页再返回须重新请求第1页，请求数从4增至5。运行时未再次变更。本地Chrome行内子表5项全部通过，embed构建和检查通过；本机未安装Edge，其验收交给CI的真实Edge矩阵。同一AST口径下修改测试回调自身CC为1 → 1，内部calls及其回调均1 → 1，无新增函数和未关闭项。最终远端结论以交付提交对应CI为准。

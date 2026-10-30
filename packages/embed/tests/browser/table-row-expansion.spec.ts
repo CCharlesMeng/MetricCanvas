@@ -42,7 +42,7 @@ test('clean inline child tables reuse the existing pager and keep independent vi
   expect(errors).toEqual([]);
 });
 
-test('query child requests are lazy, isolated and reset on fold or leaving the parent page', async ({ page }) => {
+test('query child requests are lazy, isolated, cached across folds and reset after leaving the parent page', async ({ page }) => {
   await mount(page, 'query'); const parent = page.locator('article').first();
   const calls = () => page.evaluate(() => (window as unknown as { rowQueries: unknown[] }).rowQueries);
   expect(await calls()).toHaveLength(0);
@@ -54,13 +54,21 @@ test('query child requests are lazy, isolated and reset on fold or leaving the p
   await expect(first.getByRole('cell', { name: 'C01-011', exact: true })).toBeVisible();
   await expect(second.getByRole('cell', { name: 'C02-001', exact: true })).toBeVisible();
   expect((await calls()).at(-1)).toMatchObject({ pagination: { offset: 10, limit: 10 }, filterValues: [{ queryField: 'row_customer', values: ['C01'] }] });
+  expect(await calls()).toHaveLength(3);
   await parent.getByRole('row', { name: '收起子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
   await parent.getByRole('row', { name: '展开子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
-  await expect(first.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
+  await expect(first.getByRole('cell', { name: 'C01-011', exact: true })).toBeVisible();
+  await expect(second.getByRole('cell', { name: 'C02-001', exact: true })).toBeVisible();
+  expect(await calls()).toHaveLength(3);
   await parent.getByRole('button', { name: '2', exact: true }).last().click();
   await expect(parent.getByRole('region', { name: '子表格', exact: true })).toHaveCount(0);
   await parent.getByRole('row', { name: '展开子表格 海川能源 0', exact: true }).getByRole('button').click();
   await expect(parent.getByRole('region', { name: '子表格', exact: true }).getByText('暂无数据', { exact: true })).toBeVisible();
+  expect(await calls()).toHaveLength(4);
+  await parent.getByRole('button', { name: '1', exact: true }).last().click();
+  await parent.getByRole('row', { name: '展开子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
+  await expect(first.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
+  expect(await calls()).toHaveLength(5);
 });
 
 test('title, search and sorting are opt-in; single mode closes the previous child', async ({ page }) => {
