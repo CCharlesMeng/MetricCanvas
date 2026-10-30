@@ -1,0 +1,48 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "functions": [
+    {
+      "file": "packages/data-execution/src/dqe/dqe.ts",
+      "function": "createDqeGateway",
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/data-execution/src/dqe/dqe.ts",
+      "function": "createDqeGateway/fetchColumnCandidates",
+      "before": 8,
+      "after": 10
+    },
+    {
+      "file": "packages/data-execution/src/dqe/object-query.ts",
+      "function": "encodeObjectQuery",
+      "before": 11,
+      "after": 11
+    },
+    {
+      "file": "packages/data-execution/src/dqe/object-column-candidates.ts",
+      "function": "projectedQuery",
+      "before": null,
+      "after": 6
+    },
+    {
+      "file": "packages/data-execution/src/dqe/object-column-candidates.ts",
+      "function": "assertActive",
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/data-execution/src/dqe/object-column-candidates.ts",
+      "function": "objectColumnCandidates",
+      "before": null,
+      "after": 6
+    }
+  ],
+  "untouchedOverLimit": [
+    {
+      "function": "gatewayNormalizationError",
+      "selfCC": 16
+    }
+  ]
+}
