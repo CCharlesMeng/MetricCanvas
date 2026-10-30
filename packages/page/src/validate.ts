@@ -28,6 +28,7 @@ import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
 import { normalizeReportExportScales } from './report-export';
+import { periodComparisonErrors } from './period-comparison-validation';
 import { crossSourceComputeErrors } from './validate-compute-dependencies';
 import { queryParamReferenceErrors } from './query-param-references';
 import { isObjectDqeItem, objectOutputFields } from './dqe-object';
@@ -340,6 +341,7 @@ function invariantErrors(page: Page): TypedError[] {
   errors.push(...iocHeaderErrors(page));
   errors.push(...aiSummaryErrors(page), ...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));
+  errors.push(...periodComparisonErrors(page));
   errors.push(...queryResultBindingErrors(page));
   errors.push(...pagedJoinErrors(page), ...pagedUnionErrors(page));
 

@@ -1,3 +1,4 @@
+import {hasPeriodComparison} from './period-comparison';
 import {isRelativeTimeExpression,resolveRelativeTime,validateCalendarTimeRange,type TimeRangeFilterDeclaration,type TimeRangeValue} from './filter';
 import type {DqeQueryDefinition} from './query';
 import {queryLeaves,hasQuerySelection} from './query-selection';
@@ -36,5 +37,5 @@ export function hasTimeConstraints(query:DqeQueryDefinition,declarations:readonl
 
 /** Query receipts must prove both the selected branch and constrained input context. */
 export function requiresQueryContext(query:DqeQueryDefinition,declarations:readonly import('./filter').FilterDeclaration[]=[]):boolean {
- return hasQuerySelection(query)||hasTimeConstraints(query,declarations);
+ return hasPeriodComparison(query)||hasQuerySelection(query)||hasTimeConstraints(query,declarations);
 }

@@ -47,3 +47,13 @@ pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不
 最小声明：`{"op":"sumFields","fields":["a","b"],"output":"category","onMissing":"zero"}`。输出字段须声明为数值度量，不能带 queryField 或嵌入输入行。多个算子顺序执行，可先算分类、再算总分。单字段分类可用同一策略将缺项归零。
 
 Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 的地区部、代表处使用现有各项查询的组织键并集逐行计算；顶部整体查询尚未配置，不把组织得分纵向相加冒充整体分。真实 DQE 需单独验真。
+
+## 比较期缺记录策略（6.77）
+
+`joinAggregate.values[]` 可逐度量声明 `onMissing: "null" | "zero"`，省略为 `null`。它只处理成功查询中没有匹配记录的情况，覆盖该度量的默认缺行输出；已返回的 null 单元格、异常值和失败查询绝不被替换成零。算子顶层 `onMissing: "null"` 保持兼容。
+
+```json
+{"op":"joinAggregate","source":"previous","keys":[{"local":"customer","foreign":"customer"}],"values":[{"field":"sales","output":"previous-sales","aggregate":"unique","onMissing":"zero"},{"field":"rate","output":"previous-rate","aggregate":"unique"}],"onMissing":"null"}
+```
+
+先用 `unionKeys` 对本期/上期/去年同期的完整行集取键并集，再关联各期值。增长率为 delta(本期,基期) 后 ratio(差额,基期,scale=100,onZeroDenominator=null)，基期为零包括0/0均产出null；负基期照公式计算。百分点差值只用delta，数值使用0–100刻度，用 `points-1-signed` 显示。表格绑定计算结果，允许全表排序和筛选；空值始终排在有效值之后。见 `/pages/period-comparison-demo` 和查询模块的“自动同比环比查询”。

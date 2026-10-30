@@ -109,6 +109,7 @@ function hasFixedTime(config: Record<string, unknown>): boolean {
 }
 
 function boundDateFilterErrors(binding: TimeBinding, declaration: FilterDeclaration | undefined, config: Record<string, unknown> | undefined, path: string, error: ErrorReporter): void {
+  if (binding.periodComparison) return; // Dedicated comparison validation owns day-level cutoffs.
   if (binding.periodPolicy) {
     periodPolicyErrors(binding, declaration, config, path, error);
     return;

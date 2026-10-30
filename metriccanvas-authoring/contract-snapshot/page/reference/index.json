@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.76",
-  "schemaSha256": "e606b54c8638162938b7ab7e3db3b7dd2c8f2e1a62e9e8257c77f90f6b821296",
+  "schemaVersion": "6.77",
+  "schemaSha256": "3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -168,11 +168,11 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "a48f561ba01ae5c5627488c3ed4c1b06889d54b42a5e197f7233e3c7234f3a64"
+      "sha256": "6b3378dc63a601b9ff28a9be79876c8478b22fb80434f716aa519fd9cbb4c0fd"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "e34e7b660fa6665d08264e438048659eaa3b8d62cd21747d45ef6cc59a63cc2b"
+      "sha256": "e94011a7f5d0fa4c7b0e344a69ac154744174411dee0c2fbf403785b38b9be9a"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -252,7 +252,7 @@
     },
     {
       "file": "packages/page/src/schema/compute.ts",
-      "sha256": "e60bed9f241858da6971acf26cde7c922c780c6cb226c0929236b9742f9a1452"
+      "sha256": "dfddcce2ffabfcdc458a2b8ee8777f97998f5dc63e2576cee6461538487189b9"
     },
     {
       "file": "packages/page/src/schema/condition.ts",
@@ -260,7 +260,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "746f0e40a0a70fa5d18efdeb7b465baa7a777bf6cc7118395f4e692c01debea0"
+      "sha256": "2acdd635421a2f09e2b7e7bcd12fccf7405dc76de8fcdaac7b7dd9f276b4e3c9"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -316,7 +316,7 @@
     },
     {
       "file": "packages/page/src/time-mode.ts",
-      "sha256": "c60382a21830738cefd2e591ea5854f60cae6511019553dc9faa314bb83b8e21"
+      "sha256": "ab2357dd8d2e3fa573dd2f9afd101ee49e72f292cbf546e471f49f1f57ce20b8"
     },
     {
       "file": "packages/page/src/time-param.ts",
@@ -356,7 +356,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "f22ccb9eec52a153bfe5d9dd7e26dcb795b4af5f080fc6a24e89a8358bd0ae81"
+      "sha256": "88e99394d0b5fd96c6b701fc4b2be53a28f48165cab8a1cb18b0f7608acff950"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -608,7 +608,8 @@
         "object-query-page",
         "stored-count-measures",
         "period-query-columns-demo",
-        "period-query-branches"
+        "period-query-branches",
+        "period-comparison-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -646,7 +647,8 @@
         "compute-page",
         "cross-source-page",
         "union-keys-demo",
-        "reference-export-compute-branches"
+        "reference-export-compute-branches",
+        "period-comparison-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -815,7 +817,8 @@
         "signed-number-family-page",
         "currency-selection-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "period-comparison-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1772,7 +1775,8 @@
         "6.73",
         "6.74",
         "6.75",
-        "6.76"
+        "6.76",
+        "6.77"
       ]
     },
     {
@@ -1857,6 +1861,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -1908,6 +1913,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -2959,6 +2965,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -3045,6 +3052,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -3267,6 +3275,16 @@
       "enum": [
         "unique",
         "sum"
+      ]
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing",
+      "path": "@computeOperator · oneOf[0].values[].onMissing",
+      "required": "本分支可选",
+      "module": "compute.md",
+      "enum": [
+        "null",
+        "zero"
       ]
     },
     {
@@ -4111,6 +4129,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4203,6 +4222,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4450,6 +4470,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4562,6 +4583,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4647,6 +4669,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -5343,6 +5366,29 @@
       "const": "time"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodComparison",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/kind",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodComparison.kind",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "current",
+        "previousPeriod",
+        "previousYear"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodComparison.fact",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/window",
       "path": "@dqeQuery.filterBindings{key} · anyOf[2].window",
       "required": "本分支可选",
@@ -5689,6 +5735,29 @@
       "const": "time"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/kind",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.kind",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "current",
+        "previousPeriod",
+        "previousYear"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.fact",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window",
       "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].window",
       "required": "本分支可选",
@@ -5979,6 +6048,29 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "time"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/kind",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.kind",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "current",
+        "previousPeriod",
+        "previousYear"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.fact",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window",
@@ -10494,6 +10586,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -11858,6 +11951,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -12254,6 +12348,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -12636,6 +12731,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -12803,6 +12899,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -15255,6 +15352,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -15436,6 +15534,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -15899,6 +15998,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -17477,6 +17577,7 @@
         "percent-0",
         "percent-1",
         "percent-2",
+        "points-1-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -18987,8 +19088,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/6",
       "module": "compute.md",
-      "file": "examples/compute-page.json",
-      "pointer": "#/dataSources/targets/compute/1"
+      "file": "examples/period-comparison-demo.json",
+      "pointer": "#/dataSources/comparison/compute/4"
     },
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/7",
@@ -19011,8 +19112,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/10",
       "module": "compute.md",
-      "file": "examples/union-keys-demo.json",
-      "pointer": "#/dataSources/combined/compute/0"
+      "file": "examples/period-comparison-demo.json",
+      "pointer": "#/dataSources/comparison/compute/0"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/0",

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.77 增加期间比较查询 `periodComparison`、逐度量缺记录策略和百分点格式 `points-1-signed`。年/季/月/近一年按可信统计进度派生基期，完整结果关联后支持排序、筛选、分页及导出。见[自动同比环比查询](docs/page-metadata/queries-and-bindings.md)，合成验收 `/pages/period-comparison-demo`。
+
 6.75 增加 boolean 筛选器的 enabledWhen 和 boolean 候选依赖；候选约束传递显式 true/false，原本未选代表处时不因交集更新要求额外确认。跨页共享值由宿主显式接入，各页面独立管理候选与查询状态。见[重点国代筛选集成](docs/page-metadata/filters.md#boolean-candidate-context)，合成验收入口 `/pages/key-office-filter-demo` 和 `/pages/key-office-filter-target`。
 
 表格 select 表头候选的共用 DQE 网关已接入完整结果分批读取及前端去重：保留原指标与维度，默认最多扫描1000条原始结果、每批200条（最多5批），更大范围须在集成配置中显式提高上限；超限、缺总数或截断不展示部分选项，完整后独立搜索和分页。表格可见且绘制后空闲预加载、点击菜单按需获取；主查询可抢占后台候选，候选状态不阻塞整表渲染。页面声明不变。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成 DQE 验收入口 `/pages/table-column-candidates-query`。
@@ -530,4 +532,4 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 
 `pagedJoin.records.timeoutMs` 按每次主表或补列表分页请求独立计时，每批重新获得完整预算，不再限制整轮累计耗时；任一批超时仍整轮失败且不缓存部分结果。`maxBytes` 继续整轮累计。配置形状与 Schema 版本不变，旧页面随运行时更新采用该语义。合成验收入口 `/pages/record-join-batch-timeout`（`?sourceTimeout=true` 为单批超时）；详见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)。
 
-6.76：组合查询源通过 `pagination:{mode:"query",pageSize:10,batchSize:10}` 显式按需分页，后操作成员覆盖其他成员表格状态；记录模式需真实记录标识，不自动完整回退。候选自动预热仅在新模式关闭。`isNull` 声明为空语义，未确认后端完整能力时明确不可用。见[按需查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand`、`/pages/record-join-on-demand`。
+6.77：组合查询源通过 `pagination:{mode:"query",pageSize:10,batchSize:10}` 显式按需分页，后操作成员覆盖其他成员表格状态；记录模式需真实记录标识，不自动完整回退。候选自动预热仅在新模式关闭。`isNull` 声明为空语义，未确认后端完整能力时明确不可用。见[按需查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand`、`/pages/record-join-on-demand`。

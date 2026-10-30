@@ -1,3 +1,4 @@
+import {resolvePeriodComparison, type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {bindingOwnedDqeBody, normalizeDisplayQueryRows, restoreCellFallbacks} from '@metriccanvas/page/internal';
 import {resolvePeriodQuery} from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from './intersect-filters';
@@ -10,7 +11,7 @@ import { rawSnapshot } from './snapshots';
 
 export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
 
-export interface QueryBinding { now?:Date; filters?: readonly FilterDeclaration[]; dataSource: QueryDataSource; pagination?: { limit: number }; }
+export interface QueryBinding { displayInputs?:DisplayInputsSnapshot; filterRevision?:number; now?:Date; filters?: readonly FilterDeclaration[]; dataSource: QueryDataSource; pagination?: { limit: number }; }
 
 
 function mappedQueryField(
@@ -37,7 +38,7 @@ export function composeEffectiveQuery(
     validateBindingValue(declaration, value, values, binding.now);
     if (unrestrictedDimension(value, declaration)) continue;
     const metric = selectedMetric(target, values);
-    filterValues.push(...bindingPredicates(target, value, metric));
+    filterValues.push(...bindingPredicates(target, value, metric, binding));
   }
   const tableFilters: EffectiveQuery['filterValues'] = [];
   // Header fields without queryField mappings cannot be pushed down.
@@ -73,7 +74,7 @@ export function composeEffectiveQuery(
 type FilterBinding = NonNullable<QueryDataSource['source']['query']['filterBindings']>[string];
 type Predicates = EffectiveQuery['filterValues'];
 
-function bindingPredicates(binding: FilterBinding, value: FilterValue | undefined, metric: string | undefined): Predicates {
+function bindingPredicates(binding: FilterBinding, value: FilterValue | undefined, metric: string | undefined, context: QueryBinding): Predicates {
   switch (binding.target) {
     case 'dimension': {
       if (value?.type !== 'dimension') return [];
@@ -81,7 +82,7 @@ function bindingPredicates(binding: FilterBinding, value: FilterValue | undefine
       const queryField = bindingQueryField(binding, value.level);
       return queryField === undefined ? [] : [{ target: 'dimension', queryField, values: value.values }];
     }
-    case 'time': return timePredicates(binding, value);
+    case 'time': return timePredicates(binding, value, context);
     case 'timePoint':
       return value?.type === 'timePoint' ? [{ target: 'dimension', queryField: binding.queryField, values: [timePointPredicateValue(value.value, binding.valueFormat)] }] : [];
     case 'boolean': return booleanPredicates(binding, value);
@@ -89,7 +90,8 @@ function bindingPredicates(binding: FilterBinding, value: FilterValue | undefine
   }
 }
 
-function timePredicates(binding: Extract<FilterBinding, { target: 'time' }>, value: FilterValue | undefined): Predicates {
+function timePredicates(binding: Extract<FilterBinding, { target: 'time' }>, value: FilterValue | undefined, context: QueryBinding): Predicates {
+  if (binding.periodComparison) return comparisonPredicates(binding, value, context);
   if (binding.periodPolicy) {
     if (value?.type !== 'timeRange' || !value.selection) throw Object.assign(new Error('期间策略需要已应用的期间选择'), {code:'DQE_QUERY_REJECTED'});
     const resolved = resolvePeriodQuery({...value, selection:value.selection}, binding.periodPolicy);
@@ -186,4 +188,11 @@ function selectedMetric(binding: FilterBinding, values: FilterValues): string | 
   const metric = binding.target === 'numberRange' ? (binding.metricByFilter ? selectedCase(binding.metricByFilter.cases, values.get(binding.metricByFilter.filterId)?.type === 'dimension' ? (values.get(binding.metricByFilter.filterId) as { values: string[] }).values : undefined) : binding.metric) : undefined;
   if (binding.target === 'numberRange' && !metric) throw Object.assign(new Error('金额metric未配置'), { code: 'DQE_CONFIG_ERROR' });
   return metric;
+}
+
+function comparisonPredicates(binding: Extract<FilterBinding, {target:'time'}>, value: FilterValue | undefined, context: QueryBinding): Predicates {
+  if (value?.type !== 'timeRange' || !value.selection) throw Object.assign(new Error('期间比较需要已应用的期间选择'), {code:'DQE_QUERY_REJECTED'});
+  const range = resolvePeriodComparison({...value, selection:value.selection}, binding.periodComparison!, context.displayInputs, context.filterRevision);
+  const target = binding.queryField ? {queryField:binding.queryField,valueFormat:binding.valueFormat} : {period:'day' as const};
+  return [{target:'time',...target,value:range}];
 }

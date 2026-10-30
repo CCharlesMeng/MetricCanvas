@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.77",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "fields.format"
@@ -167,7 +167,8 @@
         "references/page-metadata/examples/signed-number-family-page.json",
         "references/page-metadata/examples/currency-selection-page.json",
         "references/page-metadata/examples/chart-constant-values-page.json",
-        "references/page-metadata/examples/chart-constant-branches.json"
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json"
       ]
     }
   ],
@@ -188,7 +189,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.76",
+        "$id": "https://metriccanvas/page/v6.77",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

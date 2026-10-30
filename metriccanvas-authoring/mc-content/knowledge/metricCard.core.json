@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.77",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "metricCard.core"
@@ -164,7 +164,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.76",
+        "$id": "https://metriccanvas/page/v6.77",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

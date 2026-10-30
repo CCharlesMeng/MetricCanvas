@@ -167,3 +167,7 @@ reconcile:intersection 等完整候选就绪后保留交集。原本没有选择
 IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区部或代表处，不另设 rep-office 下拉；其他 IOC Region 形态在校验阶段拒绝。重点国代作为该树的候选依赖，勾选时保留地区部结构、收窄代表处节点；已选普通代表处失效后，须在同一棵树重新选择节点或显式确认不限。普通维度的平面、多选及显式切层能力保留。
 
 完整声明：[来源页](examples/key-office-filter-demo.json)、[目标页](examples/key-office-filter-target.json)。两页使用合成地区与代表处；浏览器操作、宿主示例和数据环境见仓库 pages/capabilities/filters/README.md 的重点国代场景。真实字段名、取值编码、权限和重点名单须由集成应用确认。
+
+## 期间筛选驱动同比环比（6.77）
+
+已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。

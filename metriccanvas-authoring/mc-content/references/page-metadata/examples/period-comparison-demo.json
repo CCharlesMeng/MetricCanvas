@@ -1,0 +1,535 @@
+{
+  "schemaVersion": "6.77",
+  "id": "period-comparison-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "同比环比（合成数据）"
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "date",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month",
+        "value": "2026-10"
+      }
+    }
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "同比环比（合成数据）"
+    },
+    "filterIds": [
+      "period"
+    ],
+    "presentation": {
+      "layout": "inline"
+    }
+  },
+  "dataSources": {
+    "current": {
+      "fields": {
+        "customer": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "customer"
+        },
+        "sales": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "sales"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "rate"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "customer"
+                ],
+                "output_metrics": [
+                  "sales",
+                  "rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "current",
+                "fact": "sales-through"
+              }
+            }
+          }
+        }
+      }
+    },
+    "previous": {
+      "fields": {
+        "customer": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "customer"
+        },
+        "sales": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "sales"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "rate"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "customer"
+                ],
+                "output_metrics": [
+                  "sales",
+                  "rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "previousPeriod",
+                "fact": "sales-through"
+              }
+            }
+          }
+        }
+      }
+    },
+    "year-ago": {
+      "fields": {
+        "customer": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "customer"
+        },
+        "sales": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "sales"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "rate"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "customer"
+                ],
+                "output_metrics": [
+                  "sales",
+                  "rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "previousYear",
+                "fact": "sales-through"
+              }
+            }
+          }
+        }
+      }
+    },
+    "comparison": {
+      "fields": {
+        "customer": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "current-sales": {
+          "type": "number",
+          "role": "measure"
+        },
+        "current-rate": {
+          "type": "number",
+          "role": "measure"
+        },
+        "previous-sales": {
+          "type": "number",
+          "role": "measure"
+        },
+        "previous-rate": {
+          "type": "number",
+          "role": "measure"
+        },
+        "year-ago-sales": {
+          "type": "number",
+          "role": "measure"
+        },
+        "year-ago-rate": {
+          "type": "number",
+          "role": "measure"
+        },
+        "previous-sales-delta": {
+          "type": "number",
+          "role": "measure"
+        },
+        "previous-rate-delta": {
+          "type": "number",
+          "role": "measure"
+        },
+        "previous-growth": {
+          "type": "number",
+          "role": "measure"
+        },
+        "year-ago-sales-delta": {
+          "type": "number",
+          "role": "measure"
+        },
+        "year-ago-rate-delta": {
+          "type": "number",
+          "role": "measure"
+        },
+        "year-ago-growth": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": []
+      },
+      "compute": [
+        {
+          "op": "unionKeys",
+          "sources": [
+            "current",
+            "previous",
+            "year-ago"
+          ],
+          "keys": [
+            "customer"
+          ]
+        },
+        {
+          "op": "joinAggregate",
+          "source": "current",
+          "keys": [
+            {
+              "local": "customer",
+              "foreign": "customer"
+            }
+          ],
+          "values": [
+            {
+              "field": "sales",
+              "output": "current-sales",
+              "aggregate": "unique",
+              "onMissing": "zero"
+            },
+            {
+              "field": "rate",
+              "output": "current-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "previous",
+          "keys": [
+            {
+              "local": "customer",
+              "foreign": "customer"
+            }
+          ],
+          "values": [
+            {
+              "field": "sales",
+              "output": "previous-sales",
+              "aggregate": "unique",
+              "onMissing": "zero"
+            },
+            {
+              "field": "rate",
+              "output": "previous-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "year-ago",
+          "keys": [
+            {
+              "local": "customer",
+              "foreign": "customer"
+            }
+          ],
+          "values": [
+            {
+              "field": "sales",
+              "output": "year-ago-sales",
+              "aggregate": "unique",
+              "onMissing": "zero"
+            },
+            {
+              "field": "rate",
+              "output": "year-ago-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "current-sales",
+          "subtrahend": "previous-sales",
+          "output": "previous-sales-delta"
+        },
+        {
+          "op": "delta",
+          "minuend": "current-rate",
+          "subtrahend": "previous-rate",
+          "output": "previous-rate-delta"
+        },
+        {
+          "op": "ratio",
+          "numerator": "previous-sales-delta",
+          "denominator": "previous-sales",
+          "output": "previous-growth",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "current-sales",
+          "subtrahend": "year-ago-sales",
+          "output": "year-ago-sales-delta"
+        },
+        {
+          "op": "delta",
+          "minuend": "current-rate",
+          "subtrahend": "year-ago-rate",
+          "output": "year-ago-rate-delta"
+        },
+        {
+          "op": "ratio",
+          "numerator": "year-ago-sales-delta",
+          "denominator": "year-ago-sales",
+          "output": "year-ago-growth",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "comparison",
+      "components": [
+        {
+          "id": "comparison-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "comparison"
+          },
+          "props": {
+            "rowKey": "customer",
+            "columns": [
+              {
+                "title": "客户",
+                "field": {
+                  "data": "main",
+                  "field": "customer",
+                  "missingText": "—"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "title": "当期销售额",
+                "field": {
+                  "data": "main",
+                  "field": "current-sales",
+                  "missingText": "—",
+                  "format": "number-1"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "title": "上期销售额",
+                "field": {
+                  "data": "main",
+                  "field": "previous-sales",
+                  "missingText": "—",
+                  "format": "number-1"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "title": "去年同期销售额",
+                "field": {
+                  "data": "main",
+                  "field": "year-ago-sales",
+                  "missingText": "—",
+                  "format": "number-1"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "title": "环比增长率",
+                "field": {
+                  "data": "main",
+                  "field": "previous-growth",
+                  "missingText": "—",
+                  "format": "percent-2-signed"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "title": "同比增长率",
+                "field": {
+                  "data": "main",
+                  "field": "year-ago-growth",
+                  "missingText": "—",
+                  "format": "percent-2-signed"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "title": "当期达成率",
+                "field": {
+                  "data": "main",
+                  "field": "current-rate",
+                  "missingText": "—",
+                  "format": "percent-1"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "title": "环比差值",
+                "field": {
+                  "data": "main",
+                  "field": "previous-rate-delta",
+                  "missingText": "—",
+                  "format": "points-1-signed"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "title": "同比差值",
+                "field": {
+                  "data": "main",
+                  "field": "year-ago-rate-delta",
+                  "missingText": "—",
+                  "format": "points-1-signed"
+                },
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "同比环比"
+              },
+              "search": {
+                "fields": [
+                  "customer"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

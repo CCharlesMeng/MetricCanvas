@@ -1,5 +1,7 @@
 <script lang="ts">
   import { createPagedJoinPreview } from '../../../../../fixtures/paged-join-on-demand';
+  import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
+  const comparisonPreview = $derived(createPeriodComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
   import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
   import {createTableRecoveryPreview} from '../../../../../fixtures/table-recovery';
   import {withIocRegionCandidates} from '$lib/ioc-region-preview';
@@ -148,6 +150,7 @@
         document,
         dataGateway: zeroTotalPreviewGateway(pageId, previewDataGateway(pageId))
       };
+      if(pageId==='period-comparison-demo')pageState.dataGateway=comparisonPreview.dataGateway;
       pageState.dataGateway = partnerHealthUnionGateway(pageId, pageState.dataGateway, page.url.searchParams.get('state') ?? 'ready');
     } catch (cause) {
       if (session !== loadSession) return;
@@ -191,7 +194,7 @@
     {/if}
     {#key visibilityInstance}
     <RuntimeView
-      displayInputs={pageExternalInputs(page.params.pageId)==='ioc-business'?businessPreview.displayInputs:pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:pageExternalInputs(page.params.pageId)==='ioc-header'?headerPreview.displayInputs:undefined}
+      displayInputs={pageExternalInputs(page.params.pageId)==='period-comparison'?comparisonPreview.displayInputs:pageExternalInputs(page.params.pageId)==='ioc-business'?businessPreview.displayInputs:pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:pageExternalInputs(page.params.pageId)==='ioc-header'?headerPreview.displayInputs:undefined}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
       {aiSummary}

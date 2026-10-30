@@ -48,7 +48,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.76。结构真源为本册[schema.json](../schema.json)，SHA256 `e606b54c8638162938b7ab7e3db3b7dd2c8f2e1a62e9e8257c77f90f6b821296`。字段表自动生成；可选不等于有默认值。
+页面协议 6.77。结构真源为本册[schema.json](../schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -428,7 +428,7 @@ Schema位置：`#/definitions/pieLegendColumn/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -452,6 +452,7 @@ Schema位置：`#/definitions/pieLegendColumn/anyOf/1/properties/format`。
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -680,7 +681,7 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -704,6 +705,7 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |

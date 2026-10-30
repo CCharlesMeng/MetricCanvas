@@ -1,3 +1,4 @@
+import {createPeriodComparisonPreview} from '../../fixtures/period-comparison';
 import {createPagedJoinPreview} from '../../fixtures/paged-join-on-demand';
 import { createFullQueryCandidatesPreview } from '../../fixtures/full-query-candidates';
 import {withIocRegionCandidates} from './ioc-region-preview';
@@ -41,6 +42,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if(kind==='period-comparison')return createPeriodComparisonPreview(state);
   if(kind==='paged-join-on-demand')return createPagedJoinPreview();
   if(kind==='full-query-candidates')return createFullQueryCandidatesPreview(state);
   return undefined;

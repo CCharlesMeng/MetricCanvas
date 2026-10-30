@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 76,
-  "current": "6.76",
+  "minor": 77,
+  "current": "6.77",
   "capabilities": {
     "table-null-predicate": {
       "minor": 76,
@@ -11,6 +11,16 @@
     "paged-join-query-pagination": {
       "minor": 76,
       "description": "组合查询源按需分页与最后操作成员生效",
+      "legacyReadable": false
+    },
+    "percentage-point-format": {
+      "minor": 77,
+      "description": "带符号的一位小数百分点格式",
+      "legacyReadable": false
+    },
+    "period-comparison": {
+      "minor": 77,
+      "description": "可信截止时间驱动的期间比较与按度量声明缺记录策略",
       "legacyReadable": false
     },
     "boolean-filter-enabled": {
@@ -791,6 +801,7 @@
     "6.73",
     "6.74",
     "6.75",
-    "6.76"
+    "6.76",
+    "6.77"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.77",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-8044e7e5"
@@ -168,7 +168,8 @@
         "references/page-metadata/examples/signed-number-family-page.json",
         "references/page-metadata/examples/currency-selection-page.json",
         "references/page-metadata/examples/chart-constant-values-page.json",
-        "references/page-metadata/examples/chart-constant-branches.json"
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json"
       ]
     }
   ],

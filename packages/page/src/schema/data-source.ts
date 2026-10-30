@@ -72,7 +72,7 @@ function filterBindingsSchema(includePeriodPolicy:boolean){return z
                   .meta({ minProperties: 2 })
               })
               .strict(),
-            z.object({ target: z.literal('time'), window: timeWindowZ.optional(), queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional(), ...(includePeriodPolicy?{periodPolicy: z.union([
+            z.object({ target: z.literal('time'), periodComparison: z.object({kind:z.enum(['current','previousPeriod','previousYear']),fact:idZ}).strict().optional(), window: timeWindowZ.optional(), queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional(), ...(includePeriodPolicy?{periodPolicy: z.union([
               z.object({kind:z.literal('fixed'),period:z.enum(QUERY_PERIODS).describe('固定消费期间的查询粒度；年允许扩大到完整自然年')}).strict(),
               z.object({kind:z.literal('selection'),supportedPeriods:z.array(z.enum(QUERY_PERIODS)).min(1).meta({uniqueItems:true}).describe('作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退')}).strict()
             ]).describe('独立消费已应用的期间选择，独占查询 period/start/end；旧绑定未声明时保留原行为').optional()}: {}) }).strict(),

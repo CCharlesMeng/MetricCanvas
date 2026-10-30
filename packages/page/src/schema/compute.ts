@@ -96,7 +96,7 @@ const joinAggregateOperatorZ = z.object({
   source: idZ,
   keys: z.array(z.object({ local: fieldNameZ, foreign: fieldNameZ }).strict()).min(1),
   values: z.array(z.object({
-    field: fieldNameZ, output: fieldNameZ, aggregate: z.enum(['unique', 'sum'])
+    field: fieldNameZ, output: fieldNameZ, aggregate: z.enum(['unique', 'sum']), onMissing: z.enum(['null','zero']).optional()
   }).strict()).min(1),
   onMissing: z.literal('null')
 }).strict();

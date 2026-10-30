@@ -579,3 +579,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 组合表格异常兼容：`/pages/table-data-recovery`，合成空值、不规则行、重复 key、缺项 Excel 与恢复后刷新；步骤见[表格示例](capabilities/table/README.md#异常数据兼容与缺项导出)。
 
 记录关联单批超时：`/pages/record-join-batch-timeout`，操作与合成数据边界见 [表格场景](capabilities/table/README.md#记录关联单批超时)。
+
+- [自动同比环比](capabilities/data/period-comparison/README.md)：四种期间、历史对象并集、增长率/百分点、全表排序筛选及导出。

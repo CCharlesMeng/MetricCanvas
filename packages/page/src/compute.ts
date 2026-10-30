@@ -92,7 +92,7 @@ export interface JoinAggregateOperator {
   op: 'joinAggregate';
   source: string;
   keys: Array<{ local: string; foreign: string }>;
-  values: Array<{ field: string; output: string; aggregate: 'unique' | 'sum' }>;
+  values: Array<{ field: string; output: string; aggregate: 'unique' | 'sum'; onMissing?: 'null' | 'zero' }>;
   onMissing: 'null';
 }
 

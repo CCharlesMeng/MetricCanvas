@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.77",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "compute.section-d31d73b5"
@@ -82,7 +82,8 @@
         "references/page-metadata/examples/compute-page.json",
         "references/page-metadata/examples/cross-source-page.json",
         "references/page-metadata/examples/union-keys-demo.json",
-        "references/page-metadata/examples/reference-export-compute-branches.json"
+        "references/page-metadata/examples/reference-export-compute-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json"
       ]
     }
   ],

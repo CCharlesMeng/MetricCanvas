@@ -240,7 +240,8 @@
         "object-query-page",
         "stored-count-measures",
         "period-query-columns-demo",
-        "period-query-branches"
+        "period-query-branches",
+        "period-comparison-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -278,7 +279,8 @@
         "compute-page",
         "cross-source-page",
         "union-keys-demo",
-        "reference-export-compute-branches"
+        "reference-export-compute-branches",
+        "period-comparison-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -447,7 +449,8 @@
         "signed-number-family-page",
         "currency-selection-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "period-comparison-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1709,7 +1712,9 @@
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/1/properties/rowKeyFields": "6.72起可用，与rowKey和rowKeyGeneration三选一；至少两个不同的来源原始非空string/number维度，按声明顺序组成来源内唯一身份，不参与排序。",
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/projection": "覆盖全部非身份输出列；字段类型和可空性仍须兼容。",
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/rowKeyGeneration": "6.73起显式选择uuid，与rowKey和rowKeyFields三选一；仅标识本次返回行，业务重复与分页重叠由上游保证。",
-    "#/definitions/pagedJoinSource/properties/pagination/anyOf/1/properties/batchSize": "按需补列的编码分组和单次响应窗口上限，1至1000；默认创作显式写10，不扫描完整业务行域。"
+    "#/definitions/pagedJoinSource/properties/pagination/anyOf/1/properties/batchSize": "按需补列的编码分组和单次响应窗口上限，1至1000；默认创作显式写10，不扫描完整业务行域。",
+    "periodComparison": "按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。",
+    "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing": "单个度量缺关联记录时null或zero，省略null；不替换已返回的空值或失败。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2010,7 +2015,12 @@
     "6.73": "分页合并成员显式选择前端UUID行键；不保证跨请求业务身份。",
     "6.74": "完整结果按稳定维度键取组织并集，再关联单项并计算分类与总分。",
     "6.75": "6.75：boolean 候选依赖与统一条件启用。",
-    "6.76": "6.76：组合源显式按需分页、最后操作成员生效和表格为空条件能力边界。"
+    "6.76": "6.76：组合源显式按需分页、最后操作成员生效和表格为空条件能力边界。",
+    "points-1-signed": "百分点值保留一位小数和符号，追加P，不乘100。",
+    "current": "所选期间截至可信统计截止日。",
+    "previousPeriod": "月前移一月、季前移三月、年与近一年前移一年。",
+    "previousYear": "所选期间前移一年，保持相同统计进度。",
+    "6.77": "期间比较查询、逐度量缺记录策略及百分点格式。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2613,6 +2623,17 @@
         "审批记录与当前信息补列（6.66）"
       ],
       "dependencies": []
+    },
+    "query.period-comparison": {
+      "module": "queries-and-bindings",
+      "title": "自动同比环比与可信统计进度",
+      "roots": [
+        "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison"
+      ],
+      "headings": [
+        "自动同比环比查询（6.77）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2659,14 +2680,16 @@
       "6.50 固定单选查询分支",
       "6.55 DQE 对象查询",
       "指定时间字段的范围下推（6.68）",
-      "查询时间精度与执行前校验"
+      "查询时间精度与执行前校验",
+      "自动同比环比查询（6.77）"
     ],
     "compute.md": [
       "组织键并集（6.74）",
       "查阅方式",
       "汇总的全空结果（6.12）",
       "多度量透视与有限主集合左关联 6.14",
-      "字段求和与缺项归零（6.71）"
+      "字段求和与缺项归零（6.71）",
+      "比较期缺记录策略（6.77）"
     ],
     "filters.md": [
       "期间选择与查询消费",
@@ -2681,7 +2704,8 @@
       "6.39 复杂时间与候选",
       "下拉搜索与普通树（6.43）",
       "IOC 业务批量场景与必选多选（6.46）",
-      "布尔候选依赖与条件启用（6.75）"
+      "布尔候选依赖与条件启用（6.75）",
+      "期间筛选驱动同比环比（6.77）"
     ],
     "sections-and-layout.md": [
       "Report 与 Dashboard 标题",
@@ -2696,7 +2720,8 @@
       "显式数字颜色与图表标签（6.16）",
       "查阅方式",
       "静态货币字段选择（6.38）",
-      "图表配置项常量取值（6.59）"
+      "图表配置项常量取值（6.59）",
+      "百分点差值（6.77）"
     ],
     "actions-and-navigation.md": [
       "查阅方式",

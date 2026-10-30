@@ -91,6 +91,15 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         }
         return session;
     }
+    function computedFailureBinding(table: TableComponent): Pick<TableRenderBinding, 'onretry'> {
+        const source = page.dataSources[table.data.main];
+        if (!source?.compute?.some(op => op.op === 'unionKeys')) return {};
+        return {onretry: () => {
+            for (const id of conditionSourceIds(page, table.data.main)) {
+                if (page.dataSources[id]?.source.type === 'query') stream()?.refreshQuery(id);
+            }
+        }};
+    }
     const controller = {
         view,
         hierarchy(table:TableComponent):HierarchySelection|undefined{return hierarchies.get(table.id)?.snapshot();},
@@ -144,7 +153,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         },
         binding(table: TableComponent, presentation: Omit<TableRenderBinding, 'view' | 'searchDraft' | 'searchOption' | 'onsearchoption' | 'onsearchdraft' | 'onsearch' | 'onpage' | 'onpagesize' | 'onsort' | 'onheaderfilter'>): TableRenderBinding {
             const source = page.dataSources[table.data.main];
-            return { ...presentation, failureNotice: source?.source.type === 'pagedUnion' ? '多来源数据加载失败，请刷新重试。' : undefined, sortReset: (source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion') ? source.source.ordering.default : undefined, view: controller.render(table), searchDraft: controller.searchDraft(table), searchOption: controller.searchOption(table),
+            return { ...presentation, ...computedFailureBinding(table), failureNotice: tableFailureNotice(source), sortReset: (source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion') ? source.source.ordering.default : undefined, view: controller.render(table), searchDraft: controller.searchDraft(table), searchOption: controller.searchOption(table),
                 onsearchoption: value => { if (presentation.toolbarEnabled?.search !== false)
                     controller.selectSearchOption(table, value); },
                 onsearchdraft: query => { if (presentation.toolbarEnabled?.search !== false)
@@ -259,4 +268,9 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
             session.dispose(); sessions.clear(); headers.clear(); searches.clear(); searchOptions.clear(); }
     };
     return controller;
+}
+
+function tableFailureNotice(source: import('@metriccanvas/page/internal').DataSource | undefined): string | undefined {
+    if (source?.compute?.some(op => op.op === 'unionKeys')) return '关联数据加载或计算失败，结果暂不可用。请重试。';
+    return source?.source.type === 'pagedUnion' ? '多来源数据加载失败，请刷新重试。' : undefined;
 }

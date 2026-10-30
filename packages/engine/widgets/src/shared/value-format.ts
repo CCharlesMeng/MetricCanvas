@@ -32,6 +32,17 @@ export function formatValue(
   const numeric = finiteNumber(value);
   if (numeric === undefined) return String(value);
 
+  return formatNumericValue(numeric, format);
+}
+
+function formatNumericValue(numeric: number, format: ValueFormatPreset): string {
+  if (format === 'points-1-signed') return `${signedNumberPresentation(numeric, 'number-1-signed').text}P`;
+  const percent = /^percent-([012])(-signed)?$/.exec(format);
+  if (percent) return `${percent[2] && numeric > 0 ? '+' : ''}${formatNumber(numeric, Number(percent[1]))}%`;
+  return formatStandardNumber(numeric, format);
+}
+
+function formatStandardNumber(numeric: number, format: ValueFormatPreset): string {
   switch (format) {
     case 'number':
       return String(numeric);
@@ -46,30 +57,11 @@ export function formatValue(
       return formatNumber(numeric, 2);
     case 'number-grouped':
       return formatNumber(numeric, undefined, true);
-    case 'compact-wan-0':
-      return `${wanUnits(numeric, 0)}万`;
-    case 'compact-wan-1':
-      return `${wanUnits(numeric, 1)}万`;
-    case 'compact-million-0':
-      return `${formatNumber(numeric / 1e6, 0, true)}百万`;
-    case 'compact-million-1':
-      return `${formatNumber(numeric / 1e6, 1, true)}百万`;
-    case 'compact-million-2':
-      return `${formatNumber(numeric / 1e6, 2, true)}百万`;
-    case 'compact-yi-1':
-      return `${formatNumber(numeric / 1e8, 1, true)}亿`;
     case 'usd-adaptive':
       return `${formatNumber(numeric,2,true)}美元`;
     case 'cny-adaptive':
       return formatCnyAdaptive(numeric);
-    case 'percent-0':
-      return `${formatNumber(numeric, 0)}%`;
-    case 'percent-1':
-      return `${formatNumber(numeric, 1)}%`;
-    case 'percent-2':
-      return `${formatNumber(numeric, 2)}%`;
-    case 'percent-2-signed':
-      return `${numeric > 0 ? '+' : ''}${formatNumber(numeric, 2)}%`;
+    default: return formatCompactNumber(numeric, format);
   }
 }
 
@@ -80,6 +72,7 @@ export function valuePolarity(
 ): ValuePolarity {
   const numeric = finiteNumber(value);
   if (numeric === undefined || numeric === 0) return 'neutral';
+  if (format === 'points-1-signed') return signedNumberPresentation(numeric, 'number-1-signed').polarity;
   if (isSignedNumberFormat(format)) return signedNumberPresentation(numeric, format).polarity;
   return numeric > 0 ? 'positive' : 'negative';
 }
@@ -170,4 +163,22 @@ function formatDate(value: FieldValue): string {
   if (typeof value !== 'number') return String(value);
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? String(value) : date.toISOString().slice(0, 10);
+}
+
+function formatCompactNumber(numeric: number, format: ValueFormatPreset): string {
+  switch (format) {
+    case 'compact-wan-0':
+      return `${wanUnits(numeric, 0)}万`;
+    case 'compact-wan-1':
+      return `${wanUnits(numeric, 1)}万`;
+    case 'compact-million-0':
+      return `${formatNumber(numeric / 1e6, 0, true)}百万`;
+    case 'compact-million-1':
+      return `${formatNumber(numeric / 1e6, 1, true)}百万`;
+    case 'compact-million-2':
+      return `${formatNumber(numeric / 1e6, 2, true)}百万`;
+    case 'compact-yi-1':
+      return `${formatNumber(numeric / 1e8, 1, true)}亿`;
+    default: return String(numeric);
+  }
 }

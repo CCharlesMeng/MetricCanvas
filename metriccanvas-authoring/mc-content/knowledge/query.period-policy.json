@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.77",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "query.period-policy"
@@ -118,7 +118,8 @@
         "references/page-metadata/examples/object-query-page.json",
         "references/page-metadata/examples/stored-count-measures.json",
         "references/page-metadata/examples/period-query-columns-demo.json",
-        "references/page-metadata/examples/period-query-branches.json"
+        "references/page-metadata/examples/period-query-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json"
       ]
     }
   ],
@@ -139,7 +140,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.76",
+        "$id": "https://metriccanvas/page/v6.77",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -231,6 +232,7 @@
         ],
         "properties": {
           "target": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/target",
+          "periodComparison": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison",
           "window": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/window",
           "queryField": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField",
           "valueFormat": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat",

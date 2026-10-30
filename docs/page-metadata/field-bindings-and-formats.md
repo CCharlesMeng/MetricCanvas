@@ -97,3 +97,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 图表级 emptyBehavior 缺省/default 保持原空态；showConstants 在查询成功零行时允许呈现常量。该策略不绕过加载和错误，不补造类别、地域或业务行；空横轴折线仍保留空图。数据有行但数值均为 null 不属于零行；常量系列仍沿这些类别呈现。无数据源的纯常量仪表直接显示，不需要 showConstants。
 
 沿真实行展开的常量点保留原行点击上下文；没有真实行时不制造字段或行身份。运行时和静态导出共用取值及空态规则。场景：[chart-constant-values-page](examples/chart-constant-values-page.json)，浏览器入口与步骤见 pages/capabilities/chart/README.md。
+
+## 百分点差值（6.77）
+
+`points-1-signed` 将已计算的百分点差值显示为 `+10.0P`、`-2.5P` 或 `0.0P`，保留一位小数，不乘100。输入比例若采用0–1刻度须先在指标契约中明确转换为百分点刻度；不自动猜测。空值显示缺失文案，舍入为零时不带正负号，方向和颜色同样为中性。它仅格式化数值，不改变计算、排序和筛选。示例 `/pages/period-comparison-demo`。

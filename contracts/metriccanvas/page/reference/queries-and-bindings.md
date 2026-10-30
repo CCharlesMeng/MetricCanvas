@@ -242,8 +242,26 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 可观察入口：`/pages/authoring-contract-reliability`，使用说明见同目录 README。共享跨语言向量由产品测试维护。
 
+## 自动同比环比查询（6.77）
 
-页面协议 6.76。结构真源为本册[schema.json](schema.json)，SHA256 `e606b54c8638162938b7ab7e3db3b7dd2c8f2e1a62e9e8257c77f90f6b821296`。字段表自动生成；可选不等于有默认值。
+顶部 `display: "period"` 时间筛选可驱动三个普通查询源，分别查询本期、上期及去年同期。每个源须声明 `resultScope: "complete"`，共用相同业务条件、稳定业务键和可信截止事实；不能带 limit/offset 或查询分页。绑定示例：
+
+```json
+{"period":{"target":"time","periodComparison":{"kind":"previousYear","fact":"sales-through"}}}
+```
+
+`kind` 为 `current`、`previousPeriod` 或 `previousYear`；`fact` 引用宿主 `DisplayInputsSnapshot.periods`，必须为当前权限上下文和筛选版本下的 ready 事实。`latest` 是实际统计截止时间，日精度使用该日、月精度使用该月末；不能用浏览器当前日期、URL 或页面自报日期替代。事实缺失、过期或所选期间尚未开始统计时明确失败。事实更新重新查询，不复用未记录事实上下文的 initial。
+
+先将本期截至 `min(所选期间末日, latest)`，再派生基期：月环比前移一月，季度环比前移三月，年度和近一年环比前移一年；同比统一前移一年。因此年度、近一年同环比基期相同。近一年仍指已应用的前十二个完整月，不在请求或导出时重新按时钟定位。未完成期间保持相同日历进度，闰日/月末截到目标月最后一天；已完成期间比较完整自然期间。
+
+`periodComparison` 与 `periodPolicy`、`window` 互斥。指标查询必须显式保留 `filter.time: {"period":"day","is_aggregate":true}`（聚合开关按实际指标契约声明），不能另有固定 start/end/param/window；对象查询可沿用 `queryField` 和 `valueFormat`。所有派生请求使用日边界，季度不依赖未确认的 DQE quarter 编码。服务端须按范围返回正确的指标值，季度/年比率不能由客户端简单累加月度比率。
+
+完整比较表复用 `unionKeys → joinAggregate → delta → ratio`，以各期稳定业务键并集保留本期和历史对象；完整计算后才做本地排序、表头筛选、分页与导出。每个查询复用最多10000行/60秒的完整读取预算，超过预算明确失败，不以当前页冒充全量。比较期失败不补零；依赖表格显示失败，导出不得产生不完整文件。大于该预算的业务需要上游提供完整比较结果，不能把该方案当作无限规模浏览器关联。
+
+完整可操作场景：`/pages/period-comparison-demo`，页面及合成数据说明见 `pages/capabilities/data/period-comparison/README.md`。合成网关验证运行链，真实 DQE 聚合与宿主事实需集成方另外验收。
+
+
+页面协议 6.77。结构真源为本册[schema.json](schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1003,6 +1021,42 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 |---|---|
 | "time" | 用于选择@dqeQuery.filterBindings{key} · anyOf[2].target分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodComparison`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["kind","fact"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f6b696e64"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodComparison.kind`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["current","previousPeriod","previousYear"] | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "current" | 所选期间截至可信统计截止日。 |
+| "previousPeriod" | 月前移一月、季前移三月、年与近一年前移一年。 |
+| "previousYear" | 所选期间前移一年，保持相同统计进度。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f66616374"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].periodComparison.fact`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
 
 ### `@dqeQuery.filterBindings{key} · anyOf[2].window`
@@ -1588,6 +1642,42 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 |---|---|
 | "time" | 用于选择@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].target分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e"></a>
+
+### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison`
+
+Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["kind","fact"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f6b696e64"></a>
+
+### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.kind`
+
+Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["current","previousPeriod","previousYear"] | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "current" | 所选期间截至可信统计截止日。 |
+| "previousPeriod" | 月前移一月、季前移三月、年与近一年前移一年。 |
+| "previousYear" | 所选期间前移一年，保持相同统计进度。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f66616374"></a>
+
+### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.fact`
+
+Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
 
 ### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].window`
@@ -2083,6 +2173,42 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 |---|---|
 | "time" | 用于选择@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].target分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["kind","fact"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f6b696e64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.kind`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["current","previousPeriod","previousYear"] | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "current" | 所选期间截至可信统计截止日。 |
+| "previousPeriod" | 月前移一月、季前移三月、年与近一年前移一年。 |
+| "previousYear" | 所选期间前移一年，保持相同统计进度。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f66616374"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.fact`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
 
 ### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].window`
@@ -2513,6 +2639,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - [stored-count-measures](examples/stored-count-measures.json)：完整合法页面；查询仅为静态契约证据。
 - [period-query-columns-demo](examples/period-query-columns-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [period-query-branches](examples/period-query-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

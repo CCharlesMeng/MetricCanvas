@@ -4,6 +4,8 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 const introducedAt: Record<string, number> = {
   'paged-join-query-pagination':76,
   'table-null-predicate':76,
+  'period-comparison':77,
+  'percentage-point-format':77,
   "boolean-filter-enabled":75,
   "boolean-candidate-context":75,
   "compute-union-keys":74,

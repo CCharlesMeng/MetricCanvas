@@ -184,6 +184,7 @@ PagedUnionMember
 PagedUnionSource
 ParamResolutionIssue
 ParameterProgramRequest
+PeriodComparison
 PeriodMode
 PeriodQueryPolicy
 PeriodRange
@@ -335,6 +336,7 @@ columnBindingKey
 columnConditionPaths
 columnMainFields
 columnPrimaryFields
+comparisonFilterIds
 componentCatalog
 componentCatalogEntry
 compositeCardChildTypes
@@ -385,6 +387,7 @@ formatPeriodFact
 formatSuitsParamType
 hasAiSummaryBody
 hasColumnConditions
+hasPeriodComparison
 hasQueryFieldMapping
 hasQueryParamReferences
 hasQuerySelection
@@ -481,6 +484,7 @@ resolveFilterTextValue
 resolveInlineQueryParams
 resolvePageParams
 resolveParamTextValues
+resolvePeriodComparison
 resolvePeriodQuery
 resolvePeriodSelection
 resolveRelativeTime

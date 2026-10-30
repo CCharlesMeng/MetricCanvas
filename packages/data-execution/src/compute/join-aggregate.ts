@@ -30,24 +30,30 @@ export function joinAggregate(
     const result: DataRow = {};
     for (const binding of operator.values) {
       if (binding.aggregate === 'unique' && group.length !== 1) throw new ComputationError('关联源存在重复组合键');
-      let total = 0;
-      let seen = false;
-      for (const row of group) {
-        const value = row[binding.field];
-        if (value == null) continue;
-        if (typeof value !== 'number' || !Number.isFinite(value)) throw new ComputationError('关联度量不是有限数值');
-        total += value; seen = true;
-      }
-      if (!Number.isFinite(total)) throw new ComputationError('关联聚合数值溢出');
-      result[binding.output] = seen ? total : null;
+      result[binding.output] = aggregateValue(group, binding.field);
       if (binding.aggregate === 'unique') copyFieldFallback(group[0], binding.field, result, binding.output);
     }
     values.set(id, result);
   }
   return rows.map(row => {
     const joined = values.get(key(row, operator.keys.map(k => k.local)));
-    const output = copyRowFallbacks(row, { ...row, ...(joined ?? Object.fromEntries(operator.values.map(binding => [binding.output, null]))) });
+    const output = copyRowFallbacks(row, { ...row, ...(joined ?? Object.fromEntries(operator.values.map(binding => [binding.output, binding.onMissing === 'zero' ? 0 : null]))) });
     for (const binding of operator.values) copyFieldFallback(joined, binding.output, output, binding.output);
     return output;
   });
+}
+
+/** Explicit null cells remain unknown; only an absent row may be replaced by zero. */
+function aggregateValue(group: readonly DataRow[], field: string): number | null {
+  let total = 0;
+  let seen = false;
+  for (const row of group) {
+    const value = row[field];
+    if (value == null) continue;
+    if (typeof value !== 'number' || !Number.isFinite(value)) throw new ComputationError('关联度量不是有限数值');
+    total += value;
+    seen = true;
+  }
+  if (!Number.isFinite(total)) throw new ComputationError('关联聚合数值溢出');
+  return seen ? total : null;
 }

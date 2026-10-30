@@ -1,3 +1,4 @@
+import {comparisonFilterIds} from '@metriccanvas/page/internal';
 import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents,sourceFilterIds} from '@metriccanvas/page/internal';
@@ -128,12 +129,21 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       }
     }
     let factKey=JSON.stringify(timeContext.displayInputs?.());
+    function invalidateChangedFacts(changed: Set<string>): void {
+      const nextKey=JSON.stringify(timeContext.displayInputs?.());
+      if(nextKey===factKey)return;
+      pendingInitial.clear();factKey=nextKey;
+      for(const id of comparisonFilterIds(page))changed.add(id);
+      for(const filter of page.filters??[]) {
+        if((filter.type==='timeRange'||filter.type==='timePoint')&&filter.availability||filter.type==='dimension'&&filter.candidateWindow)changed.add(filter.id);
+      }
+    }
     let primed = false;
     const unsubscribe = filters?.subscribe(next => {
       if (!primed) { primed = true; return; }
       const changed = new Set([...new Set([...values.keys(), ...next.keys()])].filter(id => queryCondition(values.get(id)) !== queryCondition(next.get(id))));
       if(changed.size)pendingInitial.clear();
-      const nextKey=JSON.stringify(timeContext.displayInputs?.());if(nextKey!==factKey){pendingInitial.clear();factKey=nextKey;for(const f of page.filters??[])if((f.type==='timeRange'||f.type==='timePoint')&&f.availability||f.type==='dimension'&&f.candidateWindow)changed.add(f.id);}
+      invalidateChangedFacts(changed);
       const nextBlocked = new Set(filterBlockedIds(filters));
       for (const id of new Set([...blocked,...nextBlocked])) if (blocked.has(id) !== nextBlocked.has(id)) changed.add(id);
       blocked = nextBlocked;

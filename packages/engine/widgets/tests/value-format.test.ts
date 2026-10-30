@@ -160,3 +160,10 @@ it('IOC F9 preserves zero and negative values while binding-specific missing tex
   expect(formatValue(50, 'percent-1')).toBe('50.0%');
   expect(formatValue(Infinity, 'number', '暂无数据')).toBe('暂无数据');
 });
+
+it('formats percentage point differences without scaling and with rounded neutral zero', () => {
+  expect(formatValue(10, 'points-1-signed')).toBe('+10.0P');
+  expect(formatValue(-2.56, 'points-1-signed')).toBe('-2.6P');
+  expect(formatValue(-0.04, 'points-1-signed')).toBe('0.0P');
+  expect(formatValue(null, 'points-1-signed')).toBe('—');
+});

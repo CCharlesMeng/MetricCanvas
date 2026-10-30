@@ -226,6 +226,8 @@
   {/if}
 {:else if component.type === 'table' && component.props.columns.length===0}
   <Table data={tableData} props={component.props} interactive={false} view={{pageIndex:0,sort:[],headerFilters:{}}} />
+{:else if component.type === 'table' && table?.onretry && snapshot.status === 'error' && !exportMode}
+  <div role="alert" style="display:flex;align-items:center;gap:12px">{table.failureNotice}<Button onclick={table.onretry}>重试</Button></div>
 {:else if component.type === 'table' && table?.expansion && !exportMode}
   <ExpandableTable {component} data={tableData} binding={table} {snapshot} />
 {:else}

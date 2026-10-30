@@ -383,6 +383,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/period-comparison-demo.json",
+      "target": "product-contracts/page/conformance/valid/period-comparison-demo.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/period-filter-last12-months-page.json",
       "target": "product-contracts/page/conformance/valid/period-filter-last12-months-page.json",
       "scope": "exact product contract"
@@ -5948,6 +5953,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/period-comparison-demo.json",
+      "target": "references/page-metadata/examples/period-comparison-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/queries-and-bindings.md",
       "target": "references/page-metadata/queries-and-bindings.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6734,11 +6744,11 @@
     }
   ],
   "counts": {
-    "product": 1315,
+    "product": 1317,
     "authoring": 31,
     "modules": 33,
-    "topics": 206,
-    "nodes": 2435,
+    "topics": 211,
+    "nodes": 2445,
     "tools": 9,
     "components": 19
   },

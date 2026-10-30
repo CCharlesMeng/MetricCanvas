@@ -45,6 +45,7 @@ export const valueFormatPresets = [
   'percent-0',
   'percent-1',
   'percent-2',
+  'points-1-signed',
   'percent-2-signed',
   'date',
   'date-month-day',

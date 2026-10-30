@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.77",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.overview"
@@ -117,7 +117,8 @@
         "references/page-metadata/examples/object-query-page.json",
         "references/page-metadata/examples/stored-count-measures.json",
         "references/page-metadata/examples/period-query-columns-demo.json",
-        "references/page-metadata/examples/period-query-branches.json"
+        "references/page-metadata/examples/period-query-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json"
       ]
     }
   ],

@@ -64,7 +64,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 ready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。
 
 
-页面协议 6.76。结构真源为本册[schema.json](schema.json)，SHA256 `e606b54c8638162938b7ab7e3db3b7dd2c8f2e1a62e9e8257c77f90f6b821296`。字段表自动生成；可选不等于有默认值。
+页面协议 6.77。结构真源为本册[schema.json](schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -209,7 +209,7 @@ Schema位置：`#/definitions/scalarField/oneOf/0/properties/defaultFormat`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -233,6 +233,7 @@ Schema位置：`#/definitions/scalarField/oneOf/0/properties/defaultFormat`。
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -339,7 +340,7 @@ Schema位置：`#/definitions/scalarField/oneOf/1/properties/defaultFormat`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -363,6 +364,7 @@ Schema位置：`#/definitions/scalarField/oneOf/1/properties/defaultFormat`。
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -767,7 +769,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/0/properties/defaultFormat`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -791,6 +793,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/0/properties/defaultFormat`
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -907,7 +910,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/defaultFormat`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -931,6 +934,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/defaultFormat`
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -1220,7 +1224,7 @@ Schema位置：`#/definitions/groupedDimensionQueryFieldGroup/additionalProperti
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1244,6 +1248,7 @@ Schema位置：`#/definitions/groupedDimensionQueryFieldGroup/additionalProperti
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -1385,7 +1390,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1409,6 +1414,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -1511,7 +1517,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1535,6 +1541,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |

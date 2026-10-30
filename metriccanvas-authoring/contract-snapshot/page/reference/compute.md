@@ -48,8 +48,18 @@ pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不
 
 Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证部分缺项得分 8、风险 -2、总分 6，以及全部缺项和真实零值总分 0；`/pages/partner-health` 的地区部、代表处使用现有各项查询的组织键并集逐行计算；顶部整体查询尚未配置，不把组织得分纵向相加冒充整体分。真实 DQE 需单独验真。
 
+## 比较期缺记录策略（6.77）
 
-页面协议 6.76。结构真源为本册[schema.json](schema.json)，SHA256 `e606b54c8638162938b7ab7e3db3b7dd2c8f2e1a62e9e8257c77f90f6b821296`。字段表自动生成；可选不等于有默认值。
+`joinAggregate.values[]` 可逐度量声明 `onMissing: "null" | "zero"`，省略为 `null`。它只处理成功查询中没有匹配记录的情况，覆盖该度量的默认缺行输出；已返回的 null 单元格、异常值和失败查询绝不被替换成零。算子顶层 `onMissing: "null"` 保持兼容。
+
+```json
+{"op":"joinAggregate","source":"previous","keys":[{"local":"customer","foreign":"customer"}],"values":[{"field":"sales","output":"previous-sales","aggregate":"unique","onMissing":"zero"},{"field":"rate","output":"previous-rate","aggregate":"unique"}],"onMissing":"null"}
+```
+
+先用 `unionKeys` 对本期/上期/去年同期的完整行集取键并集，再关联各期值。增长率为 delta(本期,基期) 后 ratio(差额,基期,scale=100,onZeroDenominator=null)，基期为零包括0/0均产出null；负基期照公式计算。百分点差值只用delta，数值使用0–100刻度，用 `points-1-signed` 显示。表格绑定计算结果，允许全表排序和筛选；空值始终排在有效值之后。见 `/pages/period-comparison-demo` 和查询模块的“自动同比环比查询”。
+
+
+页面协议 6.77。结构真源为本册[schema.json](schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -211,6 +221,21 @@ Schema位置：`#/definitions/computeOperator/oneOf/0/properties/values/items/pr
 |---|---|
 | "unique" | 要求唯一非空值，歧义时拒绝计算。 |
 | "sum" | 按声明可加度量求和。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f76616c7565732f6974656d732f70726f706572746965732f6f6e4d697373696e67"></a>
+
+### `@computeOperator · oneOf[0].values[].onMissing`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["null","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 单个度量缺关联记录时null或zero，省略null；不替换已返回的空值或失败。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "null" | 零/缺分母时输出空值。 |
+| "zero" | 零/缺分母时输出0。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6f6e4d697373696e67"></a>
 
@@ -1205,6 +1230,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/10/properties/keys/items`。
 - [cross-source-page](examples/cross-source-page.json)：完整合法页面；查询仅为静态契约证据。
 - [union-keys-demo](examples/union-keys-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-compute-branches](examples/reference-export-compute-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/compute.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/validate-compute-dependencies.ts`（仓库路径，非分发依赖）。
@@ -1221,8 +1247,8 @@ Schema位置：`#/definitions/computeOperator/oneOf/10/properties/keys/items`。
 - `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/2`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-2/compute/0/range`。
 - `#/definitions/computeOperator/oneOf/4`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/2`。
 - `#/definitions/computeOperator/oneOf/5`：[合法完整页面](examples/query-numeric-tolerance.json)，JSON Pointer `#/dataSources/samples/compute/0`。
-- `#/definitions/computeOperator/oneOf/6`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/1`。
+- `#/definitions/computeOperator/oneOf/6`：[合法完整页面](examples/period-comparison-demo.json)，JSON Pointer `#/dataSources/comparison/compute/4`。
 - `#/definitions/computeOperator/oneOf/7`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/2`。
 - `#/definitions/computeOperator/oneOf/8`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/3`。
 - `#/definitions/computeOperator/oneOf/9`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5-stages/compute/0`。
-- `#/definitions/computeOperator/oneOf/10`：[合法完整页面](examples/union-keys-demo.json)，JSON Pointer `#/dataSources/combined/compute/0`。
+- `#/definitions/computeOperator/oneOf/10`：[合法完整页面](examples/period-comparison-demo.json)，JSON Pointer `#/dataSources/comparison/compute/0`。

@@ -202,7 +202,7 @@ Excel 允许缺项，数据工作表导出整理后的全部匹配行，而非�
 合成入口 `/pages/table-data-recovery` 同时展示缺字段、对象值、不规则行、重复来源 key 与重复补充记录；`?recoveryState=ready` 演示数据准备好后恢复无告警。页面位于 `pages/capabilities/table/table-data-recovery.json`，模拟数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`；无需 DQE Sim。真实 DQE/Relay 行为须另验。
 
 
-页面协议 6.76。结构真源为本册[schema.json](schema.json)，SHA256 `e606b54c8638162938b7ab7e3db3b7dd2c8f2e1a62e9e8257c77f90f6b821296`。字段表自动生成；可选不等于有默认值。
+页面协议 6.77。结构真源为本册[schema.json](schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

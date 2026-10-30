@@ -241,3 +241,21 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 本次未改页面字段结构与历史页面读取版本；旧页可以读取，执行非法时间范围时会失败。无起止值的时间声明仍可供筛选绑定填充，不隐式补时间。没有批量升级或静默修正历史页面。显式 `periodPolicy` 的期间选择仍沿其现行契约解析，不把任意日范围当成期间选择。
 
 可观察入口：`/pages/authoring-contract-reliability`，使用说明见同目录 README。共享跨语言向量由产品测试维护。
+
+## 自动同比环比查询（6.77）
+
+顶部 `display: "period"` 时间筛选可驱动三个普通查询源，分别查询本期、上期及去年同期。每个源须声明 `resultScope: "complete"`，共用相同业务条件、稳定业务键和可信截止事实；不能带 limit/offset 或查询分页。绑定示例：
+
+```json
+{"period":{"target":"time","periodComparison":{"kind":"previousYear","fact":"sales-through"}}}
+```
+
+`kind` 为 `current`、`previousPeriod` 或 `previousYear`；`fact` 引用宿主 `DisplayInputsSnapshot.periods`，必须为当前权限上下文和筛选版本下的 ready 事实。`latest` 是实际统计截止时间，日精度使用该日、月精度使用该月末；不能用浏览器当前日期、URL 或页面自报日期替代。事实缺失、过期或所选期间尚未开始统计时明确失败。事实更新重新查询，不复用未记录事实上下文的 initial。
+
+先将本期截至 `min(所选期间末日, latest)`，再派生基期：月环比前移一月，季度环比前移三月，年度和近一年环比前移一年；同比统一前移一年。因此年度、近一年同环比基期相同。近一年仍指已应用的前十二个完整月，不在请求或导出时重新按时钟定位。未完成期间保持相同日历进度，闰日/月末截到目标月最后一天；已完成期间比较完整自然期间。
+
+`periodComparison` 与 `periodPolicy`、`window` 互斥。指标查询必须显式保留 `filter.time: {"period":"day","is_aggregate":true}`（聚合开关按实际指标契约声明），不能另有固定 start/end/param/window；对象查询可沿用 `queryField` 和 `valueFormat`。所有派生请求使用日边界，季度不依赖未确认的 DQE quarter 编码。服务端须按范围返回正确的指标值，季度/年比率不能由客户端简单累加月度比率。
+
+完整比较表复用 `unionKeys → joinAggregate → delta → ratio`，以各期稳定业务键并集保留本期和历史对象；完整计算后才做本地排序、表头筛选、分页与导出。每个查询复用最多10000行/60秒的完整读取预算，超过预算明确失败，不以当前页冒充全量。比较期失败不补零；依赖表格显示失败，导出不得产生不完整文件。大于该预算的业务需要上游提供完整比较结果，不能把该方案当作无限规模浏览器关联。
+
+完整可操作场景：`/pages/period-comparison-demo`，页面及合成数据说明见 `pages/capabilities/data/period-comparison/README.md`。合成网关验证运行链，真实 DQE 聚合与宿主事实需集成方另外验收。
