@@ -585,3 +585,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 - [自动同比环比](capabilities/data/period-comparison/README.md)：四种期间、历史对象并集、增长率/百分点、全表排序筛选及导出。
 
 - [对象参数与表头候选HTTP验收](temporary/business-rejection-pagination-10/README.md)：审批结果/审批阶段按单字段对象查询取候选，主表每页10条。
+
+父子表折叠缓存：[table-row-expansion-cache](capabilities/table/table-row-expansion-cache.json)，入口 `/pages/table-row-expansion-cache`；内存仿真Gateway，验证重开复用、父行隔离及父表翻页失效。

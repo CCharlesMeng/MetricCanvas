@@ -4,7 +4,8 @@ import type { FilterValues } from '../filter-state';
 import { createFilterState } from '../filter-state';
 import type { PageParamValues } from '../page-params';
 import { rowExpansionFilters, type HierarchySelection, type HierarchyContext } from './hierarchy-selection';
-import { sourceFilterIds, type TableQueryView } from '@metriccanvas/page/internal';
+import {createFoldedTableCache} from './folded-cache';
+import { canonicalizeJson, sourceFilterIds, type TableQueryView } from '@metriccanvas/page/internal';
 import { orchestrate, type PageSnapshotStream, type PageDataSnapshots } from '../orchestrator';
 export interface RowTableInstance {
     key: string;
@@ -66,7 +67,7 @@ function limitedGateway(gateway: DataGateway): DataGateway {
             });
         } };
 }
-/** Each expansion owns an ordinary source program and table view, with no cross-fold cache. */
+/** Each parent owns an isolated query session; successful folds can be resumed. */
 export function createRowExpansionController(page: Page, parent: TableComponent, gateway: DataGateway, filters: FilterValues, params: PageParamValues, changed: () => void, displaySnapshot?: import('@metriccanvas/page/internal').DisplaySnapshot, filterRevision?: number) {
     let selection:HierarchySelection|undefined;
     let autoAttempted=false;
@@ -74,11 +75,19 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
     let selectedParentValue:string|undefined;
     let presentationKey = JSON.stringify([displaySnapshot, filterRevision]);
     const instances = new Map<string, RowTableInstance>();
+    const folded=createFoldedTableCache();
+    const foldContext=()=>canonicalizeJson({filters:[...filters],params:[...params],selection,displaySnapshot,filterRevision});
     const limited = limitedGateway(gateway);
     const keyOf = (row: Row) => ['subtotal', 'total'].includes(String(row[parent.props.rowKindField ?? ''])) ? undefined : parent.props.rowKey ? expansionRowKey(row[parent.props.rowKey]) : undefined;
-    function close(key: string) { const instance = instances.get(key); if (!instance)
-        return; instances.delete(key); instance.dispose(); }
+    function close(key: string, cache=false) {
+        const instance=instances.get(key);
+        if(!instance)return;
+        instances.delete(key);
+        if(!cache||!folded.keep(instance,foldContext()))instance.dispose();
+    }
     function open(row: Row, key: string,views?:ReadonlyMap<string,TableQueryView>) {
+        const cached=folded.take(key,row,foldContext());
+        if(cached){instances.set(key,cached);changed();return;}
         const expansion = parent.props.rowExpansion!;
         let scope: ReturnType<typeof rowExpansionPage>;
         try {
@@ -161,6 +170,7 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
             if (key === presentationKey)
                 return;
             presentationKey = key;
+            folded.clear();
             displaySnapshot = snapshot;
             filterRevision = revision;
             for (const instance of instances.values()) {
@@ -177,16 +187,17 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
                 return;
             if(selection?.childValue)childIntent=!instances.has(key);
             if (instances.has(key)) {
-                close(key);
+                close(key,true);
                 changed();
                 return;
             }
             if (parent.props.rowExpansion?.mode === 'single')
                 for (const id of instances.keys())
-                    close(id);
+                    close(id,true);
             open(row, key);
         },
         retain(rows: readonly Row[]) {
+            folded.retain(rows,keyOf,foldContext());
             const counts = new Map<string, number>();
             for (const row of rows) {
                 const key = keyOf(row);
@@ -206,12 +217,13 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
             if (removed)
                 changed();
         },
-        clear() { const had = instances.size > 0; for (const key of instances.keys())
+        invalidateCache(){folded.clear();},
+        clear() { folded.clear();const had = instances.size > 0; for (const key of instances.keys())
             close(key); if (had)
             changed(); },
         retry(row: Row) { const instance = this.get(row); if (instance?.stream)
             instance.stream.refreshQuery(instance.table.data.main); },
-        dispose() { for (const key of instances.keys())
+        dispose() { folded.clear();for (const key of instances.keys())
             close(key); }
     };
 }

@@ -96,3 +96,68 @@ describe('isolated expanded table scopes', () => {
   });
 
 });
+
+
+describe('folded child table cache',()=>{
+  it('reopens the same successful child page without another request',async()=>{
+    const {page,table,rows}=fixture();let calls=0;
+    const control=createRowExpansionController(page,table,{async fetchData(query){calls++;return result(query);}},new Map(),new Map(),()=>{});
+    try{
+      control.toggle(rows[0]!);await flush();
+      const child=control.get(rows[0]!)!;child.stream!.setQueryPage(child.table.data.main,1);await flush();
+      expect(calls).toBe(2);control.toggle(rows[0]!);expect(control.get(rows[0]!)).toBeUndefined();
+      control.toggle(rows[0]!);await flush();
+      expect(calls).toBe(2);
+      expect(control.get(rows[0]!)!.stream!.getQueryView(child.table.data.main)!.pageIndex).toBe(1);
+      expect(control.get(rows[0]!)!.snapshots.get(child.table.data.main)).toMatchObject({status:'ready',rows:[expect.objectContaining({'order-id':'C01-10'}),...Array.from({length:9},()=>expect.anything())]});
+    }finally{control.dispose();}
+  });
+
+  it('keeps parents isolated and evicts changed parent data and removed rows',async()=>{
+    const {page,table,rows}=fixture();let calls=0;
+    const control=createRowExpansionController(page,table,{async fetchData(query){calls++;return result(query);}},new Map(),new Map(),()=>{});
+    try{
+      control.toggle(rows[0]!);control.toggle(rows[1]!);await flush();
+      control.toggle(rows[0]!);control.toggle(rows[1]!);control.toggle(rows[0]!);await flush();expect(calls).toBe(2);
+      control.toggle(rows[0]!);const changed={...rows[0]!,amount:42};control.retain([changed,rows[1]!]);
+      control.toggle(changed);await flush();expect(calls).toBe(3);
+      control.toggle(changed);control.retain([]);control.toggle(rows[1]!);await flush();expect(calls).toBe(4);
+    }finally{control.dispose();}
+  });
+
+  it('invalidates folded results on conditions, parameters, presentation revision and explicit clear',async()=>{
+    const {page,table,rows}=fixture();let calls=0;
+    const control=createRowExpansionController(page,table,{async fetchData(query){calls++;return result(query);}},new Map(),new Map(),()=>{});
+    const contexts=[{filters:new Map([['customer-optional',{type:'dimension' as const,dimension:'row_customer',values:['new']}]]),params:new Map()},
+      {filters:new Map(),params:new Map([['tenant','new']])}];
+    try{
+      control.toggle(rows[0]!);await flush();control.toggle(rows[0]!);expect(calls).toBe(1);
+      for(const [index,context] of contexts.entries()){control.sync(rows,context);control.toggle(rows[0]!);await flush();expect(calls).toBe(index+2);control.toggle(rows[0]!);}
+      control.updatePresentation(undefined,1);control.toggle(rows[0]!);await flush();expect(calls).toBe(4);control.toggle(rows[0]!);
+      control.clear();control.toggle(rows[0]!);await flush();expect(calls).toBe(5);
+      control.toggle(rows[0]!);control.invalidateCache();control.toggle(rows[0]!);await flush();expect(calls).toBe(6);
+    }finally{control.dispose();}
+  });
+
+  it('retries a failed fold and caches a successful empty result',async()=>{
+    const {page,table,rows}=fixture();let calls=0;
+    const control=createRowExpansionController(page,table,{async fetchData(){calls++;if(calls===1)throw Error('failed');return {rows:[],totalCount:0};}},new Map(),new Map(),()=>{});
+    try{
+      control.toggle(rows[0]!);await flush();expect(control.get(rows[0]!)!.snapshots.get('orders-default')?.status).toBe('error');
+      control.toggle(rows[0]!);control.toggle(rows[0]!);await flush();expect(calls).toBe(2);
+      control.toggle(rows[0]!);control.toggle(rows[0]!);await flush();expect(calls).toBe(2);
+      expect(control.get(rows[0]!)!.snapshots.get('orders-default')).toMatchObject({status:'empty',totalCount:0});
+    }finally{control.dispose();}
+  });
+
+  it('bounds retained closed parents to twenty and disposes on page teardown',async()=>{
+    const {page,table}=fixture();let calls=0;
+    const parents=Array.from({length:21},(_,i)=>({'customer-id':`P${i}`}));
+    const control=createRowExpansionController(page,table,{async fetchData(query){calls++;return result(query);}},new Map(),new Map(),()=>{});
+    try{
+      for(const row of parents){control.toggle(row);await flush();control.toggle(row);}
+      expect(calls).toBe(21);control.toggle(parents[20]!);await flush();expect(calls).toBe(21);control.toggle(parents[20]!);
+      control.toggle(parents[0]!);await flush();expect(calls).toBe(22);
+    }finally{control.dispose();}
+  });
+});

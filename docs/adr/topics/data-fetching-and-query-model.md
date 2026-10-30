@@ -57,3 +57,5 @@
 [ADR-0123](../0123-explicit-hierarchy-selection-and-complete-child-export.md) 在6.70以显式 `rowExpansion.selection` 声明独立父级定位和父行私有投影，父整体指标不绑定层级选择。仅启用分支保留共同条件刷新的展开/收起与合法会话，显式完整 Excel 补齐未展开子表；旧页面、旧输入失败语义和页面 PDF/PNG 限制保持。
 
 [ADR-0125](../0125-paged-join-query-pagination-and-member-operations.md)在6.76为组合查询源增加显式按需查询分页、最后操作成员生效与能力不足拒绝；保留原有完整执行分支、固定结果绑定与普通结果隔离。新模式不自动完整预热候选，菜单使用预期提交上下文；显式为空条件在未确认后端完整能力时拒绝。局部修订0108的回退策略与0114的新模式候选规则，真实DQE单源分页另验。
+
+[ADR-0126](../0126-folded-child-table-session-cache.md) 局部修订0113/0123的折叠生命周期：成功query子表在当前页面会话内有界缓存，重开恢复已提交视图；条件、父行、上下文、刷新及权限失效仍清理，不持久化initial，不放宽完整导出。

@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: 0126
 date: 2026-10-27
 note: 用户确认层级筛选的父整体口径、显式归属定位、展开会话保留与完整双工作表 Excel，并授权正式实现
 ---

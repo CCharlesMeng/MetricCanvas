@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: 0126
 date: 2026-10-21
 note: 用户确认单层白底、默认干净、独立查询分页及实时offset语义；导出范围仍待确认
 ---

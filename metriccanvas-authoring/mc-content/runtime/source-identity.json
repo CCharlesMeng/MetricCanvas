@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "28384672c97052c48a24c63cdc6ff8711b366d7debd3ebf597682871f4ac4248",
+  "sha256": "d05853888bd3cc103f7f52bb0d2288fa13bda15becf01ae5db49fad560210269",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -92,7 +92,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "3ff72c1252e5bb2196b18f1eafeb049eb0a2f78e685cfd5bf9f03efb8ca456e3"
+      "sha256": "9c8453c84bc2c55a09508fd20130d358b8f05f2577a66e7200d890ad60186b08"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -1860,7 +1860,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "c4ea416d4d3522c1d5ac1c8bb221132fe0e2558996b3df2c469d776baf94f3fd"
+      "sha256": "9f3b486a8a8434a9bb75c001913d98355981d2dfd85f0b35c8cbe3e664d1e424"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2344,7 +2344,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "68e5a6391853f777e2b7fdc688b8c803ecc46b7403be4fbe4171cfbcabdfb43a"
+      "sha256": "4729c4826bb16534f4659a37643b9080d00821149b1f2aba5d863a1f0ddc51cb"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2449,6 +2449,10 @@
     {
       "file": "pages/capabilities/table/table-pinned-summary.json",
       "sha256": "4378f0c588cc723f08eff2a0d94b5c50cecdd72f8bb70d031ac0e5f14d7b7fee"
+    },
+    {
+      "file": "pages/capabilities/table/table-row-expansion-cache.json",
+      "sha256": "e876190745f874f1360b09c73484f9a4530052970aa03a879dffb27aa5fb4b1a"
     },
     {
       "file": "pages/capabilities/table/table-row-expansion-inline.json",

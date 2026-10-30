@@ -1,0 +1,38 @@
+import {chromium,expect} from '../../../packages/embed/node_modules/@playwright/test/index.mjs';
+import {mkdir,writeFile} from 'node:fs/promises';
+const base=process.env.PLAYGROUND_BASE_URL??'http://127.0.0.1:5194';
+const output=process.argv[2]??'docs/evidence/row-expansion-cache-20261030';
+await mkdir(output,{recursive:true});
+const browser=await chromium.launch({headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:1440,height:1100}});
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.addInitScript(()=>{window.__cacheRequests=[];window.addEventListener('metriccanvas:row-cache-query',event=>window.__cacheRequests.push(event.detail));});
+ await page.goto(`${base}/pages/table-row-expansion-cache`);
+ const parent=page.locator('[data-component="default/customers-default"]');
+ const queries=()=>page.evaluate(()=>window.__cacheRequests.length);
+ await parent.getByRole('button',{name:'展开子表格',exact:true}).first().click();
+ const children=parent.getByRole('region',{name:'子表格',exact:true});
+ await expect(children.first()).toContainText('C01-001');expect(await queries()).toBe(1);
+ await children.first().getByRole('button',{name:'下一页',exact:true}).click();
+ await expect(children.first()).toContainText('C01-011');expect(await queries()).toBe(2);
+ await parent.getByRole('button',{name:'收起子表格',exact:true}).first().click();
+ await expect(children).toHaveCount(0);
+ await parent.getByRole('button',{name:'展开子表格',exact:true}).first().click();
+ await expect(children.first()).toContainText('C01-011');expect(await queries()).toBe(2);
+ await parent.getByRole('button',{name:'展开子表格',exact:true}).first().click();
+ await expect(children.nth(1)).toContainText('C02-001');expect(await queries()).toBe(3);
+ await page.screenshot({path:`${output}/cached-page-and-independent-parent.png`,fullPage:true});
+ await parent.getByRole('button',{name:'收起子表格',exact:true}).first().click();
+ await parent.getByRole('button',{name:'收起子表格',exact:true}).first().click();
+ await parent.getByRole('button',{name:'下一页',exact:true}).click();
+ await parent.getByRole('button',{name:'上一页',exact:true}).click();
+ await parent.getByRole('button',{name:'展开子表格',exact:true}).first().click();
+ await expect(children.first()).toContainText('C01-001');expect(await queries()).toBe(4);
+ await page.reload();
+ await parent.getByRole('button',{name:'展开子表格',exact:true}).first().click();
+ await expect(children.first()).toContainText('C01-001');expect(await queries()).toBe(1);
+ expect(errors).toEqual([]);
+ const report={url:`${base}/pages/table-row-expansion-cache`,passed:['reopen retains page 2 with no query','different parents isolated','parent view change invalidates','page reload invalidates'],pageErrors:errors,data:'synthetic normalized gateway; real DQE not exercised'};
+ await writeFile(`${output}/browser.json`,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+}finally{await browser.close();}

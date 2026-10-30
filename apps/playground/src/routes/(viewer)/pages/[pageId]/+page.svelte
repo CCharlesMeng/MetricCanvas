@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
   import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
   const comparisonPreview = $derived(createPeriodComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
@@ -107,6 +108,7 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='row-cache')return createRowCachePreview().dataGateway;
     if(input==='query-join')return createPagedJoinPreview().dataGateway;
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
   }

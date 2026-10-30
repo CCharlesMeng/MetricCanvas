@@ -26,8 +26,12 @@
   $effect(() => {
     const current = controller, key = parentViewKey, rows = safeData.main.snapshot.rows, loading = snapshot.status === 'loading';
     untrack(() => {
-      if (previousView !== undefined && previousView !== key && !component.props.rowExpansion?.selection) current?.clear();
-      previousView = key; if (!loading) {
+      if (previousView !== undefined && previousView !== key) {
+        if(component.props.rowExpansion?.selection)current?.invalidateCache();
+        else current?.clear();
+      }
+      previousView = key; if(loading)current?.invalidateCache();
+      if (!loading) {
         if(component.props.rowExpansion?.selection)current?.sync(rows,binding.expansion!,binding.expansion!.selection);
         else current?.retain(rows);
       }

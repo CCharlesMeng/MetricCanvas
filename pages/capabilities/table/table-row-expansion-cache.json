@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "6.44",
+  "id": "table-row-expansion-cache",
+  "layout": "dashboard",
+  "meta": {
+    "title": "父行展开缓存（合成数据）",
+    "description": "内存仿真Gateway：折叠后重开复用已成功的子表及页码，切换父表页码或筛选后重新查询。"
+  },
+  "dataSources": {
+    "customers": {
+      "fields": {
+        "customer-id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "customer-id": "C01",
+            "customer-name": "北辰科技",
+            "amount": 30000
+          },
+          {
+            "customer-id": "C02",
+            "customer-name": "远山制造",
+            "amount": 21600
+          },
+          {
+            "customer-id": "C03",
+            "customer-name": "海川能源",
+            "amount": 0
+          }
+        ]
+      }
+    },
+    "orders-default": {
+      "fields": {
+        "customer-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_customer"
+        },
+        "order-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_order_id"
+        },
+        "product": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_product"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元",
+          "queryField": "row_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "row_customer",
+                  "row_order_id",
+                  "row_product"
+                ],
+                "output_metrics": [
+                  "row_amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 10
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "customer-default": {
+              "target": "dimension",
+              "queryField": "row_customer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "default",
+      "components": [
+        {
+          "id": "customers-default",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "customers"
+          },
+          "props": {
+            "title": "折叠后复用已加载子表",
+            "rowKey": "customer-id",
+            "columns": [
+              {
+                "field": "customer-name",
+                "title": "客户",
+                "fixed": "left",
+                "width": 260
+              },
+              {
+                "field": {
+                  "field": "amount",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "title": "金额（元）",
+                "align": "right"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2,
+              "numbered": true
+            },
+            "rowExpansion": {
+              "mode": "multiple",
+              "data": {
+                "type": "query",
+                "source": "orders-default",
+                "filters": [
+                  "customer-default"
+                ],
+                "bindings": {
+                  "customer-default": {
+                    "source": "row",
+                    "field": "customer-id"
+                  }
+                }
+              },
+              "table": {
+                "rowKey": "order-id",
+                "columns": [
+                  {
+                    "field": "order-id",
+                    "title": "订单号",
+                    "width": 120
+                  },
+                  {
+                    "field": "product",
+                    "title": "产品 / 服务",
+                    "width": 160
+                  },
+                  {
+                    "field": {
+                      "field": "amount",
+                      "format": "number-grouped",
+                      "data": "main"
+                    },
+                    "title": "金额（元）",
+                    "align": "right",
+                    "width": 140
+                  }
+                ],
+                "pagination": {
+                  "mode": "query"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "customer-default",
+      "type": "dimension",
+      "dimension": "row_customer",
+      "label": "子表客户输入",
+      "visible": false
+    }
+  ]
+}

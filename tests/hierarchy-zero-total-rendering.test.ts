@@ -78,6 +78,7 @@ it('refuses a complete parent-child export of the displayed zero-total object re
 it('renders an expanded child whose object receipt also reports zero total',async()=>{
   const warn=vi.spyOn(console,'warn').mockImplementation(()=>{});
   const {page,table,filters,gateway,controller}=fixture();
+  const fetch=vi.spyOn(gateway,'fetchData');
   const expansion=createRowExpansionController(page,table,gateway,filters,new Map(),()=>{});
   try{
     const snapshot=await parentSnapshot(page,gateway);
@@ -90,5 +91,8 @@ it('renders an expanded child whose object receipt also reports zero total',asyn
     expect(warn.mock.calls.map(call=>call[1])).toContainEqual(expect.objectContaining({totalCount:0,rowCount:1,completeness:'unverified'}));
     expansion.toggle(rows[0]!);
     expect(expansion.get(rows[0]!)).toBeUndefined();
+    const count=fetch.mock.calls.length;expansion.toggle(rows[0]!);
+    expect(expansion.get(rows[0]!)?.snapshots.get(child.table.data.main)).toMatchObject({status:'ready',totalCount:0,rows:[{office:'甲代表处',score:7}]});
+    expect(fetch).toHaveBeenCalledTimes(count);
   }finally{expansion.dispose();controller.dispose();}
 });
