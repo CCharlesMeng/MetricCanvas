@@ -313,7 +313,11 @@ for (const container of ['plain', 'card'] as const) test(`${container}: loading/
     }, { serializedDocument, mode });
     for (const title of ['趋势标题', '排行标题', '明细标题']) await expect(page.getByText(title, { exact: true })).toBeVisible();
     if (mode === 'loading') {
-      expect(await page.locator('.skeleton').evaluateAll(items => items.length === 3 && items.every(item => item.getBoundingClientRect().height >= 72))).toBe(true);
+      await expect(page.locator('.skeleton')).toHaveCount(0);
+      await expect(page.locator('.loading-spinner')).toHaveCount(3);
+      await expect(page.getByRole('columnheader', { name: '配置列头', exact: true })).toBeVisible();
+      await expect(page.locator('.ranking-card')).toBeVisible();
+      await expect(page.locator('.echart')).toBeVisible();
     } else if (mode === 'error') {
       await expect(page.getByRole('alert')).toHaveCount(0);
       await expect(page.getByRole('cell', { name: '暂无数据' })).toBeVisible();

@@ -73,6 +73,9 @@ test('selection cells keep ordinary colors before clicking and after keyboard se
     const source = page.locator('[data-component="main/regions"]');
     const button = source.getByRole('button', { name: '华南地区部', exact: true });
     const cell = source.locator('td.selectable').filter({ hasText: '华南地区部' });
+    const skin = { forecastMatrix: 'forecast-matrix', embedded: 'embedded', reportCompact: 'report-compact' }[variant ?? 'forecastMatrix'];
+    if (variant) await expect(source.locator('.table-widget')).toHaveClass(new RegExp(`\\b${skin}\\b`));
+    await expect(button).toBeVisible();
     const normal = await source.locator('td:not(.selectable)').first().evaluate(element => {
       const style = getComputedStyle(element);
       return { color: style.color, background: style.backgroundColor };

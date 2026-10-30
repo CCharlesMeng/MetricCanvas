@@ -43,7 +43,9 @@ test('global sort, cross-source ranges, committed drafts and full frozen export 
  const rateHeader=main.locator('th').filter({hasText:'项目分析会召开率'});await rateHeader.locator('summary').click();
  await rateHeader.getByRole('textbox',{name:'数值下限'}).fill('85');await rateHeader.getByRole('textbox',{name:'数值下限'}).press('Tab');
  await expect(main.locator('tbody tr')).toHaveCount(1);await expect(main.getByRole('cell',{name:'上海代表处',exact:true})).toBeVisible();await expect(probe.locator('tbody tr')).toHaveCount(8);
- await rateHeader.locator('summary').click();await rateHeader.getByRole('button',{name:'清除筛选'}).click();await expect(main.locator('tbody tr')).toHaveCount(3);
+ // Loading retains the popover instead of remounting a closed header.
+ if(await rateHeader.locator('details').getAttribute('open')===null)await rateHeader.locator('summary').click();
+ await rateHeader.getByRole('button',{name:'清除筛选'}).click();await expect(main.locator('tbody tr')).toHaveCount(3);
  await amountHeader.locator('summary').click();await amountHeader.getByRole('textbox',{name:'数值下限'}).fill('-');await amountHeader.getByRole('textbox',{name:'数值下限'}).press('Tab');await expect(main.locator('tbody tr')).toHaveCount(3);
  // Export uses committed 150M despite the invalid draft.
  const download=page.waitForEvent('download');await main.getByRole('button',{name:'导出',exact:true}).click();

@@ -2160,8 +2160,8 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(host.locator('[data-decorative-icon="section-title-right"]')).toHaveCount(4);
   await expect(host.locator('[data-decorative-icon="risk-warning"]')).toHaveCount(1);
   await expect(host.locator('[data-decorative-icon="ranking-growth"]')).toHaveCount(1);
-  await expect(host.locator('[data-decorative-icon="ranking-decline"]')).toHaveCount(0);
-  await expect(decorativeIcons).toHaveCount(11);
+  await expect(host.locator('[data-decorative-icon="ranking-decline"]')).toHaveCount(1);
+  await expect(decorativeIcons).toHaveCount(12);
   await expect(decorativeIcons.first()).toHaveAttribute('src', /^data:image\/svg\+xml/);
   const riskNotices = host.locator('.text-block.risk-notice');
   await expect(riskNotices).toHaveCount(1);
@@ -2256,7 +2256,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
     });
   }, flowReportDocument);
   const yoyDropTable = host.locator('[data-component="customer-analysis/yoy-drop-table"]');
-  await expect(yoyDropTable.locator('.skeleton')).toBeVisible();
+  await expect(yoyDropTable.locator('.skeleton')).toHaveCount(0);
+  await expect(yoyDropTable.locator('.loading-spinner')).toBeVisible();
+  await expect(yoyDropTable.locator('thead')).toBeVisible();
 
   await page.evaluate((sourceDocument: FlowReportDocument) => {
     const document = structuredClone(sourceDocument);

@@ -38,7 +38,7 @@ for (const width of [1440, 390]) test(`${width}: mixed Tabs load on demand, keep
     const style = getComputedStyle(element);
     return [style.borderTopWidth, style.borderTopStyle, style.borderTopColor, style.borderTopLeftRadius];
   });
-  await expect.poll(() => cardFrame('[data-component-type=metricCard] > .metric-card')).toEqual(['1px', 'solid', 'rgba(0, 0, 0, 0.1)', '16px']);
+  await expect.poll(() => cardFrame('[data-component-type=metricCard] > .widget-content > .metric-card')).toEqual(['1px', 'solid', 'rgba(0, 0, 0, 0.1)', '16px']);
   await expect.poll(() => cardFrame('.composite-card')).toEqual(['1px', 'solid', 'rgba(0, 0, 0, 0.1)', '16px']);
   expect((await cardFrame('.composite-card .metric-card'))[0]).toBe('0px');
   for (const card of await page.locator('[data-tab-panel=overview] .metric-card, [data-tab-panel=overview] .composite-card').all()) {

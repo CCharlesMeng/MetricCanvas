@@ -56,5 +56,6 @@ test('维度必需参数缺值阻止查数；默认、单值与可选缺值可�
   await expect(page.getByText('regions',{exact:false})).toBeVisible();
   expect(await page.evaluate(()=>window.queryCalls.length)).toBe(0);
   await page.evaluate(raw=>window.runtime.update({document:raw,initialSearch:'regions=EU',dataGateway:{async fetchData(q){window.queryCalls.push(q);return {rows:[{region:'EU',gmv:1}],totalCount:1};}}}),raw);
-  await expect(page.getByRole('table').nth(0).getByText('EU',{exact:true})).toBeVisible();
+  // The candidate-gated sales table now keeps its native loading frame; check the parameter-only consumer explicitly.
+  await expect(page.locator('[data-component="details/shared-table"]').getByText('EU',{exact:true})).toBeVisible();
 });
