@@ -64,7 +64,7 @@ describe('完整快照边界', () => {
   });
   it('有显式查询窗口的零总数回执不能作为并集输入', () => {
     const windowed=structuredClone(query);
-    if(windowed.source.type!=='query')throw Error('测试需要查询来源');
+    if(windowed.source.type!=='query'||!windowed.source.query.body)throw Error('测试需要具备请求体的查询来源');
     windowed.source.query.body.dsl_list[0].order={limit:10,offset:0};
     const actual=computedSnapshots(new Map([...sources,['a',windowed]]),new Map<string,DataSnapshot>([
       ['a',{status:'ready',rows:[{org:'甲'}],totalCount:0}],['b',{status:'empty'}],['combined',{status:'empty'}]
