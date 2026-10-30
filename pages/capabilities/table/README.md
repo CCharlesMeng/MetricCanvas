@@ -425,7 +425,7 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 
 ## 组合查询按需分页
 
-入口 `/pages/paged-join-on-demand`，页面 `paged-join-on-demand.json`，80个全新合成项目；入口 `/pages/record-join-on-demand`，页面 `record-join-on-demand.json`，1205条合成审批。启动 `pnpm dev:playground --host 127.0.0.1 --port 5183` 后打开对应路由；普通数据来自 `apps/playground/fixtures/paged-join-on-demand.ts`，记录数据来自 `apps/playground/fixtures/rejection-details/gateway.ts`，不调用真实DQE。
+入口 `/pages/paged-join-on-demand`，页面 `paged-join-on-demand.json`，80个全新合成项目；入口 `/pages/record-join-on-demand`，页面 `record-join-on-demand.json`，1205条合成审批。启动 `pnpm dev:playground --host 127.0.0.1 --port 5183` 后打开对应路由；普通数据来自 `apps/playground/fixtures/query-join-gateway.ts`，记录数据来自 `apps/playground/fixtures/rejection-details/gateway.ts`，不调用真实DQE。
 
 普通表首屏10行、总数80，空闲后不扫描完整候选；下一页从P000011开始。过滤“项目状态=已关闭”总数40，旧审批次数排序清除；再点击审批次数排序，总数回80，状态勾选清除。只有本页键参与补列。记录表首屏10条、总数1205，使用真实合成记录id；补列源选页与“为空”无法正确表达时显示原因，保留原页。点击菜单才加载候选，不影响主表翻页。
 

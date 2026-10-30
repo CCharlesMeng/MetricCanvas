@@ -5,7 +5,7 @@ import {parsePage} from '@metriccanvas/page';
 import {dqeRecord,type JsonObject,type DataSnapshot,type Page,type TableQueryView,type EffectiveQuery} from '@metriccanvas/page/internal';
 import {createDqeGateway} from '../src/dqe/dqe';
 import {createSourceProgram,defaultSourceView,initialFilterValues,filterTableRows} from '../src/runtime';
-import {createPagedJoinPreview} from '../../../apps/playground/fixtures/paged-join-on-demand';
+import {createPagedJoinPreview} from '../../../apps/playground/fixtures/query-join-gateway';
 import {createRejectionPreview} from '../../../apps/playground/fixtures/rejection-details/gateway';
 import type {DataGateway} from '../src';
 

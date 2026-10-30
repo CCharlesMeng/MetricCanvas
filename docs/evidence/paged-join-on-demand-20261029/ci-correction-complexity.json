@@ -1,0 +1,2985 @@
+{
+  "baseline": "f0993f1146bb2d134ae9061fcf9449ea121444da",
+  "before": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/data-execution/src/source-program/session.ts",
+        "functions": [
+          {
+            "name": "defaultSourceView",
+            "qualifiedName": "defaultSourceView",
+            "line": 58,
+            "endLine": 62,
+            "selfCC": 8,
+            "optionalChains": 5,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "createSourceProgram",
+            "qualifiedName": "createSourceProgram",
+            "line": 64,
+            "endLine": 383,
+            "selfCC": 10,
+            "optionalChains": 3,
+            "subtreeCC": 177,
+            "nestedFunctions": 64
+          },
+          {
+            "name": "defaultConditions",
+            "qualifiedName": "createSourceProgram/defaultConditions",
+            "line": 75,
+            "endLine": 83,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 8,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "<anonymous@76:53>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@76:53>",
+            "line": 76,
+            "endLine": 76,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@77:71>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@77:71>",
+            "line": 77,
+            "endLine": 77,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@78:31>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@78:31>",
+            "line": 78,
+            "endLine": 82,
+            "selfCC": 5,
+            "optionalChains": 1,
+            "subtreeCC": 5,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@79:41>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@78:31>/<anonymous@79:41>",
+            "line": 79,
+            "endLine": 79,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readSignals",
+            "qualifiedName": "createSourceProgram/readSignals",
+            "line": 85,
+            "endLine": 87,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "freezeReadRequest",
+            "qualifiedName": "createSourceProgram/freezeReadRequest",
+            "line": 88,
+            "endLine": 90,
+            "selfCC": 5,
+            "optionalChains": 1,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "sourceReadScope",
+            "qualifiedName": "createSourceProgram/sourceReadScope",
+            "line": 91,
+            "endLine": 96,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "requiresFreshTime",
+            "qualifiedName": "createSourceProgram/requiresFreshTime",
+            "line": 97,
+            "endLine": 99,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "dynamicPeriodDefault",
+            "qualifiedName": "createSourceProgram/dynamicPeriodDefault",
+            "line": 100,
+            "endLine": 102,
+            "selfCC": 8,
+            "optionalChains": 1,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readColumnCandidates",
+            "qualifiedName": "createSourceProgram/readColumnCandidates",
+            "line": 104,
+            "endLine": 104,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@104:109>",
+            "qualifiedName": "createSourceProgram/readColumnCandidates/<anonymous@104:109>",
+            "line": 104,
+            "endLine": 104,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "initialSnapshots",
+            "qualifiedName": "createSourceProgram/initialSnapshots",
+            "line": 105,
+            "endLine": 115,
+            "selfCC": 14,
+            "optionalChains": 4,
+            "subtreeCC": 14,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureQueries",
+            "qualifiedName": "createSourceProgram/captureQueries",
+            "line": 116,
+            "endLine": 129,
+            "selfCC": 11,
+            "optionalChains": 3,
+            "subtreeCC": 11,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "read",
+            "qualifiedName": "createSourceProgram/read",
+            "line": 130,
+            "endLine": 379,
+            "selfCC": 11,
+            "optionalChains": 5,
+            "subtreeCC": 117,
+            "nestedFunctions": 48
+          },
+          {
+            "name": "displayInputs",
+            "qualifiedName": "createSourceProgram/read/displayInputs",
+            "line": 137,
+            "endLine": 137,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "filterRevision",
+            "qualifiedName": "createSourceProgram/read/filterRevision",
+            "line": 137,
+            "endLine": 137,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "reportError",
+            "qualifiedName": "createSourceProgram/read/reportError",
+            "line": 151,
+            "endLine": 159,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readLimits",
+            "qualifiedName": "createSourceProgram/read/readLimits",
+            "line": 162,
+            "endLine": 167,
+            "selfCC": 6,
+            "optionalChains": 0,
+            "subtreeCC": 6,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "computeContext",
+            "qualifiedName": "createSourceProgram/read/computeContext",
+            "line": 168,
+            "endLine": 174,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@171:60>",
+            "qualifiedName": "createSourceProgram/read/computeContext/<anonymous@171:60>",
+            "line": 171,
+            "endLine": 171,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@172:61>",
+            "qualifiedName": "createSourceProgram/read/computeContext/<anonymous@172:61>",
+            "line": 172,
+            "endLine": 172,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "execute",
+            "qualifiedName": "createSourceProgram/read/execute",
+            "line": 176,
+            "endLine": 216,
+            "selfCC": 13,
+            "optionalChains": 3,
+            "subtreeCC": 13,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@188:47>",
+            "qualifiedName": "createSourceProgram/read/execute/<anonymous@188:47>",
+            "line": 188,
+            "endLine": 188,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "describeSource",
+            "qualifiedName": "createSourceProgram/read/execute/describeSource",
+            "line": 214,
+            "endLine": 214,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "completeQuerySnapshot",
+            "qualifiedName": "createSourceProgram/read/completeQuerySnapshot",
+            "line": 217,
+            "endLine": 221,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@220:120>",
+            "qualifiedName": "createSourceProgram/read/completeQuerySnapshot/<anonymous@220:120>",
+            "line": 220,
+            "endLine": 220,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "executeCombined",
+            "qualifiedName": "createSourceProgram/read/executeCombined",
+            "line": 222,
+            "endLine": 236,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "executeUnion",
+            "qualifiedName": "createSourceProgram/read/executeUnion",
+            "line": 237,
+            "endLine": 247,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@241:50>",
+            "qualifiedName": "createSourceProgram/read/executeUnion/<anonymous@241:50>",
+            "line": 241,
+            "endLine": 241,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@242:13>",
+            "qualifiedName": "createSourceProgram/read/executeUnion/<anonymous@242:13>",
+            "line": 242,
+            "endLine": 242,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "removeUntrustedSeeds",
+            "qualifiedName": "createSourceProgram/read/removeUntrustedSeeds",
+            "line": 248,
+            "endLine": 250,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "candidateMarker",
+            "qualifiedName": "createSourceProgram/read/candidateMarker",
+            "line": 251,
+            "endLine": 253,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "canCorrectPage",
+            "qualifiedName": "createSourceProgram/read/canCorrectPage",
+            "line": 254,
+            "endLine": 256,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureUnionInitial",
+            "qualifiedName": "createSourceProgram/read/captureUnionInitial",
+            "line": 257,
+            "endLine": 260,
+            "selfCC": 7,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readJoined",
+            "qualifiedName": "createSourceProgram/read/readJoined",
+            "line": 261,
+            "endLine": 263,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "reportSourceState",
+            "qualifiedName": "createSourceProgram/read/reportSourceState",
+            "line": 264,
+            "endLine": 267,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@266:57>",
+            "qualifiedName": "createSourceProgram/read/reportSourceState/<anonymous@266:57>",
+            "line": 266,
+            "endLine": 266,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "requiredSource",
+            "qualifiedName": "createSourceProgram/read/requiredSource",
+            "line": 268,
+            "endLine": 272,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "appliedSource",
+            "qualifiedName": "createSourceProgram/read/appliedSource",
+            "line": 273,
+            "endLine": 279,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "rejectCandidate",
+            "qualifiedName": "createSourceProgram/read/rejectCandidate",
+            "line": 280,
+            "endLine": 284,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "contradictorySource",
+            "qualifiedName": "createSourceProgram/read/contradictorySource",
+            "line": 285,
+            "endLine": 287,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "untrustedSeed",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed",
+            "line": 288,
+            "endLine": 296,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@289:57>",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed/<anonymous@289:57>",
+            "line": 289,
+            "endLine": 295,
+            "selfCC": 3,
+            "optionalChains": 1,
+            "subtreeCC": 4,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@291:156>",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed/<anonymous@289:57>/<anonymous@291:156>",
+            "line": 291,
+            "endLine": 294,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@292:49>",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed/<anonymous@289:57>/<anonymous@291:156>/<anonymous@292:49>",
+            "line": 292,
+            "endLine": 292,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "availableInitial",
+            "qualifiedName": "createSourceProgram/read/availableInitial",
+            "line": 297,
+            "endLine": 301,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "joinFailureMustPropagate",
+            "qualifiedName": "createSourceProgram/read/joinFailureMustPropagate",
+            "line": 302,
+            "endLine": 304,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureJoinedResult",
+            "qualifiedName": "createSourceProgram/read/captureJoinedResult",
+            "line": 305,
+            "endLine": 309,
+            "selfCC": 10,
+            "optionalChains": 1,
+            "subtreeCC": 10,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "defaultJoinedView",
+            "qualifiedName": "createSourceProgram/read/defaultJoinedView",
+            "line": 310,
+            "endLine": 312,
+            "selfCC": 7,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readyQueryInputs",
+            "qualifiedName": "createSourceProgram/read/readyQueryInputs",
+            "line": 313,
+            "endLine": 317,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "requiresCompleteRead",
+            "qualifiedName": "createSourceProgram/read/requiresCompleteRead",
+            "line": 318,
+            "endLine": 318,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "preparedQuery",
+            "qualifiedName": "createSourceProgram/read/preparedQuery",
+            "line": 319,
+            "endLine": 329,
+            "selfCC": 6,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "fresh",
+            "qualifiedName": "createSourceProgram/read/preparedQuery/fresh",
+            "line": 322,
+            "endLine": 322,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "preserveBusinessWindow",
+            "qualifiedName": "createSourceProgram/read/preserveBusinessWindow",
+            "line": 330,
+            "endLine": 332,
+            "selfCC": 5,
+            "optionalChains": 1,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "defaultQueryView",
+            "qualifiedName": "createSourceProgram/read/defaultQueryView",
+            "line": 333,
+            "endLine": 335,
+            "selfCC": 7,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "finishQueryRead",
+            "qualifiedName": "createSourceProgram/read/finishQueryRead",
+            "line": 336,
+            "endLine": 350,
+            "selfCC": 12,
+            "optionalChains": 1,
+            "subtreeCC": 12,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "sourceProjection",
+            "qualifiedName": "createSourceProgram/read/sourceProjection",
+            "line": 351,
+            "endLine": 353,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@352:60>",
+            "qualifiedName": "createSourceProgram/read/sourceProjection/<anonymous@352:60>",
+            "line": 352,
+            "endLine": 352,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "run",
+            "qualifiedName": "createSourceProgram/read/run",
+            "line": 354,
+            "endLine": 358,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@360:46>",
+            "qualifiedName": "createSourceProgram/read/<anonymous@360:46>",
+            "line": 360,
+            "endLine": 360,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@360:70>",
+            "qualifiedName": "createSourceProgram/read/<anonymous@360:46>/<anonymous@360:70>",
+            "line": 360,
+            "endLine": 360,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@373:69>",
+            "qualifiedName": "createSourceProgram/read/<anonymous@373:69>",
+            "line": 373,
+            "endLine": 373,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "dispose",
+            "qualifiedName": "createSourceProgram/dispose",
+            "line": 380,
+            "endLine": 380,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "objectCompleteSource",
+            "qualifiedName": "objectCompleteSource",
+            "line": 386,
+            "endLine": 388,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureConsistentInitial",
+            "qualifiedName": "captureConsistentInitial",
+            "line": 391,
+            "endLine": 394,
+            "selfCC": 6,
+            "optionalChains": 0,
+            "subtreeCC": 6,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/runtime/src/orchestrator.ts",
+        "functions": [
+          {
+            "name": "orchestrate",
+            "qualifiedName": "orchestrate",
+            "line": 34,
+            "endLine": 195,
+            "selfCC": 5,
+            "optionalChains": 3,
+            "subtreeCC": 118,
+            "nestedFunctions": 61
+          },
+          {
+            "name": "demand",
+            "qualifiedName": "orchestrate/demand",
+            "line": 38,
+            "endLine": 38,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "notify",
+            "qualifiedName": "orchestrate/notify",
+            "line": 42,
+            "endLine": 42,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "start",
+            "qualifiedName": "orchestrate/start",
+            "line": 43,
+            "endLine": 179,
+            "selfCC": 26,
+            "optionalChains": 9,
+            "subtreeCC": 91,
+            "nestedFunctions": 39
+          },
+          {
+            "name": "<anonymous@47:38>",
+            "qualifiedName": "orchestrate/start/<anonymous@47:38>",
+            "line": 47,
+            "endLine": 47,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "gated",
+            "qualifiedName": "orchestrate/start/gated",
+            "line": 49,
+            "endLine": 52,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@49:73>",
+            "qualifiedName": "orchestrate/start/gated/<anonymous@49:73>",
+            "line": 49,
+            "endLine": 52,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@51:43>",
+            "qualifiedName": "orchestrate/start/gated/<anonymous@49:73>/<anonymous@51:43>",
+            "line": 51,
+            "endLine": 51,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "views",
+            "qualifiedName": "orchestrate/start/views",
+            "line": 57,
+            "endLine": 57,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@57:49>",
+            "qualifiedName": "orchestrate/start/views/<anonymous@57:49>",
+            "line": 57,
+            "endLine": 57,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@60:143>",
+            "qualifiedName": "orchestrate/start/<anonymous@60:143>",
+            "line": 60,
+            "endLine": 60,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@61:9>",
+            "qualifiedName": "orchestrate/start/<anonymous@61:9>",
+            "line": 61,
+            "endLine": 61,
+            "selfCC": 3,
+            "optionalChains": 1,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "reconcileColumns",
+            "qualifiedName": "orchestrate/start/reconcileColumns",
+            "line": 63,
+            "endLine": 63,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@76:67>",
+            "qualifiedName": "orchestrate/start/<anonymous@76:67>",
+            "line": 76,
+            "endLine": 76,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "context",
+            "qualifiedName": "orchestrate/start/context",
+            "line": 88,
+            "endLine": 90,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@89:42>",
+            "qualifiedName": "orchestrate/start/context/<anonymous@89:42>",
+            "line": 89,
+            "endLine": 89,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@90:43>",
+            "qualifiedName": "orchestrate/start/context/<anonymous@90:43>",
+            "line": 90,
+            "endLine": 90,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@91:76>",
+            "qualifiedName": "orchestrate/start/<anonymous@91:76>",
+            "line": 91,
+            "endLine": 91,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "publish",
+            "qualifiedName": "orchestrate/start/publish",
+            "line": 92,
+            "endLine": 95,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@93:74>",
+            "qualifiedName": "orchestrate/start/publish/<anonymous@93:74>",
+            "line": 93,
+            "endLine": 93,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "refetch",
+            "qualifiedName": "orchestrate/start/refetch",
+            "line": 96,
+            "endLine": 130,
+            "selfCC": 17,
+            "optionalChains": 3,
+            "subtreeCC": 29,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@99:119>",
+            "qualifiedName": "orchestrate/start/refetch/<anonymous@99:119>",
+            "line": 99,
+            "endLine": 99,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@106:85>",
+            "qualifiedName": "orchestrate/start/refetch/<anonymous@106:85>",
+            "line": 106,
+            "endLine": 106,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@116:15>",
+            "qualifiedName": "orchestrate/start/refetch/<anonymous@116:15>",
+            "line": 116,
+            "endLine": 128,
+            "selfCC": 12,
+            "optionalChains": 1,
+            "subtreeCC": 12,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "invalidateChangedFacts",
+            "qualifiedName": "orchestrate/start/invalidateChangedFacts",
+            "line": 132,
+            "endLine": 140,
+            "selfCC": 10,
+            "optionalChains": 1,
+            "subtreeCC": 10,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@142:44>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>",
+            "line": 142,
+            "endLine": 166,
+            "selfCC": 14,
+            "optionalChains": 4,
+            "subtreeCC": 14,
+            "nestedFunctions": 5
+          },
+          {
+            "name": "<anonymous@144:87>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@144:87>",
+            "line": 144,
+            "endLine": 144,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@151:45>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@151:45>",
+            "line": 151,
+            "endLine": 154,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@151:90>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@151:45>/<anonymous@151:90>",
+            "line": 151,
+            "endLine": 154,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@153:45>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@151:45>/<anonymous@151:90>/<anonymous@153:45>",
+            "line": 153,
+            "endLine": 153,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@155:127>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@155:127>",
+            "line": 155,
+            "endLine": 155,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@167:42>",
+            "qualifiedName": "orchestrate/start/<anonymous@167:42>",
+            "line": 167,
+            "endLine": 167,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "syncPresentation",
+            "qualifiedName": "orchestrate/start/syncPresentation",
+            "line": 169,
+            "endLine": 169,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "activate",
+            "qualifiedName": "orchestrate/start/activate",
+            "line": 170,
+            "endLine": 170,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@170:57>",
+            "qualifiedName": "orchestrate/start/activate/<anonymous@170:57>",
+            "line": 170,
+            "endLine": 170,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "refresh",
+            "qualifiedName": "orchestrate/start/refresh",
+            "line": 171,
+            "endLine": 171,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "current",
+            "qualifiedName": "orchestrate/start/current",
+            "line": 172,
+            "endLine": 172,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "raw",
+            "qualifiedName": "orchestrate/start/raw",
+            "line": 173,
+            "endLine": 173,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "queries",
+            "qualifiedName": "orchestrate/start/queries",
+            "line": 174,
+            "endLine": 174,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "mutable",
+            "qualifiedName": "orchestrate/start/mutable",
+            "line": 175,
+            "endLine": 175,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@175:127>",
+            "qualifiedName": "orchestrate/start/mutable/<anonymous@175:127>",
+            "line": 175,
+            "endLine": 175,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "pageSize",
+            "qualifiedName": "orchestrate/start/pageSize",
+            "line": 176,
+            "endLine": 176,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "dispose",
+            "qualifiedName": "orchestrate/start/dispose",
+            "line": 177,
+            "endLine": 177,
+            "selfCC": 3,
+            "optionalChains": 1,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "syncPresentation",
+            "qualifiedName": "orchestrate/syncPresentation",
+            "line": 181,
+            "endLine": 181,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setActiveTabs",
+            "qualifiedName": "orchestrate/setActiveTabs",
+            "line": 182,
+            "endLine": 182,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "subscribe",
+            "qualifiedName": "orchestrate/subscribe",
+            "line": 183,
+            "endLine": 183,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@183:102>",
+            "qualifiedName": "orchestrate/subscribe/<anonymous@183:102>",
+            "line": 183,
+            "endLine": 183,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureRawSnapshots",
+            "qualifiedName": "orchestrate/captureRawSnapshots",
+            "line": 184,
+            "endLine": 184,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureQueries",
+            "qualifiedName": "orchestrate/captureQueries",
+            "line": 185,
+            "endLine": 185,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureViews",
+            "qualifiedName": "orchestrate/captureViews",
+            "line": 185,
+            "endLine": 185,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureComputeYear",
+            "qualifiedName": "orchestrate/captureComputeYear",
+            "line": 186,
+            "endLine": 186,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "getSourceProgram",
+            "qualifiedName": "orchestrate/getSourceProgram",
+            "line": 186,
+            "endLine": 186,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "getQueryView",
+            "qualifiedName": "orchestrate/getQueryView",
+            "line": 187,
+            "endLine": 187,
+            "selfCC": 1,
+            "optionalChains": 2,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "getQueryPageSize",
+            "qualifiedName": "orchestrate/getQueryPageSize",
+            "line": 187,
+            "endLine": 187,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "refreshQuery",
+            "qualifiedName": "orchestrate/refreshQuery",
+            "line": 188,
+            "endLine": 188,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQueryPage",
+            "qualifiedName": "orchestrate/setQueryPage",
+            "line": 189,
+            "endLine": 189,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQueryPageSize",
+            "qualifiedName": "orchestrate/setQueryPageSize",
+            "line": 190,
+            "endLine": 190,
+            "selfCC": 5,
+            "optionalChains": 4,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQuerySort",
+            "qualifiedName": "orchestrate/setQuerySort",
+            "line": 191,
+            "endLine": 191,
+            "selfCC": 10,
+            "optionalChains": 6,
+            "subtreeCC": 10,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@191:230>",
+            "qualifiedName": "orchestrate/setQuerySort/<anonymous@191:230>",
+            "line": 191,
+            "endLine": 191,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@191:502>",
+            "qualifiedName": "orchestrate/setQuerySort/<anonymous@191:502>",
+            "line": 191,
+            "endLine": 191,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQueryHeaderFilters",
+            "qualifiedName": "orchestrate/setQueryHeaderFilters",
+            "line": 192,
+            "endLine": 192,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQuerySearch",
+            "qualifiedName": "orchestrate/setQuerySearch",
+            "line": 193,
+            "endLine": 193,
+            "selfCC": 1,
+            "optionalChains": 2,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "same",
+            "qualifiedName": "same",
+            "line": 196,
+            "endLine": 196,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@196:119>",
+            "qualifiedName": "same/<anonymous@196:119>",
+            "line": 196,
+            "endLine": 196,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "queryCondition",
+            "qualifiedName": "queryCondition",
+            "line": 198,
+            "endLine": 198,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "initialTableView",
+            "qualifiedName": "initialTableView",
+            "line": 200,
+            "endLine": 200,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "apps/playground/src/lib/scenario-environment.ts",
+        "functions": [
+          {
+            "name": "scenarioEnvironment",
+            "qualifiedName": "scenarioEnvironment",
+            "line": 21,
+            "endLine": 42,
+            "selfCC": 15,
+            "optionalChains": 0,
+            "subtreeCC": 15,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "tablePreview",
+            "qualifiedName": "tablePreview",
+            "line": 44,
+            "endLine": 49,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+        "functions": [
+          {
+            "name": "<anonymous@71:53>",
+            "qualifiedName": "<anonymous@71:53>",
+            "line": 71,
+            "endLine": 97,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 7,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "resolveTargetInputs",
+            "qualifiedName": "<anonymous@71:53>/resolveTargetInputs",
+            "line": 73,
+            "endLine": 79,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "replaceSearch",
+            "qualifiedName": "<anonymous@71:53>/replaceSearch",
+            "line": 80,
+            "endLine": 85,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "navigate",
+            "qualifiedName": "<anonymous@71:53>/navigate",
+            "line": 86,
+            "endLine": 93,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "back",
+            "qualifiedName": "<anonymous@71:53>/back",
+            "line": 96,
+            "endLine": 96,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@99:11>",
+            "qualifiedName": "<anonymous@99:11>",
+            "line": 99,
+            "endLine": 107,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "queryTableGateway",
+            "qualifiedName": "queryTableGateway",
+            "line": 109,
+            "endLine": 112,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "previewDataGateway",
+            "qualifiedName": "previewDataGateway",
+            "line": 114,
+            "endLine": 130,
+            "selfCC": 14,
+            "optionalChains": 0,
+            "subtreeCC": 14,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "recordSharedFilters",
+            "qualifiedName": "recordSharedFilters",
+            "line": 132,
+            "endLine": 135,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "loadPage",
+            "qualifiedName": "loadPage",
+            "line": 137,
+            "endLine": 162,
+            "selfCC": 8,
+            "optionalChains": 0,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "after": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/data-execution/src/source-program/session.ts",
+        "functions": [
+          {
+            "name": "defaultSourceView",
+            "qualifiedName": "defaultSourceView",
+            "line": 59,
+            "endLine": 63,
+            "selfCC": 8,
+            "optionalChains": 5,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "createSourceProgram",
+            "qualifiedName": "createSourceProgram",
+            "line": 65,
+            "endLine": 389,
+            "selfCC": 10,
+            "optionalChains": 3,
+            "subtreeCC": 180,
+            "nestedFunctions": 65
+          },
+          {
+            "name": "defaultConditions",
+            "qualifiedName": "createSourceProgram/defaultConditions",
+            "line": 76,
+            "endLine": 84,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 8,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "<anonymous@77:53>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@77:53>",
+            "line": 77,
+            "endLine": 77,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@78:71>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@78:71>",
+            "line": 78,
+            "endLine": 78,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@79:31>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@79:31>",
+            "line": 79,
+            "endLine": 83,
+            "selfCC": 5,
+            "optionalChains": 1,
+            "subtreeCC": 5,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@80:41>",
+            "qualifiedName": "createSourceProgram/defaultConditions/<anonymous@79:31>/<anonymous@80:41>",
+            "line": 80,
+            "endLine": 80,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readSignals",
+            "qualifiedName": "createSourceProgram/readSignals",
+            "line": 86,
+            "endLine": 88,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "freezeReadRequest",
+            "qualifiedName": "createSourceProgram/freezeReadRequest",
+            "line": 89,
+            "endLine": 91,
+            "selfCC": 5,
+            "optionalChains": 1,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "sourceReadScope",
+            "qualifiedName": "createSourceProgram/sourceReadScope",
+            "line": 92,
+            "endLine": 97,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "requiresFreshTime",
+            "qualifiedName": "createSourceProgram/requiresFreshTime",
+            "line": 98,
+            "endLine": 100,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "dynamicPeriodDefault",
+            "qualifiedName": "createSourceProgram/dynamicPeriodDefault",
+            "line": 101,
+            "endLine": 103,
+            "selfCC": 8,
+            "optionalChains": 1,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "prepareView",
+            "qualifiedName": "createSourceProgram/prepareView",
+            "line": 105,
+            "endLine": 109,
+            "selfCC": 4,
+            "optionalChains": 2,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readColumnCandidates",
+            "qualifiedName": "createSourceProgram/readColumnCandidates",
+            "line": 110,
+            "endLine": 110,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@110:109>",
+            "qualifiedName": "createSourceProgram/readColumnCandidates/<anonymous@110:109>",
+            "line": 110,
+            "endLine": 110,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "initialSnapshots",
+            "qualifiedName": "createSourceProgram/initialSnapshots",
+            "line": 111,
+            "endLine": 121,
+            "selfCC": 14,
+            "optionalChains": 4,
+            "subtreeCC": 14,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureQueries",
+            "qualifiedName": "createSourceProgram/captureQueries",
+            "line": 122,
+            "endLine": 135,
+            "selfCC": 11,
+            "optionalChains": 3,
+            "subtreeCC": 11,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "read",
+            "qualifiedName": "createSourceProgram/read",
+            "line": 136,
+            "endLine": 385,
+            "selfCC": 11,
+            "optionalChains": 5,
+            "subtreeCC": 117,
+            "nestedFunctions": 48
+          },
+          {
+            "name": "displayInputs",
+            "qualifiedName": "createSourceProgram/read/displayInputs",
+            "line": 143,
+            "endLine": 143,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "filterRevision",
+            "qualifiedName": "createSourceProgram/read/filterRevision",
+            "line": 143,
+            "endLine": 143,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "reportError",
+            "qualifiedName": "createSourceProgram/read/reportError",
+            "line": 157,
+            "endLine": 165,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readLimits",
+            "qualifiedName": "createSourceProgram/read/readLimits",
+            "line": 168,
+            "endLine": 173,
+            "selfCC": 6,
+            "optionalChains": 0,
+            "subtreeCC": 6,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "computeContext",
+            "qualifiedName": "createSourceProgram/read/computeContext",
+            "line": 174,
+            "endLine": 180,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@177:60>",
+            "qualifiedName": "createSourceProgram/read/computeContext/<anonymous@177:60>",
+            "line": 177,
+            "endLine": 177,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@178:61>",
+            "qualifiedName": "createSourceProgram/read/computeContext/<anonymous@178:61>",
+            "line": 178,
+            "endLine": 178,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "execute",
+            "qualifiedName": "createSourceProgram/read/execute",
+            "line": 182,
+            "endLine": 222,
+            "selfCC": 13,
+            "optionalChains": 3,
+            "subtreeCC": 13,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@194:47>",
+            "qualifiedName": "createSourceProgram/read/execute/<anonymous@194:47>",
+            "line": 194,
+            "endLine": 194,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "describeSource",
+            "qualifiedName": "createSourceProgram/read/execute/describeSource",
+            "line": 220,
+            "endLine": 220,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "completeQuerySnapshot",
+            "qualifiedName": "createSourceProgram/read/completeQuerySnapshot",
+            "line": 223,
+            "endLine": 227,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@226:120>",
+            "qualifiedName": "createSourceProgram/read/completeQuerySnapshot/<anonymous@226:120>",
+            "line": 226,
+            "endLine": 226,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "executeCombined",
+            "qualifiedName": "createSourceProgram/read/executeCombined",
+            "line": 228,
+            "endLine": 242,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "executeUnion",
+            "qualifiedName": "createSourceProgram/read/executeUnion",
+            "line": 243,
+            "endLine": 253,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@247:50>",
+            "qualifiedName": "createSourceProgram/read/executeUnion/<anonymous@247:50>",
+            "line": 247,
+            "endLine": 247,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@248:13>",
+            "qualifiedName": "createSourceProgram/read/executeUnion/<anonymous@248:13>",
+            "line": 248,
+            "endLine": 248,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "removeUntrustedSeeds",
+            "qualifiedName": "createSourceProgram/read/removeUntrustedSeeds",
+            "line": 254,
+            "endLine": 256,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "candidateMarker",
+            "qualifiedName": "createSourceProgram/read/candidateMarker",
+            "line": 257,
+            "endLine": 259,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "canCorrectPage",
+            "qualifiedName": "createSourceProgram/read/canCorrectPage",
+            "line": 260,
+            "endLine": 262,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureUnionInitial",
+            "qualifiedName": "createSourceProgram/read/captureUnionInitial",
+            "line": 263,
+            "endLine": 266,
+            "selfCC": 7,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readJoined",
+            "qualifiedName": "createSourceProgram/read/readJoined",
+            "line": 267,
+            "endLine": 269,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "reportSourceState",
+            "qualifiedName": "createSourceProgram/read/reportSourceState",
+            "line": 270,
+            "endLine": 273,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@272:57>",
+            "qualifiedName": "createSourceProgram/read/reportSourceState/<anonymous@272:57>",
+            "line": 272,
+            "endLine": 272,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "requiredSource",
+            "qualifiedName": "createSourceProgram/read/requiredSource",
+            "line": 274,
+            "endLine": 278,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "appliedSource",
+            "qualifiedName": "createSourceProgram/read/appliedSource",
+            "line": 279,
+            "endLine": 285,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "rejectCandidate",
+            "qualifiedName": "createSourceProgram/read/rejectCandidate",
+            "line": 286,
+            "endLine": 290,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "contradictorySource",
+            "qualifiedName": "createSourceProgram/read/contradictorySource",
+            "line": 291,
+            "endLine": 293,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "untrustedSeed",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed",
+            "line": 294,
+            "endLine": 302,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@295:57>",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed/<anonymous@295:57>",
+            "line": 295,
+            "endLine": 301,
+            "selfCC": 3,
+            "optionalChains": 1,
+            "subtreeCC": 4,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@297:156>",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed/<anonymous@295:57>/<anonymous@297:156>",
+            "line": 297,
+            "endLine": 300,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@298:49>",
+            "qualifiedName": "createSourceProgram/read/untrustedSeed/<anonymous@295:57>/<anonymous@297:156>/<anonymous@298:49>",
+            "line": 298,
+            "endLine": 298,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "availableInitial",
+            "qualifiedName": "createSourceProgram/read/availableInitial",
+            "line": 303,
+            "endLine": 307,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "joinFailureMustPropagate",
+            "qualifiedName": "createSourceProgram/read/joinFailureMustPropagate",
+            "line": 308,
+            "endLine": 310,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureJoinedResult",
+            "qualifiedName": "createSourceProgram/read/captureJoinedResult",
+            "line": 311,
+            "endLine": 315,
+            "selfCC": 10,
+            "optionalChains": 1,
+            "subtreeCC": 10,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "defaultJoinedView",
+            "qualifiedName": "createSourceProgram/read/defaultJoinedView",
+            "line": 316,
+            "endLine": 318,
+            "selfCC": 7,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "readyQueryInputs",
+            "qualifiedName": "createSourceProgram/read/readyQueryInputs",
+            "line": 319,
+            "endLine": 323,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "requiresCompleteRead",
+            "qualifiedName": "createSourceProgram/read/requiresCompleteRead",
+            "line": 324,
+            "endLine": 324,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "preparedQuery",
+            "qualifiedName": "createSourceProgram/read/preparedQuery",
+            "line": 325,
+            "endLine": 335,
+            "selfCC": 6,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "fresh",
+            "qualifiedName": "createSourceProgram/read/preparedQuery/fresh",
+            "line": 328,
+            "endLine": 328,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "preserveBusinessWindow",
+            "qualifiedName": "createSourceProgram/read/preserveBusinessWindow",
+            "line": 336,
+            "endLine": 338,
+            "selfCC": 5,
+            "optionalChains": 1,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "defaultQueryView",
+            "qualifiedName": "createSourceProgram/read/defaultQueryView",
+            "line": 339,
+            "endLine": 341,
+            "selfCC": 7,
+            "optionalChains": 1,
+            "subtreeCC": 7,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "finishQueryRead",
+            "qualifiedName": "createSourceProgram/read/finishQueryRead",
+            "line": 342,
+            "endLine": 356,
+            "selfCC": 12,
+            "optionalChains": 1,
+            "subtreeCC": 12,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "sourceProjection",
+            "qualifiedName": "createSourceProgram/read/sourceProjection",
+            "line": 357,
+            "endLine": 359,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@358:60>",
+            "qualifiedName": "createSourceProgram/read/sourceProjection/<anonymous@358:60>",
+            "line": 358,
+            "endLine": 358,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "run",
+            "qualifiedName": "createSourceProgram/read/run",
+            "line": 360,
+            "endLine": 364,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@366:46>",
+            "qualifiedName": "createSourceProgram/read/<anonymous@366:46>",
+            "line": 366,
+            "endLine": 366,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@366:70>",
+            "qualifiedName": "createSourceProgram/read/<anonymous@366:46>/<anonymous@366:70>",
+            "line": 366,
+            "endLine": 366,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@379:69>",
+            "qualifiedName": "createSourceProgram/read/<anonymous@379:69>",
+            "line": 379,
+            "endLine": 379,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "dispose",
+            "qualifiedName": "createSourceProgram/dispose",
+            "line": 386,
+            "endLine": 386,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "objectCompleteSource",
+            "qualifiedName": "objectCompleteSource",
+            "line": 392,
+            "endLine": 394,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureConsistentInitial",
+            "qualifiedName": "captureConsistentInitial",
+            "line": 397,
+            "endLine": 400,
+            "selfCC": 6,
+            "optionalChains": 0,
+            "subtreeCC": 6,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/runtime/src/orchestrator.ts",
+        "functions": [
+          {
+            "name": "orchestrate",
+            "qualifiedName": "orchestrate",
+            "line": 34,
+            "endLine": 195,
+            "selfCC": 5,
+            "optionalChains": 3,
+            "subtreeCC": 116,
+            "nestedFunctions": 61
+          },
+          {
+            "name": "demand",
+            "qualifiedName": "orchestrate/demand",
+            "line": 38,
+            "endLine": 38,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "notify",
+            "qualifiedName": "orchestrate/notify",
+            "line": 42,
+            "endLine": 42,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "start",
+            "qualifiedName": "orchestrate/start",
+            "line": 43,
+            "endLine": 179,
+            "selfCC": 26,
+            "optionalChains": 9,
+            "subtreeCC": 89,
+            "nestedFunctions": 39
+          },
+          {
+            "name": "<anonymous@47:38>",
+            "qualifiedName": "orchestrate/start/<anonymous@47:38>",
+            "line": 47,
+            "endLine": 47,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "gated",
+            "qualifiedName": "orchestrate/start/gated",
+            "line": 49,
+            "endLine": 52,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@49:73>",
+            "qualifiedName": "orchestrate/start/gated/<anonymous@49:73>",
+            "line": 49,
+            "endLine": 52,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@51:43>",
+            "qualifiedName": "orchestrate/start/gated/<anonymous@49:73>/<anonymous@51:43>",
+            "line": 51,
+            "endLine": 51,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "views",
+            "qualifiedName": "orchestrate/start/views",
+            "line": 57,
+            "endLine": 57,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@57:49>",
+            "qualifiedName": "orchestrate/start/views/<anonymous@57:49>",
+            "line": 57,
+            "endLine": 57,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@60:143>",
+            "qualifiedName": "orchestrate/start/<anonymous@60:143>",
+            "line": 60,
+            "endLine": 60,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@61:9>",
+            "qualifiedName": "orchestrate/start/<anonymous@61:9>",
+            "line": 61,
+            "endLine": 61,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "reconcileColumns",
+            "qualifiedName": "orchestrate/start/reconcileColumns",
+            "line": 63,
+            "endLine": 63,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@76:67>",
+            "qualifiedName": "orchestrate/start/<anonymous@76:67>",
+            "line": 76,
+            "endLine": 76,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "context",
+            "qualifiedName": "orchestrate/start/context",
+            "line": 88,
+            "endLine": 90,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@89:42>",
+            "qualifiedName": "orchestrate/start/context/<anonymous@89:42>",
+            "line": 89,
+            "endLine": 89,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@90:43>",
+            "qualifiedName": "orchestrate/start/context/<anonymous@90:43>",
+            "line": 90,
+            "endLine": 90,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@91:76>",
+            "qualifiedName": "orchestrate/start/<anonymous@91:76>",
+            "line": 91,
+            "endLine": 91,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "publish",
+            "qualifiedName": "orchestrate/start/publish",
+            "line": 92,
+            "endLine": 95,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@93:74>",
+            "qualifiedName": "orchestrate/start/publish/<anonymous@93:74>",
+            "line": 93,
+            "endLine": 93,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "refetch",
+            "qualifiedName": "orchestrate/start/refetch",
+            "line": 96,
+            "endLine": 130,
+            "selfCC": 17,
+            "optionalChains": 3,
+            "subtreeCC": 29,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@99:119>",
+            "qualifiedName": "orchestrate/start/refetch/<anonymous@99:119>",
+            "line": 99,
+            "endLine": 99,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@106:85>",
+            "qualifiedName": "orchestrate/start/refetch/<anonymous@106:85>",
+            "line": 106,
+            "endLine": 106,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@116:15>",
+            "qualifiedName": "orchestrate/start/refetch/<anonymous@116:15>",
+            "line": 116,
+            "endLine": 128,
+            "selfCC": 12,
+            "optionalChains": 1,
+            "subtreeCC": 12,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "invalidateChangedFacts",
+            "qualifiedName": "orchestrate/start/invalidateChangedFacts",
+            "line": 132,
+            "endLine": 140,
+            "selfCC": 10,
+            "optionalChains": 1,
+            "subtreeCC": 10,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@142:44>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>",
+            "line": 142,
+            "endLine": 166,
+            "selfCC": 14,
+            "optionalChains": 4,
+            "subtreeCC": 14,
+            "nestedFunctions": 5
+          },
+          {
+            "name": "<anonymous@144:87>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@144:87>",
+            "line": 144,
+            "endLine": 144,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@151:45>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@151:45>",
+            "line": 151,
+            "endLine": 154,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@151:90>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@151:45>/<anonymous@151:90>",
+            "line": 151,
+            "endLine": 154,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@153:45>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@151:45>/<anonymous@151:90>/<anonymous@153:45>",
+            "line": 153,
+            "endLine": 153,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@155:127>",
+            "qualifiedName": "orchestrate/start/<anonymous@142:44>/<anonymous@155:127>",
+            "line": 155,
+            "endLine": 155,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@167:42>",
+            "qualifiedName": "orchestrate/start/<anonymous@167:42>",
+            "line": 167,
+            "endLine": 167,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "syncPresentation",
+            "qualifiedName": "orchestrate/start/syncPresentation",
+            "line": 169,
+            "endLine": 169,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "activate",
+            "qualifiedName": "orchestrate/start/activate",
+            "line": 170,
+            "endLine": 170,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@170:57>",
+            "qualifiedName": "orchestrate/start/activate/<anonymous@170:57>",
+            "line": 170,
+            "endLine": 170,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "refresh",
+            "qualifiedName": "orchestrate/start/refresh",
+            "line": 171,
+            "endLine": 171,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "current",
+            "qualifiedName": "orchestrate/start/current",
+            "line": 172,
+            "endLine": 172,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "raw",
+            "qualifiedName": "orchestrate/start/raw",
+            "line": 173,
+            "endLine": 173,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "queries",
+            "qualifiedName": "orchestrate/start/queries",
+            "line": 174,
+            "endLine": 174,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "mutable",
+            "qualifiedName": "orchestrate/start/mutable",
+            "line": 175,
+            "endLine": 175,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@175:127>",
+            "qualifiedName": "orchestrate/start/mutable/<anonymous@175:127>",
+            "line": 175,
+            "endLine": 175,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "pageSize",
+            "qualifiedName": "orchestrate/start/pageSize",
+            "line": 176,
+            "endLine": 176,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "dispose",
+            "qualifiedName": "orchestrate/start/dispose",
+            "line": 177,
+            "endLine": 177,
+            "selfCC": 3,
+            "optionalChains": 1,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "syncPresentation",
+            "qualifiedName": "orchestrate/syncPresentation",
+            "line": 181,
+            "endLine": 181,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setActiveTabs",
+            "qualifiedName": "orchestrate/setActiveTabs",
+            "line": 182,
+            "endLine": 182,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "subscribe",
+            "qualifiedName": "orchestrate/subscribe",
+            "line": 183,
+            "endLine": 183,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@183:102>",
+            "qualifiedName": "orchestrate/subscribe/<anonymous@183:102>",
+            "line": 183,
+            "endLine": 183,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureRawSnapshots",
+            "qualifiedName": "orchestrate/captureRawSnapshots",
+            "line": 184,
+            "endLine": 184,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureQueries",
+            "qualifiedName": "orchestrate/captureQueries",
+            "line": 185,
+            "endLine": 185,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureViews",
+            "qualifiedName": "orchestrate/captureViews",
+            "line": 185,
+            "endLine": 185,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "captureComputeYear",
+            "qualifiedName": "orchestrate/captureComputeYear",
+            "line": 186,
+            "endLine": 186,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "getSourceProgram",
+            "qualifiedName": "orchestrate/getSourceProgram",
+            "line": 186,
+            "endLine": 186,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "getQueryView",
+            "qualifiedName": "orchestrate/getQueryView",
+            "line": 187,
+            "endLine": 187,
+            "selfCC": 1,
+            "optionalChains": 2,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "getQueryPageSize",
+            "qualifiedName": "orchestrate/getQueryPageSize",
+            "line": 187,
+            "endLine": 187,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "refreshQuery",
+            "qualifiedName": "orchestrate/refreshQuery",
+            "line": 188,
+            "endLine": 188,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQueryPage",
+            "qualifiedName": "orchestrate/setQueryPage",
+            "line": 189,
+            "endLine": 189,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQueryPageSize",
+            "qualifiedName": "orchestrate/setQueryPageSize",
+            "line": 190,
+            "endLine": 190,
+            "selfCC": 5,
+            "optionalChains": 4,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQuerySort",
+            "qualifiedName": "orchestrate/setQuerySort",
+            "line": 191,
+            "endLine": 191,
+            "selfCC": 10,
+            "optionalChains": 6,
+            "subtreeCC": 10,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@191:230>",
+            "qualifiedName": "orchestrate/setQuerySort/<anonymous@191:230>",
+            "line": 191,
+            "endLine": 191,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@191:502>",
+            "qualifiedName": "orchestrate/setQuerySort/<anonymous@191:502>",
+            "line": 191,
+            "endLine": 191,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQueryHeaderFilters",
+            "qualifiedName": "orchestrate/setQueryHeaderFilters",
+            "line": 192,
+            "endLine": 192,
+            "selfCC": 2,
+            "optionalChains": 2,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "setQuerySearch",
+            "qualifiedName": "orchestrate/setQuerySearch",
+            "line": 193,
+            "endLine": 193,
+            "selfCC": 1,
+            "optionalChains": 2,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "same",
+            "qualifiedName": "same",
+            "line": 196,
+            "endLine": 196,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@196:119>",
+            "qualifiedName": "same/<anonymous@196:119>",
+            "line": 196,
+            "endLine": 196,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "queryCondition",
+            "qualifiedName": "queryCondition",
+            "line": 198,
+            "endLine": 198,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "initialTableView",
+            "qualifiedName": "initialTableView",
+            "line": 200,
+            "endLine": 200,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "apps/playground/src/lib/scenario-environment.ts",
+        "functions": [
+          {
+            "name": "scenarioEnvironment",
+            "qualifiedName": "scenarioEnvironment",
+            "line": 21,
+            "endLine": 42,
+            "selfCC": 15,
+            "optionalChains": 0,
+            "subtreeCC": 15,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "tablePreview",
+            "qualifiedName": "tablePreview",
+            "line": 44,
+            "endLine": 49,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+        "functions": [
+          {
+            "name": "<anonymous@71:53>",
+            "qualifiedName": "<anonymous@71:53>",
+            "line": 71,
+            "endLine": 97,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 7,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "resolveTargetInputs",
+            "qualifiedName": "<anonymous@71:53>/resolveTargetInputs",
+            "line": 73,
+            "endLine": 79,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "replaceSearch",
+            "qualifiedName": "<anonymous@71:53>/replaceSearch",
+            "line": 80,
+            "endLine": 85,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "navigate",
+            "qualifiedName": "<anonymous@71:53>/navigate",
+            "line": 86,
+            "endLine": 93,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "back",
+            "qualifiedName": "<anonymous@71:53>/back",
+            "line": 96,
+            "endLine": 96,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@99:11>",
+            "qualifiedName": "<anonymous@99:11>",
+            "line": 99,
+            "endLine": 107,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "queryTableGateway",
+            "qualifiedName": "queryTableGateway",
+            "line": 109,
+            "endLine": 112,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "previewDataGateway",
+            "qualifiedName": "previewDataGateway",
+            "line": 114,
+            "endLine": 130,
+            "selfCC": 14,
+            "optionalChains": 0,
+            "subtreeCC": 14,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "recordSharedFilters",
+            "qualifiedName": "recordSharedFilters",
+            "line": 132,
+            "endLine": 135,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "loadPage",
+            "qualifiedName": "loadPage",
+            "line": 137,
+            "endLine": 162,
+            "selfCC": 8,
+            "optionalChains": 0,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  }
+}

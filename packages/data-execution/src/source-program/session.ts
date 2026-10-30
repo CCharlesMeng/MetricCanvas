@@ -1,5 +1,6 @@
 import {hasPeriodComparison} from '@metriccanvas/page/internal';
 import {clearRecordJoinCache} from '../paged-join/records-reader';
+import {isPagedJoinQuery,reconcilePagedJoinView} from '@metriccanvas/page/internal';
 import { readRecoverableJoin } from '../table-recovery/join';
 import { recoverUnion } from '../table-recovery/union';
 import { withTableRecovery } from '../table-recovery/read';
@@ -101,6 +102,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     return filter?.type === 'timeRange' && filter.display === 'period' && !!filter.default && typeof filter.default === 'object' && 'mode' in filter.default && (filter.default.mode === 'last12Months' || !('value' in filter.default) || !filter.default.value);
   }
   const program = {
+    prepareView(id:string,conditions:FilterValues,view:TableQueryView,field?:string):TableQueryView {
+      const source=page.dataSources[id];
+      if(source?.source.type!=='pagedJoin'||!isPagedJoinQuery(source.source))return view;
+      return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field),config.now??config.clock?.()).view;
+    },
     readColumnCandidates(request: ColumnCandidatesRead) { return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, config)(request); },
     initialSnapshots(request: Pick<SourceRead, 'roots' | 'conditions' | 'views'>): Map<string, DataSnapshot> {
       const snapshots = new Map<string, DataSnapshot>();

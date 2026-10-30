@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createPagedJoinPreview } from '../../../../../fixtures/paged-join-on-demand';
+  import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
   const comparisonPreview = $derived(createPeriodComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
   import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
@@ -107,7 +107,7 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
-    if(input==='paged-join-on-demand')return createPagedJoinPreview().dataGateway;
+    if(input==='query-join')return createPagedJoinPreview().dataGateway;
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
   }
 
@@ -150,7 +150,7 @@
         document,
         dataGateway: zeroTotalPreviewGateway(pageId, previewDataGateway(pageId))
       };
-      if(pageId==='period-comparison-demo')pageState.dataGateway=comparisonPreview.dataGateway;
+      if(pageExternalInputs(pageId)==='period-comparison')pageState.dataGateway=comparisonPreview.dataGateway;
       pageState.dataGateway = partnerHealthUnionGateway(pageId, pageState.dataGateway, page.url.searchParams.get('state') ?? 'ready');
     } catch (cause) {
       if (session !== loadSession) return;

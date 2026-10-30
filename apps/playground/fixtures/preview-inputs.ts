@@ -6,7 +6,7 @@ const exactInputs = new Map([
   ['key-office-filter-demo','key-office'], ['key-office-filter-target','key-office'],
   ['ioc-project-overview','ioc-region'], ['ioc-opportunity-list','ioc-region'], ['ioc-opportunity-analysis','ioc-region'],
   ['table-column-candidates-query', 'full-query-candidates'],
-  ['paged-join-on-demand','paged-join-on-demand'],
+  ['paged-join-on-demand','query-join'],
   ['record-join-on-demand','record-join'],
   ['partner-health-union-null-probe', 'organization-union'],
   ['table-data-recovery', 'table-recovery'],

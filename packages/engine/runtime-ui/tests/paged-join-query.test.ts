@@ -4,7 +4,7 @@ import recordDocument from '../../../../pages/capabilities/table/record-join-on-
 import {parsePage} from '@metriccanvas/page';
 import {orchestrate} from '../../runtime/src/orchestrator';
 import {createTableController} from '../src/table/controller';
-import {createPagedJoinPreview} from '../../../../apps/playground/fixtures/paged-join-on-demand';
+import {createPagedJoinPreview} from '../../../../apps/playground/fixtures/query-join-gateway';
 import {createRejectionPreview} from '../../../../apps/playground/fixtures/rejection-details/gateway';
 
 it('atomically replaces source state, clears draft checkboxes, and never starts idle preloads',async()=>{

@@ -19,7 +19,7 @@
 | 基准记录分页、真实身份、能力拒绝 | `/pages/record-join-on-demand` | 同上、`validate-record-join.ts`、ADR-0125 | `data.pagedJoin.records`、迁移检查 |
 | 类型与版本边界 | 合法页面和非法契约向量 | `version.ts`、conformance vectors | 独立校验器与生成知识 |
 
-Skill 版本1.13.0。仓外复制、零软链、版本查询与两个完整页面校验成功，见 [安装回执](standalone-skill.json)。两份完整元数据位于 `pages/capabilities/table/`；合成数据在 `apps/playground/fixtures/paged-join-on-demand.ts` 与 `fixtures/rejection-details/gateway.ts`。页面内容、请求回执和截图均为合成验收数据，未使用真实业务查询结果。
+Skill 版本1.13.0。仓外复制、零软链、版本查询与两个完整页面校验成功，见 [安装回执](standalone-skill.json)。两份完整元数据位于 `pages/capabilities/table/`；合成数据在 `apps/playground/fixtures/query-join-gateway.ts` 与 `fixtures/rejection-details/gateway.ts`。页面内容、请求回执和截图均为合成验收数据，未使用真实业务查询结果。
 
 本地预览服务为 `http://127.0.0.1:5190`。两个入口分别为 [普通组合分页](http://127.0.0.1:5190/pages/paged-join-on-demand) 和 [记录组合分页](http://127.0.0.1:5190/pages/record-join-on-demand)。服务仅在本机进程存活时可用；启动方式与操作步骤见 `pages/capabilities/table/README.md`。
 
