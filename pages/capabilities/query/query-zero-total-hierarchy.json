@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "父子表零总数回归（合成数据）",
-    "description": "合成 HTTP 响应：父表返回2行但 total_count=0，保留父行、层级筛选和展开；完整父子导出仍拒绝。"
+    "description": "合成 HTTP 响应：父表返回2行、子表返回1行，二者 total_count=0，保留父行、层级筛选和展开；完整父子导出仍拒绝。"
   },
   "dataSources": {
     "zero": {

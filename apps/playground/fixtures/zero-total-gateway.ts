@@ -13,7 +13,7 @@ function replayResult(item:ReplayItem) {
   if(item.object_type==='Demo/Zero Total/detail'){
     const region=item.filter?.fields?.find(field=>field.field_name==='地区部');
     const rows=region?.value_list.includes('甲地区部')?[{'代表处':'甲代表处','得分':7}]:[];
-    return {code:'SUCCESS',columns:null,data:rows,total_count:rows.length};
+    return {code:'SUCCESS',columns:null,data:rows,total_count:0};
   }
   const rows=item.object_type==='Demo/Zero Total/empty'?[]:parents;
   return {code:'SUCCESS',columns:null,data:rows,total_count:item.object_type==='Demo/Zero Total/normal'?rows.length:0};

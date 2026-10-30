@@ -3,6 +3,7 @@ import {parsePage} from '../packages/page/src/index';
 import type {DataSnapshot,Page,Row} from '../packages/page/src/internal';
 import {createSourceProgram,initialFilterValues} from '../packages/data-execution/src/runtime';
 import {createTableController} from '../packages/engine/runtime-ui/src/table/controller';
+import {createRowExpansionController} from '../packages/engine/runtime/src/table/expansion';
 import {prepareHierarchyExport} from '../packages/engine/runtime-ui/src/table/export/hierarchy';
 import {createZeroTotalPreview} from '../apps/playground/fixtures/zero-total-gateway';
 import document from '../pages/capabilities/query/query-zero-total-hierarchy.json';
@@ -72,4 +73,22 @@ it('refuses a complete parent-child export of the displayed zero-total object re
     await expect(prepareHierarchyExport({page,component:table,gateway,params:new Map(),queries:new Map(),controller:new AbortController(),
       state:{filters,currentYear:2026,tables:{},headerFilters:{}}})).rejects.toMatchObject({code:'EXPORT_INCOMPLETE_DATA'});
   }finally{controller.dispose();}
+});
+
+it('renders an expanded child whose object receipt also reports zero total',async()=>{
+  const warn=vi.spyOn(console,'warn').mockImplementation(()=>{});
+  const {page,table,filters,gateway,controller}=fixture();
+  const expansion=createRowExpansionController(page,table,gateway,filters,new Map(),()=>{});
+  try{
+    const snapshot=await parentSnapshot(page,gateway);
+    const rows=controller.hierarchyRows(table,snapshot.rows);
+    expansion.sync(rows,{filters,params:new Map()},controller.hierarchy(table));
+    expansion.toggle(rows[0]!);
+    const child=expansion.get(rows[0]!)!;
+    await vi.waitFor(()=>expect(child.snapshots.get(child.table.data.main)).toMatchObject({status:'ready',totalCount:0,rows:[{office:'甲代表处',score:7}]}));
+    expect(snapshot.totalCount).toBe(0);
+    expect(warn.mock.calls.map(call=>call[1])).toContainEqual(expect.objectContaining({totalCount:0,rowCount:1,completeness:'unverified'}));
+    expansion.toggle(rows[0]!);
+    expect(expansion.get(rows[0]!)).toBeUndefined();
+  }finally{expansion.dispose();controller.dispose();}
 });
