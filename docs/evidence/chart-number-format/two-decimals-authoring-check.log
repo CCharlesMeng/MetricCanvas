@@ -1,0 +1,57 @@
+$ pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/chart-number-defaults/DataDashboard
+
+ ❯ tests/authoring-export-isolation.test.ts (30 tests | 2 failed) 1653033ms
+     × 生成器保留作者参考且只清理生成子树 91903ms
+     × 旧单入口配置仍可导出且不改旧 Skill 主文 120775ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 生成器保留作者参考且只清理生成子树
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:159:44
+    157|       writeFileSync(staleTopic, '{}\n');
+    158|       const result = runExport([], folder);
+    159|       expect(result.status, result.stderr).toBe(0);
+       |                                            ^
+    160|       expect(readFileSync(authored, 'utf8')).toBe('# Authored extensio…
+    161|       expect(readFileSync(localAuthored, 'utf8')).toBe(localOriginal +…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 旧单入口配置仍可导出且不改旧 Skill 主文
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:194:45
+    192|       expect(generated.status,generated.stderr).toBe(0);
+    193|       const checked = runExport(['--check'],legacyRoot);
+    194|       expect(checked.status,checked.stderr).toBe(0);
+       |                                             ^
+    195|       expect(checked.stdout).toContain('authoring contract export curr…
+    196|       expect(readFileSync(entrypoint,'utf8')).toBe(original);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  2 failed | 225 passed (227)
+   Start at  10:33:08
+   Duration  1653.21s (transform 1.89s, setup 0ms, import 12.38s, tests 1685.21s, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.
+[ELIFECYCLE] Command failed with exit code 1.

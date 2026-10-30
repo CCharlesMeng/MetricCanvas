@@ -28,6 +28,18 @@ export function pieCategoryDomain(data: MainDataSlots, props: PieChartProps): st
   return categoryDomain(values.map(value => formatValue(value, category.format, category.missingText)));
 }
 
+/** 占比标签和图例使用同一份有效数值合计，不依赖图表库预舍入的 percent。 */
+export function pieValueTotal(rows: readonly Row[], value: ResolvedComponentValue): number {
+  return rows.reduce((sum, row) => sum + (finiteNumber(value.read(row)) ?? 0), 0);
+}
+
+/** 百分数使用 0–100 刻度；零合计或非有限合计不产生有效占比。 */
+export function piePercentage(value: FieldValue | undefined, total: number): number | null {
+  const numeric = finiteNumber(value);
+  if (numeric === undefined || !Number.isFinite(total) || total <= 0) return null;
+  return numeric / total * 100;
+}
+
 type LegendColumn = NonNullable<PieChartProps['legend']>['columns'][number];
 interface ProjectedColumn {
   label: string;
@@ -56,7 +68,7 @@ function projectColumn(column: LegendColumn, data: MainDataSlots, value: Resolve
   return {
     label: column.label,
     definition: { type: 'number', role: 'measure', defaultFormat: column.format ?? 'percent-1' },
-    read: row => total > 0 ? Number(value.read(row)) / total * 100 : null
+    read: row => piePercentage(value.read(row), total)
   };
 }
 
@@ -65,7 +77,7 @@ export function pieLegendData(data: MainDataSlots, props: PieChartProps) {
   const category = resolveField(props.categoryField, data);
   const value = resolveComponentValue(props, data, props.emptyBehavior);
   const rows = pieRows(data, props);
-  const total = rows.reduce((sum, row) => sum + Number(value.read(row)), 0);
+  const total = pieValueTotal(rows, value);
   const columns = (props.legend?.columns ?? []).map(column => projectColumn(column, data, value, total));
   const fields: Record<string, ResolvedFieldDefinition> = {
     __category: projectedDefinition(category, 'dimension')

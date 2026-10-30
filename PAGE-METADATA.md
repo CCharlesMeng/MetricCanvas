@@ -179,6 +179,10 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 格式由组件字段绑定声明，页面数据源可以提供 `defaultFormat` 建议，原始数据保留基础单位。格式清单、覆盖优先级及百万单位的用法统一见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md)。
 
+柱状图、折线图及混合图的标签、悬浮提示和同格式数值轴统一采用通用格式化；未配置格式时默认两位小数，元数据可覆盖；旧柱图标签不再隐式缩放为万。规则及兼容说明见[柱线图数值格式一致性](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，场景 `/pages/chart-number-format`。
+
+饼图外围百分比标签统一使用通用 `percent-1`，按有效原值合计直接计算，零合计显示“—”；规则及边界见[饼图外围标签](docs/page-metadata/components/pieChart.md#percentage-labels)，对照场景 `/pages/chart-number-format`。
+
 ## 旧锚点导航
 
 

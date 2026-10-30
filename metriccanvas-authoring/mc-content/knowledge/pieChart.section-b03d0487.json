@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "6.77",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "pieChart.section-b03d0487"
+  ],
+  "semantics": [
+    {
+      "module": "pieChart",
+      "reference": "references/page-metadata/components/pieChart.md",
+      "blocks": [
+        "# 饼图 pieChart\n\n展示少量类别对整体的占比或构成。适用于占比、构成、份额，且类别数量较少。数据形状：一个 dimension 类别字段 + 一个 metric 数值字段。\n\n表达类别占比，维度与度量明确；数据是否适合占比仍取决于业务可加总性。",
+        "## 外围百分比标签\n\n普通饼图及 `labelLine: true` 显示的外围标签统一采用通用 `percent-1` 格式，显示“类别: 1.2%”。占比与表格式图例的自动占比列共用有效原值合计及百分数计算，直接按 0–100 刻度格式化，不使用 ECharts 预舍入的 `percent`，也不为凑齐 100% 分配舍入差额。三个相等扇区各显示 `33.3%`。真实零在有效合计下显示 `0.0%`，零合计显示“—”；缺失值不参与合计，也不生成扇区。\n\n外围标签是派生占比，使用固定 `percent-1`；数值字段的格式仍负责原数值展示，图例列的显式格式只作用于该列。已有 `compactRing`、`labelLine: false` 和表格式图例默认隐藏外围标签的行为保持。显式高级 `echartsOption.series[].label.formatter` 仍按原扩展规则覆盖默认标签。本次修正默认呈现，不新增字段或 Schema 版本。\n\n内联合成验收入口：`/pages/chart-number-format`，包含舍入边界、有效零、缺失、零合计、均分占比及外围与表格式图例对照。"
+      ],
+      "rules": [
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/composite-page.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/pie-table-legend.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

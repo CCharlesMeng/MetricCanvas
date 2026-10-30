@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f6e796af2e480b754740e70f51ed18e2f0864a187b9f5b507d427ac576f2353e",
+  "sha256": "2aa6bedafba6ca09451281739a2db29fd584d3e3b39e295a197b5161c3bb5d62",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -28,7 +28,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "45d4c7c143014643b1b70e6dd201ec9441a51ddf84a4c3e9409591e5d8a6d3c5"
+      "sha256": "64f2a5988182fd9e02b37f3d02a0d8389d3cf16ee06296e1a45a55490ba73f72"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -60,7 +60,7 @@
     },
     {
       "file": "docs/page-metadata/components/lineChart.md",
-      "sha256": "9f7d1e9d665091abb8f781f95d20af156017e64c127a3fce0918fec8213aed6c"
+      "sha256": "51a9cba737fad7d3a135f1220b04076b221a94962a74a4c4c8de4e4f922eb473"
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
@@ -72,7 +72,7 @@
     },
     {
       "file": "docs/page-metadata/components/pieChart.md",
-      "sha256": "491ec51e376a9bb7846780920fb9bcc2ad4e1a620e7b55689bec9e4ab6942da6"
+      "sha256": "a4b9b44f2909bc674829fc28adb23cc978f92e2cbd114d6d35a5b472b9845f70"
     },
     {
       "file": "docs/page-metadata/components/rankingCard.md",
@@ -116,7 +116,7 @@
     },
     {
       "file": "docs/page-metadata/field-bindings-and-formats.md",
-      "sha256": "16abea1534362a39c5c6a8623df36c8e112a9014e9d7468e4d9a6c23543ed1cf"
+      "sha256": "eec80162a8c038ada9b9c9be991be5ce60a0a8735be876e67097618064cb38bc"
     },
     {
       "file": "docs/page-metadata/fields.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "c79744767baa0d8eaf00dfae057be1f0ecc809a22099ebf217b388faf2c26ed5"
+      "sha256": "1612edd1acc77a775ebdeccc6f81ea06029d512691ed6470c04928c0672947be"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1956,7 +1956,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "9f116fecb904b69549e55a93c1359f87bdbdfc8d1da699b8bd7f8ec77f59add9"
+      "sha256": "593beb22c4fcdc27ca0be125d4ae4b335a2839f21a714217ee36c6fd1b88cd98"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
@@ -1973,6 +1973,10 @@
     {
       "file": "pages/capabilities/chart/chart-local-filter-page.json",
       "sha256": "7d7b4a80dcf3a6c870d5a0fe158034a622b943ce60a899a526d11d08a8208f8c"
+    },
+    {
+      "file": "pages/capabilities/chart/chart-number-format.json",
+      "sha256": "df9f2ae72ae27cbc84e79777a534c525f4c25174d92ffae8423ed497891dc092"
     },
     {
       "file": "pages/capabilities/chart/dual-axis-alignment.json",
@@ -2240,7 +2244,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "11158ef88941994b886ed35bbe773f6309d89551d2d554354ccd3673a4699383"
+      "sha256": "35a00878efd178529e78f0b6358429ffde6eac138982bc1419e3baa2aaad8812"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",

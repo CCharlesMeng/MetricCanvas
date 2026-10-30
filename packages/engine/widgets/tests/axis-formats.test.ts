@@ -28,8 +28,10 @@ describe('numeric axis display formats', () => {
     expect(bar.series).toMatchObject([{ data: [11358989639011.566] }]);
   });
 
-  it('mixed formats on a shared axis keep raw ticks; separate axes retain their own units', () => {
-    expect(dualOrSingleAxis(false, 2, false, ['compact-yi-1', 'percent-2'])).toEqual({ type: 'value' });
+  it('mixed formats on a shared axis use basic two-decimal ticks; separate axes retain their own units', () => {
+    const mixed = dualOrSingleAxis(false, 2, false, ['compact-yi-1', 'percent-2']);
+    expect(mixed).toMatchObject({ type: 'value', axisLabel: { formatter: expect.any(Function) } });
+    expect((mixed as { axisLabel: { formatter: (value: number) => string } }).axisLabel.formatter(12345.6789)).toBe('12345.68');
     const axes = dualOrSingleAxis(true, 2, false, ['compact-yi-1', 'percent-2']);
     expect(axes).toMatchObject([{ axisLabel: { formatter: expect.any(Function) } }, { axisLabel: { formatter: expect.any(Function) } }]);
     expect(dualOrSingleAxis(false, 1, true, ['compact-yi-1'])).toMatchObject({ axisLabel: { show: false } });

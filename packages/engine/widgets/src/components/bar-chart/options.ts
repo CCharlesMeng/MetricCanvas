@@ -3,8 +3,8 @@ import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page/intern
 import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
-import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, alignedSecondaryAxis, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue } from '../../shared/chart-option';
+import { finiteNumber, formatValue } from '../../shared/value-format';
+import { CHART_PALETTE, GRID, alignedSecondaryAxis, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue, formatChartNumber } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
@@ -38,14 +38,8 @@ export function barOption(
   const categoryAxis = { type: 'category' as const, data: categories,
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
-  const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
+  const valueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
     props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format));
-  const reportValueFormat = props.series[0]
-    ? resolveComponentValue(props.series[0], data, props.emptyBehavior).format
-    : undefined;
-  const valueAxis = props.variant === 'reportForecast'
-    ? reportValueAxis(baseValueAxis, reportValueFormat)
-    : baseValueAxis;
   const horizontalAxis = Array.isArray(valueAxis)
     ? valueAxis.map(horizontalValueLabels)
     : horizontalValueLabels(valueAxis);
@@ -197,14 +191,10 @@ export function barOption(
               }
             }
           : {}),
-        ...(field.format
-          ? {
-              tooltip: {
-                valueFormatter: (value: unknown) =>
-                  formatValue(formatterValue(value), field.format, field.missingText)
-              }
-            }
-          : {}),
+        tooltip: {
+          valueFormatter: (value: unknown) =>
+            formatChartNumber(formatterValue(value), field.format, field.missingText)
+        },
         data: displayedValues
       };
     })
@@ -222,7 +212,7 @@ function valueLabelFormatter(format?: ValueFormatPreset) {
   return (params: unknown): string => {
     const value = finiteNumber(formatterValue((params as { value?: unknown })?.value));
     if (value === undefined) return '';
-    return format === undefined ? `${wanUnits(value)}万` : formatValue(value, format);
+    return formatChartNumber(value, format);
   };
 }
 
@@ -242,25 +232,6 @@ function floatingLabelStyle(color?: string) {
     backgroundColor: 'rgba(255, 255, 255, 0.88)',
     borderRadius: 2,
     padding: [1, 3]
-  };
-}
-
-function reportValueAxis(
-  axis: ReturnType<typeof dualOrSingleAxis>,
-  format?: ValueFormatPreset
-) {
-  if (Array.isArray(axis)) return axis;
-  if (format !== undefined) {
-    return axis;
-  }
-  return {
-    ...axis,
-    name: '万',
-    nameLocation: 'end' as const,
-    nameGap: 8,
-    axisLabel: {
-      formatter: (value: number) => wanUnits(value, 0, false)
-    }
   };
 }
 
@@ -302,7 +273,7 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
           label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
           ...(series.kind === 'line' ? { showAllSymbol: true } : {})
         } : {}),
-        tooltip: { valueFormatter: (value: unknown) => formatValue(formatterValue(value), field.format, field.missingText) },
+        tooltip: { valueFormatter: (value: unknown) => formatChartNumber(formatterValue(value), field.format, field.missingText) },
         data: rows.map(row => {
           const value = finiteNumber(field.read(row));
           if (value === undefined) return null;

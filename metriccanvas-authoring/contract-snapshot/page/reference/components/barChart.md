@@ -34,6 +34,10 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
+## 数值格式
+
+标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。
+
 
 页面协议 6.77。结构真源为本册[schema.json](../schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
 

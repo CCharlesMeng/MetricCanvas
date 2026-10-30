@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/authoring-export-isolation.test.ts -t '生成器保留作者参考且只清理生成子树|旧单入口配置仍可导出且不改旧 Skill 主文'
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/chart-number-defaults/DataDashboard
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 28 skipped (30)
+   Start at  11:01:35
+   Duration  109.63s (transform 54ms, setup 0ms, import 76ms, tests 109.42s, environment 0ms)

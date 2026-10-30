@@ -1,10 +1,10 @@
 import { resolveComponentValue } from '../../shared/component-value';
 import type { PieChartProps } from '@metriccanvas/page/internal';
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, DefaultLabelFormatterCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue } from '../../shared/value-format';
-import { pieRows, pieCategoryDomain } from './presentation';
+import { pieRows, pieCategoryDomain, pieValueTotal, piePercentage } from './presentation';
 export { pieRows } from './presentation';
 import { formatterValue } from '../../shared/chart-option';
 import {
@@ -27,6 +27,7 @@ export function pieOption(
   const rows = pieRows(data, props);
   const category = resolveField(props.categoryField, data);
   const value = resolveComponentValue(props, data, props.emptyBehavior);
+  const total = pieValueTotal(rows, value);
   const showLabelLine = props.labelLine ?? !props.legend;
   const compactRing = props.variant === 'compactRing';
   const names = rows.map((row) => formatValue(row[category.field], category.format, category.missingText));
@@ -51,7 +52,12 @@ export function pieOption(
             ? [props.ring, '72%']
             : '72%',
         ...(compactRing ? { center: ['50%', '50%'] as [string, string] } : {}),
-        label: { show: compactRing ? false : showLabelLine, formatter: '{b}: {d}%' },
+        label: {
+          show: compactRing ? false : showLabelLine,
+          ...(total === 0 ? { alignTo: 'edge' as const, edgeDistance: 8, overflow: 'none' as const } : {}),
+          formatter: (params: DefaultLabelFormatterCallbackParams) =>
+            `${params.name}: ${formatValue(piePercentage(formatterValue(params.value), total), 'percent-1')}`
+        },
         labelLine: { show: compactRing ? false : showLabelLine },
         data: rows.flatMap((row, index) => {
           const numeric = finiteNumber(value.read(row));

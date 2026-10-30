@@ -25,7 +25,7 @@ interface PieSeries {
   data: { name: string; value: number; itemStyle?: { color?: string } }[];
   radius?: string | [string, string];
   center?: [string, string];
-  label?: { show?: boolean };
+  label?: { show?: boolean; formatter?: (params: { name: string; value: number }) => string };
   labelLine?: { show?: boolean };
 }
 
@@ -142,5 +142,30 @@ describe('pieOption · 形态类别色板', () => {
       '#3cc6c1',
       '#5b72ea'
     ]);
+  });
+});
+
+
+describe('pieOption · 外围百分比格式', () => {
+  it('使用通用一位小数格式，直接从原值计算，避免 ECharts 百分比预舍入', () => {
+    const input: MainDataSlots = { main: { ...data.main, snapshot: { status: 'ready', rows: [
+      { region: '甲', amount: 1.2499 }, { region: '乙', amount: 98.7501 }, { region: '零', amount: 0 }
+    ] } } };
+    const original = structuredClone(input);
+    const formatter = series(pieOption(input, props)).label!.formatter!;
+    expect(formatter).toBeTypeOf('function');
+    expect(formatter({ name: '甲', value: 1.2499 })).toBe('甲: 1.2%');
+    expect(formatter({ name: '乙', value: 98.7501 })).toBe('乙: 98.8%');
+    expect(formatter({ name: '零', value: 0 })).toBe('零: 0.0%');
+    expect(input).toEqual(original);
+  });
+
+  it('零合计与表格式图例一致显示缺失占比，不伪造有效百分比', () => {
+    const input: MainDataSlots = { main: { ...data.main, snapshot: { status: 'ready', rows: [
+      { region: '零', amount: 0 }
+    ] } } };
+    const formatter = series(pieOption(input, props)).label!.formatter!;
+    expect(formatter).toBeTypeOf('function');
+    expect(formatter({ name: '零', value: 0 })).toBe('零: —');
   });
 });

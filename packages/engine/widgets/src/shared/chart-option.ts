@@ -1,4 +1,4 @@
-import type { ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
 import { formatValue } from './value-format';
 
 /**
@@ -23,6 +23,11 @@ export const CHART_PALETTE = [
   '#fc8452'
 ] as const;
 
+/** 柱、线与混合图的数值入口：显式格式优先，缺省固定两位小数。 */
+export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string): string {
+  return formatValue(value, format ?? 'number-2', missingText);
+}
+
 /** 双轴:第二个及之后的指标走右轴;单轴时只留左轴 */
 export function dualOrSingleAxis(
   dualAxis: boolean | undefined,
@@ -43,13 +48,12 @@ export function alignedSecondaryAxis<T extends object>(axis: T) {
 
 /** All numeric chart branches share the same format consensus and hidden-axis policy. */
 export function formattedValueAxis(group: Array<ValueFormatPreset | undefined>, hideAxis = false) {
-  // One axis has one scale. Mixed formats keep raw ticks rather than choosing
+  // One axis has one scale. Mixed formats use basic two-decimal ticks rather than choosing
   // the first series' unit for unrelated values on that axis.
+  const format = group.every(format => format === group[0]) ? group[0] : undefined;
   return {
     type: 'value' as const,
-    ...(group.length && group[0] && group.every(format => format === group[0])
-      ? { axisLabel: { formatter: (value: number) => formatValue(value, group[0]) } }
-      : {}),
+    axisLabel: { formatter: (value: number) => formatChartNumber(value, format) },
     ...(hideAxis
       ? {
           axisLabel: { show: false },

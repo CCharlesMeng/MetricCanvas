@@ -1,7 +1,7 @@
 import type { CategoryLabels, ValueFormatPreset } from '@metriccanvas/page/internal';
 import { format, type EChartsOption, type GridComponentOption, type LegendComponentOption, type LabelLayoutOptionCallbackParams } from 'echarts';
-import { finiteNumber, formatValue } from './value-format';
-import { formatterValue } from './chart-option';
+import { finiteNumber } from './value-format';
+import { formatterValue, formatChartNumber } from './chart-option';
 
 export function categoryLabelOption(labels?: CategoryLabels, showValues = false) {
   if (!labels && !showValues) return {};
@@ -17,7 +17,7 @@ export function pointValueLabel(valueFormat?: ValueFormatPreset, missingText?: s
     show: true, position: 'top' as const, distance: 5, color: '#191919', fontSize: 11,
     formatter: (params: unknown) => {
       const value = finiteNumber(formatterValue(params));
-      return value === undefined ? '' : formatValue(value, valueFormat, missingText);
+      return value === undefined ? '' : formatChartNumber(value, valueFormat, missingText);
     }
   };
 }

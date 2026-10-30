@@ -1,0 +1,1480 @@
+{
+  "before": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/engine/widgets/src/components/bar-chart/options.ts",
+        "functions": [
+          {
+            "name": "barOption",
+            "qualifiedName": "barOption",
+            "line": 27,
+            "endLine": 212,
+            "selfCC": 19,
+            "optionalChains": 2,
+            "subtreeCC": 58,
+            "nestedFunctions": 15
+          },
+          {
+            "name": "<anonymous@32:25>",
+            "qualifiedName": "barOption/<anonymous@32:25>",
+            "line": 32,
+            "endLine": 32,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@35:31>",
+            "qualifiedName": "barOption/<anonymous@35:31>",
+            "line": 35,
+            "endLine": 36,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@42:22>",
+            "qualifiedName": "barOption/<anonymous@42:22>",
+            "line": 42,
+            "endLine": 42,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@54:44>",
+            "qualifiedName": "barOption/<anonymous@54:44>",
+            "line": 54,
+            "endLine": 56,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@57:51>",
+            "qualifiedName": "barOption/<anonymous@57:51>",
+            "line": 57,
+            "endLine": 57,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@62:32>",
+            "qualifiedName": "barOption/<anonymous@62:32>",
+            "line": 62,
+            "endLine": 66,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@63:25>",
+            "qualifiedName": "barOption/<anonymous@62:32>/<anonymous@63:25>",
+            "line": 63,
+            "endLine": 66,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@68:39>",
+            "qualifiedName": "barOption/<anonymous@68:39>",
+            "line": 68,
+            "endLine": 71,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@86:39>",
+            "qualifiedName": "barOption/<anonymous@86:39>",
+            "line": 86,
+            "endLine": 86,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@96:31>",
+            "qualifiedName": "barOption/<anonymous@96:31>",
+            "line": 96,
+            "endLine": 210,
+            "selfCC": 27,
+            "optionalChains": 0,
+            "subtreeCC": 36,
+            "nestedFunctions": 5
+          },
+          {
+            "name": "<anonymous@131:31>",
+            "qualifiedName": "barOption/<anonymous@96:31>/<anonymous@131:31>",
+            "line": 131,
+            "endLine": 131,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@133:66>",
+            "qualifiedName": "barOption/<anonymous@96:31>/<anonymous@133:66>",
+            "line": 133,
+            "endLine": 135,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@136:22>",
+            "qualifiedName": "barOption/<anonymous@96:31>/<anonymous@136:22>",
+            "line": 136,
+            "endLine": 144,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@146:40>",
+            "qualifiedName": "barOption/<anonymous@96:31>/<anonymous@146:40>",
+            "line": 146,
+            "endLine": 150,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueFormatter",
+            "qualifiedName": "barOption/<anonymous@96:31>/valueFormatter",
+            "line": 203,
+            "endLine": 204,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "horizontalValueLabels",
+            "qualifiedName": "horizontalValueLabels",
+            "line": 216,
+            "endLine": 219,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueLabelFormatter",
+            "qualifiedName": "valueLabelFormatter",
+            "line": 221,
+            "endLine": 227,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@222:10>",
+            "qualifiedName": "valueLabelFormatter/<anonymous@222:10>",
+            "line": 222,
+            "endLine": 226,
+            "selfCC": 3,
+            "optionalChains": 1,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "floatingLabelLayout",
+            "qualifiedName": "floatingLabelLayout",
+            "line": 229,
+            "endLine": 233,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "isFloatingLabel",
+            "qualifiedName": "isFloatingLabel",
+            "line": 235,
+            "endLine": 237,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "floatingLabelStyle",
+            "qualifiedName": "floatingLabelStyle",
+            "line": 239,
+            "endLine": 246,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "reportValueAxis",
+            "qualifiedName": "reportValueAxis",
+            "line": 248,
+            "endLine": 265,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "formatter",
+            "qualifiedName": "reportValueAxis/formatter",
+            "line": 262,
+            "endLine": 262,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "roundedCorners",
+            "qualifiedName": "roundedCorners",
+            "line": 268,
+            "endLine": 270,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "barSeriesOrder",
+            "qualifiedName": "barSeriesOrder",
+            "line": 273,
+            "endLine": 277,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 6,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@274:36>",
+            "qualifiedName": "barSeriesOrder/<anonymous@274:36>",
+            "line": 274,
+            "endLine": 274,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@275:25>",
+            "qualifiedName": "barSeriesOrder/<anonymous@275:25>",
+            "line": 275,
+            "endLine": 275,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@276:23>",
+            "qualifiedName": "barSeriesOrder/<anonymous@276:23>",
+            "line": 276,
+            "endLine": 276,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "mixedOption",
+            "qualifiedName": "mixedOption",
+            "line": 280,
+            "endLine": 315,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 14,
+            "nestedFunctions": 9
+          },
+          {
+            "name": "axis",
+            "qualifiedName": "mixedOption/axis",
+            "line": 283,
+            "endLine": 289,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@284:40>",
+            "qualifiedName": "mixedOption/axis/<anonymous@284:40>",
+            "line": 284,
+            "endLine": 284,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@285:12>",
+            "qualifiedName": "mixedOption/axis/<anonymous@285:12>",
+            "line": 285,
+            "endLine": 285,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@287:47>",
+            "qualifiedName": "mixedOption/axis/<anonymous@287:47>",
+            "line": 287,
+            "endLine": 287,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@293:47>",
+            "qualifiedName": "mixedOption/<anonymous@293:47>",
+            "line": 293,
+            "endLine": 293,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@295:30>",
+            "qualifiedName": "mixedOption/<anonymous@295:30>",
+            "line": 295,
+            "endLine": 313,
+            "selfCC": 7,
+            "optionalChains": 0,
+            "subtreeCC": 11,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@302:107>",
+            "qualifiedName": "mixedOption/<anonymous@295:30>/<anonymous@302:107>",
+            "line": 302,
+            "endLine": 302,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueFormatter",
+            "qualifiedName": "mixedOption/<anonymous@295:30>/valueFormatter",
+            "line": 305,
+            "endLine": 305,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@306:24>",
+            "qualifiedName": "mixedOption/<anonymous@295:30>/<anonymous@306:24>",
+            "line": 306,
+            "endLine": 311,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/widgets/src/components/line-chart/options.ts",
+        "functions": [
+          {
+            "name": "lineOption",
+            "qualifiedName": "lineOption",
+            "line": 17,
+            "endLine": 75,
+            "selfCC": 7,
+            "optionalChains": 2,
+            "subtreeCC": 18,
+            "nestedFunctions": 7
+          },
+          {
+            "name": "<anonymous@35:22>",
+            "qualifiedName": "lineOption/<anonymous@35:22>",
+            "line": 35,
+            "endLine": 35,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@39:24>",
+            "qualifiedName": "lineOption/<anonymous@39:24>",
+            "line": 39,
+            "endLine": 39,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@40:30>",
+            "qualifiedName": "lineOption/<anonymous@40:30>",
+            "line": 40,
+            "endLine": 73,
+            "selfCC": 10,
+            "optionalChains": 0,
+            "subtreeCC": 12,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "<anonymous@47:50>",
+            "qualifiedName": "lineOption/<anonymous@40:30>/<anonymous@47:50>",
+            "line": 47,
+            "endLine": 47,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formatter",
+            "qualifiedName": "lineOption/<anonymous@40:30>/formatter",
+            "line": 58,
+            "endLine": 59,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueFormatter",
+            "qualifiedName": "lineOption/<anonymous@40:30>/valueFormatter",
+            "line": 66,
+            "endLine": 67,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@71:24>",
+            "qualifiedName": "lineOption/<anonymous@40:30>/<anonymous@71:24>",
+            "line": 71,
+            "endLine": 71,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "gradientArea",
+            "qualifiedName": "gradientArea",
+            "line": 81,
+            "endLine": 97,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "withAlpha",
+            "qualifiedName": "withAlpha",
+            "line": 100,
+            "endLine": 106,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/widgets/src/shared/chart-option.ts",
+        "functions": [
+          {
+            "name": "dualOrSingleAxis",
+            "qualifiedName": "dualOrSingleAxis",
+            "line": 27,
+            "endLine": 37,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "alignedSecondaryAxis",
+            "qualifiedName": "alignedSecondaryAxis",
+            "line": 40,
+            "endLine": 42,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formattedValueAxis",
+            "qualifiedName": "formattedValueAxis",
+            "line": 45,
+            "endLine": 61,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@50:49>",
+            "qualifiedName": "formattedValueAxis/<anonymous@50:49>",
+            "line": 50,
+            "endLine": 50,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formatter",
+            "qualifiedName": "formattedValueAxis/formatter",
+            "line": 51,
+            "endLine": 51,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formatterValue",
+            "qualifiedName": "formatterValue",
+            "line": 64,
+            "endLine": 71,
+            "selfCC": 8,
+            "optionalChains": 0,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "categoryWindow",
+            "qualifiedName": "categoryWindow",
+            "line": 74,
+            "endLine": 82,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "after": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/engine/widgets/src/components/bar-chart/options.ts",
+        "functions": [
+          {
+            "name": "barOption",
+            "qualifiedName": "barOption",
+            "line": 27,
+            "endLine": 202,
+            "selfCC": 17,
+            "optionalChains": 2,
+            "subtreeCC": 55,
+            "nestedFunctions": 15
+          },
+          {
+            "name": "<anonymous@32:25>",
+            "qualifiedName": "barOption/<anonymous@32:25>",
+            "line": 32,
+            "endLine": 32,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@35:31>",
+            "qualifiedName": "barOption/<anonymous@35:31>",
+            "line": 35,
+            "endLine": 36,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@42:22>",
+            "qualifiedName": "barOption/<anonymous@42:22>",
+            "line": 42,
+            "endLine": 42,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@48:44>",
+            "qualifiedName": "barOption/<anonymous@48:44>",
+            "line": 48,
+            "endLine": 50,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@51:51>",
+            "qualifiedName": "barOption/<anonymous@51:51>",
+            "line": 51,
+            "endLine": 51,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@56:32>",
+            "qualifiedName": "barOption/<anonymous@56:32>",
+            "line": 56,
+            "endLine": 60,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@57:25>",
+            "qualifiedName": "barOption/<anonymous@56:32>/<anonymous@57:25>",
+            "line": 57,
+            "endLine": 60,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@62:39>",
+            "qualifiedName": "barOption/<anonymous@62:39>",
+            "line": 62,
+            "endLine": 65,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@80:39>",
+            "qualifiedName": "barOption/<anonymous@80:39>",
+            "line": 80,
+            "endLine": 80,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@90:31>",
+            "qualifiedName": "barOption/<anonymous@90:31>",
+            "line": 90,
+            "endLine": 200,
+            "selfCC": 26,
+            "optionalChains": 0,
+            "subtreeCC": 35,
+            "nestedFunctions": 5
+          },
+          {
+            "name": "<anonymous@125:31>",
+            "qualifiedName": "barOption/<anonymous@90:31>/<anonymous@125:31>",
+            "line": 125,
+            "endLine": 125,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@127:66>",
+            "qualifiedName": "barOption/<anonymous@90:31>/<anonymous@127:66>",
+            "line": 127,
+            "endLine": 129,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@130:22>",
+            "qualifiedName": "barOption/<anonymous@90:31>/<anonymous@130:22>",
+            "line": 130,
+            "endLine": 138,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@140:40>",
+            "qualifiedName": "barOption/<anonymous@90:31>/<anonymous@140:40>",
+            "line": 140,
+            "endLine": 144,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueFormatter",
+            "qualifiedName": "barOption/<anonymous@90:31>/valueFormatter",
+            "line": 195,
+            "endLine": 196,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "horizontalValueLabels",
+            "qualifiedName": "horizontalValueLabels",
+            "line": 206,
+            "endLine": 209,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueLabelFormatter",
+            "qualifiedName": "valueLabelFormatter",
+            "line": 211,
+            "endLine": 217,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@212:10>",
+            "qualifiedName": "valueLabelFormatter/<anonymous@212:10>",
+            "line": 212,
+            "endLine": 216,
+            "selfCC": 2,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "floatingLabelLayout",
+            "qualifiedName": "floatingLabelLayout",
+            "line": 219,
+            "endLine": 223,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "isFloatingLabel",
+            "qualifiedName": "isFloatingLabel",
+            "line": 225,
+            "endLine": 227,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "floatingLabelStyle",
+            "qualifiedName": "floatingLabelStyle",
+            "line": 229,
+            "endLine": 236,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "roundedCorners",
+            "qualifiedName": "roundedCorners",
+            "line": 239,
+            "endLine": 241,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "barSeriesOrder",
+            "qualifiedName": "barSeriesOrder",
+            "line": 244,
+            "endLine": 248,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 6,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@245:36>",
+            "qualifiedName": "barSeriesOrder/<anonymous@245:36>",
+            "line": 245,
+            "endLine": 245,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@246:25>",
+            "qualifiedName": "barSeriesOrder/<anonymous@246:25>",
+            "line": 246,
+            "endLine": 246,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@247:23>",
+            "qualifiedName": "barSeriesOrder/<anonymous@247:23>",
+            "line": 247,
+            "endLine": 247,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "mixedOption",
+            "qualifiedName": "mixedOption",
+            "line": 251,
+            "endLine": 286,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 14,
+            "nestedFunctions": 9
+          },
+          {
+            "name": "axis",
+            "qualifiedName": "mixedOption/axis",
+            "line": 254,
+            "endLine": 260,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 2,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@255:40>",
+            "qualifiedName": "mixedOption/axis/<anonymous@255:40>",
+            "line": 255,
+            "endLine": 255,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@256:12>",
+            "qualifiedName": "mixedOption/axis/<anonymous@256:12>",
+            "line": 256,
+            "endLine": 256,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@258:47>",
+            "qualifiedName": "mixedOption/axis/<anonymous@258:47>",
+            "line": 258,
+            "endLine": 258,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@264:47>",
+            "qualifiedName": "mixedOption/<anonymous@264:47>",
+            "line": 264,
+            "endLine": 264,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@266:30>",
+            "qualifiedName": "mixedOption/<anonymous@266:30>",
+            "line": 266,
+            "endLine": 284,
+            "selfCC": 7,
+            "optionalChains": 0,
+            "subtreeCC": 11,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@273:107>",
+            "qualifiedName": "mixedOption/<anonymous@266:30>/<anonymous@273:107>",
+            "line": 273,
+            "endLine": 273,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueFormatter",
+            "qualifiedName": "mixedOption/<anonymous@266:30>/valueFormatter",
+            "line": 276,
+            "endLine": 276,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@277:24>",
+            "qualifiedName": "mixedOption/<anonymous@266:30>/<anonymous@277:24>",
+            "line": 277,
+            "endLine": 282,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/widgets/src/components/line-chart/options.ts",
+        "functions": [
+          {
+            "name": "lineOption",
+            "qualifiedName": "lineOption",
+            "line": 17,
+            "endLine": 71,
+            "selfCC": 7,
+            "optionalChains": 2,
+            "subtreeCC": 17,
+            "nestedFunctions": 7
+          },
+          {
+            "name": "<anonymous@35:22>",
+            "qualifiedName": "lineOption/<anonymous@35:22>",
+            "line": 35,
+            "endLine": 35,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@39:24>",
+            "qualifiedName": "lineOption/<anonymous@39:24>",
+            "line": 39,
+            "endLine": 39,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@40:30>",
+            "qualifiedName": "lineOption/<anonymous@40:30>",
+            "line": 40,
+            "endLine": 69,
+            "selfCC": 9,
+            "optionalChains": 0,
+            "subtreeCC": 11,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "<anonymous@47:50>",
+            "qualifiedName": "lineOption/<anonymous@40:30>/<anonymous@47:50>",
+            "line": 47,
+            "endLine": 47,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formatter",
+            "qualifiedName": "lineOption/<anonymous@40:30>/formatter",
+            "line": 58,
+            "endLine": 59,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "valueFormatter",
+            "qualifiedName": "lineOption/<anonymous@40:30>/valueFormatter",
+            "line": 64,
+            "endLine": 65,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@67:24>",
+            "qualifiedName": "lineOption/<anonymous@40:30>/<anonymous@67:24>",
+            "line": 67,
+            "endLine": 67,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "gradientArea",
+            "qualifiedName": "gradientArea",
+            "line": 77,
+            "endLine": 93,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "withAlpha",
+            "qualifiedName": "withAlpha",
+            "line": 96,
+            "endLine": 102,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/widgets/src/shared/chart-option.ts",
+        "functions": [
+          {
+            "name": "dualOrSingleAxis",
+            "qualifiedName": "dualOrSingleAxis",
+            "line": 27,
+            "endLine": 37,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "alignedSecondaryAxis",
+            "qualifiedName": "alignedSecondaryAxis",
+            "line": 40,
+            "endLine": 42,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formattedValueAxis",
+            "qualifiedName": "formattedValueAxis",
+            "line": 45,
+            "endLine": 60,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@48:30>",
+            "qualifiedName": "formattedValueAxis/<anonymous@48:30>",
+            "line": 48,
+            "endLine": 48,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formatter",
+            "qualifiedName": "formattedValueAxis/formatter",
+            "line": 51,
+            "endLine": 51,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "formatterValue",
+            "qualifiedName": "formatterValue",
+            "line": 63,
+            "endLine": 70,
+            "selfCC": 8,
+            "optionalChains": 0,
+            "subtreeCC": 8,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "categoryWindow",
+            "qualifiedName": "categoryWindow",
+            "line": 73,
+            "endLine": 81,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/widgets/tests/chart-format-consistency.test.ts",
+        "functions": [
+          {
+            "name": "options",
+            "qualifiedName": "options",
+            "line": 22,
+            "endLine": 32,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@34:47>",
+            "qualifiedName": "<anonymous@34:47>",
+            "line": 34,
+            "endLine": 71,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 9,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@35:85>",
+            "qualifiedName": "<anonymous@34:47>/<anonymous@35:85>",
+            "line": 35,
+            "endLine": 47,
+            "selfCC": 4,
+            "optionalChains": 4,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@49:92>",
+            "qualifiedName": "<anonymous@34:47>/<anonymous@49:92>",
+            "line": 49,
+            "endLine": 59,
+            "selfCC": 3,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@61:67>",
+            "qualifiedName": "<anonymous@34:47>/<anonymous@61:67>",
+            "line": 61,
+            "endLine": 70,
+            "selfCC": 4,
+            "optionalChains": 2,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "packages/engine/widgets/tests/axis-formats.test.ts",
+        "functions": [
+          {
+            "name": "<anonymous@17:42>",
+            "qualifiedName": "<anonymous@17:42>",
+            "line": 17,
+            "endLine": 39,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@18:87>",
+            "qualifiedName": "<anonymous@17:42>/<anonymous@18:87>",
+            "line": 18,
+            "endLine": 29,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@31:93>",
+            "qualifiedName": "<anonymous@17:42>/<anonymous@31:93>",
+            "line": 31,
+            "endLine": 38,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@41:78>",
+            "qualifiedName": "<anonymous@41:78>",
+            "line": 41,
+            "endLine": 53,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "<anonymous@42:44>",
+            "qualifiedName": "<anonymous@41:78>/<anonymous@42:44>",
+            "line": 42,
+            "endLine": 42,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@47:59>",
+            "qualifiedName": "<anonymous@41:78>/<anonymous@47:59>",
+            "line": 47,
+            "endLine": 47,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@48:85>",
+            "qualifiedName": "<anonymous@41:78>/<anonymous@48:85>",
+            "line": 48,
+            "endLine": 48,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@52:55>",
+            "qualifiedName": "<anonymous@41:78>/<anonymous@52:55>",
+            "line": 52,
+            "endLine": 52,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@55:75>",
+            "qualifiedName": "<anonymous@55:75>",
+            "line": 55,
+            "endLine": 72,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@74:92>",
+            "qualifiedName": "<anonymous@74:92>",
+            "line": 74,
+            "endLine": 89,
+            "selfCC": 1,
+            "optionalChains": 4,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@91:96>",
+            "qualifiedName": "<anonymous@91:96>",
+            "line": 91,
+            "endLine": 97,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "testBaselineAndBrowser": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "/tmp/chart-format-axis-before.ts",
+        "functions": [
+          {
+            "name": "<anonymous@17:42>",
+            "qualifiedName": "<anonymous@17:42>",
+            "line": 17,
+            "endLine": 37,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@18:87>",
+            "qualifiedName": "<anonymous@17:42>/<anonymous@18:87>",
+            "line": 18,
+            "endLine": 29,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@31:93>",
+            "qualifiedName": "<anonymous@17:42>/<anonymous@31:93>",
+            "line": 31,
+            "endLine": 36,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@39:78>",
+            "qualifiedName": "<anonymous@39:78>",
+            "line": 39,
+            "endLine": 51,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 4
+          },
+          {
+            "name": "<anonymous@40:44>",
+            "qualifiedName": "<anonymous@39:78>/<anonymous@40:44>",
+            "line": 40,
+            "endLine": 40,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@45:59>",
+            "qualifiedName": "<anonymous@39:78>/<anonymous@45:59>",
+            "line": 45,
+            "endLine": 45,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@46:85>",
+            "qualifiedName": "<anonymous@39:78>/<anonymous@46:85>",
+            "line": 46,
+            "endLine": 46,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@50:55>",
+            "qualifiedName": "<anonymous@39:78>/<anonymous@50:55>",
+            "line": 50,
+            "endLine": 50,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@53:75>",
+            "qualifiedName": "<anonymous@53:75>",
+            "line": 53,
+            "endLine": 70,
+            "selfCC": 5,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@72:92>",
+            "qualifiedName": "<anonymous@72:92>",
+            "line": 72,
+            "endLine": 87,
+            "selfCC": 1,
+            "optionalChains": 4,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@89:96>",
+            "qualifiedName": "<anonymous@89:96>",
+            "line": 89,
+            "endLine": 95,
+            "selfCC": 1,
+            "optionalChains": 1,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          }
+        ]
+      },
+      {
+        "file": "apps/playground/tests/chart-number-format.browser.ts",
+        "functions": [
+          {
+            "name": "<anonymous@6:80>",
+            "qualifiedName": "<anonymous@6:80>",
+            "line": 6,
+            "endLine": 29,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 3
+          },
+          {
+            "name": "<anonymous@8:24>",
+            "qualifiedName": "<anonymous@6:80>/<anonymous@8:24>",
+            "line": 8,
+            "endLine": 8,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@26:21>",
+            "qualifiedName": "<anonymous@6:80>/<anonymous@26:21>",
+            "line": 26,
+            "endLine": 26,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@26:41>",
+            "qualifiedName": "<anonymous@6:80>/<anonymous@26:21>/<anonymous@26:41>",
+            "line": 26,
+            "endLine": 26,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "schemaVersion": "6.74",
+  "id": "chart-number-format",
+  "layout": "dashboard",
+  "meta": {
+    "title": "图表数值格式 · 合成数据"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "图表数值格式"
+    },
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "类别"
+        },
+        "raw": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "unit": "件"
+        },
+        "formatted": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "compact-wan-1",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "正值",
+            "raw": 12345.6789,
+            "formatted": 12345.6789
+          },
+          {
+            "category": "零",
+            "raw": 0,
+            "formatted": 0
+          },
+          {
+            "category": "负值",
+            "raw": -2345.6789,
+            "formatted": -2345.6789
+          },
+          {
+            "category": "缺失",
+            "raw": null,
+            "formatted": null
+          }
+        ]
+      }
+    },
+    "pie": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "甲",
+            "amount": 1.2499
+          },
+          {
+            "category": "乙",
+            "amount": 98.7501
+          },
+          {
+            "category": "零",
+            "amount": 0
+          },
+          {
+            "category": "缺失",
+            "amount": null
+          }
+        ]
+      }
+    },
+    "pie-zero": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "甲",
+            "amount": 0
+          },
+          {
+            "category": "乙",
+            "amount": 0
+          }
+        ]
+      }
+    },
+    "pie-thirds": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "甲",
+            "amount": 1
+          },
+          {
+            "category": "乙",
+            "amount": 1
+          },
+          {
+            "category": "丙",
+            "amount": 1
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "charts",
+      "container": "plain",
+      "components": [
+        {
+          "id": "bar-raw",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "柱状图 · 默认两位小数",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "raw",
+                "label": "2026 数值"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "line-raw",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "折线图 · 默认两位小数",
+            "xField": "category",
+            "series": [
+              {
+                "field": "raw",
+                "label": "2026 数值"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "bar-inherit",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "柱状图 · 继承万单位",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "formatted",
+                "label": "2026 数值"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "line-override",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "折线图 · 显式保留原值",
+            "xField": "category",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "formatted",
+                  "format": "number"
+                },
+                "label": "2026 数值"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "bar-legacy",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "堆叠合计 · 默认两位小数",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "raw",
+                "label": "2026 数值"
+              }
+            ],
+            "showStackTotalLabels": true,
+            "stacked": true
+          }
+        },
+        {
+          "id": "line-legacy",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "旧节点标签 · 默认两位小数",
+            "xField": "category",
+            "series": [
+              {
+                "field": "raw",
+                "label": "2026 数值"
+              }
+            ],
+            "showPointLabels": true
+          }
+        },
+        {
+          "id": "bar-forecast",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "预测柱图 · 默认两位小数",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "raw",
+                "label": "2026 数值"
+              }
+            ],
+            "variant": "reportForecast",
+            "showSegmentLabels": true
+          }
+        },
+        {
+          "id": "mixed",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "混合图 · 默认两位小数",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "raw",
+                "label": "柱",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "value": 10000,
+                "unit": "件",
+                "label": "参考线",
+                "kind": "line",
+                "axis": "primary"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "pie-outer",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "pie"
+          },
+          "props": {
+            "title": "饼图 · 占比一位小数",
+            "categoryField": "category",
+            "valueField": "amount"
+          }
+        },
+        {
+          "id": "pie-table",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "pie"
+          },
+          "props": {
+            "title": "饼图 · 外围与图例占比对照",
+            "categoryField": "category",
+            "valueField": "amount",
+            "legend": {
+              "type": "table",
+              "columns": [
+                {
+                  "label": "占比",
+                  "value": "percentage"
+                }
+              ]
+            },
+            "labelLine": true
+          }
+        },
+        {
+          "id": "pie-zero",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "pie-zero"
+          },
+          "props": {
+            "title": "饼图 · 零合计",
+            "categoryField": "category",
+            "valueField": "amount",
+            "labelLine": true
+          }
+        },
+        {
+          "id": "pie-thirds",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "pie-thirds"
+          },
+          "props": {
+            "title": "饼图 · 独立舍入",
+            "categoryField": "category",
+            "valueField": "amount"
+          }
+        }
+      ]
+    }
+  ]
+}

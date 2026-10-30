@@ -4,7 +4,7 @@ import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
+import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue, formatChartNumber } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
@@ -56,18 +56,14 @@ export function lineOption(
                 color: '#191919',
                 fontSize: 12,
                 formatter: (params: unknown) =>
-                  formatValue(formatterValue(params), field.format, field.missingText)
+                  formatChartNumber(formatterValue(params), field.format, field.missingText)
               }
             }
           : {}),
-        ...(field.format
-          ? {
-              tooltip: {
-                valueFormatter: (value: unknown) =>
-                  formatValue(formatterValue(value), field.format, field.missingText)
-              }
-            }
-          : {}),
+        tooltip: {
+          valueFormatter: (value: unknown) =>
+            formatChartNumber(formatterValue(value), field.format, field.missingText)
+        },
         data: rows.map((row) => props.showValueLabels ? finiteNumber(field.read(row)) ?? null : finiteNumber(field.read(row)))
       };
     })

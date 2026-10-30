@@ -9,7 +9,8 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\nformat优先于字段defaultFormat；未设置时走组件/类型的既有格式行为。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。"
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\nformat优先于字段defaultFormat；未设置时走组件/类型的既有格式行为。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。",
+        "## 柱线图数值格式一致性\n\n柱状图、折线图及柱线混合图的数值标签和悬浮提示统一调用通用格式化：组件字段绑定 `format` 优先，其次字段 `defaultFormat`；常量使用自身 `format`。字段或常量均未声明格式时，默认采用 `number-2`，保留两位小数；不自动分组或缩放为万。显式 `number` 可保留原值。真实零保留；缺失节点不补零，悬浮提示使用绑定的 `missingText` 或“—”。系列图例显示名称，名称中的数字不作为度量格式化。\n\n同一数值轴上的系列格式一致时，刻度使用该格式；格式不一致时，刻度使用不带单位的 `number-2`，各系列标签和悬浮提示仍保留各自格式。隐藏轴及显式高级呈现配置继续遵循原声明。\n\n旧 `showSegmentLabels`、`showStackTotalLabels`、`showPointLabels` 也遵循上述优先级；`reportForecast` 不再隐式将无格式的轴和标签缩放为万。依赖旧隐式万单位的页面需在字段或绑定中显式声明 `compact-wan-0`；已声明格式的页面行为不变。本次修正呈现默认行为，不新增字段或 Schema 版本，也不改变原始数值、查询和排序。\n\n验收入口：`/pages/chart-number-format`，内联合成数据，覆盖默认两位小数、零、负值、缺失、格式继承和显式保留原值。"
       ],
       "rules": [
         {
