@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "2aa6bedafba6ca09451281739a2db29fd584d3e3b39e295a197b5161c3bb5d62",
+  "sha256": "013017aa8578feaf7819b56c9096fbde528f771a489194c012a08eb0d0972d37",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "9eff921414e23461f2421ce0d002fd0a4b2695aa52b8648b35e990ca570257c2"
+      "sha256": "42ec0792794a7db4b02add43e248313a6f3c8bc4b6100078f43c88aec174946c"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "1612edd1acc77a775ebdeccc6f81ea06029d512691ed6470c04928c0672947be"
+      "sha256": "f77ff0e08582067345d9955ecc2572d709726254037dd83ed24bd5e63c7bee9b"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1860,7 +1860,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "7a8c54912ae398847f3519139db903cf36b073a9a779668052cb7d7a2e03d82d"
+      "sha256": "27f163ba5047dbbbfa7208e215aca52136d80848ef0e84e0c98dbf8977ad79fd"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2220,7 +2220,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "d2c0f1f4080187516930ffd3ea69109c3f2dbd8cd7b424e9b205302b05391205"
+      "sha256": "84a1e71c4a8289f2fd1398b26b100e239e81927ccf3127971a5c69ac6b905b4a"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -2235,6 +2235,14 @@
       "sha256": "a90580e7e04f8780ffe6f4cb21bc13dcf5ea02fccf15aea9598ed7a7a24b7e1e"
     },
     {
+      "file": "pages/capabilities/layout/loading-ai-summary-demo.json",
+      "sha256": "11da0fd5f6d6c6ad14d53706a9dd3c41a00bc9fbfc048c901b3fac9cb101ee72"
+    },
+    {
+      "file": "pages/capabilities/layout/loading-structure-demo.json",
+      "sha256": "4d0bafbf5376a61d050f14eeac8f1ce6601a46510aecb97133df779f61100ac9"
+    },
+    {
       "file": "pages/capabilities/layout/local-authoring-knowledge-demo.json",
       "sha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb"
     },
@@ -2244,7 +2252,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "35a00878efd178529e78f0b6358429ffde6eac138982bc1419e3baa2aaad8812"
+      "sha256": "2490da691c4b61f0405dd905c2f69975b08f9d6c4b358dae8596a0752aa6aab8"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",

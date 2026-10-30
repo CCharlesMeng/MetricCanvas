@@ -8,6 +8,7 @@ import { iocHeaderFixture } from '../fixtures/ioc-header-query.mjs';
 import { executeHierarchySelection } from './hierarchy-selection';
 import { executeRowExpansion } from './row-expansion';
 import { executeChartLocalFilter } from './chart-local-filter';
+import { executeLoadingStructure } from './loading-structure';
 import { executeTableSearchOptions } from './table-search-options';
 import { executeMultiQueryTable } from './multi-query-table';
 import { executeNumericTolerance } from './numeric-tolerance';
@@ -158,7 +159,7 @@ const customerActivityDetailDimensions = [
 
 /** Exact demo handlers retain their previous precedence. */
 function executeLocalDemo(item:unknown):DqeSimItemResult|undefined {
-  for(const execute of [executeHierarchySelection,executeTableEnhancements,executeRejectionDetails,executeObjectQuery,iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeStoredCountMeasures,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
+  for(const execute of [executeLoadingStructure,executeHierarchySelection,executeTableEnhancements,executeRejectionDetails,executeObjectQuery,iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeStoredCountMeasures,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
     const result=execute(item);if(result)return result;
   }
 }

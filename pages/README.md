@@ -1,5 +1,7 @@
 # 页面示例与验收场景
 
+- [加载时保留组件结构](capabilities/layout/README.md#加载时保留组件结构)：首次取数、筛选、查询翻页、展开明细与 Tab 激活时保留真实组件；统一入口 `/loading-components-review`，覆盖19种组件及IOC页头，可重播3秒加载；使用 DQE Sim 合成数据。
+
 - [商务驳回明细原始元数据](business-rejection-details.json)：审批object主表、责任人与生命状态补列的完整模拟验收；入口 `/pages/business-rejection-details`，操作及1205/402/201条预期见 [DQE Sim说明](../tools/dqe-sim/README.md#商务驳回明细的原始元数据模拟验收)。
 
 - [对象查询作为记录关联主表](capabilities/query/README.md#对象查询作为记录关联主表)：object 分批完整读取、同商务多条审批与指标补列；入口 `/pages/object-record-join-demo`，使用 DQE Sim。

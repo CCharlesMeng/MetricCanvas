@@ -14,7 +14,7 @@
   import type {PageDataSnapshots} from '../../runtime/src';
   import type {NamedDataSlots} from '../../widgets/src/shared/component-data';
   import type {TableRenderBinding} from './component-render';
-  import {hostRenderSnapshot,renderableDataSnapshot} from './widget-host-state';
+  import {hostRenderSnapshot,displayDataSnapshot} from './widget-host-state';
   import ComponentRenderer from './ComponentRenderer.svelte';
   import RuntimeSection from './RuntimeSection.svelte';
 
@@ -51,14 +51,14 @@
   function data(component:Component):NamedDataSlots{
     void revision;const result:NamedDataSlots={};
     for(const [slot,id] of Object.entries(component.data??{})){
-      const snapshot=snapshots.get(id);if(!snapshot)continue;
-      let ready=renderableDataSnapshot(snapshot);if(!ready)continue;
+      const snapshot=snapshots.get(id)??{status:'loading'};
+      let ready=displayDataSnapshot(snapshot);
       if(component.type==='table'&&slot==='main'){
         ready=projectSnapshotRows(ready,ready.rows);
         const rows=controller.present(component,presentation.rows(component,ready.rows),component.props.pagination?.mode!=='local').rows;
         ready=projectSnapshotRows(ready,rows);
       }
-      result[slot]={snapshot:ready,fields:resolveDataSourceFields(page.dataSources[id])};
+      result[slot]={snapshot:ready,sourceStatus:snapshot.status,fields:resolveDataSourceFields(page.dataSources[id])};
     }return result;
   }
   function table(component:Component):TableRenderBinding|undefined{

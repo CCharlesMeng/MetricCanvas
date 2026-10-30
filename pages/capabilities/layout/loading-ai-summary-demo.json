@@ -1,0 +1,188 @@
+{
+  "id": "loading-ai-summary-demo",
+  "schemaVersion": "6.74",
+  "layout": "report",
+  "meta": {
+    "title": "AI 总结加载预览（本地Mock）"
+  },
+  "filters": [
+    {
+      "id": "demo-region",
+      "type": "dimension",
+      "dimension": "chart_demo_region",
+      "label": "区域",
+      "default": [
+        "CN"
+      ],
+      "options": [
+        {
+          "value": "CN",
+          "label": "中国区"
+        },
+        {
+          "value": "OVERSEAS",
+          "label": "海外"
+        }
+      ],
+      "selection": {
+        "mode": "single",
+        "required": true
+      }
+    }
+  ],
+  "dataSources": {
+    "gallery": {
+      "fields": {
+        "category": {
+          "label": "类别",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_category"
+        },
+        "name": {
+          "label": "团队",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_name"
+        },
+        "demo-region": {
+          "label": "省份",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_region"
+        },
+        "date": {
+          "label": "日期",
+          "type": "date",
+          "role": "dimension",
+          "queryField": "preview_date"
+        },
+        "description": {
+          "label": "说明",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_description"
+        },
+        "value": {
+          "label": "完成量",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_value",
+          "defaultFormat": "number"
+        },
+        "change": {
+          "label": "较上期",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_change",
+          "defaultFormat": "percent-1"
+        },
+        "progress": {
+          "label": "完成率",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_progress",
+          "defaultFormat": "percent-0"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "schema_id": "MC_LOADING_STRUCTURE_DEMO",
+                "output_dims": [
+                  "preview_category",
+                  "preview_name",
+                  "preview_region",
+                  "preview_date",
+                  "preview_description"
+                ],
+                "output_metrics": [
+                  "preview_value",
+                  "preview_change",
+                  "preview_progress"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "demo-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "report-header",
+      "components": [
+        {
+          "id": "summary-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "报告页头与 AI 总结"
+          }
+        }
+      ]
+    },
+    {
+      "id": "summary-review",
+      "components": [
+        {
+          "id": "summary-generated",
+          "type": "aiSummary",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "AI 总结",
+            "variant": "reportInline",
+            "promptTemplate": "简要概括合成团队数据，明确这是加载测试。",
+            "relatedDataSources": [
+              "gallery"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "summary-data",
+      "components": [
+        {
+          "id": "summary-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "gallery"
+          },
+          "props": {
+            "title": "AI 分析数据",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

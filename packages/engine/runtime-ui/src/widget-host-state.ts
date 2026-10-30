@@ -49,6 +49,11 @@ export function renderableDataSnapshot(
   };
 }
 
+/** Screen rendering keeps native component structure while execution is pending. */
+export function displayDataSnapshot(snapshot: DataSnapshot): ReadyDataSnapshot {
+  return renderableDataSnapshot(snapshot) ?? { status: 'ready', rows: [] };
+}
+
 /**
  * 组件宿主态:把组件全部数据槽的快照收敛为 WidgetHost 呈现的单一状态。
  * 任一槽错误即错误、任一槽加载中即加载中;表格空结果仍要渲染表头,

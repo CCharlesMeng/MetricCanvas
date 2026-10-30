@@ -2218,7 +2218,7 @@
         "#/definitions/queryDataSource",
         "#/definitions/querySource"
       ],
-      "headings": [],
+      "headings": ["加载时保留组件结构"],
       "dependencies": []
     },
     "data.pagedJoin": {
@@ -2655,6 +2655,7 @@
       "文本片段组合（6.23）"
     ],
     "data-sources.md": [
+      "加载时保留组件结构",
       "查询异常与结果总数",
       "查阅方式",
       "多查询组合源 pagedJoin（6.22）",

@@ -49,7 +49,6 @@
   import WidgetHost from './WidgetHost.svelte';
   import FilterGroup from './dashboard/FilterGroup.svelte';
   import { compositeFilterToolbar } from './dashboard/filter-toolbar';
-  import TableToolbar from '../../widgets/src/components/table/TableToolbar.svelte';
   import { componentDataNotices } from './component-render';
   import {
     rendersWithoutWidgetHost,
@@ -111,11 +110,11 @@
     nested
   }: Props = $props();
 
-  // One failed slot makes the whole component empty, including healthy comparison slots.
+  // Pending or failed slots must not combine values from different query states.
   const gate=$derived(presentation?.()?.component(component.id));
-  const visibleData = $derived(snapshot.status === 'error'
+  const visibleData = $derived(snapshot.status === 'error' || snapshot.status === 'loading'
     ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
-      fields: data[slot]?.fields ?? {}, sourceStatus: 'error' as const, snapshot: { status: 'ready' as const, rows: [] }
+      fields: data[slot]?.fields ?? {}, diagnostics: data[slot]?.diagnostics, sourceStatus: snapshot.status, snapshot: { status: 'ready' as const, rows: [] }
     }])) : data);
   const mainData = $derived({ main: visibleData.main! } as MainDataSlots);
   const metricData = $derived({
@@ -231,12 +230,7 @@
 {:else if component.type === 'table' && table?.expansion && !exportMode}
   <ExpandableTable {component} data={tableData} binding={table} {snapshot} />
 {:else}
-  {#if component.type === 'table' && table && component.props.toolbar && !exportMode && snapshot.status === 'loading'}
-    <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} option={table.searchOption} onoption={table.onsearchoption} searchEnabled={table.toolbarEnabled?.search??true} busy={table.exporting}
-      error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
-      onexport={table.onexport} oncancel={table.oncancelexport} />
-  {/if}
-  <WidgetHost {snapshot} title={'title' in component.props ? component.props.title : undefined} notices={componentDataNotices(component, snapshot, pageSnapshots, table)}>
+  <WidgetHost {snapshot} showLoadingIndicator={component.type !== 'table'} notices={componentDataNotices(component, snapshot, pageSnapshots, table)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />

@@ -1,0 +1,959 @@
+{
+  "schemaVersion": "6.74",
+  "id": "loading-structure-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "全部组件加载预览（合成数据）",
+    "description": "19种页面组件与IOC页头；查询延迟3秒，AI总结为本地Mock。"
+  },
+  "filters": [
+    {
+      "id": "demo-region",
+      "type": "dimension",
+      "dimension": "chart_demo_region",
+      "label": "区域",
+      "default": [
+        "CN"
+      ],
+      "options": [
+        {
+          "value": "CN",
+          "label": "中国区"
+        },
+        {
+          "value": "OVERSEAS",
+          "label": "海外"
+        }
+      ],
+      "selection": {
+        "mode": "single",
+        "required": true
+      }
+    },
+    {
+      "id": "child-category",
+      "type": "dimension",
+      "dimension": "chart_demo_category",
+      "label": "明细类别",
+      "visible": false,
+      "options": [
+        {
+          "value": "合成类别1",
+          "label": "合成类别1"
+        },
+        {
+          "value": "合成类别2",
+          "label": "合成类别2"
+        },
+        {
+          "value": "合成类别3",
+          "label": "合成类别3"
+        },
+        {
+          "value": "合成类别4",
+          "label": "合成类别4"
+        }
+      ]
+    },
+    {
+      "id": "loading-round",
+      "type": "dimension",
+      "dimension": "loading_demo_round",
+      "label": "测试轮次",
+      "default": [
+        "1"
+      ]
+    }
+  ],
+  "dataSources": {
+    "summary": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category",
+          "label": "类别"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_orders",
+          "label": "订单量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_orders"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {},
+                "schema_id": "MC_LOADING_STRUCTURE_DEMO"
+              }
+            ]
+          },
+          "filterBindings": {
+            "demo-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            },
+            "loading-round": {
+              "target": "dimension",
+              "queryField": "loading_demo_round"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "entries": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category",
+          "label": "类别"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_orders",
+          "label": "订单量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_orders"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "limit": 2,
+                  "offset": 0
+                },
+                "schema_id": "MC_LOADING_STRUCTURE_DEMO"
+              }
+            ]
+          },
+          "filterBindings": {
+            "demo-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            },
+            "loading-round": {
+              "target": "dimension",
+              "queryField": "loading_demo_round"
+            }
+          }
+        }
+      }
+    },
+    "secondary": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category",
+          "label": "类别"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_revenue",
+          "label": "订单量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_revenue"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {},
+                "schema_id": "MC_LOADING_STRUCTURE_DEMO"
+              }
+            ]
+          },
+          "filterBindings": {
+            "demo-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            },
+            "loading-round": {
+              "target": "dimension",
+              "queryField": "loading_demo_round"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "children": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category",
+          "label": "类别"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_orders",
+          "label": "订单量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_orders"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "limit": 2,
+                  "offset": 0
+                },
+                "schema_id": "MC_LOADING_STRUCTURE_DEMO"
+              }
+            ]
+          },
+          "filterBindings": {
+            "demo-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            },
+            "child-category": {
+              "target": "dimension",
+              "queryField": "chart_demo_category"
+            }
+          }
+        }
+      }
+    },
+    "gallery": {
+      "fields": {
+        "category": {
+          "label": "类别",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_category"
+        },
+        "name": {
+          "label": "团队",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_name"
+        },
+        "demo-region": {
+          "label": "省份",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_region"
+        },
+        "date": {
+          "label": "日期",
+          "type": "date",
+          "role": "dimension",
+          "queryField": "preview_date"
+        },
+        "description": {
+          "label": "说明",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_description"
+        },
+        "value": {
+          "label": "完成量",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_value",
+          "defaultFormat": "number"
+        },
+        "change": {
+          "label": "较上期",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_change",
+          "defaultFormat": "percent-1"
+        },
+        "progress": {
+          "label": "完成率",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_progress",
+          "defaultFormat": "percent-0"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "schema_id": "MC_LOADING_STRUCTURE_DEMO",
+                "output_dims": [
+                  "preview_category",
+                  "preview_name",
+                  "preview_region",
+                  "preview_date",
+                  "preview_description"
+                ],
+                "output_metrics": [
+                  "preview_value",
+                  "preview_change",
+                  "preview_progress"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "demo-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            },
+            "loading-round": {
+              "target": "dimension",
+              "queryField": "loading_demo_round"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "gallery-intro",
+      "container": "plain",
+      "components": [
+        {
+          "id": "gallery-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "文本说明",
+            "body": "取数组件首次请求等待约3秒；已访问条件命中缓存时直接显示。切换测试轮次可观察新一轮加载。完整19种组件统一总览：/loading-components-review。",
+            "links": [
+              {
+                "label": "打开全部组件统一总览",
+                "href": "/loading-components-review"
+              }
+            ]
+          }
+        },
+        {
+          "id": "gallery-report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "报告页头",
+            "subtitle": "静态组件直接显示；取数组件与AI总结按各自状态显示转圈。",
+            "decoration": "shortBar"
+          }
+        },
+        {
+          "id": "gallery-filter",
+          "type": "filterGroup",
+          "layout": {
+            "span": 9
+          },
+          "props": {
+            "filterId": "loading-round",
+            "options": [
+              {
+                "value": "1",
+                "label": "第1轮"
+              },
+              {
+                "value": "2",
+                "label": "第2轮"
+              },
+              {
+                "value": "3",
+                "label": "第3轮"
+              }
+            ]
+          }
+        },
+        {
+          "id": "gallery-button",
+          "type": "button",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "label": "按钮：切到第3轮",
+            "action": {
+              "on": "click",
+              "writeFilter": "loading-round",
+              "value": "3"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "gallery-values",
+      "components": [
+        {
+          "id": "gallery-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "props": {
+            "title": "指标卡",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change",
+                    "tone": "auto"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            }
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-gauge",
+          "type": "gauge",
+          "layout": {
+            "span": 4
+          },
+          "props": {
+            "title": "仪表盘",
+            "valueField": {
+              "field": "progress",
+              "data": "main",
+              "format": "percent-0"
+            },
+            "min": 0,
+            "max": 100
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-key-value",
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 4
+          },
+          "props": {
+            "title": "键值面板",
+            "columns": 1,
+            "items": [
+              {
+                "label": "团队",
+                "field": "name"
+              },
+              {
+                "label": "省份",
+                "field": "demo-region"
+              },
+              {
+                "label": "完成量",
+                "field": "value"
+              }
+            ]
+          },
+          "data": {
+            "main": "gallery"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gallery-charts",
+      "components": [
+        {
+          "id": "gallery-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "柱状图",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "value",
+                "label": "完成量"
+              }
+            ]
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-line",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "折线图",
+            "xField": "date",
+            "series": [
+              {
+                "field": "value",
+                "label": "完成量"
+              }
+            ]
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-pie",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "饼图",
+            "categoryField": "category",
+            "valueField": "value",
+            "ring": "55%"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-map",
+          "type": "mapChart",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "地图",
+            "nameField": "demo-region",
+            "valueField": "value",
+            "map": "china"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gallery-details",
+      "components": [
+        {
+          "id": "gallery-ranking",
+          "type": "rankingCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "排行榜",
+            "nameField": "name",
+            "valueField": "value",
+            "changeField": "change"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-ranking-detail",
+          "type": "rankingDetailCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "排名详情",
+            "nameField": "name",
+            "valueField": "value",
+            "changeField": "change",
+            "descriptionField": "description"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-category",
+          "type": "categoryBreakdown",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "分类明细",
+            "categoryField": "category",
+            "columns": [
+              {
+                "label": "完成量",
+                "field": "value"
+              },
+              {
+                "label": "较上期",
+                "field": "change"
+              }
+            ]
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-field-text",
+          "type": "fieldText",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "字段文本",
+            "field": "description"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "gallery-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "普通表格",
+            "columns": [
+              {
+                "field": "name",
+                "title": "团队"
+              },
+              {
+                "field": "demo-region",
+                "title": "省份"
+              },
+              {
+                "field": "value",
+                "title": "完成量"
+              },
+              {
+                "field": "change",
+                "title": "较上期"
+              }
+            ]
+          },
+          "data": {
+            "main": "gallery"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gallery-composition",
+      "components": [
+        {
+          "id": "gallery-composite",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "组合卡",
+            "components": [
+              {
+                "id": "gallery-composite-metric",
+                "type": "metricCard",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "title": "卡内指标",
+                  "rows": [
+                    {
+                      "label": "完成量",
+                      "valueField": "value"
+                    }
+                  ]
+                },
+                "data": {
+                  "main": "gallery"
+                }
+              },
+              {
+                "id": "gallery-composite-gauge",
+                "type": "gauge",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "title": "卡内仪表",
+                  "valueField": {
+                    "data": "main",
+                    "field": "progress",
+                    "format": "percent-0"
+                  },
+                  "min": 0,
+                  "max": 100
+                },
+                "data": {
+                  "main": "gallery"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "loading-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "经营分析",
+            "contentLayout": "grid",
+            "defaultTab": "orders",
+            "tabs": [
+              {
+                "id": "orders",
+                "label": "订单",
+                "components": [
+                  {
+                    "id": "loading-metric",
+                    "type": "metricCard",
+                    "layout": {
+                      "span": 4
+                    },
+                    "data": {
+                      "main": "summary"
+                    },
+                    "props": {
+                      "title": "订单概况",
+                      "rows": [
+                        {
+                          "label": "订单量",
+                          "valueField": "value"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "loading-chart",
+                    "type": "barChart",
+                    "layout": {
+                      "span": 8
+                    },
+                    "data": {
+                      "main": "summary"
+                    },
+                    "props": {
+                      "title": "订单分布",
+                      "categoryField": "category",
+                      "series": [
+                        {
+                          "field": "value",
+                          "label": "订单量"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "loading-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "entries"
+                    },
+                    "props": {
+                      "title": "订单明细",
+                      "columns": [
+                        {
+                          "field": "category",
+                          "title": "类别"
+                        },
+                        {
+                          "field": "value",
+                          "title": "订单量"
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "query"
+                      },
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "category"
+                          ]
+                        }
+                      },
+                      "rowKey": "category",
+                      "rowExpansion": {
+                        "mode": "multiple",
+                        "data": {
+                          "type": "query",
+                          "source": "children",
+                          "filters": [
+                            "child-category"
+                          ],
+                          "bindings": {
+                            "child-category": {
+                              "source": "row",
+                              "field": "category"
+                            }
+                          }
+                        },
+                        "table": {
+                          "title": "订单子项",
+                          "rowKey": "category",
+                          "columns": [
+                            {
+                              "field": "category",
+                              "title": "子项类别"
+                            },
+                            {
+                              "field": "value",
+                              "title": "子项订单量"
+                            }
+                          ],
+                          "pagination": {
+                            "mode": "query"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "revenue",
+                "label": "收入",
+                "components": [
+                  {
+                    "id": "loading-line",
+                    "type": "lineChart",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "secondary"
+                    },
+                    "props": {
+                      "title": "收入趋势",
+                      "xField": "category",
+                      "series": [
+                        {
+                          "field": "value",
+                          "label": "收入"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "loading-regular-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "secondary"
+                    },
+                    "props": {
+                      "title": "收入明细",
+                      "columns": [
+                        {
+                          "field": "category",
+                          "title": "类别"
+                        },
+                        {
+                          "field": "value",
+                          "title": "收入"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Tab、查询分页与展开明细"
+    }
+  ],
+  "iocHeader": {
+    "filterIds": [
+      "demo-region"
+    ]
+  }
+}

@@ -15,6 +15,7 @@
   let dateMaximum = $state(currentTimeValue('date'));
   let dateError = $state('');
   import { Empty } from '@metriccanvas/ui';
+  import LoadingSpinner from '../../shared/LoadingSpinner.svelte';
   import TableHeading from './header/TableHeading.svelte';
   import TableToolbar from './TableToolbar.svelte';
   import TableControlIcon from './TableControlIcon.svelte';
@@ -104,7 +105,7 @@
     view,
     columnCandidates, oncandidatepreloadvisible, oncandidateopen, oncandidatesearch, oncandidatemore, oncandidateretry,
     filterOptions = {}, filterOptionsStatus = {},
-    pagination,
+    pagination: currentPagination,
     searchDraft, searchOption, onsearchoption, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
     selectedCell,
     onpage,
@@ -115,6 +116,13 @@
     onlink,
     interactionGate, toolbarEnabled, linkHref
   }: Props = $props();
+
+  const loading = $derived(data.main.sourceStatus === 'loading');
+  let previousPagination = $state.raw<TablePaginationState>();
+  const pagination = $derived(loading
+    ? previousPagination ?? currentPagination ?? { pageSize: props.pagination?.mode === 'local' ? props.pagination.pageSize : 20, totalCount: 0 }
+    : currentPagination);
+  $effect(() => { if (!loading) previousPagination = currentPagination; });
 
   const expandable = $derived(Boolean(expansion && interactive && !staticExport));
   const validExpansionKeys = $derived.by(() => {
@@ -359,6 +367,7 @@
   class:compound-inline={props.compoundCellLayout === 'inline'}
   class:static-export={staticExport}
   class="table-widget"
+  aria-busy={data.main.sourceStatus === 'loading'}
   data-table-title={props.title}
   style:--table-header-row-height={`${headerRowHeight}px`}
   style:--table-content-min-width={`${columnWidthTotal}px`}
@@ -367,7 +376,7 @@
   <TableHeading title={props.title} subtitle={props.subtitle} showTools={interactive && !staticExport && !!props.toolbar && leaves.length>0}>
     {#snippet tools()}
       {#if interactive && !staticExport && props.toolbar}
-        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={toolbarEnabled?.export??true} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}
+        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={(toolbarEnabled?.export??true) && data.main.sourceStatus !== 'loading'} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}
           ondraft={onsearchdraft} {onsearch} {onexport} oncancel={oncancelexport} />
       {/if}
     {/snippet}
@@ -662,7 +671,13 @@
           {/if}
         {:else}
           <tr>
-            <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>{#if props.variant === 'reportCompact'}暂无数据{:else}<div class="empty-state">暂无数据</div>{/if}</td>
+            <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
+              {#if props.variant === 'reportCompact'}
+                <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
+              {:else}
+                <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
+              {/if}
+            </td>
           </tr>
         {/each}
       </tbody>
@@ -674,8 +689,8 @@
   {/if}
 
   {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
-    <div class="pager">
-      <span class="total">总条数： <span>{pagination.totalCount}</span></span>
+    <div class="pager" inert={loading}>
+      <span class="total">总条数： <span>{loading ? '—' : pagination.totalCount}</span></span>
       {#if showPaginationControls}
         <div class="pager-actions">
           <details class="page-size-select">
@@ -746,6 +761,12 @@
 </div>
 
 <style>
+  .empty-message, .empty-state {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
   .table-widget {
     position: relative;
     box-sizing: border-box;

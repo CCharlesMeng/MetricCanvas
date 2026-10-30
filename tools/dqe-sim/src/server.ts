@@ -123,6 +123,11 @@ async function route(request: IncomingMessage): Promise<RouteResult> {
       requestBody: parsed.value
     };
   }
+  // Temporary visual testing: only the loading demo opts into this delay.
+  const loadingDemoDelayMs = Number(process.env.DQE_LOADING_DEMO_DELAY_MS ?? 0);
+  if (loadingDemoDelayMs > 0 && parsed.value.dsl_list.some(item => isRecord(item) && item.schema_id === 'MC_LOADING_STRUCTURE_DEMO')) {
+    await delay(loadingDemoDelayMs);
+  }
   return {
     status: 200,
     body: {

@@ -31,12 +31,10 @@
 
 {#if table.props.columns.length===0}
   <Table nested view={{pageIndex:0,sort:[],headerFilters:{}}} props={table.props} data={{main:{fields:{},snapshot:{status:'ready',rows:[]}}}} />
-{:else if !snapshot || snapshot.status === 'loading'}
-  <div class="content-state" role="status">正在加载明细…</div>
-{:else if snapshot.status === 'error'}
+{:else if snapshot?.status === 'error'}
   <div class="content-state" role="status">明细暂不可用{#if instance.stream}<button type="button" onclick={onretry}>重试</button>{/if}</div>
 {:else}
-  <Table nested data={{ main: { fields: resolveDataSourceFields(instance.page.dataSources[table.data.main]!), snapshot: { status: 'ready', rows }, diagnostics: {snapshot} } }}
+  <Table nested data={{ main: { fields: resolveDataSourceFields(instance.page.dataSources[table.data.main]!), sourceStatus: snapshot?.status ?? 'loading', snapshot: { status: 'ready', rows }, diagnostics: {snapshot: snapshot ?? {status: 'loading'}} } }}
     props={table.props} {view} {pagination}
     searchOption={binding.searchOption} onsearchoption={binding.onsearchoption}
     searchDraft={binding.searchDraft} onsearchdraft={binding.onsearchdraft} onsearch={binding.onsearch}

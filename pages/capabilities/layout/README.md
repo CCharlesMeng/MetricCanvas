@@ -245,3 +245,19 @@ Tab不允许页头或嵌套Tab；Report导出不补生成未访问的AI总结。
 4. 回归命令：`PLAYGROUND_BASE_URL=http://127.0.0.1:5173 node apps/playground/tests/tab-multiple-tables-browser.mjs`。
 
 仅验证正式运行时布局、分页与滚动，不涉及真实 DQE/Relay。
+
+
+## 加载时保留组件结构
+
+统一入口：[全部组件加载总览](http://localhost:5173/loading-components-review)。同一页面同时渲染 Dashboard 与 Report，覆盖组件目录全部19种类型及根级 IOC 页头。Dashboard 中放18种组件，Report 中验收专属 AI 总结，遵守 filterGroup 仅 Dashboard、AI 总结仅 Report 的布局约束。
+
+页面 JSON：[Dashboard](loading-structure-demo.json)、[Report](loading-ai-summary-demo.json)，原独立入口 `/pages/loading-structure-demo` 保留。示例显式使用 `MC_LOADING_STRUCTURE_DEMO`，合成行位于 `tools/dqe-sim/fixtures/loading-structure-gallery.json`，原订单分页数据在 `tools/dqe-sim/src/loading-structure.ts`，不访问真实业务服务。
+
+启动 Playground 与 Sim：`pnpm dev:playground`，另开终端 `DQE_LOADING_DEMO_DELAY_MS=3000 pnpm sim:dqe`。延迟只作用于此命名演示查询，默认0；AI 总结走本地 Mock，自有生成等待。
+
+1. 点击“重新播放全部加载”，两个运行时重新挂载，当前页可见的取数组件重新查询，等待3秒；标题、缺省值、图表容器、表头与搜索框保留，圆圈居中显示，表格圆圈位于表体加载提示旁。
+2. 文本、页头、按钮、筛选器和容器没有独立请求，直接显示；已访问筛选条件与 Tab 命中缓存时直接显示。切换测试轮次或使用重播可观察新的请求。
+3. 查看指标卡、仪表盘、键值面板、柱状图、折线图、饼图、地图、排行榜、排名详情、分类明细、字段文本、普通表格及组合卡子组件；数据返回后圆圈消失，原节点仍在。AI 总结在相关查询完成后生成本地 Mock 分析。
+4. 下方 Tab 保留订单／收入切换、查询分页与展开明细；子表在回执前已有表头，筛选重查不混用上次条件的数据。390px 下按栅格堆叠，无页面横向溢出。
+
+自动验收：`pnpm --filter playground exec playwright test loading-structure.browser.ts`。以可控的合成 HTTP 回执暂停查询，覆盖全部数据组件圆圈、AI、重播、首次加载、筛选、分页、展开子表、Tab 激活、原节点持续挂载及宽窄屏。组件目录与页面类型集合由 `tools/dqe-sim/tests/loading-structure.test.ts` 对账。合成回执不代表真实 DQE／Relay 或已部署环境验收。

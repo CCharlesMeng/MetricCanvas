@@ -128,7 +128,7 @@
   import { hasVisibleFilters } from './filters/filter-bar';
   import { changedFilters, resetFilteredTablePages, sortTableRows, filterTableRowsByHeaders } from './table/state';
   import { applySearchFilters } from './filters/inline-search';
-  import { hostRenderSnapshot, renderableDataSnapshot } from './widget-host-state';
+  import { hostRenderSnapshot, displayDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
   import type { RuntimeSurfaceProps } from './composition-types';
   import {
@@ -1060,8 +1060,7 @@
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
       const fields = resolveDataSourceFields(source);
-      const renderable = renderableDataSnapshot(snapshot);
-      if (!renderable) continue;
+      const renderable = displayDataSnapshot(snapshot);
       let visible =
         component.type === 'table' && slot === 'main'
           ? tableSnapshot(component, renderable)

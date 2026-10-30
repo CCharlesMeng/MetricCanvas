@@ -2,12 +2,19 @@ import { describe, expect, it } from 'vitest';
 import type { Component, DataSnapshot, QueryError } from '@metriccanvas/page/internal';
 import {
   hostRenderSnapshot,
+  displayDataSnapshot,
   partialDataNotices,
   queryErrorView,
   renderableDataSnapshot
 } from '../src/widget-host-state';
 
 describe('renderableDataSnapshot', () => {
+  it('屏幕加载保留原始状态并提供空行，导出仍跳过未完成快照', () => {
+    const loading = { status: 'loading' as const };
+    expect(displayDataSnapshot(loading)).toEqual({ status: 'ready', rows: [] });
+    expect(loading).toEqual({ status: 'loading' });
+    expect(renderableDataSnapshot(loading)).toBeUndefined();
+  });
   it('查询错误只在呈现边界投影为空数据', () => {
     expect(
       renderableDataSnapshot({

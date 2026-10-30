@@ -16,9 +16,6 @@
   const scopeKey = $derived(JSON.stringify(component.props.rowExpansion?.selection ? [component.id,component.data,component.props.rowKey,component.props.rowExpansion,binding.expansion!.selection?.identity,[...binding.expansion!.params]] : [component,[...binding.expansion!.filters],[...binding.expansion!.params]]));
   const parentViewKey = $derived(JSON.stringify([binding.view.pageIndex, binding.view.searchQuery, binding.view.headerFilters, binding.pagination?.pageSize]));
   const safeData = $derived(data.main ? data : { main: { fields: resolveDataSourceFields(contextPage.dataSources[component.data.main]!), snapshot: { status: 'ready' as const, rows: [] } } });
-  let retainedData = $state.raw<typeof safeData>();
-  const renderedData = $derived(snapshot.status === 'loading' ? retainedData ?? safeData : safeData);
-  $effect(() => { if (snapshot.status !== 'loading') retainedData = safeData; });
   let previousView: string | undefined;
   $effect(() => {
     void scopeKey;
@@ -46,8 +43,8 @@
   }; });
 </script>
 
-<div hidden={snapshot.status === 'loading' || Boolean(component.props.rowExpansion?.selection && snapshot.status === 'error')}>
-<Table data={renderedData} props={{ ...component.props, pagination: binding.paginationConfig }} view={binding.view}
+<div aria-busy={snapshot.status === 'loading'} hidden={Boolean(component.props.rowExpansion?.selection && snapshot.status === 'error')}>
+<Table data={safeData} props={{ ...component.props, pagination: binding.paginationConfig }} view={binding.view}
   columnCandidates={binding.columnCandidates} oncandidatepreloadvisible={binding.oncandidatepreloadvisible}
   oncandidateopen={binding.oncandidateopen} oncandidatesearch={binding.oncandidatesearch} oncandidatemore={binding.oncandidatemore} oncandidateretry={binding.oncandidateretry}
   interactionGate={binding.interactionGate} toolbarEnabled={binding.toolbarEnabled} searchOption={binding.searchOption} onsearchoption={binding.onsearchoption}
@@ -62,4 +59,4 @@
   {/snippet}
 </Table>
 </div>
-{#if snapshot.status === 'loading'}<div role="status">正在加载…</div>{:else if snapshot.status==='error' && component.props.rowExpansion?.selection}<div role="alert">{snapshot.error.message}</div>{/if}
+{#if snapshot.status==='error' && component.props.rowExpansion?.selection}<div role="alert">{snapshot.error.message}</div>{/if}
