@@ -39,6 +39,11 @@
       "after": 6
     }
   ],
+  "ciTestExpectationFix": {
+    "file": "apps/playground/tests/partner-health-dqe.test.ts",
+    "testCallback": {"before": 1, "after": 1},
+    "newExpectedBodyMapCallback": {"before": null, "after": 2}
+  },
   "untouchedOverLimit": [
     {
       "function": "gatewayNormalizationError",

@@ -35,3 +35,5 @@ CI由推送后的准确SHA运行，完整authoring:check、全量测试、构建
 ## CI诊断快照修复
 
 首轮CI的完整local-authoring回归227项已通过，但MC快照检查报diagnostics.json漂移。官方mc-content-fixtures.py生成器确认只有三份诊断/布局回执中的内容与清单哈希需要同步，页面JSON和运行逻辑没有变化。已重新生成这三份回执，mc-content-fixtures.py --check通过；MC来源覆盖、33项Python内容包回归、7项TypeScript覆盖回归及独立MC打包均通过。最终CI结论以补推后的准确SHA为准。
+
+同轮全量测试412文件通过、1文件失败：伙伴健康度的8项断言仍期待无条件对象请求省略filter。按已确认的统一对象参数规则更新为filter.fields空数组，保留完整请求体断言；伙伴页面与对象编码2文件41项通过。测试回调自身CC1→1，新增期望体映射回调CC2，口径同上，无新增超限项。

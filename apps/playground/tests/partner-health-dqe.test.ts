@@ -32,7 +32,7 @@ beforeEach(() => {
 afterEach(() => installRuntimeConfig(null));
 
 describe('伙伴健康度使用共享DQE传输', () => {
-  it.each(queryCases)('$id发送页面声明的execute请求，空结果不回填演示行', async ({body, fields}) => {
+  it.each(queryCases)('$id发送标准对象execute请求，空结果不回填演示行', async ({body, fields}) => {
     const {dataGateway} = scenarioEnvironment('partner-health');
     const result = await dataGateway.fetchData({
       language: 'dqe', body, fieldMappings: fields, filterValues: []
@@ -41,7 +41,9 @@ describe('伙伴健康度使用共享DQE传输', () => {
     const [url, init] = transport.mock.calls[0]!;
     expect(url).toBe(endpoint);
     expect(init?.method).toBe('POST');
-    expect(JSON.parse(String(init?.body))).toEqual(body);
+    expect(JSON.parse(String(init?.body))).toEqual({
+      dsl_list: body.dsl_list.map(query => ({...query, filter: query.filter ?? {fields: []}}))
+    });
     expect(result.rows).toEqual([]);
   });
 
