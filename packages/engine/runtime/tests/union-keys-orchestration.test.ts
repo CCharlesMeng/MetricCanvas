@@ -8,7 +8,7 @@ import type {DataGateway,DataGatewayResult} from '../src/ports';
 
 const flush=()=>new Promise(resolve=>setTimeout(resolve,0));
 
-it('并集等待同轮全部来源；筛选取消旧请求，迟到回执不混入组织或得分',async()=>{
+it.each([0,1])('总数%s：并集等待同轮全部来源；筛选取消旧请求，迟到回执不混入组织或得分',async totalCount=>{
   const input=JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/union-keys-demo.json',import.meta.url),'utf8'));
   const parsed=parsePage(input);
   if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
@@ -34,10 +34,10 @@ it('并集等待同轮全部来源；筛选取消旧请求，迟到回执不混�
     await flush();
     expect(calls).toHaveLength(4);
     calls[1].resolve({rows:[{org:'迟到旧组织',value:999}],totalCount:1});
-    calls[2].resolve({rows:[{org:'新甲',value:0}],totalCount:1});
+    calls[2].resolve({rows:[{org:'新甲',value:0}],totalCount});
     await flush();
     expect(state.get('combined')?.status).toBe('loading');
-    calls[3].resolve({rows:[{org:'新乙',value:null}],totalCount:1});
+    calls[3].resolve({rows:[{org:'新乙',value:null}],totalCount});
     await flush();
     expect(state.get('combined')).toMatchObject({status:'ready',totalCount:2,rows:[{org:'新甲',a:0,b:null,total:0},{org:'新乙',a:null,b:null,total:0}]});
   } finally {stop();}

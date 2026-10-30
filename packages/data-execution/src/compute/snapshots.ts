@@ -1,4 +1,4 @@
-import { restoreCellFallbacks, snapshotCellFallbacks } from '@metriccanvas/page/internal';
+import { declaredPaginationLimit, restoreCellFallbacks, snapshotCellFallbacks } from '@metriccanvas/page/internal';
 import { checkOrdinaryRange } from '../source-program/range-policy';
 import type { ComputationContext } from './time-fill';
 import { computeDependencies, type DataSource, type DataSnapshot, type DataRow } from '@metriccanvas/page/internal';
@@ -9,7 +9,9 @@ import { ComputationError } from './join-aggregate';
 export function computedSnapshots(
   sources: ReadonlyMap<string, DataSource>,
   raw: ReadonlyMap<string, DataSnapshot>,
-  context?: ComputationContext
+  context?: ComputationContext,
+  /** Display-only compatibility; complete reads leave this disabled. */
+  options: { allowZeroTotal?: boolean } = {}
 ): Map<string, DataSnapshot> {
   const result = new Map<string, DataSnapshot>();
   const visiting = new Set<string>();
@@ -21,8 +23,8 @@ export function computedSnapshots(
     const snapshot = restoreSnapshot(raw.get(id));
     if (!source || !snapshot) return fail('页面数据源计算依赖不存在');
     visiting.add(id);
-    const dependencies = collectDependencies(source, sources, visit);
-    const computed = computeSnapshot(source, snapshot, dependencies, context);
+    const dependencies = collectDependencies(source, sources, visit, options.allowZeroTotal === true);
+    const computed = computeSnapshot(source, snapshot, dependencies, context, options.allowZeroTotal === true);
     visiting.delete(id);
     result.set(id, computed);
     return computed;
@@ -35,11 +37,11 @@ export function computedSnapshots(
 interface Dependencies { rows: Map<string, readonly DataRow[]>; state?: DataSnapshot }
 function fail(message: string): DataSnapshot { return {status:'error',error:{code:'UNKNOWN',message}}; }
 
-function collectDependencies(source: DataSource, sources: ReadonlyMap<string, DataSource>, visit: (id:string)=>DataSnapshot): Dependencies {
+function collectDependencies(source: DataSource, sources: ReadonlyMap<string, DataSource>, visit: (id:string)=>DataSnapshot, allowZeroTotal: boolean): Dependencies {
   const result: Dependencies = {rows:new Map()};
   const unionSources = new Set((source.compute ?? []).flatMap(op => op.op === 'unionKeys' ? op.sources : []));
   for (const dependency of computeDependencies(source.compute ?? [])) {
-    const snapshot = completeDependency(sources.get(dependency), visit(dependency), unionSources.has(dependency));
+    const snapshot = completeDependency(sources.get(dependency), visit(dependency), unionSources.has(dependency), allowZeroTotal);
     if (snapshot.status === 'error') result.state = snapshot;
     else if (snapshot.status === 'loading' && result.state?.status !== 'error') result.state = snapshot;
     else if (snapshot.status === 'ready') result.rows.set(dependency, snapshot.rows);
@@ -48,11 +50,11 @@ function collectDependencies(source: DataSource, sources: ReadonlyMap<string, Da
   return result;
 }
 
-function computeSnapshot(source: DataSource, snapshot: DataSnapshot, dependencies: Dependencies, context?: ComputationContext): DataSnapshot {
+function computeSnapshot(source: DataSource, snapshot: DataSnapshot, dependencies: Dependencies, context: ComputationContext | undefined, allowZeroTotal: boolean): DataSnapshot {
   if (snapshot.status === 'error') return snapshot;
   if (dependencies.state?.status === 'error') return {status:'error',error:{code:dependencies.state.error.code,message:'依赖数据源执行或计算失败'}};
   if (snapshot.status === 'loading' || dependencies.state?.status === 'loading') return {status:'loading'};
-  const checked = checkOrdinaryRange(source,snapshot,undefined,undefined,{allowZeroTotal:canRenderZeroTotal(source)});
+  const checked = checkOrdinaryRange(source,snapshot,undefined,undefined,{allowZeroTotal:canRenderZeroTotal(source) || (allowZeroTotal && hasZeroTotalRows(source, snapshot))});
   if (checked.status === 'error') return checked;
   return evaluateRows(source, snapshot, dependencies.rows, context);
 }
@@ -72,13 +74,20 @@ function restoreSnapshot(snapshot: DataSnapshot | undefined): DataSnapshot | und
   return snapshot;
 }
 
-/** Cross-source computation cannot promote a provisional display receipt to a complete input. */
-function completeDependency(source: DataSource | undefined, snapshot: DataSnapshot, requireCompleteCount = false): DataSnapshot {
-  if (requireCompleteCount && (snapshot.status === 'ready' || snapshot.status === 'empty') &&
+/** Screen computation may consume zero-total rows without rewriting the upstream receipt. */
+function completeDependency(source: DataSource | undefined, snapshot: DataSnapshot, requireCompleteCount: boolean, allowZeroTotal: boolean): DataSnapshot {
+  const provisional = allowZeroTotal && hasZeroTotalRows(source, snapshot);
+  if (!provisional && requireCompleteCount && (snapshot.status === 'ready' || snapshot.status === 'empty') &&
     snapshot.totalCount !== undefined && snapshot.totalCount !== (snapshot.status === 'ready' ? snapshot.rows.length : 0)) {
     return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'并集依赖结果与 totalCount 不一致，不能证明完整行集'}};
   }
-  return source ? checkOrdinaryRange(source, snapshot) : snapshot;
+  return source ? checkOrdinaryRange(source, snapshot, undefined, undefined, {allowZeroTotal: provisional}) : snapshot;
+}
+
+function hasZeroTotalRows(source: DataSource | undefined, snapshot: DataSnapshot): boolean {
+  return source?.source.type === 'query' && source.source.resultScope === 'complete' &&
+    declaredPaginationLimit(source.source.query) === undefined &&
+    snapshot.status === 'ready' && snapshot.rows.length > 0 && snapshot.totalCount === 0;
 }
 
 function canRenderZeroTotal(source: DataSource): boolean {

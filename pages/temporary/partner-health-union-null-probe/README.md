@@ -13,3 +13,5 @@
 通过 URL 参数 `state` 验收：默认 `ready`；`?state=emptyMain` 声音闭环查询空但仍显示14行；`?state=empty` 全部为空，图表/表格为空；`?state=error` 合成失败、`?state=truncated` 已知计数不完整、`?state=duplicate` 来源组织重复，均不产出部分总分；内部快照与诊断保留错误分类，当前统一呈现策略将错误显示为空数据。非法声明、键类型、字段省略及迟到响应等由行为测试补充。切换图表与表格的区域/代表处页签验证两种粒度；表格本地分页/导出复用计算结果。
 
 原始 Mock、可运行诊断脚本、日志和截图见 [诊断报告](../../../docs/evidence/partner-health-union-null-20261029/README.md)，后续修改见 [整改方案](../../../docs/plan/2026-10-29-partner-health-union-and-missing-scores.md)。
+
+`?state=zeroTotal` 保留全部合成行，只将每份 DQE 响应的 `total_count` 设为0。地区部、代表处仍各有15个组织，表格分页可看到全部行，图表与总分保持；顶部中国区35、海外30。Console 保留 `TOTAL_COUNT_MISMATCH` 和 `completeness: unverified`，原查询总数不改写。计算只描述已返回行，不能证明真实服务完整性；严格对象完整导出仍拒绝矛盾计数。正式页面无需改 JSON，需部署修复后的运行时。

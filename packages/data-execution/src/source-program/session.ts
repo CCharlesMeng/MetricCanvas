@@ -371,12 +371,12 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const all = new Map(sources);
           // Sources outside this read cannot create spurious missing-compute errors.
           for (const key of all.keys()) if (!ids.has(key) && !raw.has(key)) all.delete(key);
-          const snapshots = computedSnapshots(all, raw, context);
+          const snapshots = computedSnapshots(all, raw, context, {allowZeroTotal: request.purpose !== 'complete'});
           reportSourceState(id, snapshots);
           yield { ...candidateMarker(id), sourceId: id, snapshot: sourceProjection(id, snapshots), raw: raw.get(id)!, initial: initials.get(id), viewCorrection: corrections.get(id), query: queries.get(id) };
         }
         // Raw success can precede compute dependencies. Publish final projections after all settle.
-        const final = computedSnapshots(new Map([...sources].filter(([id]) => ids.has(id) || raw.has(id))), raw, context);
+        const final = computedSnapshots(new Map([...sources].filter(([id]) => ids.has(id) || raw.has(id))), raw, context, {allowZeroTotal: request.purpose !== 'complete'});
         for (const id of ids) if (compiled.sources.get(id)?.compute?.length) {
           reportError(id, final.get(id)!);
           yield { ...candidateMarker(id), sourceId: id, snapshot: final.get(id)!, raw: raw.get(id)! };

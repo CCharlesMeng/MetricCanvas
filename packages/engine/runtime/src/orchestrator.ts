@@ -88,9 +88,9 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const context = () => ({ currentYear: year,
       modes: new Map([...values].flatMap(([id, v]) => v.type === 'dimension' ? [[id, v.values] as const] : [])),
       ranges: new Map([...values].flatMap(([id, v]) => v.type === 'timeRange' ? [[id, { from: v.from, to: v.to }] as const] : [])) });
-    let snapshots = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id))), raw, context());
+    let snapshots = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id))), raw, context(), {allowZeroTotal: true});
     function publish() {
-      snapshots = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id))), raw, context());
+      snapshots = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id))), raw, context(), {allowZeroTotal: true});
       for (const run of subscribers) notify(run, snapshots);
     }
     function refetch(changed: Set<string>, firstRead = false, releaseInitial = false) {

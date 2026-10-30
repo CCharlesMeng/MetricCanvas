@@ -57,7 +57,7 @@ IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提
 页面拥有命名数据源、筛选器和内容分区；组件的数据槽引用数据源，字段绑定引用结果字段契约。queryField属于查询字段空间，页面字段id和筛选器dimension不能靠同名隐式绑定。数据快照是运行状态，不是作者文档。
 
 查询失败时，页面 UI 组件呈现空数据，具体错误打印到控制台，内部错误态及 `data-error` 事件保留。普通查询的 `totalCount` 与返回行数不一致仅告警，继续渲染已有行；详见[查询异常与结果总数](docs/page-metadata/data-sources.md#查询异常与结果总数)。
-对象完整结果在页面显示时若 `total_count: 0` 但有返回行，保留原始总数和返回行，控制台输出带组件/数据源位置的 `TOTAL_COUNT_MISMATCH`，完整性标记为未确认；完整导出与完整输入仍严格校验。无需新增页面字段或升级Schema。父子表层级联动也保留这些父行并按已有行执行本地分页和父级投影，仍校验行键及唯一匹配；完整父子导出保持严格校验。验收入口 `/pages/query-zero-total-demo`、`/pages/query-zero-total-hierarchy`，详见[零总数兼容](docs/page-metadata/data-sources.md#有返回行但总数为零)。
+对象完整结果在页面显示时若 `total_count: 0` 但有返回行，保留原始总数和返回行，控制台输出带组件/数据源位置的 `TOTAL_COUNT_MISMATCH`，完整性标记为未确认。无窗口、声明完整结果的普通查询也可基于这些行执行组织并集、关联与得分计算；严格完整读取、对象导出与结果绑定的完整性检查保持。无需新增页面字段或升级Schema。父子表层级联动也保留这些父行并按已有行执行本地分页和父级投影，仍校验行键及唯一匹配；完整父子导出保持严格校验。验收入口 `/pages/query-zero-total-demo`、`/pages/query-zero-total-hierarchy`、`/pages/partner-health-union-null-probe?state=zeroTotal`，详见[零总数兼容](docs/page-metadata/data-sources.md#有返回行但总数为零)。
 
 
 页面搭建的拖动手柄、组件清单拖动排序、蓝色选框、就地操作条与删除属于创作期交互，不新增页面协议字段。组件顺序与宽度仍由 `sections[].components`、`layout.span` 声明；空分区草稿与删除行为见[内容分区与布局](docs/page-metadata/sections-and-layout.md#页面搭建中的移动与删除)，验收页面为 `pages/platform/platform-canvas-experience.json`。

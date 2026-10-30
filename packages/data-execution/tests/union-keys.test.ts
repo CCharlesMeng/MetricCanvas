@@ -34,7 +34,7 @@ describe('完整快照边界', () => {
   const fields={org:{type:'string',role:'dimension'}} as const;
   const query: DataSource={fields:{org:{...fields.org,queryField:'组织'}},source:{type:'query',resultScope:'complete',query:{language:'dqe',body:{dsl_list:[{output_dims:['组织'],output_metrics:[]}]}}}};
   const sources=new Map<string,DataSource>([['a',query],['b',{fields,source:{type:'inline',rows:[]}}],['combined',{fields,source:{type:'inline',rows:[]},compute:[op]}]]);
-  const calculate=(snapshot:DataSnapshot)=>computedSnapshots(sources,new Map<string,DataSnapshot>([['a',snapshot],['b',{status:'empty'}],['combined',{status:'empty',totalCount:0}]]));
+  const calculate=(snapshot:DataSnapshot,allowZeroTotal=false)=>computedSnapshots(sources,new Map<string,DataSnapshot>([['a',snapshot],['b',{status:'empty'}],['combined',{status:'empty',totalCount:0}]]),undefined,{allowZeroTotal});
   it('行集合变化后更新 totalCount', () => {
     expect(calculate({status:'ready',rows:[{org:'甲'},{org:'乙'}],totalCount:2}).get('combined')).toMatchObject({status:'ready',rows:[{org:'甲'},{org:'乙'}],totalCount:2});
   });
@@ -44,5 +44,31 @@ describe('完整快照边界', () => {
     {status:'ready',rows:[{org:'甲'}],totalCount:10}
   ] as DataSnapshot[])('等待或传播异常，不生成部分总分 %s', snapshot => {
     expect(calculate(snapshot).get('combined')?.status).toBe(snapshot.status==='loading'?'loading':'error');
+    expect(calculate(snapshot,true).get('combined')?.status).toBe(snapshot.status==='loading'?'loading':'error');
+  });
+  it('仅显示允许零总数，原始输入保留；完整计算仍拒绝', () => {
+    const snapshot:DataSnapshot={status:'ready',rows:[{org:'甲'},{org:'乙'}],totalCount:0};
+    const before=structuredClone(snapshot);
+    const shown=calculate(snapshot,true);
+    expect(shown.get('combined')).toMatchObject({status:'ready',totalCount:2,rows:snapshot.rows});
+    expect(shown.get('a')).toMatchObject({totalCount:0});
+    expect(calculate(snapshot).get('combined')?.status).toBe('error');
+    expect(snapshot).toEqual(before);
+  });
+  it('零总数兼容不放宽非法总数、重复键和空结果', () => {
+    for(const totalCount of [-1,0.5,NaN,Infinity,1,3]) {
+      expect(calculate({status:'ready',rows:[{org:'甲'},{org:'乙'}],totalCount},true).get('combined')?.status).toBe('error');
+    }
+    expect(calculate({status:'ready',rows:[{org:'甲'},{org:'甲'}],totalCount:0},true).get('combined')?.status).toBe('error');
+    expect(calculate({status:'empty',totalCount:0},true).get('combined')).toMatchObject({status:'empty',totalCount:0});
+  });
+  it('有显式查询窗口的零总数回执不能作为并集输入', () => {
+    const windowed=structuredClone(query);
+    if(windowed.source.type!=='query')throw Error('测试需要查询来源');
+    windowed.source.query.body.dsl_list[0].order={limit:10,offset:0};
+    const actual=computedSnapshots(new Map([...sources,['a',windowed]]),new Map<string,DataSnapshot>([
+      ['a',{status:'ready',rows:[{org:'甲'}],totalCount:0}],['b',{status:'empty'}],['combined',{status:'empty'}]
+    ]),undefined,{allowZeroTotal:true});
+    expect(actual.get('combined')?.status).toBe('error');
   });
 });

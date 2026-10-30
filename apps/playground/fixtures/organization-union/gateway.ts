@@ -28,6 +28,11 @@ function overviewRows(prefix: string, query: EffectiveQuery, state: string): Moc
   });
 }
 
+function responseTotal(state: string, prefix: string, count: number): number {
+  if (state === 'zeroTotal') return 0;
+  return state === 'truncated' && prefix === 'voice-closure-score' ? 15 : count;
+}
+
 /** Only the explicit Mock page uses synthetic HTTP receipts; production partner-health never matches. */
 export function createPartnerHealthUnionPreview(state = 'ready') {
   const requests: {sourceId:string;body:unknown}[] = [];
@@ -50,7 +55,7 @@ export function createPartnerHealthUnionPreview(state = 'ready') {
       if (state === 'error' && prefix === 'customer-eval-score') throw new Error('合成查询失败');
       const data = responseRows(source, rows);
       return Response.json({retCode:'CBC.0000',results:[{code:'SUCCESS',data,
-        total_count: state === 'truncated' && prefix === 'voice-closure-score' ? 15 : data.length}]});
+        total_count: responseTotal(state, prefix, data.length)}]});
     }}).fetchData(query, context, signal);
   }};
   return {dataGateway,requests};
