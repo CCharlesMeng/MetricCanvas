@@ -21,6 +21,8 @@
 
 入口：`/pages/mc-content-layout-demo`；[实际页面](mc-content-layout-demo.json)。运行 `pnpm dev:playground`；无 URL 参数和 DQE 依赖。页面由 `tools/scripts/mc-content-fixtures.py` 调用真实本地 MC 接口生成，数据为合成诊断。
 
+查看“安装文件完整性”“运行依赖预检”和“换行转换拒绝”：前两项分别来自实际 diagnose/preflight，第三项来自临时完整副本的 CRLF 故障注入，应显示 invalid、CONTENT_RESOURCE_MISMATCH / line-endings。页面是生成时的本地结果快照，浏览器不扫描安装磁盘，不代表 Windows/Relay 或真实服务验收。点击“检查项”排序并在 1440px/390px 核对表格与页面滚动，自动入口为 `mc-content.browser.ts`。
+
 1. 检查表格：同源知识有界读取、完整工具参数、来源覆盖对账，以及正常编译 ok、用户要求地图 gap、IOC 计划场景 invalid、旧版 6.0 页面 upgrade_required、未来版本 needs_review、真实保存与 Relay not_run。
 2. 点击“检查项”列排序，确认已有表格交互可用；390px 下检查页面可阅读，宽表在自己的滚动区域展示。
 3. 通过 `mc-content/scripts/mc_content.py schema --input <旧文件>` 检查兼容性；upgrade 不带输出目录只检查，带全新目录才输出 original、page 和 migration.json，原文件不变。

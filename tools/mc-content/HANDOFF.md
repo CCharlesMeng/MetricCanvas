@@ -8,6 +8,10 @@
 
 替换整包后启动新进程或完整重载模块，禁止旧内存代码混用新资源；旧 spec 与新内容明确拒绝。Relay 需单独验证：tools.py/加载器注册与权限、可信上下文注入、结构化双通道、并发/重试关联、热重载、预览精确引用、标记替换/卡片注入、真实 DQE、保存、渲染和回执。此处是调用说明，不是已完成这些部署验收的证明。
 
+安装按“固定发布回执 → 验证归档 → 全新无缓存版本目录 → preflight → 新调用进程 → 切换后续轮次”执行，生产目录配置只读权限。保留旧目录，不在活动目录逐文件覆盖。固定每轮 contentSha256，并核对实际 Python/Node 路径；Python↔Node 与 CLI JSON 使用 UTF-8。PYTHONDONTWRITEBYTECODE/-B 只禁止写缓存，不能消除已有 pyc；启动遇到缓存或同名模块来源冲突时重新保真安装并新建进程。
+
+完整性/环境故障先读取 diagnose/preflight 的结构化问题及 action；不得 monkey-patch digest、跳过 verify、直接读 index 绕过包检查或重写旧 manifest。只有修改作者源并重建发布物才能改变包身份。业务失败、环境不可用、truncated 和 correlation=not_run 分别处理，退出 0 不代替业务检查。现场须单独验证默认编码、缓存、跨版本并发、切换失败与取消，MC 本地与 CI 结果不替代这些现场验收。
+
 Skill 保留采用、模板选择、用户确认与交付决定。MC 不提供批准/豁免状态，不改变既有保存工具行为。
 
 包内 `examples/program-call.py` 是已运行的独立调用样例，可验证编译输入、原样 spec 和产物摘要关联；它不依赖或假设 Relay SDK。`runtime/source-identity` 锁公共构建输入（产品源码、公共 Python、MC 作者源、生成器、例子、契约和依赖锁）的相对路径/SHA256，排除内部 Adapter。外部 release 记录同时给 Git 基线、是否未提交、内容和归档摘要；只有完成提交与实际部署后才能补相应固定 SHA/部署结论。

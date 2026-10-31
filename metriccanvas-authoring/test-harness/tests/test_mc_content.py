@@ -341,6 +341,7 @@ class McCompletenessTest(unittest.TestCase):
             for item in manifest['files']:
                 item['sha256'] = digest((installed / item['file']).read_bytes())
             manifest['contentSha256'] = digest((json.dumps(manifest['files'], ensure_ascii=False, indent=2) + '\n').encode())
+            manifest['contentVersion'] = '1-' + manifest['contentSha256'][:16]
             path.write_text(json.dumps(manifest))
             with self.assertRaisesRegex(ContentError, 'Reload all MC modules'):
                 verify_package(installed)

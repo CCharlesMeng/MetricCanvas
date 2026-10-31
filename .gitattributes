@@ -1,0 +1,7 @@
+# Author-maintained MC text has a deterministic checkout representation.
+tools/mc-content/** text eol=lf
+tools/scripts/mc-content*.py text eol=lf
+tools/scripts/mc-content*.ts text eol=lf
+# Generated, digest-pinned resources must retain their exact committed bytes.
+metriccanvas-authoring/** -text
+contracts/metriccanvas/** -text

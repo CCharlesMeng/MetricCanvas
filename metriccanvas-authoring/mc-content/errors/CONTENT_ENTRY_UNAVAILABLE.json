@@ -1,5 +1,5 @@
 {
-  "code": "CONTENT_NODE_UNKNOWN",
+  "code": "CONTENT_ENTRY_UNAVAILABLE",
   "guidance": {
     "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
     "action": null,
@@ -7,8 +7,8 @@
   },
   "sourceLocations": [
     {
-      "source": "tools/mc-content/scripts/mc_resources.py",
-      "line": 146
+      "source": "tools/mc-content/scripts/mc_content.py",
+      "line": 53
     }
   ],
   "coverage": {

@@ -107,18 +107,14 @@ def initialize(root):
     return True
 
 
-def plan(root, incoming):
-    target_path(root, INTERNAL)
-    old_lock = target_path(root, 'bundle.lock.json')
-    previous = entries(json.loads(old_lock.read_bytes())) if old_lock.exists() else {}
-    previous = {name: sha for name, sha in previous.items() if not protected(name)}
-    conflicts = []
+def tracked_conflicts(root, previous):
     # Validate ALL tracked public files, even unchanged or deleted upstream.
-    for name, expected in previous.items():
-        path = target_path(root, name)
-        if not path.is_file() or digest(path.read_bytes()) != expected:
-            conflicts.append(name)
-    changes, deletes = [], []
+    return [name for name, expected in previous.items()
+        if not target_path(root, name).is_file() or digest(target_path(root, name).read_bytes()) != expected]
+
+
+def incoming_changes(root, incoming, previous):
+    changes, conflicts = [], []
     for name, data in incoming.items():
         if protected(name):
             raise ValueError('Attempt to update internal adapters')
@@ -133,10 +129,20 @@ def plan(root, incoming):
         elif path.exists() and name not in previous and name != 'bundle.lock.json':
             conflicts.append(name)
         changes.append(name)
-    for name in previous.keys() - incoming.keys():
-        deletes.append(name)
+    return changes, conflicts
+
+
+def plan(root, incoming):
+    target_path(root, INTERNAL)
+    old_lock = target_path(root, 'bundle.lock.json')
+    previous = entries(json.loads(old_lock.read_bytes())) if old_lock.exists() else {}
+    previous = {name: sha for name, sha in previous.items() if not protected(name)}
+    changes, conflicts = incoming_changes(root, incoming, previous)
+    conflicts.extend(tracked_conflicts(root, previous))
+    deletes = list(previous.keys() - incoming.keys())
     if conflicts:
-        raise ValueError('Public/local conflicts; no files changed: ' + ', '.join(sorted(set(conflicts))))
+        raise ValueError('Public/local conflicts; no files changed: ' + ', '.join(sorted(set(conflicts)))
+            + '. Preserve these files. Restore a known backup or synchronize into a fresh sibling directory; do not rewrite the old lock or delete unknown temporary files.')
     return sorted(changes), sorted(deletes)
 
 
@@ -151,14 +157,27 @@ def apply(root, incoming, changes, deletes):
         with temporary.open('xb') as handle:
             handle.write(incoming[name])
         temporary.replace(path)
-    for name in changes:
-        if name != 'bundle.lock.json':
-            write(name)
-    for name in deletes:
-        target_path(root, name).unlink()
-    initialize(root)
-    if 'bundle.lock.json' in changes:
-        write('bundle.lock.json')
+    lock = root / 'bundle.lock.json'
+    previous_lock = digest(lock.read_bytes()) if lock.exists() else None
+    completed = []
+    try:
+        for name in changes:
+            if name != 'bundle.lock.json':
+                write(name)
+                completed.append(name)
+        for name in deletes:
+            target_path(root, name).unlink()
+            completed.append(name)
+        initialize(root)
+        if 'bundle.lock.json' in changes:
+            write('bundle.lock.json')
+    except OSError as error:
+        pending = sorted(set(changes + deletes) - set(completed))
+        recovery = {'status': 'interrupted', 'previousLockSha256': previous_lock,
+            'completed': completed[:20], 'completedCount': len(completed), 'pending': pending[:20],
+            'pendingCount': len(pending), 'preserved': INTERNAL,
+            'action': 'Preserve the old lock and .sync-tmp files. Restore a known backup or use a fresh sibling directory; do not serve this partial tree.'}
+        raise ValueError(json.dumps(recovery, ensure_ascii=False)) from error
 
 
 def main():
@@ -180,10 +199,10 @@ def main():
         parser.error('--source and --ref are required')
     commit, incoming = snapshot(args.source, args.ref)
     changes, deletes = plan(root, incoming)
-    print(json.dumps({'upstreamCommit': commit, 'write': changes, 'delete': deletes,
-                     'preserved': INTERNAL, 'applied': args.apply}, ensure_ascii=False, indent=2))
     if args.apply:
         apply(root, incoming, changes, deletes)
+    print(json.dumps({'upstreamCommit': commit, 'write': changes, 'delete': deletes,
+                     'preserved': INTERNAL, 'applied': args.apply}, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':

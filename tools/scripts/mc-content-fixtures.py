@@ -3,12 +3,29 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import sys
+import shutil
+import tempfile
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTENT = ROOT / 'metriccanvas-authoring/mc-content'
 sys.path.insert(0, str(CONTENT / 'scripts'))
-from mc_content import compile_layout, evaluate, inspect_schema, verify_package, query_content
+from mc_content import compile_layout, diagnose_package, evaluate, inspect_schema, preflight, verify_package, query_content
+
+
+def distribution_rows():
+    installation = diagnose_package(CONTENT)
+    environment = preflight('all', root=CONTENT)
+    with tempfile.TemporaryDirectory(prefix='mc-fixture-crlf-') as directory:
+        copy = Path(directory) / 'mc-content'
+        shutil.copytree(CONTENT, copy, ignore=shutil.ignore_patterns('__pycache__'))
+        file = copy / 'layouts/report.md'
+        file.write_bytes(file.read_bytes().replace(b'\n', b'\r\n'))
+        rejected = diagnose_package(copy)
+    return [
+        {'case': '安装文件完整性', 'result': installation['status'], 'detail': '原字节摘要匹配；不代表页面或服务验收'},
+        {'case': '运行依赖预检', 'result': environment['status'], 'detail': '实际调用解释器及 Node；环境故障不能改页面版本放行'},
+        {'case': '换行转换拒绝', 'result': rejected['status'], 'detail': rejected['issues'][0]['code'] + ' / ' + rejected['issues'][0]['changed'][0]['hint']}]
 
 
 def report_example(scene):
@@ -62,7 +79,7 @@ def results():
     assert planned_result['status'] == 'invalid'
     assert old_result['status'] == 'upgrade_required'
     assert not future_result['upgrade']['possible']
-    rows = [
+    rows = distribution_rows() + [
         {'case': '同源知识有界读取', 'result': 'ok', 'detail': 'table.width 保留语义与父约束；未展开引用可继续定位'},
         {'case': '完整工具参数', 'result': 'ok', 'detail': 'query_data 外层与 request 来自实际 FastMCP 注册'},
         {'case': '来源覆盖对账', 'result': 'ok', 'detail': f"{coverage['counts']['topics']} 主题 / {coverage['counts']['tools']} 工具 / {coverage['counts']['components']} 组件；独立分母检查"},
@@ -105,11 +122,11 @@ def main():
     for file, value in outputs.items():
         text = json.dumps(value, ensure_ascii=False, indent=2) + '\n'
         if '--check' in sys.argv:
-            if not file.is_file() or file.read_text() != text:
+            if not file.is_file() or file.read_text(encoding='utf-8') != text:
                 raise ValueError(f'Diagnostic fixture drift: {file}')
         else:
             file.parent.mkdir(parents=True, exist_ok=True)
-            file.write_text(text)
+            file.write_text(text, encoding='utf-8', newline='\n')
     print('MC diagnostics and visible fixture current')
 
 

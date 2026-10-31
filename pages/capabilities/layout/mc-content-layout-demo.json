@@ -29,6 +29,21 @@
         "type": "inline",
         "rows": [
           {
+            "case": "安装文件完整性",
+            "result": "ok",
+            "detail": "原字节摘要匹配；不代表页面或服务验收"
+          },
+          {
+            "case": "运行依赖预检",
+            "result": "ok",
+            "detail": "实际调用解释器及 Node；环境故障不能改页面版本放行"
+          },
+          {
+            "case": "换行转换拒绝",
+            "result": "invalid",
+            "detail": "CONTENT_RESOURCE_MISMATCH / line-endings"
+          },
+          {
             "case": "同源知识有界读取",
             "result": "ok",
             "detail": "table.width 保留语义与父约束；未展开引用可继续定位"

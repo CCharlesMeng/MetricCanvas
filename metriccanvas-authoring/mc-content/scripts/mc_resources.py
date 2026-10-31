@@ -6,9 +6,9 @@ import re
 
 
 class ContentError(ValueError):
-    def __init__(self, code, path='', message=''):
+    def __init__(self, code, path='', message='', **facts):
         super().__init__(message or code)
-        self.issue = {'code': code, 'path': path, 'message': message or code}
+        self.issue = {'code': code, 'path': path, 'message': message or code, **facts}
 
 
 def digest(content):
@@ -40,7 +40,9 @@ def read_json(root, name):
     try:
         return json.loads(resource(root, name).read_text(encoding='utf-8'))
     except (OSError, ValueError) as error:
-        raise ContentError('CONTENT_RESOURCE_UNAVAILABLE', name, str(error)) from error
+        hint = 'utf8-bom' if 'UTF-8 BOM' in str(error) else 'unreadable-resource'
+        raise ContentError('CONTENT_RESOURCE_UNAVAILABLE', name, 'The installed JSON resource cannot be read.',
+            hint=hint, action='Reinstall the complete verified archive without editing its files.') from error
 
 
 def manifest_files(manifest):
@@ -57,6 +59,9 @@ def manifest_files(manifest):
     serialized = (json.dumps(files, ensure_ascii=False, indent=2) + '\n').encode()
     if digest(serialized) != manifest.get('contentSha256'):
         raise ContentError('CONTENT_MANIFEST_INVALID')
+    if manifest.get('contentVersion') != '1-' + manifest['contentSha256'][:16]:
+        raise ContentError('CONTENT_MANIFEST_INVALID', 'contentVersion',
+            'The content version does not match its manifest digest.', action='Regenerate and replace the complete package.')
     return files
 
 
@@ -64,29 +69,100 @@ def manifest_files(manifest):
 LOADED_CODE = {file.name: digest(file.read_bytes()) for file in Path(__file__).resolve().parent.glob('*.py')}
 
 
-def verify_package(root=None):
-    root = package_root(root)
-    manifest = read_json(root, 'mc-content.version.json')
-    files = manifest_files(manifest)
+def verify_file_set(root, files):
     names = [item['file'] for item in files]
     if len(names) != len(set(names)):
         raise ContentError('CONTENT_MANIFEST_INVALID')
     actual = {file.relative_to(root).as_posix() for file in root.rglob('*')
         if file.is_file() and '__pycache__' not in file.parts and file != root / 'mc-content.version.json'}
     if actual != set(names):
-        raise ContentError('CONTENT_RESOURCE_SET_MISMATCH')
+        missing, extra = sorted(set(names) - actual), sorted(actual - set(names))
+        raise ContentError('CONTENT_RESOURCE_SET_MISMATCH', message='The installed package has missing or extra files.',
+            missing=missing[:20], extra=extra[:max(0, 20 - len(missing[:20]))], missingCount=len(missing), extraCount=len(extra),
+            truncated=len(missing) + len(extra) > 20, action='Install the verified archive in a new empty directory. Keep outputs outside it; preserve unknown extra files.')
+
+
+def verify_loaded_code(root):
     for name, expected in LOADED_CODE.items():
-        if digest(resource(root, 'scripts/' + name).read_bytes()) != expected:
-            raise ContentError('CONTENT_CODE_VERSION_MISMATCH', name, 'Reload all MC modules or start a new process')
+        actual = digest(resource(root, 'scripts/' + name).read_bytes())
+        if actual != expected:
+            raise ContentError('CONTENT_CODE_VERSION_MISMATCH', name,
+                'The loaded code differs from this installation. Reload all MC modules or start a new process.',
+                expectedSha256=expected, actualSha256=actual,
+                action='Start a new process using one complete verified version directory.')
+
+
+def verify_clean_cache(root):
+    caches = sorted(file.relative_to(root).as_posix() for file in (root / 'scripts').rglob('*.pyc'))
+    if caches:
+        raise ContentError('CONTENT_BYTECODE_PRESENT', 'scripts', 'The installation contains bytecode caches.',
+            files=caches[:20], count=len(caches), truncated=len(caches) > 20,
+            action='Install the verified archive in a new empty directory and disable bytecode writes before loading it.')
+
+
+def change_hint(content, expected):
+    if content.startswith(b'\xef\xbb\xbf') and digest(content[3:]) == expected:
+        return 'utf8-bom'
+    if digest(content.replace(b'\r\n', b'\n')) == expected:
+        return 'line-endings'
+    return 'changed-bytes'
+
+
+def changed_files(root, files):
+    changed, count = [], 0
     for item in files:
         file = resource(root, item['file'])
-        if not file.is_file() or digest(file.read_bytes()) != item['sha256']:
-            raise ContentError('CONTENT_RESOURCE_MISMATCH', item['file'])
+        content = file.read_bytes()
+        actual = digest(content)
+        if actual != item['sha256']:
+            count += 1
+            if len(changed) < 20:
+                changed.append({'file': item['file'], 'expectedSha256': item['sha256'], 'actualSha256': actual,
+                    'hint': change_hint(content, item['sha256'])})
+    if count:
+        raise ContentError('CONTENT_RESOURCE_MISMATCH', changed[0]['file'], 'Installed resource bytes differ from the release.',
+            changed=changed, changedCount=count, truncated=count > 20,
+            action='Reinstall the complete verified archive without newline conversion. Do not patch digest or rewrite the installed manifest.')
+
+
+def verify_alignment(root, manifest):
     if digest(resource(root, 'mc-closed-sets/snapshot.json').read_bytes()) != manifest.get('snapshotSha256'):
         raise ContentError('CONTENT_SNAPSHOT_MISMATCH')
     if read_json(root, 'runtime/contract-alignment.json') != manifest.get('alignedWith'):
         raise ContentError('CONTENT_ALIGNMENT_MISMATCH')
-    return root, manifest
+
+
+def verify_package(root=None):
+    root = package_root(root)
+    try:
+        verify_clean_cache(root)
+        manifest = read_json(root, 'mc-content.version.json')
+        files = manifest_files(manifest)
+        verify_file_set(root, files)
+        verify_loaded_code(root)
+        changed_files(root, files)
+        verify_alignment(root, manifest)
+        return root, manifest
+    except OSError as error:
+        raise ContentError('CONTENT_RESOURCE_UNAVAILABLE', message='Installed files cannot be read.',
+            action='Check installation file access or reinstall the complete verified archive.') from error
+
+
+def diagnose_package(root=None):
+    root = package_root(root)
+    try:
+        verify_clean_cache(root)
+        manifest = read_json(root, 'mc-content.version.json')
+        files = manifest_files(manifest)
+        verify_file_set(root, files)
+        changed_files(root, files)
+        verify_loaded_code(root)
+        verify_alignment(root, manifest)
+        return {'status': 'ok', 'contentVersion': manifest['contentVersion'], 'contentSha256': manifest['contentSha256'],
+            'issues': [], 'scope': 'disk files and loaded-module baseline; not authentication or deployment'}
+    except (ContentError, OSError) as error:
+        diagnostic = error.issue if isinstance(error, ContentError) else issue('CONTENT_RESOURCE_UNAVAILABLE', message='Installed files cannot be read.', action='Check file access or reinstall the verified archive.')
+        return {'status': 'invalid', 'issues': [diagnostic]}
 
 
 def index_page(index, key, options):
@@ -138,15 +214,9 @@ def atom_content(root, manifest, topic, key, options):
 
 
 def node_content(root, key):
-    import subprocess
-    try:
-        result = subprocess.run(['node', str(resource(root, 'scripts/read-knowledge.mjs'))],
-            input=json.dumps({'pointers': [key]}), capture_output=True, text=True, timeout=30, check=False)
-        if result.returncode:
-            raise ContentError('CONTENT_NODE_UNKNOWN', key, result.stderr)
-        return json.loads(result.stdout), 'references/authoring-knowledge/model.json'
-    except (OSError, subprocess.TimeoutExpired) as error:
-        raise ContentError('CONTENT_READER_UNAVAILABLE', key, str(error)) from error
+    from mc_runtime import run_node
+    return run_node([str(resource(root, 'scripts/read-knowledge.mjs'))],
+        {'pointers': [key]}, failure_code='CONTENT_NODE_UNKNOWN'), 'references/authoring-knowledge/model.json'
 
 
 def query_content(topic, key='', options=None, *, root=None):

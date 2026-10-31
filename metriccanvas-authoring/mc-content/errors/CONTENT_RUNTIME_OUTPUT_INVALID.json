@@ -1,5 +1,5 @@
 {
-  "code": "CONTENT_READER_UNAVAILABLE",
+  "code": "CONTENT_RUNTIME_OUTPUT_INVALID",
   "guidance": {
     "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
     "action": null,
@@ -7,8 +7,12 @@
   },
   "sourceLocations": [
     {
-      "source": "tools/mc-content/scripts/mc_resources.py",
-      "line": 149
+      "source": "tools/mc-content/scripts/mc_runtime.py",
+      "line": 22
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_runtime.py",
+      "line": 30
     }
   ],
   "coverage": {

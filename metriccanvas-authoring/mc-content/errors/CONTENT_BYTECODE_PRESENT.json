@@ -1,0 +1,25 @@
+{
+  "code": "CONTENT_BYTECODE_PRESENT",
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "tools/mc-content/scripts/mc_content.py",
+      "line": 14
+    },
+    {
+      "source": "tools/mc-content/scripts/mc_resources.py",
+      "line": 98
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": false
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

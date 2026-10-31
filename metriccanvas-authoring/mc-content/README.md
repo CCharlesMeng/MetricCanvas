@@ -6,11 +6,13 @@ MC 提供完整资源、确定性脚本及检查结论。Skill 负责调用 Adap
 
 ## 安装与整体替换
 
-复制完整 mc-content 目录。运行环境为 Python 3.12+、Node.js 22+；Python 依赖见 scripts/requirements.txt。脚本只依赖本目录和明确安装的第三方库，不读取 MC 开发仓。Interface 版本、内容摘要、页面写出版本及当前可读范围分别记录，不能混为一个版本号。
+优先使用经过归档回验的完整 mc-content.tar.gz，也支持保留原字节的整目录复制。安装到全新版本目录，禁止换行转换、添加 BOM 或覆盖正在使用的目录。运行环境为 Python 3.12+、Node.js 22+；Python 依赖见 scripts/requirements.txt，必须安装到调用方实际使用的解释器。脚本只依赖本目录和明确安装的第三方库，不读取 MC 开发仓。Interface 版本、内容摘要、页面写出版本及当前可读范围分别记录，不能混为一个版本号。
 
 ```sh
 python -m pip install -r /absolute/mc-content/scripts/requirements.txt
 python /absolute/mc-content/scripts/mc_content.py verify
+python /absolute/mc-content/scripts/mc_content.py diagnose
+python /absolute/mc-content/scripts/mc_content.py preflight --capability all
 python /absolute/mc-content/scripts/mc_content.py query --topic version
 python /absolute/mc-content/scripts/mc_content.py query --topic index --key tool
 python /absolute/mc-content/scripts/mc_content.py query --topic tool --key compose_page
@@ -18,13 +20,17 @@ python /absolute/mc-content/scripts/mc_content.py query --topic tool --key compo
 
 整包资源逐项校验摘要和文件集合。不要混装新脚本、旧快照或单独替换模板。接口不兼容、资源不完整时返回具体错误；采用或回退由调用方决定。Python 缓存不属于分发资源。
 
-整包替换后，调用方新建调用进程或完整重新载入 Skill 脚本，使内存中的函数与磁盘资源来自同一版本。同轮固定内容摘要；调用 Adapter 的缓存以内容摘要区分，更新后重新建立检查声明。本包的 CLI 每次调用使用新进程，进程内重载属于调用方接线验收。
+diagnose 只读报告缺失/额外文件和变更字节的有界样例、总数及恢复动作。换行标准化仅用于识别差异，不用于放行。verify 只证明安装文件一致，不证明编译依赖或 Node 可用；preflight 按 verify/compile/schema/upgrade/knowledge/all 检查实际解释器、依赖和 Node。diagnose/preflight 不通过时退出 1；既有计算命令仍需读取业务 status、readable、correlation 和 truncated，退出 0 不等于业务成功。
+
+脚本启动前拒绝 scripts 下已有 .pyc，以及来自其他安装目录的同名已加载模块。使用全新无缓存目录，在服务进程中禁用字节码写入，并将生产版本目录设置为只读（Windows 由部署方配置 ACL）。仅设置 PYTHONDONTWRITEBYTECODE 或 -B 不会禁止读取已有缓存。不要在包内放日志、回执、临时页面或其他业务输出；不得为恢复而 monkey-patch digest、跳过 verify 或重算旧安装包的清单。恢复采用保真重装；源代码有意变更则从作者源重新生成整包。
+
+新目录校验和能力探针通过后，调用方新建调用进程并切换后续轮次；保留旧目录用于恢复，已有轮次仍固定其目录和内容摘要。调用 Adapter 的缓存以内容摘要区分，更新后重新建立检查声明。本包的 CLI 每次调用使用新进程，进程内重载属于调用方接线验收。源同步失败时保留旧锁与临时文件，按恢复报告使用备份或全新目录，不能将中断树作为服务目录。
 
 ## 程序 Interface
 
 Report新建／章节重组的参考入口为 `query_content('layout', 'report-composition')`，或CLI的 `query --topic layout --key report-composition`。先选适用组合并核对组件自动装配支持面，再形成结构计划；完成后按参考检查PC预览。`layout/report`、`layout/reading`与两类Report场景都指向此单一正文，布局建议不变成保存或交付门禁。
 
-将 scripts 加入调用程序的 Python 模块路径后，可从 mc_content 导入 query_content、compile_layout、inspect_assembly、inspect_schema、upgrade_page、evaluate。
+将 scripts 加入调用程序的 Python 模块路径后，可从 mc_content 导入 query_content、compile_layout、inspect_assembly、inspect_schema、upgrade_page、evaluate。程序调用须在首次 import 前设置 `sys.dont_write_bytecode = True`，或以 `PYTHONDONTWRITEBYTECODE=1`/`python -B` 启动；普通 import 可能在执行模块正文前创建自身 pyc，随后被缓存防护拒绝。`examples/program-call.py` 展示正确顺序。
 
 - 查询受控 topic/key，索引可分页。单原子超预算时整体暂不返回并给 requiredBytes，不截断成貌似完整的工具契约。同轮缓存由 Adapter 决定。
 - 编译输入为 templateRef、完整 plan、可选 userRequirements 与 targetVersions。输出 plan、调整、缺口及 inspectionSpec；plan 仍是现有 compose_page 的 request，检查声明不能夹带进去。
@@ -75,4 +81,6 @@ inspect 的可选 correlation（只在程序通道）包含 requestId、原始 c
 
 runtime/coverage 是按产品注册、reference-map、实际工具和能力声明对账的构建结论；runtime/source-identity 记录公共源码身份。覆盖缺口使仓库构建/发包失败，不改变运行时保存语义。发布归档从已校验暂存目录生成，文件集合/摘要/许可证随包；Python 平台 wheel、引擎和 Relay 是独立外部交付物。真实部署任务见 [HANDOFF](HANDOFF.md)。
 
-离线 URI 引用通过 runtime/schema-catalog 定位到已安装 Schema；原产品 manifest 仅保留来源身份，变换后的参考位置由 runtime/coverage 映射，不能把来源 manifest 当成本包安装清单。本包的安装清单是 mc-content.version.json。`examples/program-call.py` 可直接执行本地合成编译/关联检查；新进程执行不需要原仓或 Skill。Python 字节码缓存不参与分发身份；检查遇到已加载代码与被替换的脚本不匹配会要求完整重载。
+维护端 `tools/scripts/mc-content-pack.py --output <new.tar.gz>` 保留原调用形式；`verify --archive <downloaded.tar.gz>` 校验外部回执、归档摘要、来源及仓外探针；`install --archive <downloaded.tar.gz> --destination <new-version-directory>` 只创建新目录，不激活服务。归档与同名 .release.json 任一已存在均拒绝覆盖。回执记录完整目录摘要、内容身份、源码提交及 dirty 标志；CI 拒绝 dirty/SHA 错配，并在 Linux/Windows 下载后回验。上述维护工具不是安装包运行依赖；外部部署可用等价的保真解包与验证方式。
+
+离线 URI 引用通过 runtime/schema-catalog 定位到已安装 Schema；原产品 manifest 仅保留来源身份，变换后的参考位置由 runtime/coverage 映射，不能把来源 manifest 当成本包安装清单。本包的安装清单是 mc-content.version.json。`examples/program-call.py` 可直接执行本地合成编译/关联检查；新进程执行不需要原仓或 Skill。脚本入口拒绝已有字节码；磁盘校验不能替代加载前的来源与缓存隔离。

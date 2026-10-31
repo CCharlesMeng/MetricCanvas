@@ -10,7 +10,7 @@ import { checkMcCoverage } from './mc-content-coverage';
 
 type Outputs = Map<string, string>;
 const json = (value: unknown) => JSON.stringify(value, null, 2) + '\n';
-const hash = (value: string) => createHash('sha256').update(value).digest('hex');
+const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 
 export async function copyTree(root: string, prefix = ''): Promise<Outputs> {
   const outputs: Outputs = new Map();
@@ -124,7 +124,7 @@ async function buildInputSources(root: string, sources: string[]): Promise<strin
 
 async function sourceIdentity(root: string, sources: string[]): Promise<object> {
   const files = await Promise.all((await buildInputSources(root, sources)).map(async file => ({file,
-    sha256: hash(await readFile(path.join(root, file), 'utf8'))})));
+    sha256: hash(await readFile(path.join(root, file)))})));
   return {kind: 'public-build-inputs', sha256: hash(json(files)), files,
     deployment: 'not_run; Relay must record actual engine/tool versions and artifact digests'};
 }

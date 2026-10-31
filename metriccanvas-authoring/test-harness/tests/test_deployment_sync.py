@@ -1,10 +1,14 @@
 """Behavior checks for destructive public updates and internal preservation."""
 import importlib.util
+from contextlib import redirect_stdout
+import io
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 BUNDLE = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('sync_upstream', BUNDLE/'scripts/sync_upstream.py')
@@ -27,6 +31,39 @@ def install(root, incoming):
 
 
 class SyncTest(unittest.TestCase):
+    def test_cli_does_not_confirm_application_before_it_succeeds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = io.StringIO()
+            arguments = ['sync_upstream.py', '--source', tmp, '--ref', 'main', '--target', tmp, '--apply']
+            with patch.object(sys, 'argv', arguments), patch.object(
+                    sync, 'snapshot', return_value=('a' * 40, {})), patch.object(sync, 'apply', side_effect=ValueError('interrupted')):
+                with redirect_stdout(output), self.assertRaises(ValueError):
+                    sync.main()
+            self.assertNotIn('"applied": true', output.getvalue())
+
+    def test_interrupted_update_preserves_old_lock_and_reports_recovery(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            install(root, source_files(**{'a.py': 'old-a', 'b.py': 'old-b'}))
+            old_lock = (root / 'bundle.lock.json').read_bytes()
+            incoming = source_files(**{'a.py': 'new-a', 'b.py': 'new-b'})
+            changes, deletes = sync.plan(root, incoming)
+            replace = Path.replace
+            def fail_second(path, target):
+                if path.name == 'b.py.sync-tmp':
+                    raise OSError('simulated disk interruption')
+                return replace(path, target)
+            with patch.object(Path, 'replace', fail_second):
+                with self.assertRaises(ValueError) as failure:
+                    sync.apply(root, incoming, changes, deletes)
+            report = json.loads(str(failure.exception))
+            self.assertEqual(report['completed'], ['a.py'])
+            self.assertIn('b.py', report['pending'])
+            self.assertEqual((root / 'bundle.lock.json').read_bytes(), old_lock)
+            self.assertTrue((root / 'b.py.sync-tmp').exists())
+            with self.assertRaisesRegex(ValueError, 'fresh sibling directory'):
+                sync.plan(root, incoming)
+
     def test_upgrade_removes_retired_public_files_and_preserves_internal_exactly(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

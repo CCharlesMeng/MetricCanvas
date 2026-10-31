@@ -1,20 +1,13 @@
 """Inspect an explicitly supplied artifact. Never loads a current page or saves."""
-import json
-import subprocess
 
 from mc_resources import ContentError, resource, verify_package, issue
 
 
 def inspect_schema(document, *, root=None):
+    from mc_runtime import run_node
     root, _ = verify_package(root)
-    try:
-        result = subprocess.run(['node', str(resource(root, 'scripts/inspect-page.mjs')), '--stdin'],
-            input=json.dumps(document), text=True, capture_output=True, check=False, timeout=30)
-    except (OSError, subprocess.TimeoutExpired) as error:
-        raise ContentError('PAGE_INSPECTION_UNAVAILABLE', message=str(error)) from error
-    if result.returncode:
-        raise ContentError('PAGE_INSPECTION_UNAVAILABLE', message=result.stderr.strip())
-    return json.loads(result.stdout)
+    return run_node([str(resource(root, 'scripts/inspect-page.mjs')), '--stdin'], document,
+        failure_code='PAGE_INSPECTION_UNAVAILABLE')
 
 
 def bound_field_gap(fields, binding, uses):

@@ -5,14 +5,9 @@
     "action": null,
     "owner": "caller"
   },
-  "sourceLocations": [
-    {
-      "source": "tools/mc-content/scripts/mc_content.py",
-      "line": 45
-    }
-  ],
+  "sourceLocations": [],
   "coverage": {
-    "literalCallSite": true,
+    "literalCallSite": false,
     "queryClosedSet": false,
     "pageErrorType": false,
     "authoredGuidance": true

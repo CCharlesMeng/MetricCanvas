@@ -30,14 +30,22 @@ describe('parallel CI keeps a complete required gate', () => {
     const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
     const {ci, ...checks} = workflow.jobs;
     expect([...ci.needs].sort()).toEqual(Object.keys(checks).sort());
-    expect(Object.keys(checks).sort()).toEqual(['authoring','build','compatibility','tests','types']);
+    expect(Object.keys(checks).sort()).toEqual(['authoring','build','compatibility','mc-distribution','tests','types']);
     expect(ci.if).toBe('${{ always() }}');
     expect(ci.steps.at(-1).env.CI_JOB_RESULTS).toBe('${{ toJSON(needs) }}');
     expect(ci.steps.at(-1).run).toBe('node tools/scripts/check-ci-results.mjs');
     expect(workflow.jobs.tests.steps.at(-1).run).toBe('pnpm test');
     expect(workflow.jobs.types.steps.at(-1).run).toBe('pnpm check');
     // Source checks execute independently, rather than serially behind other jobs.
-    for(const job of Object.values(checks)) expect(job).not.toHaveProperty('needs');
+    for(const [name, job] of Object.entries(checks)) {
+      if(name !== 'mc-distribution') expect(job).not.toHaveProperty('needs');
+    }
+    const distribution = workflow.jobs['mc-distribution'];
+    expect(distribution.needs).toBe('authoring');
+    expect(distribution.strategy.matrix.os).toEqual(['ubuntu-latest', 'windows-latest']);
+    expect(distribution.steps.find((step: {uses?: string}) => step.uses === 'actions/download-artifact@v4').with.name)
+      .toBe('mc-content-${{ github.sha }}');
+    expect(distribution.steps.some((step: {run?: string}) => step.run?.includes('mc-content-pack.py verify --archive'))).toBe(true);
   });
 
   it('uses the CI-only compatibility profile and uploads diagnostics without workspace dependencies', () => {

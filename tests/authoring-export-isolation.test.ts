@@ -3,6 +3,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symli
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import {createHash} from 'node:crypto';
 
 const root = process.cwd();
 const isolated = mkdtempSync(path.join(tmpdir(), 'metriccanvas-contract-export-'));
@@ -56,6 +57,23 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     symlinkSync(path.join(root, 'node_modules'), path.join(isolated, 'node_modules'), 'dir');
     symlinkSync(path.join(root, 'packages/page/node_modules'), path.join(isolated, 'packages/page/node_modules'), 'dir');
   }, scenarioTimeout);
+
+  it('构建来源摘要保留二进制原字节', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-binary-source-'));
+    try {
+      cpSync(isolated, folder, {recursive: true, verbatimSymlinks: true});
+      const relative = 'pages/mc-source-identity-probe.bin';
+      const bytes = Buffer.from([0xff, 0xfe, 0x80, 0x00, 0x0d, 0x0a]);
+      writeFileSync(path.join(folder, relative), bytes);
+      const generated = runExport([], folder);
+      expect(generated.status, generated.stderr).toBe(0);
+      const identity = JSON.parse(readFileSync(path.join(folder, 'metriccanvas-authoring/mc-content/runtime/source-identity.json'), 'utf8'));
+      const entry = identity.files.find((file: {file: string}) => file.file === relative);
+      expect(entry.sha256).toBe(createHash('sha256').update(bytes).digest('hex'));
+    } finally {
+      rmSync(folder, {recursive: true, force: true});
+    }
+  }, scenarioTimeout * 2);
 
   it('无旧链时可运行', () => {
     for (const relative of ['packages/server', 'apps', 'metriccanvas-page-assets']) {

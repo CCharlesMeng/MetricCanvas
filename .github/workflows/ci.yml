@@ -110,6 +110,34 @@ jobs:
         if: github.event_name == 'push'
         run: python "$RUNNER_TEMP/metriccanvas-authoring-installed/scripts/check_bundle.py"
 
+  mc-distribution:
+    needs: authoring
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: 安装独立 MC 调用依赖
+        run: python -m pip install -r metriccanvas-authoring/mc-content/scripts/requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: mc-content-${{ github.sha }}
+          path: ${{ runner.temp }}/mc-downloaded
+      - name: 校验实际下载归档、来源与仓外能力
+        run: python tools/scripts/mc-content-pack.py verify --archive "${{ runner.temp }}/mc-downloaded/mc-content.tar.gz"
+      - name: 安装到独立版本目录
+        run: python tools/scripts/mc-content-pack.py install --archive "${{ runner.temp }}/mc-downloaded/mc-content.tar.gz" --destination "${{ runner.temp }}/MC 中文 version"
+      - name: 回归跨平台编码、缓存和错误诊断
+        run: python -B -m unittest discover -s metriccanvas-authoring/test-harness/tests -p test_mc_distribution.py
+
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -206,7 +234,7 @@ jobs:
 
   ci:
     if: ${{ always() }}
-    needs: [authoring, tests, types, build, compatibility]
+    needs: [authoring, mc-distribution, tests, types, build, compatibility]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

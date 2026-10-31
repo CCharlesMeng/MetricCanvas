@@ -7,8 +7,12 @@ test('MC diagnostics render in the product engine with sorting and narrow scroll
   await expect(page.getByText('同源知识有界读取', {exact: true})).toBeVisible();
   await expect(page.getByText('完整工具参数', {exact: true})).toBeVisible();
   await expect(page.getByText('来源覆盖对账', {exact: true})).toBeVisible();
+  await expect(page.getByText('安装文件完整性', {exact: true})).toBeVisible();
+  await expect(page.getByText('运行依赖预检', {exact: true})).toBeVisible();
+  await expect(page.getByText('换行转换拒绝', {exact: true})).toBeVisible();
   const table = page.locator('table').first();
   await expect(table).toContainText('not_run');
+  await expect(table).toContainText('CONTENT_RESOURCE_MISMATCH / line-endings');
   const before = await table.locator('tbody tr').first().textContent();
   await table.getByRole('button', {name: '检查项', exact: true}).click();
   await expect(table.locator('tbody tr').first()).not.toHaveText(before!);
