@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "6.74",
+  "id": "query-missing-measures",
+  "layout": "dashboard",
+  "meta": {
+    "title": "缺失指标保留列",
+    "description": "合成数据：响应省略数值属性，保留行、列与真实零。"
+  },
+  "dataSources": {
+    "samples": {
+      "fields": {
+        "sample": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "样例",
+          "nullable": false,
+          "label": "样例"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "数值",
+          "nullable": false,
+          "label": "数值",
+          "defaultFormat": "number-1"
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "queryField": "金额",
+          "nullable": false,
+          "currency": "CNY",
+          "label": "金额",
+          "defaultFormat": "number-2"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "样例"
+                ],
+                "output_metrics": [
+                  "数值",
+                  "金额"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-10",
+                    "end": "2026-10"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-31T00:00:00Z",
+          "rows": [
+            {
+              "样例": "未返回数值"
+            },
+            {
+              "样例": "真实零",
+              "数值": 0
+            },
+            {
+              "样例": "负数",
+              "数值": -4
+            }
+          ],
+          "totalCount": 3
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "missing-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "title": "缺失指标保留列 · 合成数据",
+            "columns": [
+              {
+                "field": "sample",
+                "title": "样例"
+              },
+              {
+                "field": "value",
+                "title": "数值",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "title": "金额（元）",
+                "sortable": true
+              }
+            ],
+            "rowKey": "sample"
+          }
+        }
+      ]
+    }
+  ]
+}

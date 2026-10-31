@@ -175,7 +175,8 @@ describe('独立本地创作 Skill', () => {
     { kind: '数值归一化', expected: 0 },
     { kind: '空标量', expected: 0 },
     { kind: '结构错误', expected: 1 },
-    { kind: '缺少字段', expected: 1 }
+    { kind: '缺少数值字段', expected: 0 },
+    { kind: '缺少维度字段', expected: 1 }
   ])('查询标量仓外校验：$kind', async ({ kind, expected }) => {
     const sourcePage = files.get('references/page-metadata/examples/query-numeric-tolerance.json');
     expect(sourcePage).toBeDefined();
@@ -188,10 +189,8 @@ describe('独立本地创作 Skill', () => {
     }
     if (kind === '空标量') row['容错样例'] = null;
     if (kind === '结构错误') row['容错样例'] = { invalid: true };
-    if (kind === '缺少字段') {
-      row['容错样例'] = '正常';
-      delete row['容错数值'];
-    }
+    if (kind === '缺少数值字段') delete row['容错数值'];
+    if (kind === '缺少维度字段') delete row['容错样例'];
     await writeFile(target, JSON.stringify(page));
     expect(run([target]).status).toBe(expected);
   });

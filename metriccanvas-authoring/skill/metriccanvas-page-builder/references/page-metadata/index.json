@@ -103,6 +103,10 @@
       "sha256": "034c79b20c27339e9c4d42965286fcf88739326b6f387db5b7daae99c97469e8"
     },
     {
+      "file": "packages/page/src/data-source-structure-errors.ts",
+      "sha256": "54ea196e6aea4068c7c8f58f99b08bebd35cf16784e785c30bd0459f7cd9bd0d"
+    },
+    {
       "file": "packages/page/src/dqe-object.ts",
       "sha256": "2d7c3bbeff933f4cddbe3891996301f9f3a91cbda96345a1c8ea58d5301b4a22"
     },
@@ -356,7 +360,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "88e99394d0b5fd96c6b701fc4b2be53a28f48165cab8a1cb18b0f7608acff950"
+      "sha256": "cde02357d904a94ab472851bec284297937ece87da75f557a2dfd2779ca2d19e"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -364,7 +368,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "ddaf18a03c22b5ec6c76caa0c139aae3ddfc6c6d3ede66f6d8b89f99c571dfc7"
+      "sha256": "bf45667f6cdcf901524ef76adaad1688b4668d109e21db8335457230c449ee03"
     }
   ],
   "modules": {
@@ -497,6 +501,7 @@
         "paged-join-page",
         "paged-join-fixed-rank-page",
         "query-numeric-tolerance",
+        "query-missing-measures",
         "paged-union-page",
         "paged-union-branches",
         "record-join-page",
@@ -913,6 +918,7 @@
       ],
       "sources": [
         "packages/page/src/validate.ts",
+        "packages/page/src/data-source-structure-errors.ts",
         "packages/page/src/schema/page.ts",
         "tools/scripts/page-conformance-vectors.ts"
       ],

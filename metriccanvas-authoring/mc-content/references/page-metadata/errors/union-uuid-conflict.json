@@ -4,122 +4,8 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 rows",
-      "paths": [
-        "/dataSources/opinions/source/rows"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "存在未定义字段 rowKey(拼写错误?)",
-      "paths": [
-        "/dataSources/opinions/source/rowKey",
-        "/dataSources/opinions/source/rowKey",
-        "/dataSources/opinions/source/members/contract/rowKey",
-        "/dataSources/opinions/source/members/contract/rowKey",
-        "/dataSources/opinions/source/members/contract/rowKey"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "存在未定义字段 sourceField(拼写错误?)",
-      "paths": [
-        "/dataSources/opinions/source/sourceField",
-        "/dataSources/opinions/source/sourceField",
-        "/dataSources/opinions/source/sourceField"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "存在未定义字段 members(拼写错误?)",
-      "paths": [
-        "/dataSources/opinions/source/members",
-        "/dataSources/opinions/source/members"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "存在未定义字段 ordering(拼写错误?)",
-      "paths": [
-        "/dataSources/opinions/source/ordering",
-        "/dataSources/opinions/source/ordering"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "存在未定义字段 pagination(拼写错误?)",
-      "paths": [
-        "/dataSources/opinions/source/pagination",
-        "/dataSources/opinions/source/pagination"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "must be equal to constant",
-      "paths": [
-        "/dataSources/opinions/source/type",
-        "/dataSources/opinions/source/type",
-        "/dataSources/opinions/source/type"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 query",
-      "paths": [
-        "/dataSources/opinions/source/query"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 domainMember",
-      "paths": [
-        "/dataSources/opinions/source/domainMember"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 projection",
-      "paths": [
-        "/dataSources/opinions/source/projection"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 onMissing",
-      "paths": [
-        "/dataSources/opinions/source/onMissing"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 key",
-      "paths": [
-        "/dataSources/opinions/source/members/contract/key",
-        "/dataSources/opinions/source/members/commercial/key"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 canSelectPage",
-      "paths": [
-        "/dataSources/opinions/source/members/contract/canSelectPage",
-        "/dataSources/opinions/source/members/commercial/canSelectPage"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "存在未定义字段 projection(拼写错误?)",
-      "paths": [
-        "/dataSources/opinions/source/members/contract/projection",
-        "/dataSources/opinions/source/members/commercial/projection"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 rowKeyGeneration(拼写错误?)",
       "paths": [
-        "/dataSources/opinions/source/members/contract/rowKeyGeneration",
-        "/dataSources/opinions/source/members/commercial/rowKeyGeneration",
         "/dataSources/opinions/source/members/contract/rowKeyGeneration",
         "/dataSources/opinions/source/members/contract/rowKeyGeneration"
       ]
@@ -133,84 +19,80 @@
     },
     {
       "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 rowKey(拼写错误?)",
+      "paths": [
+        "/dataSources/opinions/source/members/contract/rowKey",
+        "/dataSources/opinions/source/members/contract/rowKey"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "must match a schema in anyOf",
       "paths": [
-        "/dataSources/opinions/source/members/contract",
-        "/dataSources/opinions"
+        "/dataSources/opinions/source/members/contract"
       ]
     }
   ],
   "inputExcerpt": {
     "dataSources": {
       "opinions": {
-        "fields": {
-          "rowKey": {
-            "…": "共4个键"
-          },
-          "localRowId": {
-            "…": "共4个键"
-          },
-          "memberId": {
-            "…": "共4个键"
-          },
-          "approverId": {
-            "…": "共4个键"
-          },
-          "approver": {
-            "…": "共4个键"
-          },
-          "regionId": {
-            "…": "共4个键"
-          },
-          "region": {
-            "…": "共4个键"
-          },
-          "officeId": {
-            "…": "共4个键"
-          },
-          "office": {
-            "…": "共4个键"
-          },
-          "roleId": {
-            "…": "共4个键"
-          },
-          "role": {
-            "…": "共4个键"
-          },
-          "businessType": {
-            "…": "共4个键"
-          },
-          "decisionCount": {
-            "…": "共5个键"
-          },
-          "validOpinionCount": {
-            "…": "共5个键"
-          },
-          "validOpinionRate": {
-            "…": "共5个键"
-          },
-          "missingNote": {
-            "…": "共3个键"
-          },
-          "literalNumber": {
-            "…": "共3个键"
-          },
-          "literalFlag": {
-            "…": "共3个键"
-          }
-        },
         "source": {
-          "type": "pagedUnion",
-          "rowKey": "rowKey",
-          "sourceField": "memberId",
           "members": {
-            "…": "共2个键"
-          },
-          "ordering": {
-            "…": "共3个键"
-          },
-          "pagination": {
-            "…": "共1个键"
+            "contract": {
+              "source": "contract",
+              "projection": {
+                "localRowId": {
+                  "…": "共1个键"
+                },
+                "approverId": {
+                  "…": "共1个键"
+                },
+                "approver": {
+                  "…": "共1个键"
+                },
+                "regionId": {
+                  "…": "共1个键"
+                },
+                "region": {
+                  "…": "共1个键"
+                },
+                "officeId": {
+                  "…": "共1个键"
+                },
+                "office": {
+                  "…": "共1个键"
+                },
+                "roleId": {
+                  "…": "共1个键"
+                },
+                "role": {
+                  "…": "共1个键"
+                },
+                "decisionCount": {
+                  "…": "共1个键"
+                },
+                "validOpinionCount": {
+                  "…": "共1个键"
+                },
+                "validOpinionRate": {
+                  "…": "共1个键"
+                },
+                "businessType": {
+                  "…": "共1个键"
+                },
+                "missingNote": {
+                  "…": "共1个键"
+                },
+                "literalNumber": {
+                  "…": "共1个键"
+                },
+                "literalFlag": {
+                  "…": "共1个键"
+                }
+              },
+              "rowKeyGeneration": "uuid",
+              "rowKey": "contract-localRowId"
+            }
           }
         }
       }

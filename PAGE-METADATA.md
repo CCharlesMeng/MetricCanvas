@@ -92,6 +92,8 @@ IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提
 
 ## 快速查阅与验证
 
+页面数据源结构校验按 `source.type` 定位对应分支；单查询定义的 `dsl_list` 条数错误不再混入其他数据源类型的字段要求。规则见[分支诊断](docs/page-metadata/validation.md#页面数据源分支诊断)，可观察入口 `/pages/data-source-diagnostics`。
+
 需要先观察效果再查配置时，使用[页面示例与能力索引](pages/README.md#能力索引)。页面试验场按布局、独立组件目录和数据与联动三个维度查找推荐场景；数据主线覆盖取数、条件、关联、交互、结果范围与跨页输出，并按页面实际 Dashboard／Report 布局形态筛选具体功能与直接相关的演示。同一场景跨入口复用，集中展示实际演示、目录 README 操作说明、数据关系、组件配置和当前文档试改。全部实际文件在 `/files` 中自动发现，可按文件夹、组件、布局和数据来源组合查找；移动文件保留 id 和 `/pages/<id>` 地址，无需逐页登记。推荐场景的归属信息属于开发工具，不进入页面协议或本地创作 Skill 的运行依赖；目录递归校验见[文件与目录校验](docs/page-metadata/validation.md#文件与目录校验)。
 
 | 使用场景 | 规则与用法 | 完整页面或接入示例 |
@@ -246,7 +248,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 4.4 数据行契约 → [模块参考](contracts/metriccanvas/page/reference/fields.md)。
 
-查询结果中的 `number` / `money` 度量采用单元格容错：异常值归一化为 `null`，数字字符串转换，保留全部数据行；`nullable: false` 的数值度量缺失改为非阻断告警。初始行、动态响应、嵌套数值明细和组合结果的规则一致；维度、字段映射及结构仍严格校验。完整规则见[查询数值容错](docs/page-metadata/fields.md#查询数值度量的容错)，验收见 [query-numeric-tolerance](pages/capabilities/query/query-numeric-tolerance.json)。
+查询结果中的 `number` / `money` 度量采用单元格容错：异常值归一化为 `null`，数字字符串转换，保留全部数据行；`nullable: false` 的数值度量缺失改为非阻断告警。初始行、动态响应和组合结果共享顶层数值容错：响应漏返数值属性时保留列并置空，记录 `MISSING_NUMERIC_QUERY_FIELD`；嵌套数值明细的值异常沿用容错，缺少映射属性仍严格。维度、静态字段映射及结构仍严格校验。完整规则见[查询数值容错](docs/page-metadata/fields.md#查询数值度量的容错)，验收见 [query-numeric-tolerance](pages/capabilities/query/query-numeric-tolerance.json) 与 [query-missing-measures](pages/capabilities/query/query-missing-measures.json)。
 
 <a id="45-inline-页面数据源"></a>
 

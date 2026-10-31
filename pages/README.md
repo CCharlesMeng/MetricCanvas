@@ -284,13 +284,14 @@ Report 页面按三节组织，控件相互独立：
 ### 查询数值容错
 
 - 页面：[query-numeric-tolerance.json](capabilities/query/query-numeric-tolerance.json)，试验场 `capabilities/query/` 目录，或直接打开 [数值容错](http://localhost:5173/pages/query-numeric-tolerance)。
+- 响应漏返指标属性：[query-missing-measures.json](capabilities/query/query-missing-measures.json)，[保留列与空值](http://localhost:5173/pages/query-missing-measures)；合成初始行展示整列金额缺失、单格数值缺失、真实零和负数，操作见[查询场景说明](capabilities/query/README.md#响应漏返数值指标保留行与列)。
 - 数据：八行固定合成数据，含正常数值、占位符、null、数字字符串、真实零、负数、布尔和空串；首屏使用 initial，本地动态查询由 DQE Sim 提供相同原始值。
 - 操作：启动 `pnpm dev:dqe` 后打开页面；表格应保留八行，数值依次为 10.0、—、—、12.5、0.0、-4.0、—、—，完成率按相同缺失规则计算。折线保留 10、12.5、0、-4 四个有效点及其间缺口。排序后八行仍保留。两张指标卡分别显示缺失占位符和真实的 0%，缺失值进度环不能显示 0%。
 - 动态链路：自动行为测试直接读取此页面，通过真实网关和 Sim 执行函数验证无 initial 的动态结果、告警计数、计算、保存与重开；内嵌首屏不请求 DQE。
-- 边界：字段缺失、维度类型、行/明细结构仍拒绝；number 与 money 的查询度量缺失即使 nullable=false 也继续显示。inline 仍严格。
+- 边界：缺少维度属性、嵌套明细映射属性与行/明细结构错误仍拒绝；顶层 number 与 money 查询度量即使属性未返回或 nullable=false 也保留字段并显示缺失。inline 仍严格。
 - 协议：[结果字段契约](../docs/page-metadata/fields.md#查询数值度量的容错)。静态/行为和本地浏览器证据不代表真实 DQE、Relay、DS 模型或部署验收。
 
-此页面同时用于查询错误与结果总数回归：`packages/embed/tests/browser/result-diagnostics.spec.ts` 直接读取页面，在 DQE HTTP 边界注入异常。字段缺失或维度类型错误时，表格、指标卡和折线图呈现空数据，错误只打印到控制台；总数小于或大于实际八行时，八行继续显示并打印 `TOTAL_COUNT_MISMATCH`，不修改上游总数。协议见[查询异常与结果总数](../docs/page-metadata/data-sources.md#查询异常与结果总数)。
+此页面同时用于查询错误与结果总数回归：`packages/embed/tests/browser/result-diagnostics.spec.ts` 直接读取页面，在 DQE HTTP 边界注入异常。缺少维度属性或维度对象失配时，表格、指标卡和折线图呈现空数据，错误只打印到控制台；总数小于或大于实际八行时，八行继续显示并打印 `TOTAL_COUNT_MISMATCH`，不修改上游总数。协议见[查询异常与结果总数](../docs/page-metadata/data-sources.md#查询异常与结果总数)。
 
 ### 商务SDT级联查询保留场景
 

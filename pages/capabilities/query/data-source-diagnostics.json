@@ -1,0 +1,100 @@
+{
+  "id": "data-source-diagnostics",
+  "schemaVersion": "6.74",
+  "layout": "dashboard",
+  "meta": {
+    "title": "页面数据源分支诊断（合成）"
+  },
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "region": {
+          "queryField": "地区部",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "amount": {
+          "queryField": "收入",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "收入"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-30T00:00:00Z",
+          "rows": [
+            {
+              "地区部": "示例地区部",
+              "收入": 12
+            }
+          ],
+          "totalCount": 1
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "example",
+      "title": "页面数据源分支诊断（合成）",
+      "container": "panel",
+      "components": [
+        {
+          "id": "sales-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": "amount",
+                "title": "收入"
+              }
+            ]
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "复制完整页面到 JSON 即时预览；将唯一的查询项复制一份后，应该只报告查询条数错误。恢复一项后正常显示。"
+          }
+        }
+      ]
+    }
+  ]
+}

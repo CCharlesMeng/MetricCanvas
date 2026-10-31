@@ -120,7 +120,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
 
   // Feature pages are the single source for both browser acceptance and exported examples.
   const pageAssets = pageFilesById(path.join(repoRoot, 'pages'));
-  for(const name of ['key-office-filter-demo','key-office-filter-target','chart-constant-values-page','page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles']) {
+  for(const name of ['key-office-filter-demo','key-office-filter-target','chart-constant-values-page','page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles','query-missing-measures']) {
     const content=await readFile(pageAssets.get(name)!,'utf8');
     const document=JSON.parse(content);const errors=validate(document);
     if(errors.length)throw Error(JSON.stringify(errors));

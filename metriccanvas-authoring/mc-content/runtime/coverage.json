@@ -843,6 +843,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/query-missing-measures.json",
+      "target": "product-contracts/page/conformance/valid/query-missing-measures.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/layout-compatibility.json",
       "target": "product-contracts/page/conformance/layout-compatibility.json",
       "scope": "exact product contract"
@@ -2260,6 +2265,11 @@
     {
       "source": "product:page/conformance/invalid/grouped-field-label-equals-id.json",
       "target": "product-contracts/page/conformance/invalid/grouped-field-label-equals-id.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/missing-measures-still-requires-dimension.json",
+      "target": "product-contracts/page/conformance/invalid/missing-measures-still-requires-dimension.json",
       "scope": "exact product contract"
     },
     {
@@ -4798,6 +4808,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/missing-measures-still-requires-dimension.json",
+      "target": "references/page-metadata/errors/missing-measures-still-requires-dimension.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/initial-row-missing-query-field.json",
       "target": "references/page-metadata/errors/initial-row-missing-query-field.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -5828,6 +5843,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/query-missing-measures.json",
+      "target": "references/page-metadata/examples/query-missing-measures.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/paged-union-page.json",
       "target": "references/page-metadata/examples/paged-union-page.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6744,10 +6764,10 @@
     }
   ],
   "counts": {
-    "product": 1317,
+    "product": 1321,
     "authoring": 31,
     "modules": 33,
-    "topics": 216,
+    "topics": 217,
     "nodes": 2445,
     "tools": 9,
     "components": 19

@@ -36,6 +36,7 @@ import { objectQueryErrors } from './validate-object-query';
 import { paramBindingErrors } from './param-bindings';
 import { navigationErrors, urlInputErrors } from './navigate';
 import { Ajv, type ErrorObject } from 'ajv';
+import { dataSourceStructureErrors } from './data-source-structure-errors';
 import {
   isInlineDataSource,
   isQueryDataSource,
@@ -130,7 +131,7 @@ export function parsePage(
   }
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   if (!validateStructure(compatibleDocument)) {
-    const structural = (validateStructure.errors ?? []).map(toTypedError);
+    const structural = dataSourceStructureErrors(compatibleDocument, validateStructure.errors ?? []).map(toTypedError);
     const guided = [...versionErrors(compatibleDocument), ...compositeCardStructureErrors(compatibleDocument), ...tabContainerStructureErrors(compatibleDocument)];
     if (guided.length > 0) {
       return { ok: false, errors: [...guided, ...withoutGuidedPaths(structural, guided)] };
@@ -169,7 +170,7 @@ export function parsePage(
     return { ok: false, errors: materialized.errors };
   }
   if (!validateStructure(materialized.document)) {
-    const structural = (validateStructure.errors ?? []).map(toTypedError);
+    const structural = dataSourceStructureErrors(materialized.document, validateStructure.errors ?? []).map(toTypedError);
     return {
       ok: false,
       errors: declarations.some((declaration) => declaration.required === false)
@@ -2501,6 +2502,12 @@ function typedError(
 
 
 function toTypedError(error: ErrorObject): TypedError {
+  if ((error.keyword === 'minItems' || error.keyword === 'maxItems') &&
+      error.instancePath.endsWith('/dsl_list') && error.params.limit === 1 &&
+      typeof error.params.actualCount === 'number') {
+    return schemaError(error.instancePath,
+      `每个查询定义必须且只能包含 1 条查询，当前为 ${error.params.actualCount} 条。请将多条查询拆为独立页面数据源，再按需关联展示。`);
+  }
   if (error.keyword === 'required') {
     const missing = (error.params as { missingProperty: string }).missingProperty;
     return schemaError(`${error.instancePath}/${escapePointer(missing)}`, `缺少必填字段 ${missing}`);

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "d05853888bd3cc103f7f52bb0d2288fa13bda15becf01ae5db49fad560210269",
+  "sha256": "3e637b4bc8ea0a8c4ead31c98ea4f488f7d590f9708229054730c103b831d7a3",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/fields.md",
-      "sha256": "001f54292997ae8af2fed78a3e9cb053bf1a8c78fe11ea1a12b6e1d994706c58"
+      "sha256": "d60bdbad92f7bfc407176b3744bffa87de4b32c02d623e6708cebf95cdeecd53"
     },
     {
       "file": "docs/page-metadata/filters.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "f77ff0e08582067345d9955ecc2572d709726254037dd83ed24bd5e63c7bee9b"
+      "sha256": "a686052892ff2f7f734bc4b5d82afc280cbb94a4dd4aa399ef7ee8a4b28c693a"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -164,7 +164,7 @@
     },
     {
       "file": "docs/page-metadata/validation.md",
-      "sha256": "0294b5ff9e94ebf85bfd937e1d007012868bb4f78aa4c7b1f76d35b63f0960d9"
+      "sha256": "c87bb7ab42420bb92da2db0c5acf6d2377e9b1829a02f6828557825f1770f9c1"
     },
     {
       "file": "docs/schema-metadata.md",
@@ -1359,6 +1359,10 @@
       "sha256": "82eeff4121d329529e179128d6cd97b80dea03306d5757e116c1bcb8c0f0da3d"
     },
     {
+      "file": "packages/page/src/data-source-structure-errors.ts",
+      "sha256": "54ea196e6aea4068c7c8f58f99b08bebd35cf16784e785c30bd0459f7cd9bd0d"
+    },
+    {
       "file": "packages/page/src/data-source.ts",
       "sha256": "5c19f6610483c42feb4509891fdc64623e166473ae7c957d861ecc5640d3e67b"
     },
@@ -1560,7 +1564,7 @@
     },
     {
       "file": "packages/page/src/query-rows.ts",
-      "sha256": "c7afa62b0a451f30a1c663d0fadb037f6d43884148d1082ccf1f83a5e3f7917b"
+      "sha256": "09e9027c24dbe81260a9e1e648730e5d7f4c8ded49279e4f09571defbb398747"
     },
     {
       "file": "packages/page/src/query-selection-validation.ts",
@@ -1852,7 +1856,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "88e99394d0b5fd96c6b701fc4b2be53a28f48165cab8a1cb18b0f7608acff950"
+      "sha256": "cde02357d904a94ab472851bec284297937ece87da75f557a2dfd2779ca2d19e"
     },
     {
       "file": "packages/page/src/version.ts",
@@ -1860,7 +1864,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "9f3b486a8a8434a9bb75c001913d98355981d2dfd85f0b35c8cbe3e664d1e424"
+      "sha256": "96140cb3d00607b3b716e52d3951f350d7c1709d2c743e6a15812e3eb70a1727"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2252,7 +2256,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "2490da691c4b61f0405dd905c2f69975b08f9d6c4b358dae8596a0752aa6aab8"
+      "sha256": "6170bfb189e1361fbcedf670129052829fd35ef183c5709cb2f5035f8a537c3a"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
@@ -2308,11 +2312,15 @@
     },
     {
       "file": "pages/capabilities/query/README.md",
-      "sha256": "97ac1912a5eb355bb5fd1ccafc41f306df9dfc8ea51ed1293d9a5daf8ef50977"
+      "sha256": "ce5d1029988315ecf1736e2dba175cfa6006e82f539b71ede6e8e54afc46f291"
     },
     {
       "file": "pages/capabilities/query/authoring-contract-reliability.json",
       "sha256": "b899d5cb8ed84513bfe496e644f8c145242f6f416adc18683b4ec8c4740a3a8b"
+    },
+    {
+      "file": "pages/capabilities/query/data-source-diagnostics.json",
+      "sha256": "b0ce0dc713d2e072bf4b886425a6ce755a3354d4fc6502fcd38d1f6e7709e1ef"
     },
     {
       "file": "pages/capabilities/query/dqe-object-query-demo.json",
@@ -2321,6 +2329,10 @@
     {
       "file": "pages/capabilities/query/object-record-join-demo.json",
       "sha256": "94f9f6c6e0eb226fd0ea0bc0558da859c298e244ad6201390fe6eaaab7f51138"
+    },
+    {
+      "file": "pages/capabilities/query/query-missing-measures.json",
+      "sha256": "3826595c48720d0cc28dc0378ff5a4cba75accfbb95a6970d732c6c59f730d90"
     },
     {
       "file": "pages/capabilities/query/query-numeric-tolerance.json",
@@ -2864,7 +2876,7 @@
     },
     {
       "file": "tools/scripts/export-authoring-contracts.ts",
-      "sha256": "e179098020a8e12552f9924ec4255014a3b2e076661b1f4049ed6db1d5f9d9b2"
+      "sha256": "ae2800f3e42fc0e918b4dd30c207ec9d7757b2b9b79c07d3a4235747253ba328"
     },
     {
       "file": "tools/scripts/local-authoring-data-analysis.ts",
@@ -2956,7 +2968,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "ddaf18a03c22b5ec6c76caa0c139aae3ddfc6c6d3ede66f6d8b89f99c571dfc7"
+      "sha256": "bf45667f6cdcf901524ef76adaad1688b4668d109e21db8335457230c449ee03"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

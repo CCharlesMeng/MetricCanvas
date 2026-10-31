@@ -794,8 +794,14 @@ export const invariants: InvariantDefinition[] = [
   {
     id: 'query-initial-rows-normalize',
     description: 'DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验',
-    valid: ['table-scalar-fallback-page', 'filters-page', 'compute-page', 'grouped-fields-page', 'map-page', 'forecast-page', 'query-numeric-tolerance'],
+    valid: ['table-scalar-fallback-page', 'filters-page', 'compute-page', 'grouped-fields-page', 'map-page', 'forecast-page', 'query-numeric-tolerance', 'query-missing-measures'],
     cases: [
+      {
+        case: 'missing-measures-still-requires-dimension',
+        base: 'query-missing-measures',
+        expect: /DQE 内嵌初始行缺少映射字段:样例/,
+        mutate: document => { delete document.dataSources.samples.source.initial.rows[0]['样例']; }
+      },
       {
         case: 'initial-row-missing-query-field',
         base: 'grouped-fields-page',

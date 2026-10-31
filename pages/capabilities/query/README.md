@@ -31,7 +31,7 @@
 1. 检查八行数值依次为 10.0、—、—、12.5、0.0、-4.0、—、—。
 2. 排序后检查八行仍保留，比较缺失指标卡与真实 0% 的区别。
 
-容错仅针对查询数值度量；字段缺失、维度类型错误和 inline 数据仍受严格校验。HTTP 异常注入由回归测试覆盖。
+查询顶层数值度量的属性漏返也按缺失处理，保留列并记录诊断；缺少维度属性、嵌套映射属性和 inline 数据仍受严格校验。HTTP 异常注入由回归测试覆盖。
 
 关键声明：`dataSources.*.fields`, `dataSources.*.source.initial`。
 
@@ -126,3 +126,25 @@
 4. 重复/缺失父行键和非零总数矛盾仍失败，见 `tests/hierarchy-zero-total-rendering.test.ts`；取消、迟到响应、查找歧义与导出边界复用 hierarchy-selection/hierarchy-export 回归。
 
 以上为本地合成查询链路与统一运行时验收，不证明真实 DQE 总数已更正。用户捕获响应仅用于本机忽略目录回放，不写入本示例或分发知识。
+
+## 页面数据源分支诊断
+
+启动 `pnpm dev:playground`，打开 `/pages/data-source-diagnostics`。页面使用合成初始行，不需要 DQE 服务；正常显示“示例地区部”和数值 12。
+
+1. 展开“查看页面 JSON”，复制完整文档，在 `/preview` 的“Page JSON 编辑器”粘贴。正常文档应通过校验并显示一行。
+2. 将 `dataSources.sales.source.query.body.dsl_list` 的唯一元素复制一份，使数组含两项。应只出现一条 `SCHEMA_ERROR`，定位 `/dataSources/sales/source/query/body/dsl_list`，说明当前为 2 条，建议拆成独立页面数据源；不得提示 `queryField` 未定义或缺少 `currency/items/members`。
+3. 恢复一项后正常渲染；改成空数组应报告当前为 0 条。将 `source.type` 改为 `qurey`，应定位 `/dataSources/sales/source/type` 并列出允许值。
+
+静态诊断来自产品共享校验器；浏览器验证错误输出和恢复，不证明真实 DQE 查询或业务口径。
+
+
+## 响应漏返数值指标，保留行与列
+
+入口：`/pages/query-missing-measures`；[页面 JSON](query-missing-measures.json)。无需 URL 参数。启动 `pnpm dev:playground`，使用内嵌合成初始行，无需 DQE 服务。
+
+1. 检查表格保留三行和“数值”“金额（元）”两列；第一行数值显示 `—`，后两行保留 `0.0` 和 `-4.0`。
+2. 金额属性在三行中均未返回，整列显示 `—`；声明的字段、`output_metrics` 和表格列均保留。
+3. 点击数值列排序，确认三行仍在，缺失没有被补零。
+4. 异常复现：将第一行的 `样例` 属性也删除后粘贴至 `/preview`，应报 `MISSING_QUERY_FIELD`，维度键缺失不能按数值缺项处理。
+
+查询诊断按字段汇总 `MISSING_NUMERIC_QUERY_FIELD`，动态 DQE 与初始行共用归一化；真实动态入口、保存重开和组合结果由回归测试及捕获响应回放覆盖。本页只证明合成数据的浏览器呈现，不代表真实 DQE 服务已验收。

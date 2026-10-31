@@ -210,9 +210,11 @@
             "grouped-fields-page",
             "map-page",
             "forecast-page",
-            "query-numeric-tolerance"
+            "query-numeric-tolerance",
+            "query-missing-measures"
           ],
           "invalid": [
+            "missing-measures-still-requires-dimension",
             "initial-row-missing-query-field",
             "initial-row-scalar-object",
             "initial-row-scalar-array",

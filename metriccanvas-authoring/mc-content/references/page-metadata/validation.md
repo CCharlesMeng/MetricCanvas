@@ -6,6 +6,14 @@ SCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段
 
 本册example是完整页面，短JSON片段必须注明插入路径与依赖；生成器会核对完整例子。实际受控工具是否支持、外部服务是否接通分别查Authoring及集成证据。
 
+## 页面数据源分支诊断
+
+页面数据源按显式 `source.type` 报告对应结构分支的错误，不混入其他类型的字段要求；未知类型定位到 `source.type`，允许值由产品 Schema 提供。未声明类型时保留结构错误，不猜测类型。这只改善诊断，不改变文档接受规则，也不自动修正文档。
+
+每个查询定义的 `body.dsl_list` 必须且只能包含一条查询。空数组或多条查询定位到该数组，并报告实际条数和修复建议；多条查询应拆为独立页面数据源，再按需关联展示。一个查询分支失败不应导致合法的 `queryField` 被报为未定义，也不应提示补其他分支的 `currency`、`items` 或 `members`。其他数据源和同一数据源内的独立错误继续保留。
+
+可观察入口 `/pages/data-source-diagnostics`；使用合成初始行，不需要 DQE 服务。在 JSON 即时预览中复制该页唯一的查询项形成两项，应只报告 `dsl_list` 条数错误；步骤见 `pages/capabilities/query/README.md`。
+
 ## 文件与目录校验
 
 页面文件名去掉 `.json` 后须与页面 `id` 一致。目录可按业务或能力嵌套；路径只组织文件，不进入页面元数据，也不改变页面身份或跨页导航。
@@ -37,7 +45,7 @@ SCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段
 - `optional-param-not-in-required-text`：必填文本属性只能引用必需参数。反例：[required-title-references-optional-param](errors/required-title-references-optional-param.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `grouped-query-fields-unique`：按角色分组的查询字段在维度组与度量组之间不得重名。反例：[grouped-field-duplicate](errors/grouped-field-duplicate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `grouped-query-field-label-not-id`：分组查询字段的 label 与字段 id 相同时应省略。反例：[grouped-field-label-equals-id](errors/grouped-field-label-equals-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `query-initial-rows-normalize`：DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验。反例：[initial-row-missing-query-field](errors/initial-row-missing-query-field.json)、[initial-row-scalar-object](errors/initial-row-scalar-object.json)、[initial-row-scalar-array](errors/initial-row-scalar-array.json)、[initial-row-date-object](errors/initial-row-date-object.json)、[initial-row-semantic-html-too-large](errors/initial-row-semantic-html-too-large.json)、[initial-row-detail-missing-query-field](errors/initial-row-detail-missing-query-field.json)、[initial-row-detail-null-not-allowed](errors/initial-row-detail-null-not-allowed.json)、[initial-row-detail-type-mismatch](errors/initial-row-detail-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `query-initial-rows-normalize`：DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验。反例：[missing-measures-still-requires-dimension](errors/missing-measures-still-requires-dimension.json)、[initial-row-missing-query-field](errors/initial-row-missing-query-field.json)、[initial-row-scalar-object](errors/initial-row-scalar-object.json)、[initial-row-scalar-array](errors/initial-row-scalar-array.json)、[initial-row-date-object](errors/initial-row-date-object.json)、[initial-row-semantic-html-too-large](errors/initial-row-semantic-html-too-large.json)、[initial-row-detail-missing-query-field](errors/initial-row-detail-missing-query-field.json)、[initial-row-detail-null-not-allowed](errors/initial-row-detail-null-not-allowed.json)、[initial-row-detail-type-mismatch](errors/initial-row-detail-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `filter-id-unique`：筛选器 id 唯一。反例：[duplicate-filter-id](errors/duplicate-filter-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-range-default-calendar`：timeRange 绝对默认值须为合法公历值、精度一致且 from 不晚于 to。反例：[time-range-from-format](errors/time-range-from-format.json)、[time-range-to-calendar](errors/time-range-to-calendar.json)、[time-range-datetime-without-precision](errors/time-range-datetime-without-precision.json)、[time-range-from-after-to](errors/time-range-from-after-to.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `relative-time-anchor`：结构化相对时间的 anchor 须为合法公历日期。反例：[relative-time-anchor-invalid](errors/relative-time-anchor-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。

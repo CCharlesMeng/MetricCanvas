@@ -88,9 +88,11 @@
             "grouped-fields-page",
             "map-page",
             "forecast-page",
-            "query-numeric-tolerance"
+            "query-numeric-tolerance",
+            "query-missing-measures"
           ],
           "invalid": [
+            "missing-measures-still-requires-dimension",
             "initial-row-missing-query-field",
             "initial-row-scalar-object",
             "initial-row-scalar-array",
@@ -157,6 +159,7 @@
         "references/page-metadata/examples/paged-join-page.json",
         "references/page-metadata/examples/paged-join-fixed-rank-page.json",
         "references/page-metadata/examples/query-numeric-tolerance.json",
+        "references/page-metadata/examples/query-missing-measures.json",
         "references/page-metadata/examples/paged-union-page.json",
         "references/page-metadata/examples/paged-union-branches.json",
         "references/page-metadata/examples/record-join-page.json",

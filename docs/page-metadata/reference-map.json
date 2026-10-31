@@ -129,6 +129,7 @@
         "paged-join-page",
         "paged-join-fixed-rank-page",
         "query-numeric-tolerance",
+        "query-missing-measures",
         "paged-union-page",
         "paged-union-branches",
         "record-join-page",
@@ -545,6 +546,7 @@
       ],
       "sources": [
         "packages/page/src/validate.ts",
+        "packages/page/src/data-source-structure-errors.ts",
         "packages/page/src/schema/page.ts",
         "tools/scripts/page-conformance-vectors.ts"
       ],
@@ -2737,6 +2739,7 @@
       "查阅方式"
     ],
     "validation.md": [
+      "页面数据源分支诊断",
       "文件与目录校验",
       "查阅方式"
     ],

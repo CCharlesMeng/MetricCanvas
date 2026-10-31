@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fixture from '../../../pages/capabilities/query/query-numeric-tolerance.json';
+import missingMeasuresFixture from '../../../pages/capabilities/query/query-missing-measures.json';
 import joinFixture from '../../page/fixtures/contract-valid/paged-join-page.json';
 import { parsePage, versionPolicy, type PageDocument } from '@metriccanvas/page';
 import { rowCellFallback, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
@@ -15,13 +16,17 @@ import { formatValue } from '../../engine/widgets/src/shared/value-format';
 const expected = [10, null, null, 12.5, 0, -4, null, null];
 const document = (): PageDocument => JSON.parse(JSON.stringify(fixture));
 
-function gateway() {
+function gateway(missingFields: string[] = []) {
   const diagnostics = createInMemoryDqeDiagnostics();
   let requests = 0;
   const result = createDqeGateway({ diagnostics, fetchImpl: (async (_url, options) => {
     requests++;
     const body = JSON.parse(String(options?.body));
-    return new Response(JSON.stringify({ retCode: 'CBC.0000', results: body.dsl_list.map(executeDqeItem) }));
+    const results = body.dsl_list.map(executeDqeItem);
+    for (const result of results) {
+      for (const field of missingFields) delete result.data[0][field];
+    }
+    return new Response(JSON.stringify({ retCode: 'CBC.0000', results }));
   }) as typeof fetch });
   return { result, diagnostics, requests: () => requests };
 }
@@ -41,6 +46,43 @@ async function read(input: PageDocument, useInitial: boolean, transport: ReturnT
 }
 
 describe('完整页面的查询数值容错', () => {
+  it('缺失指标验收页保留整列，只有真实零显示为零', async () => {
+    const result = await read(JSON.parse(JSON.stringify(missingMeasuresFixture)), true, gateway());
+    expect(result.rows).toEqual([
+      {sample:'未返回数值',value:null,amount:null},
+      {sample:'真实零',value:0,amount:null},
+      {sample:'负数',value:-4,amount:null}
+    ]);
+    expect(result.rows.map(row => formatValue(row.value, 'number-1'))).toEqual(['—','0.0','-4.0']);
+    expect(result.rows.map(row => formatValue(row.amount, 'number-2'))).toEqual(['—','—','—']);
+  });
+
+  it('响应漏返数值属性时保留声明、行和其他值；首屏、动态与保存重开一致', async () => {
+    const input = document(), transport = gateway(['容错数值', '容错金额']);
+    const source = input.dataSources.samples.source;
+    if (source.type !== 'query' || !source.initial) throw Error('缺少查询初始行');
+    delete source.initial.rows[0]['容错数值'];
+    delete source.initial.rows[0]['容错金额'];
+    const original = structuredClone(input);
+    const initial = await read(input, true, transport);
+    const dynamic = await read(input, false, transport);
+    expect(dynamic.rows).toEqual(initial.rows);
+    expect(dynamic.rows).toHaveLength(8);
+    expect(dynamic.rows[0]).toMatchObject({value:null,amount:null,rate:null,target:100});
+    expect(dynamic.rows[4]).toMatchObject({value:0,amount:0});
+    expect(dynamic.rows[5]).toMatchObject({value:-4,amount:-40});
+    expect(formatValue(dynamic.rows[0].value, 'number-1')).toBe('—');
+    expect(transport.diagnostics.records()[0]).toMatchObject({status:'success',warnings:expect.arrayContaining([
+      {code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'value',queryField:'容错数值',expectedType:'number',count:1},
+      {code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'amount',queryField:'容错金额',expectedType:'money',count:1}
+    ])});
+    const saved = await createPageDataExecutor({gateway:transport.result}).execute(input);
+    const reopened = await read(JSON.parse(JSON.stringify(saved)), true, transport);
+    expect(reopened.rows).toEqual(dynamic.rows);
+    expect(saved.dataSources.samples.fields).toEqual(input.dataSources.samples.fields);
+    expect(input).toEqual(original);
+  });
+
   it('原始初始行中的对象、数组和非有限数字也能到达数值归一化接缝', async () => {
     for (const value of [{ invalid: true }, [1, 2], NaN, Infinity]) {
       const input = JSON.parse(JSON.stringify(fixture));

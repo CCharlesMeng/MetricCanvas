@@ -25,7 +25,7 @@
     },
     {
       "file": "page/conformance/coverage.json",
-      "sha256": "9143813f2df573e7dea65763897d824941c32dcc818e812c3653f61e0b127c39"
+      "sha256": "8bebc5be00600d7360cbefe41825ff58a97884c3da4a3fdabe46527023c16b70"
     },
     {
       "file": "page/conformance/grouped-params.json",
@@ -517,7 +517,7 @@
     },
     {
       "file": "page/conformance/invalid/field-id-pattern.json",
-      "sha256": "7c048cdbd7fba91120199a7195d31862b32e659b953046d8884d2936ab6ad74e"
+      "sha256": "43a621458055c050da89216cf963eaa440ba05e0f07f25bde4298615955822dd"
     },
     {
       "file": "page/conformance/invalid/filter-binding-dimension-target-not-dimension.json",
@@ -673,11 +673,11 @@
     },
     {
       "file": "page/conformance/invalid/inline-row-detail-item-not-object.json",
-      "sha256": "f03e1b9c078912330157693de1a436fab7a434edf3aacf63aeb13953b294d741"
+      "sha256": "04683f2e59237c3d5f8ea9c8f997abd7c422faff357ea13f210c965eb74b47a4"
     },
     {
       "file": "page/conformance/invalid/inline-row-detail-list-too-large.json",
-      "sha256": "40a2da03e3440f8761e98202b3b5151029ef2cb262a6de725dde015017ccd48e"
+      "sha256": "54681c09925812e0f0048b57d316059e9226cd108ae9a85a49ccb26227710235"
     },
     {
       "file": "page/conformance/invalid/inline-row-detail-missing-field.json",
@@ -882,6 +882,10 @@
     {
       "file": "page/conformance/invalid/metric-secondary-link.json",
       "sha256": "1be626673fa24b8431bbd123307af74a6ac1c59a5d8a1207d4079731a293c119"
+    },
+    {
+      "file": "page/conformance/invalid/missing-measures-still-requires-dimension.json",
+      "sha256": "a24226b702a4d6a55f77f8a76d1c3b6eaa3f11e8fbab24d855a3961e9490e5f0"
     },
     {
       "file": "page/conformance/invalid/missing-schema-version.json",
@@ -1721,7 +1725,7 @@
     },
     {
       "file": "page/conformance/invalid/union-composite-empty-fields.json",
-      "sha256": "f52bd1307d676c57ff6498cab0eb6921a79e2bd6fbe706ca2c63a112ff2a3973"
+      "sha256": "25aa55fb75be699d51c29167cbc3f96aff084970550e83d242437ece7b487f6a"
     },
     {
       "file": "page/conformance/invalid/union-composite-measure-field.json",
@@ -1737,7 +1741,7 @@
     },
     {
       "file": "page/conformance/invalid/union-composite-scalar-conflict.json",
-      "sha256": "8d6bc058976b43629909767e70e180633657aacd2a7ef5e9af084aa1a579cc24"
+      "sha256": "a46769ba488337ccf2c6a4ec004fe0b530c8be0ca959a1e30baeacbb0068a357"
     },
     {
       "file": "page/conformance/invalid/union-composite-unknown-field.json",
@@ -1789,7 +1793,7 @@
     },
     {
       "file": "page/conformance/invalid/union-uuid-conflict.json",
-      "sha256": "d9f599385489a3f55556f9b801bd65121e54ce19d479d4d2d210b734aa605937"
+      "sha256": "e97c996d3b4c708d0de5fa2d26d2148230ec0e0f128eba0586f81ec4f49e28da"
     },
     {
       "file": "page/conformance/invalid/union-uuid-old.json",
@@ -1853,7 +1857,7 @@
     },
     {
       "file": "page/conformance/time-param-bindings.json",
-      "sha256": "65ff1a38e8e1f493383dd8ff3b880b6501eb8ae741f5faef491d947de47fa47c"
+      "sha256": "4446cd240729c62e6183ac332b3fa0007311611c2413d922306721e185c503ad"
     },
     {
       "file": "page/conformance/valid/availability-page.json",
@@ -2190,6 +2194,10 @@
     {
       "file": "page/conformance/valid/query-dashboard.json",
       "sha256": "e9b276d0d6fd3014e64b11f0abf6bd416ff87f13d8b58d11c2311b46fdc040cb"
+    },
+    {
+      "file": "page/conformance/valid/query-missing-measures.json",
+      "sha256": "3826595c48720d0cc28dc0378ff5a4cba75accfbb95a6970d732c6c59f730d90"
     },
     {
       "file": "page/conformance/valid/query-mode-binding-branches-page.json",
@@ -2597,7 +2605,7 @@
     },
     {
       "file": "page/reference/data-sources.md",
-      "sha256": "5aa39ac49d8789c3f7533591d7e695bfde46ef6e356d447e1693683151d23588"
+      "sha256": "55d91a9f76358812eb88d4478a2abc568d94845b8de6bf16b14d96e6ee64effc"
     },
     {
       "file": "page/reference/errors/actual-after-captured-month.json",
@@ -3081,7 +3089,7 @@
     },
     {
       "file": "page/reference/errors/field-id-pattern.json",
-      "sha256": "ee6dc1192e50afed1293270bbb72cf5a783f4c1a6d39cdc8566d90dbdcf33bda"
+      "sha256": "a222ca0e3be4b768f660f56ef1db8874ced2b16e1fb2bb68c49c76544fe8140d"
     },
     {
       "file": "page/reference/errors/filter-binding-dimension-target-not-dimension.json",
@@ -3237,11 +3245,11 @@
     },
     {
       "file": "page/reference/errors/inline-row-detail-item-not-object.json",
-      "sha256": "e976c12437d4a450116de0ad6dbfbec83f4acc840c018efc19085ec932135193"
+      "sha256": "c72f84013fd23fafb00f91a9285a83a7dad84322fdb46e86ac989267f471d0c2"
     },
     {
       "file": "page/reference/errors/inline-row-detail-list-too-large.json",
-      "sha256": "1703606111bb6b60c6b913b30a415264f57f44321dbfeb4cdc9f2d49131a7bda"
+      "sha256": "e2dde51cd186c69576a347f21ea6c1763cef2bd06a97562c9f6e6016b1d843c4"
     },
     {
       "file": "page/reference/errors/inline-row-detail-missing-field.json",
@@ -3446,6 +3454,10 @@
     {
       "file": "page/reference/errors/metric-secondary-link.json",
       "sha256": "ab6077db33c69ff8e5c3292d8a49aee9cf1bb6053a13a64489e906351f96d999"
+    },
+    {
+      "file": "page/reference/errors/missing-measures-still-requires-dimension.json",
+      "sha256": "3a1fe68576f058b8b90a1e781b9805eb9b24e1b1eb26a2be4181524edd5ff49a"
     },
     {
       "file": "page/reference/errors/missing-schema-version.json",
@@ -4285,7 +4297,7 @@
     },
     {
       "file": "page/reference/errors/union-composite-empty-fields.json",
-      "sha256": "33cecd829350c34bad4c293a408d75501069a54d23d81766fdb036e8790933c8"
+      "sha256": "f01324f7b62386d0f4158d237af5eb900615b51dad5ea66ae164d381063f91df"
     },
     {
       "file": "page/reference/errors/union-composite-measure-field.json",
@@ -4301,7 +4313,7 @@
     },
     {
       "file": "page/reference/errors/union-composite-scalar-conflict.json",
-      "sha256": "5451fa123945c22d0b291ef4657ba80d93b8568a00793b5485c231843bdaa5de"
+      "sha256": "6af76849938889e2e78ea9d40b4299ed3cc7463d9556388129f68e34973aad54"
     },
     {
       "file": "page/reference/errors/union-composite-unknown-field.json",
@@ -4353,7 +4365,7 @@
     },
     {
       "file": "page/reference/errors/union-uuid-conflict.json",
-      "sha256": "7fd04ca15dc13f87017724542c9b175a5948645cbebf4e904711a1c00c331b67"
+      "sha256": "7c5b0167c63234f9c5a3e5ee6f9291859921b0caf7e0329fa662a1e29266a759"
     },
     {
       "file": "page/reference/errors/union-uuid-old.json",
@@ -4912,6 +4924,10 @@
       "sha256": "e9b276d0d6fd3014e64b11f0abf6bd416ff87f13d8b58d11c2311b46fdc040cb"
     },
     {
+      "file": "page/reference/examples/query-missing-measures.json",
+      "sha256": "3826595c48720d0cc28dc0378ff5a4cba75accfbb95a6970d732c6c59f730d90"
+    },
+    {
       "file": "page/reference/examples/query-mode-binding-branches-page.json",
       "sha256": "5957389dd0c9a006bf6177b1ec848b26e4d3e5edbdde0003a63e0d126d108e2b"
     },
@@ -5213,7 +5229,7 @@
     },
     {
       "file": "page/reference/fields.md",
-      "sha256": "89a614c225d8f1105b4896223a56ceae889d0f19b8aba21e62beebff8c82775c"
+      "sha256": "ee4985666dae3510e74d56cd1c1cc09087a1d7ba06c5dc5386b43eca39b39780"
     },
     {
       "file": "page/reference/filters.md",
@@ -5221,7 +5237,7 @@
     },
     {
       "file": "page/reference/index.json",
-      "sha256": "11102f4dfc6af34dedb96d4552a5a29fc6a4147c8313e22781dbef3789bec0a3"
+      "sha256": "e2d74ebdeb1708b25122a355c4eeae63809b0d155fd25526a74507860c94419d"
     },
     {
       "file": "page/reference/page.md",
@@ -5241,7 +5257,7 @@
     },
     {
       "file": "page/reference/rules.json",
-      "sha256": "9143813f2df573e7dea65763897d824941c32dcc818e812c3653f61e0b127c39"
+      "sha256": "8bebc5be00600d7360cbefe41825ff58a97884c3da4a3fdabe46527023c16b70"
     },
     {
       "file": "page/reference/schema.json",
@@ -5257,7 +5273,7 @@
     },
     {
       "file": "page/reference/validation.md",
-      "sha256": "c74a8e8464512be9963f405345b6ce0f8bdd48c4182feb3fce335784a8f0709d"
+      "sha256": "26ff146d5379319b696fe7bac5431af0ad0fd30c3d1de42f240b1f99967d4952"
     },
     {
       "file": "page/schema.json",

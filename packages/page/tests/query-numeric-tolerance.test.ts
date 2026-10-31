@@ -5,6 +5,26 @@ const number: QueryFieldDefinition = { queryField: '数值', type: 'number', rol
 const money: QueryFieldDefinition = { queryField: '数值', type: 'money', role: 'measure', currency: 'CNY', nullable: false };
 
 describe('查询数值度量容错', () => {
+  it.each([number, money])('$type 未返回属性时保留行和字段，置空并按字段汇总告警', field => {
+    const input = [{ 编码: 'A', 数值: 0 }, { 编码: 'B' }, { 编码: 'C', 数值: -4 }, { 编码: 'D' }];
+    const original = structuredClone(input);
+    const result = normalizeQueryRows(input, {
+      key: { queryField: '编码', type: 'string', role: 'dimension', nullable: false }, value: field
+    });
+    expect(result).toMatchObject({ok:true,rows:[
+      {key:'A',value:0},{key:'B',value:null},{key:'C',value:-4},{key:'D',value:null}
+    ],warnings:[{code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'value',queryField:'数值',expectedType:field.type,count:2}]});
+    expect(input).toEqual(original);
+    expect(JSON.stringify(result)).not.toContain('cellFallbacks');
+  });
+
+  it('整列数值未返回也保留声明字段，可空声明仍记录缺列告警', () => {
+    const result = normalizeQueryRows([{}, {}], { value: {...number,nullable:true} });
+    expect(result).toMatchObject({ok:true,rows:[{value:null},{value:null}],warnings:[{
+      code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'value',queryField:'数值',count:2
+    }]});
+  });
+
   it.each([number, money])('$type 保留有效值和全部行，不把缺失、布尔或对象变成零', field => {
     const values = [10, '--', null, ' 12.5 ', 0, -4, '', ' ', true, false, {}, [], 'bad', NaN, Infinity, -Infinity, '0x10', '1,000', '12%'];
     const input = values.map(value => ({ 数值: value }));
@@ -47,8 +67,11 @@ describe('查询数值度量容错', () => {
     }
   });
 
-  it('缺字段与 inline 继续严格；标量失配保留展示证据而不提升类型', () => {
-    expect(normalizeQueryRows([{}], { value: number }).ok).toBe(false);
+  it('缺维度字段、行结构与 inline 继续严格；标量失配保留展示证据而不提升类型', () => {
+    expect(normalizeQueryRows([{}], { value: { ...number, role: 'dimension' } })).toMatchObject({
+      ok: false, issues: [{code: 'MISSING_QUERY_FIELD', rowIndex: 0, fieldId: 'value', queryField: '数值', actualFields: []}]
+    });
+    expect(normalizeQueryRows([null], { value: number })).toEqual({ok:false,issues:[{code:'ROW_NOT_OBJECT',rowIndex:0}]});
     for (const value of ['--', '12', null]) {
       expect(normalizeQueryRows([{ 数值: value }], { value: { ...number, role: 'dimension' } })).toMatchObject({ok:true,rows:[{value:null}]});
     }

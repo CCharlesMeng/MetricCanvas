@@ -42,7 +42,7 @@ export type QueryRowNormalizationIssue =
 
 /** 按字段和原因计数，不保留原始值、数据行或每行告警。 */
 export interface QueryRowNormalizationWarning {
-  code: 'INVALID_NUMERIC_VALUE' | 'NUMERIC_NULL_NOT_ALLOWED' | 'SCALAR_TYPE_MISMATCH' | 'SCALAR_NULL_NOT_ALLOWED';
+  code: 'MISSING_NUMERIC_QUERY_FIELD' | 'INVALID_NUMERIC_VALUE' | 'NUMERIC_NULL_NOT_ALLOWED' | 'SCALAR_TYPE_MISMATCH' | 'SCALAR_NULL_NOT_ALLOWED';
   expectedType?: QueryFieldDefinition['type'];
   fieldId: string;
   queryField: string;
@@ -87,6 +87,13 @@ export function normalizeQueryRows(
       // 计算阶段产出字段不来自外部响应,归一化阶段跳过;它们由算子写入。
       if (!hasQueryFieldMapping(mapping)) continue;
       if (!Object.hasOwn(rawRow, mapping.queryField)) {
+        if (isNumericMeasure(mapping)) {
+          row[fieldId] = null;
+          addWarning(warnings, 'MISSING_NUMERIC_QUERY_FIELD', {
+            fieldId, queryField: mapping.queryField, expectedType: mapping.type
+          });
+          continue;
+        }
         issues.push({
           code: 'MISSING_QUERY_FIELD',
           rowIndex,

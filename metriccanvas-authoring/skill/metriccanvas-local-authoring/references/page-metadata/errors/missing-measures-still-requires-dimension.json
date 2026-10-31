@@ -1,0 +1,27 @@
+{
+  "case": "missing-measures-still-requires-dimension",
+  "invariant": "query-initial-rows-normalize",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 内嵌初始行缺少映射字段:样例",
+      "paths": [
+        "/dataSources/samples/source/initial/rows/0/样例"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "samples": {
+        "source": {
+          "initial": {
+            "rows": [
+              {}
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}
