@@ -1,6 +1,6 @@
 ---
 name: repair-page-metadata
-description: 定位、修复并回归验证 AI 生成或人工修改的 MetricCanvas 页面元数据（Page Metadata JSON）。用于 `validate_page` / `pnpm validate` 报错、页面 JSON 无法解析、字段契约或 `queryField` 错误、筛选绑定或跨页引用错误、DQE 页面验真失败、以及“校验通过但查询、运行时或呈现仍不正确”的元数据问题。
+description: 定位、修复并回归验证 MetricCanvas 页面元数据。用于页面校验失败、JSON 无法解析、字段契约或 queryField 错误、筛选绑定或导航输入错误、DQE 查询失败，以及校验通过但查询、运行时或呈现仍不正确的问题。
 ---
 
 # 页面元数据定位与修复
@@ -28,7 +28,7 @@ pnpm exec tsx .agents/skills/repair-page-metadata/scripts/inspect-page-metadata.
 
 1. JSON 语法与版本；
 2. 页面 Schema 与文档内不变式；
-3. 文件名与跨页引用；
+3. 文件名、递归目录发现与导航输入；
 4. 数据上下文与取数单元清单；
 5. DQE 真实执行、查询字段映射与结果字段契约；
 6. 统一运行时与呈现；
@@ -66,17 +66,21 @@ pnpm exec tsx .agents/skills/repair-page-metadata/scripts/inspect-page-metadata.
 
 每轮修改后立即重跑原始失败入口。如果错误数没有减少或新错误落在更上游，回滚该轮推断，重新定位。
 
+诊断脚本直接复用产品的单文档检查与递归页面发现；文件名始终核对 `Page.id`。目录中跨层同名页面和空目录为调用错误。退出码 0/1/2 分别为通过/文档错误/调用错误，文档诊断保留 `type/path/message`，输入文件只读。导航按当前 URL 与显式输入绑定检查，部署目标是否存在由集成应用和浏览器验证。
+
 ## 5. 验证闭环
 
 根据涉及的层级完成所有适用项：
 
 - 目标文档的诊断结果为零错误；
-- 文件位于 `pages/` 或包含导航时，整个页面目录校验通过；
+- 文件位于 `pages/` 时，整个页面目录校验通过；修改导航时，在集成应用中验证目标 URL 及传参；
 - 查询页面数据源的取数单元重跑清单校验和真实执行，并证明返回行通过查询字段映射与结果字段契约；
 - 修改了校验器、Schema 或组件能力时，加入能在修复前失败的最小回归测试，并运行相关包测试与类型检查；
 - 问题与呈现有关时，在统一运行时预览精确页面修订，覆盖 ready / empty / error 与必要交互。
 
 “`validate_page` 通过”只完成单文档结构和语义校验，不能单独作为查询正确、业务正确或呈现正确的完成证据。
+
+维护本 Skill 脚本或产品包导出时运行 `pnpm skills:repair:check`；两个核心入口的统一回归为 `pnpm skills:check`。协议与引擎行为的同步要求见仓库 `docs/agents/local-authoring-skill-maintenance.md`。
 
 ## 6. 交付错误台账
 

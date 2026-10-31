@@ -35,7 +35,10 @@
     "mc:content:coverage": "tsx tools/scripts/export-authoring-contracts.ts --mc-coverage",
     "mc:content:check": "pnpm authoring:contracts:check && pnpm mc:content:coverage && pnpm mc:content:test && python3 tools/scripts/mc-content-fixtures.py --check",
     "mc:content:pack": "python3 tools/scripts/mc-content-pack.py",
-    "mc:content:benchmark": "python3 tools/scripts/mc-content-benchmark.py"
+    "mc:content:benchmark": "python3 tools/scripts/mc-content-benchmark.py",
+    "skills:repair:check": "tsc --noEmit -p tools/tsconfig.skills.json && vitest run tests/repair-page-metadata.test.ts tests/skill-release.test.ts",
+    "skills:check": "pnpm skills:repair:check && pnpm authoring:check",
+    "skills:pack": "python3 tools/scripts/skill-release.py pack"
   },
   "devDependencies": {
     "@sveltejs/package": "2.5.8",

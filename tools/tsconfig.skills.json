@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "../.agents/skills/repair-page-metadata/scripts/*.ts",
+    "scripts/local-authoring-validator.ts"
+  ]
+}

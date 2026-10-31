@@ -30,7 +30,7 @@ jobs:
           python tools/scripts/check-authoring-complexity.py
 
       # 校验页面文档(结构 + 语义 + 文件名)。失败时按错误分型汇总到 job summary:
-      # v3 页面文档只做结构与绑定契约校验；DQE 查询错误在预览/运行阶段返回。
+      # 页面文档只做当前协议的结构与绑定契约校验；DQE 查询错误在预览/运行阶段返回。
       - name: 校验页面文档
         run: |
           set +e
@@ -40,7 +40,7 @@ jobs:
             {
               echo '## 页面文档校验失败'
               if grep -q 'SCHEMA_ERROR' validate.log; then
-                echo '- **SCHEMA_ERROR**:页面文档不符合 v3 契约，修改文档本身即可；v1/v2 页面需在接入仓库前离线转换（错误明细见「校验页面文档」步骤日志）。'
+                echo '- **SCHEMA_ERROR**:页面文档不符合当前产品契约；按错误路径检查文档，旧版本先运行独立升级工具（错误明细见「校验页面文档」步骤日志）。'
               fi
             } >> "$GITHUB_STEP_SUMMARY"
           fi
@@ -49,8 +49,28 @@ jobs:
       - name: 检查创作 Bundle 中立契约
         run: pnpm authoring:contracts:check
 
-      - name: 验证 local-authoring Skill
-        run: pnpm authoring:check
+      - name: 验证两个核心 Skill 与独立分发
+        run: pnpm skills:check
+
+      - name: 打包并回验独立 local-authoring Skill
+        run: pnpm skills:pack --output "$RUNNER_TEMP/metriccanvas-local-authoring.tar.gz"
+
+      - name: 上传独立 Skill 及发布回执
+        uses: actions/upload-artifact@v4
+        with:
+          name: metriccanvas-local-authoring-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/metriccanvas-local-authoring.tar.gz
+            ${{ runner.temp }}/metriccanvas-local-authoring.tar.gz.release.json
+
+      - name: 下载并校验实际分发 Skill
+        uses: actions/download-artifact@v4
+        with:
+          name: metriccanvas-local-authoring-${{ github.sha }}
+          path: ${{ runner.temp }}/skill-downloaded
+
+      - name: 仓外验证下载归档与整目录摘要
+        run: python tools/scripts/skill-release.py verify --archive "$RUNNER_TEMP/skill-downloaded/metriccanvas-local-authoring.tar.gz"
 
       - name: 验证 MC 内容包、布局能力与旧页升级
         run: |

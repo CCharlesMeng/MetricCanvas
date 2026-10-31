@@ -46,13 +46,23 @@ Skill 验证按 [仓库约定](../../AGENTS.md#skill-验收范围) 只验收 loc
 pnpm install --frozen-lockfile
 pnpm authoring:contracts
 pnpm authoring:contracts:check
-pnpm authoring:check
+pnpm skills:check
 pnpm exec tsc --noEmit -p tests/tsconfig.json
 ```
 
 Python 测试需要 Bundle 锁定依赖；使用已装依赖的环境执行，不能把缺依赖当成产品失败。独立安装运行校验只需 Node.js 22+，无需上述维护工具链。
 
 检查生成差异、第三方许可证、注册入口及完整目录链接闭合。tests/local-authoring-skill.test.ts 会复制实体至临时位置，核对生成哈希、短片段/完整样例、快照与产品契约向量的一致性；导出隔离测试验证生成漂移与作者文件保留。显式暂存本次真源和对应派生物，保持其他任务的源文件与本地证据不变。
+
+`skills:check` 组合 repair 的定向类型检查、真实 CLI 回归和独立归档回验，以及既有 `authoring:check`。CI 保留一次生成一致性检查；包导出或工具移动同样触发入口检查，避免 Skill 内脚本游离于常规类型检查之外。repair 复用 `inspectPageDocument` 与 `pageFilesById`，维护其报告格式时保持产品错误内容与顺序。
+
+## 独立 Skill 发行与回退
+
+运行 `pnpm skills:pack --output <new-path.tar.gz>` 生成完整安装目录归档与同名 `.release.json` 回执。维护工具需 Python 3.12+ 和 Node.js 22+；安装后的 Skill 仍只依赖 Node。工具拒绝覆盖、符号链接、知识清单漂移，回读实际归档，在仓库外执行版本、合法示例和非法文档检查。回执锁定作者文件在内的全部文件摘要、Skill/Schema/产品版本、来源提交和脏工作区标记，并记录实际校验命令和退出码。
+
+CI 在生成与两个核心入口检查通过后上传归档与回执，再下载执行 `python3 tools/scripts/skill-release.py verify --archive <downloaded-path.tar.gz>`。CI 运行与回执来源为同一提交；脏工作区产物只作为本地检查证据。Schema、产品发行与 Skill 版本各自演进，来源 SHA 放外部回执，避免生成文件提交自引用。
+
+安装或回退时核对回执摘要，并完整替换 Skill 目录；替换后运行版本命令和代表页面校验，记录实际安装版本。仓库更新、归档通过和外部安装成功分别报告。真实 Relay、DQE 和目标设备部署由实际环境另验。
 
 ## 行为复测
 
