@@ -205,6 +205,7 @@ describe('独立本地创作 Skill', () => {
     expect(run([target]).status).toBe(1);
   });
 
+  // Three cold CLI processes, each still bounded by run()'s 10s deadline.
   it('仓外支持 output_dims 现成计数作为度量，并拒绝旧版本及维度系列', async () => {
     const document = JSON.parse(files.get('references/page-metadata/examples/stored-count-measures.json')!);
     const target = path.join(isolated, `${document.id}.json`);
@@ -219,7 +220,7 @@ describe('独立本地创作 Skill', () => {
     document.sections[0].components[0].props.series[0].field = 'regionId';
     await writeFile(target, JSON.stringify(document));
     expect(run([target]).status).toBe(1);
-  });
+  }, 30_000);
 
   it('仓外Skill携带同源Report组合参考，并由报表创作入口触发读取', async () => {
     const canonical = await readFile('tools/mc-content/layouts/report-composition.md', 'utf8');

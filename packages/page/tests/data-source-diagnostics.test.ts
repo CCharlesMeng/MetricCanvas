@@ -46,6 +46,13 @@ describe('页面数据源结构诊断', () => {
     expect(parsePage(queryDashboard).ok).toBe(true);
   });
 
+  it('数据源以外的结构错误保留原位置，不为合法数据源制造诊断', () => {
+    const input = { ...structuredClone(queryDashboard), unexpected: true };
+    const before = JSON.stringify(input);
+    expect(parsePage(input).errors).toEqual([expect.objectContaining({path:'/unexpected'})]);
+    expect(JSON.stringify(input)).toBe(before);
+  });
+
   it('不隐藏同一查询中的独立字段错误', () => {
     const document = multipleQueries();
     const input = { ...document, dataSources: { sales: {

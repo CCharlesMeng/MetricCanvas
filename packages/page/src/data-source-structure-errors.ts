@@ -2,22 +2,40 @@ import { Ajv, type AnySchemaObject, type ErrorObject, type ValidateFunction } fr
 import { pageSchema } from './schema';
 
 const definitions = (pageSchema as unknown as { definitions: Record<string, AnySchemaObject> }).definitions;
-const validators = sourceValidators();
+const schemas = sourceSchemas();
+const validators = new Map<string, ValidateFunction>();
+let ajv: Ajv | undefined;
 
 function resolve(schema: AnySchemaObject): AnySchemaObject {
   return typeof schema.$ref === 'string' ? definitions[schema.$ref.slice('#/definitions/'.length)] : schema;
 }
 
 /** Diagnostic branches come from the same Schema as acceptance; no second protocol table. */
-function sourceValidators(): Map<string, ValidateFunction> {
-  const ajv = new Ajv({ allErrors: true, strict: false });
-  const result = new Map<string, ValidateFunction>();
+function sourceSchemas(): Map<string, AnySchemaObject> {
+  const result = new Map<string, AnySchemaObject>();
   for (const branch of definitions.dataSource.anyOf as AnySchemaObject[]) {
     const schema = resolve(branch);
     const source = resolve(schema.properties.source);
-    result.set(source.properties.type.const, ajv.compile({ ...schema, definitions }));
+    result.set(source.properties.type.const, schema);
   }
   return result;
+}
+
+/** Compile only an affected branch; valid pages never need diagnostic validators. */
+function sourceValidator(type: string): ValidateFunction | undefined {
+  const schema = schemas.get(type);
+  if (!schema) return undefined;
+  let validate = validators.get(type);
+  if (!validate) {
+    ajv ??= new Ajv({ allErrors: true, strict: false });
+    validate = ajv.compile({ ...schema, definitions });
+    validators.set(type, validate);
+  }
+  return validate;
+}
+
+function sourcePath(error: ErrorObject): string {
+  return error.instancePath.match(/^\/dataSources\/[^/]+/)?.[0] ?? '';
 }
 
 function object(value: unknown): Record<string, unknown> | undefined {
@@ -55,10 +73,10 @@ function scopedError(error: ErrorObject, value: unknown, path: string): ErrorObj
 function sourceErrors(value: unknown, path: string): ErrorObject[] | undefined {
   const type = object(object(value)?.source)?.type;
   if (typeof type !== 'string') return undefined;
-  const validate = validators.get(type);
+  const validate = sourceValidator(type);
   if (!validate) return [{
     keyword: 'enum', instancePath: `${path}/source/type`, schemaPath: '#/definitions/dataSource',
-    params: { allowedValues: [...validators.keys()] }
+    params: { allowedValues: [...schemas.keys()] }
   }];
   validate(value);
   return (validate.errors ?? []).filter(error => !singleAlternative(error))
@@ -69,16 +87,18 @@ function sourceErrors(value: unknown, path: string): ErrorObject[] | undefined {
 export function dataSourceStructureErrors(document: unknown, errors: ErrorObject[]): ErrorObject[] {
   const sources = object(object(document)?.dataSources);
   if (!sources) return errors;
+  const affected = new Set(errors.map(sourcePath));
   const replacements = new Map<string, ErrorObject[]>();
   for (const [id, source] of Object.entries(sources)) {
     const path = `/dataSources/${escapePointer(id)}`;
+    if (!affected.has(path)) continue;
     const selected = sourceErrors(source, path);
     if (selected) replacements.set(path, selected);
   }
   const result: ErrorObject[] = [];
   const emitted = new Set<string>();
   for (const error of errors) {
-    const path = error.instancePath.match(/^\/dataSources\/[^/]+/)?.[0] ?? '';
+    const path = sourcePath(error);
     const selected = replacements.get(path);
     if (!selected) { result.push(error); continue; }
     if (emitted.has(path)) continue;
