@@ -36,7 +36,7 @@ it.each(['target','operationId','conditionKey','rows-error','status','extra-sour
   if (field === 'extra-source') response.dataSources.extra = response.dataSources.gmv;
   expect(()=>prepareExecution(request,response)).toThrow(expect.objectContaining({code:'RESPONSE_MISMATCH'}));
 });
-it('raw queryField映射、字段失败及全失败沿用既有快照错误，原文不变', () => {
+it('raw queryField映射保留缺失数值，维度失败及全失败沿用快照错误，原文不变', () => {
   const {request,response} = scenario('execute-success');
   response.document.dataSources.gmv.fields.gmv.queryField = 'income';
   response.document.dataSources.gmv.source.query.body!.dsl_list[0].output_metrics = ['income'];
@@ -45,6 +45,9 @@ it('raw queryField映射、字段失败及全失败沿用既有快照错误，�
   expect(prepareExecution(request,response).snapshots.get('gmv')).toMatchObject({status:'ready',rows:[{gmv:42}]});
   expect(JSON.stringify(response)).toBe(original);
   response.dataSources.gmv.rows = [{}];
+  expect(prepareExecution(request,response).snapshots.get('gmv')).toMatchObject({status:'ready',rows:[{gmv:null}]});
+  response.document.dataSources.gmv.fields.region = {type:'string',role:'dimension',queryField:'region'};
+  response.document.dataSources.gmv.source.query.body!.dsl_list[0].output_dims = ['region'];
   expect(prepareExecution(request,response).snapshots.get('gmv')).toMatchObject({status:'error',error:{code:'DQE_FIELD_MAPPING_ERROR'}});
   response.status='error';
   for (const key of Object.keys(response.dataSources)) response.dataSources[key] = {status:'error',conditionKey:response.conditionKey,error:{code:'DQE_TIMEOUT',message:'private values must not surface'}};

@@ -42,3 +42,24 @@
 | buildProductOutputs | 15 | 15 |
 
 新增分支诊断各辅助函数selfCC为1至8，所有新增测试回调均不超15。存量parsePage超限保持31：本次只接入独立诊断模块，避免扩大解析生命周期重构；后续入口packages/page/src/validate.ts。扫描另见未改buildSkillProjections保持52，仍属存量项，不计为本次关闭。
+
+
+## CI 回归补齐
+
+首次提交的全仓CI发现六处历史断言仍把数值属性省略视为整批失败。补充测试覆盖对象查询、伙伴健康度、零总数回执及执行回执：数值漏返保留null与告警，维度漏返仍报映射错误。错误分类和敏感哨兵断言改为明确的维度漏返输入，不降低原有诊断隐私检查。
+
+六个受影响测试文件79项通过。完整local-authoring回归首轮227项通过，唯一失败是scripts/analyze-data.mjs漂移检查在并发构建时达到90秒；相同用例独立重跑33.95秒通过，没有修改超时或降低断言。分轮结果分别保留，不能声称首次完整运行全绿。
+
+本轮只调整测试及此记录，不改变产品源码、Schema、已生成Skill或MC内容。逐函数selfCC重新测量，六个测试文件的全部函数均不超过15，修改回调无分支增长；新增零总数漏返用例回调selfCC=1。
+
+
+补充测量仍使用metriccanvas-ts-ast/1、TypeScript5.9.3；下表为各文件逐函数selfCC最大值（前/后），所有闭包均在扫描范围：
+
+| 文件 | 前 | 后 |
+| --- | --- | --- |
+| partner-health-object-preview.test.ts | 1 | 1 |
+| partner-health-union.test.ts | 5 | 5 |
+| zero-total-rendering.test.ts | 2 | 2 |
+| data-gateway/diagnostics.test.ts | 2 | 2 |
+| data-gateway/query-error-classification.test.ts | 2 | 2 |
+| runtime/execution.test.ts | 7 | 7 |

@@ -135,11 +135,11 @@ const cases: ClassificationCase[] = [
       ])) as typeof fetch
   },
   {
-    name: '响应缺少映射字段 → 结果字段契约不匹配(映射)',
+    name: '响应缺少维度映射字段 → 结果字段契约不匹配(映射)',
     code: 'DQE_FIELD_MAPPING_ERROR',
     fetchImpl: (async () =>
       envelope([
-        { code: 'SUCCESS', data: [{ 客户级别: '卓越NA' }], total_count: 1 }
+        { code: 'SUCCESS', data: [{ NA客户数: 1 }], total_count: 1 }
       ])) as typeof fetch
   },
   {

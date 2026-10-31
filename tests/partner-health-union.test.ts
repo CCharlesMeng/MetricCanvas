@@ -86,7 +86,12 @@ describe('DQE 数字归一化与展示',()=>{
     expect(computed[0].total).toBe(total);
     if(input==='坏值')expect(result.warnings?.[0].code).toBe('INVALID_NUMERIC_VALUE');
   });
-  it('省略声明属性仍是字段映射错误',()=>{
-    expect(normalizeQueryRows([{}],{score:{type:'number',role:'measure',queryField:'得分'}}).ok).toBe(false);
+  it('省略数值属性保留空值，省略维度属性仍是映射错误',()=>{
+    expect(normalizeQueryRows([{}],{score:{type:'number',role:'measure',queryField:'得分'}})).toMatchObject({
+      ok:true,rows:[{score:null}],warnings:[{code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'score',count:1}]
+    });
+    expect(normalizeQueryRows([{}],{region:{type:'string',role:'dimension',queryField:'地区部'}})).toMatchObject({
+      ok:false,issues:[{code:'MISSING_QUERY_FIELD',fieldId:'region'}]
+    });
   });
 });

@@ -47,16 +47,20 @@ describe('伙伴健康度粘贴页面的预览查询', () => {
     expect(object.totalCount).toBe(4);
   });
 
-  it('columns为null不影响客户评价字段映射，data字段缺失仍明确失败', async () => {
+  it('columns为null不影响映射，数值漏返置空，维度漏返仍失败', async () => {
     const gateway=createDqeGateway({fetchImpl:async ()=>Response.json({retCode:'CBC.0000',results:[
       {code:'SUCCESS',columns:null,data:[{'地区部':'华东地区部','客户对伙伴的评价得分':27}],total_count:1},
-      {code:'SUCCESS',columns:null,data:[{'地区部':'华东地区部','错误别名':27}],total_count:1}
+      {code:'SUCCESS',columns:null,data:[{'地区部':'华东地区部','错误别名':27}],total_count:1},
+      {code:'SUCCESS',columns:null,data:[{'客户对伙伴的评价得分':27}],total_count:1}
     ]})});
     const query:EffectiveQuery={language:'dqe',body:{dsl_list:[{query_type:'object',object_type:'Partner Health/Custormer Partner Evaluation Score',output_fields:['地区部','客户对伙伴的评价得分']}]},
       fieldMappings:{region:{queryField:'地区部',type:'string',role:'dimension'},score:{queryField:'客户对伙伴的评价得分',type:'number',role:'measure'}},filterValues:[]};
     const first=gateway.fetchData({...query,body:{dsl_list:[{...query.body.dsl_list[0]}]},filterValues:[]});
     const second=gateway.fetchData({...query,body:{dsl_list:[{...query.body.dsl_list[0],order:{}}]},filterValues:[]});
+    const third=gateway.fetchData({...query,body:{dsl_list:[{...query.body.dsl_list[0],filter:{fields:[]}}]},filterValues:[]});
     await expect(first).resolves.toEqual({rows:[{region:'华东地区部',score:27}],totalCount:1});
-    await expect(second).rejects.toMatchObject({code:'DQE_FIELD_MAPPING_ERROR'});
+    await expect(second).resolves.toMatchObject({rows:[{region:'华东地区部',score:null}],totalCount:1,
+      warnings:[{code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'score',queryField:'客户对伙伴的评价得分',count:1}]});
+    await expect(third).rejects.toMatchObject({code:'DQE_FIELD_MAPPING_ERROR'});
   });
 });

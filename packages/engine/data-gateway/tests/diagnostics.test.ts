@@ -129,7 +129,7 @@ describe('查询诊断默认不保留业务数据行(issue #47)', () => {
     });
   });
 
-  it('非成功码带数据但字段缺失:上游错误正文与数据行不进入诊断记录和错误对象', async () => {
+  it('非成功码带数据但维度缺失:上游错误正文与数据行不进入诊断记录和错误对象', async () => {
     const spies = consoleSpies();
     const diagnostics = createInMemoryDqeDiagnostics();
     const gateway = createDqeGateway({
@@ -142,7 +142,7 @@ describe('查询诊断默认不保留业务数据行(issue #47)', () => {
               {
                 code: 'FAILED',
                 message: `执行失败:${SENTINEL}`,
-                data: [{ 客户名称: SENTINEL }],
+                data: [{ 错误客户字段: SENTINEL, NA客户数: 15 }],
                 total_count: 0
               }
             ]

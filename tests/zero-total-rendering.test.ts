@@ -56,8 +56,13 @@ describe('零总数但有返回行：显示并告警',()=>{
     await expect(read('complete')).rejects.toMatchObject({code:'EXPORT_INCOMPLETE_DATA'});
   });
 
-  it('字段映射错误仍失败，不使用总数容错掩盖',async()=>{
+  it('零总数与数值漏返共同出现时保留行和空值',async()=>{
     const gateway=createDqeGateway({fetchImpl:async()=>Response.json({retCode:'CBC.0000',results:[{code:'SUCCESS',data:[{'地区部':'甲地区部'}],total_count:0}]})});
+    expect((await read('screen',['zero'],gateway)).at(-1)?.snapshot).toMatchObject({status:'ready',rows:[{region:'甲地区部',score:null}],totalCount:0});
+  });
+
+  it('维度映射缺失仍失败，不使用总数容错掩盖',async()=>{
+    const gateway=createDqeGateway({fetchImpl:async()=>Response.json({retCode:'CBC.0000',results:[{code:'SUCCESS',data:[{'得分':1}],total_count:0}]})});
     expect((await read('screen',['zero'],gateway)).at(-1)?.snapshot).toMatchObject({status:'error',error:{code:'DQE_FIELD_MAPPING_ERROR'}});
   });
 
