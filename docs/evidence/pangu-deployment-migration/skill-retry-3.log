@@ -1,0 +1,53 @@
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/pangu-deployment-migration/DataDashboard
+
+ ❯ tests/authoring-export-isolation.test.ts (30 tests | 2 failed | 28 skipped) 280092ms
+     × 包版本变更后拒绝旧导出并可重新生成 92371ms
+     × 结构不变的语义修复使旧 MC 失效，重新生成后同源主题更新 183969ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 包版本变更后拒绝旧导出并可重新生成
+AssertionError: expected '' to contain 'productContractVersion=1.0.0-rc.4; @m…'
+
+- Expected
++ Received
+
+- productContractVersion=1.0.0-rc.4; @metriccanvas/page version=9.9.9
+
+ ❯ tests/authoring-export-isolation.test.ts:261:30
+    259|         const stale = runExport(['--check'], regenerationRoot);
+    260|         expect(stale.status).not.toBe(0);
+    261|         expect(stale.stderr).toContain(`productContractVersion=${pageM…
+       |                              ^
+    262|         const regenerated = runExport([], regenerationRoot);
+    263|         expect(regenerated.stderr, regenerated.stderr).toBe('');
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:258:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 结构不变的语义修复使旧 MC 失效，重新生成后同源主题更新
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:296:44
+    294|       writeFileSync(source, readFileSync(source, 'utf8').replace(/(# .…
+    295|       expect(runExport(['--check'], folder).status).not.toBe(0);
+    296|       expect(runExport([], folder).status).toBe(0);
+       |                                            ^
+    297|       expect(readFileSync(path.join(folder, 'metriccanvas-authoring/mc…
+    298|     } finally { rmSync(folder, {recursive: true, force: true}); }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 28 skipped (30)
+   Start at  17:26:11
+   Duration  280.19s (transform 16ms, setup 0ms, import 24ms, tests 280.09s, environment 0ms)

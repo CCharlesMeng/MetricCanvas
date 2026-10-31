@@ -185,6 +185,11 @@ jobs:
       - name: 验证 qiankun 调试包源码映射
         run: node apps/platform/tests/microfrontend/debug-browser.mjs
 
+      - name: 验证盘古部署配置兼容迁移
+        run: |
+          pnpm --filter platform test:pangu-deployment
+          MICROFRONTEND_PROFILE=debug pnpm --filter platform test:pangu-deployment
+
       - name: 检查打包入口、声明与组件
         run: pnpm packages:check
 

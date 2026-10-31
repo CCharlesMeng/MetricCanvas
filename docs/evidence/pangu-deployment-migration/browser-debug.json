@@ -1,0 +1,98 @@
+{
+  "profile": "debug",
+  "sdk": "synthetic",
+  "qiankun": "2.10.16",
+  "targetPortal": "NOT_RUN",
+  "scenarios": [
+    {
+      "mode": "injected",
+      "receipts": {
+        "read": 1,
+        "loaded": 1,
+        "mounted": 1,
+        "destroyed": 1,
+        "disconnected": 1
+      },
+      "resources": [
+        "http://127.0.0.1:55099/sdk.js?v=injected"
+      ],
+      "status": "PASS"
+    },
+    {
+      "mode": "legacy",
+      "receipts": {
+        "read": 0,
+        "loaded": 1,
+        "mounted": 1,
+        "destroyed": 1,
+        "disconnected": 1
+      },
+      "resources": [
+        "http://127.0.0.1:55099/sdk.js?v=legacy"
+      ],
+      "status": "PASS"
+    },
+    {
+      "mode": "custom",
+      "receipts": {
+        "read": 0,
+        "loaded": 0,
+        "mounted": 1,
+        "destroyed": 1,
+        "disconnected": 1
+      },
+      "resources": [],
+      "status": "PASS"
+    },
+    {
+      "mode": "empty",
+      "receipts": {
+        "read": 1,
+        "loaded": 0,
+        "mounted": 0,
+        "destroyed": 0,
+        "disconnected": 1
+      },
+      "resources": [],
+      "status": "PASS"
+    },
+    {
+      "mode": "undefined",
+      "receipts": {
+        "read": 1,
+        "loaded": 0,
+        "mounted": 0,
+        "destroyed": 0,
+        "disconnected": 1
+      },
+      "resources": [],
+      "status": "PASS"
+    },
+    {
+      "mode": "throw",
+      "receipts": {
+        "read": 1,
+        "loaded": 0,
+        "mounted": 0,
+        "destroyed": 0,
+        "disconnected": 1
+      },
+      "resources": [],
+      "status": "PASS"
+    }
+  ],
+  "platform": {
+    "baseCommit": "8ab563417a5007cd4254d1ce12a68fef1acdbacb",
+    "sourceDirty": true,
+    "sourceTreeSha256": "44ed68ff85335fe6caf58749ec40560db7c9b5a1c62868736d96c3ad5bc22869",
+    "files": {
+      "assets/platform.css": "a99006fa824529be0b6c4f3bdf68b1c302d47e3175b70103f71767becaaeedb9",
+      "assets/platform.umd.js": "7d5e568ad472ae7022e52c8967cca6897d97d57f47cf19c6bab777d73657d90f",
+      "assets/platform.umd.js.map": "c494ed210b41c0b61cb90c8fbbf0d736a4ae1a8631f20d32147ea9dc8ddf12b3",
+      "compose-deployment.mjs": "51841ae4b76761ee2ae7729421eacb7d7326e73b7df2e2e8e5f39876bb2b4c20",
+      "index.html": "0d4704d095a10afc00a1b37cd7efabe8e556802f450e844a1d78750d3a95f40c",
+      "pack-deployment.mjs": "8dcc56bbdb456430564cd37544830ed0a2780758b93d967dc60f9dddb6addd34",
+      "portal-contract.d.ts": "f0ad32a07eefd7be9796044cd9da67156bd40c4d3ef4a453add739b074c2f893"
+    }
+  }
+}

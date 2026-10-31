@@ -1,6 +1,6 @@
 import {createDialogueSessions} from '../dialogue/sessions';
 import {createPageInfoPort} from '../page-assets/info';
-import type {PageInfoPort} from './contract';
+import type {PageInfoPort, ReadPanguDeployment} from './contract';
 import {platformFilterCandidates} from './filter-candidates';
 import {isDisplayInputs} from '@metriccanvas/engine';
 import {createWorkSession} from '../workbench/work-session';
@@ -11,11 +11,11 @@ import { createPageAssetServices } from '../page-assets';
 import { createPlatformSession } from './session';
 import type { PlatformNavigation } from './navigation';
 import type { DialogueAdapter } from '../dialogue/port';
-import { panguDialogueAdapter } from '../dialogue/runtime';
+import { createPanguDialogueAdapter, panguDialogueAdapter } from '../dialogue/runtime';
 import type { AuthoringIntegration } from '../dialogue/authoring-integration';
 export const PLATFORM_CONTEXT = Symbol('platform-services');
 export function createPlatformServices(session: ReturnType<typeof createPlatformSession>, navigation: PlatformNavigation, options: {
-  embedded: boolean; displayInputs?:unknown; filterCandidates?:unknown; dialogueAdapter?: DialogueAdapter; authoring?: AuthoringIntegration; pageInfo?:PageInfoPort;
+  embedded: boolean; displayInputs?:unknown; filterCandidates?:unknown; dialogueAdapter?: DialogueAdapter; readPanguDeployment?: ReadPanguDeployment; authoring?: AuthoringIntegration; pageInfo?:PageInfoPort;
 }) {
   if(options.displayInputs!==undefined&&!isDisplayInputs(options.displayInputs))throw Error('displayInputs必须实现getSnapshot/subscribe');
   const displayInputs=isDisplayInputs(options.displayInputs)?options.displayInputs:undefined;
@@ -24,7 +24,8 @@ export function createPlatformServices(session: ReturnType<typeof createPlatform
   const workSession=createWorkSession({scope:{actorId:config?.operatorId??'',workspaceId:config?.workspaceId??'',pageId:'__platform-work-session__',serviceTarget:JSON.stringify([config?.pageMetadataBaseUrl,config?.dqeEndpoint])},base:navigation.base,origin:location.origin});
   session.onInvalidate(()=>workSession.dispose());
   const assets=createPageAssetServices({readConfig:session.readConfig,fetchImpl:session.fetchImpl});
-  const dialogueAdapter=options.dialogueAdapter??panguDialogueAdapter;
+  const dialogueAdapter=options.dialogueAdapter??(options.readPanguDeployment===undefined
+    ?panguDialogueAdapter:createPanguDialogueAdapter(options.readPanguDeployment));
   const dialogueSessions=dialogueAdapter.agent?createDialogueSessions(dialogueAdapter.agent):undefined;
   session.onInvalidate(()=>dialogueSessions?.dispose());
   return {workSession,displayInputs,...assets,session,navigation,dialogueSessions,

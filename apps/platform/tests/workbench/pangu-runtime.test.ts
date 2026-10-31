@@ -33,6 +33,61 @@ beforeEach(() => { vi.resetModules(); vi.useFakeTimers(); });
 afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe('Pangu resource and instance boundary', () => {
+  it('reads deployment configuration lazily at every mount without using the legacy global', async () => {
+    const env = environment();
+    env.window.__METRICCANVAS_PANGU__ = { resourceUrl: '/wrong.js', version: 'legacy' };
+    const read = vi.fn(() => ({ resourceUrl: '/sdk.js', version: '1' }));
+    const { createPanguDialogueAdapter } = await import('../../src/lib/dialogue/runtime');
+    const adapter = createPanguDialogueAdapter(read);
+    expect(read).not.toHaveBeenCalled();
+    const pending = adapter.mount(env.host()); await tick();
+    expect(env.scripts[0].src).toBe('https://platform.test/sdk.js?v=1');
+    env.complete(0); (await pending)();
+    (await adapter.mount(env.host()))();
+    expect(read).toHaveBeenCalledTimes(2);
+    expect(env.scripts).toHaveLength(1);
+  });
+
+  it.each([null, undefined])('does not fall back from an explicit empty reader result (%s)', async config => {
+    const env = environment();
+    const { createPanguDialogueAdapter } = await import('../../src/lib/dialogue/runtime');
+    await expect(createPanguDialogueAdapter(() => config).mount(env.host())).rejects.toThrow('未配置盘古静态资源地址和版本号');
+    expect(env.append).not.toHaveBeenCalled();
+    expect(env.instance).not.toHaveBeenCalled();
+  });
+
+  it('masks deployment reader errors and permits recovery on a later mount', async () => {
+    const env = environment();
+    const read = vi.fn().mockImplementationOnce(() => { throw Error('private-deployment-value'); })
+      .mockReturnValue({ resourceUrl: '/sdk.js', version: '1' });
+    const { createPanguDialogueAdapter } = await import('../../src/lib/dialogue/runtime');
+    const adapter = createPanguDialogueAdapter(read);
+    await expect(adapter.mount(env.host())).rejects.toThrow('盘古部署配置读取失败，请检查部署侧配置读取函数。');
+    expect(env.append).not.toHaveBeenCalled();
+    const pending = adapter.mount(env.host()); await tick();
+    env.complete(0); (await pending)();
+  });
+
+  it('shares the version pin across injected readers and the legacy default adapter', async () => {
+    const env = environment();
+    const { createPanguDialogueAdapter, panguDialogueAdapter } = await import('../../src/lib/dialogue/runtime');
+    const first = createPanguDialogueAdapter(() => ({ resourceUrl: '/sdk.js', version: '1' }));
+    const pending = first.mount(env.host()); await tick(); env.complete(0); (await pending)();
+    env.window.__METRICCANVAS_PANGU__.version = '2';
+    await expect(panguDialogueAdapter.mount(env.host())).rejects.toThrow('重新加载页面');
+    const second = createPanguDialogueAdapter(() => ({ resourceUrl: '/other.js', version: '1' }));
+    await expect(second.mount(env.host())).rejects.toThrow('重新加载页面');
+    expect(env.scripts).toHaveLength(1);
+  });
+
+  it('rejects incomplete explicit configuration instead of borrowing legacy fields', async () => {
+    const env = environment();
+    const { createPanguDialogueAdapter } = await import('../../src/lib/dialogue/runtime');
+    const adapter = createPanguDialogueAdapter(() => ({ resourceUrl: '/sdk.js', version: '' }));
+    await expect(adapter.mount(env.host())).rejects.toThrow('静态资源地址或版本号未配置');
+    expect(env.append).not.toHaveBeenCalled();
+  });
+
   it('reuses an identifiable preloaded portal SDK without appending another loader', async () => {
     const env = environment();
     env.scripts.push({ src: 'https://platform.test/sdk.js?v=1', async: true, onload: null, onerror: null, remove: vi.fn() });

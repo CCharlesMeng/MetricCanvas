@@ -1,6 +1,7 @@
 import type { DialogueAdapter } from './port';
+import type { PanguDeployment, ReadPanguDeployment } from '../integration/contract';
 
-export interface PanguDeployment { resourceUrl: string; version: string }
+export type { PanguDeployment, ReadPanguDeployment } from '../integration/contract';
 interface PanguApi {
   instance(id: string): {
     renderChat(selector: string, options: { instanceId: string; config: {
@@ -78,44 +79,58 @@ const loadResource = createPanguResourceLoader((url: string): Promise<void> => {
   });
 });
 
-export const panguDialogueAdapter: DialogueAdapter = {
-  async mount(element) {
-    const config = window.__METRICCANVAS_PANGU__;
-    if (!config) throw new Error('对话服务尚未接通：未配置盘古静态资源地址和版本号。');
-    await loadResource(panguResourceUrl(config, window.location.href));
-    if (!element.isConnected) return () => {};
-    const api = window.pangu;
-    if (typeof api?.instance !== 'function') throw new Error('盘古资源未提供 instance 接口。');
-    const id = `metriccanvas-${crypto.randomUUID()}`;
-    const previousId = element.id;
-    element.id = id;
-    let instance: ReturnType<PanguApi['instance']> | undefined;
-    let destroyed = false;
-    const destroy = () => {
-      if (destroyed) return;
-      destroyed = true;
+function readDeploymentConfig(readDeployment: ReadPanguDeployment): PanguDeployment {
+  let config: PanguDeployment | null | undefined;
+  try { config = readDeployment(); }
+  catch { throw new Error('盘古部署配置读取失败，请检查部署侧配置读取函数。'); }
+  if (!config) throw new Error('对话服务尚未接通：未配置盘古静态资源地址和版本号。');
+  return config;
+}
+
+/** Keep deployment field mappings outside platform source; share document-wide SDK version protection. */
+export function createPanguDialogueAdapter(
+  readDeployment: ReadPanguDeployment = () => window.__METRICCANVAS_PANGU__
+): DialogueAdapter {
+  return {
+    async mount(element) {
+      const config = readDeploymentConfig(readDeployment);
+      await loadResource(panguResourceUrl(config, window.location.href));
+      if (!element.isConnected) return () => {};
+      const api = window.pangu;
+      if (typeof api?.instance !== 'function') throw new Error('盘古资源未提供 instance 接口。');
+      const id = `metriccanvas-${crypto.randomUUID()}`;
+      const previousId = element.id;
+      element.id = id;
+      let instance: ReturnType<PanguApi['instance']> | undefined;
+      let destroyed = false;
+      const destroy = () => {
+        if (destroyed) return;
+        destroyed = true;
+        try {
+          if (typeof instance?.destroy === 'function') instance.destroy();
+        } finally {
+          // A replacement adapter may already own this container.
+          if (element.id === id) element.id = previousId;
+        }
+      };
       try {
-        if (typeof instance?.destroy === 'function') instance.destroy();
-      } finally {
-        // A replacement adapter may already own this container.
-        if (element.id === id) element.id = previousId;
+        instance = api.instance(id);
+        if (typeof instance?.renderChat !== 'function' || typeof instance.destroy !== 'function') {
+          throw new Error('Invalid SDK instance');
+        }
+        instance.renderChat(`#${id}`, { instanceId: id, config: {
+          mode: 'side', autoRecover: false, draggable: false, resizable: false, adsorbable: false
+        } });
+      } catch {
+        try { destroy(); } catch { /* Do not expose SDK errors that may contain runtime credentials. */ }
+        throw new Error('盘古实例挂载失败，请核对 SDK 版本与适配配置。');
       }
-    };
-    try {
-      instance = api.instance(id);
-      if (typeof instance?.renderChat !== 'function' || typeof instance.destroy !== 'function') {
-        throw new Error('Invalid SDK instance');
-      }
-      instance.renderChat(`#${id}`, { instanceId: id, config: {
-        mode: 'side', autoRecover: false, draggable: false, resizable: false, adsorbable: false
-      } });
-    } catch {
-      try { destroy(); } catch { /* Do not expose SDK errors that may contain runtime credentials. */ }
-      throw new Error('盘古实例挂载失败，请核对 SDK 版本与适配配置。');
+      return () => {
+        // Teardown must not interrupt a replacement adapter or expose SDK diagnostics.
+        try { destroy(); } catch { /* SDK cleanup cannot be guaranteed after its own failure. */ }
+      };
     }
-    return () => {
-      // Teardown must not interrupt a replacement adapter or expose SDK diagnostics.
-      try { destroy(); } catch { /* SDK cleanup cannot be guaranteed after its own failure. */ }
-    };
-  }
-};
+  };
+}
+
+export const panguDialogueAdapter = createPanguDialogueAdapter();

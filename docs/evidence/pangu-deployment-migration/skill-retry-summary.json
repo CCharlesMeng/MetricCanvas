@@ -1,0 +1,37 @@
+{
+  "interpreter": "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/.venv/bin/python",
+  "python": "3.12.13",
+  "fastmcp": "3.4.7",
+  "initialRepairPassed": 16,
+  "initialAuthoringPassed": 218,
+  "initialAuthoringFailed": 10,
+  "retryGroups": [
+    {
+      "group": 1,
+      "passed": 1,
+      "failed": 2,
+      "exitCode": 1
+    },
+    {
+      "group": 2,
+      "passed": 0,
+      "failed": 3,
+      "exitCode": 1
+    },
+    {
+      "group": 3,
+      "passed": 0,
+      "failed": 2,
+      "exitCode": 1
+    },
+    {
+      "group": 4,
+      "passed": 0,
+      "failed": 2,
+      "exitCode": 1
+    }
+  ],
+  "retryPassed": 1,
+  "retryFailed": 9,
+  "overall": "NOT_PASSED"
+}

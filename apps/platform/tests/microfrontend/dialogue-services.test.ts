@@ -3,6 +3,8 @@ import { createPlatformServices } from '../../src/lib/integration/services';
 import { createPlatformSession } from '../../src/lib/integration/session';
 import type { PlatformNavigation } from '../../src/lib/integration/navigation';
 import type { DialogueAdapter } from '../../src/lib/dialogue/port';
+import type { ReadPanguDeployment } from '../../src/lib/integration/contract';
+import { connectPortal } from '../../src/microfrontend/portal-config';
 
 // The service factory only reads base; navigation itself is outside this SDK boundary.
 function navigation(): PlatformNavigation {
@@ -18,10 +20,10 @@ function navigation(): PlatformNavigation {
 afterEach(() => { vi.unstubAllGlobals(); });
 
 describe('platform dialogue assembly', () => {
-  function services(dialogueAdapter?: DialogueAdapter) {
+  function services(dialogueAdapter?: DialogueAdapter, readPanguDeployment?: ReadPanguDeployment) {
     vi.stubGlobal('location', { origin: 'https://platform.test' });
     const session = createPlatformSession({ readConfig: () => null });
-    return createPlatformServices(session, navigation(), { embedded: true, dialogueAdapter });
+    return createPlatformServices(session, navigation(), { embedded: true, dialogueAdapter, readPanguDeployment });
   }
 
   it('mounts the configured SDK when the portal omits an adapter, and releases only its instance', async () => {
@@ -49,12 +51,34 @@ describe('platform dialogue assembly', () => {
     vi.stubGlobal('window', {});
     const stop = vi.fn();
     const adapter = { mount: vi.fn(async () => stop) };
-    const platform = services(adapter);
+    const read = vi.fn(() => { throw Error('must not read default SDK config'); });
+    const platform = services(adapter, read);
     const host = {} as HTMLElement;
     const cleanup = await platform.dialogueAdapter.mount(host);
     expect(adapter.mount).toHaveBeenCalledExactlyOnceWith(host);
     cleanup(); expect(stop).toHaveBeenCalledTimes(1);
+    expect(read).not.toHaveBeenCalled();
     platform.session.destroy();
+  });
+
+  it('carries an external deployment reader through connectPortal into the default SDK', async () => {
+    const instance = vi.fn(() => ({ renderChat: vi.fn(), destroy: vi.fn() }));
+    vi.stubGlobal('window', { location: { href: 'https://platform.test/metrics' }, pangu: { instance } });
+    vi.stubGlobal('document', { scripts: [{ src: 'https://platform.test/sdk.js?v=1' }] });
+    vi.stubGlobal('location', { origin: 'https://platform.test' });
+    const read = vi.fn(() => ({ resourceUrl: '/sdk.js', version: '1' }));
+    const connection = await connectPortal({ appList: [], roleList: [] }, {
+      contractVersion: '1', connect: () => ({ props: {
+        routeBase: '/metrics', readConfig: () => null, configChanges: 'reload', readPanguDeployment: read
+      } })
+    });
+    const session = createPlatformSession(connection.props);
+    const platform = createPlatformServices(session, navigation(), { ...connection.props, embedded: true });
+    expect(read).not.toHaveBeenCalled();
+    (await platform.dialogueAdapter.mount({ id: '', isConnected: true } as HTMLElement))();
+    expect(read).toHaveBeenCalledTimes(1);
+    expect(instance).toHaveBeenCalledTimes(1);
+    session.destroy(); await connection.disconnect();
   });
 
   it('starts without SDK configuration and reports the missing deployment only when dialogue mounts', async () => {

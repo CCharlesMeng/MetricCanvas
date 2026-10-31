@@ -17,6 +17,8 @@ flowchart LR
 
 `PlatformDialogueAdapter.mount(element, context?)` 挂载现有 Chat 并返回清理函数。云宝模式额外提供 `agent: DialogueAgentPort`，旧的单参数挂载仍兼容。SDK 名称、实例创建、身份和会话 API 由内网 Adapter 映射，不能从接口示例推断私有 SDK 已具有某个同名方法。
 
+仅迁移资源配置读取时，可注入 `props.readPanguDeployment` 使用默认实例 SDK；它不提供 agent 能力。已有云宝创作接线继续注入完整 `dialogueAdapter`，该 adapter 优先且不读取默认 SDK 配置。移动旧 runtime 时须保留 context、agent 和现有 authoring/pageInfo 等 props，实施顺序见[内网迁移方案](plan/2026-10-16-intranet-dialogue-sync.md)。
+
 - `agent.openSession({sessionId?}, signal)`：有 ID 则恢复该会话，回执必须返回原 ID；没有则真正新建。失败显式报错，MC 不生成伪会话 ID。取消不能产生重复创建。平台复用同一准备请求，并在身份失效时取消。
 - `mount` 的 `context.sessionId`：当前真实云宝会话。SDK 的发送前回调调用并等待 `context.submit(question)`，**由这一入口接管本轮发送**；SDK 不得再自行发送第二次。
 - `agent.send(request, signal)`：消费 `request.input.documentJson` 的完整前端快照（新建为空）、SHA256、已有精确修订引用、requestId 和 intent。`persistedRef` 只是保存基线，不可据此用远端文档替换快照。问题文本不承担结构化上下文的传输。

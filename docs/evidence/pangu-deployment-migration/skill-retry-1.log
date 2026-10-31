@@ -1,0 +1,52 @@
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/pangu-deployment-migration/DataDashboard
+
+ ❯ tests/authoring-export-isolation.test.ts (30 tests | 2 failed | 27 skipped) 312926ms
+     × 无旧链时可运行 90038ms
+     × 本地模型评估产物不影响交付锁 90021ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 无旧链时可运行
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:66:26
+     64|     const clean = runExport();
+     65|     expect(clean.stderr, clean.stderr).toBe('');
+     66|     expect(clean.status).toBe(0);
+       |                          ^
+     67|     expect(clean.stdout).toContain('authoring contract export current'…
+     68|   }, scenarioTimeout);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 本地模型评估产物不影响交付锁
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:76:46
+     74|       writeFileSync(path.join(localRun, 'report.json'), '{"local":true…
+     75|       const checked = runExport();
+     76|       expect(checked.status, checked.stderr).toBe(0);
+       |                                              ^
+     77|     } finally { rmSync(localRun, { recursive: true, force: true }); }
+     78|   }, scenarioTimeout);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 27 skipped (30)
+   Start at  17:26:11
+   Duration  313.02s (transform 16ms, setup 0ms, import 24ms, tests 312.93s, environment 0ms)

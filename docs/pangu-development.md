@@ -32,6 +32,8 @@ window.__METRICCANVAS_PANGU__ = {
 
 工作台默认使用 `panguDialogueAdapter`。资源地址附加 `v` 参数，一个 document 固定一个地址和版本；更换版本需整页刷新。资源配置不存浏览器本地存储，不修改上游源码。
 
+包含 2026-10-31 迁移增量的平台版本还可在 `MetricCanvasDeploymentAdapter.connect` 返回的 props 中提供 `readPanguDeployment: () => ({resourceUrl, version})`，将配置读取留在部署项目；本页开头的历史 #127 分支不含此增量。函数在默认对话挂载时执行；显式 `dialogueAdapter` 优先，函数返回空值或失败不回退全局。旧全局配置继续兼容。配置函数不能适配单例 SDK；完整迁移和两种接法见[内网兼容同步方案](plan/2026-10-16-intranet-dialogue-sync.md)。
+
 内部通知契约（不是已确认的真实盘古事件）：
 
 ```js

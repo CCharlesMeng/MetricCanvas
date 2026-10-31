@@ -9,6 +9,7 @@ export function portalConfig(props:PlatformProps):PlatformProps {
   if(props.configChanges !== undefined && props.configChanges !== 'subscribe' && props.configChanges !== 'reload')throw Error('无效的配置变化策略。');
   if(typeof props.subscribeConfig !== 'function' && props.configChanges !== 'reload')throw Error('平台需要配置订阅，或明确声明身份变化将整页重载。');
   if(props.subscribeConfig !== undefined && typeof props.subscribeConfig !== 'function')throw Error('无效的配置订阅。');
+  if(props.readPanguDeployment !== undefined && typeof props.readPanguDeployment !== 'function')throw Error('盘古配置读取入口必须是函数。');
   return {...props,routeBase:normalizeRouteBase(props.routeBase) || '/'};
 }
 

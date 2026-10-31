@@ -1,0 +1,52 @@
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/pangu-deployment-migration/DataDashboard
+
+ ❯ tests/authoring-export-isolation.test.ts (30 tests | 2 failed | 28 skipped) 189806ms
+     × 活动 query 工具参数变动进入完整 inputSchema，内部 Adapter 不改变公共 MC 92396ms
+     × 隔离新 minor 加入真实字段语义后，旧页检查与迁移均保留原件 93845ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 活动 query 工具参数变动进入完整 inputSchema，内部 Adapter 不改变公共 MC
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:307:53
+    305|       const internal = path.join(folder, 'metriccanvas-authoring/tool/…
+    306|       writeFileSync(internal, 'raise RuntimeError("PRIVATE_MC_PROBE_ER…
+    307|       expect(runExport(['--check'], folder).status).toBe(0);
+       |                                                     ^
+    308|       const source = path.join(folder, 'metriccanvas-authoring/tool/me…
+    309|       writeFileSync(source, readFileSync(source, 'utf8').replace('resu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 隔离新 minor 加入真实字段语义后，旧页检查与迁移均保留原件
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:334:50
+    332|       writeFileSync(referenceFile, JSON.stringify(reference));
+    333|       const generated = runExport([], folder);
+    334|       expect(generated.status, generated.stderr).toBe(0);
+       |                                                  ^
+    335|       const scripts = path.join(folder, 'metriccanvas-authoring/mc-con…
+    336|       const input = path.join(folder, 'pages/capabilities/layout/mc-la…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 28 skipped (30)
+   Start at  17:26:11
+   Duration  189.90s (transform 17ms, setup 0ms, import 25ms, tests 189.81s, environment 0ms)

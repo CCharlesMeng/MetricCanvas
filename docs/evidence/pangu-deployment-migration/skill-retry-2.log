@@ -1,0 +1,72 @@
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/pangu-deployment-migration/DataDashboard
+
+ ❯ tests/authoring-export-isolation.test.ts (30 tests | 3 failed | 27 skipped) 281926ms
+     × 旧单入口配置仍可导出且不改旧 Skill 主文 92331ms
+     × Schema 升级后整包重新生成，旧页面保留且可另目录迁移 93841ms
+     × MC 事实只维护一处，同时生成内容包和兼容参考 92358ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 旧单入口配置仍可导出且不改旧 Skill 主文
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:192:49
+    190|       const original = readFileSync(entrypoint,'utf8');
+    191|       const generated = runExport([],legacyRoot);
+    192|       expect(generated.status,generated.stderr).toBe(0);
+       |                                                 ^
+    193|       const checked = runExport(['--check'],legacyRoot);
+    194|       expect(checked.status,checked.stderr).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > Schema 升级后整包重新生成，旧页面保留且可另目录迁移
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:219:50
+    217|       writeFileSync(referenceFile, JSON.stringify(reference));
+    218|       const generated = runExport([], folder);
+    219|       expect(generated.status, generated.stderr).toBe(0);
+       |                                                  ^
+    220|       const current = JSON.parse(readFileSync(manifestFile, 'utf8'));
+    221|       expect(current.alignedWith.pageSchemaVersion).toBe(expected);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > MC 事实只维护一处，同时生成内容包和兼容参考
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:244:50
+    242|       writeFileSync(source, readFileSync(source, 'utf8') + marker);
+    243|       const generated = runExport([], folder);
+    244|       expect(generated.status, generated.stderr).toBe(0);
+       |                                                  ^
+    245|       expect(readFileSync(path.join(folder, 'metriccanvas-authoring/mc…
+    246|       expect(readFileSync(path.join(folder, 'metriccanvas-authoring/sk…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 27 skipped (30)
+   Start at  17:26:11
+   Duration  282.02s (transform 16ms, setup 0ms, import 24ms, tests 281.93s, environment 0ms)

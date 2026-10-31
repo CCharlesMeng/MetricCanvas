@@ -14,6 +14,11 @@ export interface PlatformEvent {
   message: string;
 }
 
+/** Public SDK resource configuration; identity and credentials stay deployment-owned. */
+export interface PanguDeployment { resourceUrl: string; version: string }
+/** Synchronous, read at dialogue mount. An explicit empty result never falls back to globals. */
+export type ReadPanguDeployment = () => PanguDeployment | null | undefined;
+
 /** Portable dialogue contract: SDK implementation remains in the intranet Adapter. */
 export interface DialoguePageInput {
   pageId: string | null;
@@ -62,6 +67,8 @@ export interface PlatformPortalProps<TrustedAuthoring = never> {
   onEvent?: (event: PlatformEvent) => void;
   registerLeaveGuard?: (guard: () => boolean | Promise<boolean>) => () => void;
   dialogueAdapter?: PlatformDialogueAdapter;
+  /** Default instance SDK only; an explicit dialogueAdapter takes precedence. */
+  readPanguDeployment?: ReadPanguDeployment;
   pageInfo?:PageInfoPort;
   /** Optional trusted program adapter; use the repository's AuthoringIntegration type. */
   authoring?: TrustedAuthoring;

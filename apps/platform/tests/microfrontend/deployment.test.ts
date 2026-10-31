@@ -4,6 +4,14 @@ import type {PlatformDeploymentAdapter} from '../../src/lib/integration/contract
 
 const props = {routeBase:'/metrics', readConfig:()=>null, configChanges:'reload' as const};
 describe('independent deployment adapter', () => {
+  it('rejects an invalid optional Pangu reader and cleans the deployment connection', async () => {
+    const disconnect = vi.fn();
+    const invalid = { ...props, readPanguDeployment: {} };
+    await expect(connectPortal({}, {
+      contractVersion: '1', connect: () => ({ props: invalid as unknown as typeof props, disconnect })
+    })).rejects.toThrow('盘古配置读取入口必须是函数');
+    expect(disconnect).toHaveBeenCalledTimes(1);
+  });
   it('handles host replacement of props without relying on the discarded standard config', async () => {
     const app: {props: Record<string, unknown>} = {props};
     const appList = [{appUrl:'/metrics'}], roleList = ['reader'];

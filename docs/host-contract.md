@@ -84,12 +84,15 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 | `configChanges` | 默认订阅模式；部署保证身份/目标变化整页重载时可显式设为 `reload` 并省略订阅 |
 | `onEvent` | 可选，接收 `{code,message}`；code 为 `ready`、`login-required`、`session-invalidated`，消息不含凭据 |
 | `registerLeaveGuard` | 可选 `(guard) => unregister`；guard 返回 boolean 或 Promise<boolean>；门户在区域外导航及浏览器后退提交前调用，取消时恢复 URL |
-| `dialogueAdapter` | 可选，沿用 DialogueAdapter：mount(element) 返回实例清理函数；显式注入优先，缺席时使用平台自带的盘古适配器；不能清理门户共享 SDK |
+| `dialogueAdapter` | 可选，沿用 DialogueAdapter：mount(element, context?) 返回实例清理函数，可选 agent 保持真实会话与创作发送；显式注入优先，不能清理门户共享 SDK |
+| `readPanguDeployment` | 可选同步函数，每次默认盘古适配器挂载时读取 `{resourceUrl, version}`；显式 dialogueAdapter 优先。只有未提供函数时才读取旧全局配置；函数返回 null/undefined 或抛错均不回退 |
 | `authoring` | 可选，沿用可信创作 AuthoringIntegration；缺席时受控创作不可用，人工页面搭建不受阻 |
 
 平台内部通知统一使用平台所在的 `window`，不通过门户 props 注入事件总线。发送方用 `window.dispatchEvent(new CustomEvent('metriccanvas:apply-page', { detail }))`：`detail: { previewJson }` 直接应用完整页面文档（对象或 JSON 字符串），`detail: { pageId }` 重新读取当前页面；两者同时提供时优先使用 `previewJson`。工作台仅在活动时处理应用通知，保留身份、受控操作及未保存工作检查，并在卸载时移除监听。`metriccanvas:draft-saved` 同样使用 `window`，仍须经过精确草稿读取与校验。
 
-平台自带的盘古适配器要求 `window.__METRICCANVAS_PANGU__ = {resourceUrl, version}`，使用 `pangu.instance(id).renderChat(...)` / `destroy()`；资源配置缺失时保留明确的不可用反馈。此默认策略不增加对 `setChatConfig` 单例 SDK 的支持。使用单例 SDK 的部署须注入兼容的 `dialogueAdapter`，由部署侧闭包提供身份现读与登录恢复；`currentUser`、`onLoginRequired` 不属于本版平台 props。迁移方法见[内网对话兼容同步方案](plan/2026-10-16-intranet-dialogue-sync.md)。
+平台自带的盘古适配器使用 `pangu.instance(id).renderChat(...)` / `destroy()`。部署可通过 `props.readPanguDeployment` 注入自己的配置读取函数；旧的 `window.__METRICCANVAS_PANGU__ = {resourceUrl, version}` 入口继续兼容。函数在每次挂载时读取，不在 connect 或平台服务创建时执行；返回空值明确显示配置缺失，抛错显示固定的部署配置读取失败提示，不展示原始异常。它只提供资源地址和版本，不承载身份、凭据、SDK 等待或异步初始化。
+
+所有默认适配器共享同一 document 的资源版本保护，注入读取函数不会绕过它；资源 URL 或版本变更仍须整页重载。此配置入口不增加对 `setChatConfig` 单例 SDK 的支持。单例 SDK、用户身份及登录恢复仍由部署侧 `dialogueAdapter` 完整实现；存在显式 adapter 时不执行 `readPanguDeployment`，不触发默认 SDK 加载。`currentUser`、`onLoginRequired` 不属于平台 props。迁移步骤、当前创作上下文保留及验收见[内网对话兼容同步方案](plan/2026-10-16-intranet-dialogue-sync.md)。这次是部署契约 v1 的可选增量，旧接入不要求新增字段；旧平台不会消费该字段，先按方案做桥接再切换。
 
 **默认交付：内部组合后的完整子应用包。** 原始平台归档是内部流水线的输入；若宿主只提供 `appList/roleList`，直接注册原始包会因为缺少 `readConfig` 而失败。独立部署项目通过 `MetricCanvasDeploymentAdapter` 契约 v1 转换主应用已有 props/全局能力，提供上表中的标准配置。接线实现、私有 SDK 和环境配置由内部项目维护，平台只消费标准输入。
 
