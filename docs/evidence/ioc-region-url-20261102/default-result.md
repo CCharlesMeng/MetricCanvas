@@ -57,3 +57,5 @@ Skill 1.16.0 最终检查：local-authoring-skill 与 skill-release 两文件40�
 补修同步输入投影 `iocRegion:true` 的平台断言，并通过 `mc-content-fixtures.py` 从最终MC重生成诊断页与三份诊断证据；再从更新后的源页面重生成来源摘要和锁，最后刷新诊断里的内容摘要。未改变产品执行分支、Skill安装目录内容或版本。定向复验4文件36项通过；修改的测试回调与其4个嵌套函数按相同AST口径均保持selfCC 1→1。
 
 补修后的 `pnpm mc:content:check` 完整通过：契约生成一致、MC来源覆盖一致、51项Python测试通过、最终诊断及可视夹具无漂移。执行环境使用已锁定依赖的Python虚拟环境，并禁用字节码缓存。
+
+首轮兼容性随后完成：518项中514通过、4失败，均为 ioc-header-business 两条用例在Chrome/Edge上的旧URL回写断言（region/region.level），未当作无关失败忽略。补齐为rep-office及旧键清理断言后，本地运行 `MC_EMBED_EXAMPLE_PORT=4196 pnpm --filter @metriccanvas/embed exec playwright test tests/browser/ioc-header-business.spec.ts tests/browser/key-office-filter.spec.ts tests/browser/navigation.spec.ts`，21项全部通过。28个测试函数与回调selfCC均不变，最高4；没有产品源码变化。第二轮CI因尚未包含该浏览器断言补修，已主动取消，以最终提交的新CI为交付结论。
