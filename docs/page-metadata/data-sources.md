@@ -45,6 +45,10 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 `pagedJoin` 只引用页内已有普通查询源，复用查询定义，独立产出组合表的公开数据快照。成员必须无 compute、无 resultBindings、无业务 TopN/窗口，并声明 `resultScope: complete`。普通结果与内部选页、补列结果隔离；定义引用只传播参数/筛选失效，不改变固定级联顺序。
 
+6.78 起，无 records 的显式查询分页组合可在数据源同层声明 `compute`，仅接受按行执行的 delta/ratio；投影字段 `onMissing: "null" | "zero"` 可覆盖默认缺记录策略，仅数值度量允许 zero。缺省仍取 null，已返回的空单元格不补零。计算产出在 fields 声明，不能同时投影或覆盖行键/序号，计算前检查投影输入，计算后检查最终契约，totalCount 和行顺序不变。旧组合分支和其他算子不自动开放，见[组合结果逐行计算](compute.md#paged-join-row-compute)。
+
+期间比较成员可在此分支使用 `periodComparison`；当期业务行域拥有选页能力，历史成员仅补列，同一期间筛选引用同一可信截止事实。按主查询行域选页，组合输出不自动扩大成三期并集；内部结果不写回普通成员。读取和导出复用统一事实和计算路径，比较期失败、重复键或截断明确失败。完整例子 `/pages/period-comparison-query-page`，声明与期间细节见[查询模块](queries-and-bindings.md#period-comparison-query-page)。
+
 `domainMember` 定义业务行域；各成员按显式单个非空 string/number 维度键关联，`projection` 覆盖最终字段。类型、角色、单位和币种一致，可能缺匹配的列允许 null。网络、权限或查询配置错误整轮失败；结果异常按下文兼容。序号由 `ordinalField` 生成，与稳定 `rowKey` 分开。
 
 同源可兑现全部排序/筛选且 `canSelectPage` 已经真实验真时，先选页编码，再取各成员编码内的完整行；否则在最大 1000 行的完整行域上关联、筛选、稳定排序并分页。不能筛当前页冒充全局处理。完整本地路径在排序末尾补业务键升序，远端选页仅请求声明的业务排序；缺值在升降序都排尾；可空原始排序字段未确认上游 null 编码时走完整路径。

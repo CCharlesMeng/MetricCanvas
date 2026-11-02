@@ -1,4 +1,4 @@
-import { restoreCellFallbacks, copyRowFallbacks, copyFieldFallback } from '@metriccanvas/page/internal';
+import { restoreCellFallbacks, copyRowFallbacks, copyFieldFallback, pagedJoinProjectionFields } from '@metriccanvas/page/internal';
 import { queryResultFieldContract, validateContractRows, type FieldDefinition, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
 import type { PagedJoinPlan } from './plan';
 import {memberFailure,memberKey,memberKeyLabel} from './member-diagnostics';
@@ -37,13 +37,13 @@ export function projectRows(plan: PagedJoinPlan, keys: readonly (string | number
     const row: Row = {};
     for (const [field, projection] of Object.entries(plan.source.source.projection)) {
       const source = members.get(projection.member)?.get(key);
-      row[field] = source?.[projection.field] ?? null;
+      row[field] = source ? source[projection.field] ?? null : projection.onMissing === 'zero' ? 0 : null;
       copyFieldFallback(source, projection.field, row, field);
     }
     if (plan.source.source.ordinalField) row[plan.source.source.ordinalField] = 0;
     return row;
   });
-  if (!validateContractRows(rows, queryResultFields(plan.source.fields)).ok) throw rowFailure('最终投影违反字段契约');
+  if (!validateContractRows(rows, queryResultFields(pagedJoinProjectionFields(plan.source))).ok) throw rowFailure('最终投影违反字段契约');
   return rows;
 }
 export function ordinalRows(plan: PagedJoinPlan, rows: Row[], offset: number): Row[] {

@@ -10,3 +10,7 @@
 6. 按主流程冻结尝试并运行独立校验器。真实接入另核实各来源稳定排序、null 位置、字符串比较、总数、搜索编码和候选接口；模拟数据通过与真实取数分别报告。首次深页可能更慢，受扫描/耗时限制；超限提示缩小范围，不截断后宣称完整。
 
 协议细节以 `read-knowledge.mjs show --topic data.pagedUnion --topic table.source-navigation` 的生成知识为准。
+
+## 同比环比按页补查
+
+用户要求后端分页并展示当前页同比环比时，读取 `query.period-comparison-page` 与 `data.pagedJoin`，以 [完整示例](page-metadata/examples/period-comparison-query-page.json) 为声明起点：当期业务行域选页，历史成员按本页键补列，组合结果执行逐行计算。先沿用已确认的业务粒度、稳定键、期间与缺记录口径；具体字段、版本和能力限制以生成知识为准。需要历史对象并集或计算列全局排序筛选时，读取 `query.period-comparison` 并明确选择完整集合路径。

@@ -286,8 +286,12 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 
 当 main 或其他数据槽的 pagedUnion/pagedJoin 动态结果经过兼容整理时，表格在标题下显示可展开 warning，列出来源、处理方式和次数。默认空值显示 —；交互继续消费整理后的类型值，不将显示原文作为行键。Excel 数据工作表保留可用匹配行，另附“数据异常说明”；正常导出不增说明表。异常语义及资源边界由[组合表格异常兼容](../data-sources.md#table-result-recovery)维护，合成入口 `/pages/table-data-recovery`。
 
+## 期间比较的查询分页（6.78）
 
-页面协议 6.77。结构真源为本册[schema.json](../schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
+表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败显示持续错误和重试；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
+
+
+页面协议 6.78。结构真源为本册[schema.json](../schema.json)，SHA256 `55de7dce3225b8700044b37f441afc100190b4c140ea010fd9ef3e19bd3b012d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -3440,6 +3444,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-hierarchy-lookup-param](../examples/table-hierarchy-lookup-param.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-query-page](../examples/paged-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-query-page](../examples/record-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [period-comparison-query-page](../examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

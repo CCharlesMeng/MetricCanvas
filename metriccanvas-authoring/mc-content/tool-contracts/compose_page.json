@@ -894,6 +894,14 @@
                       "field": {
                         "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
                         "type": "string"
+                      },
+                      "onMissing": {
+                        "description": "成功查询缺少关联记录时取空或补零；省略取空，返回的 null 单元格保持为空",
+                        "enum": [
+                          "null",
+                          "zero"
+                        ],
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -2304,6 +2312,14 @@
                   },
                   "field": {
                     "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  },
+                  "onMissing": {
+                    "description": "成功查询缺少关联记录时取空或补零；省略取空，返回的 null 单元格保持为空",
+                    "enum": [
+                      "null",
+                      "zero"
+                    ],
                     "type": "string"
                   }
                 },

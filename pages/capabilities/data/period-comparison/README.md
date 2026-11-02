@@ -1,5 +1,20 @@
 # 同比环比
 
+## 按页补查（Schema 6.78）
+
+入口 `/pages/period-comparison-query-page`，完整JSON为 [period-comparison-query-page.json](period-comparison-query-page.json)。无需URL参数，使用本页专属合成网关；启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5197`。数据和请求记录在 `apps/playground/fixtures/period-comparison-query-page.ts`：2023-10至2026-10各月28日的合成观测，可信统计截止2026-10-28。不是实际业务数据或真实DQE。
+
+当期主查询先按销售额降序取得10条，历史两期只按这10个客户编号补查，再逐行计算；主查询总数23，第三页3条。历史独有客户不自动进入主行域，计算列只展示；客户编号和当期销售额允许后端排序/筛选。补查返回按编号关联，顺序不影响计算。
+
+1. 首屏最高销售额客户C000023：560/320/256，环比75%、同比118.75%，百分点+10.0P/+20.0P。正常首屏3次有界请求，没有全量读取。
+2. 翻第二页：主查询offset10，比较期仍从本页键集合offset0补查；第三页3条。按客户升序后C000001为120/100/80，增长率20%/50%，百分点10/20。
+3. C000002基期为0，增长率—；C000003当期比率为null，百分点—；C000004缺上期记录，销售额按声明补0、比率仍为空；C000005已返回上期销售额null保持为空；C000006负基期按原公式计算。
+4. 当期销售额表头下限300只用于当期选页，上期依然查这些客户的真实值，不沿用300阈值。切换年、季、月、近一年重新查询对应日期；年/近一年同比环比相同。
+5. 导出按当前条件和顺序逐页补查、计算全部匹配对象；普通状态导出23条数据，保留数值和百分比/百分点格式，非当前10条。
+6. `?state=large` 为十万对象，首屏仍仅选一页并补两期；`?state=error` 去年同期失败，持续错误和重试；`?state=retry` 首次失败、点击重试恢复；`?state=duplicate|truncated` 展示补查重复键/截断失败，不回退全集扫描。
+
+浏览器脚本 `apps/playground/tests/period-comparison-query-page-browser.mjs` 读取同一页面声明，核对真实显示、合成请求、翻页、四种模式、失败重试和导出。取消、迟到回执、事实刷新、批次、零值和非法能力由行为测试补充。验收证据见 `docs/evidence/period-comparison-query-page/acceptance.md`；真实服务的指标聚合、分页稳定性、键粒度、权限和总数单列待验。
+
 ## 使用配置（Schema 6.77）
 
 完整可复制配置见 [period-comparison-demo.json](period-comparison-demo.json)。修改真实业务时替换查询指标、维度和字段映射，并用稳定业务编号作为关联键；示例的 customer/sales/rate 为合成字段。查询和计算由页面数据源声明，表格列引用计算后的字段。

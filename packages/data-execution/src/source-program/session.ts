@@ -18,6 +18,7 @@ import { createCandidateValidator } from '../candidate-validation';
 import { createColumnCandidatesReader, type ColumnCandidatesRead } from './column-candidates';
 import { initialFilterValues } from '../filter-values';
 import { compilePagedJoin } from '../paged-join/plan';
+import {pagedJoinHasComparison} from '@metriccanvas/page/internal';
 import { executePagedJoin } from '../paged-join/execute';
 import { preservedQueryError } from '../query-error';
 import { cascadeSourceIds, conditionSourceIds, canonicalizeJson, isBoundedResultSource, queryResultDependencies, tableHeaders, declaredPaginationLimit, type DataSource, type PagedJoinDataSource, type PagedUnionDataSource, type Page, type DataSnapshot, type EffectiveQuery, type TableQueryView, type QueryDataSource, type EmbeddedInitialRows } from '@metriccanvas/page/internal';
@@ -105,7 +106,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     prepareView(id:string,conditions:FilterValues,view:TableQueryView,field?:string):TableQueryView {
       const source=page.dataSources[id];
       if(source?.source.type!=='pagedJoin'||!isPagedJoinQuery(source.source))return view;
-      return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field),config.now??config.clock?.()).view;
+      return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field),config.now??config.clock?.(),{displayInputs:config.displayInputs?.(),filterRevision:config.filterRevision?.()}).view;
     },
     readColumnCandidates(request: ColumnCandidatesRead) { return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, config)(request); },
     initialSnapshots(request: Pick<SourceRead, 'roots' | 'conditions' | 'views'>): Map<string, DataSnapshot> {
@@ -139,7 +140,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const request = freezeReadRequest(input, signals);
       const execution = candidateQueryRunner(runner, request.background);
       const currentUnion = candidateUnionReader(union, execution, request.background);
-      const frozenInputs = request.displayInputs ?? config.displayInputs?.(); const frozenRevision = request.filterRevision ?? config.filterRevision?.();
+      const frozenInputs = structuredClone(request.displayInputs ?? config.displayInputs?.()); const frozenRevision = request.filterRevision ?? config.filterRevision?.();
       const candidates = createCandidateValidator(page, config.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: request.now });
       const scope = sourceReadScope(request.freshness, frozenInputs);
       try {
@@ -229,7 +230,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           try {
             if (source.source.type === 'pagedUnion') await executeUnion(id, source as PagedUnionDataSource, view);
             else {
-              const plan = compilePagedJoin(page, id, request.conditions, view, request.now);
+              const plan = compilePagedJoin(page, id, request.conditions, view, request.now,{displayInputs:frozenInputs,filterRevision:frozenRevision});
               const result = await readJoined(plan);
               request.signal.throwIfAborted();
               raw.set(id, result.snapshot);
@@ -311,6 +312,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         function captureJoinedResult(id: string, source: PagedJoinDataSource, view: TableQueryView, plan: ReturnType<typeof compilePagedJoin>, result: Awaited<ReturnType<typeof executePagedJoin>>): void {
           const applied = result.viewCorrection ?? plan.view;
           if (canonicalizeJson(applied) !== canonicalizeJson(view)) corrections.set(id, applied);
+          if(source.compute?.length||pagedJoinHasComparison(page,source))return;
           if (defaultJoinedView(id, source, applied) && (result.snapshot.status === 'ready' || result.snapshot.status === 'empty') && !result.snapshot.warnings?.length) initials.set(id, { capturedAt: new Date().toISOString(), rows: result.snapshot.status === 'ready' ? result.snapshot.rows : [], ...(result.snapshot.status === 'ready' ? snapshotCellFallbacks(result.snapshot.rows) : {}), totalCount: result.snapshot.totalCount!, view: result.viewCorrection ?? { ...view, sort: plan.view.sort } });
         }
         function defaultJoinedView(id: string, source: PagedJoinDataSource | PagedUnionDataSource, applied: TableQueryView): boolean {

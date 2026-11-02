@@ -1,4 +1,4 @@
-import { isPagedJoinQuery, hasQueryFieldMapping, restoreCellFallbacks, dqeDefaultSort, type EffectiveQuery, type DataSnapshot, type TableQueryView, type Row } from '@metriccanvas/page/internal';
+import { isPagedJoinQuery, hasQueryFieldMapping, restoreCellFallbacks, dqeDefaultSort, pagedJoinHasComparison, type EffectiveQuery, type DataSnapshot, type TableQueryView, type Row } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { PagedJoinPlan } from './plan';
 import { memberQuery, restrictKeys } from './member-query';
@@ -15,16 +15,21 @@ function readyRows(snapshot:DataSnapshot):Row[]{
 }
 
 async function runPageQuery(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,input?:AbortSignal){
-  const timeout=plan.source.source.records&&AbortSignal.timeout(plan.source.source.records.timeoutMs);
+  const timeout=pageQueryTimeout(plan);
   const signal=AbortSignal.any([...(input?[input]:[]),...(timeout?[timeout]:[])]);
   try{
     const result=await runner.run(query,{pageId:plan.page.id,dataSourceIds:[plan.source.source.members[id].source]},scope,signal);
     signal.throwIfAborted();return result;
   }catch(cause){
     input?.throwIfAborted();
-    if(timeout&&timeout.aborted)throw Object.assign(new Error('记录分页单批查询超时'),{code:'DQE_TIMEOUT'});
+    if(timeout&&timeout.aborted)throw Object.assign(new Error(plan.source.source.records?'记录分页单批查询超时':'当前页比较查询超时，请重试'),{code:'DQE_TIMEOUT'});
     throw cause;
   }
+}
+
+function pageQueryTimeout(plan:PagedJoinPlan):AbortSignal|undefined {
+  const milliseconds=plan.source.source.records?.timeoutMs??(pagedJoinHasComparison(plan.page,plan.source)?60_000:undefined);
+  return milliseconds?AbortSignal.timeout(milliseconds):undefined;
 }
 
 function selectionQuery(plan:PagedJoinPlan,pageIndex:number){

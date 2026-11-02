@@ -5,20 +5,26 @@ import {hasPeriodComparison} from './period-comparison';
 import {flattenPageComponents} from './component-walk';
 import {isObjectDqeItem} from './dqe-object';
 import type {DqeFilterBinding, DqeQueryDefinition} from './query';
+import {isPagedJoinQuery} from './paged-join-view';
+import type {PagedJoinDataSource} from './paged-join';
 
 type TimeBinding = Extract<DqeFilterBinding,{target:'time'}>;
 export function periodComparisonErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
+  const combined=comparisonMemberContexts(page);
   const error = (path:string,message:string) => {errors.push({type:'SCHEMA_ERROR',path,message});};
-  for (const variant of queryVariants(page)) for (const [id,source] of Object.entries(variant.dataSources)) {
+  for (const variant of queryVariants(page)) {
+   for (const [id,source] of Object.entries(variant.dataSources)) {
     if (source.source.type !== 'query' || !hasPeriodComparison(source.source.query)) continue;
     const path = `/dataSources/${id}/source`;
-    if (combinedMembers(page).has(id)) error(path,'期间比较源不能作为分页组合成员；请以完整计算结果作为表格数据源');
+    if (combined.get(id)===false) error(path,'期间比较源不能作为此分页组合成员；请使用无 records 的查询分页组合');
     if (source.source.resultScope !== 'complete') error(path,'期间比较需要 resultScope: complete 的完整结果');
     for (const [filterId,binding] of Object.entries(source.source.query.filterBindings ?? {})) {
       if (binding.target === 'time' && binding.periodComparison) validateBinding(page,filterId,binding,source.source.query,`${path}/query/filterBindings/${filterId}`,error);
     }
     if (flattenPageComponents(page).some(c=>c.type==='table'&&c.data.main===id&&c.props.pagination?.mode==='query')) error(path,'期间比较源不允许查询分页；请在完整计算结果上分页');
+  }
+   errors.push(...comparisonGroupErrors(variant));
   }
   return errors;
 }
@@ -57,6 +63,53 @@ function declaresComparison(value:unknown):boolean {
   return ['queryModes','timeModes'].some(key=>Object.values(record(record(query[key])?.cases)??{}).some(declaresComparison));
 }
 
-function combinedMembers(page:Page):Set<string> {
-  return new Set(Object.values(page.dataSources).flatMap(source=>source.source.type==='pagedJoin'||source.source.type==='pagedUnion'?Object.values(source.source.members).map(member=>member.source):[]));
+function comparisonMemberContexts(page:Page):Map<string,boolean> {
+  const result=new Map<string,boolean>();
+  for(const data of Object.values(page.dataSources)) {
+    if(data.source.type!=='pagedJoin'&&data.source.type!=='pagedUnion')continue;
+    const allowed=isPagedJoinQuery(data.source)&&!data.source.records;
+    for(const member of Object.values(data.source.members))result.set(member.source,result.get(member.source)!==false&&allowed);
+  }
+  return result;
+}
+
+function comparisons(query:DqeQueryDefinition):Map<string,NonNullable<TimeBinding['periodComparison']>> {
+  return new Map(Object.entries(query.filterBindings??{}).flatMap(([id,binding])=>binding.target==='time'&&binding.periodComparison?[[id,binding.periodComparison]]:[]));
+}
+
+function comparisonGroupErrors(page:Page):TypedError[] {
+  const errors:TypedError[]=[];
+  for(const [id,data] of Object.entries(page.dataSources)) {
+    if(data.source.type!=='pagedJoin'||!isPagedJoinQuery(data.source)||data.source.records)continue;
+    const source=data.source;
+    const definitions=Object.entries(source.members).flatMap(([name,member])=>{
+      const ref=page.dataSources[member.source];return ref?.source.type==='query'?[[name,ref.source.query] as const]:[];
+    });
+    if(!definitions.some(([,query])=>hasPeriodComparison(query)))continue;
+    const domain=definitions.find(([name])=>name===source.domainMember);
+    const expected=domain?comparisons(domain[1]):new Map();
+    if(!expected.size)errors.push({type:'SCHEMA_ERROR',path:`/dataSources/${id}/source/domainMember`,message:'比较组合的业务行域必须绑定当期期间'});
+    for(const [name,query] of definitions)validateComparisonMember(data as PagedJoinDataSource,name,comparisons(query),expected,`/dataSources/${id}/source/members/${name}`,errors);
+  }
+  return errors;
+}
+
+function validateComparisonMember(data:PagedJoinDataSource,name:string,actual:ReturnType<typeof comparisons>,expected:ReturnType<typeof comparisons>,path:string,errors:TypedError[]):void {
+  const domain=name===data.source.domainMember;
+  if(data.source.members[name].canSelectPage!==domain)errors.push({type:'SCHEMA_ERROR',path:`${path}/canSelectPage`,message:'期间比较只能由当期业务行域选页，历史成员用于补列'});
+  const invalid=[...expected].some(([id,binding])=>{
+    const value=actual.get(id);
+    return !value||value.fact!==binding.fact||(domain?value.kind!=='current':value.kind==='current');
+  });
+  if(invalid||actual.size!==expected.size)errors.push({type:'SCHEMA_ERROR',path:`${path}/source`,message:'比较成员必须绑定相同期间筛选和可信截止事实；业务行域为当期，补列为上期或去年同期'});
+}
+
+export function comparisonJoinCapabilityPaths(document:unknown):string[] {
+  const sources=record(record(document)?.dataSources)??{};
+  return Object.entries(sources).flatMap(([id,value])=>{
+    const source=record(record(value)?.source);
+    if(source?.type!=='pagedJoin')return [];
+    const used=Object.values(record(source.members)??{}).some(member=>declaresComparison(record(record(sources[String(record(member)?.source)])?.source)?.query));
+    return used?[`/dataSources/${id}/source/members`]:[];
+  });
 }

@@ -137,7 +137,8 @@
         "paged-union-composite-branches",
         "paged-union-generated-key",
         "paged-join-query-page",
-        "record-join-query-page"
+        "record-join-query-page",
+        "period-comparison-query-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -242,7 +243,8 @@
         "stored-count-measures",
         "period-query-columns-demo",
         "period-query-branches",
-        "period-comparison-demo"
+        "period-comparison-demo",
+        "period-comparison-query-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -281,7 +283,8 @@
         "cross-source-page",
         "union-keys-demo",
         "reference-export-compute-branches",
-        "period-comparison-demo"
+        "period-comparison-demo",
+        "period-comparison-query-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -813,7 +816,8 @@
         "table-hierarchy-selection",
         "table-hierarchy-lookup-param",
         "paged-join-query-page",
-        "record-join-query-page"
+        "record-join-query-page",
+        "period-comparison-query-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -2022,7 +2026,8 @@
     "current": "所选期间截至可信统计截止日。",
     "previousPeriod": "月前移一月、季前移三月、年与近一年前移一年。",
     "previousYear": "所选期间前移一年，保持相同统计进度。",
-    "6.77": "期间比较查询、逐度量缺记录策略及百分点格式。"
+    "6.77": "期间比较查询、逐度量缺记录策略及百分点格式。",
+    "6.78": "查询分页期间比较、组合投影缺记录策略与逐行计算"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2638,6 +2643,18 @@
         "自动同比环比查询（6.77）"
       ],
       "dependencies": []
+    },
+    "query.period-comparison-page": {
+      "module": "queries-and-bindings",
+      "title": "按当前页业务键补查期间比较",
+      "roots": [
+        "#/definitions/pagedJoinDataSource/properties/compute",
+        "#/definitions/pagedJoinSource/properties/projection"
+      ],
+      "headings": [
+        "期间比较按当前页业务键补查（6.78）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2686,7 +2703,8 @@
       "6.55 DQE 对象查询",
       "指定时间字段的范围下推（6.68）",
       "查询时间精度与执行前校验",
-      "自动同比环比查询（6.77）"
+      "自动同比环比查询（6.77）",
+      "期间比较按当前页业务键补查（6.78）"
     ],
     "compute.md": [
       "组织键并集（6.74）",
@@ -2694,7 +2712,8 @@
       "汇总的全空结果（6.12）",
       "多度量透视与有限主集合左关联 6.14",
       "字段求和与缺项归零（6.71）",
-      "比较期缺记录策略（6.77）"
+      "比较期缺记录策略（6.77）",
+      "查询分页组合结果逐行计算（6.78）"
     ],
     "filters.md": [
       "期间选择与查询消费",
@@ -2792,7 +2811,8 @@
       "期间模式列显隐（6.67）",
       "层级筛选联动（6.70）",
       "完整父子 Excel（6.70）",
-      "组合源数据异常提示与导出"
+      "组合源数据异常提示与导出",
+      "期间比较的查询分页（6.78）"
     ],
     "components/mapChart.md": [
       "查阅方式",

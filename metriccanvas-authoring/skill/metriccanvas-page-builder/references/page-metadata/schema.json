@@ -77,9 +77,10 @@
         "6.74",
         "6.75",
         "6.76",
-        "6.77"
+        "6.77",
+        "6.78"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78"
     },
     "id": {
       "type": "string",
@@ -3921,6 +3922,85 @@
         },
         "source": {
           "$ref": "#/definitions/pagedJoinSource"
+        },
+        "compute": {
+          "description": "查询分页组合投影后的逐行 delta/ratio 计算；不改变行数、顺序和 totalCount",
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "type": "string",
+                    "const": "delta"
+                  },
+                  "minuend": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "subtrahend": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "output": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  }
+                },
+                "required": [
+                  "op",
+                  "minuend",
+                  "subtrahend",
+                  "output"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "type": "string",
+                    "const": "ratio"
+                  },
+                  "numerator": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "denominator": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "output": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "onZeroDenominator": {
+                    "type": "string",
+                    "enum": [
+                      "null",
+                      "zero"
+                    ],
+                    "description": "分母为零或缺失时取空还是取零；必须显式声明，默认值会静默改数"
+                  },
+                  "scale": {
+                    "description": "输出刻度；缺省产出 0–1 分数，100 产出 0–100。闭集只有 100，开放数值等于在算子里引入乘法表达式",
+                    "type": "number",
+                    "const": 100
+                  }
+                },
+                "required": [
+                  "op",
+                  "numerator",
+                  "denominator",
+                  "output",
+                  "onZeroDenominator"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
         }
       },
       "required": [
@@ -4010,6 +4090,14 @@
               "field": {
                 "type": "string",
                 "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "onMissing": {
+                "description": "成功查询缺少关联记录时取空或补零；省略取空，返回的 null 单元格保持为空",
+                "type": "string",
+                "enum": [
+                  "null",
+                  "zero"
+                ]
               }
             },
             "required": [
@@ -12489,5 +12577,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.77"
+  "$id": "https://metriccanvas/page/v6.78"
 }

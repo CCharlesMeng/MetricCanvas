@@ -1,0 +1,61 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests packages/data-execution/tests packages/engine/runtime/tests packages/engine/runtime-ui/tests tests/public-api.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/period-comparison/DataDashboard
+
+ ❯ tests/public-api.test.ts (8 tests | 1 failed) 134ms
+     × @metriccanvas/page 的导出名与快照一致 84ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/public-api.test.ts > 六个交付物的公开面 > @metriccanvas/page 的导出名与快照一致
+AssertionError: expected '# @metriccanvas/page\n\n## .\nExtract…' to be '# @metriccanvas/page\n\n## .\nExtract…' // Object.is equality
+
+- Expected
++ Received
+
+@@ -445,11 +445,14 @@
+  pageListEntry
+  pageParamDeclarations
+  pageParamErrors
+  pageSchema
+  pagedJoinCandidateView
+- pagedJoinMemberView
++ pagedJoinComputeErrors
++ pagedJoinHasComparison
++ pagedJoinMemberView
++ pagedJoinProjectionFields
+  pagedJoinUnavailable
+  pagedJoinViewOwner
+  parsePage
+  periodFact
+  periodRangeLabel
+@@ -461,10 +464,11 @@
+  presentationTargets
+  projectComponentFields
+  projectFieldSelections
+  projectQueries
+  projectSnapshotRows
++ projectionMissingErrors
+  queryErrorDisposition
+  queryFilterIds
+  queryLeaves
+  queryResultDependencies
+  queryResultFieldContract
+
+ ❯ tests/public-api.test.ts:46:22
+     44|       }
+     45|       expect(existsSync(file), `缺少公开面快照 ${relative(root, file)}`).toBe…
+     46|       expect(actual).toBe(readFileSync(file, 'utf8'));
+       |                      ^
+     47|     });
+     48|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 247 passed (248)
+      Tests  1 failed | 2059 passed (2060)
+   Start at  10:34:08
+   Duration  27.88s (transform 17.04s, setup 0ms, import 268.49s, tests 83.59s, environment 17ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

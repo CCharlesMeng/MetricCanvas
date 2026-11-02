@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.77",
+  "currentWriter": "6.78",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -825,6 +825,93 @@
           "id": "dashboard-toolbar-compact-read-only",
           "minor": 0,
           "description": "dashboard 紧凑页头与只读筛选说明"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/period-comparison-query-page.json",
+      "requiredVersion": "6.78",
+      "capabilities": [
+        {
+          "id": "paged-join-row-compute",
+          "minor": 78,
+          "description": "查询分页组合逐行计算与按投影声明缺记录策略"
+        },
+        {
+          "id": "paged-period-comparison",
+          "minor": 78,
+          "description": "期间比较按当前页业务键补查"
+        },
+        {
+          "id": "paged-join-query-pagination",
+          "minor": 76,
+          "description": "组合查询源按需分页与最后操作成员生效"
+        },
+        {
+          "id": "percentage-point-format",
+          "minor": 77,
+          "description": "带符号的一位小数百分点格式"
+        },
+        {
+          "id": "period-comparison",
+          "minor": 77,
+          "description": "可信截止时间驱动的期间比较与按度量声明缺记录策略"
+        },
+        {
+          "id": "unified-page-header",
+          "minor": 41,
+          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
+        },
+        {
+          "id": "ioc-header",
+          "minor": 36,
+          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
+        },
+        {
+          "id": "period-filter",
+          "minor": 27,
+          "description": "Dashboard 年季月与近一年期间筛选"
+        },
+        {
+          "id": "paged-join",
+          "minor": 22,
+          "description": "多查询组合表格与数值表头范围"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "binding-missing-text",
+          "minor": 12,
+          "description": "字段绑定的缺失值展示文案"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "data-source-computation",
+          "minor": 0,
+          "description": "页面数据源的受控计算阶段与具名算子(ADR-0046)"
+        },
+        {
+          "id": "ratio-scale",
+          "minor": 0,
+          "description": "ratio 算子的输出刻度 scale(ADR-0046)"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

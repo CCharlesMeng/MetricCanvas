@@ -45,6 +45,10 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 `pagedJoin` 只引用页内已有普通查询源，复用查询定义，独立产出组合表的公开数据快照。成员必须无 compute、无 resultBindings、无业务 TopN/窗口，并声明 `resultScope: complete`。普通结果与内部选页、补列结果隔离；定义引用只传播参数/筛选失效，不改变固定级联顺序。
 
+6.78 起，无 records 的显式查询分页组合可在数据源同层声明 `compute`，仅接受按行执行的 delta/ratio；投影字段 `onMissing: "null" | "zero"` 可覆盖默认缺记录策略，仅数值度量允许 zero。缺省仍取 null，已返回的空单元格不补零。计算产出在 fields 声明，不能同时投影或覆盖行键/序号，计算前检查投影输入，计算后检查最终契约，totalCount 和行顺序不变。旧组合分支和其他算子不自动开放，见[组合结果逐行计算](compute.md#paged-join-row-compute)。
+
+期间比较成员可在此分支使用 `periodComparison`；当期业务行域拥有选页能力，历史成员仅补列，同一期间筛选引用同一可信截止事实。按主查询行域选页，组合输出不自动扩大成三期并集；内部结果不写回普通成员。读取和导出复用统一事实和计算路径，比较期失败、重复键或截断明确失败。完整例子 `/pages/period-comparison-query-page`，声明与期间细节见[查询模块](queries-and-bindings.md#period-comparison-query-page)。
+
 `domainMember` 定义业务行域；各成员按显式单个非空 string/number 维度键关联，`projection` 覆盖最终字段。类型、角色、单位和币种一致，可能缺匹配的列允许 null。网络、权限或查询配置错误整轮失败；结果异常按下文兼容。序号由 `ordinalField` 生成，与稳定 `rowKey` 分开。
 
 同源可兑现全部排序/筛选且 `canSelectPage` 已经真实验真时，先选页编码，再取各成员编码内的完整行；否则在最大 1000 行的完整行域上关联、筛选、稳定排序并分页。不能筛当前页冒充全局处理。完整本地路径在排序末尾补业务键升序，远端选页仅请求声明的业务排序；缺值在升降序都排尾；可空原始排序字段未确认上游 null 编码时走完整路径。
@@ -208,7 +212,7 @@ Excel 允许缺项，数据工作表导出整理后的全部匹配行，而非�
 合成入口 `/pages/table-data-recovery` 同时展示缺字段、对象值、不规则行、重复来源 key 与重复补充记录；`?recoveryState=ready` 演示数据准备好后恢复无告警。页面位于 `pages/capabilities/table/table-data-recovery.json`，模拟数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`；无需 DQE Sim。真实 DQE/Relay 行为须另验。
 
 
-页面协议 6.77。结构真源为本册[schema.json](schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.78。结构真源为本册[schema.json](schema.json)，SHA256 `55de7dce3225b8700044b37f441afc100190b4c140ea010fd9ef3e19bd3b012d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -787,6 +791,21 @@ Schema位置：`#/definitions/pagedJoinSource/properties/projection/additionalPr
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f70726f6a656374696f6e2f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6f6e4d697373696e67"></a>
+
+### `@pagedJoinSource.projection{key}.onMissing`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/projection/additionalProperties/properties/onMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["null","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 成功查询缺少关联记录时取空或补零；省略取空，返回的 null 单元格保持为空 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "null" | 零/缺分母时输出空值。 |
+| "zero" | 零/缺分母时输出0。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f70726f6a656374696f6e2f70726f70657274794e616d6573"></a>
 
@@ -1556,6 +1575,163 @@ Schema位置：`#/definitions/pagedJoinSource/properties/initial/properties/view
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "equals" | 用于选择@pagedJoinSource.initial.view.search.match分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d70757465"></a>
+
+### `@pagedJoinDataSource.compute`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 查询分页组合投影后的逐行 delta/ratio 计算；不改变行数、顺序和 totalCount |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d73"></a>
+
+### `@pagedJoinDataSource.compute[]`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f30"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[0]`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","minuend","subtrahend","output"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f302f70726f706572746965732f6f70"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[0].op`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/0/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="delta" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "delta" | 用于选择@pagedJoinDataSource.compute[] · oneOf[0].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f302f70726f706572746965732f6d696e75656e64"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[0].minuend`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/0/properties/minuend`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | delta被减数数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f302f70726f706572746965732f73756274726168656e64"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[0].subtrahend`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/0/properties/subtrahend`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | delta减数数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f302f70726f706572746965732f6f7574707574"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[0].output`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/0/properties/output`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f31"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[1]`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","numerator","denominator","output","onZeroDenominator"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f312f70726f706572746965732f6f70"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[1].op`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="ratio" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "ratio" | 用于选择@pagedJoinDataSource.compute[] · oneOf[1].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f312f70726f706572746965732f6e756d657261746f72"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[1].numerator`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1/properties/numerator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | ratio分子数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f312f70726f706572746965732f64656e6f6d696e61746f72"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[1].denominator`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1/properties/denominator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | ratio分母数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f312f70726f706572746965732f6f7574707574"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[1].output`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1/properties/output`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f312f70726f706572746965732f6f6e5a65726f44656e6f6d696e61746f72"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[1].onZeroDenominator`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1/properties/onZeroDenominator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["null","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 分母为零或缺失时取空还是取零；必须显式声明，默认值会静默改数 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "null" | 零/缺分母时输出空值。 |
+| "zero" | 零/缺分母时输出0。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e44617461536f757263652f70726f706572746965732f636f6d707574652f6974656d732f6f6e654f662f312f70726f706572746965732f7363616c65"></a>
+
+### `@pagedJoinDataSource.compute[] · oneOf[1].scale`
+
+Schema位置：`#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1/properties/scale`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | const=100 | Schema未设默认；装配/运行时默认见语义说明 | 输出刻度；缺省产出 0–1 分数，100 产出 0–100。闭集只有 100，开放数值等于在算子里引入乘法表达式 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| 100 | ratio输出乘100，匹配百分比原值展示。 |
 
 <a id="schema-232f646566696e6974696f6e732f64617461536f757263652f616e794f662f33"></a>
 
@@ -2685,6 +2861,7 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - [paged-union-generated-key](examples/paged-union-generated-key.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-query-page](examples/paged-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-query-page](examples/record-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
@@ -2701,6 +2878,8 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/1`：[语义拒绝反例](errors/paged-join-initial-predicate-numeric.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/2`：[语义拒绝反例](errors/paged-join-initial-predicate-date.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/3`：[语义拒绝反例](errors/paged-join-initial-predicate-null.json)：显式为空属于已提交运行视图，持久化initial仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。
+- `#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/0`：[合法完整页面](examples/period-comparison-query-page.json)，JSON Pointer `#/dataSources/comparison/compute/0`。
+- `#/definitions/pagedJoinDataSource/properties/compute/items/oneOf/1`：[合法完整页面](examples/period-comparison-query-page.json)，JSON Pointer `#/dataSources/comparison/compute/2`。
 - `#/definitions/dataSource/anyOf/3`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions`。
 - `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract`。
 - `#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/0/properties/projection/additionalProperties/anyOf/0`：[合法完整页面](examples/paged-union-page.json)，JSON Pointer `#/dataSources/opinions/source/members/contract/projection/localRowId`。

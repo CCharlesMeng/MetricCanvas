@@ -893,6 +893,14 @@
                   "field": {
                     "type": "string",
                     "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "onMissing": {
+                    "description": "成功查询缺少关联记录时取空或补零；省略取空，返回的 null 单元格保持为空",
+                    "type": "string",
+                    "enum": [
+                      "null",
+                      "zero"
+                    ]
                   }
                 },
                 "required": [

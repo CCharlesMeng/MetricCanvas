@@ -1,11 +1,12 @@
 import { dqeDefaultSort, isObjectDqeItem, isPagedJoinQuery, pagedJoinViewOwner, reconcilePagedJoinView, pagedJoinUnavailable, selectQuerySource, hasQueryFieldMapping, type Page, type PagedJoinDataSource, type QueryDataSource, type TableQueryView } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../filter-values';
-import { composeEffectiveQuery } from '../effective-query';
+import { composeEffectiveQuery, type QueryBinding } from '../effective-query';
 
-export type PagedJoinPlan = { page: Page; sourceId: string; source: PagedJoinDataSource; conditions: FilterValues;now?:Date;
+type ComparisonContext=Pick<QueryBinding,'displayInputs'|'filterRevision'>;
+export type PagedJoinPlan = { page: Page; sourceId: string; source: PagedJoinDataSource; conditions: FilterValues;now?:Date; context?:ComparisonContext;
   view: TableQueryView; strategy:'queryPage'|'selectPageThenFill'|'completeJoin'|'recordJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'|'records'; selection?: string; members: Map<string, QueryDataSource> };
 /** Dynamic execution order stays private; resultBindings are never rewritten. */
-export function compilePagedJoin(page: Page, sourceId: string, conditions: FilterValues, input: TableQueryView,now?:Date): PagedJoinPlan {
+export function compilePagedJoin(page: Page, sourceId: string, conditions: FilterValues, input: TableQueryView,now?:Date,context?:ComparisonContext): PagedJoinPlan {
   const source = page.dataSources[sourceId] as PagedJoinDataSource;
   const view = structuredClone(input);
   if (!view.sort.length && (!isPagedJoinQuery(source.source) || !view.predicates.length)) view.sort = structuredClone(source.source.ordering.default);
@@ -15,7 +16,7 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
   if(view.predicates.some(predicate=>{const field=source.fields[predicate.field];return predicate.op==='gte'||predicate.op==='lte'?field.role!=='measure'||!['number','money'].includes(field.type):field.role!=='dimension';}))throw Object.assign(new Error('组合筛选与最终字段类型不相容'),{code:'DQE_QUERY_REJECTED'});
   if (view.search?.fields.some(field => !source.source.projection[field] || source.fields[field]?.type !== 'string')) throw Object.assign(new Error('组合搜索字段必须为已投影文本'), { code: 'DQE_QUERY_REJECTED' });
   const members = new Map(Object.entries(source.source.members).map(([id, member]) => [id, selectQuerySource(page.dataSources[member.source] as QueryDataSource,conditions)]));
-  if(isPagedJoinQuery(source.source))return queryPagePlan({now,page,sourceId,source,conditions,view,members,strategy:'queryPage',reason:'single-owner'});
+  if(isPagedJoinQuery(source.source))return queryPagePlan({now,context,page,sourceId,source,conditions,view,members,strategy:'queryPage',reason:'single-owner'});
   if(source.source.records)return {now,page,sourceId,source,conditions,view,members,strategy:'recordJoin',reason:'records'};
   const {selection,reason}=selectPageMember(page,source,members,conditions,view,now);
   return {now,page,sourceId,source,conditions,view,selection,members,strategy:selection?'selectPageThenFill':'completeJoin',reason};
@@ -24,7 +25,7 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
 function queryPagePlan(plan:PagedJoinPlan):PagedJoinPlan{
   const view=reconcilePagedJoinView(plan.source,plan.view),selection=pagedJoinViewOwner(plan.source,view);
   const definition=plan.members.get(selection)!;
-  const query=composeEffectiveQuery({now:plan.now,filters:plan.page.filters,dataSource:definition},plan.conditions,0,[],{});
+  const query=composeEffectiveQuery({...plan.context,now:plan.now,filters:plan.page.filters,dataSource:definition},plan.conditions,0,[],{});
   const sort:{queryField?:string}[]=view.sort.length?view.sort.map(rule=>{
     const field=definition.fields[plan.source.source.projection[rule.field].field];
     return {queryField:hasQueryFieldMapping(field)?field.queryField:undefined};

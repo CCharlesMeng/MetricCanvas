@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "39418c412bb4cf61a1bfaf76a6d25a6dd1963f38f6c6fa942c8174be76ebc5c2",
+  "sha256": "aa9583fbbf930ef5ae63b2c18959f4853f0608cd851da17fc19084af0cd36cf1",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -92,7 +92,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "9c8453c84bc2c55a09508fd20130d358b8f05f2577a66e7200d890ad60186b08"
+      "sha256": "888aaff5e4415a2f2d80a9c37b7784d02c80380342ded5aa8c65187bbf0c3bdb"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -100,7 +100,7 @@
     },
     {
       "file": "docs/page-metadata/compute.md",
-      "sha256": "c7b32be2eecb1f5b590fd610d265a0376f2c8ce4170a6f42d8c595d0cc49fa06"
+      "sha256": "6991461f8e64f183895ada533b5b585344a3e3ac020511a520811fbe660b1e8a"
     },
     {
       "file": "docs/page-metadata/conditions.md",
@@ -108,7 +108,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "42ec0792794a7db4b02add43e248313a6f3c8bc4b6100078f43c88aec174946c"
+      "sha256": "93db5fb370ea8119bc2d4f56589ef9d4d5551d7ab6cc4087a6b638470c446244"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -144,11 +144,11 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "867cfe83853a8191a80042496546c9dc03c849a4346a9bab5a985d8957376ab4"
+      "sha256": "67d56799013f69bcda725d44cc569b7c906f19e51b5e652f68d1044e941903d3"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "a686052892ff2f7f734bc4b5d82afc280cbb94a4dd4aa399ef7ee8a4b28c693a"
+      "sha256": "52f7fdb521d049994a0c88dd83f5dc45ad9024abb281b37b2c83e97b995f2334"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -963,6 +963,10 @@
       "sha256": "076fa764951bcb1002bd4ef930530b3fe74bc7f2559d89be5b71f5862219a6a4"
     },
     {
+      "file": "packages/page/fixtures/contract-valid/period-comparison-query-page.json",
+      "sha256": "587b0a48e8b4825b306b5be6a539a050ca1481b0c4ab1ae6943cfb195f7c9f25"
+    },
+    {
       "file": "packages/page/fixtures/contract-valid/period-filter-last12-months-page.json",
       "sha256": "f9d4f22c850a294db770832ec302448ec0cd06070437145885825587ad56a555"
     },
@@ -1424,7 +1428,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "603c8a1f77d025fff56ad7faf66b8701d8d58865f35ca9135927e9bb4f1cc72c"
+      "sha256": "194ed5b2260d9e3542669e3a6f80b5a612cbb5ca7a7b3bbce2f9832e844e11ce"
     },
     {
       "file": "packages/page/src/ioc-header.ts",
@@ -1479,12 +1483,16 @@
       "sha256": "52e8564ff41b35ec1bf04ef063fdd8599ed6ab734d84e375810456cd76cc89e5"
     },
     {
+      "file": "packages/page/src/paged-join-compute.ts",
+      "sha256": "26480193e751ace9b49597424046156d3728a6108d6857b37dc3d282a2fc6a95"
+    },
+    {
       "file": "packages/page/src/paged-join-view.ts",
       "sha256": "67a50051cd27c7df4c76e66b2e6261aaf3a1bce102fa656b7c6ccae02134631f"
     },
     {
       "file": "packages/page/src/paged-join.ts",
-      "sha256": "d6e0d837f68421cd964e7d88c0b668a4103f14286bfc5f28b7a597e782144c61"
+      "sha256": "0323783bea9846c9164ca79cb743a40cad3d01d2327ee28d31e5d4474097e184"
     },
     {
       "file": "packages/page/src/paged-union-identity.ts",
@@ -1508,7 +1516,7 @@
     },
     {
       "file": "packages/page/src/period-comparison-validation.ts",
-      "sha256": "a1bfc8dfc2d265c5ead9c2b8bd51a076b729b40cdd45787f3969969074e26e88"
+      "sha256": "aab351bf0ea83ecb7d43d58f5e4da2e1433c7373b50eafaacf564c835ae5bee6"
     },
     {
       "file": "packages/page/src/period-comparison.ts",
@@ -1684,7 +1692,7 @@
     },
     {
       "file": "packages/page/src/schema/compute.ts",
-      "sha256": "dfddcce2ffabfcdc458a2b8ee8777f97998f5dc63e2576cee6461538487189b9"
+      "sha256": "c3b614cb7589ce5cefe4701e4c905b3dbeec6cab7f6a8ed196d72a5a3c261a5f"
     },
     {
       "file": "packages/page/src/schema/condition.ts",
@@ -1716,7 +1724,7 @@
     },
     {
       "file": "packages/page/src/schema/paged-join.ts",
-      "sha256": "9bcc23bc47dad05ae47916ab5674733cb17af5c0c4a940cab41df03eaa15f3ab"
+      "sha256": "6af42f4f5806f2025e31a55c1191802643a65234f8c8c53b47025139138b5417"
     },
     {
       "file": "packages/page/src/schema/paged-union.ts",
@@ -1840,7 +1848,7 @@
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
-      "sha256": "4d0c8052bf8656fb37894a4f218b7ca8c4b4763bb59d26ea3c0069ead3c76369"
+      "sha256": "1fe574f9b8b76c8ee7c3a0f2bd09917a450c615fdc6ba782970662a4347c7e64"
     },
     {
       "file": "packages/page/src/validate-paged-union.ts",
@@ -1860,11 +1868,11 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "e4bd54a6ae9d9e56bbe7c86e9b26e5f7c6adee865f9dac0aaccc795b06fa94f9"
+      "sha256": "a052ae7611a3f3eec34b2c628817cd39ace511d2507c77644e745a7106fd1422"
     },
     {
       "file": "pages/README.md",
-      "sha256": "96140cb3d00607b3b716e52d3951f350d7c1709d2c743e6a15812e3eb70a1727"
+      "sha256": "998eec4a0afd930006f66abfbb8bcd95d35c89fad6d29f7cdbd7be40b9419b7a"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2008,11 +2016,15 @@
     },
     {
       "file": "pages/capabilities/data/period-comparison/README.md",
-      "sha256": "ffd8db05234abefa4d4314cfa6a8c9eaa5ed4d5f247598ed5ce75d3f5c564363"
+      "sha256": "4640890fcf6f6c024c81591c7690c0b13efeab443beaddf2332f6ab6f40c2dba"
     },
     {
       "file": "pages/capabilities/data/period-comparison/period-comparison-demo.json",
       "sha256": "076fa764951bcb1002bd4ef930530b3fe74bc7f2559d89be5b71f5862219a6a4"
+    },
+    {
+      "file": "pages/capabilities/data/period-comparison/period-comparison-query-page.json",
+      "sha256": "587b0a48e8b4825b306b5be6a539a050ca1481b0c4ab1ae6943cfb195f7c9f25"
     },
     {
       "file": "pages/capabilities/data/sum-fields-missing-values.json",
@@ -2256,15 +2268,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "8a3a7810572adcb667b670ef27501638836d49c5b2bce684efc581a14de64e1f"
+      "sha256": "189093d496645ec337606e2f4cd30ee8513575024ec60b5e76ec8ec479f90913"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "3efb845ed11523157262cb0c9e901809ad2c2ef65fa6bf6dfbe154d0c28d2a92"
+      "sha256": "e27ddd13c0d9f7eb68630f9af322e63ba652e7e6cd9cb6e504935b9748806296"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "b19dc4e1ea8033249d04d2a6e024a6060085985aa24faf34a1f93109315c40d4"
+      "sha256": "291708aa9c648c65d5ddf738c3dcdd75ae32405af40426b7955bbf65bd06745a"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2280,7 +2292,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "8e9b2a860c36f76377e58e946024507ee0b94907d7e0f9945fd2c853a5a89c49"
+      "sha256": "1a05e138cfcf4d5793648dc45b5dcabb3c2d583729c70d028c046d748834dd83"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",

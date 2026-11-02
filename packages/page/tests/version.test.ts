@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVersions, versionErrors, versionPolicy } from '../src/version';
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
+  'paged-join-row-compute':78,
+  'paged-period-comparison':78,
   'paged-join-query-pagination':76,
   'table-null-predicate':76,
   'period-comparison':77,

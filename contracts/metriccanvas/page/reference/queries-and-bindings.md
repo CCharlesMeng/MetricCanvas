@@ -284,8 +284,26 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 完整可操作场景：`/pages/period-comparison-demo`，页面及合成数据说明见 `pages/capabilities/data/period-comparison/README.md`。合成网关验证运行链，真实 DQE 聚合与宿主事实需集成方另外验收。
 
+<a id="period-comparison-query-page"></a>
 
-页面协议 6.77。结构真源为本册[schema.json](schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
+## 期间比较按当前页业务键补查（6.78）
+
+后端分页表复用 `pagedJoin` 的显式 `pagination: {"mode":"query","pageSize":10,"batchSize":10}`。业务行域成员绑定 `periodComparison.kind:current` 并拥有 canSelectPage；上期、去年同期成员使用相同的期间筛选与 fact，canSelectPage 为 false，只按本页键补列。三期成员仍引用无业务窗口、无计算、无结果绑定的完整普通查询定义；组合内部选页与补列窗口不改变成员的普通结果和初始行。
+
+主查询决定本页对象、全局顺序、表头条件及 totalCount。比较期查询保留固定业务、页面筛选、参数和权限条件，替换时间范围并增加本页键约束；不会接收主查询的 offset、销售额阈值等表格选页条件。返回按键关联，与顺序无关；空主窗口不发补查。首版支持单个非空 string/number 稳定业务键，不能将多个独立 IN 条件视作复合键。
+
+可信截止事实由 SourceProgram 冻结并传入成员查询、预检、候选与导出；缺失或过期在发请求前失败。取消、翻页、期间或权限变化使整轮失效，旧补查不能与新页混用。比较组合不复用缺少可信事实上下文证明的 initial。时间事实决定比较范围，不要求后端预先将三期结果排列对齐，也不承诺多次读取具有后端事务快照。
+
+投影就绪后，组合数据源同层 `compute` 可声明 delta/ratio；输出字段就在 fields 中声明，顺序消费投影或前序产出，保留行序与主查询总数。投影 `onMissing:zero` 仅处理成功缺记录，已返回 null 保持为空，失败或截断整轮失败。参见数据源和计算模块。
+
+表格 `data.main` 绑定组合源，`pagination:{"mode":"query"}`。主查询原始列按已验证能力执行全局排序/筛选；计算列只展示，不声明 sortable/filterable/候选，不能用当前页排序冒充全局排序。历史独有对象是否出现由主查询行域决定；需要三期并集或计算列全局操作时选择原完整比较模式，或接入能够按计算结果选页的后端查询。
+
+完整导出冻结条件与期间，逐页选主查询、补查并计算全部匹配对象，沿用10000行/60秒总预算；任一期失败不给不完整文件。浏览首屏不扫描全集，补列批次只控制本页键数。新能力限无 records 的查询分页 pagedJoin；legacy组合、pagedUnion或直接将普通比较源绑定查询分页仍拒绝。
+
+合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
+
+
+页面协议 6.78。结构真源为本册[schema.json](schema.json)，SHA256 `55de7dce3225b8700044b37f441afc100190b4c140ea010fd9ef3e19bd3b012d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2664,6 +2682,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - [period-query-columns-demo](examples/period-query-columns-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [period-query-branches](examples/period-query-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
+- [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

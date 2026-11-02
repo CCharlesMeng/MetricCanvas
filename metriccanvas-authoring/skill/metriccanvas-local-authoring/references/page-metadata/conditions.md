@@ -37,7 +37,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。
 
 
-页面协议 6.77。结构真源为本册[schema.json](schema.json)，SHA256 `3e3abe3dbef48003227a8d96f3aa43d01149423952180076840aeeb1b1d61ba4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.78。结构真源为本册[schema.json](schema.json)，SHA256 `55de7dce3225b8700044b37f441afc100190b4c140ea010fd9ef3e19bd3b012d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

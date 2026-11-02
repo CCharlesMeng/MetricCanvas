@@ -52,6 +52,8 @@ Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证�
 
 ## 比较期缺记录策略（6.77）
 
+查询分页下的比较参见下节“查询分页组合结果逐行计算（6.78）”；本节的 unionKeys 路径仍按完整集合执行。
+
 `joinAggregate.values[]` 可逐度量声明 `onMissing: "null" | "zero"`，省略为 `null`。它只处理成功查询中没有匹配记录的情况，覆盖该度量的默认缺行输出；已返回的 null 单元格、异常值和失败查询绝不被替换成零。算子顶层 `onMissing: "null"` 保持兼容。
 
 ```json
@@ -59,3 +61,17 @@ Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证�
 ```
 
 先用 `unionKeys` 对本期/上期/去年同期的完整行集取键并集，再关联各期值。增长率为 delta(本期,基期) 后 ratio(差额,基期,scale=100,onZeroDenominator=null)，基期为零包括0/0均产出null；负基期照公式计算。百分点差值只用delta，数值使用0–100刻度，用 `points-1-signed` 显示。表格绑定计算结果，允许全表排序和筛选；空值始终排在有效值之后。见 `/pages/period-comparison-demo` 和查询模块的“自动同比环比查询”。
+
+<a id="paged-join-row-compute"></a>
+
+## 查询分页组合结果逐行计算（6.78）
+
+显式 `pagedJoin.source.pagination.mode:query`、无 records 的组合数据源，可在与 fields/source 同层声明 compute；仅允许 delta、ratio。算子按声明顺序消费已投影字段及前序计算产出，output 就地声明为允许空的数值度量且不得声明 queryField；不能覆盖投影、行键、序号和前序产出。零分母、负基期、刻度和百分点继续使用原算子规则，不新增表达式或公式语言。
+
+```json
+{"compute":[{"op":"delta","minuend":"current-sales","subtrahend":"previous-sales","output":"previous-sales-delta"},{"op":"ratio","numerator":"previous-sales-delta","denominator":"previous-sales","output":"previous-growth","scale":100,"onZeroDenominator":"null"}]}
+```
+
+组合先完成当前页的选页、按键补列和投影，再由共享计算阶段执行一次逐行计算，保留主查询 totalCount、行序和当前页长度；完整导出逐页读取相同范围并执行同一计算。计算字段不能用于后端全局排序、表头筛选、候选或搜索，不能把本页计算结果作为完整跨源输入。unionKeys、joinAggregate、timeFill、小计、总计等算子在该位置拒绝，原有完整跨源计算契约保持。
+
+缺记录策略声明在 `source.projection` 的具体字段：`{"member":"previous","field":"sales","onMissing":"zero"}`；省略或null取空，仅数值度量允许zero。仅成功查询没有该键记录时补零；存在记录中的null/降级标量不补零，查询失败、截断或重复键整轮失败。比较组合的initial不在缺少可信事实证明时复用或采集。完整声明、合成操作和边界见 `/pages/period-comparison-query-page`。

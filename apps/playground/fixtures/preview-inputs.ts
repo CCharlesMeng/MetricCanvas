@@ -3,6 +3,8 @@ const unionPages = new Set(['multi-source-table', 'multi-source-composite-key', 
 const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capabilities/ioc-header/business/*.json')).map(path => path.split('/').pop()!.slice(0, -5)));
 const exactInputs = new Map([
   ['table-row-expansion-cache','row-cache'],
+
+  ['period-comparison-query-page','period-comparison-query-page'],
   ['period-comparison-demo','period-comparison'],
   ['key-office-filter-demo','key-office'], ['key-office-filter-target','key-office'],
   ['ioc-project-overview','ioc-region'], ['ioc-opportunity-list','ioc-region'], ['ioc-opportunity-analysis','ioc-region'],

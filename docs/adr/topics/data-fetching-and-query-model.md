@@ -1,5 +1,7 @@
 # 数据获取与查询模型
 
+**期间比较查询分页（[ADR-0127](../0127-query-paged-period-comparison-and-row-computation.md)）：** 6.78复用按需pagedJoin，由当期业务行域选页、历史成员按本页键补查；组合数据源同层仅开放逐行delta/ratio，投影可按度量声明缺记录策略。SourceProgram拥有期间事实、预检和执行上下文；主查询决定totalCount，完整导出逐页补查，计算列不冒充全局排序筛选。局部扩展0108/0125的组合结果计算位置，保持0095完整跨源计算及0107普通结果绑定窗口语义。真实DQE另验。
+
 **2026-10-29 组合表格结果容错裁决：** 用户确认页面与导出均允许缺项并显式 warning。本轮局部修订 ADR-0108/0121 的结果异常整轮失败边界，以及 ADR-0120 对组合查询内部结构失配的严格处理：按有界完整整理保留可用行、重复身份留首条，页面提示来源，Excel 附异常说明；普通 query/inline/持久化 initial、配置、权限、网络和资源规则保持。现行语义见[组合表格异常兼容](../../page-metadata/data-sources.md#table-result-recovery)，本地实施证据见[验收记录](../../evidence/table-data-recovery/result.md)。
 
 **表格标量容错和独立汇总：** [ADR-0120](../0120-table-scalar-fallback-and-independent-pinned-row.md) 保留有效类型值与原文展示证据；计算、行键和查询输入不消费降级文本，结构及授权规则保持。中国区汇总独立查询，不依赖明细行域；两源共同条件显式绑定，地区选择不传给汇总。

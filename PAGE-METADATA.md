@@ -2,6 +2,8 @@
 
 数据加载时先呈现真实组件结构，保留标题、容器、表头及工具栏；首次加载、筛选重查、查询翻页和 Tab 激活均不再用骨架块替换组件。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#加载时保留组件结构)，合成验收入口 `/pages/loading-structure-demo`。无需新增页面字段或升级 Schema。
 
+6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。
+
 6.77 增加期间比较查询 `periodComparison`、逐度量缺记录策略和百分点格式 `points-1-signed`。年/季/月/近一年按可信统计进度派生基期，完整结果关联后支持排序、筛选、分页及导出。见[自动同比环比查询](docs/page-metadata/queries-and-bindings.md)，合成验收 `/pages/period-comparison-demo`。
 
 6.75 增加 boolean 筛选器的 enabledWhen 和 boolean 候选依赖；候选约束传递显式 true/false，原本未选代表处时不因交集更新要求额外确认。跨页共享值由宿主显式接入，各页面独立管理候选与查询状态。见[重点国代筛选集成](docs/page-metadata/filters.md#boolean-candidate-context)，合成验收入口 `/pages/key-office-filter-demo` 和 `/pages/key-office-filter-target`。

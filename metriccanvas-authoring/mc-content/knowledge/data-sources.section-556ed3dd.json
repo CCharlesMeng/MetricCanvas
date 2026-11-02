@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.77",
+  "schemaVersion": "6.78",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data-sources.section-556ed3dd"
@@ -167,7 +167,8 @@
         "references/page-metadata/examples/paged-union-composite-branches.json",
         "references/page-metadata/examples/paged-union-generated-key.json",
         "references/page-metadata/examples/paged-join-query-page.json",
-        "references/page-metadata/examples/record-join-query-page.json"
+        "references/page-metadata/examples/record-join-query-page.json",
+        "references/page-metadata/examples/period-comparison-query-page.json"
       ]
     }
   ],

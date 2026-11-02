@@ -2,6 +2,18 @@
   import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
   import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
+  import {createQueryComparisonPreview} from "../../../../../fixtures/period-comparison-query-page";
+  const queryComparisonPreview = $derived(createQueryComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
+  const activeDisplayInputs = $derived.by(()=>{
+    switch(pageExternalInputs(page.params.pageId)){
+      case 'period-comparison-query-page': return queryComparisonPreview.displayInputs;
+      case 'period-comparison': return comparisonPreview.displayInputs;
+      case 'ioc-business': return businessPreview.displayInputs;
+      case 'visibility': return visibilityDemo.source;
+      case 'ioc-header': return headerPreview.displayInputs;
+      default:return undefined;
+    }
+  });
   const comparisonPreview = $derived(createPeriodComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
   import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
   import {createTableRecoveryPreview} from '../../../../../fixtures/table-recovery';
@@ -153,6 +165,7 @@
         dataGateway: zeroTotalPreviewGateway(pageId, previewDataGateway(pageId))
       };
       if(pageExternalInputs(pageId)==='period-comparison')pageState.dataGateway=comparisonPreview.dataGateway;
+      if(pageExternalInputs(pageId)==='period-comparison-query-page')pageState.dataGateway=queryComparisonPreview.dataGateway;
       pageState.dataGateway = partnerHealthUnionGateway(pageId, pageState.dataGateway, page.url.searchParams.get('state') ?? 'ready');
     } catch (cause) {
       if (session !== loadSession) return;
@@ -196,7 +209,7 @@
     {/if}
     {#key visibilityInstance}
     <RuntimeView
-      displayInputs={pageExternalInputs(page.params.pageId)==='period-comparison'?comparisonPreview.displayInputs:pageExternalInputs(page.params.pageId)==='ioc-business'?businessPreview.displayInputs:pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:pageExternalInputs(page.params.pageId)==='ioc-header'?headerPreview.displayInputs:undefined}
+      displayInputs={activeDisplayInputs}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
       {aiSummary}

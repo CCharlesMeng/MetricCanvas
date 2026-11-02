@@ -1,6 +1,6 @@
 # 计划总览
 
-更新：2026-10-26。先按下表选择任务；**plan只保留未完成工作**，已完成实施记录和被替代的分稿移到证据或归档。这里的完成状态区分方案、本仓实现、本地验收与真实集成，不按文档日期或旧勾选推断生产完成。
+更新：2026-10-30。先按下表选择任务；**plan只保留未完成工作**，已完成实施记录和被替代的分稿移到证据或归档。这里的完成状态区分方案、本仓实现、本地验收与真实集成，不按文档日期或旧勾选推断生产完成。
 
 ## 当前未完成工作
 
@@ -50,6 +50,7 @@
 
 | 工作 | 完成范围 | 查看结论或证据 |
 |---|---|---|
+| 同比环比按当前页补查 | Schema 6.78、local-authoring 1.15.0，本仓实现和本地验收完成；main 交付复验见验收记录，真实服务另验 | [设计与Schema/架构影响](../evidence/period-comparison-query-page/design.md)、[验收记录](../evidence/period-comparison-query-page/acceptance.md)、[可运行示例](../../pages/capabilities/data/period-comparison/period-comparison-query-page.json) |
 | 表格同比环比 | Schema 6.77，本仓实现与本地验收完成；真实服务待接入验收 | [使用说明](../../pages/capabilities/data/period-comparison/README.md)、[交付验证](../evidence/period-comparison/delivery.md) |
 | AI Summary 容器组合与顶部位置 | Schema 6.56，本仓实现与本地验收完成；未提交/推送 | [设计](../evidence/ai-summary-regions/design.md)、[验收](../evidence/ai-summary-regions/result.md)：组合卡准入、显式所在区域、顶部约束及独立 local-authoring |
 | 显式数字颜色与图表标签 | 6.16声明、商务SDT迁移及本地验收完成；真实集成/发布未执行 | [批次结论](../archive/2026-10-12-explicit-presentation/README.md)、[验收](../evidence/2026-10-12-explicit-presentation/result.md) |

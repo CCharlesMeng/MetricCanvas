@@ -1,4 +1,4 @@
-import { declaredPaginationLimit, restoreCellFallbacks, snapshotCellFallbacks } from '@metriccanvas/page/internal';
+import { declaredPaginationLimit, restoreCellFallbacks, snapshotCellFallbacks, validateContractRows, queryResultFieldContract } from '@metriccanvas/page/internal';
 import { checkOrdinaryRange } from '../source-program/range-policy';
 import type { ComputationContext } from './time-fill';
 import { computeDependencies, type DataSource, type DataSnapshot, type DataRow } from '@metriccanvas/page/internal';
@@ -63,10 +63,17 @@ function evaluateRows(source: DataSource, snapshot: Extract<DataSnapshot,{status
   try {
     const rows = snapshot.status === 'ready' ? snapshot.rows : [];
     const output = applyComputation(source.compute ?? [], rows, dependencies, context);
+    validateComputedJoin(source,output);
     const changesCount = (source.compute ?? []).some(op => op.op === 'timeFill' || op.op === 'unionKeys');
     const total = changesCount ? {totalCount:output.length} : snapshot.totalCount === undefined ? {} : {totalCount:snapshot.totalCount};
     return output.length ? {status:'ready',rows:output,...snapshotCellFallbacks(output),...total,warnings:snapshot.warnings} : {status:'empty',...total,warnings:snapshot.warnings};
   } catch (cause) { return fail(cause instanceof ComputationError ? cause.message : '页面数据源计算失败'); }
+}
+
+function validateComputedJoin(source:DataSource,rows:DataRow[]):void {
+  if(source.source.type!=='pagedJoin'||!source.compute?.length)return;
+  const fields=Object.fromEntries(Object.entries(source.fields).map(([id,field])=>[id,queryResultFieldContract(field)]));
+  if(!validateContractRows(rows,fields).ok)throw new ComputationError('组合计算结果违反字段契约');
 }
 
 function restoreSnapshot(snapshot: DataSnapshot | undefined): DataSnapshot | undefined {

@@ -93,6 +93,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     }
     function computedFailureBinding(table: TableComponent): Pick<TableRenderBinding, 'onretry'> {
         const source = page.dataSources[table.data.main];
+        if(source?.source.type==='pagedJoin'&&source.compute?.length)return {onretry:()=>stream()?.refreshQuery(table.data.main)};
         if (!source?.compute?.some(op => op.op === 'unionKeys')) return {};
         return {onretry: () => {
             for (const id of conditionSourceIds(page, table.data.main)) {
@@ -271,6 +272,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
 }
 
 function tableFailureNotice(source: import('@metriccanvas/page/internal').DataSource | undefined): string | undefined {
+    if(source?.source.type==='pagedJoin'&&source.compute?.length)return '比较期数据加载或计算失败，结果暂不可用。请重试。';
     if (source?.compute?.some(op => op.op === 'unionKeys')) return '关联数据加载或计算失败，结果暂不可用。请重试。';
     return source?.source.type === 'pagedUnion' ? '多来源数据加载失败，请刷新重试。' : undefined;
 }

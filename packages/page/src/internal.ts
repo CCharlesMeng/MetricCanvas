@@ -1,4 +1,5 @@
 export * from './page';
+export {pagedJoinProjectionFields,pagedJoinHasComparison} from './paged-join-compute';
 export type { IocHeaderDeclaration } from './schema/ioc-header';
 export * from './page-document';
 export * from './page-param';

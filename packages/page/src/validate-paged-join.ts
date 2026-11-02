@@ -1,4 +1,5 @@
 import {memberFilterErrors,recordJoinErrors} from './validate-record-join';
+import {pagedJoinComputeErrors,pagedJoinProjectionFields,projectionMissingErrors} from './paged-join-compute';
 import { cellFallbackErrors } from './validate-cell-fallbacks';
 
 import type { PagedUnionDataSource, PagedUnionSource } from './paged-union';
@@ -30,6 +31,8 @@ export function pagedJoinErrors(page: Page): TypedError[] {
     rowKeyErrors(joined, path, error);
     recordJoinErrors(page,joined,path,error);
     memberErrors(page, joined, path, error);
+    pagedJoinComputeErrors(page,id,joined,path,error);
+    projectionMissingErrors(joined,path,error);
     projectionErrors(page, joined, path, error);
     orderingErrors(joined, path, error);
     consumerErrors(page, id, joined.source, path, error);
@@ -102,7 +105,7 @@ function projectionErrors(page: Page, data: PagedJoinDataSource, path: string, e
   const domain = source.members[source.domainMember];
   const keyProjection = source.projection[source.rowKey];
   if (!source.records && (!domain || keyProjection?.member !== source.domainMember || keyProjection?.field !== domain.key.field)) error(`${path}/source/projection/${ptr(source.rowKey)}`, '行键投影必须来自业务行域成员键');
-  for (const [fieldId, field] of Object.entries(data.fields)) {
+  for (const [fieldId, field] of Object.entries(pagedJoinProjectionFields(data))) {
     if ('queryField' in field) error(`${path}/fields/${ptr(fieldId)}`, '组合字段不得声明 queryField');
     if(source.records&&fieldId===source.rowKey&&!source.projection[fieldId])continue;
     if (fieldId === source.ordinalField) {
@@ -125,7 +128,7 @@ function projectedFieldErrors(page: Page, source: PagedJoinSource, fieldId: stri
   const input = member && page.dataSources[member.source]?.fields[projection.field];
   if (!input || !hasQueryFieldMapping(input)) { error(`${path}/source/projection/${ptr(fieldId)}`, '投影必须引用成员的原始字段'); return; }
   if (!compatibleProjection(input, field)) error(`${path}/fields/${ptr(fieldId)}`, '投影类型、角色、单位和币种必须相容');
-  if ((projection.member !== source.domainMember || input.nullable !== false) && field.nullable === false) error(`${path}/fields/${ptr(fieldId)}`, '可能缺匹配的投影必须允许 null');
+  if ((input.nullable !== false || (projection.member !== source.domainMember && projection.onMissing !== 'zero')) && field.nullable === false) error(`${path}/fields/${ptr(fieldId)}`, '可能缺匹配的投影必须允许 null');
 }
 
 function compatibleProjection(input: FieldDefinition, field: FieldDefinition): boolean {

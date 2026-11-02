@@ -1,8 +1,18 @@
 {
   "major": 6,
-  "minor": 77,
-  "current": "6.77",
+  "minor": 78,
+  "current": "6.78",
   "capabilities": {
+    "paged-join-row-compute": {
+      "minor": 78,
+      "description": "查询分页组合逐行计算与按投影声明缺记录策略",
+      "legacyReadable": false
+    },
+    "paged-period-comparison": {
+      "minor": 78,
+      "description": "期间比较按当前页业务键补查",
+      "legacyReadable": false
+    },
     "table-null-predicate": {
       "minor": 76,
       "description": "表格显式为空条件及后端能力拒绝",
@@ -802,6 +812,7 @@
     "6.74",
     "6.75",
     "6.76",
-    "6.77"
+    "6.77",
+    "6.78"
   ]
 }

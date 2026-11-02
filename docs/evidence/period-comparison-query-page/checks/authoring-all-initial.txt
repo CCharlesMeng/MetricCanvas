@@ -1,0 +1,30 @@
+$ pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/period-comparison/DataDashboard
+
+ ❯ tests/local-authoring-tools.test.ts (32 tests | 1 failed) 4139ms
+     × 常用主题没有截断且受输出预算约束，全部模块可发现语义 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/local-authoring-tools.test.ts > 按需协议知识 > 常用主题没有截断且受输出预算约束，全部模块可发现语义
+AssertionError: query.period-comparison-page: expected 26286 to be less than or equal to 16384
+ ❯ tests/local-authoring-tools.test.ts:148:132
+    146|   it('常用主题没有截断且受输出预算约束，全部模块可发现语义',()=>{
+    147|     const map=JSON.parse(readFileSync('docs/page-metadata/reference-ma…
+    148|     for(const id of Object.keys(map.authoringTopics)) expect(Buffer.by…
+       |                                                                                                                                    ^
+    149|     for(const [id,module] of Object.entries(model.modules)) {
+    150|       const sections=new Set(Object.values(model.topics).filter(t=>t.m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 227 passed (228)
+   Start at  10:35:54
+   Duration  1554.39s (transform 4.77s, setup 0ms, import 18.59s, tests 1587.82s, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.
+[ELIFECYCLE] Command failed with exit code 1.

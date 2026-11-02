@@ -285,3 +285,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 ## 组合源数据异常提示与导出
 
 当 main 或其他数据槽的 pagedUnion/pagedJoin 动态结果经过兼容整理时，表格在标题下显示可展开 warning，列出来源、处理方式和次数。默认空值显示 —；交互继续消费整理后的类型值，不将显示原文作为行键。Excel 数据工作表保留可用匹配行，另附“数据异常说明”；正常导出不增说明表。异常语义及资源边界由[组合表格异常兼容](../data-sources.md#table-result-recovery)维护，合成入口 `/pages/table-data-recovery`。
+
+## 期间比较的查询分页（6.78）
+
+表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败显示持续错误和重试；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。

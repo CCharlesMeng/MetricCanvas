@@ -75,7 +75,7 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
 }
 
 async function joinedCandidates(page: Page, request: ColumnCandidatesRead, view: TableQueryView, runner: QueryRunner, scope: string, signal?: AbortSignal): Promise<ColumnCandidatesPage> {
-      const plan = compilePagedJoin(page, request.sourceId, request.conditions, view, request.now);
+      const plan = compilePagedJoin(page, request.sourceId, request.conditions, view, request.now,{displayInputs:request.displayInputs,filterRevision:request.filterRevision});
       const result = await executePagedJoin({ ...plan, selection: undefined, strategy: 'completeJoin' }, runner, scope, signal, true);
       const snapshot = result.snapshot;
       if (snapshot.status !== 'ready' && snapshot.status !== 'empty') return { kind: 'unavailable' };

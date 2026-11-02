@@ -18,7 +18,7 @@ const rowKindMarkZ = z
     description: '折叠行写入的行类别字段与取值；表格按同一闭集识别呈现档位'
   });
 
-const ratioOperatorZ = z
+export const ratioOperatorZ = z
   .object({
     op: z.literal('ratio'),
     numerator: fieldNameZ,
@@ -38,7 +38,7 @@ const ratioOperatorZ = z
   })
   .strict();
 
-const deltaOperatorZ = z
+export const deltaOperatorZ = z
   .object({
     op: z.literal('delta'),
     minuend: fieldNameZ,
