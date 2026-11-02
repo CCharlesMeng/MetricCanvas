@@ -20,7 +20,7 @@ Schema 6.78、local-authoring 1.15.0。主查询执行后端分页，比较期�
 - 新按页浏览器脚本通过：有界首屏、本页键补查、翻页、四种期间、当期阈值作用域、完整 Excel、十万对象、失败重试；旧完整集合浏览器脚本通过，无 pageerror。实际查看交付版本首屏截图。
 - `skills:repair:check`：定向类型和 16 项工具/分发测试通过。
 - 独立 local-authoring 归档与仓外回验通过：Skill 1.15.0、Schema 6.78；本地归档回执标记 uncommitted，仅作为本地验证。
-- 升级示例版本漂移已用产品升级器修正；`local-authoring-upgrade.test.ts` 最终 112 项通过。完整 `skills:check` 已运行，初次发现该旧版本断言失败；其他长耗时用例与完整检查以提交对应 CI 复验为准，不将初次命令记为全绿。
+- 升级示例版本漂移已用产品升级器修正；`local-authoring-upgrade.test.ts` 最终 112 项通过。完整 `skills:check` 已运行；初次本地另有隔离导出未正常退出（status:null），不将该命令记为全绿。首轮干净 CI 的 authoring 任务含完整 skills:check 和实际归档回验全部通过，未放宽导出时限。完整测试发现的页面 ID 中立性问题及修复见 [CI 修正](ci-correction.md)。
 - MC 首轮 51 项通过；本地字节码缓存触发完整性拒绝后，清理本工作树缓存，禁用字节码写入，重新生成诊断夹具和最终来源摘要。最终生成一致性与夹具检查通过。
 - ADR 索引、差异空白检查通过。
 

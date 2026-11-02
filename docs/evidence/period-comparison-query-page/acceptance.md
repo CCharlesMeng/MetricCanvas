@@ -8,7 +8,7 @@
 
 - 演示：[按页补查](http://127.0.0.1:5197/pages/period-comparison-query-page)。`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为异常场景。
 - 页面真源：`pages/capabilities/data/period-comparison/period-comparison-query-page.json`；完整操作步骤在同目录README。
-- 合成数据和请求记录：`apps/playground/fixtures/period-comparison-query-page.ts`。2023-10至2026-10每月28日的合成观测；可信统计截止2026-10-28。
+- 合成数据和请求记录：`apps/playground/fixtures/query-comparison-gateway.ts`。2023-10至2026-10每月28日的合成观测；可信统计截止2026-10-28。
 - 浏览器脚本：`apps/playground/tests/period-comparison-query-page-browser.mjs`，直接读取同一页面并通过专属网关事件记录请求。
 - 旧完整集合示例 `/pages/period-comparison-demo` 保留并已浏览器回归，可继续展示历史对象并集、计算列全局排序筛选。
 

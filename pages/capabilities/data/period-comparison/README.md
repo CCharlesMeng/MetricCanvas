@@ -2,7 +2,7 @@
 
 ## 按页补查（Schema 6.78）
 
-入口 `/pages/period-comparison-query-page`，完整JSON为 [period-comparison-query-page.json](period-comparison-query-page.json)。无需URL参数，使用本页专属合成网关；启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5197`。数据和请求记录在 `apps/playground/fixtures/period-comparison-query-page.ts`：2023-10至2026-10各月28日的合成观测，可信统计截止2026-10-28。不是实际业务数据或真实DQE。
+入口 `/pages/period-comparison-query-page`，完整JSON为 [period-comparison-query-page.json](period-comparison-query-page.json)。无需URL参数，使用本页专属合成网关；启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5197`。数据和请求记录在 `apps/playground/fixtures/query-comparison-gateway.ts`：2023-10至2026-10各月28日的合成观测，可信统计截止2026-10-28。不是实际业务数据或真实DQE。
 
 当期主查询先按销售额降序取得10条，历史两期只按这10个客户编号补查，再逐行计算；主查询总数23，第三页3条。历史独有客户不自动进入主行域，计算列只展示；客户编号和当期销售额允许后端排序/筛选。补查返回按编号关联，顺序不影响计算。
 

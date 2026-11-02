@@ -2,11 +2,11 @@
   import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
   import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
-  import {createQueryComparisonPreview} from "../../../../../fixtures/period-comparison-query-page";
+  import {createQueryComparisonPreview} from "../../../../../fixtures/query-comparison-gateway";
   const queryComparisonPreview = $derived(createQueryComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
   const activeDisplayInputs = $derived.by(()=>{
     switch(pageExternalInputs(page.params.pageId)){
-      case 'period-comparison-query-page': return queryComparisonPreview.displayInputs;
+      case 'query-comparison': return queryComparisonPreview.displayInputs;
       case 'period-comparison': return comparisonPreview.displayInputs;
       case 'ioc-business': return businessPreview.displayInputs;
       case 'visibility': return visibilityDemo.source;
@@ -165,7 +165,7 @@
         dataGateway: zeroTotalPreviewGateway(pageId, previewDataGateway(pageId))
       };
       if(pageExternalInputs(pageId)==='period-comparison')pageState.dataGateway=comparisonPreview.dataGateway;
-      if(pageExternalInputs(pageId)==='period-comparison-query-page')pageState.dataGateway=queryComparisonPreview.dataGateway;
+      if(pageExternalInputs(pageId)==='query-comparison')pageState.dataGateway=queryComparisonPreview.dataGateway;
       pageState.dataGateway = partnerHealthUnionGateway(pageId, pageState.dataGateway, page.url.searchParams.get('state') ?? 'ready');
     } catch (cause) {
       if (session !== loadSession) return;

@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run apps/playground/tests
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/period-delivery/DataDashboard
+
+
+ Test Files  21 passed (21)
+      Tests  130 passed (130)
+   Start at  10:58:29
+   Duration  2.18s (transform 7.69s, setup 0ms, import 19.64s, tests 2.14s, environment 1ms)
+

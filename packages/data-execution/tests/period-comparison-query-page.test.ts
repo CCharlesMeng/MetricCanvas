@@ -3,7 +3,7 @@ import {expect,it,vi} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
 import type {DataSnapshot,Page,TableQueryView} from '@metriccanvas/page/internal';
 import {createSourceProgram,defaultSourceView,initialFilterValues} from '../src/runtime';
-import {createQueryComparisonPreview} from '../../../apps/playground/fixtures/period-comparison-query-page';
+import {createQueryComparisonPreview} from '../../../apps/playground/fixtures/query-comparison-gateway';
 import {comparisonInputs} from '../../../apps/playground/fixtures/period-comparison';
 import {effectiveDqeItem} from '../src/dqe/dqe';
 

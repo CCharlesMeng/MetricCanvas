@@ -6,7 +6,7 @@ import {createFilterState} from '../src/filter-state';
 import {orchestrate} from '../src/orchestrator';
 import {prepareExportSnapshots} from '../src/export-snapshots';
 import type {DataGateway} from '../src/ports';
-import {createQueryComparisonPreview} from '../../../../apps/playground/fixtures/period-comparison-query-page';
+import {createQueryComparisonPreview} from '../../../../apps/playground/fixtures/query-comparison-gateway';
 import {comparisonInputs} from '../../../../apps/playground/fixtures/period-comparison';
 
 const now=new Date(2026,9,30);

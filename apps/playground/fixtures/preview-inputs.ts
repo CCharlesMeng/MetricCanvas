@@ -4,7 +4,7 @@ const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capab
 const exactInputs = new Map([
   ['table-row-expansion-cache','row-cache'],
 
-  ['period-comparison-query-page','period-comparison-query-page'],
+  ['period-comparison-query-page','query-comparison'],
   ['period-comparison-demo','period-comparison'],
   ['key-office-filter-demo','key-office'], ['key-office-filter-target','key-office'],
   ['ioc-project-overview','ioc-region'], ['ioc-opportunity-list','ioc-region'], ['ioc-opportunity-analysis','ioc-region'],

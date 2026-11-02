@@ -1,6 +1,6 @@
 import {createRowCachePreview} from '../../fixtures/row-expansion-cache';
 import {createPeriodComparisonPreview} from '../../fixtures/period-comparison';
-import {createQueryComparisonPreview} from '../../fixtures/period-comparison-query-page';
+import {createQueryComparisonPreview} from '../../fixtures/query-comparison-gateway';
 import {createPagedJoinPreview} from '../../fixtures/query-join-gateway';
 import { createFullQueryCandidatesPreview } from '../../fixtures/full-query-candidates';
 import {withIocRegionCandidates} from './ioc-region-preview';
@@ -46,7 +46,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 function tablePreview(kind:string|undefined,state:string){
   if(kind==='row-cache')return createRowCachePreview();
 
-  if(kind==='period-comparison-query-page')return createQueryComparisonPreview(state);
+  if(kind==='query-comparison')return createQueryComparisonPreview(state);
   if(kind==='period-comparison')return createPeriodComparisonPreview(state);
   if(kind==='query-join')return createPagedJoinPreview();
   if(kind==='full-query-candidates')return createFullQueryCandidatesPreview(state);
