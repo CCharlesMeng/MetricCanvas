@@ -1,0 +1,169 @@
+{
+  "before": {
+    "version": [
+      0.2796,
+      0.2705,
+      0.2695,
+      0.2705,
+      0.2777
+    ],
+    "validate": [
+      0.2819,
+      0.281,
+      0.2843,
+      0.2831,
+      0.2936
+    ]
+  },
+  "after": {
+    "version": [
+      0.0632,
+      0.0658,
+      0.0606,
+      0.0599,
+      0.0597
+    ],
+    "validate": [
+      0.1961,
+      0.1926,
+      0.1966,
+      0.1952,
+      0.2
+    ]
+  },
+  "medianRatio": {
+    "version": 0.224,
+    "validate": 0.693
+  },
+  "complexityBefore": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/page/src/structure-validator.ts",
+        "functions": [
+          {
+            "name": "withoutHeaderBranch",
+            "qualifiedName": "withoutHeaderBranch",
+            "line": 10,
+            "endLine": 16,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 7,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@11:45>",
+            "qualifiedName": "withoutHeaderBranch/<anonymous@11:45>",
+            "line": 11,
+            "endLine": 12,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@15:54>",
+            "qualifiedName": "withoutHeaderBranch/<anonymous@15:54>",
+            "line": 15,
+            "endLine": 15,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "pageStructureValidator",
+            "qualifiedName": "pageStructureValidator",
+            "line": 18,
+            "endLine": 22,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 3,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@20:35>",
+            "qualifiedName": "pageStructureValidator/<anonymous@20:35>",
+            "line": 20,
+            "endLine": 20,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "complexityAfter": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "files": [
+      {
+        "file": "packages/page/src/structure-validator.ts",
+        "functions": [
+          {
+            "name": "withoutHeaderBranch",
+            "qualifiedName": "withoutHeaderBranch",
+            "line": 11,
+            "endLine": 17,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 7,
+            "nestedFunctions": 2
+          },
+          {
+            "name": "<anonymous@12:45>",
+            "qualifiedName": "withoutHeaderBranch/<anonymous@12:45>",
+            "line": 12,
+            "endLine": 13,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 4,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "<anonymous@16:54>",
+            "qualifiedName": "withoutHeaderBranch/<anonymous@16:54>",
+            "line": 16,
+            "endLine": 16,
+            "selfCC": 1,
+            "optionalChains": 0,
+            "subtreeCC": 1,
+            "nestedFunctions": 0
+          },
+          {
+            "name": "pageStructureValidator",
+            "qualifiedName": "pageStructureValidator",
+            "line": 19,
+            "endLine": 24,
+            "selfCC": 4,
+            "optionalChains": 0,
+            "subtreeCC": 5,
+            "nestedFunctions": 1
+          },
+          {
+            "name": "<anonymous@21:35>",
+            "qualifiedName": "pageStructureValidator/<anonymous@21:35>",
+            "line": 21,
+            "endLine": 21,
+            "selfCC": 2,
+            "optionalChains": 0,
+            "subtreeCC": 2,
+            "nestedFunctions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "initialCI": {
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/actions/runs/41474616355",
+    "commit": "a4af035b69b295c0582f972a998fdcd343381d99",
+    "failures": [
+      "local-authoring-skill plural/singular compatibility: default 5000ms timeout",
+      "local-authoring-upgrade preserve original bytes: default 5000ms timeout"
+    ],
+    "fullIsolationPassed": 31
+  }
+}

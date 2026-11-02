@@ -1,10 +1,11 @@
-import {Ajv} from 'ajv';
+import {Ajv,type ValidateFunction} from 'ajv';
 import {pageSchema} from './schema';
 import {walkDocumentComponents} from './component-walk';
 
 const options={allErrors:true,strict:false};
-const current=new Ajv(options).compile(pageSchema);
-const legacy=new Ajv(options).compile(withoutHeaderBranch(pageSchema) as object);
+// A cold CLI needs only its document's union, not two eager Schema compilations.
+let current:ValidateFunction|undefined;
+let legacy:ValidateFunction|undefined;
 
 /** Derive the old union from the same Schema, preserving its ordered structural diagnostics. */
 function withoutHeaderBranch(node:unknown):unknown {
@@ -15,8 +16,9 @@ function withoutHeaderBranch(node:unknown):unknown {
   return Object.fromEntries(Object.entries(node).map(([key,value])=>[key,withoutHeaderBranch(value)]));
 }
 
-export function pageStructureValidator(document:unknown):typeof current {
+export function pageStructureValidator(document:unknown):ValidateFunction {
   let componentHeader=false;
   walkDocumentComponents(document,component=>{if(component.type==='iocHeader')componentHeader=true;});
-  return componentHeader?current:legacy;
+  if(componentHeader)return current??=new Ajv(options).compile(pageSchema);
+  return legacy??=new Ajv(options).compile(withoutHeaderBranch(pageSchema) as object);
 }
