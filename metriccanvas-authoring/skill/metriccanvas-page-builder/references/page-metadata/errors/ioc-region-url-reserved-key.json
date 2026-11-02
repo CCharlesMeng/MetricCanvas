@@ -1,0 +1,20 @@
+{
+  "case": "ioc-region-url-reserved-key",
+  "invariant": "ioc-region-default-url",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "URL 参数名重复:rep-office",
+      "paths": [
+        "/filters/1/urlParams/value"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {}
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-region-url-reserved-key.json"
+}

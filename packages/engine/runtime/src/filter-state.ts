@@ -1,7 +1,7 @@
 import {timeAvailabilityIssue,modeRangeIssue,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import { numberRangeIssue,rangeContextIssue, filterDependencies, dimensionSelectionIssue } from '@metriccanvas/page/internal';
 import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
-import { filterURLKeys } from '@metriccanvas/page/internal';
+import { filterURLKeys, readLevelURLSelection } from '@metriccanvas/page/internal';
 import {
   timeFilterBoundaryError,
   dimensionOfLevel,
@@ -53,7 +53,7 @@ export interface FilterState {
   fromURL(search: string, declarations: readonly FilterDeclaration[]): void;
 }
 
-export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; now?: () => Date } = {}): CoordinatedFilterState {
+export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { iocRegion?: boolean; readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; now?: () => Date } = {}): CoordinatedFilterState {
   function accepted(id: string, value: FilterValue | null | undefined): boolean {
     const options = dimensionOptions.get(id);
     return !options || !!value && value.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
@@ -172,6 +172,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     const query = new URLSearchParams(stripQuestionMark(search));
     for (const declaration of declarations) {
       if (declaration.type !== 'dimension' || declaration.selection?.mode !== 'single') continue;
+      if (readLevelURLSelection(filterURLKeys(declaration, editing.iocRegion), query)) continue;
       if (query.getAll(filterURLKeys(declaration).value!).filter(Boolean).length <= 1) continue;
       const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
       if (fallback) next.set(declaration.id, fallback);
@@ -209,11 +210,11 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     writeMany(updates) { commit({ type: 'applyDraft', changes: updates }); },
 
     toURL(explicitDeclarations = declarations) {
-      return filterSearch(current, explicitDeclarations);
+      return filterSearch(current, explicitDeclarations, editing.iocRegion);
     },
     fromURL(search, declarations) {
       for (const declaration of declarations) byId.set(declaration.id, declaration);
-      const next = new Map(parseFilterSearch(search, declarations));
+      const next = new Map(parseFilterSearch(search, declarations, undefined, editing.iocRegion));
       restoreMissingDates(next, declarations);
       restoreSingleSelections(next, declarations, search);
       restoreDimensionOptions(next);
@@ -329,11 +330,11 @@ function stripQuestionMark(search: string): string {
 }
 
 /** 类型只来自接收页面声明，不从字符串前缀或参数内容猜测。 */
-export function parseFilterSearch(search: string, declarations: readonly FilterDeclaration[], now = new Date()): FilterValues {
+export function parseFilterSearch(search: string, declarations: readonly FilterDeclaration[], now = new Date(), iocRegion = false): FilterValues {
   const query = new URLSearchParams(stripQuestionMark(search));
   const result = new Map<string, FilterValue>();
   for (const declaration of declarations) {
-    const keys = filterURLKeys(declaration);
+    const keys = filterURLKeys(declaration, iocRegion);
     const read = (part: string) => keys[part] ? query.get(keys[part]!) : null;
     if (declaration.type === 'timeRange' && declaration.display === 'modes') {
       const value = readModeFilter(declaration, query, keys, read);
@@ -380,6 +381,8 @@ function readFilterValue(declaration: FilterDeclaration, query: URLSearchParams,
 }
 
 function readDimensionFilter(declaration: Extract<FilterDeclaration, { type: 'dimension' }>, query: URLSearchParams, keys: ReturnType<typeof filterURLKeys>, read: ReadURLPart): FilterValue | undefined {
+  const selected = readLevelURLSelection(keys, query);
+  if (selected) return selected.value.trim() ? { type: 'dimension', values: [selected.value], level: selected.level, dimension: dimensionOfLevel(declaration, selected.level) } : undefined;
   const values = query.getAll(keys.value!).filter(v => v !== '');
   if (!values.length && !(declaration.hierarchy && read('level'))) return;
   const level = read('level') ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
@@ -407,19 +410,18 @@ function readPeriodFilter(declaration: Extract<FilterDeclaration, { type: 'timeR
 }
 
 
-export function filterSearch(values: FilterValues, declarations: readonly FilterDeclaration[] = []): string {
+export function filterSearch(values: FilterValues, declarations: readonly FilterDeclaration[] = [], iocRegion = false): string {
   const query = new URLSearchParams();
   for (const [id, value] of values) {
     const declaration = declarations.find(d => d.id === id);
-    const keys = declaration ? filterURLKeys(declaration) : {
+    const keys = declaration ? filterURLKeys(declaration, iocRegion) : {
       value:id, from:`${id}.from`, to:`${id}.to`, level:`${id}.level`
     };
     const put = (part: string, item: string | number | boolean | undefined) => {
       if (item !== undefined && keys[part]) query.append(keys[part]!, String(item));
     };
     if (value.type === 'dimension') {
-      value.values.forEach(item => put('value',item));
-      put('level',value.level);
+      appendDimensionURL(query, keys, value);
     } else if(value.type==='timeRange'&&value.mode){query.set(`${id}.mode`,value.mode);query.set(keys.from!,value.from);query.set(keys.to!,value.to);
     } else if (value.type === 'timeRange' && value.selection && declaration?.type === 'timeRange' && declaration.display === 'period') {
       put('value',value.selection.mode === 'last12Months' ? 'last12Months' : `${value.selection.mode}:${value.selection.value}`);
@@ -429,6 +431,14 @@ export function filterSearch(values: FilterValues, declarations: readonly Filter
     else put('value',value.value);
   }
   return query.toString();
+}
+
+
+function appendDimensionURL(query: URLSearchParams, keys: Record<string, string>, value: Extract<FilterValue, { type: 'dimension' }>): void {
+  const levelKey = value.level === undefined ? undefined : keys[`node/${value.level}`];
+  const valueKey = levelKey ?? keys.value;
+  if (valueKey) for (const item of value.values) query.append(valueKey, item);
+  if ((!levelKey || value.values.length === 0) && value.level !== undefined && keys.level) query.append(keys.level, value.level);
 }
 
 

@@ -348,7 +348,8 @@
         "ioc-header-unconfigured",
         "period-query-columns-demo",
         "key-office-filter-demo",
-        "key-office-filter-target"
+        "key-office-filter-target",
+        "ioc-region-url-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -365,7 +366,8 @@
         "packages/page/src/field-selection.ts",
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
-        "packages/page/src/time-extension-validation.ts"
+        "packages/page/src/time-extension-validation.ts",
+        "packages/page/src/filter-url.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -495,7 +497,8 @@
         "time-modes-page",
         "navigation-source-page",
         "navigation-list-page",
-        "navigation-detail-page"
+        "navigation-detail-page",
+        "ioc-region-url-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -504,7 +507,8 @@
         "packages/page/src/schema/navigation.ts",
         "packages/engine/runtime/src/navigate.ts",
         "packages/page/src/navigate.ts",
-        "packages/engine/runtime/src/navigation-inputs.ts"
+        "packages/engine/runtime/src/navigation-inputs.ts",
+        "packages/page/src/filter-url.ts"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -2225,7 +2229,9 @@
         "#/definitions/queryDataSource",
         "#/definitions/querySource"
       ],
-      "headings": ["加载时保留组件结构"],
+      "headings": [
+        "加载时保留组件结构"
+      ],
       "dependencies": []
     },
     "data.pagedJoin": {
@@ -2717,6 +2723,7 @@
     ],
     "filters.md": [
       "期间选择与查询消费",
+      "IOC Region 默认 URL 输入",
       "时间选择的默认上限",
       "Dashboard 期间选择（6.27）",
       "时间点下限（6.24）",
@@ -2752,7 +2759,8 @@
       "查阅方式",
       "当前内容工具边界",
       "链接传参与目标页签",
-      "6.40 显式跨页传值"
+      "6.40 显式跨页传值",
+      "IOC Region 默认 URL 输入"
     ],
     "semantic-html.md": [
       "查阅方式"

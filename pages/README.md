@@ -16,6 +16,8 @@
 
 - [记录关联省略行数预算](capabilities/table/README.md#记录关联省略行数预算669)：100001条合成审批记录完整关联，入口 `/pages/record-join-no-row-limit`。
 
+- [IOC Region URL 输入](capabilities/filters/README.md#ioc-region-参数名表示层级)：地区部 `region-dept`、代表处 `rep-office`，同组按 URL 顺序取最后项；合成入口 `/pages/ioc-region-url-demo`。
+
 ## 目录组织
 
 页面试验场首页提供「组件、数据与联动、布局」三个入口。每类组件都有独立目录 `/catalog/components/<type>`；数据能力按取数、条件、关联、交互、结果范围和跨页输出组织。同一推荐场景在多个目录中复用，集中展示操作、数据关系、配置和当前文档试改。全部文件在 `/files`，业务示例和临时评测可从首页次级入口进入。基础数据消费组件见[共享内联数据场景](capabilities/components/README.md)。

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createRegionURLGateway} from '../../../../../fixtures/region-url';
   import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
   import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
@@ -120,6 +121,7 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;
     if(input==='query-join')return createPagedJoinPreview().dataGateway;
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
@@ -145,7 +147,7 @@
 
   function recordSharedFilters(event:RuntimeViewEvent) {
     if(event.type!=='filter-change'||pageState.phase!=='ready'||pageExternalInputs(page.params.pageId)!=='key-office')return;
-    sharedKeyOfficeFilters.recordSearch(projectNavigationInputs(pageState.document).filters,event.search,sharedBindings);
+    sharedKeyOfficeFilters.recordSearch(projectNavigationInputs(pageState.document),event.search,sharedBindings);
   }
 
   async function loadPage(pageId: string) {
@@ -155,9 +157,9 @@
       const document = await pageRepository.load(pageId);
       if (session !== loadSession) return;
       if(pageExternalInputs(pageId)==='key-office') {
-        const filters=projectNavigationInputs(document).filters;
-        initialSearch=sharedKeyOfficeFilters.initialSearch(filters,initialSearch,sharedBindings);
-        sharedKeyOfficeFilters.recordSearch(filters,initialSearch,sharedBindings);
+        const inputs=projectNavigationInputs(document);
+        initialSearch=sharedKeyOfficeFilters.initialSearch(inputs,initialSearch,sharedBindings);
+        sharedKeyOfficeFilters.recordSearch(inputs,initialSearch,sharedBindings);
       }
       pageState = {
         phase: 'ready',

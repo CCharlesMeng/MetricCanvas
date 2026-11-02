@@ -55,6 +55,10 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'ioc-region-default-url',description:'IOC Header 默认保留地区部与代表处 URL 参数名，页面无需映射',valid:['ioc-region-url-demo'],cases:[
+    {case:'ioc-region-url-reserved-key',base:'ioc-region-url-demo',expect:/URL 参数名重复:rep-office/,mutate:d=>{d.filters.push({id:'rep-office',type:'search',visible:false});}},
+    {case:'ioc-region-url-no-custom-map',base:'ioc-region-url-demo',expect:/存在未定义字段 byLevel/,mutate:d=>{d.filters[0].urlParams={byLevel:{office:'rep-office'}};}}
+  ]},
   {id:'ioc-region-single-tree',description:'IOC Region 仅允许 Header 单个可搜索单选组织树，普通维度不收紧',valid:['key-office-filter-demo'],cases:[
     {case:'ioc-region-flat',base:'key-office-filter-demo',expect:/IOC Region 必须声明/,mutate:d=>{delete d.filters[0].hierarchy;}},
     {case:'ioc-region-external-picker',base:'key-office-filter-demo',expect:/IOC Region 不再允许/,mutate:d=>{d.filters[0].hierarchyPicker='tabs';}},

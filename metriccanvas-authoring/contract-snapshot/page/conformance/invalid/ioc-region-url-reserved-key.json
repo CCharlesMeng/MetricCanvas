@@ -1,0 +1,151 @@
+{
+  "case": "ioc-region-url-reserved-key",
+  "invariant": "ioc-region-default-url",
+  "input": {
+    "schemaVersion": "6.78",
+    "id": "ioc-region-url-demo",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC Region URL 初始化 · 合成数据"
+    },
+    "filters": [
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "demo_region",
+        "label": "Region",
+        "selection": {
+          "mode": "single"
+        },
+        "display": "tree",
+        "treeSelection": "level",
+        "hierarchy": [
+          {
+            "id": "region-dept",
+            "dimension": "demo_region",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "demo_office",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "region-dept",
+        "default": [
+          "中国地区部"
+        ]
+      },
+      {
+        "id": "rep-office",
+        "type": "search",
+        "visible": false
+      }
+    ],
+    "iocHeader": {
+      "identity": {
+        "title": "Region URL 初始化"
+      },
+      "filterIds": [
+        "region"
+      ]
+    },
+    "dataSources": {
+      "offices": {
+        "fields": {
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "demo_office"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "demo_amount"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "demo_office"
+                  ],
+                  "output_metrics": [
+                    "demo_amount"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "region-dept": "demo_region",
+                  "office": "demo_office"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "results",
+        "components": [
+          {
+            "id": "office-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "rowKey": "office",
+              "columns": [
+                {
+                  "title": "代表处",
+                  "field": {
+                    "data": "main",
+                    "field": "office"
+                  }
+                },
+                {
+                  "title": "金额",
+                  "field": {
+                    "data": "main",
+                    "field": "amount"
+                  }
+                }
+              ],
+              "toolbar": {
+                "export": {
+                  "format": "xlsx"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "strictURLInputs": true
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1/urlParams/value",
+      "message": "URL 参数名重复:rep-office"
+    }
+  ]
+}

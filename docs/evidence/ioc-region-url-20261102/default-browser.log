@@ -1,0 +1,23 @@
+[WebServer] (node:15604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ vite dev --host 127.0.0.1 --port 5183 --strictPort
+[WebServer] (node:15625) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:15683) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer]
+[WebServer] [404] GET /favicon.ico
+  ✓  1 tests/region-url.browser.ts:25:3 › URL 恢复与查询绑定：region-dept=中国地区部 (2.1s)
+  ✓  2 tests/region-url.browser.ts:25:3 › URL 恢复与查询绑定：rep-office=上海代表处 (998ms)
+  ✓  3 tests/region-url.browser.ts:25:3 › URL 恢复与查询绑定：region-dept=中国地区部&rep-office=上海代表处 (1.0s)
+  ✓  4 tests/region-url.browser.ts:25:3 › URL 恢复与查询绑定：rep-office=上海代表处&region-dept=中国地区部 (1.0s)
+  ✓  5 tests/region-url.browser.ts:25:3 › URL 恢复与查询绑定：rep-office=北京代表处&rep-office=上海代表处 (986ms)
+  ✓  6 tests/region-url.browser.ts:25:3 › URL 恢复与查询绑定：region=上海代表处&region.level=office (1.0s)
+  ✓  7 tests/region-url.browser.ts:25:3 › URL 恢复与查询绑定：页面默认值 (1.0s)
+  ✓  8 tests/region-url.browser.ts:35:1 › 同树改选清理旧键、保留无关参数，刷新恢复同一查询 (2.5s)
+  ✓  9 tests/region-url.browser.ts:63:1 › 最后空值被拒绝，未知候选阻断业务查询及导出 (1.3s)
+
+  9 passed (13.8s)

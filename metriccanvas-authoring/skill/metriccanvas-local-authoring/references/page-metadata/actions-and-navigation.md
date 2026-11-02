@@ -70,6 +70,10 @@
 目标输入投影排除不可由URL覆盖的旧数组固定参数；该旧模式整体不接收筛选URL，因此其筛选也不作为可传入接口。strictURLInputs与旧数组固定参数互斥，应显式使用分组参数；不自动迁移业务页。
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
+## IOC Region 默认 URL 输入
+
+目标页使用 IOC Header 并认领 Region 时，默认接受 `region-dept` 与 `rep-office` 参数，无需页面 URL 映射。来源导航可显式把行字段、参数或筛选 value 映射到 `query.rep-office` 或 `query.region-dept`，键名决定目标层级，不再映射 level。目标输入投影从实际 Header 推导组织输入能力，同组按 URL 顺序取最后值；筛选来源的层级必须与目标键一致。候选权限仍由目标页验证，旧 value/level 链接继续兼容。完整合成目标为 `/pages/ioc-region-url-demo`；声明和边界见[筛选声明](filters.md#region-level-url)。
+
 
 页面协议 6.78。结构真源为本册[schema.json](schema.json)，SHA256 `55de7dce3225b8700044b37f441afc100190b4c140ea010fd9ef3e19bd3b012d`。字段表自动生成；可选不等于有默认值。
 
@@ -1052,6 +1056,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 - [navigation-source-page](examples/navigation-source-page.json)：完整合法页面；查询仅为静态契约证据。
 - [navigation-list-page](examples/navigation-list-page.json)：完整合法页面；查询仅为静态契约证据。
 - [navigation-detail-page](examples/navigation-detail-page.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-region-url-demo](examples/ioc-region-url-demo.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

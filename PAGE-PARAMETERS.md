@@ -516,3 +516,9 @@ IOC 最近月份使用 dimension 的 `selection:{mode:"multiple",required:true}`
 ## 对象查询参数（6.55）
 
 DQE object 查询复用分组参数及筛选初值；维度原位引用放在 `filter.fields[].value_list:{param:id}`，dim_name 必须与 field_name 一致。日期原位引用由同字段的两条条件成对声明 `{param:id,part:start|end,valueFormat:iso|compact|datetime}`；或使用 `target:time` 的显式字段/格式绑定（允许既有 window）。固定输入与页内筛选不共同控制同一目标。具体边界见[对象查询](docs/page-metadata/queries-and-bindings.md#652-dqe-对象查询)。参数提取只自动识别无歧义的字符串等值对象条件；日期条件优先通过已声明的日期筛选绑定提取，原始任意比较式不猜测。
+
+## IOC Region 默认 URL 输入
+
+IOC Header 中的 Region 默认识别地区部 `region-dept` 与代表处 `rep-office`，无需页面配置 URL 映射，也不新增两个页面参数。值须匹配合法候选稳定值，可以是中文。同组按 URL 顺序取最后一项，例如 `?region-dept=中国地区部&rep-office=上海代表处` 选中代表处；反向顺序选择地区部。
+
+任一标准参数出现时优先于旧 value/level 输入；都未传时沿用页面初值。树内改选后回写标准参数；最后空值和未知候选按既有严格 URL 模式及候选门禁处理。普通页面的同名 region 筛选不自动启用这些组织键。详细说明见[筛选声明](docs/page-metadata/filters.md#region-level-url)，完整合成入口 `/pages/ioc-region-url-demo`。

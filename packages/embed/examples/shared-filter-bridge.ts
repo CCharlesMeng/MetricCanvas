@@ -1,4 +1,4 @@
-import type { FilterDeclaration } from '@metriccanvas/page/internal';
+import {filterURLKeys,readLevelURLSelection,type FilterDeclaration} from '@metriccanvas/page/internal';
 
 /** Host example: one active page, explicit shared-key to public-filter bindings. */
 export type SharedFilterBindings = Readonly<Record<string,string>>;
@@ -22,26 +22,33 @@ function publicBindings(filters:readonly FilterDeclaration[],bindings:SharedFilt
     return [{shared,filter}];
   });
 }
+type SharedFilterInputs = readonly FilterDeclaration[] | { filters: readonly FilterDeclaration[]; iocRegion?: true };
+function pageInputs(input: SharedFilterInputs): { filters: readonly FilterDeclaration[]; iocRegion?: true } {
+  return 'filters' in input ? input : { filters: input };
+}
 /** Input must be public declarations from projectNavigationInputs, never detail-private filters. */
 export function createSharedFilterBridge(initial:SharedFilterSnapshot={}) {
   const entries:SharedFilterSnapshot=structuredClone(initial);
   return {
     snapshot:()=>structuredClone(entries),
-    initialSearch(filters:readonly FilterDeclaration[],search:string,bindings:SharedFilterBindings):string {
+    initialSearch(input:SharedFilterInputs,search:string,bindings:SharedFilterBindings):string {
+      const {filters,iocRegion}=pageInputs(input);
       const query=new URLSearchParams(search);
       for(const {shared,filter} of publicBindings(filters,bindings)){
         const target=keys(filter),entry=entries[shared];
-        if(!entry||entry.signature!==signature(filter)||Object.values(target).some(key=>query.has(key)))continue;
+        if(!entry||entry.signature!==signature(filter)||Object.values(filterURLKeys(filter,iocRegion)).some(key=>query.has(key)))continue;
         for(const [part,values] of Object.entries(entry.parts)){
           if(target[part])for(const value of values)query.append(target[part],value);
         }
       }
       return query.toString();
     },
-    recordSearch(filters:readonly FilterDeclaration[],search:string,bindings:SharedFilterBindings):void {
+    recordSearch(input:SharedFilterInputs,search:string,bindings:SharedFilterBindings):void {
+      const {filters,iocRegion}=pageInputs(input);
       const query=new URLSearchParams(search);
       for(const {shared,filter} of publicBindings(filters,bindings)){
-        const parts=Object.fromEntries(Object.entries(keys(filter)).map(([part,key])=>[part,query.getAll(key)]));
+        const selected=readLevelURLSelection(filterURLKeys(filter,iocRegion),query);
+        const parts=selected?{value:[selected.value],level:[selected.level]}:Object.fromEntries(Object.entries(keys(filter)).map(([part,key])=>[part,query.getAll(key)]));
         entries[shared]={signature:signature(filter),parts};
       }
     }

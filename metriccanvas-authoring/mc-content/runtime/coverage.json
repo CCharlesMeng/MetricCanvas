@@ -798,6 +798,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-region-url-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-region-url-demo.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/key-office-filter-demo.json",
       "target": "product-contracts/page/conformance/valid/key-office-filter-demo.json",
       "scope": "exact product contract"
@@ -885,6 +890,16 @@
     {
       "source": "product:page/conformance/parameter-extraction.json",
       "target": "product-contracts/page/conformance/parameter-extraction.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-region-url-reserved-key.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-region-url-reserved-key.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-region-url-no-custom-map.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-region-url-no-custom-map.json",
       "scope": "exact product contract"
     },
     {
@@ -3425,6 +3440,16 @@
     {
       "source": "product:page/reference/examples/component-filterGroup.json",
       "target": "references/page-metadata/examples/component-filterGroup.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-region-url-reserved-key.json",
+      "target": "references/page-metadata/errors/ioc-region-url-reserved-key.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-region-url-no-custom-map.json",
+      "target": "references/page-metadata/errors/ioc-region-url-no-custom-map.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -6103,6 +6128,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/ioc-region-url-demo.json",
+      "target": "references/page-metadata/examples/ioc-region-url-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/filters.md",
       "target": "references/page-metadata/filters.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6774,10 +6804,10 @@
     }
   ],
   "counts": {
-    "product": 1323,
+    "product": 1329,
     "authoring": 31,
     "modules": 33,
-    "topics": 221,
+    "topics": 223,
     "nodes": 2460,
     "tools": 9,
     "components": 19

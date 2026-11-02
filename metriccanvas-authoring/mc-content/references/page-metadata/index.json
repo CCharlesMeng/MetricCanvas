@@ -294,7 +294,8 @@
         "ioc-header-unconfigured",
         "period-query-columns-demo",
         "key-office-filter-demo",
-        "key-office-filter-target"
+        "key-office-filter-target",
+        "ioc-region-url-demo"
       ],
       "rules": [
         "filter-id-unique",
@@ -408,7 +409,8 @@
         "time-modes-page",
         "navigation-source-page",
         "navigation-list-page",
-        "navigation-detail-page"
+        "navigation-detail-page",
+        "ioc-region-url-demo"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -20597,5 +20599,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "7da8362ede369228e102aacfbd52d3ec0cab8b5dbc7edf54031d11976d9b3cc5"
+  "semanticSourceDigest": "7ba8ecb7def690e3fa317d7e31224dea8b6dbedf091ab8446f8cd38016139fdb"
 }

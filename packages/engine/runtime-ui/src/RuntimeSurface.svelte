@@ -488,11 +488,11 @@
     const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
     declarations = loaded.filters ?? [];
 
-    if(loaded.strictURLInputs===true){const privateIds=new Set((loaded.detailViews??[]).flatMap(view=>view.filters??[])),query=new URLSearchParams(search);const privateInput=declarations.some(f=>privateIds.has(f.id)&&Object.values(filterURLKeys(f)).some(key=>query.has(key)));const message=privateInput?'详情私有筛选不能由页面URL写入':filterInputIssue(search,declarations,candidateClock);if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}}
+    if(loaded.strictURLInputs===true){const privateIds=new Set((loaded.detailViews??[]).flatMap(view=>view.filters??[])),query=new URLSearchParams(search);const privateInput=declarations.some(f=>privateIds.has(f.id)&&Object.values(filterURLKeys(f,!!loaded.iocHeader)).some(key=>query.has(key)));const message=privateInput?'详情私有筛选不能由页面URL写入':filterInputIssue(search,declarations,candidateClock,!!loaded.iocHeader);if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
     let fromURL:Map<string,FilterValue>;
     try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
-      ? parseFilterSearch(search,declarations,candidateClock)
+      ? parseFilterSearch(search,declarations,candidateClock,!!loaded.iocHeader)
       : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const localOptions = filterGroupOptions(loaded);
     for (const [id, options] of localOptions) {
@@ -509,7 +509,7 @@
     try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     let state:ReturnType<typeof createFilterState>;
     try {
-      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
+      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:!!loaded.iocHeader, candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
     } catch {
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
@@ -734,13 +734,13 @@
   }
 
   function parseFilterURL(search: string, declared: FilterDeclaration[]): FilterValues {
-    return parseFilterSearch(search, declared);
+    return parseFilterSearch(search, declared, undefined, !!declarationPage?.iocHeader);
   }
 
   function mergedSearch(state: FilterState, initial: string): string {
     const params = new URLSearchParams(initial);
     for (const declaration of declarations) {
-      for (const key of Object.values(filterURLKeys(declaration))) params.delete(key);
+      for (const key of Object.values(filterURLKeys(declaration,!!declarationPage?.iocHeader))) params.delete(key);
     }
     for (const [key, value] of new URLSearchParams(state.toURL(declarations))) params.append(key, value);
     return params.toString();

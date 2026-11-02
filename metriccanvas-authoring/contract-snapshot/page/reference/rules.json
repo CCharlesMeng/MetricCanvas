@@ -1,6 +1,17 @@
 {
   "invariants": [
     {
+      "id": "ioc-region-default-url",
+      "description": "IOC Header 默认保留地区部与代表处 URL 参数名，页面无需映射",
+      "valid": [
+        "ioc-region-url-demo"
+      ],
+      "invalid": [
+        "ioc-region-url-reserved-key",
+        "ioc-region-url-no-custom-map"
+      ]
+    },
+    {
       "id": "ioc-region-single-tree",
       "description": "IOC Region 仅允许 Header 单个可搜索单选组织树，普通维度不收紧",
       "valid": [

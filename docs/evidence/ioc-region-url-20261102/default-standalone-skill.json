@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "6.78",
+  "skillVersion": "1.16.0",
+  "isolatedDirectoryRemovedAfterVerification": true,
+  "checks": [
+    {
+      "check": "version",
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":\"6.78\",\"validation\":\"page-and-file-name\"}\n",
+      "stderr": ""
+    },
+    {
+      "check": "valid-no-url-mapping",
+      "exitCode": 0,
+      "stdout": "{\"file\":\"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-region-skill-1.16.0-el0rvs7h/ioc-region-url-demo.json\",\"ok\":true,\"errors\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "check": "invalid-reserved-organization-key",
+      "exitCode": 1,
+      "stdout": "{\"file\":\"/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-region-skill-1.16.0-el0rvs7h/ioc-region-url-demo.json\",\"ok\":false,\"errors\":[{\"type\":\"SCHEMA_ERROR\",\"path\":\"/filters/1/urlParams/value\",\"message\":\"URL 参数名重复:rep-office\"}]}\n",
+      "stderr": ""
+    }
+  ]
+}

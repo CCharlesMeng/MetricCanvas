@@ -32,14 +32,16 @@ it('the actual Playground page chooses an office inside one tree and resolves it
     const shanghai = tree.find(node => node.label === '华东')!.children!.find(node => node.label === '上海')!;
     const next = hierarchyTreeSelection(snapshot, [shanghai.value], 'region-dept')!;
     expect(next).toEqual({ level: 'office', values: ['O101'] });
-    const state = createFilterState(filters, page.filters);
+    const state = createFilterState(filters, page.filters, new Map(), {iocRegion:!!page.iocHeader});
     const changes: FilterValues[] = [];
     const stop = state.subscribe(values => changes.push(values));
     state.write('region', { type: 'dimension', dimension: 'h_office', ...next });
     stop();
     expect(changes).toHaveLength(2);
-    expect(state.toURL()).toContain('region=O101');
-    expect(state.toURL()).toContain('region.level=office');
+    const query = new URLSearchParams(state.toURL());
+    expect(query.get('rep-office')).toBe('O101');
+    expect(query.has('region')).toBe(false);
+    expect(query.has('region.level')).toBe(false);
     expect(await resolveHierarchySelection(page, table, gateway, { filters: changes[1]!, params: new Map() }, signal)).toMatchObject({ status: 'selected', parentValue: 'R01', childValue: 'O101' });
     expect(tree.map(node => node.label)).toContain('定位无结果（异常验收）');
   } finally {

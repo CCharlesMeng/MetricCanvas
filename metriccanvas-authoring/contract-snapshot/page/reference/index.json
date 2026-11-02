@@ -44,11 +44,11 @@
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
-      "sha256": "81c2faeb33b3a4459a7aec2ff2059e5b09b38e4f9032a82fff2bbc30c3cf6626"
+      "sha256": "3b66f17a148ffb3a9c0ef9a7c0eb4b4c05391b15b29ffcbf7949450109f98ad1"
     },
     {
       "file": "packages/engine/runtime/src/navigation-inputs.ts",
-      "sha256": "23fbbb96ed2879d6d88295bb89c28965cad9b1c592346cda49654a4dd382191e"
+      "sha256": "23f8e9dbbca0264ca2bf0dd79f38ded8bac91b844ee2c77ad707982f145957e0"
     },
     {
       "file": "packages/engine/runtime/src/presentation.ts",
@@ -127,6 +127,10 @@
       "sha256": "0677ae512e8447a5dbc3a347bef5b970ed598d3e12ec855487bebbe4d822768a"
     },
     {
+      "file": "packages/page/src/filter-url.ts",
+      "sha256": "284d8785f61a682ed1066240508f9a06d19740f29cf89839471b3a44e4b90951"
+    },
+    {
       "file": "packages/page/src/ioc-header.ts",
       "sha256": "5b820b7e5b6aae14d34f75c7ddd4ae8ed7cf1652b31cb61a9f7d8926f4bc45ce"
     },
@@ -136,7 +140,7 @@
     },
     {
       "file": "packages/page/src/navigate.ts",
-      "sha256": "a548e2869b602c9bf77c811407c1746c2bf24953586aad7e9543b60558e944b2"
+      "sha256": "30b1d70eb8be7b697a1929280c20a27d511b8f99a751e817ef0f1ee88b66eb18"
     },
     {
       "file": "packages/page/src/object-query-params.ts",
@@ -368,7 +372,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "bf45667f6cdcf901524ef76adaad1688b4668d109e21db8335457230c449ee03"
+      "sha256": "6dd295e5d708b5f4a4b8e6d79bc27360c9370240f1211b0f638634a28837fab2"
     }
   ],
   "modules": {
@@ -720,7 +724,8 @@
         "ioc-header-unconfigured",
         "period-query-columns-demo",
         "key-office-filter-demo",
-        "key-office-filter-target"
+        "key-office-filter-target",
+        "ioc-region-url-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -737,7 +742,8 @@
         "packages/page/src/field-selection.ts",
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
-        "packages/page/src/time-extension-validation.ts"
+        "packages/page/src/time-extension-validation.ts",
+        "packages/page/src/filter-url.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -867,7 +873,8 @@
         "time-modes-page",
         "navigation-source-page",
         "navigation-list-page",
-        "navigation-detail-page"
+        "navigation-detail-page",
+        "ioc-region-url-demo"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -876,7 +883,8 @@
         "packages/page/src/schema/navigation.ts",
         "packages/engine/runtime/src/navigate.ts",
         "packages/page/src/navigate.ts",
-        "packages/engine/runtime/src/navigation-inputs.ts"
+        "packages/engine/runtime/src/navigation-inputs.ts",
+        "packages/page/src/filter-url.ts"
       ],
       "rules": [
         "url-navigation-source-contract",

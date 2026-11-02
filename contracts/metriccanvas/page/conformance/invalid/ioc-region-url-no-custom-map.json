@@ -1,0 +1,421 @@
+{
+  "case": "ioc-region-url-no-custom-map",
+  "invariant": "ioc-region-default-url",
+  "input": {
+    "schemaVersion": "6.78",
+    "id": "ioc-region-url-demo",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC Region URL 初始化 · 合成数据"
+    },
+    "filters": [
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "demo_region",
+        "label": "Region",
+        "selection": {
+          "mode": "single"
+        },
+        "display": "tree",
+        "treeSelection": "level",
+        "hierarchy": [
+          {
+            "id": "region-dept",
+            "dimension": "demo_region",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "demo_office",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "region-dept",
+        "default": [
+          "中国地区部"
+        ],
+        "urlParams": {
+          "byLevel": {
+            "office": "rep-office"
+          }
+        }
+      }
+    ],
+    "iocHeader": {
+      "identity": {
+        "title": "Region URL 初始化"
+      },
+      "filterIds": [
+        "region"
+      ]
+    },
+    "dataSources": {
+      "offices": {
+        "fields": {
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "demo_office"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "demo_amount"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "demo_office"
+                  ],
+                  "output_metrics": [
+                    "demo_amount"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "region-dept": "demo_region",
+                  "office": "demo_office"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "results",
+        "components": [
+          {
+            "id": "office-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "rowKey": "office",
+              "columns": [
+                {
+                  "title": "代表处",
+                  "field": {
+                    "data": "main",
+                    "field": "office"
+                  }
+                },
+                {
+                  "title": "金额",
+                  "field": {
+                    "data": "main",
+                    "field": "amount"
+                  }
+                }
+              ],
+              "toolbar": {
+                "export": {
+                  "format": "xlsx"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "strictURLInputs": true
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/urlParams/byLevel",
+      "message": "存在未定义字段 byLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/dimension",
+      "message": "存在未定义字段 dimension(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/selection",
+      "message": "存在未定义字段 selection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/treeSelection",
+      "message": "存在未定义字段 treeSelection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/hierarchy",
+      "message": "存在未定义字段 hierarchy(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/defaultLevel",
+      "message": "存在未定义字段 defaultLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/urlParams/byLevel",
+      "message": "存在未定义字段 byLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/display",
+      "message": "取值不在允许范围:[\"period\",\"modes\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be string"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/granularity",
+      "message": "缺少必填字段 granularity"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/dimension",
+      "message": "存在未定义字段 dimension(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/selection",
+      "message": "存在未定义字段 selection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/display",
+      "message": "存在未定义字段 display(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/treeSelection",
+      "message": "存在未定义字段 treeSelection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/hierarchy",
+      "message": "存在未定义字段 hierarchy(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/defaultLevel",
+      "message": "存在未定义字段 defaultLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/urlParams/byLevel",
+      "message": "存在未定义字段 byLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be string"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/dimension",
+      "message": "存在未定义字段 dimension(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/selection",
+      "message": "存在未定义字段 selection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/display",
+      "message": "存在未定义字段 display(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/treeSelection",
+      "message": "存在未定义字段 treeSelection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/hierarchy",
+      "message": "存在未定义字段 hierarchy(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/defaultLevel",
+      "message": "存在未定义字段 defaultLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/urlParams/byLevel",
+      "message": "存在未定义字段 byLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be boolean"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/dimension",
+      "message": "存在未定义字段 dimension(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/selection",
+      "message": "存在未定义字段 selection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/display",
+      "message": "存在未定义字段 display(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/treeSelection",
+      "message": "存在未定义字段 treeSelection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/hierarchy",
+      "message": "存在未定义字段 hierarchy(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/defaultLevel",
+      "message": "存在未定义字段 defaultLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/urlParams/byLevel",
+      "message": "存在未定义字段 byLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/dimension",
+      "message": "存在未定义字段 dimension(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/selection",
+      "message": "存在未定义字段 selection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/display",
+      "message": "存在未定义字段 display(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/treeSelection",
+      "message": "存在未定义字段 treeSelection(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/hierarchy",
+      "message": "存在未定义字段 hierarchy(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/defaultLevel",
+      "message": "存在未定义字段 defaultLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/urlParams/byLevel",
+      "message": "存在未定义字段 byLevel(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be string"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

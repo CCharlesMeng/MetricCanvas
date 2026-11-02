@@ -1,3 +1,4 @@
+import {createRegionURLGateway} from '../../fixtures/region-url';
 import {createRowCachePreview} from '../../fixtures/row-expansion-cache';
 import {createPeriodComparisonPreview} from '../../fixtures/period-comparison';
 import {createQueryComparisonPreview} from '../../fixtures/query-comparison-gateway';
@@ -44,6 +45,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if(kind==='region-url')return {dataGateway:createRegionURLGateway()};
   if(kind==='row-cache')return createRowCachePreview();
 
   if(kind==='query-comparison')return createQueryComparisonPreview(state);

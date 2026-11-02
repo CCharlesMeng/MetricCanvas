@@ -229,3 +229,17 @@
 选择地区 A、月份 2026-09、勾选重点国代，点击“切换页面”：目标页回填三项共享值，重新验证候选后显示 A1；返回时继续继承。显式 URL `?key-office=false` 优先于宿主保存的 true；取消勾选、清空地区也写回共享值。禁用本身保留已有 true。Playground 的两页共用局部宿主示例实例；刷新视为新会话。嵌入浏览器夹具则以 sessionStorage 模拟跨整页导航的宿主会话。
 
 可复用宿主示例是 `packages/embed/examples/shared-filter-bridge.ts`，两个挂载入口使用相同实例。只将 projectNavigationInputs 投影出的公共筛选声明传给它。MC 每页持有独立候选与查询状态；本示例不接入真实 HeaderOptionService，不证明真实 DQE 或门户部署。
+
+## IOC Region 参数名表示层级
+
+页面：`/pages/ioc-region-url-demo`，文件 `ioc-region-url-demo.json`。IOC Header 默认启用组织 URL 参数，页面不包含 URL 映射字段，旧 IOC 页面也无需增加配置。先运行 `pnpm dev:playground`；该场景由 Playground 注入完整的合成组织树及合成查询 Adapter，无需真实 DQE 服务。
+
+- `/pages/ioc-region-url-demo?region-dept=中国地区部`：树内选中中国地区部，表格显示上海、北京两条记录。
+- `/pages/ioc-region-url-demo?rep-office=上海代表处`：树内选中上海代表处，表格只有上海一条。
+- `/pages/ioc-region-url-demo?region-dept=中国地区部&rep-office=上海代表处`：取第二项代表处；反过来 `?rep-office=上海代表处&region-dept=中国地区部` 取地区部。
+- `?rep-office=北京代表处&rep-office=上海代表处`：重复键也取最后值。
+- `?region=上海代表处&region.level=office`：旧格式继续选中上海；交互选择后回写新键，并删除旧键。
+- `?region-dept=中国地区部&rep-office=`：严格 URL 模式显示输入错误，不向业务查询静默回退。
+- `?rep-office=未授权代表处`：不在完整候选内，查询和导出受门禁阻断。
+
+在同一棵树中改选欧洲地区部，URL 只保留 `region-dept=欧洲地区部`，表格显示法国代表处；改选上海代表处则只保留 `rep-office=上海代表处`。无关 URL 参数应继续保留。无输入使用声明的中国地区部默认值。本地合成行为不证明真实组织接口、DQE/Relay、权限或部署验收。

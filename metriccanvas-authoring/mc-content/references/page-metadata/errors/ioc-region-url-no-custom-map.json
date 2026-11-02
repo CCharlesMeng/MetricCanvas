@@ -1,0 +1,190 @@
+{
+  "case": "ioc-region-url-no-custom-map",
+  "invariant": "ioc-region-default-url",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 byLevel(拼写错误?)",
+      "paths": [
+        "/filters/0/urlParams/byLevel",
+        "/filters/0/urlParams/byLevel",
+        "/filters/0/urlParams/byLevel",
+        "/filters/0/urlParams/byLevel",
+        "/filters/0/urlParams/byLevel",
+        "/filters/0/urlParams/byLevel"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 dimension(拼写错误?)",
+      "paths": [
+        "/filters/0/dimension",
+        "/filters/0/dimension",
+        "/filters/0/dimension",
+        "/filters/0/dimension",
+        "/filters/0/dimension"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 selection(拼写错误?)",
+      "paths": [
+        "/filters/0/selection",
+        "/filters/0/selection",
+        "/filters/0/selection",
+        "/filters/0/selection",
+        "/filters/0/selection"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 treeSelection(拼写错误?)",
+      "paths": [
+        "/filters/0/treeSelection",
+        "/filters/0/treeSelection",
+        "/filters/0/treeSelection",
+        "/filters/0/treeSelection",
+        "/filters/0/treeSelection"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 hierarchy(拼写错误?)",
+      "paths": [
+        "/filters/0/hierarchy",
+        "/filters/0/hierarchy",
+        "/filters/0/hierarchy",
+        "/filters/0/hierarchy",
+        "/filters/0/hierarchy"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 defaultLevel(拼写错误?)",
+      "paths": [
+        "/filters/0/defaultLevel",
+        "/filters/0/defaultLevel",
+        "/filters/0/defaultLevel",
+        "/filters/0/defaultLevel",
+        "/filters/0/defaultLevel"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"period\",\"modes\"]",
+      "paths": [
+        "/filters/0/display"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be string",
+      "paths": [
+        "/filters/0/default",
+        "/filters/0/default",
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be object",
+      "paths": [
+        "/filters/0/default",
+        "/filters/0/default",
+        "/filters/0/default",
+        "/filters/0/default",
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/filters/0/default",
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 granularity",
+      "paths": [
+        "/filters/0/granularity"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 display(拼写错误?)",
+      "paths": [
+        "/filters/0/display",
+        "/filters/0/display",
+        "/filters/0/display",
+        "/filters/0/display"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be boolean",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "demo_region",
+        "label": "Region",
+        "selection": {
+          "mode": "single"
+        },
+        "display": "tree",
+        "treeSelection": "level",
+        "hierarchy": [
+          {
+            "…": "共3个键"
+          },
+          {
+            "…": "共3个键"
+          }
+        ],
+        "defaultLevel": "region-dept",
+        "default": [
+          "中国地区部"
+        ],
+        "urlParams": {
+          "byLevel": {
+            "…": "共1个键"
+          }
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

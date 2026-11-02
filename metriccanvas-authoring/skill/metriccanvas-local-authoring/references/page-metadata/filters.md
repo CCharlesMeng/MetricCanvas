@@ -6,7 +6,42 @@
 
 展示条件可通过 `{filter:"statistics-period",part:"mode",op:"eq",value:"quarter"}` 读取期间模式。它来自 selection.mode，不是查询策略转换后的 period，也不是控件尚未应用的草稿。新旧期间筛选声明均可被读取；未应用时条件等待，不能经 not 转成允许。示例：`period-query-columns-demo`。
 
-六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。
+六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；普通维度的重复键表示多值，不拆逗号；IOC Header 的 Region 采用下述最后参数规则。boolean的false是显式值，不能被默认true覆盖。
+
+<a id="region-level-url"></a>
+
+## IOC Region 默认 URL 输入
+
+IOC Header 默认识别 `region-dept`（地区部）与 `rep-office`（代表处）两个 URL 参数，不需要页面增加 URL 映射字段。页面继续声明原有 Region 组织树，并由 `iocHeader.filterIds` 认领：
+
+```json
+{
+  "iocHeader": { "identity": { "title": "示例" }, "filterIds": ["region"] },
+  "filters": [{
+    "id": "region",
+    "type": "dimension",
+    "dimension": "地区部编码",
+    "display": "tree",
+    "treeSelection": "level",
+    "selection": { "mode": "single" },
+    "hierarchy": [
+      { "id": "region-dept", "dimension": "地区部编码", "label": "地区部" },
+      { "id": "office", "dimension": "代表处编码", "label": "代表处" }
+    ],
+    "defaultLevel": "region-dept"
+  }]
+}
+```
+
+`?region-dept=中国地区部` 选择地区部；`?rep-office=上海代表处` 选择代表处，参数名直接决定层级，不再额外传 `region.level`。值是候选的稳定 `value`，允许中文、编码或包含连接符的字符串；不按显示名猜测候选。新页面使用层级 ID `region-dept` / `office`，既有 IOC 示例的地区部层级 ID `department` 继续兼容。页面不必改写层级 ID；不支持的组织层级不猜测其业务含义。
+
+同组参数按原始 URL 从左到右取最后出现的一项；交换顺序会交换生效节点，重复同名键也取最后值。最后值为空或无效时不取前一项；严格 URL 输入模式报告空输入错误，完整候选门禁继续校验权限。都未传时沿用页面初值，不自动推导用户组织。
+
+两个标准参数名由 IOC Region 保留，不能与同页参数、其他筛选或页签输入重名。旧 value/level 输入仍兼容；任一标准参数出现时整组新输入优先于旧输入，与旧输入位置无关。树内改选后只回写当前节点对应的标准参数，并清理同组新旧键，保留无关 URL 参数。全球等其他层级保持旧 value/level；可选树显式清空时沿用 level-only 格式保存空选层级，避免刷新重新套用默认节点。
+
+`levelQueryFields` 继续按选中层级决定业务查询字段。默认 URL 处理由 Header 上下文启用，候选权限、父子关系和查询绑定保持原协议；普通页面即使使用同名 region 层级筛选，也不会自动读取 IOC 组织参数。导航目标投影和示例宿主共享状态由实际 Header 取得此上下文，不要求作者再配参数映射。撤回的 `urlParams.byLevel` 不是页面协议字段。
+
+完整合成验收入口：`/pages/ioc-region-url-demo?region-dept=中国地区部&rep-office=上海代表处`；反向顺序显示地区部的两条记录，最后值为空或不在候选时阻断查询。该页不含 URL 映射字段，使用本地合成组织树和查询 Adapter，不证明真实组织服务或 DQE/Relay 权限已接通。此更新没有新增页面字段或 Schema 能力下限，既有合法 IOC 页面可直接使用运行时默认行为。
 
 ## 时间选择的默认上限
 
@@ -2786,6 +2821,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [period-query-columns-demo](examples/period-query-columns-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [key-office-filter-demo](examples/key-office-filter-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [key-office-filter-target](examples/key-office-filter-target.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-region-url-demo](examples/ioc-region-url-demo.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或代表处，页面无需增加 URL 映射字段。同组参数按 URL 顺序取最后项，旧 value/level 链接继续兼容，普通页面筛选保持原行为。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)，合成入口 `/pages/ioc-region-url-demo`。本更新不新增页面字段或 Schema 能力下限。
+
 数据加载时先呈现真实组件结构，保留标题、容器、表头及工具栏；首次加载、筛选重查、查询翻页和 Tab 激活均不再用骨架块替换组件。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#加载时保留组件结构)，合成验收入口 `/pages/loading-structure-demo`。无需新增页面字段或升级 Schema。
 
 6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。

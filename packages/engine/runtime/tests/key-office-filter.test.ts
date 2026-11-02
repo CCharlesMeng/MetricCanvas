@@ -1,3 +1,4 @@
+import {projectNavigationInputs} from '../src/navigation-inputs';
 import {readFileSync} from 'node:fs';
 import {describe,it,expect} from 'vitest';
 import {parsePage} from '../../../page/src/validate';
@@ -13,6 +14,7 @@ import type {FilterDeclaration,DimensionFilterDeclaration} from '../../../page/s
 import type {FilterCandidatesRequest,FilterCandidatesResult} from '../src/ports';
 const raw=JSON.parse(readFileSync('pages/capabilities/filters/key-office-filter-demo.json','utf8'));
 const parsed=parsePage(raw);if(!parsed.ok)throw new Error(JSON.stringify(parsed.errors));
+const inputs=projectNavigationInputs(raw);
 const page=parsed.page,filters=page.filters!,office=filters.find(f=>f.id==='region') as DimensionFilterDeclaration;
 const key=(value:boolean)=>new Map<string,import("../src/filter-state").FilterValue>([['key-office',{type:'boolean',value}]]);
 const dimension=(values:string[])=>({type:'dimension' as const,dimension:'demo_office',level:'office',values});
@@ -94,13 +96,13 @@ it('loader sends booleans, cancels stale responses and isolates false from true 
 describe('host shared filter example',()=>{
  const bindings={'key-office':'key-office',region:'region',mtime:'mtime'};
  it('carries true and false, preserves explicit URL and nonfilter parameters, and records clears',()=>{
-  const bridge=createSharedFilterBridge();bridge.recordSearch(filters,'key-office=true&region=A&mtime=2026-09&rep-office=A1',bindings);
-  const next=new URLSearchParams(bridge.initialSearch(filters,'heading=keep&key-office=false',bindings));
-  expect(next.get('key-office')).toBe('false');expect(next.get('region')).toBe('A');expect(next.get('heading')).toBe('keep');expect(next.has('rep-office')).toBe(false);
-  bridge.recordSearch(filters,'key-office=false',bindings);expect(bridge.initialSearch(filters,'',bindings)).toBe('key-office=false');
+  const bridge=createSharedFilterBridge();bridge.recordSearch(inputs,'key-office=true&region=A&mtime=2026-09&rep-office=A1',bindings);
+  const next=new URLSearchParams(bridge.initialSearch(inputs,'heading=keep&key-office=false',bindings));
+  expect(next.get('key-office')).toBe('false');expect(next.get('region')).toBe('A1');expect(next.get('region.level')).toBe('office');expect(next.get('heading')).toBe('keep');expect(next.has('rep-office')).toBe(false);
+  bridge.recordSearch(inputs,'key-office=false',bindings);expect(bridge.initialSearch(inputs,'',bindings)).toBe('key-office=false');
  });
  it('maps IDs and rejects incompatible dimensions and precision',()=>{
-  const bridge=createSharedFilterBridge();bridge.recordSearch(filters,'key-office=true&region=A&mtime=2026-09',bindings);
+  const bridge=createSharedFilterBridge();bridge.recordSearch(inputs,'key-office=true&region=A&mtime=2026-09',bindings);
   expect(bridge.initialSearch([{id:'other',type:'boolean'}],'',{'key-office':'other'})).toBe('other=true');
   expect(bridge.initialSearch([{id:'region',type:'dimension',dimension:'different'},{id:'mtime',type:'timePoint',granularity:'date'}],'',bindings)).toBe('');
   bridge.recordSearch([],'',bindings);expect(bridge.snapshot()['key-office'].parts.value).toEqual(['true']);

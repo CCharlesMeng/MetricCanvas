@@ -1,3 +1,5 @@
+import { filterURLKeys } from './filter-url';
+export { filterURLKeys, readLevelURLSelection } from './filter-url';
 import {staticFieldBinding} from './field';
 import { resolveDataSourceFields } from './data-source';
 import { walkPageComponents } from './component-walk';
@@ -83,24 +85,16 @@ export function navigationErrors(page: Page): TypedError[] {
   return errors;
 }
 
-/** 同页 URL 名称不能指向两个不同输入。 */
-export function filterURLKeys(filter: NonNullable<Page['filters']>[number]): Record<string, string> {
-  const names = filter.urlParams ?? {};
-  if (filter.type === 'timeRange' && filter.display === 'period') return {value:names.value ?? filter.id,from:names.from ?? `${filter.id}.from`,to:names.to ?? `${filter.id}.to`};
-  if(filter.type==='timeRange'&&filter.display==='modes')return {mode:`${filter.id}.mode`,from:names.from??`${filter.id}.from`,to:names.to??`${filter.id}.to`};
-  if (filter.type === 'timeRange' || filter.type === 'numberRange') return { from: names.from ?? `${filter.id}.from`, to: names.to ?? `${filter.id}.to` };
-  return { value: names.value ?? filter.id, ...(filter.type === 'dimension' && filter.hierarchy ? { level: names.level ?? `${filter.id}.level` } : {}) };
-}
 export function urlInputErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
   const used = new Set((page.params ?? []).map(p => p.id));
   (page.filters ?? []).forEach((filter, i) => {
-    const keys = filterURLKeys(filter);
+    const keys = filterURLKeys(filter, !!page.iocHeader);
     for (const part of Object.keys(filter.urlParams ?? {})) {
       if (!(part in keys)) errors.push({ type:'SCHEMA_ERROR', path:`/filters/${i}/urlParams/${part}`, message:'该筛选器不支持此 URL 分量' });
     }
     for (const [part, key] of Object.entries(keys)) {
-      if (used.has(key)) errors.push({ type:'SCHEMA_ERROR', path:`/filters/${i}/urlParams/${part}`, message:`URL 参数名重复:${key}` });
+      if (used.has(key)) errors.push({ type:'SCHEMA_ERROR', path:part.startsWith('node/')?'/iocHeader/filterIds':`/filters/${i}/urlParams/${part}`, message:`URL 参数名重复:${key}` });
       used.add(key);
     }
   });

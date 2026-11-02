@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "7adfe1192df7e6daf074042c8817c8c7605323e241c1dca74732f6db7ae212d1",
+  "sha256": "93cf9f1bafc798fc27bf899c18ce54a6f00595071fa3c5925861a80132947704",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -12,7 +12,7 @@
     },
     {
       "file": "docs/page-metadata/actions-and-navigation.md",
-      "sha256": "834d83ae252dc3fb1b747c350cf0fb57ed631434257413b77d3108698181cc15"
+      "sha256": "b75ec9daebd45c34e5deaeb3474721522ef5bb82efe16a255436e485176f2b21"
     },
     {
       "file": "docs/page-metadata/chart-option.md",
@@ -124,7 +124,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "d62b56c6df501021e4525561dbc4af9c58972401c43fbab79aa4173fd3613458"
+      "sha256": "f19f0763f33532014b6c343628631a701185203c544210d5ae03f739ea9cb94e"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "52f7fdb521d049994a0c88dd83f5dc45ad9024abb281b37b2c83e97b995f2334"
+      "sha256": "9b01798f7e4932075be3081aef7fa9c8892bd2e1691c00eb3504aa1985734503"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1415,6 +1415,10 @@
       "sha256": "0677ae512e8447a5dbc3a347bef5b970ed598d3e12ec855487bebbe4d822768a"
     },
     {
+      "file": "packages/page/src/filter-url.ts",
+      "sha256": "284d8785f61a682ed1066240508f9a06d19740f29cf89839471b3a44e4b90951"
+    },
+    {
       "file": "packages/page/src/filter.ts",
       "sha256": "7619c183fae8b07a75bb83a57779eddf6d4a1b571fc09a8abdadfc896797645f"
     },
@@ -1428,7 +1432,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "194ed5b2260d9e3542669e3a6f80b5a612cbb5ca7a7b3bbce2f9832e844e11ce"
+      "sha256": "8aa209f26a9e4361d36f1523ea5fa1c95b34ca0f417ed4b387fb3d7da087bd6d"
     },
     {
       "file": "packages/page/src/ioc-header.ts",
@@ -1460,7 +1464,7 @@
     },
     {
       "file": "packages/page/src/navigate.ts",
-      "sha256": "a548e2869b602c9bf77c811407c1746c2bf24953586aad7e9543b60558e944b2"
+      "sha256": "30b1d70eb8be7b697a1929280c20a27d511b8f99a751e817ef0f1ee88b66eb18"
     },
     {
       "file": "packages/page/src/object-query-params.ts",
@@ -1872,7 +1876,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "998eec4a0afd930006f66abfbb8bcd95d35c89fad6d29f7cdbd7be40b9419b7a"
+      "sha256": "cdfd37dc79855d0571bdc41cea000b628fae84feb008d3a04a26e757d0f60a1c"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2056,7 +2060,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "c981a313193cafdd8a707f34cc54ff563c168fc84d8ffcaa9b25a49677c90bda"
+      "sha256": "988ab095c6b8aaba64b5ef431057fbac73251a2985f4c1c3353d5502b2b00ae5"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",
@@ -2073,6 +2077,10 @@
     {
       "file": "pages/capabilities/filters/filter-group-state-page.json",
       "sha256": "d61b96b3986ce102cedc695a9111218277c17d6cff987c032ba619e795496ba2"
+    },
+    {
+      "file": "pages/capabilities/filters/ioc-region-url-demo.json",
+      "sha256": "86494794392e04a69d333d23533912f205c22ef8dfe143d57bf860f5d980e375"
     },
     {
       "file": "pages/capabilities/filters/key-office-filter-demo.json",
@@ -2892,7 +2900,7 @@
     },
     {
       "file": "tools/scripts/export-authoring-contracts.ts",
-      "sha256": "ae2800f3e42fc0e918b4dd30c207ec9d7757b2b9b79c07d3a4235747253ba328"
+      "sha256": "be7d26500dc9c34dd78992b8ca914715bc84d83fedadef139fedfe13bc423ddb"
     },
     {
       "file": "tools/scripts/local-authoring-data-analysis.ts",
@@ -2984,7 +2992,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "bf45667f6cdcf901524ef76adaad1688b4668d109e21db8335457230c449ee03"
+      "sha256": "6dd295e5d708b5f4a4b8e6d79bc27360c9370240f1211b0f638634a28837fab2"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

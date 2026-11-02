@@ -61,7 +61,7 @@ export const scenes: readonly Scene[] = [
   { id: 'query-results', title: '查询窗口与结果处理', owner: 'data/results', components: ['table', 'metricCard', 'lineChart'], topics: ['results', 'sources'],
     pages: ['query-result-where-page', 'query-numeric-tolerance'], question: '结果过滤消费当前窗口还是完整行集，非法数值怎样处理？' },
   { id: 'navigation', title: '跨页传值与 URL 初始化', owner: 'data/output', components: ['button', 'text', 'tabContainer'], topics: ['output', 'interactions'],
-    pages: ['ioc-header-navigation-source-demo', 'ioc-header-navigation-list-demo', 'ioc-header-navigation-detail-demo', 'ioc-content-navigation', 'tab-url-source', 'tab-url-initialization', 'demo', 'sales-detail'],
+    pages: ['ioc-region-url-demo', 'ioc-header-navigation-source-demo', 'ioc-header-navigation-list-demo', 'ioc-header-navigation-detail-demo', 'ioc-content-navigation', 'tab-url-source', 'tab-url-initialization', 'demo', 'sales-detail'],
     question: '哪些条件被显式传递，目标页怎样恢复，来源状态是否受影响？' },
   { id: 'headings', title: '布局形态与分区标题', owner: 'layouts/sections', components: ['text'], topics: [], layouts: ['dashboard', 'report', 'sections'],
     pages: ['dashboard-title-styles', 'report-title-styles', 'empty-state-showcase'], question: '页面外框、分区容器和组件标题各自控制哪一层？' },
@@ -70,6 +70,7 @@ export const scenes: readonly Scene[] = [
 ];
 
 export const pageSearchInputs: Readonly<Record<string, string>> = {
+  'ioc-region-url-demo': 'region-dept=中国地区部&rep-office=上海代表处',
   'ioc-header-navigation-list-demo': 'origin=专题直接入口',
   'ioc-header-navigation-detail-demo': 'project-id=P-001&project-name=示例项目甲&origin=专题直接入口&month=2026-09'
 };

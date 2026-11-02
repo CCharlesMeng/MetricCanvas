@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/filters.md",
       "blocks": [
         "# 筛选声明与运行状态",
-        "## 期间选择与查询消费\n\n6.67 的新期间查询绑定读取已应用的 selection 和窗口：组件表达 year/quarter/month/last12Months，查询各自声明 periodPolicy。筛选器 precision 在旧绑定上保留原意；它不决定新策略的粒度。同一个期间可以同时驱动日趋势与月度数据。交互、URL恢复、公历/未来边界仍由现有筛选状态流程管理；取消草稿不改变已应用选择。\n\n展示条件可通过 `{filter:\"statistics-period\",part:\"mode\",op:\"eq\",value:\"quarter\"}` 读取期间模式。它来自 selection.mode，不是查询策略转换后的 period，也不是控件尚未应用的草稿。新旧期间筛选声明均可被读取；未应用时条件等待，不能经 not 转成允许。示例：`period-query-columns-demo`。\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。"
+        "## 期间选择与查询消费\n\n6.67 的新期间查询绑定读取已应用的 selection 和窗口：组件表达 year/quarter/month/last12Months，查询各自声明 periodPolicy。筛选器 precision 在旧绑定上保留原意；它不决定新策略的粒度。同一个期间可以同时驱动日趋势与月度数据。交互、URL恢复、公历/未来边界仍由现有筛选状态流程管理；取消草稿不改变已应用选择。\n\n展示条件可通过 `{filter:\"statistics-period\",part:\"mode\",op:\"eq\",value:\"quarter\"}` 读取期间模式。它来自 selection.mode，不是查询策略转换后的 period，也不是控件尚未应用的草稿。新旧期间筛选声明均可被读取；未应用时条件等待，不能经 not 转成允许。示例：`period-query-columns-demo`。\n\n六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；普通维度的重复键表示多值，不拆逗号；IOC Header 的 Region 采用下述最后参数规则。boolean的false是显式值，不能被默认true覆盖。\n\n<a id=\"region-level-url\"></a>"
       ],
       "rules": [
         {
@@ -328,7 +328,8 @@
         "references/page-metadata/examples/ioc-header-unconfigured.json",
         "references/page-metadata/examples/period-query-columns-demo.json",
         "references/page-metadata/examples/key-office-filter-demo.json",
-        "references/page-metadata/examples/key-office-filter-target.json"
+        "references/page-metadata/examples/key-office-filter-target.json",
+        "references/page-metadata/examples/ioc-region-url-demo.json"
       ]
     }
   ],
