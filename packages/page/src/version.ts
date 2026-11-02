@@ -59,7 +59,7 @@ export const pageCapabilities = {
   'paged-period-comparison': {minor:78,legacyReadable:false,description:'期间比较按当前页业务键补查',usedAt:comparisonJoinCapabilityPaths},
   'table-multiple-pinned-sources': {minor:79,legacyReadable:false,description:'多条独立汇总查询组成置顶行及固定文字',
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&(has(record(props(c)?.pinnedTop),'additionalData')||hasPinnedText(props(c)?.columns)))},
-  'table-column-enums':{minor:80,legacyReadable:false,description:'表格列前端枚举展示及静态筛选',usedAt:columnEnumPaths},
+  'table-column-enum-values':{minor:80,legacyReadable:false,description:'表格列前端枚举展示及静态筛选',usedAt:columnEnumPaths},
   'table-null-predicate': {minor:76,legacyReadable:false,description:'表格显式为空条件及后端能力拒绝',
     usedAt:document=>dataSourcePaths(document,data=>{const predicates=record(record(record(data.source)?.initial)?.view)?.predicates;return Array.isArray(predicates)&&predicates.some(p=>record(p)?.op==='isNull');})},
   'paged-join-query-pagination': {minor:76,legacyReadable:false,description:'组合查询源按需分页与最后操作成员生效',
