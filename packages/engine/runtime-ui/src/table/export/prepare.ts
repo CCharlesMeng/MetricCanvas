@@ -1,5 +1,5 @@
 import {hierarchyRows,type HierarchySelection} from '../../../../runtime/src/table/hierarchy-selection';
-import { projectSnapshotRows, pinnedSnapshotError } from '@metriccanvas/page/internal';
+import { projectSnapshotRows, pinnedSnapshotError, tablePinnedSlots } from '@metriccanvas/page/internal';
 import type { EffectiveQuery, Page, TableComponent } from '@metriccanvas/page/internal';
 import { projectComponentFields,resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../../../../runtime/src';
@@ -57,8 +57,11 @@ export function abortable<T>(work: Promise<T>, signal: AbortSignal): Promise<T> 
 function assertPinnedExport(component: TableComponent, snapshots: ReadonlyMap<string, import('@metriccanvas/page/internal').DataSnapshot>): void {
   const slot = component.props.pinnedTop?.data;
   if (!slot) return;
-  const pinned = snapshots.get(component.data[slot]);
-  if (!pinned || pinned.status === 'loading' || pinnedSnapshotError(pinned)) throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '置顶汇总不可用，不能导出完整表格');
+  for (const name of tablePinnedSlots(component.props)) {
+    const snapshot = snapshots.get(component.data[name]);
+    if (!snapshot || snapshot.status === 'loading' || pinnedSnapshotError(snapshot)) throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '置顶汇总不可用，不能导出完整表格');
+  }
+  const pinned = snapshots.get(component.data[slot])!;
   const main = snapshots.get(component.data.main);
   const bodyCount = main?.status === 'ready' ? main.rows.length : 0;
   const pinnedCount = pinned.status === 'ready' ? pinned.rows.length : 0;

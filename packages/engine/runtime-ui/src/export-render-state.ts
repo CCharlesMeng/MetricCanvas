@@ -1,4 +1,4 @@
-import { restoreCellFallbacks, snapshotCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
+import { tablePinnedSlots, restoreCellFallbacks, snapshotCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
 import { compilePresentation, projectPresentationRows } from '../../runtime/src/presentation';
 import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
 import type { Page, Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
@@ -70,7 +70,7 @@ export function exportComponentMap(state:ExportRenderState,component:Component):
 
 function exportSlotSnapshot(component: Component, slot: string, snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
   if (!snapshot) return;
-  if (component.type === 'table' && slot === component.props.pinnedTop?.data && pinnedSnapshotError(snapshot)) return;
+  if (component.type === 'table' && tablePinnedSlots(component.props).includes(slot) && pinnedSnapshotError(snapshot)) return;
   if (snapshot.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
   return snapshot;
 }

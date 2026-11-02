@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.78",
-  "schemaSha256": "55de7dce3225b8700044b37f441afc100190b4c140ea010fd9ef3e19bd3b012d",
+  "schemaVersion": "6.79",
+  "schemaSha256": "de59871e73f1f5c7bd929d147e3482216b50599ad50e174e3795401276ff2914",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -252,7 +252,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "6ab51acdcace9a887fdea13a8feb7d82c4905aac29f7c38d81dd89580301f61f"
+      "sha256": "9da407f5e692a19df3d09a7d48990f0cbb4831eaad4efa035685e8ae7c5068dc"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -1197,7 +1197,8 @@
         "table-hierarchy-lookup-param",
         "paged-join-query-page",
         "record-join-query-page",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "table-multiple-pinned-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -1795,7 +1796,8 @@
         "6.75",
         "6.76",
         "6.77",
-        "6.78"
+        "6.78",
+        "6.79"
       ]
     },
     {
@@ -13580,6 +13582,18 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData",
+      "path": "@tableComponent.props.pinnedTop.additionalData",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData/items",
+      "path": "@tableComponent.props.pinnedTop.additionalData[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/rowKey",
       "path": "@tableComponent.props.rowKey",
       "required": "本分支可选",
@@ -13646,37 +13660,55 @@
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/field",
-      "path": "@tableColumn.pinnedTop.field",
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0",
+      "path": "@tableColumn.pinnedTop · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/field",
+      "path": "@tableColumn.pinnedTop · anyOf[0].field",
       "required": "本分支必填",
       "module": "components/table.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField",
-      "path": "@tableColumn.pinnedTop.secondaryField",
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/secondaryField",
+      "path": "@tableColumn.pinnedTop · anyOf[0].secondaryField",
       "required": "本分支可选",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField/allOf/0",
-      "path": "@tableColumn.pinnedTop.secondaryField · allOf[0]",
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/secondaryField/allOf/0",
+      "path": "@tableColumn.pinnedTop · anyOf[0].secondaryField · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/fieldBinding"
     },
     {
-      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/badgeField",
-      "path": "@tableColumn.pinnedTop.badgeField",
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/badgeField",
+      "path": "@tableColumn.pinnedTop · anyOf[0].badgeField",
       "required": "本分支可选",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableColumn/properties/pinnedTop/properties/badgeField/allOf/0",
-      "path": "@tableColumn.pinnedTop.badgeField · allOf[0]",
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/badgeField/allOf/0",
+      "path": "@tableColumn.pinnedTop · anyOf[0].badgeField · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/1",
+      "path": "@tableColumn.pinnedTop · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/1/properties/text",
+      "path": "@tableColumn.pinnedTop · anyOf[1].text",
+      "required": "本分支必填",
+      "module": "components/table.md"
     },
     {
       "pointer": "#/definitions/tableColumn/properties/visibleWhen",
@@ -20550,6 +20582,18 @@
       "module": "components/table.md",
       "file": "examples/component-metricCard-primaryDetail.json",
       "pointer": "#/detailViews/0/components/0/props/columns/0"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-pinned-summary-page.json",
+      "pointer": "#/sections/0/components/0/props/columns/0/pinnedTop"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-multiple-pinned-page.json",
+      "pointer": "#/sections/0/components/0/props/columns/0/pinnedTop"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0",

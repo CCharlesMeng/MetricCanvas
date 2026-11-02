@@ -1,4 +1,5 @@
 import {
+  tablePinnedSlots,
   queryErrorDisposition,
   type Component,
   type DataSnapshot,
@@ -63,7 +64,7 @@ export function hostRenderSnapshot(
   component: Component,
   slots: ReadonlyMap<string, DataSnapshot>
 ): DataSnapshot {
-  const values = Object.keys(component.data ?? {}).filter(slot => component.type !== 'table' || slot !== component.props.pinnedTop?.data).map(
+  const values = Object.keys(component.data ?? {}).filter(slot => component.type !== 'table' || !tablePinnedSlots(component.props).includes(slot)).map(
     (slot) => slots.get(slot) ?? ({ status: 'loading' } as const)
   );
   const error = values.find(

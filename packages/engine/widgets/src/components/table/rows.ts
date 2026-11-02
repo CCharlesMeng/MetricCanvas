@@ -1,4 +1,4 @@
-import { tableLeafColumns, restoreCellFallbacks, rowCellFallback, pinnedSnapshotError, type TableProps, type TableColumn, type FieldBinding, type FieldValue, type Row } from '@metriccanvas/page/internal';
+import { tablePinnedSlots, tableLeafColumns, restoreCellFallbacks, rowCellFallback, pinnedSnapshotError, type TableProps, type TableColumn, type FieldBinding, type FieldValue, type Row } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { reportTableFormats, formatTableCell } from './cell-presentation';
@@ -68,15 +68,28 @@ export function alignedFieldValue(
 export function projectTableRows(data: NamedDataSlots, props: TableProps): AlignedTableRow[] {
   const columns = tableLeafColumns(props.columns);
   reportTableFormats(data, columns);
-  const slot = props.pinnedTop?.data;
-  const alignedData = Object.fromEntries(Object.entries(data).filter(([name]) => name !== slot));
+  const slots = tablePinnedSlots(props), slot = props.pinnedTop?.data;
+  const alignedData = Object.fromEntries(Object.entries(data).filter(([name]) => !slots.includes(name)));
   const body = alignTableRows(alignedData, props.rowKey).map((row, bodyIndex) => ({ ...row, bodyIndex }));
   const snapshot = slot ? data[slot]?.snapshot : undefined;
-  if (!slot || !snapshot || pinnedSnapshotError(snapshot) || snapshot.rows.length !== 1) return body;
-  restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
-  const pinned: AlignedTableRow = { main: snapshot.rows[0], bySlot: { [slot]: snapshot.rows[0] }, kind: 'pinnedTop' };
+  if (!slot || !snapshot || snapshot.rows.length !== 1 || !pinnedSlotsReady(data, slots)) return body;
+  for (const name of slots) {
+    const receipt = data[name]!.snapshot;
+    restoreCellFallbacks(receipt.rows, receipt.cellFallbacks);
+  }
+  const pinned: AlignedTableRow = { main: snapshot.rows[0], bySlot: Object.fromEntries(slots.map(name => [name, data[name]?.snapshot.rows[0]])), kind: 'pinnedTop' };
   reportTableFormats(data, columns.map(column => tableRowColumn(column, pinned, data)));
   return [pinned, ...body];
+}
+function pinnedSlotsReady(data: NamedDataSlots, slots: string[]): boolean {
+  return slots.every(slot => {
+    const value = data[slot];
+    return value !== undefined && value.sourceStatus !== 'loading' && value.sourceStatus !== 'error' && !pinnedSnapshotError(value.snapshot);
+  });
+}
+function pinnedTextBinding(binding: FieldBinding, text: string, data: NamedDataSlots): FieldBinding {
+  const field = resolveField(binding, data);
+  return { data: field.data, field: field.field, missingText: text };
 }
 function pinnedBinding(binding: FieldBinding | undefined, inherited: FieldBinding | undefined, data: NamedDataSlots): FieldBinding | undefined {
   if (!binding) return undefined;
@@ -88,7 +101,7 @@ function pinnedBinding(binding: FieldBinding | undefined, inherited: FieldBindin
 export function tableRowColumn(column: TableColumn, row: AlignedTableRow, data: NamedDataSlots): TableColumn {
   if (row.kind !== 'pinnedTop') return column;
   const pinned = column.pinnedTop;
-  return { ...column, field: pinnedBinding(pinned?.field, column.field, data) ?? { data: '__unbound', field: '__unbound' },
+  return { ...column, field: pinned?.text !== undefined ? pinnedTextBinding(column.field, pinned.text, data) : pinnedBinding(pinned?.field, column.field, data) ?? { data: '__unbound', field: '__unbound' },
     secondaryField: pinnedBinding(pinned?.secondaryField, column.secondaryField, data), badgeField: pinnedBinding(pinned?.badgeField, column.badgeField, data),
     selection: undefined, link: false, openDetail: undefined, navigate: undefined };
 }

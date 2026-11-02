@@ -112,7 +112,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "48a5f735e13bc915ae159da58fb7ff2b32e0375ffdaa39edd4247baad9af9b7f",
+      "contentSha256": "d5c7ea960b0b1cd76cf0b67e535b42c795b5293e0333380b4924922f42571be0",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -159,7 +159,7 @@
         "planSha256": "ddbda1b7110c6bd2949f97ca835a7f9af815965979ca9d8e70daf4b57a69f6d4"
       }
     },
-    "contentSha256": "48a5f735e13bc915ae159da58fb7ff2b32e0375ffdaa39edd4247baad9af9b7f",
+    "contentSha256": "d5c7ea960b0b1cd76cf0b67e535b42c795b5293e0333380b4924922f42571be0",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -204,8 +204,8 @@
     "status": "ok",
     "gaps": [],
     "schema": {
-      "declaredVersion": "6.78",
-      "targetVersion": "6.78",
+      "declaredVersion": "6.79",
+      "targetVersion": "6.79",
       "readableVersions": [
         "5.0",
         "5.1",
@@ -280,7 +280,8 @@
         "6.75",
         "6.76",
         "6.77",
-        "6.78"
+        "6.78",
+        "6.79"
       ],
       "readable": true,
       "requiredVersion": "6.1",

@@ -821,7 +821,8 @@
         "table-hierarchy-lookup-param",
         "paged-join-query-page",
         "record-join-query-page",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "table-multiple-pinned-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -1724,7 +1725,9 @@
     "#/definitions/pagedUnionSource/properties/members/additionalProperties/anyOf/2/properties/rowKeyGeneration": "6.73起显式选择uuid，与rowKey和rowKeyFields三选一；仅标识本次返回行，业务重复与分页重叠由上游保证。",
     "#/definitions/pagedJoinSource/properties/pagination/anyOf/1/properties/batchSize": "按需补列的编码分组和单次响应窗口上限，1至1000；默认创作显式写10，不扫描完整业务行域。",
     "periodComparison": "按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。",
-    "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing": "单个度量缺关联记录时null或zero，省略null；不替换已返回的空值或失败。"
+    "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing": "单个度量缺关联记录时null或zero，省略null；不替换已返回的空值或失败。",
+    "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData": "额外独立完整汇总查询的命名数据槽，每个槽返回零或一行；不参与明细对齐。",
+    "#/definitions/tableColumn/properties/pinnedTop/anyOf/1/properties/text": "该列置顶格固定显示的非空纯文本，与字段绑定分支互斥，不修改明细或查询。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2031,7 +2034,8 @@
     "previousPeriod": "月前移一月、季前移三月、年与近一年前移一年。",
     "previousYear": "所选期间前移一年，保持相同统计进度。",
     "6.77": "期间比较查询、逐度量缺记录策略及百分点格式。",
-    "6.78": "查询分页期间比较、组合投影缺记录策略与逐行计算"
+    "6.78": "查询分页期间比较、组合投影缺记录策略与逐行计算",
+    "6.79": "多条独立查询组成置顶行，列级固定文字。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2661,6 +2665,18 @@
         "期间比较按当前页业务键补查（6.78）"
       ],
       "dependencies": []
+    },
+    "table.pinnedTop.multiple": {
+      "module": "table",
+      "title": "多个独立置顶查询与固定文字",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData",
+        "#/definitions/tableColumn/properties/pinnedTop/anyOf/1"
+      ],
+      "headings": [
+        "多查询置顶行与固定文字（6.79）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2815,6 +2831,7 @@
       "详情表格的浮层宽度",
       "标量原文展示与本地尾排（6.60）",
       "独立查询置顶行（6.60）",
+      "多查询置顶行与固定文字（6.79）",
       "多来源整体排序与来源导航（6.61）",
       "期间模式列显隐（6.67）",
       "层级筛选联动（6.70）",

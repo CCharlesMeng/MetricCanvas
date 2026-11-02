@@ -7,8 +7,13 @@ import { conditionSourceIds } from './data-source-references';
 import { queryLeaves } from './query-selection';
 import type { TypedError } from './errors';
 
+export function tablePinnedSlots(props: Pick<TableComponent['props'], 'pinnedTop'>): string[] {
+  const pinned = props.pinnedTop;
+  return pinned ? [pinned.data, ...(pinned.additionalData ?? [])] : [];
+}
 export function tableAlignedSlots(table: TableComponent): [string, string][] {
-  return Object.entries(table.data).filter(([slot]) => slot !== table.props.pinnedTop?.data);
+  const pinned = new Set(tablePinnedSlots(table.props));
+  return Object.entries(table.data).filter(([slot]) => !pinned.has(slot));
 }
 function bindingDefinition(page: Page, table: TableComponent, binding: FieldBinding): FieldDefinition | undefined {
   const slot = typeof binding === 'string' ? 'main' : 'data' in binding ? binding.data : '';
@@ -27,7 +32,7 @@ function pinnedBindingErrors(page: Page, table: TableComponent, column: TableCol
     for (const leaf of fieldBindingLeaves(binding)) {
       const slot = typeof leaf === 'string' ? 'main' : leaf.data;
       const field = bindingDefinition(page, table, leaf);
-      if (slot !== table.props.pinnedTop?.data || !field) errors.push(error(path + '/' + key, '置顶字段必须引用已声明的置顶槽及有效字段'));
+      if (!tablePinnedSlots(table.props).includes(slot) || !field) errors.push(error(path + '/' + key, '置顶字段必须引用已声明的置顶槽及有效字段'));
       const body = column[key];
       if (field && body) for (const bodyLeaf of fieldBindingLeaves(body)) {
         const original = bindingDefinition(page, table, bodyLeaf);
@@ -40,19 +45,27 @@ function pinnedBindingErrors(page: Page, table: TableComponent, column: TableCol
 const error = (path: string, message: string): TypedError => ({ type: 'SCHEMA_ERROR', path, message });
 export function tablePinnedErrors(page: Page, table: TableComponent, path: string): TypedError[] {
   const errors: TypedError[] = [];
-  const slot = table.props.pinnedTop?.data;
+  const slots = tablePinnedSlots(table.props);
   tableLeafColumns(table.props.columns).forEach((column, index) => {
     const at = path + '/props/columns/' + index + '/pinnedTop';
     errors.push(...pinnedBindingErrors(page, table, column, at));
+    if (column.pinnedTop && slots.length === 0) errors.push(error(at, '置顶单元格需要声明置顶数据槽'));
     for (const key of ['field', 'secondaryField', 'badgeField'] as const) {
-      if (column[key] && fieldBindingLeaves(column[key]).some(leaf => typeof leaf !== 'string' && leaf.data === slot)) errors.push(error(at, '置顶槽不得作为明细对齐字段'));
+      if (column[key] && fieldBindingLeaves(column[key]).some(leaf => typeof leaf !== 'string' && slots.includes(leaf.data))) errors.push(error(at, '置顶槽不得作为明细对齐字段'));
     }
   });
-  if (!slot) return errors;
+  if (new Set(slots).size !== slots.length) errors.push(error(path + '/props/pinnedTop', '置顶数据槽不得重复'));
+  const ids = slots.map(slot => table.data[slot]);
+  if (new Set(ids).size !== ids.length) errors.push(error(path + '/props/pinnedTop', '置顶数据槽必须引用不同的独立查询'));
+  for (const slot of slots) errors.push(...pinnedSourceErrors(page, table, slot, path));
+  return errors;
+}
+function pinnedSourceErrors(page: Page, table: TableComponent, slot: string, path: string): TypedError[] {
   const id = table.data[slot], source = page.dataSources[id];
   const at = path + '/props/pinnedTop';
-  if (slot === 'main' || !source || id === table.data.main) return [...errors, error(at, '置顶行必须引用独立的非 main 数据槽')];
-  if (source.source.type !== 'query' || source.source.resultScope !== 'complete') return [...errors, error(at, '置顶行需要完整的普通 query 数据源')];
+  if (slot === 'main' || !source || id === table.data.main) return [error(at, '置顶行必须引用独立的非 main 数据槽')];
+  if (source.source.type !== 'query' || source.source.resultScope !== 'complete') return [error(at, '置顶行需要完整的普通 query 数据源')];
+  const errors: TypedError[] = [];
   const dependencies = conditionSourceIds(page, id);
   if (tableAlignedSlots(table).some(([, member]) => dependencies.has(member))) errors.push(error(at, '置顶查询不能依赖明细数据源'));
   if (queryLeaves(source.source.query).some(query => hasWindow(query.body.dsl_list[0]))) errors.push(error(at, '置顶查询不能使用 limit 或 offset 截断结果'));

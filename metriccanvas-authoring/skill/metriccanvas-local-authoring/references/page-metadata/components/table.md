@@ -236,6 +236,13 @@ Excel 表头后写一次汇总，无序号，然后导出全部匹配明细。�
 
 完整场景 `/pages/table-pinned-summary` 使用两个独立的 DQE Sim 查询，支持地区、共同时间和产品条件，以及零行、多行、失败场景；不能据此宣称真实 DQE 权限及汇总口径已经验收。
 
+## 多查询置顶行与固定文字（6.79）
+
+可通过 `props.pinnedTop.additionalData:["commercial","contract"]` 加入额外的独立完整查询槽，列级字段绑定可引用主置顶槽或其中任一槽。所有槽必须引用不同的普通 complete query，均不得依赖明细或带窗口；它们各自最多返回一行。主置顶槽零行时不生成该行；额外槽合法零行时仅对应格子缺失；任一槽加载、失败或行数异常时暂不生成置顶行，明细继续渲染，完整 Excel 在汇总失败或未就绪时拒绝。额外槽同样不参加明细对齐、排序、搜索、计数或分页。
+
+叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。既有单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页全部数据源均为 DQE 查询，不包含 inline 数据或初始行，真实指标聚合语义、授权及服务可执行性须在内网验证。自动化查询组装测试显式使用合成 HTTP 回执，不影响页面运行时网关。
+
+
 <a id="source-navigation"></a>
 
 ## 多来源整体排序与来源导航（6.61）
@@ -291,7 +298,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败显示持续错误和重试；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
 
 
-页面协议 6.78。结构真源为本册[schema.json](../schema.json)，SHA256 `55de7dce3225b8700044b37f441afc100190b4c140ea010fd9ef3e19bd3b012d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.79。结构真源为本册[schema.json](../schema.json)，SHA256 `de59871e73f1f5c7bd929d147e3482216b50599ad50e174e3795401276ff2914`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -921,6 +928,26 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/pinnedT
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 置顶行消费的命名数据槽，不能是main或同一个明细源。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f6164646974696f6e616c44617461"></a>
+
+### `@tableComponent.props.pinnedTop.additionalData`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 额外独立完整汇总查询的命名数据槽，每个槽返回零或一行；不参与明细对齐。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f6164646974696f6e616c446174612f6974656d73"></a>
+
+### `@tableComponent.props.pinnedTop.additionalData[]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774b6579"></a>
 
 ### `@tableComponent.props.rowKey`
@@ -1024,57 +1051,87 @@ Schema位置：`#/definitions/tableColumn/properties/pinnedTop`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 该叶子列的置顶字段绑定；省略则留空，不继承明细值。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 该叶子列的置顶字段绑定；省略则留空，不继承明细值。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f6669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f30"></a>
 
-### `@tableColumn.pinnedTop.field`
+### `@tableColumn.pinnedTop · anyOf[0]`
 
-Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/field`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 置顶槽的显式主字段绑定。 |
-
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f7365636f6e646172794669656c64"></a>
-
-### `@tableColumn.pinnedTop.secondaryField`
-
-Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField`。
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 置顶槽的可选次字段，不隐式继承明细次字段。 |
+| "object" | 独立分支（不合并required） | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f7365636f6e646172794669656c642f616c6c4f662f30"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f302f70726f706572746965732f6669656c64"></a>
 
-### `@tableColumn.pinnedTop.secondaryField · allOf[0]`
+### `@tableColumn.pinnedTop · anyOf[0].field`
 
-Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/secondaryField/allOf/0`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/field`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f302f70726f706572746965732f7365636f6e646172794669656c64"></a>
+
+### `@tableColumn.pinnedTop · anyOf[0].secondaryField`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/secondaryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 次要信息字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f302f70726f706572746965732f7365636f6e646172794669656c642f616c6c4f662f30"></a>
+
+### `@tableColumn.pinnedTop · anyOf[0].secondaryField · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/secondaryField/allOf/0`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldBinding | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f302f70726f706572746965732f62616467654669656c64"></a>
+
+### `@tableColumn.pinnedTop · anyOf[0].badgeField`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/badgeField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 徽标内容绑定字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f302f70726f706572746965732f62616467654669656c642f616c6c4f662f30"></a>
+
+### `@tableColumn.pinnedTop · anyOf[0].badgeField · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/0/properties/badgeField/allOf/0`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/fieldBinding | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f62616467654669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f31"></a>
 
-### `@tableColumn.pinnedTop.badgeField`
+### `@tableColumn.pinnedTop · anyOf[1]`
 
-Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/badgeField`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 置顶槽的可选徽标字段。 |
-
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f70726f706572746965732f62616467654669656c642f616c6c4f662f30"></a>
-
-### `@tableColumn.pinnedTop.badgeField · allOf[0]`
-
-Schema位置：`#/definitions/tableColumn/properties/pinnedTop/properties/badgeField/allOf/0`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/fieldBinding | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["text"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f70696e6e6564546f702f616e794f662f312f70726f706572746965732f74657874"></a>
+
+### `@tableColumn.pinnedTop · anyOf[1].text`
+
+Schema位置：`#/definitions/tableColumn/properties/pinnedTop/anyOf/1/properties/text`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 该列置顶格固定显示的非空纯文本，与字段绑定分支互斥，不修改明细或查询。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f76697369626c655768656e"></a>
 
@@ -3445,6 +3502,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [paged-join-query-page](../examples/paged-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-query-page](../examples/record-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](../examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-multiple-pinned-page](../examples/table-multiple-pinned-page.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -3476,6 +3534,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/2/props/toolbar/search`。
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1`：[合法完整页面](../examples/table-search-options-page.json)，JSON Pointer `#/sections/0/components/0/props/toolbar/search`。
 - `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/detailViews/0/components/0/props/columns/0`。
+- `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/table-pinned-summary-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
+- `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/table-multiple-pinned-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/city`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/7/components/0/props/columns/0/openDetail`。

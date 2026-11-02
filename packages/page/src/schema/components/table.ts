@@ -31,11 +31,9 @@ export interface TableCellSelection {
   writes: Record<string, TableSelectionWrite>;
 }
 
-export interface TablePinnedCell {
-  field: FieldBinding;
-  secondaryField?: FieldBinding;
-  badgeField?: FieldBinding;
-}
+export type TablePinnedCell =
+  | { field: FieldBinding; text?: never; secondaryField?: FieldBinding; badgeField?: FieldBinding }
+  | { text: string; field?: never; secondaryField?: never; badgeField?: never };
 
 export interface TableColumn {
   pinnedTop?: TablePinnedCell;
@@ -89,7 +87,10 @@ const tableCellSelectionZ: z.ZodType<TableCellSelection> = z
 
 const tableColumnZ: z.ZodType<TableColumn> = z
   .object({
-    pinnedTop: z.object({ field: fieldBindingZ, secondaryField: fieldBindingZ.optional(), badgeField: fieldBindingZ.optional() }).strict().optional(),
+    pinnedTop: z.union([
+      z.object({ field: fieldBindingZ, secondaryField: fieldBindingZ.optional(), badgeField: fieldBindingZ.optional() }).strict(),
+      z.object({ text: z.string().min(1) }).strict()
+    ]).optional(),
     ...visibilityShape,
     kind: z.literal('field').optional(),
     field: fieldBindingZ,
@@ -223,7 +224,7 @@ export const tableComponentZ = z
         compoundCellLayout: z.literal('inline').optional(),
         /** 呈现列：不占用页面字段；按当前行集顺序从 1 开始，分页连续。 */
         rowNumber: rowNumberZ.optional(),
-        pinnedTop: z.object({ data: idZ }).strict().optional(),
+        pinnedTop: z.object({ data: idZ, additionalData: z.array(idZ).min(1).meta({ uniqueItems: true }).optional() }).strict().optional(),
         rowKey: fieldNameZ.optional(),
         /**
          * 行类别字段（ADR-0049）：取值来自计算阶段折叠算子写入的闭集，

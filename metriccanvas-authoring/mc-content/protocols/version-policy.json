@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 78,
-  "current": "6.78",
+  "minor": 79,
+  "current": "6.79",
   "capabilities": {
     "paged-join-row-compute": {
       "minor": 78,
@@ -11,6 +11,11 @@
     "paged-period-comparison": {
       "minor": 78,
       "description": "期间比较按当前页业务键补查",
+      "legacyReadable": false
+    },
+    "table-multiple-pinned-sources": {
+      "minor": 79,
+      "description": "多条独立汇总查询组成置顶行及固定文字",
       "legacyReadable": false
     },
     "table-null-predicate": {
@@ -813,6 +818,7 @@
     "6.75",
     "6.76",
     "6.77",
-    "6.78"
+    "6.78",
+    "6.79"
   ]
 }

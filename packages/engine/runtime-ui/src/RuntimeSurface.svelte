@@ -4,7 +4,7 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
-  import { projectSnapshotRows, snapshotCellFallbacks, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
+  import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
@@ -1092,7 +1092,7 @@
 
   function prepareSlotSnapshot(component: Component, slot: string, sourceId: string, snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
     if (!snapshot) return;
-    if (component.type === 'table' && slot === component.props.pinnedTop?.data && pinnedSnapshotError(snapshot)) {
+    if (component.type === 'table' && tablePinnedSlots(component.props).includes(slot) && pinnedSnapshotError(snapshot)) {
       reportPinnedIssue(component, sourceId, snapshot);
       return;
     }

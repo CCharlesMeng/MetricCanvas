@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.78",
+  "schemaVersion": "6.79",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.overview"
@@ -295,7 +295,8 @@
         "references/page-metadata/examples/table-hierarchy-lookup-param.json",
         "references/page-metadata/examples/paged-join-query-page.json",
         "references/page-metadata/examples/record-join-query-page.json",
-        "references/page-metadata/examples/period-comparison-query-page.json"
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/table-multiple-pinned-page.json"
       ]
     }
   ],
