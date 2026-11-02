@@ -1,13 +1,23 @@
-import type {DimensionValuesResult} from '@metriccanvas/engine';
+import type {DimensionValuesResult, FilterCandidatesResult} from '@metriccanvas/engine';
 import {dqeDimensionConditions, dqeRecord} from '../../../../packages/page/src/dqe-object';
 import mock from './mock.json';
 
 const parents: Record<string, string> = mock.representative.parents;
 
-/** Flat candidates by declared level; no structural-candidate API is required. */
+/** Flat candidates for legacy preview filters. */
 export function organizationDimensionValues(dimension: string): DimensionValuesResult {
   const values = dimension === 'representative' ? mock.representative.expectedOrganizations : dimension === 'region-dept' ? mock.expectedOrganizations : undefined;
   return values ? {kind: 'values', candidates: values.map(value => ({value, label: value}))} : {kind: 'unavailable'};
+}
+
+/** Synthetic IOC candidates preserve the fixture's real parent relationships. */
+export function organizationFilterCandidates(filterId: string): FilterCandidatesResult {
+  if (filterId !== 'region') return {kind: 'unavailable'};
+  return {kind: 'values', candidates: [
+    ...mock.expectedOrganizations.map(value => ({value, label: value, level: 'region-dept'})),
+    ...mock.representative.expectedOrganizations.map(value => ({value, label: value, level: 'representative',
+      parent: {level: 'region-dept', value: parents[value]}}))
+  ]};
 }
 
 function matchesOrganization(id: string, row: {region: string}, field: string, values: unknown): boolean {

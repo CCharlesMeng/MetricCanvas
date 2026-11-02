@@ -660,7 +660,8 @@
         "union-keys-demo",
         "reference-export-compute-branches",
         "period-comparison-demo",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "missing-organization-key"
       ],
       "sources": [
         "packages/page/src/validate.ts",

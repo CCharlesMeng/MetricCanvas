@@ -1,0 +1,275 @@
+{
+  "schemaVersion": "6.74",
+  "id": "missing-organization-key",
+  "layout": "dashboard",
+  "meta": {
+    "title": "空组织键兼容（合成数据）"
+  },
+  "dataSources": {
+    "a": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "org": "甲",
+            "value": 0
+          },
+          {
+            "org": null,
+            "value": 0
+          },
+          {
+            "org": "  ",
+            "value": 5
+          }
+        ]
+      }
+    },
+    "b": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "org": "乙",
+            "value": null
+          },
+          {
+            "org": "丙",
+            "value": -2
+          },
+          {
+            "org": "",
+            "value": 9
+          }
+        ]
+      }
+    },
+    "combined": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "a": {
+          "type": "number",
+          "role": "measure"
+        },
+        "b": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": []
+      },
+      "compute": [
+        {
+          "op": "unionKeys",
+          "sources": [
+            "a",
+            "b"
+          ],
+          "keys": [
+            "org"
+          ]
+        },
+        {
+          "op": "joinAggregate",
+          "source": "a",
+          "keys": [
+            {
+              "local": "org",
+              "foreign": "org"
+            }
+          ],
+          "values": [
+            {
+              "field": "value",
+              "output": "a",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "b",
+          "keys": [
+            {
+              "local": "org",
+              "foreign": "org"
+            }
+          ],
+          "values": [
+            {
+              "field": "value",
+              "output": "b",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "a",
+            "b"
+          ],
+          "output": "total",
+          "onMissing": "zero"
+        }
+      ]
+    },
+    "empty-orgs": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "org": null
+          },
+          {
+            "org": " "
+          }
+        ]
+      }
+    },
+    "empty-result": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": []
+      },
+      "compute": [
+        {
+          "op": "unionKeys",
+          "sources": [
+            "empty-orgs"
+          ],
+          "keys": [
+            "org"
+          ]
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "scores",
+      "components": [
+        {
+          "id": "scores-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "combined"
+          },
+          "props": {
+            "rowKey": "org",
+            "columns": [
+              {
+                "title": "org",
+                "field": {
+                  "data": "main",
+                  "field": "org",
+                  "missingText": "--"
+                }
+              },
+              {
+                "title": "a",
+                "field": {
+                  "data": "main",
+                  "field": "a",
+                  "missingText": "--"
+                }
+              },
+              {
+                "title": "b",
+                "field": {
+                  "data": "main",
+                  "field": "b",
+                  "missingText": "--"
+                }
+              },
+              {
+                "title": "total",
+                "field": {
+                  "data": "main",
+                  "field": "total",
+                  "missingText": "--"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "title": "引擎默认兼容空组织键：有效组织保留零分、缺项与负分"
+    },
+    {
+      "id": "strict-section",
+      "title": "所有组织键为空：空态与跳过数量",
+      "components": [
+        {
+          "id": "empty-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "empty-result"
+          },
+          "props": {
+            "rowKey": "org",
+            "columns": [
+              {
+                "title": "org",
+                "field": {
+                  "data": "main",
+                  "field": "org",
+                  "missingText": "--"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

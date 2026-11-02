@@ -284,7 +284,8 @@
         "union-keys-demo",
         "reference-export-compute-branches",
         "period-comparison-demo",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "missing-organization-key"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2730,6 +2731,7 @@
     ],
     "compute.md": [
       "组织键并集（6.74）",
+      "空组织键兼容",
       "查阅方式",
       "汇总的全空结果（6.12）",
       "多度量透视与有限主集合左关联 6.14",

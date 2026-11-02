@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "6.79",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "compute.section-30b3a884"
+  ],
+  "semantics": [
+    {
+      "module": "compute",
+      "reference": "references/page-metadata/compute.md",
+      "blocks": [
+        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。",
+        "## 空组织键兼容\n\n引擎统一处理 `unionKeys` 与 `joinAggregate` 的空组织键，无需新增页面字段、开关或升级 Schema。键中含 null、缺失属性或空/空白文本时，排除整行；组合键任一项为空即排除整行。`joinAggregate` 同时处理主集合与被关联来源。查询响应缺少映射的维度属性仍是字段契约错误，不会被计算阶段绕过。\n\n只处理没有组织归属的记录，不把它们归入未知组织或有效组织，不补零。数值0、布尔false键及有效组织的零分、负分均保留。非空类型异常、带降级展示证据的异常键、并集单来源重复键、unique关联重复键、查询失败及非零总数矛盾仍失败；sum关联继续按原规则聚合重复键。\n\n计算快照带 `COMPUTE_MISSING_KEY_ROWS` 告警，包含来源 ID、键字段 ID 与跳过数量，不包含业务值或原始行。同一来源同一键组在并集和关联中不重复累计；告警沿后续计算依赖传播，表格显示可用结果及异常说明，导出沿用异常说明工作表。全部行被排除时产生带告警的空态。上游查询行及 totalCount 不变，计算结果 totalCount 按剩余实际行数更新。\n\n验收入口 `/pages/missing-organization-key` 使用已有6.74声明与 inline 合成数据：上表显示甲0、乙缺项、丙-2及跳过数量，下表验证全部组织键为空的空态与告警。正式伙伴健康度页保持原有完整真实查询与6.77声明，升级引擎即可兼容；不查询声音闭环率的版本仅用于排查，不作为正式完整得分。"
+      ],
+      "rules": [
+        {
+          "id": "compute-operator-inputs",
+          "description": "算子引用的字段已声明、角色相容、数值算子输入为数值类型",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "compute-undeclared-field",
+            "compute-role-mismatch",
+            "compute-non-numeric-input"
+          ]
+        },
+        {
+          "id": "compute-operator-outputs",
+          "description": "算子产出字段已声明、不重名、不来自外部响应",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "compute-duplicate-output",
+            "compute-output-with-query-field"
+          ]
+        },
+        {
+          "id": "compute-folding-collapsible",
+          "description": "折叠算子只能作用于显式声明 collapsible 的度量字段",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "compute-fold-non-collapsible"
+          ]
+        },
+        {
+          "id": "compute-row-kind-field",
+          "description": "行类别字段必须是可空的 string 维度",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "compute-row-kind-not-string",
+            "compute-row-kind-not-nullable"
+          ]
+        },
+        {
+          "id": "compute-pivot-categories-unique",
+          "description": "透视类别取值只能映射到一个目标列",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "compute-pivot-duplicate-category"
+          ]
+        },
+        {
+          "id": "compute-output-not-in-rows",
+          "description": "算子产出字段不得出现在数据行中",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "compute-output-in-inline-rows"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/compute-page.json",
+        "references/page-metadata/examples/cross-source-page.json",
+        "references/page-metadata/examples/union-keys-demo.json",
+        "references/page-metadata/examples/reference-export-compute-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json",
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/missing-organization-key.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

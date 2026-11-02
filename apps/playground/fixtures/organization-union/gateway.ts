@@ -5,7 +5,7 @@ import {isQueryDataSource, type EffectiveQuery, type QueryDataSource} from '@met
 import document from '../../../../pages/temporary/partner-health-union-null-probe/partner-health-union-null-probe.json';
 import mock from './mock.json';
 import {dqeDimensionConditions, dqeRecord} from '../../../../packages/page/src/dqe-object';
-import {organizationDimensionValues, selectOrganizationRows} from './organizations';
+import {organizationDimensionValues, organizationFilterCandidates, selectOrganizationRows} from './organizations';
 
 type MockRow = {region:string; value:number|string|null};
 const parsed = parsePage(document);
@@ -41,6 +41,14 @@ function responseTotal(state: string, prefix: string, count: number): number {
 export function createPartnerHealthUnionPreview(state = 'ready') {
   const requests: {sourceId:string;body:unknown}[] = [];
   const dataGateway: RuntimeDataGateway = {
+    async fetchFilterCandidates(request, {signal}) {
+      signal.throwIfAborted();
+      if (request.filterId === 'region') return organizationFilterCandidates(request.filterId);
+      const result = await dataGateway.fetchDimensionValues!(request.dimension, {signal});
+      return result.kind === 'values'
+        ? {...result, candidates: result.candidates.map(candidate => ({...candidate, level: request.level}))}
+        : result;
+    },
     async fetchDimensionValues(dimension) {
       if (dimension === 'region-dept' || dimension === 'representative') return organizationDimensionValues(dimension);
       const values = dimension === 'level' ? ['地区部','代表处'] : dimension === 'china-overseas' ? ['中国区','海外'] : mock.expectedOrganizations;
@@ -76,6 +84,7 @@ export function partnerHealthUnionGateway(pageId: string, fallback: DataGateway,
   const endpoint = `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute?fixture=partner-health&state=${encodeURIComponent(state ?? 'ready')}`;
   const preview = createPartnerHealthUnionPreview(state).dataGateway;
   const gateway: RuntimeDataGateway = {...createDqeGateway({endpoint}),
-    fetchDimensionValues: preview.fetchDimensionValues};
+    fetchDimensionValues: preview.fetchDimensionValues,
+    fetchFilterCandidates: preview.fetchFilterCandidates};
   return gateway;
 }

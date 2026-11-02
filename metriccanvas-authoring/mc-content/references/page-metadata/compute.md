@@ -20,15 +20,25 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 `sources` 是非空、无重复的数据源 ID 数组，`keys` 是非空、无重复的同名页面维度字段数组，可组成组合键；均为显式引用，不猜测字段或组织名称。unionKeys 只能是空 inline 数据源的首个算子，产出只含键，键须在本源 fields 声明且不得带 queryField。其余字段可由后续 joinAggregate、sumFields 等产出。6.73 及以下不得使用。
 
-按 sources 顺序及各来源行首次出现顺序生成唯一键并集；跨来源相同键合并，单来源重复键报错。键保持原始类型，数值0和布尔false有效；null、空/空白文本、非有限值、复杂值和已降级的异常维度不能作为键。多个来源都空则无行，不制造组织。所有来源均无某组织时，并集不会产生该组织，需要完整组织目录时另行声明该目录来源。
+按 sources 顺序及各来源行首次出现顺序生成唯一键并集；跨来源相同键合并，单来源重复键报错。键保持原始类型，数值0和布尔false有效；null、空/空白文本按下述空组织键兼容处理；非有限值、复杂值和已降级的异常维度仍报错。多个来源都空则无行，不制造组织。所有来源均无某组织时，并集不会产生该组织，需要完整组织目录时另行声明该目录来源。
 
-查询依赖须 resultScope: complete，无分页窗口，不能使用 pagedJoin/pagedUnion 的窗口结果；使用同轮筛选条件。依赖未完成时等待，失败时传播错误。页面显示时，普通完整查询的 totalCount 为0且有返回行，可基于这些行继续执行 unionKeys、joinAggregate 与后续求和；原查询总数0保留，TOTAL_COUNT_MISMATCH 诊断仍标记 completeness: unverified。该兼容不证明服务已返回全部组织；非零总数矛盾、非法总数、查询窗口、重复或非法键及查询失败仍拒绝并集。严格完整读取不启用此显示兼容；对象完整导出和查询结果绑定仍检查完整性。依赖图不得成环，筛选改变及迟到回执沿统一运行时的批次隔离与取消规则处理。产出 totalCount 是本轮实际并集行数，不改写上游查询的业务总数。
+查询依赖须 resultScope: complete，无分页窗口，不能使用 pagedJoin/pagedUnion 的窗口结果；使用同轮筛选条件。依赖未完成时等待，失败时传播错误。页面显示时，普通完整查询的 totalCount 为0且有返回行，可基于这些行继续执行 unionKeys、joinAggregate 与后续求和；原查询总数0保留，TOTAL_COUNT_MISMATCH 诊断仍标记 completeness: unverified。该兼容不证明服务已返回全部组织；非零总数矛盾、非法总数、查询窗口、重复或类型异常键及查询失败仍拒绝并集。严格完整读取不启用此显示兼容；对象完整导出和查询结果绑定仍检查完整性。依赖图不得成环，筛选改变及迟到回执沿统一运行时的批次隔离与取消规则处理。产出 totalCount 是本轮实际并集行数，不改写上游查询的业务总数。
 
 随后用 joinAggregate 的 unique 关联补单项，缺行输出 null，再用 sumFields.onMissing: zero 算分类与总分。**单项保留 null 以显示 `--`，不能先把单项覆盖成0**；全缺项总分0，真实0及负分保留。查询数值空/空白字符串经归一化成为 null，不保留空文本展示回退。非空非法文本仍有告警和原文证据；字段属性省略是映射错误，不等于业务缺项。
 
 页面试验场 `/pages/union-keys-demo` 用 inline 合成结果显示3个组织，单项缺失 `--`、真实0、全缺总分0及负数；`/pages/partner-health-union-null-probe` 为明确标注的查询响应 Mock，复用正式 partner-health 的11项查询及计算声明，验证1/10/13行形成15个组织。正式 `/pages/partner-health` 保持真实 DQE 网关。数据源计算产物可统一供表格、图表和导出消费，不改变表格默认主集合左对齐规则。
 
 `/pages/partner-health-union-null-probe?state=zeroTotal` 将合成响应的 total_count 均设为0，地区部、代表处仍显示15个组织，顶部卡片按独立整体行计算。`empty`、`truncated`、`duplicate`、`error` 分别核对真实空结果、非零总数矛盾、重复键和查询失败。页面 JSON 无需新增开关或升级 Schema；只升级运行时即可应用兼容。
+
+## 空组织键兼容
+
+引擎统一处理 `unionKeys` 与 `joinAggregate` 的空组织键，无需新增页面字段、开关或升级 Schema。键中含 null、缺失属性或空/空白文本时，排除整行；组合键任一项为空即排除整行。`joinAggregate` 同时处理主集合与被关联来源。查询响应缺少映射的维度属性仍是字段契约错误，不会被计算阶段绕过。
+
+只处理没有组织归属的记录，不把它们归入未知组织或有效组织，不补零。数值0、布尔false键及有效组织的零分、负分均保留。非空类型异常、带降级展示证据的异常键、并集单来源重复键、unique关联重复键、查询失败及非零总数矛盾仍失败；sum关联继续按原规则聚合重复键。
+
+计算快照带 `COMPUTE_MISSING_KEY_ROWS` 告警，包含来源 ID、键字段 ID 与跳过数量，不包含业务值或原始行。同一来源同一键组在并集和关联中不重复累计；告警沿后续计算依赖传播，表格显示可用结果及异常说明，导出沿用异常说明工作表。全部行被排除时产生带告警的空态。上游查询行及 totalCount 不变，计算结果 totalCount 按剩余实际行数更新。
+
+验收入口 `/pages/missing-organization-key` 使用已有6.74声明与 inline 合成数据：上表显示甲0、乙缺项、丙-2及跳过数量，下表验证全部组织键为空的空态与告警。正式伙伴健康度页保持原有完整真实查询与6.77声明，升级引擎即可兼容；不查询声音闭环率的版本仅用于排查，不作为正式完整得分。
 
 ## 查阅方式
 
@@ -1250,6 +1260,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/10/properties/keys/items`。
 - [reference-export-compute-branches](examples/reference-export-compute-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [missing-organization-key](examples/missing-organization-key.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

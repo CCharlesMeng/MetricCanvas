@@ -1,0 +1,181 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "packages/data-execution/src/compute/snapshots.ts",
+      "functions": [
+        {
+          "name": "computedSnapshots",
+          "qualifiedName": "computedSnapshots",
+          "line": 10,
+          "endLine": 35,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "visit",
+          "qualifiedName": "computedSnapshots/visit",
+          "line": 19,
+          "endLine": 32,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fail",
+          "qualifiedName": "fail",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "collectDependencies",
+          "qualifiedName": "collectDependencies",
+          "line": 41,
+          "endLine": 53,
+          "selfCC": 11,
+          "optionalChains": 1,
+          "subtreeCC": 12,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@43:63>",
+          "qualifiedName": "collectDependencies/<anonymous@43:63>",
+          "line": 43,
+          "endLine": 43,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@46:90>",
+          "qualifiedName": "collectDependencies/<anonymous@46:90>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "computeSnapshot",
+          "qualifiedName": "computeSnapshot",
+          "line": 55,
+          "endLine": 62,
+          "selfCC": 8,
+          "optionalChains": 2,
+          "subtreeCC": 8,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "evaluateRows",
+          "qualifiedName": "evaluateRows",
+          "line": 64,
+          "endLine": 76,
+          "selfCC": 12,
+          "optionalChains": 0,
+          "subtreeCC": 13,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@71:94>",
+          "qualifiedName": "evaluateRows/<anonymous@71:94>",
+          "line": 71,
+          "endLine": 71,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mergedWarnings",
+          "qualifiedName": "mergedWarnings",
+          "line": 78,
+          "endLine": 80,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@79:67>",
+          "qualifiedName": "mergedWarnings/<anonymous@79:67>",
+          "line": 79,
+          "endLine": 79,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "validateComputedJoin",
+          "qualifiedName": "validateComputedJoin",
+          "line": 82,
+          "endLine": 86,
+          "selfCC": 4,
+          "optionalChains": 1,
+          "subtreeCC": 4,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@84:69>",
+          "qualifiedName": "validateComputedJoin/<anonymous@84:69>",
+          "line": 84,
+          "endLine": 84,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "restoreSnapshot",
+          "qualifiedName": "restoreSnapshot",
+          "line": 88,
+          "endLine": 91,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "completeDependency",
+          "qualifiedName": "completeDependency",
+          "line": 94,
+          "endLine": 101,
+          "selfCC": 10,
+          "optionalChains": 0,
+          "subtreeCC": 10,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "hasZeroTotalRows",
+          "qualifiedName": "hasZeroTotalRows",
+          "line": 103,
+          "endLine": 107,
+          "selfCC": 6,
+          "optionalChains": 1,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "canRenderZeroTotal",
+          "qualifiedName": "canRenderZeroTotal",
+          "line": 109,
+          "endLine": 111,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

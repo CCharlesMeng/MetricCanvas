@@ -29,7 +29,7 @@ describe('IOC F2 跨源计算与批次', () => {
     const sum: JoinAggregateOperator = { ...op, values: [{ ...op.values[0], aggregate: 'sum' }] };
     expect(applyComputation([sum], rows, deps)[0].income).toBe(300);
     expect(applyComputation([sum], rows, new Map([['aux', [{ a: 'A', b: 'B', amount: null }]]]))[0].income).toBeNull();
-    expect(() => applyComputation([sum], [{ a: 'A' }], deps)).toThrow('关联键缺失');
+    expect(applyComputation([sum], [{ a: 'A' }], deps)).toEqual([]);
   });
   it('无组件直连的依赖也进入调度，inline 同步算出快照', () => {
     let state: PageDataSnapshots = new Map();

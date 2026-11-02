@@ -19,14 +19,17 @@ describe('组织键并集求值', () => {
     expect(applyComputation([composite],[],new Map([['a',a],['b',[]]]))).toEqual(a);
     expect(()=>applyComputation([op],[],new Map([['a',[{org:'甲'},{org:'甲'}]],['b',[]]]))).toThrow('重复组合键');
   });
-  it.each([undefined,null,'','   ',NaN,Infinity,[]])('拒绝非法组织键 %s', value => {
-    expect(()=>applyComputation([op],[],new Map([['a',[{org:value} as DataRow]],['b',[]]]))).toThrow('并集键缺失');
+  it.each([NaN,Infinity,[]])('拒绝非法组织键 %s', value => {
+    expect(()=>applyComputation([op],[],new Map([['a',[{org:value} as DataRow]],['b',[]]]))).toThrow('组织键类型不合法');
+  });
+  it.each([undefined,null,'','   '])('跳过空组织键 %s，其余行保留',value=>{
+    expect(applyComputation([op],[],new Map([['a',[{org:value} as DataRow,{org:'甲'}]],['b',[]]]))).toEqual([{org:'甲'}]);
   });
   it('缺依赖不视作空集，归一化失配的维度不能变成组织键', () => {
     expect(()=>applyComputation([op],[],new Map([['a',[]]]))).toThrow('并集依赖尚未完成');
     const normalized=normalizeQueryRows([{org:12}],{org:{type:'string',role:'dimension',queryField:'org'}});
     if (!normalized.ok) throw Error('归一化失败');
-    expect(()=>applyComputation([op],[],new Map([['a',normalized.rows],['b',[]]]))).toThrow('并集键缺失');
+    expect(()=>applyComputation([op],[],new Map([['a',normalized.rows],['b',[]]]))).toThrow('组织键类型不合法');
   });
 });
 

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "13baf69e6ae55ede2eaa5ea05a6840bfb1e799251f8385e087a35c9d2d2c61f2",
+  "sha256": "3b206423acaaa573d57f11bf984500616992156b09dad2011086cc3a939b8532",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -100,7 +100,7 @@
     },
     {
       "file": "docs/page-metadata/compute.md",
-      "sha256": "6991461f8e64f183895ada533b5b585344a3e3ac020511a520811fbe660b1e8a"
+      "sha256": "a987ceb12db5d98d97e5bac9badeeea5a2d246c22406f8b72ec09fe023c55f89"
     },
     {
       "file": "docs/page-metadata/conditions.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "318e4efb580de80a8ffec5791019c165fdc87380cfaaa4fd8ef6fbe121a58703"
+      "sha256": "8311fa66b34ea4e94b79d022a00cee5b988fef6f21d6f3fa57654a84db36a1e2"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -897,6 +897,10 @@
     {
       "file": "packages/page/fixtures/contract-valid/million-formats-page.json",
       "sha256": "1e69fb85cfe427079b0dd292e9051ee6dabb0148a59ffbb3e6adbc5a5f6de204"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/missing-organization-key.json",
+      "sha256": "f8ab8b8ea4b53eb138603f4c8e54593e0a75eb5392a050946aab6c8a0633eda0"
     },
     {
       "file": "packages/page/fixtures/contract-valid/mixed-page.json",
@@ -1756,7 +1760,7 @@
     },
     {
       "file": "packages/page/src/snapshot.ts",
-      "sha256": "b385f441496aa1e92517b5e19a7ece6c2538924b8fc6cc677d78b17bce4aed8c"
+      "sha256": "4eb7932534fe66e2dedf961d88ef6cd7b40c0f88912c1b59b30e1119040f31c6"
     },
     {
       "file": "packages/page/src/tab-state.ts",
@@ -1880,7 +1884,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "cdfd37dc79855d0571bdc41cea000b628fae84feb008d3a04a26e757d0f60a1c"
+      "sha256": "0e9df352405b3e8c2b7c7505b0ac45ee1fec4b2d700db3e65fa837b3d250a5ca"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2020,7 +2024,11 @@
     },
     {
       "file": "pages/capabilities/data/README.md",
-      "sha256": "3018a5b9a65db71e0322d18b86051cec575ccd8bca7e00df85f1d3e441ec8872"
+      "sha256": "21a25fb6d22a59ce788c43fce177701eac4309b09d42182338da84abc105890f"
+    },
+    {
+      "file": "pages/capabilities/data/missing-organization-key.json",
+      "sha256": "f8ab8b8ea4b53eb138603f4c8e54593e0a75eb5392a050946aab6c8a0633eda0"
     },
     {
       "file": "pages/capabilities/data/period-comparison/README.md",
@@ -2280,7 +2288,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "3416e542298fc013df5b2c6ab0894c42027355042535d37d992eebcaf3e18781"
+      "sha256": "513acb5a56c163c05d98a497f5aa2b450be9c39a3222467659942bbea31f8e0b"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
@@ -2588,11 +2596,15 @@
     },
     {
       "file": "pages/temporary/partner-health-union-null-probe/partner-health-union-null-probe.json",
-      "sha256": "3f3f7e8272c96920106fd25ead0e8407edca43eeba3d468e15a1164e1f16a337"
+      "sha256": "05c1cdc9ef5b29dd960c765bc756aa9794df747ee1902f417f82e54eecdab08c"
+    },
+    {
+      "file": "pages/temporary/partner-health-without-voice-score.json",
+      "sha256": "304c3ec828c9da776984d863641027e2f1f7aaf3b97d7f2e0ee153abe46f8a6e"
     },
     {
       "file": "pages/temporary/partner-health.json",
-      "sha256": "c655601634ecc02ef867f5bfda35577e68bf76857e182a9ad669d2a840508ae7"
+      "sha256": "3bdee5c5aacd020fbfcbeafa8e6e5d74569a6c5154b3b0d3d7263422bb4cafb7"
     },
     {
       "file": "pages/temporary/report-container-principles-20261027-r3/README.md",

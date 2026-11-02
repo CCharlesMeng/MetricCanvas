@@ -6,8 +6,10 @@ export type Row = Record<string, FieldValue>;
 
 /** Safe diagnostics only; no source rows, keys, filter values or response bodies. */
 export interface DataWarning {
-  code: 'TABLE_RESULT_RECOVERED';
+  code: 'TABLE_RESULT_RECOVERED' | 'COMPUTE_MISSING_KEY_ROWS';
   sourceId: string;
+  /** 参与空键判定的页面字段 ID，不包含组织值。 */
+  fields?: string[];
   message: string;
   count: number;
 }

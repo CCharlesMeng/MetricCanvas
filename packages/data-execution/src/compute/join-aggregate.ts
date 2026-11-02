@@ -1,26 +1,19 @@
 import { copyRowFallbacks, copyFieldFallback } from '@metriccanvas/page/internal';
 import type { DataRow, JoinAggregateOperator } from '@metriccanvas/page/internal';
+import {ComputationError} from './error';
+import {keyRows, type ComputationDiagnostics} from './key-rows';
 
-/** 仅包含脱值原因；不得将组合键值和输入行写进错误。 */
-export class ComputationError extends Error {
-  constructor(message: string) { super(message); this.name = 'ComputationError'; }
-}
+export {ComputationError} from './error';
 
 export function joinAggregate(
   operator: JoinAggregateOperator,
   rows: readonly DataRow[],
-  dependency: readonly DataRow[]
+  dependency: readonly DataRow[],
+  diagnostics?: ComputationDiagnostics
 ): DataRow[] {
-  const key = (row: DataRow, fields: string[]) => JSON.stringify(fields.map(field => {
-    const value = row[field];
-    if (value == null || !['string', 'number', 'boolean'].includes(typeof value) ||
-      (typeof value === 'number' && !Number.isFinite(value))) {
-      throw new ComputationError('关联键缺失或类型不合法');
-    }
-    return value;
-  }));
+  const key = (row: DataRow, fields: string[]) => JSON.stringify(fields.map(field => row[field]));
   const groups = new Map<string, DataRow[]>();
-  for (const row of dependency) {
+  for (const row of keyRows(dependency, operator.keys.map(k => k.foreign), operator.source, diagnostics)) {
     const id = key(row, operator.keys.map(k => k.foreign));
     const group = groups.get(id) ?? [];
     group.push(row); groups.set(id, group);
@@ -35,7 +28,9 @@ export function joinAggregate(
     }
     values.set(id, result);
   }
-  return rows.map(row => {
+  const usable = keyRows(rows, operator.keys.map(k => k.local), diagnostics?.sourceId ?? 'local', diagnostics);
+  if (diagnostics && usable.length !== rows.length) diagnostics.rowCountChanged = true;
+  return usable.map(row => {
     const joined = values.get(key(row, operator.keys.map(k => k.local)));
     const output = copyRowFallbacks(row, { ...row, ...(joined ?? Object.fromEntries(operator.values.map(binding => [binding.output, binding.onMissing === 'zero' ? 0 : null]))) });
     for (const binding of operator.values) copyFieldFallback(joined, binding.output, output, binding.output);

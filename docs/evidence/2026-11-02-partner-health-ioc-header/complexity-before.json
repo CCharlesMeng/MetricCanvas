@@ -1,0 +1,236 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "apps/playground/fixtures/organization-union/organizations.ts",
+      "functions": [
+        {
+          "name": "organizationDimensionValues",
+          "qualifiedName": "organizationDimensionValues",
+          "line": 8,
+          "endLine": 11,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@10:59>",
+          "qualifiedName": "organizationDimensionValues/<anonymous@10:59>",
+          "line": 10,
+          "endLine": 10,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "matchesOrganization",
+          "qualifiedName": "matchesOrganization",
+          "line": 13,
+          "endLine": 19,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@17:90>",
+          "qualifiedName": "matchesOrganization/<anonymous@17:90>",
+          "line": 17,
+          "endLine": 17,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "selectOrganizationRows",
+          "qualifiedName": "selectOrganizationRows",
+          "line": 22,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@23:69>",
+          "qualifiedName": "selectOrganizationRows/<anonymous@23:69>",
+          "line": 23,
+          "endLine": 23,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@24:22>",
+          "qualifiedName": "selectOrganizationRows/<anonymous@24:22>",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@24:46>",
+          "qualifiedName": "selectOrganizationRows/<anonymous@24:22>/<anonymous@24:46>",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/fixtures/organization-union/gateway.ts",
+      "functions": [
+        {
+          "name": "responseRows",
+          "qualifiedName": "responseRows",
+          "line": 18,
+          "endLine": 21,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@19:19>",
+          "qualifiedName": "responseRows/<anonymous@19:19>",
+          "line": 19,
+          "endLine": 20,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@19:83>",
+          "qualifiedName": "responseRows/<anonymous@19:19>/<anonymous@19:83>",
+          "line": 19,
+          "endLine": 20,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "overviewRows",
+          "qualifiedName": "overviewRows",
+          "line": 23,
+          "endLine": 33,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 6,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@24:84>",
+          "qualifiedName": "overviewRows/<anonymous@24:84>",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@27:21>",
+          "qualifiedName": "overviewRows/<anonymous@27:21>",
+          "line": 27,
+          "endLine": 32,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "responseTotal",
+          "qualifiedName": "responseTotal",
+          "line": 35,
+          "endLine": 38,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "createPartnerHealthUnionPreview",
+          "qualifiedName": "createPartnerHealthUnionPreview",
+          "line": 41,
+          "endLine": 72,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 19,
+          "nestedFunctions": 5
+        },
+        {
+          "name": "fetchDimensionValues",
+          "qualifiedName": "createPartnerHealthUnionPreview/fetchDimensionValues",
+          "line": 44,
+          "endLine": 48,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@47:51>",
+          "qualifiedName": "createPartnerHealthUnionPreview/fetchDimensionValues/<anonymous@47:51>",
+          "line": 47,
+          "endLine": 47,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "fetchData",
+          "qualifiedName": "createPartnerHealthUnionPreview/fetchData",
+          "line": 49,
+          "endLine": 70,
+          "selfCC": 10,
+          "optionalChains": 2,
+          "subtreeCC": 15,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "fetchImpl",
+          "qualifiedName": "createPartnerHealthUnionPreview/fetchData/fetchImpl",
+          "line": 57,
+          "endLine": 69,
+          "selfCC": 6,
+          "optionalChains": 3,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@65:66>",
+          "qualifiedName": "createPartnerHealthUnionPreview/fetchData/fetchImpl/<anonymous@65:66>",
+          "line": 65,
+          "endLine": 65,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "partnerHealthUnionGateway",
+          "qualifiedName": "partnerHealthUnionGateway",
+          "line": 74,
+          "endLine": 81,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

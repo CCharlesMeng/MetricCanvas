@@ -308,6 +308,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/missing-organization-key.json",
+      "target": "product-contracts/page/conformance/valid/missing-organization-key.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/mixed-page.json",
       "target": "product-contracts/page/conformance/valid/mixed-page.json",
       "scope": "exact product contract"
@@ -6043,6 +6048,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/missing-organization-key.json",
+      "target": "references/page-metadata/examples/missing-organization-key.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/compute.md",
       "target": "references/page-metadata/compute.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6814,10 +6824,10 @@
     }
   ],
   "counts": {
-    "product": 1331,
+    "product": 1333,
     "authoring": 31,
     "modules": 33,
-    "topics": 225,
+    "topics": 226,
     "nodes": 2465,
     "tools": 9,
     "components": 19

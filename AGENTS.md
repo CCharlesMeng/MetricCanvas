@@ -28,6 +28,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 新增 `pages/` 示例显式使用 `layout: "dashboard"`，复用现有 Dashboard 页头与组件；仅用户明确要求或验收 Report 专属能力时使用 `report`。
 
+### IOC 页头迁移（必选）
+
+用户提供或要求修改的 JSON 属于 IOC 看板，且仍以旧工具栏或自拼组件承担页头时，按 [页头迁移](.agents/skills/metriccanvas-local-authoring/references/ioc-header-migration.md) 分析标题、筛选归属与作用范围、默认值、查询绑定及操作，再迁移为根级 `iocHeader`。完成后明确告知用户已迁移及实际改动；存在无法等价承接的功能时保留原件并说明缺口。已有 `iocHeader` 的页面沿用并核对，正文独立章节标题保留。
+
 ### 每次编码的复杂度检查（必选）
 
 每次新增、修改或重构代码，均执行 [代码复杂度规则](docs/agents/code-complexity.md)：编码前识别职责与分支，编码后实测修改函数和全部新增辅助函数，按规则处理存量超限，并验证行为保持。完成说明须给出测量口径、相关函数前后结果及未关闭项。
@@ -39,6 +43,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 ### 功能与协议能力验收（必选）
 
 所有新功能及页面协议能力更新（新增、调整、修复、收紧或废弃），均须按 [功能与协议能力验收要求](docs/agents/feature-acceptance.md) 完成 Playground 可观察场景、页面元数据文档及 `metriccanvas-local-authoring` 同步，作为实施完成条件。
+
+### Schema 演进（必选）
+
+后续功能演进优先保持或减少 Schema，把可复用的计算、容错与执行逻辑沉淀到引擎。实施前按 [Schema 最小化](docs/agents/page-metadata-changes.md#schema-最小化必选) 检查现有协议能否表达需求，并记录字段增减及引擎承接的职责。
 
 ### Issue tracker
 

@@ -1227,12 +1227,6 @@
           "role": "measure",
           "label": "扣分",
           "queryField": "扣分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1247,8 +1241,7 @@
                 "object_type": "Partner Health/Partner Deduction Score",
                 "output_fields": [
                   "地区部",
-                  "扣分",
-                  "国内或海外"
+                  "扣分"
                 ],
                 "order": {}
               }
@@ -1279,12 +1272,6 @@
           "role": "measure",
           "label": "扣分",
           "queryField": "扣分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1299,8 +1286,7 @@
                 "object_type": "Partner Health/Partner Deduction Score",
                 "output_fields": [
                   "代表处",
-                  "扣分",
-                  "国内或海外"
+                  "扣分"
                 ],
                 "order": {}
               }
@@ -1331,12 +1317,6 @@
           "role": "measure",
           "label": "客户对伙伴的评价得分",
           "queryField": "客户对伙伴的评价得分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1351,8 +1331,7 @@
                 "object_type": "Partner Health/Custormer Partner Evaluation Score",
                 "output_fields": [
                   "地区部",
-                  "客户对伙伴的评价得分",
-                  "国内或海外"
+                  "客户对伙伴的评价得分"
                 ],
                 "order": {}
               }
@@ -1383,12 +1362,6 @@
           "role": "measure",
           "label": "客户对伙伴的评价得分",
           "queryField": "客户对伙伴的评价得分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1403,8 +1376,7 @@
                 "object_type": "Partner Health/Custormer Partner Evaluation Score",
                 "output_fields": [
                   "代表处",
-                  "客户对伙伴的评价得分",
-                  "国内或海外"
+                  "客户对伙伴的评价得分"
                 ],
                 "order": {}
               }
@@ -1435,12 +1407,6 @@
           "role": "measure",
           "label": "收入得分",
           "queryField": "收入得分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1455,8 +1421,7 @@
                 "object_type": "Partner Health/Partner Core Income Score",
                 "output_fields": [
                   "地区部",
-                  "收入得分",
-                  "国内或海外"
+                  "收入得分"
                 ],
                 "order": {}
               }
@@ -1487,12 +1452,6 @@
           "role": "measure",
           "label": "收入得分",
           "queryField": "收入得分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1507,8 +1466,7 @@
                 "object_type": "Partner Health/Partner Core Income Score",
                 "output_fields": [
                   "代表处",
-                  "收入得分",
-                  "国内或海外"
+                  "收入得分"
                 ],
                 "order": {}
               }
@@ -1539,12 +1497,6 @@
           "role": "measure",
           "label": "合作意愿感知评分",
           "queryField": "合作意愿感知评分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1559,8 +1511,7 @@
                 "object_type": "Partner Health/Cooperate Willingness Score",
                 "output_fields": [
                   "地区部",
-                  "合作意愿感知评分",
-                  "国内或海外"
+                  "合作意愿感知评分"
                 ],
                 "order": {}
               }
@@ -1591,12 +1542,6 @@
           "role": "measure",
           "label": "合作意愿感知评分",
           "queryField": "合作意愿感知评分"
-        },
-        "domestic-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外",
-          "queryField": "国内或海外"
         }
       },
       "source": {
@@ -1611,8 +1556,7 @@
                 "object_type": "Partner Health/Cooperate Willingness Score",
                 "output_fields": [
                   "代表处",
-                  "合作意愿感知评分",
-                  "国内或海外"
+                  "合作意愿感知评分"
                 ],
                 "order": {}
               }
