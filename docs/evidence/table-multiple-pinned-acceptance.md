@@ -17,3 +17,7 @@
 metriccanvas-ts-ast/1，TypeScript 5.9.3，函数自身 selfCC；Svelte 提取 script，模板分支不计。修改函数：tablePinnedErrors 9→4、projectTableRows 6→7、tableRowColumn 3→4、assertPinnedExport 8→9、hostRenderSnapshot 6→6、exportSlotSnapshot 6→6、prepareSlotSnapshot 6→6。
 
 新增辅助函数：tablePinnedSlots=3、pinnedSourceErrors=8、pinnedSlotsReady=1（回调=4）、pinnedTextBinding=1、hasPinnedText=2（回调=2），其他新增测试与夹具函数/回调均≤15。未改动的 exportComponentData=23，未扩张本批范围；本次修改/新增函数无超限未关闭项。撤除临时 Playground 接线后路由和场景函数回到远端基线。
+
+## CI 期望表补齐
+
+首次提交 CI 的 tests 为 424/426 文件、3875/3877 已执行用例通过，失败仅为遗漏新能力的 introducedAt 固定版本表和 tablePinnedSlots 的 internal 导出快照。补齐两份独立期望后，version 与 public-api 两文件 12/12 通过；未改运行时分支。version 测试文件以同一 metriccanvas-ts-ast/1 实测，所有函数前后 selfCC 保持一致，无新增函数。最终远端 CI 以修正提交的回执为准。
