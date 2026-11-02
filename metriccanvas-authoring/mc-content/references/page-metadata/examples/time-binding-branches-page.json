@@ -1,42 +1,10 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "time-binding-branches-page",
   "layout": "dashboard",
-  "dashboardToolbar": "hidden",
   "meta": {
     "title": "IOC B3：金额与币种",
     "description": "本地合成双货币字段，不代表真实USD业务数据；没有前端汇率换算。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "金额与币种",
-      "description": {
-        "text": "独立静态人民币/美元字段 · 输入以万元/万美元，查询保留基本单位"
-      },
-      "tags": [
-        {
-          "id": "demo",
-          "text": "合成数据",
-          "tone": "info"
-        }
-      ],
-      "facts": [
-        {
-          "id": "period",
-          "kind": "queryPeriod",
-          "label": "统计期间",
-          "value": {
-            "filter": "period",
-            "format": "period"
-          }
-        }
-      ]
-    },
-    "filterIds": [
-      "period",
-      "currency",
-      "amount"
-    ]
   },
   "filters": [
     {
@@ -362,6 +330,50 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "金额与币种",
+              "description": {
+                "text": "独立静态人民币/美元字段 · 输入以万元/万美元，查询保留基本单位"
+              },
+              "tags": [
+                {
+                  "id": "demo",
+                  "text": "合成数据",
+                  "tone": "info"
+                }
+              ],
+              "facts": [
+                {
+                  "id": "period",
+                  "kind": "queryPeriod",
+                  "label": "统计期间",
+                  "value": {
+                    "filter": "period",
+                    "format": "period"
+                  }
+                }
+              ]
+            },
+            "filterIds": [
+              "period",
+              "currency",
+              "amount"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "body",
       "components": [

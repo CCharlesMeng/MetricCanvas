@@ -1,46 +1,10 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "navigation-detail-page",
   "layout": "report",
   "meta": {
     "title": "IOC B5：项目详情",
     "description": "本地合成跨页传值验收；不保存或恢复来源视图。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": {
-        "param": "project-name"
-      },
-      "tags": [
-        {
-          "id": "synthetic",
-          "text": "合成验收",
-          "tone": "info"
-        }
-      ],
-      "code": {
-        "label": "项目编码",
-        "value": {
-          "param": "project-id"
-        }
-      },
-      "description": {
-        "text": {
-          "parts": [
-            "来源：",
-            {
-              "param": "origin"
-            }
-          ]
-        },
-        "presentation": "inline"
-      }
-    },
-    "filterIds": [
-      "month",
-      "currency",
-      "regions"
-    ]
   },
   "filters": [
     {
@@ -187,6 +151,55 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": {
+                "param": "project-name"
+              },
+              "tags": [
+                {
+                  "id": "synthetic",
+                  "text": "合成验收",
+                  "tone": "info"
+                }
+              ],
+              "code": {
+                "label": "项目编码",
+                "value": {
+                  "param": "project-id"
+                }
+              },
+              "description": {
+                "text": {
+                  "parts": [
+                    "来源：",
+                    {
+                      "param": "origin"
+                    }
+                  ]
+                },
+                "presentation": "inline"
+              }
+            },
+            "filterIds": [
+              "month",
+              "currency",
+              "regions"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "detail",
       "components": [

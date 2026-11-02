@@ -1,0 +1,21 @@
+{
+  "base": "http://127.0.0.1:5189",
+  "checks": [
+    "weighted-section-full-width",
+    "mixed-section-hide-restore-url",
+    "section-group-return",
+    "page-sticky-single-instance",
+    "custom-layout-and-back",
+    "legacy-custom-inputs",
+    "nested-scroll",
+    "shadow-root-sticky",
+    "new-no-default",
+    "export",
+    "export-hidden",
+    "export-groups",
+    "export-legacy-root",
+    "export-legacy-toolbar",
+    "narrow"
+  ],
+  "errors": []
+}

@@ -598,3 +598,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 父子表折叠缓存：[table-row-expansion-cache](capabilities/table/table-row-expansion-cache.json)，入口 `/pages/table-row-expansion-cache`；内存仿真Gateway，验证重开复用、父行隔离及父表翻页失效。
 
 - 同比环比按页补查：[使用与合成数据说明](capabilities/data/period-comparison/README.md#按页补查schema-678)，入口 `/pages/period-comparison-query-page`。
+
+- [IOC Header 分区组件](capabilities/ioc-header/section-component/README.md)：首分区混排、显隐、分组与吸顶。

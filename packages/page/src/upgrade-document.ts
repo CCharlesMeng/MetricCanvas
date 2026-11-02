@@ -1,3 +1,4 @@
+import { upgradeIocHeader } from './upgrade-ioc-header';
 import { adaptLegacyPageDocument } from './legacy-compatibility';
 import { walkDocumentComponents } from './component-walk';
 import { normalizePageDocument } from './validate';
@@ -51,6 +52,8 @@ export function upgradePageDocument(input: unknown, target = versionPolicy.curre
   report.errors = upgradeChartFilters(document, report.changes);
   if (report.errors.length) return { ...report, ok: false };
   if (canonicalizeJson(input) !== canonicalizeJson(adapted)) report.changes.push({ rule: 'legacy-navigation', path: '/sections', message: '按现有 5.x 兼容规则转换站内导航为 href/query；部署路径需预览核对' });
+  report.errors=upgradeIocHeader(document,report.changes);
+  if(report.errors.length)return {...report,ok:false};
   document.schemaVersion = target;
   const normalized = normalizePageDocument(document);
   if (!normalized.ok) return { ...report, ok: false, errors: normalized.errors };

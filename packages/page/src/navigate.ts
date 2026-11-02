@@ -1,3 +1,4 @@
+import { usesIocRegion, resolveHeaderBinding } from './header-binding';
 import { filterURLKeys } from './filter-url';
 export { filterURLKeys, readLevelURLSelection } from './filter-url';
 import {staticFieldBinding} from './field';
@@ -89,12 +90,12 @@ export function urlInputErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
   const used = new Set((page.params ?? []).map(p => p.id));
   (page.filters ?? []).forEach((filter, i) => {
-    const keys = filterURLKeys(filter, !!page.iocHeader);
+    const keys = filterURLKeys(filter, usesIocRegion(page));
     for (const part of Object.keys(filter.urlParams ?? {})) {
       if (!(part in keys)) errors.push({ type:'SCHEMA_ERROR', path:`/filters/${i}/urlParams/${part}`, message:'该筛选器不支持此 URL 分量' });
     }
     for (const [part, key] of Object.entries(keys)) {
-      if (used.has(key)) errors.push({ type:'SCHEMA_ERROR', path:part.startsWith('node/')?'/iocHeader/filterIds':`/filters/${i}/urlParams/${part}`, message:`URL 参数名重复:${key}` });
+      if (used.has(key)) errors.push({ type:'SCHEMA_ERROR', path:part.startsWith('node/')?`${resolveHeaderBinding(page)?.path??'/iocHeader'}/filterIds`:`/filters/${i}/urlParams/${part}`, message:`URL 参数名重复:${key}` });
       used.add(key);
     }
   });

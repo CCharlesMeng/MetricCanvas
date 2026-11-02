@@ -30,7 +30,8 @@
         "ioc-header-models",
         "ioc-header-months",
         "ioc-header-unconfigured",
-        "tab-mixed-content"
+        "tab-mixed-content",
+        "ioc-header-section-placement"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -43,7 +44,9 @@
         "packages/page/src/time-extension-validation.ts",
         "packages/page/src/upgrade-document.ts",
         "packages/page/src/upgrade-chart-filters.ts",
-        "packages/page/src/upgrade-types.ts"
+        "packages/page/src/upgrade-types.ts",
+        "packages/page/src/header-binding.ts",
+        "packages/page/src/upgrade-ioc-header.ts"
       ],
       "rules": [
         "page-layout-compatibility",
@@ -1259,6 +1262,32 @@
         "filter-group",
         "filter-group-presentation"
       ]
+    },
+    "components/iocHeader.md": {
+      "title": "IOC 页头",
+      "definitions": [
+        "iocHeaderComponent"
+      ],
+      "keywords": [
+        "iocHeader",
+        "页头",
+        "身份",
+        "页级筛选"
+      ],
+      "examples": [
+        "ioc-header-section-placement",
+        "ioc-component-availability-page",
+        "ioc-component-ioc-header-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/ioc-header.ts",
+        "packages/page/src/header-binding.ts",
+        "packages/page/src/ioc-header.ts",
+        "packages/page/src/upgrade-ioc-header.ts"
+      ],
+      "rules": [
+        "ioc-header-component"
+      ]
     }
   },
   "fieldNotes": {
@@ -1733,7 +1762,22 @@
     "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing": "单个度量缺关联记录时null或zero，省略null；不替换已返回的空值或失败。",
     "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData": "额外独立完整汇总查询的命名数据槽，每个槽返回零或一行；不参与明细对齐。",
     "#/definitions/tableColumn/properties/pinnedTop/anyOf/1/properties/text": "该列置顶格固定显示的非空纯文本，与字段绑定分支互斥，不修改明细或查询。",
-    "enumValues": "列主字段的前端枚举字典，1至1000项；原始值类型敏感且不得重复，统一显示、静态选项和导出标签，不改写查询编码。"
+    "enumValues": "列主字段的前端枚举字典，1至1000项；原始值类型敏感且不得重复，统一显示、静态选项和导出标签，不改写查询编码。",
+    "#/definitions/iocHeaderComponent/properties/props": "IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity": "可选身份行；省略不自动使用目录标题。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/code": "标签与业务编码整体显示；缺值整体省略。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/text": "纯文本说明，沿用TextValue引用。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/presentation": "说明直接显示或通过键盘可达说明入口展开。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/text": "业务标签文字；缺值不产生空色块。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts": "显式期间/时间事实；不根据类别自动生成当前时间。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/back": "返回意图；必须同时有合法returnContext和back处理函数。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/filterIds": "按序唯一认领静态可见的页级筛选；不含图表独立或详情私有筛选。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation": "仅改变密度和折叠，不改变筛选语义。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/density": "普通或紧凑页头。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse": "保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/readOnly": "6.41：页内筛选只读，所有用户筛选写入共用只读门禁；不是服务权限。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/note": "页头说明；可用于只读原因，纯文本。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout": "6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2042,7 +2086,26 @@
     "6.77": "期间比较查询、逐度量缺记录策略及百分点格式。",
     "6.78": "查询分页期间比较、组合投影缺记录策略与逐行计算",
     "6.79": "多条独立查询组成置顶行，列级固定文字。",
-    "6.80": "表格列前端枚举展示、静态筛选及导出标签。"
+    "6.80": "表格列前端枚举展示、静态筛选及导出标签。",
+    "6.81": "IOC页头作为首分区首组件，旧根级兼容读取，新页面无隐式页头。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/presentation=\"inline\"": "在身份区直接显示说明。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/presentation=\"tooltip\"": "通过可聚焦说明入口展开完整文字。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/tone=\"neutral\"": "中性标签，不推断业务含义。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/tone=\"info\"": "提示信息标签。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/tone=\"success\"": "显式成功语义标签。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/tone=\"warning\"": "显式提醒语义标签。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/tone=\"danger\"": "显式危险语义标签。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/kind=\"queryPeriod\"": "显式已应用查询期间。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/kind=\"latestDataPeriod\"": "由可信输入给出的最新数据期。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/kind=\"refreshedAt\"": "可信数据刷新时间，缺值省略。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/kind=\"generatedAt\"": "可信页面生成时间，缺值省略。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/density=\"normal\"": "正常密度（缺省）。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/density=\"compact\"": "紧凑密度，不改查询。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"none\"": "全部展开（缺省）。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"firstRow\"": "按实际换行收起到首行。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout=\"inline\"": "标题与筛选行内排布；窄容器换行。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout=\"stacked\"": "身份区与筛选区上下排布；缺省。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2200,6 +2263,12 @@
       "rule": "paged-union",
       "reason": "显式为空属于已提交运行视图，持久化initial仅允许默认无条件视图。",
       "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/19": {
+      "case": "ioc-component-detail",
+      "rule": "ioc-header-component",
+      "reason": "IOC页头仅首分区首组件，详情中不允许。",
+      "source": "packages/page/src/ioc-header.ts"
     }
   },
   "authoringTopics": {
@@ -2694,7 +2763,8 @@
       "查阅方式",
       "IOC 公共页头（6.36）",
       "可信期间事实输入（6.39）",
-      "唯一页头（6.41）"
+      "唯一页头（6.41）",
+      "IOC 页头进入分区（6.81）"
     ],
     "params-and-text-values.md": [
       "查阅方式",
@@ -2903,6 +2973,7 @@
     "components/button.md": [],
     "components/filterGroup.md": [
       "固定单选下拉与对齐（6.47）"
-    ]
+    ],
+    "components/iocHeader.md": []
   }
 }

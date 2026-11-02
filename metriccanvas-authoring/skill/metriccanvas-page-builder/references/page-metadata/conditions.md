@@ -37,7 +37,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。
 
 
-页面协议 6.80。结构真源为本册[schema.json](schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.81。结构真源为本册[schema.json](schema.json)，SHA256 `304b22179260547b5c13429751e5b56bb8e2ea238ab5aa0c83ead37b69c952a4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -985,10 +985,10 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 - `#/definitions/condition/anyOf/1`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/3/components/0/props/rowVisibleWhen`。
 - `#/definitions/condition/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/filters/0/visibleWhen`。
 - `#/definitions/condition/anyOf/3`：[合法完整页面](examples/page-visibility-inputs.json)，JSON Pointer `#/sections/1/visibleWhen`。
-- `#/definitions/condition/anyOf/4`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/visibleWhen`。
+- `#/definitions/condition/anyOf/4`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/visibleWhen`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/visibleWhen/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/4/value`。
-- `#/definitions/condition/anyOf/4/properties/value/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/6/value`。
+- `#/definitions/condition/anyOf/4/properties/value/anyOf/2`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/visibleWhen/value`。
 - `#/definitions/condition/anyOf/5`：[合法完整页面](examples/table-column-visibility.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/visibleWhen`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/0`：[合法完整页面](examples/table-column-visibility.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/visibleWhen/values/0`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0`。

@@ -1,19 +1,9 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "pie-table-legend",
   "layout": "dashboard",
   "meta": {
     "title": "饼图表格式图例 · 合成数据"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "框架执行概况"
-    },
-    "note": "全部为合成演示数据；图例按区间固定，数量变化不重排。",
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "dataSources": {
     "bands": {
@@ -190,6 +180,29 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "框架执行概况"
+            },
+            "note": "全部为合成演示数据；图例按区间固定，数量变化不重排。",
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "default",
       "components": [

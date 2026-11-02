@@ -1,76 +1,10 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "availability-page",
   "layout": "dashboard",
-  "dashboardToolbar": "hidden",
   "meta": {
     "title": "IOC B4：可信最新期",
     "description": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "IOC B4：可信最新期",
-      "tags": [
-        {
-          "id": "demo",
-          "text": "合成验收",
-          "tone": "info"
-        }
-      ],
-      "facts": [
-        {
-          "id": "period",
-          "kind": "queryPeriod",
-          "label": "已应用期间",
-          "value": {
-            "filter": "month",
-            "format": "period"
-          }
-        },
-        {
-          "id": "latest",
-          "kind": "latestDataPeriod",
-          "label": "数据最新期",
-          "value": {
-            "fact": "sales",
-            "part": "latest"
-          }
-        },
-        {
-          "id": "complete",
-          "kind": "latestDataPeriod",
-          "label": "完成期",
-          "value": {
-            "fact": "sales",
-            "part": "latestComplete"
-          }
-        },
-        {
-          "id": "refreshed",
-          "kind": "refreshedAt",
-          "label": "服务刷新",
-          "value": {
-            "fact": "sales",
-            "part": "refreshedAt"
-          }
-        },
-        {
-          "id": "generated",
-          "kind": "generatedAt",
-          "label": "产物生成",
-          "value": {
-            "fact": "sales",
-            "part": "generatedAt"
-          }
-        }
-      ]
-    },
-    "filterIds": [
-      "month"
-    ],
-    "presentation": {
-      "collapse": "firstRow"
-    }
   },
   "filters": [
     {
@@ -176,6 +110,84 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "IOC B4：可信最新期",
+              "tags": [
+                {
+                  "id": "demo",
+                  "text": "合成验收",
+                  "tone": "info"
+                }
+              ],
+              "facts": [
+                {
+                  "id": "period",
+                  "kind": "queryPeriod",
+                  "label": "已应用期间",
+                  "value": {
+                    "filter": "month",
+                    "format": "period"
+                  }
+                },
+                {
+                  "id": "latest",
+                  "kind": "latestDataPeriod",
+                  "label": "数据最新期",
+                  "value": {
+                    "fact": "sales",
+                    "part": "latest"
+                  }
+                },
+                {
+                  "id": "complete",
+                  "kind": "latestDataPeriod",
+                  "label": "完成期",
+                  "value": {
+                    "fact": "sales",
+                    "part": "latestComplete"
+                  }
+                },
+                {
+                  "id": "refreshed",
+                  "kind": "refreshedAt",
+                  "label": "服务刷新",
+                  "value": {
+                    "fact": "sales",
+                    "part": "refreshedAt"
+                  }
+                },
+                {
+                  "id": "generated",
+                  "kind": "generatedAt",
+                  "label": "产物生成",
+                  "value": {
+                    "fact": "sales",
+                    "part": "generatedAt"
+                  }
+                }
+              ]
+            },
+            "filterIds": [
+              "month"
+            ],
+            "presentation": {
+              "collapse": "firstRow"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "body",
       "container": "card",

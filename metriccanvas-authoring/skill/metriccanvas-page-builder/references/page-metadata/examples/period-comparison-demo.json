@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "period-comparison-demo",
   "layout": "dashboard",
   "meta": {
@@ -19,17 +19,6 @@
       }
     }
   ],
-  "iocHeader": {
-    "identity": {
-      "title": "同比环比（合成数据）"
-    },
-    "filterIds": [
-      "period"
-    ],
-    "presentation": {
-      "layout": "inline"
-    }
-  },
   "dataSources": {
     "current": {
       "fields": {
@@ -380,6 +369,30 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "同比环比（合成数据）"
+            },
+            "filterIds": [
+              "period"
+            ],
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "comparison",
       "components": [

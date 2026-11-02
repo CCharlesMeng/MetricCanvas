@@ -1,29 +1,9 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "ioc-header-incentives",
   "layout": "dashboard",
   "meta": {
     "title": "IOC页头 · 激励策略与所选月份"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "激励策略与所选月份",
-      "tags": [
-        {
-          "text": "合成候选与查询",
-          "id": "tag-0"
-        }
-      ]
-    },
-    "back": true,
-    "filterIds": [
-      "month",
-      "strategy"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "filters": [
     {
@@ -115,6 +95,39 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "激励策略与所选月份",
+              "tags": [
+                {
+                  "text": "合成候选与查询",
+                  "id": "tag-0"
+                }
+              ]
+            },
+            "back": true,
+            "filterIds": [
+              "month",
+              "strategy"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "main",
       "components": [
         {
@@ -155,6 +168,5 @@
         }
       ]
     }
-  ],
-  "dashboardToolbar": "hidden"
+  ]
 }

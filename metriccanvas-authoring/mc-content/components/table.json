@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.80",
+  "currentWriter": "6.81",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -62,11 +62,6 @@
           "id": "page-params",
           "minor": 0,
           "description": "顶层 params:页面参数声明(ADR-0047)"
-        },
-        {
-          "id": "dashboard-toolbar-visibility",
-          "minor": 0,
-          "description": "顶层 dashboardToolbar:显式关闭 dashboard 统一工具栏"
         },
         {
           "id": "text-value-reference",
@@ -427,8 +422,13 @@
     },
     {
       "file": "references/page-metadata/examples/paged-union-page.json",
-      "requiredVersion": "6.61",
+      "requiredVersion": "6.81",
       "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
         {
           "id": "table-source-navigation",
           "minor": 61,
@@ -443,16 +443,6 @@
           "id": "table-row-ordinal-column",
           "minor": 48,
           "description": "表格独立序号列，排序筛选后重编号且跨页连续"
-        },
-        {
-          "id": "unified-page-header",
-          "minor": 41,
-          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
-        },
-        {
-          "id": "ioc-header",
-          "minor": 36,
-          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
         },
         {
           "id": "table-toolbar",
@@ -474,8 +464,13 @@
     },
     {
       "file": "references/page-metadata/examples/paged-union-branches.json",
-      "requiredVersion": "6.61",
+      "requiredVersion": "6.81",
       "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
         {
           "id": "table-source-navigation",
           "minor": 61,
@@ -490,16 +485,6 @@
           "id": "table-row-ordinal-column",
           "minor": 48,
           "description": "表格独立序号列，排序筛选后重编号且跨页连续"
-        },
-        {
-          "id": "unified-page-header",
-          "minor": 41,
-          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
-        },
-        {
-          "id": "ioc-header",
-          "minor": 36,
-          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
         },
         {
           "id": "table-toolbar",
@@ -583,8 +568,13 @@
     },
     {
       "file": "references/page-metadata/examples/table-hierarchy-selection.json",
-      "requiredVersion": "6.70",
+      "requiredVersion": "6.81",
       "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
         {
           "id": "table-row-hierarchy-selection",
           "minor": 70,
@@ -606,19 +596,9 @@
           "description": "单层行内子表格与按父行隔离的查询分页"
         },
         {
-          "id": "unified-page-header",
-          "minor": 41,
-          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
-        },
-        {
           "id": "business-filter-selection",
           "minor": 37,
           "description": "页级单多选、封闭枚举及显式结构树"
-        },
-        {
-          "id": "ioc-header",
-          "minor": 36,
-          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
         },
         {
           "id": "table-toolbar",
@@ -645,8 +625,13 @@
     },
     {
       "file": "references/page-metadata/examples/table-hierarchy-lookup-param.json",
-      "requiredVersion": "6.70",
+      "requiredVersion": "6.81",
       "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
         {
           "id": "table-row-hierarchy-selection",
           "minor": 70,
@@ -668,19 +653,9 @@
           "description": "单层行内子表格与按父行隔离的查询分页"
         },
         {
-          "id": "unified-page-header",
-          "minor": 41,
-          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
-        },
-        {
           "id": "business-filter-selection",
           "minor": 37,
           "description": "页级单多选、封闭枚举及显式结构树"
-        },
-        {
-          "id": "ioc-header",
-          "minor": 36,
-          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
         },
         {
           "id": "table-toolbar",
@@ -820,11 +795,6 @@
           "id": "filter-empty-label",
           "minor": 0,
           "description": "维度筛选器的空选展示文案"
-        },
-        {
-          "id": "dashboard-toolbar-compact-read-only",
-          "minor": 0,
-          "description": "dashboard 紧凑页头与只读筛选说明"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
@@ -853,8 +823,13 @@
     },
     {
       "file": "references/page-metadata/examples/period-comparison-query-page.json",
-      "requiredVersion": "6.78",
+      "requiredVersion": "6.81",
       "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
         {
           "id": "paged-join-row-compute",
           "minor": 78,
@@ -879,16 +854,6 @@
           "id": "period-comparison",
           "minor": 77,
           "description": "可信截止时间驱动的期间比较与按度量声明缺记录策略"
-        },
-        {
-          "id": "unified-page-header",
-          "minor": 41,
-          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
-        },
-        {
-          "id": "ioc-header",
-          "minor": 36,
-          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
         },
         {
           "id": "period-filter",

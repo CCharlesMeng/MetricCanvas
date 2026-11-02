@@ -1,40 +1,9 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "ioc-header-business",
   "layout": "dashboard",
   "meta": {
     "title": "IOC页头 · 业务筛选整体组合"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "业务筛选整体组合",
-      "tags": [
-        {
-          "text": "合成候选与查询",
-          "id": "tag-0"
-        }
-      ]
-    },
-    "back": true,
-    "filterIds": [
-      "sector",
-      "industry",
-      "business-type",
-      "customer-type",
-      "customer-sort",
-      "project-level",
-      "contact-days",
-      "execution-band",
-      "margin-band",
-      "breakthrough",
-      "growth",
-      "top100",
-      "overseas"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "filters": [
     {
@@ -368,6 +337,50 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "业务筛选整体组合",
+              "tags": [
+                {
+                  "text": "合成候选与查询",
+                  "id": "tag-0"
+                }
+              ]
+            },
+            "back": true,
+            "filterIds": [
+              "sector",
+              "industry",
+              "business-type",
+              "customer-type",
+              "customer-sort",
+              "project-level",
+              "contact-days",
+              "execution-band",
+              "margin-band",
+              "breakthrough",
+              "growth",
+              "top100",
+              "overseas"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "main",
       "components": [
         {
@@ -408,6 +421,5 @@
         }
       ]
     }
-  ],
-  "dashboardToolbar": "hidden"
+  ]
 }

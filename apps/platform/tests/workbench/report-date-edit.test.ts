@@ -1,3 +1,4 @@
+import {iocHeaderDeclaration} from '@metriccanvas/page/internal';
 import { parsePage } from '@metriccanvas/page';
 import { expect, it } from 'vitest';
 import fixture from '../../../../packages/page/fixtures/contract-valid/report-date-filters-page.json';
@@ -32,4 +33,18 @@ it('Dashboard page-level period editing does not need a report header and preser
   expect(page.sections.some(s=>s.components.some(c=>c.type==='reportHeader'))).toBe(false);
   const removed=editReportDate(edit.draft,null,{filterId:'period-filter',remove:true});expect(removed.ok).toBe(true);
   if(removed.ok)expect(removed.draft.pageDocument.iocHeader).not.toHaveProperty('filterIds');
+});
+
+it('component IOC date ownership is edited and removed at props without adding a root declaration',()=>{
+  const document=structuredClone(dashboardFixture) as any;
+  const props=document.iocHeader;delete document.iocHeader;delete document.dashboardToolbar;
+  document.schemaVersion='6.81';document.sections[0].components.unshift({id:'component-header',type:'iocHeader',layout:{span:12},props});
+  const before=createCanvasAuthoringDraft(document);if(!before.ok)throw Error(before.message);
+  const edited=editReportDate(before.draft,null,{filterId:'period-filter',declaration:{id:'period-filter',type:'timeRange',display:'period',precision:'date',required:true,default:{mode:'quarter',value:'2026-Q4'}},bindings:[{dataSourceId:'sales',binding:{target:'time'}}]});
+  if(!edited.ok)throw Error(edited.message);
+  const parsed=parsePage(edited.draft.pageDocument);if(!parsed.ok)throw Error('invalid');
+  expect(iocHeaderDeclaration(parsed.page)?.filterIds).toEqual(['period-filter']);
+  expect(edited.draft.pageDocument.iocHeader).toBeUndefined();
+  const removed=editReportDate(edited.draft,null,{filterId:'period-filter',remove:true});if(!removed.ok)throw Error(removed.message);
+  expect((removed.draft.pageDocument.sections as Array<{components:unknown[]}>)[0].components[0]).toMatchObject({type:'iocHeader',props:expect.not.objectContaining({filterIds:expect.anything()})});
 });

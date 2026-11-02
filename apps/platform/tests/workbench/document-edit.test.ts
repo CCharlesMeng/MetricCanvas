@@ -1,3 +1,4 @@
+import iocHeaderPage from '../../../../pages/capabilities/ioc-header/section-component/ioc-header-section-placement.json';
 import { describe, expect, it } from 'vitest';
 import { validate } from '@metriccanvas/page';
 import documentFixture from './fixtures/document-edit.json';
@@ -310,3 +311,12 @@ describe('旧页面进入创作草稿的规范化', () => {
 
 
 it('page title edits retain component titles, source bindings and unrelated metadata',()=>{const original=assembled();original.meta={title:'页面旧标题',description:'保留描述'};const draft=authoringDraftOf(original);const changed=editPageTitle(draft,'页面新标题');expect(changed.ok).toBe(true);if(!changed.ok)return;expect(changed.draft.pageDocument.meta).toMatchObject({title:'页面新标题',description:'保留描述'});expect(changed.draft.pageDocument.sections).toEqual(draft.pageDocument.sections);expect(changed.draft.pageDocument.dataSources).toEqual(draft.pageDocument.dataSources);expect(draft.pageDocument.meta).toMatchObject({title:'页面旧标题'});const cleared=editPageTitle(changed.draft,'');expect(cleared.ok).toBe(true);if(cleared.ok)expect(cleared.draft.pageDocument.meta).toEqual({description:'保留描述'});});
+
+it('edits IOC identity title through props and rejects a partial-width Header atomically',()=>{
+ const draft=authoringDraftOf(iocHeaderPage),locator={sectionId:'main',componentId:'page-header'};
+ const changed=editComponent(draft,locator,{title:'页头新标题'});if(!changed.ok)throw Error(changed.message);
+ expect(componentAt(changed.draft.pageDocument,0)).toMatchObject({type:'iocHeader',props:{identity:{title:'页头新标题'}}});
+ expect(componentAt(changed.draft.pageDocument,0).props).not.toHaveProperty('title');
+ expect(editComponent(changed.draft,locator,{span:6})).toMatchObject({ok:false});
+ expect((componentAt(changed.draft.pageDocument,0).layout as {span:number}).span).toBe(12);
+});

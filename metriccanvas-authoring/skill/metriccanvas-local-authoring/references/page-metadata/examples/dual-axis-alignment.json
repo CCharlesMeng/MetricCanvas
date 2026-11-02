@@ -1,18 +1,9 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "dual-axis-alignment",
   "layout": "dashboard",
   "meta": {
     "title": "双轴刻度对齐"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "双轴刻度对齐 · 内联合成数据"
-    },
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "dataSources": {
     "sample": {
@@ -56,6 +47,28 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "双轴刻度对齐 · 内联合成数据"
+            },
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "charts",
       "container": "plain",

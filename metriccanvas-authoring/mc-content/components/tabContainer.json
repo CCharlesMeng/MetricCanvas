@@ -26,7 +26,7 @@
   "knowledge": "tabContainer.overview",
   "reference": "references/page-metadata/components/tabContainer.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.80",
+  "currentWriter": "6.81",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/composite-page.json",
@@ -116,11 +116,6 @@
           "id": "tab-container-analysis-stack",
           "minor": 0,
           "description": "Tab 容器的分析表格堆叠呈现档"
-        },
-        {
-          "id": "dashboard-toolbar-compact-read-only",
-          "minor": 0,
-          "description": "dashboard 紧凑页头与只读筛选说明"
         },
         {
           "id": "composite-card-metric-grid",
@@ -271,11 +266,6 @@
           "id": "category-breakdown-component",
           "minor": 0,
           "description": "分类明细组件(ADR-0053)"
-        },
-        {
-          "id": "dashboard-toolbar-compact-read-only",
-          "minor": 0,
-          "description": "dashboard 紧凑页头与只读筛选说明"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
@@ -343,11 +333,6 @@
           "id": "metric-row-link",
           "minor": 0,
           "description": "指标行的显式非空值导航入口"
-        },
-        {
-          "id": "dashboard-toolbar-compact-read-only",
-          "minor": 0,
-          "description": "dashboard 紧凑页头与只读筛选说明"
         },
         {
           "id": "composite-card-metric-grid",
@@ -439,11 +424,6 @@
           "id": "key-value-panel-single-column",
           "minor": 0,
           "description": "key-value 信息面板的单列排布"
-        },
-        {
-          "id": "dashboard-toolbar-compact-read-only",
-          "minor": 0,
-          "description": "dashboard 紧凑页头与只读筛选说明"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
@@ -542,11 +522,6 @@
           "id": "tab-container-component",
           "minor": 0,
           "description": "Tab 容器组件"
-        },
-        {
-          "id": "dashboard-toolbar-compact-read-only",
-          "minor": 0,
-          "description": "dashboard 紧凑页头与只读筛选说明"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

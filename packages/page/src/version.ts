@@ -1,3 +1,4 @@
+import { headerDeclarations } from './header-binding';
 import { comparisonCapabilityPaths,comparisonJoinCapabilityPaths } from './period-comparison-validation';
 import { periodCapabilityPaths } from './period-capability';
 import { columnConditionPaths, columnEnumPaths } from './table/columns';
@@ -23,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 80;
+const CURRENT_MINOR = 81;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -54,6 +55,7 @@ function hasPinnedText(columns: unknown): boolean {
 }
 
 export const pageCapabilities = {
+  'ioc-header-component': {minor:81,legacyReadable:false,description:'IOC 页头作为首分区首组件',usedAt:document=>componentPaths(document,c=>c.type==='iocHeader')},
   'paged-join-row-compute': {minor:78,legacyReadable:false,description:'查询分页组合逐行计算与按投影声明缺记录策略',
     usedAt:document=>dataSourcePaths(document,data=>record(data.source)?.type==='pagedJoin'&&(Array.isArray(data.compute)||Object.values(record(record(data.source)?.projection)??{}).some(value=>record(value)?.onMissing!==undefined)))},
   'paged-period-comparison': {minor:78,legacyReadable:false,description:'期间比较按当前页业务键补查',usedAt:comparisonJoinCapabilityPaths},
@@ -205,7 +207,7 @@ export const pageCapabilities = {
  'navigation-inputs':{minor:40,description:'显式跨页传值与目标输入契约验证',usedAt:document=>{const paths:string[]=record(document)?.strictURLInputs===true?['/strictURLInputs']:[];walkDocumentComponents(document,(component,path)=>{const page={sections:[{components:[component]}]} as unknown as Page;if(declaredNavigationTargets(page).some(target=>target?.validateTargetInputs===true))paths.push(path);});return paths;}},
  'query-modes':{minor:50,legacyReadable:false,description:'固定单选选择不同静态DQE查询分支，共享结果字段契约',usedAt:document=>dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.queryModes)},
  'time-modes':{minor:39,description:'日月ISO周模式及完整静态查询case',usedAt:document=>[...filterPaths(document,f=>f.display==='modes'),...dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.timeModes)]},
- 'time-availability':{minor:39,description:'可信期间事实与显式日期边界',usedAt:document=>[...filterPaths(document,f=>['availability','max','blockedRanges'].some(key=>has(f,key))),...(Array.isArray(record(record(record(document)?.iocHeader)?.identity)?.facts)&&((record(record(record(document)?.iocHeader)?.identity)?.facts) as unknown[]).some(value=>has(record(record(value)?.value),'fact'))?['/iocHeader/identity/facts']:[])]},
+ 'time-availability':{minor:39,description:'可信期间事实与显式日期边界',usedAt:document=>[...filterPaths(document,f=>['availability','max','blockedRanges'].some(key=>has(f,key))),...headerDeclarations(document).filter(header=>Array.isArray(record(header.props.identity)?.facts)&&(record(header.props.identity)!.facts as unknown[]).some(value=>has(record(record(value)?.value),'fact'))).map(header=>header.path+'/identity/facts')]},
  'time-presets':{minor:39,description:'时间快捷范围与候选月份窗口',usedAt:document=>filterPaths(document,f=>f.type==='timeRange'&&has(f,'presets')||f.type==='dimension'&&has(f,'candidateWindow'))},
   'business-filter-selection':{minor:37,description:'页级单多选、封闭枚举及显式结构树',usedAt:document=>filterPaths(document,f=>['selection','options','treeSelection'].some(key=>has(f,key)))},
   'business-filter-context':{minor:37,description:'页级候选依赖与明确清理',usedAt:document=>filterPaths(document,f=>['candidateContext','clearOnChangeOf'].some(key=>has(f,key)))},

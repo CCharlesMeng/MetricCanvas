@@ -1,39 +1,10 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "navigation-list-page",
   "layout": "dashboard",
-  "dashboardToolbar": "hidden",
   "meta": {
     "title": "IOC B5：项目清单",
     "description": "本地合成跨页传值验收；不保存或恢复来源视图。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "IOC B5：项目清单",
-      "tags": [
-        {
-          "id": "synthetic",
-          "text": "合成验收",
-          "tone": "info"
-        }
-      ],
-      "description": {
-        "text": {
-          "parts": [
-            "来源：",
-            {
-              "param": "origin"
-            }
-          ]
-        },
-        "presentation": "inline"
-      }
-    },
-    "filterIds": [
-      "period",
-      "currency",
-      "regions"
-    ]
   },
   "filters": [
     {
@@ -125,6 +96,47 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "IOC B5：项目清单",
+              "tags": [
+                {
+                  "id": "synthetic",
+                  "text": "合成验收",
+                  "tone": "info"
+                }
+              ],
+              "description": {
+                "text": {
+                  "parts": [
+                    "来源：",
+                    {
+                      "param": "origin"
+                    }
+                  ]
+                },
+                "presentation": "inline"
+              }
+            },
+            "filterIds": [
+              "period",
+              "currency",
+              "regions"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "list",
       "components": [

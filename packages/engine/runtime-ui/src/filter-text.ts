@@ -1,4 +1,4 @@
-import {formatPeriodFact} from '@metriccanvas/page/internal';
+import {mapIocHeader,formatPeriodFact} from '@metriccanvas/page/internal';
 import {
   appliedAmountRange,projectFieldSelections, applyFilterTextValues, formatPeriod,
   type FilterTextValueUsage, type FilterTextValueReference, type Page
@@ -31,7 +31,9 @@ export function filterText(reference: FilterTextValueReference, values: FilterVa
 }
 
 export function periodFactPage(page:Page,snapshot:import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined,revision:number):Page {
- if(!page.iocHeader?.identity?.facts)return page;
- const facts=page.iocHeader.identity.facts.map(fact=>typeof fact.value==='object'&&'fact' in fact.value?{...fact,value:formatPeriodFact(snapshot,fact.value.fact,fact.value.part,revision)??'—'}:fact);
- return {...page,iocHeader:{...page.iocHeader,identity:{...page.iocHeader.identity,facts}}};
+ return mapIocHeader(page,header=>{
+  if(!header.identity?.facts)return header;
+  const facts=header.identity.facts.map(fact=>typeof fact.value==='object'&&'fact' in fact.value?{...fact,value:formatPeriodFact(snapshot,fact.value.fact,fact.value.part,revision)??'—'}:fact);
+  return {...header,identity:{...header.identity,facts}};
+ });
 }

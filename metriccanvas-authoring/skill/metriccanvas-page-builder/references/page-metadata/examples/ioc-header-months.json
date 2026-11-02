@@ -1,28 +1,9 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "ioc-header-months",
   "layout": "dashboard",
   "meta": {
     "title": "IOC页头 · 最近十二个月离散选择"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "月份选择",
-      "tags": [
-        {
-          "text": "合成验收",
-          "id": "tag-0"
-        }
-      ]
-    },
-    "back": true,
-    "filterIds": [
-      "months"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "filters": [
     {
@@ -141,6 +122,38 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "月份选择",
+              "tags": [
+                {
+                  "text": "合成验收",
+                  "id": "tag-0"
+                }
+              ]
+            },
+            "back": true,
+            "filterIds": [
+              "months"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "main",
       "components": [
         {
@@ -177,6 +190,5 @@
         }
       ]
     }
-  ],
-  "dashboardToolbar": "hidden"
+  ]
 }

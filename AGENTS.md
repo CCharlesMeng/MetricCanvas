@@ -30,7 +30,7 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 ### IOC 页头迁移（必选）
 
-用户提供或要求修改的 JSON 属于 IOC 看板，且仍以旧工具栏或自拼组件承担页头时，按 [页头迁移](.agents/skills/metriccanvas-local-authoring/references/ioc-header-migration.md) 分析标题、筛选归属与作用范围、默认值、查询绑定及操作，再迁移为根级 `iocHeader`。完成后明确告知用户已迁移及实际改动；存在无法等价承接的功能时保留原件并说明缺口。已有 `iocHeader` 的页面沿用并核对，正文独立章节标题保留。
+用户提供或要求修改的 JSON 属于 IOC 看板，且仍以旧工具栏或自拼组件承担页头时，按 [页头迁移](.agents/skills/metriccanvas-local-authoring/references/ioc-header-migration.md) 分析标题、筛选归属与作用范围、默认值、查询绑定及操作，再迁移为首 section 首组件 `type:"iocHeader"`（业务属性在 props，旧根级仅兼容读取）。完成后明确告知用户已迁移及实际改动；存在无法等价承接的功能时保留原件并说明缺口。已有 `iocHeader` 的页面沿用并核对，正文独立章节标题保留。
 
 ### 每次编码的复杂度检查（必选）
 

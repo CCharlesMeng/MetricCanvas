@@ -1,3 +1,4 @@
+import { documentIocHeader, hasLegacyDefaultHeader } from './header-binding';
 import {filterHasObservableConsumer} from './presentation-policy';
 import type { z } from 'zod';
 import type { DataSourceMode, DataSources } from './data-source';
@@ -5,6 +6,7 @@ import type { FilterDeclaration } from './filter';
 import type { PageParamDeclaration } from './page-param';
 import type { VersionPolicy } from './version';
 import {
+  iocHeaderComponentZ,
   filterGroupComponentZ,
   buttonComponentZ,
   reportHeaderComponentZ,
@@ -160,7 +162,10 @@ export type FilterGroupComponent = z.infer<typeof filterGroupComponentZ> & { dat
 
 export type ButtonComponent = z.infer<typeof buttonComponentZ> & { data?: never; props: z.infer<typeof buttonComponentZ>['props'] & {title?:never} };
 
+export type IocHeaderComponent = z.infer<typeof iocHeaderComponentZ> & {data?:never;props:z.infer<typeof iocHeaderComponentZ>['props'] & {title?:never}};
+
 export type Component =
+  | IocHeaderComponent
   | FilterGroupComponent
   | ButtonComponent
   | ReportHeaderComponent
@@ -183,6 +188,7 @@ export type Component =
 
 export type DataComponent = Exclude<
   Component,
+  | IocHeaderComponent
   | ReportHeaderComponent
   | FilterGroupComponent
   | ButtonComponent
@@ -262,12 +268,13 @@ export function documentLayoutForm(document: unknown): PageLayoutForm {
  * RuntimeView 只会在 dashboard 形态渲染它，report 仍须保留宿主 breadcrumb。
  */
 export function documentUsesRuntimeBackToolbar(document: unknown): boolean {
-  const ioc = (document as { iocHeader?: { back?: unknown } } | null)?.iocHeader;
+  const ioc = documentIocHeader(document);
   if (ioc) return ioc.back === true;
   if (documentLayoutForm(document) !== 'dashboard') return false;
   if (typeof document !== 'object' || document === null || Array.isArray(document)) return false;
   const toolbar = (document as { dashboardToolbar?: unknown }).dashboardToolbar;
-  if (toolbar === undefined || toolbar === 'visible') return true;
+  if (toolbar === undefined) return hasLegacyDefaultHeader(document);
+  if (toolbar === 'visible') return true;
   return (
     typeof toolbar === 'object' &&
     toolbar !== null &&
@@ -285,6 +292,7 @@ export function isDataComponent(component: Component): component is DataComponen
   return (
     component.type !== 'filterGroup' &&
     component.type !== 'button' &&
+    component.type !== 'iocHeader' &&
     component.type !== 'reportHeader' &&
     component.type !== 'text' &&
     component.type !== 'aiSummary' &&

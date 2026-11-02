@@ -1,5 +1,6 @@
 # 组件选型
 
+- [IOC 页头 iocHeader](iocHeader.md)：首 section 首组件，全宽；身份、返回与页级筛选，跟随 section 显隐。
 - [报告页头 reportHeader](reportHeader.md)：表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML；不绑定页面数据源。
 - [指标卡 metricCard](metricCard.md)：突出一个或少量核心指标的当前值、变化值与可选完成率；单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric。
 - [柱状图 barChart](barChart.md)：比较离散类别之间的大小或展示分类分布；一个 dimension 类别字段 + 一个或多个 metric 字段。

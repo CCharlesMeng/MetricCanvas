@@ -117,7 +117,8 @@
   import {periodFactPage, filterTextPage } from './filter-text';
   import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
   import FilterBar from './filters/FilterBar.svelte';
-  import IocHeader from './ioc-header/IocHeader.svelte';
+  import { compatibilityHeaderSection, leadingHeaderSectionId } from './ioc-header/render-plan';
+  import { usesIocRegion } from '@metriccanvas/page/internal';
   import {resolvePageHeader,pageFiltersReadOnly} from './ioc-header/page-header';
   import {
     cascadeConstraints,
@@ -488,11 +489,11 @@
     const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
     declarations = loaded.filters ?? [];
 
-    if(loaded.strictURLInputs===true){const privateIds=new Set((loaded.detailViews??[]).flatMap(view=>view.filters??[])),query=new URLSearchParams(search);const privateInput=declarations.some(f=>privateIds.has(f.id)&&Object.values(filterURLKeys(f,!!loaded.iocHeader)).some(key=>query.has(key)));const message=privateInput?'详情私有筛选不能由页面URL写入':filterInputIssue(search,declarations,candidateClock,!!loaded.iocHeader);if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}}
+    if(loaded.strictURLInputs===true){const privateIds=new Set((loaded.detailViews??[]).flatMap(view=>view.filters??[])),query=new URLSearchParams(search);const privateInput=declarations.some(f=>privateIds.has(f.id)&&Object.values(filterURLKeys(f,usesIocRegion(loaded))).some(key=>query.has(key)));const message=privateInput?'详情私有筛选不能由页面URL写入':filterInputIssue(search,declarations,candidateClock,usesIocRegion(loaded));if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
     let fromURL:Map<string,FilterValue>;
     try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
-      ? parseFilterSearch(search,declarations,candidateClock,!!loaded.iocHeader)
+      ? parseFilterSearch(search,declarations,candidateClock,usesIocRegion(loaded))
       : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const localOptions = filterGroupOptions(loaded);
     for (const [id, options] of localOptions) {
@@ -509,7 +510,7 @@
     try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     let state:ReturnType<typeof createFilterState>;
     try {
-      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:!!loaded.iocHeader, candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
+      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
     } catch {
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
@@ -734,13 +735,13 @@
   }
 
   function parseFilterURL(search: string, declared: FilterDeclaration[]): FilterValues {
-    return parseFilterSearch(search, declared, undefined, !!declarationPage?.iocHeader);
+    return parseFilterSearch(search, declared, undefined, !!declarationPage&&usesIocRegion(declarationPage));
   }
 
   function mergedSearch(state: FilterState, initial: string): string {
     const params = new URLSearchParams(initial);
     for (const declaration of declarations) {
-      for (const key of Object.values(filterURLKeys(declaration,!!declarationPage?.iocHeader))) params.delete(key);
+      for (const key of Object.values(filterURLKeys(declaration,!!declarationPage&&usesIocRegion(declarationPage)))) params.delete(key);
     }
     for (const [key, value] of new URLSearchParams(state.toURL(declarations))) params.append(key, value);
     return params.toString();
@@ -1317,7 +1318,11 @@
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
     {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
-    {@const dashboardToolbar = readyPage.iocHeader ? 'hidden' : readyPage.dashboardToolbar ?? 'visible'}
+    {@const dashboardToolbar = usesIocRegion(readyPage)?'hidden':readyPage.dashboardToolbar??(header.model?'visible':'hidden')}
+    {@const compatibleHeader = compatibilityHeaderSection(readyPage)}
+    {@const leadingId = leadingHeaderSectionId(readyPage)}
+    {@const projectedSections = presentation?.sections??readyPage.sections}
+    {@const activeSections = visibleSections({...readyPage,sections:projectedSections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)},selectedGroup)}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:with-report-date-toolbar={leadingDateToolbar}
@@ -1326,43 +1331,8 @@
       }
       class="page-content"
       data-page-layout-form={layoutForm}
-      data-dashboard-toolbar={typeof dashboardToolbar === 'string'
-        ? dashboardToolbar
-        : dashboardToolbar.variant}
+      data-dashboard-toolbar={typeof dashboardToolbar==='string'?dashboardToolbar:dashboardToolbar.variant}
     >
-    {#if header.model}
-      <IocHeader model={header.model} filterIds={header.primary.map(filter=>filter.id)} overflowIds={header.overflow.map(filter=>filter.id)}
-        returnContext={navigation?.returnContext} onback={navigation?.back} controls={iocHeaderControls}
-        readOnly={pageReadOnly} note={blockedFilters.length ? `等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label ?? id).join('、')}` : pageReadOnly ? filterEditing?.reason ?? header.note ?? '筛选只读' : header.note}/>
-    {/if}
-    {#snippet iocHeaderControls(id: string, readOnly: boolean)}
-      <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
-        {readOnly} ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
-        onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
-    {/snippet}
-    {#if pageState.capabilities.filters && hasVisibleFilters(header.content)}
-      <div data-dashboard-content-filters={layoutForm==='dashboard'?true:undefined} class:dashboard-content-filters={layoutForm==='dashboard'}>
-        <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={pageReadOnly}
-          declarations={header.content} values={filterValues} candidates={dimensionCandidates}
-          ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
-          onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
-      </div>
-    {/if}
-
-    {#if readyPage.sectionGroups || readyPage.sectionAnchors}
-      <nav class="section-navigation" aria-label="内容导航">
-        {#each (readyPage.sectionGroups ?? []).filter(group=>presentation?.groups.get(group.id)?.eligible!==false) as group (group.id)}
-          <button type="button" data-section-group={group.id}
-            aria-pressed={selectedSectionGroup(readyPage, selectedGroup) === group.id}
-            onclick={() => (selectedGroup = group.id)}>{group.label}</button>
-        {/each}
-        {#each (readyPage.sectionAnchors ?? []).filter(anchor=>presentation?.sectionGates.get(anchor.sectionId)?.eligible!==false) as anchor (anchor.sectionId)}
-          <button type="button" data-section-anchor={anchor.sectionId}
-            onclick={() => locateSection(readyPage, anchor.sectionId)}>{anchor.label}</button>
-        {/each}
-      </nav>
-    {/if}
-    <div class="page-sections">
       {#snippet headerControls(ids: string[])}
         <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
           candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange}
@@ -1372,6 +1342,9 @@
         {@const slots = componentSnapshots(component)}
         <ComponentRenderer
           {component}
+          iocHeader={header.model?{model:header.model,filterIds:header.primary.map(filter=>filter.id),overflowIds:header.overflow.map(filter=>filter.id),controls:iocHeaderControls,
+            returnContext:navigation?.returnContext,onback:navigation?.back,readOnly:pageReadOnly,
+            note:blockedFilters.length?`等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label??id).join('、')}`:pageReadOnly?filterEditing?.reason??header.note??'筛选只读':header.note}:undefined}
           {initialTabs}
           filterGroupReadOnly={pageReadOnly}
           {headerControls}
@@ -1403,12 +1376,50 @@
           nested={nestedRender(readyPage)}
         />
       {/snippet}
+    {#if compatibleHeader}
+      <RuntimeSection section={compatibleHeader} {componentContent}/>
+    {/if}
+    {#snippet iocHeaderControls(id: string, readOnly: boolean)}
+      <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
+        {readOnly} ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+        onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
+    {/snippet}
+    {#if pageState.capabilities.filters && hasVisibleFilters(header.content)}
+      <div data-dashboard-content-filters={layoutForm==='dashboard'?true:undefined} class:dashboard-content-filters={layoutForm==='dashboard'}>
+        <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={pageReadOnly}
+          declarations={header.content} values={filterValues} candidates={dimensionCandidates}
+          ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+          onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
+      </div>
+    {/if}
+
+    {#if !sectionsContent&&leadingId}
+      <div class="page-sections" data-leading-header-section>
+      {#each projectedSections.filter(section=>section.id===leadingId) as section (section.id)}
+        <RuntimeSection {section} {componentContent} hidden={!activeSections.some(item=>item.id===section.id)}/>
+      {/each}
+      </div>
+    {/if}
+    {#if readyPage.sectionGroups || readyPage.sectionAnchors}
+      <nav class="section-navigation" aria-label="内容导航">
+        {#each (readyPage.sectionGroups ?? []).filter(group=>presentation?.groups.get(group.id)?.eligible!==false) as group (group.id)}
+          <button type="button" data-section-group={group.id}
+            aria-pressed={selectedSectionGroup(readyPage, selectedGroup) === group.id}
+            onclick={() => (selectedGroup = group.id)}>{group.label}</button>
+        {/each}
+        {#each (readyPage.sectionAnchors ?? []).filter(anchor=>presentation?.sectionGates.get(anchor.sectionId)?.eligible!==false) as anchor (anchor.sectionId)}
+          <button type="button" data-section-anchor={anchor.sectionId}
+            onclick={() => locateSection(readyPage, anchor.sectionId)}>{anchor.label}</button>
+        {/each}
+      </nav>
+    {/if}
+    <div class="page-sections">
       {#if sectionsContent}
-        {@render sectionsContent(visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup), componentContent)}
+        {@render sectionsContent(activeSections, componentContent)}
       {:else}
-        {#each presentation?.sections ?? readyPage.sections as section (section.id)}
+        {#each projectedSections.filter(section=>section.id!==leadingId) as section (section.id)}
           <RuntimeSection {section} {componentContent}
-            hidden={!visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup).some(item=>item.id===section.id)} />
+            hidden={!activeSections.some(item=>item.id===section.id)} />
         {/each}
       {/if}
     </div>

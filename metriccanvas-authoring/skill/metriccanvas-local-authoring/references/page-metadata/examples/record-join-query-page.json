@@ -1,11 +1,7 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "record-join-query-page",
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "note": "区域和审批期间筛选；责任人及生命状态为当前快照"
-  },
   "meta": {
     "title": "审批记录按需分页",
     "description": "1205条合成审批记录，真实记录标识，基准源按页查询，再补本页项目资料。"

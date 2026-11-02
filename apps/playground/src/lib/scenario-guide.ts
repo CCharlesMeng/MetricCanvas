@@ -1,3 +1,4 @@
+import { documentIocHeader } from '@metriccanvas/page/internal';
 /** README content stays text: no HTML execution or natural-language configuration inference. */
 export interface GuideBlock { kind: 'heading' | 'text' | 'code'; text: string }
 
@@ -61,7 +62,7 @@ export function sourceFacts(document: unknown): SourceFact[] {
 }
 
 export function componentConfiguration(document: unknown, focus: string): unknown {
-  if (focus === 'iocHeader') return record(document).iocHeader;
+  if (focus === 'iocHeader') return documentIocHeader(document);
   const components = documentComponents(document);
   if (!focus) return document;
   return components.filter(component => component.type === focus);

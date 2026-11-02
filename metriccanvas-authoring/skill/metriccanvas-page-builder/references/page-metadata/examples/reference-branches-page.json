@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "layout": "report",
   "id": "reference-branches-page",
   "dataSources": {
@@ -693,6 +693,5 @@
         "granularity": "month"
       }
     }
-  ],
-  "dashboardToolbar": "visible"
+  ]
 }

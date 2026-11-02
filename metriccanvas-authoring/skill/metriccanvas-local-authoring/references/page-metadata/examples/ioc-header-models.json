@@ -1,32 +1,9 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "ioc-header-models",
   "layout": "dashboard",
   "meta": {
     "title": "IOC页头 · 模型与时间范围"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "模型与时间范围",
-      "tags": [
-        {
-          "text": "合成候选与查询",
-          "id": "tag-0"
-        }
-      ]
-    },
-    "back": true,
-    "filterIds": [
-      "range",
-      "model",
-      "region",
-      "customer-type",
-      "key"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "filters": [
     {
@@ -191,6 +168,42 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "模型与时间范围",
+              "tags": [
+                {
+                  "text": "合成候选与查询",
+                  "id": "tag-0"
+                }
+              ]
+            },
+            "back": true,
+            "filterIds": [
+              "range",
+              "model",
+              "region",
+              "customer-type",
+              "key"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "main",
       "components": [
         {
@@ -231,6 +244,5 @@
         }
       ]
     }
-  ],
-  "dashboardToolbar": "hidden"
+  ]
 }

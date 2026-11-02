@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "6.81",
+  "id": "dual-axis-alignment",
+  "layout": "dashboard",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "双轴刻度对齐 · 内联合成数据"
+            },
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

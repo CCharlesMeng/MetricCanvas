@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "unified-year-header",
   "layout": "dashboard",
   "filters": [
@@ -113,6 +113,30 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "Dashboard 期间选择与查询"
+            },
+            "filterIds": [
+              "period-filter"
+            ],
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "detail",
       "container": "plain",
       "title": "经营明细",
@@ -179,16 +203,5 @@
   "meta": {
     "title": "Dashboard 期间选择与查询",
     "description": "合成验收数据；统一页头仅选年份，查询完整自然年，未绑定查询保持不变。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "Dashboard 期间选择与查询"
-    },
-    "filterIds": [
-      "period-filter"
-    ],
-    "presentation": {
-      "layout": "inline"
-    }
   }
 }

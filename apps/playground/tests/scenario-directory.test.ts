@@ -48,7 +48,7 @@ describe('三维场景目录', () => {
     expect(searchScenes(available, pages, '不存在的能力')).toEqual([]);
   });
 
-  it('IOC 页头可从组件目录发现，配置读取页面根声明且复用数据入口场景', () => {
+  it('IOC 页头可从组件目录发现，配置兼容根声明及新组件并复用数据入口场景', () => {
     expect(directoryTopics('components')).toContainEqual(expect.objectContaining({ id: 'iocHeader', title: 'IOC 页头' }));
     const matches = scenesForTopic(available, pages, 'components', 'iocHeader');
     const header = matches.find(scene => scene.id === 'ioc-header')!;
@@ -58,7 +58,7 @@ describe('三维场景目录', () => {
     expect(sceneRelations(header, 'ioc-header-demo')).toContainEqual({ title: 'IOC 页头', href: '/catalog/components/iocHeader?scene=ioc-header&example=ioc-header-demo' });
     const document = documents.find(item => item.document.id === 'ioc-header-demo')!.document;
     expect(componentConfiguration(document, 'iocHeader')).toEqual(document.iocHeader);
-    expect(componentCatalog.some(item => String(item.type) === 'iocHeader')).toBe(false);
+    expect(componentCatalog.some(item => String(item.type) === 'iocHeader')).toBe(true);
     expect(matches.flatMap(scene => scene.pages).every(id => pages.find(page => page.id === id)!.componentTypes.includes('iocHeader'))).toBe(true);
   });
 

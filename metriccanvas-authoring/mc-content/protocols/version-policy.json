@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 80,
-  "current": "6.80",
+  "minor": 81,
+  "current": "6.81",
   "capabilities": {
+    "ioc-header-component": {
+      "minor": 81,
+      "description": "IOC 页头作为首分区首组件",
+      "legacyReadable": false
+    },
     "paged-join-row-compute": {
       "minor": 78,
       "description": "查询分页组合逐行计算与按投影声明缺记录策略",
@@ -825,6 +830,7 @@
     "6.77",
     "6.78",
     "6.79",
-    "6.80"
+    "6.80",
+    "6.81"
   ]
 }

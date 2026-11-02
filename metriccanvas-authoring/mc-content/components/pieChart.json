@@ -32,7 +32,7 @@
   "knowledge": "pieChart.overview",
   "reference": "references/page-metadata/components/pieChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.80",
+  "currentWriter": "6.81",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/composite-page.json",
@@ -124,11 +124,6 @@
           "description": "Tab 容器的分析表格堆叠呈现档"
         },
         {
-          "id": "dashboard-toolbar-compact-read-only",
-          "minor": 0,
-          "description": "dashboard 紧凑页头与只读筛选说明"
-        },
-        {
           "id": "composite-card-metric-grid",
           "minor": 0,
           "description": "组合卡的紧凑指标网格呈现档"
@@ -202,22 +197,17 @@
     },
     {
       "file": "references/page-metadata/examples/pie-table-legend.json",
-      "requiredVersion": "6.64",
+      "requiredVersion": "6.81",
       "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
         {
           "id": "pie-legend-table",
           "minor": 64,
           "description": "饼图表格式图例、显式数值排序与类别顺序"
-        },
-        {
-          "id": "unified-page-header",
-          "minor": 41,
-          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
-        },
-        {
-          "id": "ioc-header",
-          "minor": 36,
-          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
         },
         {
           "id": "open-detail-action",

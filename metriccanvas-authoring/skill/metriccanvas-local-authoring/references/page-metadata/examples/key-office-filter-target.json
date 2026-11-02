@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "key-office-filter-target",
   "layout": "dashboard",
   "meta": {
@@ -53,16 +53,6 @@
       "label": "数据月份"
     }
   ],
-  "iocHeader": {
-    "identity": {
-      "title": "重点国代下钻"
-    },
-    "filterIds": [
-      "key-office",
-      "mtime",
-      "region"
-    ]
-  },
   "dataSources": {
     "offices": {
       "fields": {
@@ -119,6 +109,29 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "重点国代下钻"
+            },
+            "filterIds": [
+              "key-office",
+              "mtime",
+              "region"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "results",
       "components": [

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "unified-overflow-header",
   "meta": {
     "title": "机会点清单",
@@ -785,6 +785,43 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "机会点清单"
+            },
+            "back": true,
+            "filterIds": [
+              "mtime",
+              "key-office",
+              "industry-type",
+              "region",
+              "na-type",
+              "industry-l1",
+              "industry-l2",
+              "overdue",
+              "opportunity-stage",
+              "bidding-amount"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "overflow"
+            },
+            "readOnly": true,
+            "note": "只读验收：包括更多筛选"
+          }
+        }
+      ]
+    },
+    {
       "id": "list",
       "container": "card",
       "components": [
@@ -1098,29 +1135,5 @@
       ]
     }
   ],
-  "layout": "dashboard",
-  "iocHeader": {
-    "identity": {
-      "title": "机会点清单"
-    },
-    "back": true,
-    "filterIds": [
-      "mtime",
-      "key-office",
-      "industry-type",
-      "region",
-      "na-type",
-      "industry-l1",
-      "industry-l2",
-      "overdue",
-      "opportunity-stage",
-      "bidding-amount"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "overflow"
-    },
-    "readOnly": true,
-    "note": "只读验收：包括更多筛选"
-  }
+  "layout": "dashboard"
 }

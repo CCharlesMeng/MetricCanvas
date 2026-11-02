@@ -1,5 +1,9 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import IocHeader from './ioc-header/IocHeader.svelte';
+  import IocHeaderFrame from './ioc-header/IocHeaderFrame.svelte';
+  import { resolvedIocHeader } from './ioc-header/model';
+  import type { IocHeaderRenderBinding } from './ioc-header/render-binding';
   import { Button } from '@metriccanvas/ui';
   import { PRESENTATION_CONTEXT,type PresentationReader } from './presentation-context';
   /**
@@ -62,6 +66,7 @@
 
   interface Props {
     component: Component;
+    iocHeader?:IocHeaderRenderBinding;
     initialTabs?: ReadonlyMap<string, string>;
     summarySnapshot?: import('./ai-summary').AiSummarySnapshot;
     exportMode?: boolean;
@@ -93,7 +98,7 @@
   }
 
   let {
-    component,
+    component, iocHeader,
     initialTabs,
     exportMode = false, filterGroupReadOnly = false, filterGroupValue, onfiltergroup, headerControls, headerPeriod, summarySnapshot,
     data,
@@ -126,6 +131,8 @@
     visibleData as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }
   );
 </script>
+
+{#snippet emptyIocControls(_id:string,_readOnly:boolean)}{/snippet}
 
 <!-- 容器内的子组件递归回本组件;数据与交互仍由统一运行时按组件提供。 -->
 {#snippet child(nestedComponent: Component)}
@@ -160,7 +167,12 @@
 {/snippet}
 
 {#if rendersWithoutWidgetHost(component)}
-  {#if component.type === 'filterGroup'}
+  {#if component.type === 'iocHeader'}
+    {@const binding=iocHeader??{model:resolvedIocHeader(component.props),filterIds:component.props.filterIds??[],controls:emptyIocControls}}
+    <IocHeaderFrame sticky={!exportMode&&binding.model.layout==='inline'&&binding.model.density==='compact'}>
+      <IocHeader {...binding} staticView={exportMode}/>
+    </IocHeaderFrame>
+  {:else if component.type === 'filterGroup'}
     <FilterGroup control={component.props} value={filterGroupValue?.(component)}
       label={presentation?.()?.context.declarations.find(filter=>filter.id===component.props.filterId)?.label ?? '筛选'} {exportMode}
       disabled={filterGroupReadOnly || gate?.enabled===false}

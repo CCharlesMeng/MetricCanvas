@@ -32,7 +32,7 @@
   "knowledge": "lineChart.overview",
   "reference": "references/page-metadata/components/lineChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.80",
+  "currentWriter": "6.81",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/mixed-page.json",
@@ -112,22 +112,17 @@
     },
     {
       "file": "references/page-metadata/examples/dual-axis-alignment.json",
-      "requiredVersion": "6.41",
+      "requiredVersion": "6.81",
       "capabilities": [
         {
-          "id": "unified-page-header",
-          "minor": 41,
-          "description": "唯一页头实现及行内布局、更多筛选和只读说明"
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
         },
         {
           "id": "chart-echarts-option",
           "minor": 32,
           "description": "柱状图、折线图、饼图高级 ECharts 呈现扩展"
-        },
-        {
-          "id": "ioc-header",
-          "minor": 36,
-          "description": "页级 IOC 身份、筛选归属与实际首行折叠"
         },
         {
           "id": "mixed-chart-series",

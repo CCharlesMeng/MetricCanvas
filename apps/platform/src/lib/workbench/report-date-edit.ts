@@ -1,6 +1,6 @@
 import { editDateQueryBindings, inferredPeriodPolicy, periodBindable, queryTime, type EditableDateBinding } from './report-date-bindings';
-import { parsePage, versionPolicy } from '@metriccanvas/page';
-import { flattenPageComponents, type FilterDeclaration, type DqeFilterBinding, type TimeWindow } from '@metriccanvas/page/internal';
+import { parsePage } from '@metriccanvas/page';
+import { documentIocHeader, flattenPageComponents, type IocHeaderDeclaration, type FilterDeclaration, type DqeFilterBinding, type TimeWindow } from '@metriccanvas/page/internal';
 import { projectCanvasDraft, type CanvasAuthoringDraft, type ComponentLocator, type DocumentEditResult } from './document-edit';
 export interface ReportDateEdit {
   filterId: string;
@@ -38,13 +38,11 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
   const existing=(document.filters??[]).find((f:FilterDeclaration)=>f.id===edit.filterId);
   if(existing&&!['timePoint','timeRange'].includes(existing.type))return {ok:false,message:'筛选器 ID 已被其他类型占用'};
   if(Object.values(parsed.page.dataSources).some(source=>source.source.type==='query'&&source.source.query.timeModes?.filterId===edit.filterId))return {ok:false,message:'时间模式需通过原子时间程序配置同步修改全部查询case'};
-  document.schemaVersion=versionPolicy.current;
+  document.schemaVersion=parsed.page.schemaVersion;
+  const ioc=documentIocHeader(document) as IocHeaderDeclaration|undefined;
   if(edit.remove) {
     document.filters=(document.filters??[]).filter((f:FilterDeclaration)=>f.id!==edit.filterId);
-    if(document.iocHeader?.filterIds){
-      const ids=document.iocHeader.filterIds.filter((id:string)=>id!==edit.filterId);
-      if(ids.length)document.iocHeader.filterIds=ids;else delete document.iocHeader.filterIds;
-    }
+    removeHeaderFilter(ioc,edit.filterId);
     for(const component of flattenPageComponents(parsed.page)) if(component.type==='reportHeader') {
       const target=document.sections.flatMap((s:any)=>s.components).find((c:any)=>c.id===component.id);
       const ids=(target.props.filterIds??[]).filter((id:string)=>id!==edit.filterId);
@@ -58,8 +56,8 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
     for(const section of document.sections)for(const other of section.components)if(other.type==='reportHeader'&&other!==header){const ids=(other.props.filterIds??[]).filter((id:string)=>id!==edit.filterId);if(ids.length)other.props.filterIds=ids;else delete other.props.filterIds;}
     if(header) {
       header.props.filterIds=[...new Set([...(header.props.filterIds??[]),edit.filterId])];
-      if(document.iocHeader?.filterIds){const ids=document.iocHeader.filterIds.filter((id:string)=>id!==edit.filterId);if(ids.length)document.iocHeader.filterIds=ids;else delete document.iocHeader.filterIds;}
-    } else if(document.iocHeader)document.iocHeader.filterIds=[...new Set([...(document.iocHeader.filterIds??[]),edit.filterId])];
+      removeHeaderFilter(ioc,edit.filterId);
+    } else if(ioc)ioc.filterIds=[...new Set([...(ioc.filterIds??[]),edit.filterId])];
   }
   for(const [id,source] of Object.entries(document.dataSources) as [string,any][]) {
     if(source.source.type!=='query')continue;
@@ -83,4 +81,10 @@ function pruneOwnedTimeParam(document:any,id:string) {
   if(!document.params.query.times.length)delete document.params.query.times;
   if(!Object.keys(document.params.query).length)delete document.params.query;
   if(!Object.keys(document.params).length)delete document.params;
+}
+
+function removeHeaderFilter(header:IocHeaderDeclaration|undefined,id:string):void {
+  if(!header?.filterIds)return;
+  const ids=header.filterIds.filter(value=>value!==id);
+  if(ids.length)header.filterIds=ids;else delete header.filterIds;
 }

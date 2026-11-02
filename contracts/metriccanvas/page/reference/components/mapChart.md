@@ -19,7 +19,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.80。结构真源为本册[schema.json](../schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.81。结构真源为本册[schema.json](../schema.json)，SHA256 `304b22179260547b5c13429751e5b56bb8e2ea238ab5aa0c83ead37b69c952a4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

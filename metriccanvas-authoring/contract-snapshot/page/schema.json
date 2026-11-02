@@ -80,9 +80,10 @@
         "6.77",
         "6.78",
         "6.79",
-        "6.80"
+        "6.80",
+        "6.81"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81"
     },
     "id": {
       "type": "string",
@@ -126,6 +127,8 @@
       ]
     },
     "iocHeader": {
+      "deprecated": true,
+      "description": "旧根级IOC页头兼容读取；新写出使用首section首组件iocHeader，属性位于props",
       "type": "object",
       "properties": {
         "identity": {
@@ -460,6 +463,9 @@
                 },
                 {
                   "$ref": "#/definitions/filterGroupComponent"
+                },
+                {
+                  "$ref": "#/definitions/iocHeaderComponent"
                 }
               ]
             }
@@ -732,7 +738,7 @@
           "additionalProperties": false
         }
       ],
-      "description": "旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader",
+      "description": "旧页面兼容字段；统一由 IocHeader 呈现，新页面配置首section首组件 type:iocHeader",
       "deprecated": true
     },
     "pageParam": {
@@ -12506,6 +12512,230 @@
       ],
       "additionalProperties": false
     },
+    "iocHeaderComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
+        "type": {
+          "type": "string",
+          "const": "iocHeader"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "identity": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/nonEmptyTextValue"
+                    }
+                  ]
+                },
+                "code": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "$ref": "#/definitions/nonEmptyTextValue"
+                    },
+                    "value": {
+                      "$ref": "#/definitions/nonEmptyTextValue"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                },
+                "description": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "$ref": "#/definitions/nonEmptyTextValue"
+                    },
+                    "presentation": {
+                      "type": "string",
+                      "enum": [
+                        "inline",
+                        "tooltip"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "text"
+                  ],
+                  "additionalProperties": false
+                },
+                "tags": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "text": {
+                        "$ref": "#/definitions/nonEmptyTextValue"
+                      },
+                      "tone": {
+                        "type": "string",
+                        "enum": [
+                          "neutral",
+                          "info",
+                          "success",
+                          "warning",
+                          "danger"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "text"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "facts": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "queryPeriod",
+                          "latestDataPeriod",
+                          "refreshedAt",
+                          "generatedAt"
+                        ]
+                      },
+                      "label": {
+                        "$ref": "#/definitions/nonEmptyTextValue"
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/definitions/nonEmptyTextValue"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "fact": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              },
+                              "part": {
+                                "type": "string",
+                                "enum": [
+                                  "latest",
+                                  "latestComplete",
+                                  "refreshedAt",
+                                  "generatedAt"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "fact",
+                              "part"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "kind",
+                      "label",
+                      "value"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            "back": {
+              "type": "boolean",
+              "const": true
+            },
+            "readOnly": {
+              "type": "boolean"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "filterIds": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "uniqueItems": true
+            },
+            "presentation": {
+              "type": "object",
+              "properties": {
+                "density": {
+                  "type": "string",
+                  "enum": [
+                    "normal",
+                    "compact"
+                  ]
+                },
+                "collapse": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "firstRow",
+                    "overflow"
+                  ]
+                },
+                "layout": {
+                  "type": "string",
+                  "enum": [
+                    "stacked",
+                    "inline"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
     "section": {
       "type": "object",
       "properties": {
@@ -12602,6 +12832,9 @@
               },
               {
                 "$ref": "#/definitions/filterGroupComponent"
+              },
+              {
+                "$ref": "#/definitions/iocHeaderComponent"
               }
             ]
           }
@@ -12634,5 +12867,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.80"
+  "$id": "https://metriccanvas/page/v6.81"
 }

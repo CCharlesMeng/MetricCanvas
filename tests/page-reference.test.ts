@@ -1,3 +1,5 @@
+import {upgradePageDocument} from '../packages/page/src/upgrade-document';
+import {appendIocComponentFixtures,featureConformancePages} from '../tools/scripts/page-conformance-sources';
 import { pageFilesById } from '../tools/scripts/page-files.mjs';
 import { createHash } from 'node:crypto';
 import { gunzipSync } from 'node:zlib';
@@ -14,10 +16,11 @@ const skills: Array<{id:string;entrypoint:string;referenceProjection?:string}> =
 const authorMap = JSON.parse(await readFile('docs/page-metadata/reference-map.json', 'utf8')) as ReferenceMap;
 const inputs = new Map<string,string>();
 for(const example of new Set(Object.values(authorMap.modules).flatMap(module=>module.examples))){
-  if(['table-column-enums','record-join-query-params','ioc-region-url-demo','key-office-filter-demo','key-office-filter-target','chart-constant-values-page','page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles','query-missing-measures'].includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(pageFilesById('pages').get(`${example}`)!,'utf8'));
+  if((featureConformancePages as readonly string[]).includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(pageFilesById('pages').get(`${example}`)!,'utf8'));
 }
 
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
+appendIocComponentFixtures(new Map([...inputs].map(([file,content])=>[path.basename(file,'.json'),JSON.parse(content)])),inputs);
 inputs.set('page/conformance/coverage.json',await readFile('contracts/metriccanvas/page/conformance/coverage.json','utf8'));
 for(const file of await readdir('contracts/metriccanvas/page/conformance/invalid')) inputs.set(`page/conformance/invalid/${file}`,await readFile(`contracts/metriccanvas/page/conformance/invalid/${file}`,'utf8'));
 const reference = await buildPageReference(root, pageSchema, componentCatalog, inputs, versionPolicy.current);
@@ -124,11 +127,17 @@ describe('页面参考手册生成与分发', () => {
       for (const skill of skills.filter(skill => skill.id === 'metriccanvas-page-builder')) {
         const actual = await readFile(`metriccanvas-authoring/${path.dirname(skill.entrypoint)}/references/page-metadata/${file}`, 'utf8');
         if (file.startsWith('examples/') && file.endsWith('.json')) {
-          const normalized = normalizePageDocument({...JSON.parse(content), schemaVersion: versionPolicy.current});
+          const original=JSON.parse(content);
+          const upgraded=original.iocHeader?upgradePageDocument(original):undefined;
+          if(upgraded&&!upgraded.ok)throw Error(file);
+          const {dashboardToolbar:_legacyToolbar,...candidate}=upgraded?.ok?upgraded.document:original;
+          const normalized = normalizePageDocument({...candidate, schemaVersion: versionPolicy.current});
           expect(normalized.ok, file).toBe(true);
           if (!normalized.ok) throw new Error(file);
           expect(JSON.parse(actual), file).toEqual({...normalized.document, schemaVersion: versionPolicy.current});
           expect(validate(JSON.parse(actual)), file).toEqual([]);
+          expect(JSON.parse(actual),file).not.toHaveProperty('iocHeader');
+          expect(JSON.parse(actual),file).not.toHaveProperty('dashboardToolbar');
         } else expect(actual, file).toBe(content);
       }
     }

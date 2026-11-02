@@ -1,11 +1,7 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "record-join-page",
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "note": "合成审批数据 · 1205 条 · 同一商务多条审批记录"
-  },
   "meta": {
     "title": "审批记录关联与全局筛选",
     "description": "合成数据：1205 条审批记录，同一商务多条记录，当前基本信息补列；验证本地时间范围、搜索、候选值和导出。"

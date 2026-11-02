@@ -1,43 +1,10 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "business-filter-page",
   "layout": "dashboard",
-  "dashboardToolbar": "hidden",
   "meta": {
     "title": "IOC B2：封闭枚举与勾选语义",
     "description": "本地DQE仿真合成验收，条件回显不是业务指标。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "业务筛选 · 封闭枚举",
-      "description": {
-        "text": "本地合成验收 · 控件改变真实声明的查询条件"
-      },
-      "tags": [
-        {
-          "id": "demo",
-          "text": "合成数据",
-          "tone": "info"
-        }
-      ],
-      "facts": [
-        {
-          "id": "period",
-          "kind": "queryPeriod",
-          "label": "统计期间",
-          "value": {
-            "filter": "period",
-            "format": "period"
-          }
-        }
-      ]
-    },
-    "filterIds": [
-      "period",
-      "kind",
-      "breakthrough",
-      "focus"
-    ]
   },
   "filters": [
     {
@@ -251,6 +218,51 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "业务筛选 · 封闭枚举",
+              "description": {
+                "text": "本地合成验收 · 控件改变真实声明的查询条件"
+              },
+              "tags": [
+                {
+                  "id": "demo",
+                  "text": "合成数据",
+                  "tone": "info"
+                }
+              ],
+              "facts": [
+                {
+                  "id": "period",
+                  "kind": "queryPeriod",
+                  "label": "统计期间",
+                  "value": {
+                    "filter": "period",
+                    "format": "period"
+                  }
+                }
+              ]
+            },
+            "filterIds": [
+              "period",
+              "kind",
+              "breakthrough",
+              "focus"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "body",
       "container": "card",

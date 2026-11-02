@@ -148,7 +148,8 @@
 {#snippet cell(component: Component, componentIndex: number, gridColumn?: string)}
       <article
         class:chart-cell={isChartComponent(component)}
-        class:header-cell={component.type === 'reportHeader'}
+        class:header-cell={component.type === 'reportHeader' || component.type === 'iocHeader'}
+        class:ioc-header-cell={component.type === 'iocHeader'}
         class:filter-group-cell={component.type === 'filterGroup'}
         class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
         class:metric-connection-cell={gridColumn !== undefined}
@@ -289,6 +290,7 @@
 
     min-height: 0;
   }
+  .ioc-header-cell { grid-column:1 / -1 !important; }
   .header-cell,
   .filter-group-cell {
     min-height: 0;

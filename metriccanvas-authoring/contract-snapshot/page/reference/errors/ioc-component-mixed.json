@@ -1,0 +1,41 @@
+{
+  "case": "ioc-component-mixed",
+  "invariant": "ioc-header-component",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "组件页头不能与旧根级 iocHeader 或 dashboardToolbar 混写",
+      "paths": [
+        "/sections/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "…": "共1个键"
+              },
+              "filterIds": [
+                "…（共1项）"
+              ],
+              "back": true,
+              "presentation": {
+                "…": "共3个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-component-mixed.json"
+}

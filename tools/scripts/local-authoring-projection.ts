@@ -1,3 +1,4 @@
+import { upgradePageDocument } from '../../packages/page/src/upgrade-document';
 import { createHash } from 'node:crypto';
 import { builtinModules } from 'node:module';
 import { readFile, readdir, realpath } from 'node:fs/promises';
@@ -142,7 +143,10 @@ export function referenceProjection(outputs: Map<string, string>): Map<string, s
     // conformance vectors remain in the product contracts, not example recipes.
     if (relative.startsWith('examples/') && relative.endsWith('.json')) {
       const parsed = JSON.parse(content);
-      const normalized = normalizePageDocument({...parsed, schemaVersion: versionPolicy.current});
+      const upgraded=parsed.iocHeader?upgradePageDocument(parsed):undefined;
+      if(upgraded&&!upgraded.ok)throw new Error(`Invalid IOC Skill example: ${relative}`);
+      const {dashboardToolbar:_legacyToolbar,...candidate}=upgraded?.ok?upgraded.document:parsed;
+      const normalized = normalizePageDocument({...candidate, schemaVersion: versionPolicy.current});
       if (!normalized.ok) throw new Error(`Invalid current Skill example: ${relative}`);
       const document = {...normalized.document, schemaVersion: versionPolicy.current};
       const errors = validate(document);

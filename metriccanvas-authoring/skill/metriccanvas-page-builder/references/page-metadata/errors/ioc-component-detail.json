@@ -1,0 +1,55 @@
+{
+  "case": "ioc-component-detail",
+  "invariant": "ioc-header-component",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头只允许位于首分区的第一个组件",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "每页最多声明一个 IOC 页头",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "detailViews": [
+      {
+        "components": [
+          {
+            "id": "detail-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "…": "共1个键"
+              },
+              "filterIds": [
+                "…（共1项）"
+              ],
+              "back": true,
+              "presentation": {
+                "…": "共3个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-component-detail.json"
+}

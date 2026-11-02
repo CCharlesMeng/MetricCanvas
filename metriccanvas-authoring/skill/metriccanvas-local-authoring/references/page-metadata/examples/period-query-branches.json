@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "period-query-branches",
   "layout": "dashboard",
   "meta": {
@@ -42,17 +42,6 @@
       ]
     }
   ],
-  "iocHeader": {
-    "identity": {
-      "title": "期间策略与表格列显隐"
-    },
-    "filterIds": [
-      "statistics-period"
-    ],
-    "presentation": {
-      "layout": "inline"
-    }
-  },
   "dataSources": {
     "scores": {
       "fields": {
@@ -250,6 +239,30 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "期间策略与表格列显隐"
+            },
+            "filterIds": [
+              "statistics-period"
+            ],
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "period-demo",
       "components": [

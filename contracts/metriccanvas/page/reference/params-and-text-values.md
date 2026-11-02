@@ -75,7 +75,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.80。结构真源为本册[schema.json](schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.81。结构真源为本册[schema.json](schema.json)，SHA256 `304b22179260547b5c13429751e5b56bb8e2ea238ab5aa0c83ead37b69c952a4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1372,10 +1372,10 @@ Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textV
 - `#/definitions/nonEmptyTextValue/anyOf/0`：[合法完整页面](examples/component-reportHeader.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/nonEmptyTextValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/nonEmptyTextValue/anyOf/2`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/iocHeader/identity/facts/0/value`。
-- `#/definitions/nonEmptyTextValue/anyOf/3`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title`。
-- `#/definitions/textValueComposition/properties/parts/items/anyOf/0`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title/parts/1`。
+- `#/definitions/nonEmptyTextValue/anyOf/3`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/components/0/props/identity/title`。
+- `#/definitions/textValueComposition/properties/parts/items/anyOf/0`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/components/0/props/identity/title/parts/0`。
 - `#/definitions/textValueComposition/properties/parts/items/anyOf/1`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title/parts/2`。
-- `#/definitions/textValueComposition/properties/parts/items/anyOf/2`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title/parts/0`。
+- `#/definitions/textValueComposition/properties/parts/items/anyOf/2`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/components/0/props/identity/title/parts/1`。
 - `#/definitions/pageParam/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/default`。

@@ -1,0 +1,54 @@
+{
+  "case": "ioc-component-legacy-version",
+  "invariant": "ioc-header-component",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头作为首分区首组件 由 6.81 引入，文档声明的是 5.4",
+      "paths": [
+        "/sections/0/components/0"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 5.4",
+      "paths": [
+        "/sections/0/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "…": "共1个键"
+              },
+              "filterIds": [
+                "…（共1项）"
+              ],
+              "back": true,
+              "presentation": {
+                "…": "共3个键"
+              }
+            }
+          }
+        ],
+        "visibleWhen": {
+          "filter": "show-header",
+          "part": "value",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

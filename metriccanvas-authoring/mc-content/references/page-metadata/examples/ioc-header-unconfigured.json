@@ -1,29 +1,9 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "ioc-header-unconfigured",
   "layout": "dashboard",
   "meta": {
     "title": "IOC页头 · 缺配置与局部查询门禁"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "缺配置与局部查询门禁",
-      "tags": [
-        {
-          "text": "合成候选与查询",
-          "id": "tag-0"
-        }
-      ]
-    },
-    "back": true,
-    "filterIds": [
-      "industry",
-      "band"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "filters": [
     {
@@ -139,6 +119,39 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "缺配置与局部查询门禁",
+              "tags": [
+                {
+                  "text": "合成候选与查询",
+                  "id": "tag-0"
+                }
+              ]
+            },
+            "back": true,
+            "filterIds": [
+              "industry",
+              "band"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "main",
       "components": [
         {
@@ -201,6 +214,5 @@
         }
       ]
     }
-  ],
-  "dashboardToolbar": "hidden"
+  ]
 }

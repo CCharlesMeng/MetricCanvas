@@ -1,3 +1,4 @@
+import { appendIocComponentFixtures,featureConformancePages } from './page-conformance-sources';
 import { pageFilesById } from './page-files.mjs';
 import { buildPublicationSchema } from '../../metriccanvas-authoring/contracts/authored/publication-contract.ts';
 import { createHash } from 'node:crypto';
@@ -120,12 +121,13 @@ async function buildProductOutputs(): Promise<OutputMap> {
 
   // Feature pages are the single source for both browser acceptance and exported examples.
   const pageAssets = pageFilesById(path.join(repoRoot, 'pages'));
-  for(const name of ['table-column-enums','record-join-query-params','ioc-region-url-demo','key-office-filter-demo','key-office-filter-target','chart-constant-values-page','page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','report-ai-summary','report-ai-summary-regions','dashboard-title-styles','report-title-styles','query-missing-measures']) {
+  for(const name of featureConformancePages) {
     const content=await readFile(pageAssets.get(name)!,'utf8');
     const document=JSON.parse(content);const errors=validate(document);
     if(errors.length)throw Error(JSON.stringify(errors));
     outputs.set(`page/conformance/valid/${name}.json`,content);fixtures.set(name,document);
   }
+  appendIocComponentFixtures(fixtures,outputs);
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
   for (const schemaVersion of ['5.0', '5.4', '6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '7.0']) {

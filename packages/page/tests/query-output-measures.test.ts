@@ -28,7 +28,7 @@ describe('DQE 直接返回的数值显式作为度量', () => {
     expect(input).toEqual(before);
     const normalized = normalizePageDocument(input);
     if (!normalized.ok) throw new Error(JSON.stringify(normalized.errors));
-    expect(normalized.document).toEqual({...input,schemaVersion:versionPolicy.current});
+    expect(normalized.document).toEqual({...input,schemaVersion:'6.80'});
   });
 
   it('分组写法支持现成金额；缺失与数值字符串沿用查询度量归一化', () => {

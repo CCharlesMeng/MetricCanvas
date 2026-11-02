@@ -1,0 +1,27 @@
+{
+  "case": "ioc-component-span",
+  "invariant": "ioc-header-component",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头必须占满分区，span 为12且不能作为背景",
+      "paths": [
+        "/sections/0/components/0/layout"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "layout": {
+              "span": 6
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

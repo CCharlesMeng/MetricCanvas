@@ -1,40 +1,10 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "time-modes-page",
   "layout": "dashboard",
-  "dashboardToolbar": "hidden",
   "meta": {
     "title": "IOC B4：日 / 月 / ISO周",
     "description": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "IOC B4：日 / 月 / ISO周",
-      "tags": [
-        {
-          "id": "demo",
-          "text": "合成验收",
-          "tone": "info"
-        }
-      ],
-      "facts": [
-        {
-          "id": "period",
-          "kind": "queryPeriod",
-          "label": "已应用期间",
-          "value": {
-            "filter": "period",
-            "format": "period"
-          }
-        }
-      ]
-    },
-    "filterIds": [
-      "period"
-    ],
-    "presentation": {
-      "collapse": "firstRow"
-    }
   },
   "filters": [
     {
@@ -231,6 +201,48 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "IOC B4：日 / 月 / ISO周",
+              "tags": [
+                {
+                  "id": "demo",
+                  "text": "合成验收",
+                  "tone": "info"
+                }
+              ],
+              "facts": [
+                {
+                  "id": "period",
+                  "kind": "queryPeriod",
+                  "label": "已应用期间",
+                  "value": {
+                    "filter": "period",
+                    "format": "period"
+                  }
+                }
+              ]
+            },
+            "filterIds": [
+              "period"
+            ],
+            "presentation": {
+              "collapse": "firstRow"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "body",
       "container": "card",

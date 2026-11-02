@@ -16,7 +16,7 @@ MC 内容包也分发同一产品实现的旧页检查与升级脚本。内容�
 
 未知/未来版本、6.5/6.6非空数组参数旧写入语义、6.13/6.14页头filterIds自动期间文字返回具体错误并保留原件，不直接改版本号。整页升级被阻止时，原页若仍通过校验且本次修改只使用原版本能力，可以保留原版本继续局部开发；只有原页无效或需要新能力时才处理相应迁移缺口。静态成功后继续原任务并预览所涉交互；静态校验不证明真实数据执行。schema-upgrade-demo场景展示旧布局升级、继续编辑标题以及原数据和排序保留。
 
-report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHeader 呈现。dashboardToolbar 仅兼容读取：缺省／visible 自动适配行内页头，hidden 不生成默认页头，compact 对象适配紧凑呈现及只读说明；不保留旧工具栏实现。新页面使用 iocHeader。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
+report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHeader 呈现。dashboardToolbar 仅兼容读取：缺省／visible 自动适配行内页头，hidden 不生成默认页头，compact 对象适配紧凑呈现及只读说明；不保留旧工具栏实现。6.81起新页面使用首分区首组件 `type:"iocHeader"`，不声明页头就不生成默认工具栏。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
 ## 创作时显式选择布局形态
 
@@ -32,13 +32,13 @@ report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHead
 
 ## IOC 公共页头（6.36）
 
-根级 `iocHeader` 独立于 `layout`，用于 IOC 身份与页级筛选归属。普通/密集看板和详情报表共用同一个呈现 Module；meta.title仍是目录标题。6.41 新页面声明 iocHeader 时无需同时写 dashboardToolbar；显式声明 visible/compact 与 iocHeader 仍为冲突。旧版本的显式 hidden 继续读取，没有 IOC 声明的旧页面通过同一呈现 Module 保持原布局。正文独立章节页头可保留，首个业务reportHeader或projectDetail不能重复承担页面身份。
+6.81起使用首分区首组件 `type:"iocHeader"`，业务属性写入 `props`，用于 IOC 身份与页级筛选归属。旧根级 `iocHeader` 仍兼容读取，属性含义相同。普通/密集看板和详情报表共用同一个呈现 Module；meta.title仍是目录标题。6.41 新页面声明 iocHeader 时无需同时写 dashboardToolbar；显式声明 visible/compact 与 iocHeader 仍为冲突。旧版本的显式 hidden 继续读取，没有 IOC 声明的旧页面通过同一呈现 Module 保持原布局。正文独立章节页头可保留，首个业务reportHeader或projectDetail不能重复承担页面身份。
 
 `identity`可省略；title不声明就没有标题占位，不回退meta.title。title显式参数引用缺值显示“未命名”；code、description、tags、facts缺值整体省略。编码用label/value；标签有唯一id及显式neutral/info/success/warning/danger色调，数组决定顺序。说明为纯文本，inline或键盘可达tooltip；不接受任意HTML。facts区分queryPeriod/latestDataPeriod/refreshedAt/generatedAt；value显式TextValue，不根据kind生成当前时间。统计期间应引用已应用filter。B1尚无HeaderFactReference/displayInputs，可信时间可通过已声明参数传入。
 
 `filterIds`依序认领已声明且静态可见的页级筛选。重复、不存在、隐藏、图表独立或详情私有筛选，以及与reportHeader重复认领均拒绝。已认领项从通用FilterBar排除，其余可见项保留。期间筛选原有Dashboard位置继续有效；report中的period须由IOC认领，期间语义和查询精度不变。详情单月仍用timePoint，不截断年季月来伪造单月；离散月份仍用dimension绑定，不能扩成连续区间。
 
-IOC 业务页的公共 `region` 输入只允许页头中的一个组织树：`display:"tree"`、`selection.mode:"single"`、`treeSelection:"level"`，声明真实 hierarchy，并由 iocHeader.filterIds 认领。树内可搜索并直接选择地区部或代表处节点，原子提交值与层级。平面 Region、hierarchyPicker 的 tabs/hidden、Region 多选、不可搜索树和拆开的地区部/代表处筛选都被拒绝；旧 schemaVersion 不绕过该规则。普通维度筛选不受此 IOC 约束。
+IOC 业务页的公共 `region` 输入只允许页头中的一个组织树：`display:"tree"`、`selection.mode:"single"`、`treeSelection:"level"`，声明真实 hierarchy，并由组件 props.filterIds（旧文档为 iocHeader.filterIds）认领。树内可搜索并直接选择地区部或代表处节点，原子提交值与层级。平面 Region、hierarchyPicker 的 tabs/hidden、Region 多选、不可搜索树和拆开的地区部/代表处筛选都被拒绝；旧 schemaVersion 不绕过该规则。普通维度筛选不受此 IOC 约束。
 
 `presentation.density`为normal/compact；`collapse`为none/firstRow，缺省normal/none。firstRow按直接容器实际换行测量，折叠保留首行，隐藏项inert并关闭弹层；展开不改值、不查询。日期复用DatePicker/PeriodFilter；月→季→年→月保留月份锚点，近一年为当前月之前12完整月。锚点与展开是实例局部状态，不写入Page。
 
@@ -60,7 +60,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 
 ## 唯一页头（6.41）
 
-新页面统一声明根级 `iocHeader`，布局形态不决定业务身份。`presentation.layout` 为 `stacked`（缺省）或 `inline`；前者保留身份与筛选上下排，后者承接旧 Dashboard 标题与筛选同行。`presentation.collapse` 为 `none`、按实际首行测量的 `firstRow` 或按数量收纳的 `overflow`：不超过五项全部常驻，密集时搜索回正文，其余前四项常驻、剩余进“更多筛选”。`density:"compact"` 不执行数量收纳；搭配 inline 时为 56px 紧凑吸顶行；窄容器内筛选行自行横向滚动，说明换行，不撑开页面。
+新页面统一声明首分区首组件 `type:"iocHeader"`，布局形态不决定业务身份；本节属性均指组件 `props`。旧根级写法仅兼容读取。`presentation.layout` 为 `stacked`（缺省）或 `inline`；前者保留身份与筛选上下排，后者承接旧 Dashboard 标题与筛选同行。`presentation.collapse` 为 `none`、按实际首行测量的 `firstRow` 或按数量收纳的 `overflow`：不超过五项全部常驻，密集时搜索回正文，其余前四项常驻、剩余进“更多筛选”。`density:"compact"` 不执行数量收纳；搭配 inline 时为 56px 紧凑吸顶行；窄容器内筛选行自行横向滚动，说明换行，不撑开页面。
 
 页头组件自身统一提供 **16px 底部外间距**，适用于普通行内、上下排、紧凑及静态呈现。该间距位于页头外框与后续正文之间，不是页头内部padding；不需页面JSON声明。旧工具栏适配与导出正文不再叠加另一份页头间距。未渲染页头时没有此占位。当前可观察入口为 `ioc-header-demo`、`ioc-header-standard` 与旧紧凑入口 `ioc-opportunity-analysis`。
 
@@ -76,7 +76,30 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 MC 内容投影与本地创作知识由同一产品参考生成。完整性诊断场景为 `mc-content-layout-demo`；内容身份、页面版本与实际部署身份分别核对。旧文件的可读性、能力下限、可迁移性和人工语义处理项分别返回，不能仅提升 schemaVersion 绕过迁移。
 
 
-页面协议 6.80。结构真源为本册[schema.json](schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
+<a id="ioc-页头进入分区681"></a>
+
+## IOC 页头进入分区（6.81）
+
+IOC Header 使用普通组件外壳 `id/type/layout/props`，限定在 `sections[0].components[0]`，每页最多一个，`layout.span:12` 且不能作为 backdrop。始终跨满 section 当前列轨道；不要求独占 section，正文可紧随其后。不允许位于其他分区、Tab、组合卡或 detailViews，不允许与根级 iocHeader 或 dashboardToolbar 混写。业务属性复用旧页头，不新增数据槽或显示开关。
+
+```json
+{"id":"page-header","type":"iocHeader","layout":{"span":12},"props":{"identity":{"title":"经营概览"},"filterIds":["period"],"presentation":{"layout":"inline"}}}
+```
+
+页头和父 section 一起走条件显隐与分组切换；自身也可声明公共 visibleWhen。隐藏不清空页级筛选、URL、候选、只读或返回接管，不停止查询；已认领筛选不回流正文。候选阻塞仍生效，切回后显示原因和重试入口。页头隐藏期间可能没有可见返回按钮，集成应用不自动补回。
+
+默认布局在整个首分区之后、其他分区之前放页内导航；首分区含正文时该正文也在导航之前。定制 sectionsContent 保持一次整体调用和原签名，新文档按声明分区交付，导航在整次回调之前；旧文档回调仍接收原正文，不注入虚拟兼容分区。
+
+inline+compact 保持整页吸顶。位置切换使用同一个控件实例；父级隐藏、自身隐藏或布局卸载清理浮动层与弹层。恢复保留页级状态，不保证局部展开或焦点恢复。导出采用冻结输入和同一组件路径；条件隐藏不导出，分组/Tab按既有展开规则，去掉返回和吸顶交互。
+
+旧根级页头通过内部常显兼容分区呈现，不插入可能隐藏的旧首分区，不写回原始修订。旧默认/显式 Dashboard 工具栏保留普通 Region URL 规则及不导出页头的历史行为；显示工具栏不意味着开启 IOC 模式。6.80及之前的隐式 Dashboard 缺省保持；规范化读取保留必要的旧版本边界，6.81无声明时不生成页头。
+
+显式升级将合法旧根级 IOC 物化为常显首分区的新组件，并删除旧根字段，id确定且避冲突，重复升级不插入第二份。旧隐藏工具栏可移除。普通旧工具栏的 Region、legacyBack、导出语义不能自动等价转为正式 IOC；工具返回迁移错误且不写目标文件，原件仍可读，按迁移手册人工处理。不猜组织树、候选、返回上下文或查询映射。
+
+可观察页面：`ioc-header-section-placement`（混排/显隐/动态文字）、`ioc-header-section-groups`（分组）、`ioc-header-section-sticky`（紧凑吸顶）。均为静态合成示例，不证明真实DQE或集成应用接线。
+
+
+页面协议 6.81。结构真源为本册[schema.json](schema.json)，SHA256 `304b22179260547b5c13429751e5b56bb8e2ea238ab5aa0c83ead37b69c952a4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -98,7 +121,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58","6.59","6.60","6.61","6.62","6.63","6.64","6.65","6.66","6.67","6.68","6.69","6.70","6.71","6.72","6.73","6.74","6.75","6.76","6.77","6.78","6.79","6.80"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58","6.59","6.60","6.61","6.62","6.63","6.64","6.65","6.66","6.67","6.68","6.69","6.70","6.71","6.72","6.73","6.74","6.75","6.76","6.77","6.78","6.79","6.80","6.81"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -178,6 +201,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.78" | 查询分页期间比较、组合投影缺记录策略与逐行计算 |
 | "6.79" | 多条独立查询组成置顶行，列级固定文字。 |
 | "6.80" | 表格列前端枚举展示、静态筛选及导出标签。 |
+| "6.81" | IOC页头作为首分区首组件，旧根级兼容读取，新页面无隐式页头。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -312,7 +336,7 @@ Schema位置：`#/definitions/dashboardToolbar`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| anyOf联合 | 类型/分支 | deprecated=true | Schema未设默认；装配/运行时默认见语义说明 | 旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader |
+| anyOf联合 | 类型/分支 | deprecated=true | Schema未设默认；装配/运行时默认见语义说明 | 旧页面兼容字段；统一由 IocHeader 呈现，新页面配置首section首组件 type:iocHeader |
 
 <a id="schema-232f646566696e6974696f6e732f64617368626f617264546f6f6c6261722f616e794f662f30"></a>
 
@@ -381,7 +405,7 @@ Schema位置：`#/properties/iocHeader`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。 |
+| "object" | 本分支可选 | deprecated=true; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。 |
 
 <a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e74697479"></a>
 
@@ -1199,6 +1223,16 @@ Schema位置：`#/properties/detailViews/items/properties/components/items/oneOf
 |---|---|---|---|---|
 | 引用 #/definitions/filterGroupComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f70726f706572746965732f64657461696c56696577732f6974656d732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f3139"></a>
+
+### `$.detailViews[].components[] · oneOf[19]`
+
+Schema位置：`#/properties/detailViews/items/properties/components/items/oneOf/19`。目标：[#/definitions/iocHeaderComponent](components/iocHeader.md#schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/iocHeaderComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f70726f706572746965732f73656374696f6e47726f757073"></a>
 
 ### `$.sectionGroups`
@@ -1394,6 +1428,7 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - [ioc-header-months](examples/ioc-header-months.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-header-unconfigured](examples/ioc-header-unconfigured.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-mixed-content](examples/tab-mixed-content.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-section-placement](examples/ioc-header-section-placement.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/page.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -1405,6 +1440,8 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - 源码/验证定位：`packages/page/src/upgrade-document.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/upgrade-chart-filters.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/upgrade-types.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/header-binding.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/upgrade-ioc-header.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
@@ -1439,3 +1476,4 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/detailViews/items/properties/components/items/oneOf/16`：[语义拒绝反例](errors/detail-component-reject-aisummary.json)：详情的展示闭集拒绝 aiSummary；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
 - `#/properties/detailViews/items/properties/components/items/oneOf/17`：[语义拒绝反例](errors/detail-component-reject-button.json)：详情展示闭集不开放独立按钮和递归动作，只有语义拒绝见证。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
 - `#/properties/detailViews/items/properties/components/items/oneOf/18`：[语义拒绝反例](errors/filter-group-detail.json)：独立固定筛选按钮组首批仅用于Dashboard正文或组合卡；共享组件Schema的详情分支由语义校验拒绝。（规则 `filter-group`）。此项不计入合法示例覆盖。
+- `#/properties/detailViews/items/properties/components/items/oneOf/19`：[语义拒绝反例](errors/ioc-component-detail.json)：IOC页头仅首分区首组件，详情中不允许。（规则 `ioc-header-component`）。此项不计入合法示例覆盖。

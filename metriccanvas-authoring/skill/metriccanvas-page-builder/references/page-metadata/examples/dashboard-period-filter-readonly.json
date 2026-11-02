@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.81",
   "id": "dashboard-period-filter-readonly",
   "layout": "dashboard",
   "filters": [
@@ -176,9 +176,5 @@
   "meta": {
     "title": "期间筛选验收",
     "description": "合成验收数据；通过网关请求中的实际时间范围验证联动。"
-  },
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true
   }
 }
