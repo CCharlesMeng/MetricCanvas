@@ -27,7 +27,7 @@ for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as
       page.on('pageerror', error => errors.push(error.message));
       const failures: string[] = [];
       const fixtures = presentationFixtures(layout);
-      expect(fixtures).toHaveLength(layout === 'report' ? 55 : 53);
+      expect(fixtures).toHaveLength(layout === 'report' ? 56 : 54);
       for (const fixture of fixtures) await test.step(fixture.name, async () => {
         const document = { ...fixture.document, layout, sections: fixture.document.sections.map(section => ({ ...section, container })) };
         await show(page, document);

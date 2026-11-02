@@ -72,3 +72,5 @@
 ## CI 后续修复
 
 首次远端验收的CLI冷启动超时及修复后复验见[CI修复记录](ci-followup.md)。它补充本页提交前快照；最终远端结论以修复提交的CI回执为准。
+
+独立安装浏览器矩阵的组件计数和表格定位适配见[兼容性修复记录](compatibility-followup.md)；完整本地Chrome243项通过，最终Chrome/Edge结果以对应新提交CI为准。
