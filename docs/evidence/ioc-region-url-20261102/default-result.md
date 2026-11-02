@@ -49,3 +49,11 @@ Skill 1.16.0 最终检查：local-authoring-skill 与 skill-release 两文件40�
 提交前复验：`pnpm test packages/page/tests/level-url.test.ts packages/engine/runtime/tests/region-url.test.ts packages/engine/runtime/tests/key-office-filter.test.ts packages/engine/runtime/tests/navigation-inputs.test.ts apps/playground/tests/hierarchy-region-tree.test.ts apps/playground/tests/page-id-neutrality.test.ts tests/local-authoring-skill.test.ts tests/skill-release.test.ts tests/page-reference.test.ts`，9 文件101项全部通过；`METRICCANVAS_PYTHON=<primary>/metriccanvas-authoring/tool/.venv/bin/python pnpm authoring:contracts:check` 通过（1329/4/1）。此前浏览器与构建结果对应同一基线、同一可执行源码，继续有效。CI 结论随实际交付另行报告。
 
 与交付基线同口径比较，filterURLKeys 的 selfCC 为19→15，resolveNavigationTarget 为31→7；新增辅助函数均≤15。createFilterState 保持17→17的存量例外，其未拆原因和后续入口如上。
+
+## 首轮 CI 补修
+
+首轮提交 `55f630873ed54a0db0d3564cc38ac74e3ec95b4b` 的 [CI](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/41404315075) 发现两处漏同步验收：平台 reading-navigation 测试仍断言旧的输入投影键，完整测试为3868通过、1失败、5跳过；MC 诊断可视夹具仍记录221主题，实际为223，导致 authoring 检查失败。这些失败没有改写为通过。
+
+补修同步输入投影 `iocRegion:true` 的平台断言，并通过 `mc-content-fixtures.py` 从最终MC重生成诊断页与三份诊断证据；再从更新后的源页面重生成来源摘要和锁，最后刷新诊断里的内容摘要。未改变产品执行分支、Skill安装目录内容或版本。定向复验4文件36项通过；修改的测试回调与其4个嵌套函数按相同AST口径均保持selfCC 1→1。
+
+补修后的 `pnpm mc:content:check` 完整通过：契约生成一致、MC来源覆盖一致、51项Python测试通过、最终诊断及可视夹具无漂移。执行环境使用已锁定依赖的Python虚拟环境，并禁用字节码缓存。

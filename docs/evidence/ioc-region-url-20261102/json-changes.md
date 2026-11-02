@@ -1,8 +1,8 @@
 # IOC Region 最终 JSON 变更清单
 
-2026-11-02。基于当前独立工作树相对 HEAD 的最终差异：52 个已跟踪 JSON 修改、27 个新 JSON，合计 79 个产品/分发 JSON。验收回执另列，不冒充业务页面。
+2026-11-02。基于当前独立工作树相对交付基线 `bf2cc88ebc257a328bf74dbe41b60143f0755df3` 的最终差异：56 个原有 JSON 修改、27 个新 JSON，合计 83 个产品/分发与派生验收 JSON。验收回执另列，不冒充业务页面。
 
-业务页面 JSON 只有新增 `pages/capabilities/filters/ioc-region-url-demo.json`；16 个原有活动 IOC 页面恢复原声明，没有批量修改。页面 Schema JSON 与版本策略未改，仍为 6.78。Skill 最终版本为 1.16.0，仅本工作树分发目录已更新，未同步主工作区或外部安装副本。
+业务示例新增 `pages/capabilities/filters/ioc-region-url-demo.json`，另由 MC 生成器更新 `pages/capabilities/layout/mc-content-layout-demo.json` 的主题计数；16 个原有活动 IOC 页面恢复原声明，没有批量修改。页面 Schema JSON 与版本策略未改，仍为 6.78。Skill 最终版本为 1.16.0，仅本工作树分发目录已更新，未同步主工作区或外部安装副本。
 
 ## 产品契约与参考（10）
 
@@ -103,9 +103,17 @@
 - [metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/index.json](/Users/moon/.codex/worktrees/ioc-region-url/DataDashboard/metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/index.json)
 - [metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/rules.json](/Users/moon/.codex/worktrees/ioc-region-url/DataDashboard/metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/rules.json)
 
-## 页面 JSON（1）
+## 页面 JSON（2）
 
 - [pages/capabilities/filters/ioc-region-url-demo.json](/Users/moon/.codex/worktrees/ioc-region-url/DataDashboard/pages/capabilities/filters/ioc-region-url-demo.json)
+
+- [pages/capabilities/layout/mc-content-layout-demo.json](/Users/moon/.codex/worktrees/ioc-region-url/DataDashboard/pages/capabilities/layout/mc-content-layout-demo.json)
+
+## MC 诊断派生夹具（3）
+
+- [docs/evidence/mc-content-layout/business-report.json](/Users/moon/.codex/worktrees/ioc-region-url/DataDashboard/docs/evidence/mc-content-layout/business-report.json)
+- [docs/evidence/mc-content-layout/diagnostics.json](/Users/moon/.codex/worktrees/ioc-region-url/DataDashboard/docs/evidence/mc-content-layout/diagnostics.json)
+- [docs/evidence/mc-content-layout/usage-report.json](/Users/moon/.codex/worktrees/ioc-region-url/DataDashboard/docs/evidence/mc-content-layout/usage-report.json)
 
 ## 本地验收 JSON（不属于业务页面或生成分发清单）
 
