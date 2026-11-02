@@ -37,6 +37,8 @@ params 增加对象分支，按消费位置分两层：params.query.{dimensions,
 
 文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度用重复键；时间是纯文本，单点写 2026-03，区间写 2026-01..2026-06，未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分层结构改写为数组。
 
+审批人等仅供下钻的固定输入可直接声明为可选的 query.dimensions 参数，由适用查询的 paramBindings 指定目标。参数不等同于维度筛选器，不会请求候选值。记录模式组合源允许各成员独立消费参数；非记录模式仍要求全员消费同组参数。声明与运行边界见[记录模式](data-sources.md)，合成入口 `/pages/record-join-query-params?approver-name=合成审批人甲`。参数缺值时不增加条件；文本 parts 中的可选参数缺值会使整个标题属性省略。
+
 ## 筛选文本取值（6.15）
 
 文本取值增加 `{filter: "筛选器id", format?: "格式预设"}` 分支，与 `{param: "参数id", format?: ...}` 互斥。这两个分支均为整值替换；6.23 可用下述 parts 分支显式组合片段，不接受模板表达式。筛选引用允许在所有既有文本取值位置声明，包括页头、副标题、内容分区标题、普通文本与嵌套组件；dataSources 内的请求体和业务数据不参与文本解析。
@@ -73,7 +75,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.79。结构真源为本册[schema.json](schema.json)，SHA256 `de59871e73f1f5c7bd929d147e3482216b50599ad50e174e3795401276ff2914`。字段表自动生成；可选不等于有默认值。
+页面协议 6.80。结构真源为本册[schema.json](schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1356,6 +1358,7 @@ Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textV
 - [grouped-scalar-params-page](examples/grouped-scalar-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [report-filter-text-page](examples/report-filter-text-page.json)：完整合法页面；查询仅为静态契约证据。
 - [text-composition-page](examples/text-composition-page.json)：完整合法页面；查询仅为静态契约证据。
+- [record-join-query-params](examples/record-join-query-params.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/primitives.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

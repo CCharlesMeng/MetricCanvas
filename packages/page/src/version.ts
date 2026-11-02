@@ -1,6 +1,6 @@
 import { comparisonCapabilityPaths,comparisonJoinCapabilityPaths } from './period-comparison-validation';
 import { periodCapabilityPaths } from './period-capability';
-import { columnConditionPaths } from './table/columns';
+import { columnConditionPaths, columnEnumPaths } from './table/columns';
 import { isObjectDqeItem } from './dqe-object';
 import {chartOptionScopes} from './chart-option';
 import type { TypedError } from './errors';
@@ -23,7 +23,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 79;
+const CURRENT_MINOR = 80;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -59,6 +59,7 @@ export const pageCapabilities = {
   'paged-period-comparison': {minor:78,legacyReadable:false,description:'期间比较按当前页业务键补查',usedAt:comparisonJoinCapabilityPaths},
   'table-multiple-pinned-sources': {minor:79,legacyReadable:false,description:'多条独立汇总查询组成置顶行及固定文字',
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&(has(record(props(c)?.pinnedTop),'additionalData')||hasPinnedText(props(c)?.columns)))},
+  'table-column-enums':{minor:80,legacyReadable:false,description:'表格列前端枚举展示及静态筛选',usedAt:columnEnumPaths},
   'table-null-predicate': {minor:76,legacyReadable:false,description:'表格显式为空条件及后端能力拒绝',
     usedAt:document=>dataSourcePaths(document,data=>{const predicates=record(record(record(data.source)?.initial)?.view)?.predicates;return Array.isArray(predicates)&&predicates.some(p=>record(p)?.op==='isNull');})},
   'paged-join-query-pagination': {minor:76,legacyReadable:false,description:'组合查询源按需分页与最后操作成员生效',

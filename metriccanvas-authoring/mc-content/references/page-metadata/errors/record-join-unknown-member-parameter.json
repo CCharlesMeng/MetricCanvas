@@ -1,0 +1,54 @@
+{
+  "case": "record-join-unknown-member-parameter",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询参数绑定必须引用已声明的dimension参数",
+      "paths": [
+        "/dataSources/decisions/source/query/paramBindings/approver-name"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "文本取值引用了未声明的页面参数:approver-name",
+      "paths": [
+        "/sections/0/components/0/props/title/parts/0/param"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "decisions": {
+        "source": {
+          "query": {
+            "paramBindings": {
+              "approver-name": {
+                "target": "dimension",
+                "queryField": "审批人姓名"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "title": {
+                "parts": [
+                  {
+                    "param": "approver-name"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,41 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "/tmp/table-column-enum-template-callbacks.ts",
+      "functions": [
+        {
+          "name": "beforeToggle",
+          "qualifiedName": "beforeToggle",
+          "line": 1,
+          "endLine": 1,
+          "selfCC": 2,
+          "optionalChains": 2,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "afterToggle",
+          "qualifiedName": "afterToggle",
+          "line": 2,
+          "endLine": 2,
+          "selfCC": 3,
+          "optionalChains": 2,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "enumChange",
+          "qualifiedName": "enumChange",
+          "line": 3,
+          "endLine": 3,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

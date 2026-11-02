@@ -808,6 +808,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-column-enums.json",
+      "target": "product-contracts/page/conformance/valid/table-column-enums.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/record-join-query-params.json",
+      "target": "product-contracts/page/conformance/valid/record-join-query-params.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-region-url-demo.json",
       "target": "product-contracts/page/conformance/valid/ioc-region-url-demo.json",
       "scope": "exact product contract"
@@ -980,6 +990,16 @@
     {
       "source": "product:page/conformance/invalid/pie-table-native-legend.json",
       "target": "product-contracts/page/conformance/invalid/pie-table-native-legend.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-enums-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/table-enums-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-enums-duplicate-value.json",
+      "target": "product-contracts/page/conformance/invalid/table-enums-duplicate-value.json",
       "scope": "exact product contract"
     },
     {
@@ -1925,6 +1945,16 @@
     {
       "source": "product:page/conformance/invalid/union-source-navigation-field.json",
       "target": "product-contracts/page/conformance/invalid/union-source-navigation-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/paged-join-non-record-member-parameter.json",
+      "target": "product-contracts/page/conformance/invalid/paged-join-non-record-member-parameter.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/record-join-unknown-member-parameter.json",
+      "target": "product-contracts/page/conformance/invalid/record-join-unknown-member-parameter.json",
       "scope": "exact product contract"
     },
     {
@@ -3533,6 +3563,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/table-enums-old-version.json",
+      "target": "references/page-metadata/errors/table-enums-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-enums-duplicate-value.json",
+      "target": "references/page-metadata/errors/table-enums-duplicate-value.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/table-column-old-version.json",
       "target": "references/page-metadata/errors/table-column-old-version.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -4475,6 +4515,16 @@
     {
       "source": "product:page/reference/errors/union-source-navigation-field.json",
       "target": "references/page-metadata/errors/union-source-navigation-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/paged-join-non-record-member-parameter.json",
+      "target": "references/page-metadata/errors/paged-join-non-record-member-parameter.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/record-join-unknown-member-parameter.json",
+      "target": "references/page-metadata/errors/record-join-unknown-member-parameter.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -5858,6 +5908,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/record-join-query-params.json",
+      "target": "references/page-metadata/examples/record-join-query-params.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/params-and-text-values.md",
       "target": "references/page-metadata/params-and-text-values.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6398,6 +6453,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-column-enums.json",
+      "target": "references/page-metadata/examples/table-column-enums.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/table-multiple-pinned-page.json",
       "target": "references/page-metadata/examples/table-multiple-pinned-page.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6824,11 +6884,11 @@
     }
   ],
   "counts": {
-    "product": 1333,
+    "product": 1345,
     "authoring": 31,
     "modules": 33,
-    "topics": 226,
-    "nodes": 2465,
+    "topics": 227,
+    "nodes": 2471,
     "tools": 9,
     "components": 19
   },

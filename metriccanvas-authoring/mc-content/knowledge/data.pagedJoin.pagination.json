@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.79",
+  "schemaVersion": "6.80",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data.pagedJoin.pagination"
@@ -57,12 +57,15 @@
         },
         {
           "id": "paged-join",
-          "description": "6.22 组合表全局视图与普通查询定义引用",
+          "description": "6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数",
           "valid": [
             "paged-join-page",
-            "table-number-range-page"
+            "table-number-range-page",
+            "record-join-query-params"
           ],
           "invalid": [
+            "paged-join-non-record-member-parameter",
+            "record-join-unknown-member-parameter",
             "table-number-range-before-6.22",
             "paged-join-initial-predicate-null",
             "paged-join-initial-predicate-in",
@@ -163,6 +166,7 @@
         "references/page-metadata/examples/paged-union-page.json",
         "references/page-metadata/examples/paged-union-branches.json",
         "references/page-metadata/examples/record-join-page.json",
+        "references/page-metadata/examples/record-join-query-params.json",
         "references/page-metadata/examples/paged-union-composite-key.json",
         "references/page-metadata/examples/paged-union-composite-branches.json",
         "references/page-metadata/examples/paged-union-generated-key.json",
@@ -189,7 +193,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.79",
+        "$id": "https://metriccanvas/page/v6.80",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

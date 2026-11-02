@@ -1,0 +1,137 @@
+{
+  "case": "table-enums-duplicate-value",
+  "invariant": "table-column-enums",
+  "input": {
+    "schemaVersion": "6.80",
+    "id": "table-column-enums",
+    "layout": "dashboard",
+    "meta": {
+      "title": "商务类型前端枚举",
+      "description": "合成原始编码：展示和导出使用前端枚举，筛选仍使用原始编码。"
+    },
+    "dataSources": {
+      "businesses": {
+        "fields": {
+          "id": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "biz-type": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": true
+          },
+          "numeric-code": {
+            "type": "number",
+            "role": "dimension",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "id": "B-1",
+              "biz-type": "0",
+              "numeric-code": 0
+            },
+            {
+              "id": "B-2",
+              "biz-type": "1",
+              "numeric-code": 1
+            },
+            {
+              "id": "B-3",
+              "biz-type": "9",
+              "numeric-code": 9
+            },
+            {
+              "id": "B-4",
+              "biz-type": null,
+              "numeric-code": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "container": "card",
+        "components": [
+          {
+            "id": "business-types",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "businesses"
+            },
+            "props": {
+              "title": "商务类型（合成数据）",
+              "rowKey": "id",
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "商务类型枚举"
+                }
+              },
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "商务ID",
+                  "width": 150
+                },
+                {
+                  "field": "biz-type",
+                  "title": "商务类型",
+                  "width": 240,
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "enumValues": [
+                    {
+                      "value": "0",
+                      "label": "项目商务框架"
+                    },
+                    {
+                      "value": "1",
+                      "label": "项目非框架"
+                    },
+                    {
+                      "value": "0",
+                      "label": "重复"
+                    }
+                  ]
+                },
+                {
+                  "field": "numeric-code",
+                  "title": "数值编码",
+                  "width": 150,
+                  "enumValues": [
+                    {
+                      "value": 0,
+                      "label": "数值零"
+                    },
+                    {
+                      "value": 1,
+                      "label": "数值一"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/enumValues",
+      "message": "列枚举的原始值不得重复"
+    }
+  ]
+}

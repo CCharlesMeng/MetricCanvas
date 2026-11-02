@@ -1,0 +1,1208 @@
+[
+  {
+    "name": "main-a",
+    "total": 3,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 3,
+    "network": [
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": [
+                  {
+                    "field_name": "审批人姓名",
+                    "value_list": [
+                      "合成审批人甲"
+                    ],
+                    "operator": "="
+                  }
+                ]
+              },
+              "order": {
+                "offset": 0,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": [
+                  {
+                    "field_name": "审批人姓名",
+                    "value_list": [
+                      "合成审批人甲"
+                    ],
+                    "operator": "="
+                  }
+                ]
+              },
+              "order": {
+                "offset": 2,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-1",
+                      "B-3"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "responses": [
+      {
+        "status": 200,
+        "requestId": "dqe-sim-1",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-1",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 1
+                },
+                {
+                  "审批记录ID": "A-2",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 2
+                }
+              ],
+              "total_count": 3,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-2",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-4",
+                  "商务ID": "B-3",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 4
+                }
+              ],
+              "total_count": 3,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 2,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-3",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "商务ID": "B-1",
+                  "责任人名称": "合成责任人甲"
+                }
+              ],
+              "total_count": 1,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "main-b",
+    "total": 1,
+    "ids": [
+      "A-3"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 2,
+    "network": [
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": [
+                  {
+                    "field_name": "审批人姓名",
+                    "value_list": [
+                      "合成审批人乙"
+                    ],
+                    "operator": "="
+                  }
+                ]
+              },
+              "order": {
+                "offset": 0,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-2"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "responses": [
+      {
+        "status": 200,
+        "requestId": "dqe-sim-4",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-3",
+                  "商务ID": "B-2",
+                  "审批人姓名": "合成审批人乙",
+                  "审批顺序": 3
+                }
+              ],
+              "total_count": 1,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-5",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "商务ID": "B-2",
+                  "责任人名称": "合成责任人乙"
+                }
+              ],
+              "total_count": 1,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "optional-missing",
+    "total": 4,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 4,
+    "network": [
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": []
+              },
+              "order": {
+                "offset": 0,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": []
+              },
+              "order": {
+                "offset": 2,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-1",
+                      "B-2"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-3"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "responses": [
+      {
+        "status": 200,
+        "requestId": "dqe-sim-6",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-1",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 1
+                },
+                {
+                  "审批记录ID": "A-2",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 2
+                }
+              ],
+              "total_count": 4,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-7",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-3",
+                  "商务ID": "B-2",
+                  "审批人姓名": "合成审批人乙",
+                  "审批顺序": 3
+                },
+                {
+                  "审批记录ID": "A-4",
+                  "商务ID": "B-3",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 4
+                }
+              ],
+              "total_count": 4,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 2,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-8",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "商务ID": "B-1",
+                  "责任人名称": "合成责任人甲"
+                },
+                {
+                  "商务ID": "B-2",
+                  "责任人名称": "合成责任人乙"
+                }
+              ],
+              "total_count": 2,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-9",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [],
+              "total_count": 0,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "supplement-only",
+    "total": 4,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 4,
+    "network": [
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": []
+              },
+              "order": {
+                "offset": 0,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": []
+              },
+              "order": {
+                "offset": 2,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "责任人名称",
+                    "dim_value_list": [
+                      "合成责任人甲"
+                    ]
+                  },
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-1",
+                      "B-2"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "责任人名称",
+                    "dim_value_list": [
+                      "合成责任人甲"
+                    ]
+                  },
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-3"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "responses": [
+      {
+        "status": 200,
+        "requestId": "dqe-sim-10",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-1",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 1
+                },
+                {
+                  "审批记录ID": "A-2",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 2
+                }
+              ],
+              "total_count": 4,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-11",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-3",
+                  "商务ID": "B-2",
+                  "审批人姓名": "合成审批人乙",
+                  "审批顺序": 3
+                },
+                {
+                  "审批记录ID": "A-4",
+                  "商务ID": "B-3",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 4
+                }
+              ],
+              "total_count": 4,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 2,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-12",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "商务ID": "B-1",
+                  "责任人名称": "合成责任人甲"
+                }
+              ],
+              "total_count": 1,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-13",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [],
+              "total_count": 0,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "multiple-inputs",
+    "total": 4,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 4,
+    "network": [
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": [
+                  {
+                    "field_name": "审批人姓名",
+                    "value_list": [
+                      "合成审批人甲",
+                      "合成审批人乙"
+                    ],
+                    "operator": "="
+                  }
+                ]
+              },
+              "order": {
+                "offset": 0,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": [
+                  {
+                    "field_name": "审批人姓名",
+                    "value_list": [
+                      "合成审批人甲",
+                      "合成审批人乙"
+                    ],
+                    "operator": "="
+                  }
+                ]
+              },
+              "order": {
+                "offset": 2,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-1",
+                      "B-2"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      },
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "商务ID",
+                "责任人名称"
+              ],
+              "output_metrics": [],
+              "filter": {
+                "dims": [
+                  {
+                    "dim_name": "商务ID",
+                    "dim_value_list": [
+                      "B-3"
+                    ]
+                  }
+                ],
+                "metrics": []
+              },
+              "order": {
+                "order_by_field": "商务ID",
+                "type": "asc",
+                "offset": 0,
+                "limit": 2
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "responses": [
+      {
+        "status": 200,
+        "requestId": "dqe-sim-14",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-1",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 1
+                },
+                {
+                  "审批记录ID": "A-2",
+                  "商务ID": "B-1",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 2
+                }
+              ],
+              "total_count": 4,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-15",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "审批记录ID": "A-3",
+                  "商务ID": "B-2",
+                  "审批人姓名": "合成审批人乙",
+                  "审批顺序": 3
+                },
+                {
+                  "审批记录ID": "A-4",
+                  "商务ID": "B-3",
+                  "审批人姓名": "合成审批人甲",
+                  "审批顺序": 4
+                }
+              ],
+              "total_count": 4,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 2,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-16",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [
+                {
+                  "商务ID": "B-1",
+                  "责任人名称": "合成责任人甲"
+                },
+                {
+                  "商务ID": "B-2",
+                  "责任人名称": "合成责任人乙"
+                }
+              ],
+              "total_count": 2,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      },
+      {
+        "status": 200,
+        "requestId": "dqe-sim-17",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [],
+              "total_count": 0,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "no-match",
+    "total": 0,
+    "ids": [],
+    "errors": [],
+    "dqeHttpCalls": 1,
+    "network": [
+      {
+        "url": "http://127.0.0.1:5187/rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+        "method": "POST",
+        "body": {
+          "dsl_list": [
+            {
+              "query_type": "object",
+              "object_type": "Demo/Approval Records",
+              "output_fields": [
+                "审批记录ID",
+                "商务ID",
+                "审批人姓名",
+                "审批顺序"
+              ],
+              "filter": {
+                "fields": [
+                  {
+                    "field_name": "审批人姓名",
+                    "value_list": [
+                      "没有匹配记录"
+                    ],
+                    "operator": "="
+                  }
+                ]
+              },
+              "order": {
+                "offset": 0,
+                "limit": 2,
+                "order_by_field": "商务ID",
+                "type": "asc"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "responses": [
+      {
+        "status": 200,
+        "requestId": "dqe-sim-18",
+        "body": {
+          "retCode": "CBC.0000",
+          "retDesc": null,
+          "results": [
+            {
+              "code": "SUCCESS",
+              "data": [],
+              "total_count": 0,
+              "dqe": {
+                "columns": [],
+                "orders": [],
+                "limit": 2,
+                "offset": 0,
+                "sql": null
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

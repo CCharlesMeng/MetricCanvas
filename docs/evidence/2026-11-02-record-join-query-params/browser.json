@@ -1,0 +1,66 @@
+[
+  {
+    "name": "main-a",
+    "total": 3,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 0
+  },
+  {
+    "name": "main-b",
+    "total": 1,
+    "ids": [
+      "A-3"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 0
+  },
+  {
+    "name": "optional-missing",
+    "total": 4,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 0
+  },
+  {
+    "name": "supplement-only",
+    "total": 4,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 0
+  },
+  {
+    "name": "multiple-inputs",
+    "total": 4,
+    "ids": [
+      "A-1",
+      "A-2"
+    ],
+    "errors": [],
+    "dqeHttpCalls": 0
+  },
+  {
+    "name": "no-match",
+    "total": 0,
+    "ids": [],
+    "errors": [],
+    "dqeHttpCalls": 0
+  },
+  {
+    "name": "upstream-error",
+    "ids": [],
+    "errors": [
+      "[MetricCanvas][DQE_TRANSPORT_ERROR] 合成上游失败 {pageId: record-join-query-params, dataSourceId: joined, dataSourcePath: /dataSources/joined, components: Array(1), code: DQE_TRANSPORT_ERROR}"
+    ],
+    "dqeHttpCalls": 0
+  }
+]

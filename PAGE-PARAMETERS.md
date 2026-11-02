@@ -19,6 +19,8 @@
 
 ## 当前分层参数（新页面）
 
+下钻审批人可直接作为查询参数，由主表 `paramBindings` 消费，不需要创建隐藏维度筛选器，也不产生审批人候选查询。`pagedJoin.records` 的成员允许各自绑定适用参数；未启用记录模式仍要求全部成员消费同组参数。参数缺值时不注入条件，引用可选参数的整个标题属性按既有规则省略。配置与限制见[记录模式组合源](docs/page-metadata/data-sources.md)，合成入口 `/pages/record-join-query-params?approver-name=合成审批人甲`。需要更新包含该校验修复的引擎；单独替换 JSON 不能让旧引擎接受新的成员参数范围。
+
 新结构为 `params: { query?: { dimensions?: [...], times?: [...] }, display?: [...] }`。分层依据是**消费位置**：`params.query` 下的输入落进 DQE 请求体，`params.display` 下的只被文本取值和导航消费，哪儿也不落。两层共享同一个 ID 空间，引用处只写 id，不写所在层。各层可省略，至少声明一个参数。
 
 `query.dimensions` 使用 `id/dim_name/dim_value_list`；`query.times` 使用 `id/granularity/start/end`；`display` 每项为 `id/type/value`，保留标题等 string/number/boolean 输入。

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.79",
+  "schemaVersion": "6.80",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "params-and-text-values.overview"
@@ -138,7 +138,8 @@
         "references/page-metadata/examples/grouped-params-page.json",
         "references/page-metadata/examples/grouped-scalar-params-page.json",
         "references/page-metadata/examples/report-filter-text-page.json",
-        "references/page-metadata/examples/text-composition-page.json"
+        "references/page-metadata/examples/text-composition-page.json",
+        "references/page-metadata/examples/record-join-query-params.json"
       ]
     }
   ],

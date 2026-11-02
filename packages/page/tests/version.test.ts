@@ -5,6 +5,7 @@ const introducedAt: Record<string, number> = {
   "table-multiple-pinned-sources": 79,
   'paged-join-row-compute':78,
   'paged-period-comparison':78,
+  'table-column-enums':80,
   'paged-join-query-pagination':76,
   'table-null-predicate':76,
   'period-comparison':77,

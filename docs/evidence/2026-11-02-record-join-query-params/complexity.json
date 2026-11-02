@@ -1,0 +1,58 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "functions": [
+    {
+      "function": "memberErrors",
+      "before": 14,
+      "after": 15
+    },
+    {
+      "function": "pageExternalInputs",
+      "before": 8,
+      "after": 8
+    },
+    {
+      "function": "tablePreview",
+      "before": 5,
+      "after": 6
+    },
+    {
+      "function": "buildProductOutputs",
+      "before": 15,
+      "after": 15
+    },
+    {
+      "function": "queryTableGateway (Svelte script only)",
+      "before": 5,
+      "after": 7
+    },
+    {
+      "file": "apps/playground/fixtures/record-query-params.ts",
+      "newFunctions": 11,
+      "maxCC": 8
+    },
+    {
+      "file": "packages/page/tests/record-join-query-params.test.ts",
+      "newFunctions": 8,
+      "maxCC": 1
+    },
+    {
+      "file": "packages/engine/runtime/tests/record-join-query-params.test.ts",
+      "newFunctions": 25,
+      "maxCC": 4
+    },
+    {
+      "file": "apps/playground/tests/record-join-query-params-browser.mjs",
+      "newFunctions": 4,
+      "maxCC": 3
+    }
+  ],
+  "untouchedOverLimit": [
+    {
+      "function": "buildSkillProjections",
+      "selfCC": 52,
+      "reason": "未修改此函数，保留存量问题"
+    }
+  ]
+}

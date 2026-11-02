@@ -6,6 +6,7 @@ import { buildTableColumnLayout } from '../../../../widgets/src/components/table
 import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/components/table/cell-presentation';
 import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
 import { tableDataWarnings } from '../../../../widgets/src/components/table/warnings';
+import {tableEnumLabel} from '../../../../widgets/src/components/table/enum-values';
 
 export function tableExportFilename(component: TableComponent): string {
   const name = component.props.toolbar?.export?.filename || component.props.title || '表格数据';
@@ -96,6 +97,8 @@ function writeTableSheet(sheet:import('exceljs').Worksheet,component:TableCompon
       const fallback = alignedFallback(column.field, data, row);
       if (fallback) { cell.value = String(fallback.raw); return; }
       if (!hasDisplayValue(value)) { cell.value = resolved.missingText ?? recoveredMissingText; return; }
+      const enumLabel=tableEnumLabel(value,column.enumValues);
+      if(enumLabel!==undefined){cell.value=enumLabel;return;}
       if (resolved.format && !compatibleTableFormat(value, resolved.format)) { cell.value = formatTableCell(value, resolved.format); return; }
       if (typeof value === 'number') {
         cell.value = value; cell.numFmt = numberFormat(value, resolved.format);

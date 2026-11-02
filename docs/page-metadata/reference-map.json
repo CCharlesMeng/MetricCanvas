@@ -81,7 +81,8 @@
         "grouped-params-page",
         "grouped-scalar-params-page",
         "report-filter-text-page",
-        "text-composition-page"
+        "text-composition-page",
+        "record-join-query-params"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -133,6 +134,7 @@
         "paged-union-page",
         "paged-union-branches",
         "record-join-page",
+        "record-join-query-params",
         "paged-union-composite-key",
         "paged-union-composite-branches",
         "paged-union-generated-key",
@@ -822,6 +824,7 @@
         "table-hierarchy-lookup-param",
         "paged-join-query-page",
         "record-join-query-page",
+        "table-column-enums",
         "period-comparison-query-page",
         "table-multiple-pinned-page"
       ],
@@ -852,7 +855,8 @@
         "paged-union",
         "table-column-visibility",
         "table-column-search-fields",
-        "table-hierarchy-selection"
+        "table-hierarchy-selection",
+        "table-column-enums"
       ]
     },
     "components/mapChart.md": {
@@ -1728,7 +1732,8 @@
     "periodComparison": "按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。",
     "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing": "单个度量缺关联记录时null或zero，省略null；不替换已返回的空值或失败。",
     "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData": "额外独立完整汇总查询的命名数据槽，每个槽返回零或一行；不参与明细对齐。",
-    "#/definitions/tableColumn/properties/pinnedTop/anyOf/1/properties/text": "该列置顶格固定显示的非空纯文本，与字段绑定分支互斥，不修改明细或查询。"
+    "#/definitions/tableColumn/properties/pinnedTop/anyOf/1/properties/text": "该列置顶格固定显示的非空纯文本，与字段绑定分支互斥，不修改明细或查询。",
+    "enumValues": "列主字段的前端枚举字典，1至1000项；原始值类型敏感且不得重复，统一显示、静态选项和导出标签，不改写查询编码。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2036,7 +2041,8 @@
     "previousYear": "所选期间前移一年，保持相同统计进度。",
     "6.77": "期间比较查询、逐度量缺记录策略及百分点格式。",
     "6.78": "查询分页期间比较、组合投影缺记录策略与逐行计算",
-    "6.79": "多条独立查询组成置顶行，列级固定文字。"
+    "6.79": "多条独立查询组成置顶行，列级固定文字。",
+    "6.80": "表格列前端枚举展示、静态筛选及导出标签。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2293,6 +2299,7 @@
         "#/definitions/tableColumnGroup"
       ],
       "headings": [
+        "前端列枚举（6.80）",
         "期间模式列显隐（6.67）"
       ],
       "dependencies": []
@@ -2818,6 +2825,7 @@
       "常量取值（6.59）"
     ],
     "components/table.md": [
+      "前端列枚举（6.80）",
       "决策意见明细合成预览",
       "列条件显隐（6.62）",
       "单元格点击与筛选联动",

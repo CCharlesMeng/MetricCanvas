@@ -89,7 +89,10 @@ function memberErrors(page: Page, data: PagedJoinDataSource, path: string, error
     const field = ref.fields[member.key.field];
     if (!field || field.role !== 'dimension' || field.type !== key?.type || field.nullable !== false || !hasQueryFieldMapping(field)) error(`${mp}/key/field`, '成员键必须与业务行键类型一致且非空');
     if (!member.key.queryField.trim()) error(`${mp}/key/queryField`, '编码输入目标不能为空');
-    for (const param of params) if (!queryParams(ref.source.query).has(param)) error(`${mp}/source`, '每个成员必须显式消费全部组合查询参数');
+    // Record members bind their own immutable query inputs; supplements still join by domain keys.
+    if (!source.records) {
+      for (const param of params) if (!queryParams(ref.source.query).has(param)) error(`${mp}/source`, '每个成员必须显式消费全部组合查询参数');
+    }
     memberFilterErrors(page,source,name,member,bindings,mp,error);
   }
 }

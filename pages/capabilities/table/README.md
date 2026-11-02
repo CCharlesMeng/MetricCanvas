@@ -2,6 +2,19 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 审批人下钻查询参数
+
+入口：[主表筛选](http://localhost:5187/pages/record-join-query-params?approver-name=合成审批人甲)、[全部记录](http://localhost:5187/pages/record-join-query-params)、[无匹配](http://localhost:5187/pages/record-join-query-params?approver-name=没有匹配记录)。
+
+分别启动 `DQE_SIM_PORT=18387 DQE_SIM_HOST=127.0.0.1 pnpm --filter @metriccanvas/dqe-sim dev` 和 `DQE_SIM_PORT=18387 pnpm --filter playground dev --host 127.0.0.1 --port 5187 --strictPort`。页面使用默认标准数据网关，经同源 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` HTTP 代理访问 DQE Sim；没有专用页面网关或接口拦截。夹具仅在 Sim 服务端，JSON 不含行数据、initial 或模拟开关。参数仅用于查询初始化，页面不提供审批人筛选控件。
+
+- `approver-name=合成审批人甲`：标题显示人名，3 条审批记录，第一页有同一商务的两条记录；第二页 A-4 无基本信息，责任人为 null。
+- `approver-name=合成审批人乙`：显示 1 条 A-3；不带参数显示 4 条，动态标题属性按缺值规则省略。
+- `owner-name=合成责任人甲`：仅限制补列源，主表仍有 4 条，其他商务的责任人补空。
+- 无匹配参数显示空表。主表请求只增加“审批人姓名”条件，补列请求只增加自己的责任人参数及本轮商务ID；不应出现只查询审批人候选值的请求。上游失败由 HTTP 运行时回归覆盖。
+
+页面声明与浏览器验收共用此文件。打开 Network 过滤 `execute`，审批人甲应出现3条 POST：主表两个读取批次及一条基本信息补列。浏览器回归禁止零HTTP请求，保存请求体、响应体、状态和 Sim 的 x-request-id；运行时回归也通过临时 Sim HTTP 服务及正式网关执行。HTTP仿真不代表内网真实字段、权限、总数或部署成功。
+
 ## 表头候选完整查询与前端去重
 
 入口：`/pages/table-column-candidates-query`；[页面 JSON](table-column-candidates-query.json)。运行 `pnpm dev:playground`，无需 URL 参数或真实 DQE。模拟数据位于 `apps/playground/fixtures/full-query-candidates.ts`，通过平台共用网关消费原生 DQE 合成响应。
@@ -441,3 +454,6 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 4. 请求数、隔离和刷新由 `apps/playground/tests/row-expansion-cache-browser.mjs` 验证；条件/参数/上下文变化、错误/空结果、取消迟到响应和20实例上限由运行时回归覆盖。
 
 此为本地仿真与浏览器证据，不代表真实DQE或生产权限联调。用户页面无需新增缓存字段。
+## 商务类型前端枚举（6.80）
+
+入口 `/pages/table-column-enums`，内联合成编码0、1、9和空值。单元格显示项目商务框架、项目非框架、9、—。打开商务类型筛选直接看到两项中文枚举，选择项目商务框架仅保留 B-1；清空后导出 Excel，前两条为中文标签。枚举选项不请求候选接口；查询页仍使用原始编码过滤。业务页 `/pages/business-decision-all-details?approver-name=合成审批人甲&mtime=month:2026-11` 通过 DQE Sim execute 返回原始编码，再由前端映射。

@@ -53,6 +53,17 @@
       ]
     },
     {
+      "id": "table-column-enums",
+      "description": "前端列枚举值唯一及版本下限",
+      "valid": [
+        "table-column-enums"
+      ],
+      "invalid": [
+        "table-enums-old-version",
+        "table-enums-duplicate-value"
+      ]
+    },
+    {
       "id": "table-column-visibility",
       "description": "列显隐条件与版本下限",
       "valid": [
@@ -585,12 +596,15 @@
     },
     {
       "id": "paged-join",
-      "description": "6.22 组合表全局视图与普通查询定义引用",
+      "description": "6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数",
       "valid": [
         "paged-join-page",
-        "table-number-range-page"
+        "table-number-range-page",
+        "record-join-query-params"
       ],
       "invalid": [
+        "paged-join-non-record-member-parameter",
+        "record-join-unknown-member-parameter",
         "table-number-range-before-6.22",
         "paged-join-initial-predicate-null",
         "paged-join-initial-predicate-in",

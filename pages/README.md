@@ -1,5 +1,11 @@
 # 页面示例与验收场景
 
+- [商务类型前端枚举](capabilities/table/README.md#商务类型前端枚举680)：`/pages/table-column-enums`，静态筛选、中文展示与导出，原始编码保留。
+
+- [商务决策明细审批人筛选](business/dashboard/ioc/commercial/README.md)：原业务页的 `approver-name` 只下推主表，动态标题与 IOC Header；数据经 DQE Sim execute HTTP，分页保留原方式。
+
+- [审批人下钻查询参数](capabilities/table/README.md#审批人下钻查询参数)：记录模式的主表和补列源各自绑定查询参数，不枚举审批人候选值；入口 `/pages/record-join-query-params?approver-name=合成审批人甲`，经标准 execute HTTP 调用 DQE Sim。
+
 - [加载时保留组件结构](capabilities/layout/README.md#加载时保留组件结构)：首次取数、筛选、查询翻页、展开明细与 Tab 激活时保留真实组件；统一入口 `/loading-components-review`，覆盖19种组件及IOC页头，可重播3秒加载；使用 DQE Sim 合成数据。
 
 - [商务驳回明细原始元数据](business-rejection-details.json)：审批object主表、责任人与生命状态补列的完整模拟验收；入口 `/pages/business-rejection-details`，操作及1205/402/201条预期见 [DQE Sim说明](../tools/dqe-sim/README.md#商务驳回明细的原始元数据模拟验收)。

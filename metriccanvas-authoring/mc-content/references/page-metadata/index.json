@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.79",
-  "schemaSha256": "de59871e73f1f5c7bd929d147e3482216b50599ad50e174e3795401276ff2914",
+  "schemaVersion": "6.80",
+  "schemaSha256": "be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -70,7 +70,8 @@
         "grouped-params-page",
         "grouped-scalar-params-page",
         "report-filter-text-page",
-        "text-composition-page"
+        "text-composition-page",
+        "record-join-query-params"
       ],
       "rules": [
         "page-param-id-unique",
@@ -113,6 +114,7 @@
         "paged-union-page",
         "paged-union-branches",
         "record-join-page",
+        "record-join-query-params",
         "paged-union-composite-key",
         "paged-union-composite-branches",
         "paged-union-generated-key",
@@ -684,6 +686,7 @@
         "table-hierarchy-lookup-param",
         "paged-join-query-page",
         "record-join-query-page",
+        "table-column-enums",
         "period-comparison-query-page",
         "table-multiple-pinned-page"
       ],
@@ -707,7 +710,8 @@
         "paged-union",
         "table-column-visibility",
         "table-column-search-fields",
-        "table-hierarchy-selection"
+        "table-hierarchy-selection",
+        "table-column-enums"
       ]
     },
     "components/mapChart.md": {
@@ -1201,7 +1205,8 @@
         "6.76",
         "6.77",
         "6.78",
-        "6.79"
+        "6.79",
+        "6.80"
       ]
     },
     {
@@ -13135,6 +13140,42 @@
       "const": "field"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/enumValues",
+      "path": "@tableColumn.enumValues",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/enumValues/items",
+      "path": "@tableColumn.enumValues[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value",
+      "path": "@tableColumn.enumValues[].value",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0",
+      "path": "@tableColumn.enumValues[].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1",
+      "path": "@tableColumn.enumValues[].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/enumValues/items/properties/label",
+      "path": "@tableColumn.enumValues[].label",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/field",
       "path": "@tableColumn.field",
       "required": "本分支必填",
@@ -18984,14 +19025,14 @@
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/2",
       "module": "data-sources.md",
-      "file": "examples/paged-join-page.json",
-      "pointer": "#/dataSources/office-overview"
+      "file": "examples/record-join-query-params.json",
+      "pointer": "#/dataSources/joined"
     },
     {
       "schemaPointer": "#/definitions/pagedJoinSource/properties/pagination/anyOf/0",
       "module": "data-sources.md",
-      "file": "examples/paged-join-page.json",
-      "pointer": "#/dataSources/office-overview/source/pagination"
+      "file": "examples/record-join-query-params.json",
+      "pointer": "#/dataSources/joined/source/pagination"
     },
     {
       "schemaPointer": "#/definitions/pagedJoinSource/properties/pagination/anyOf/1",
@@ -19930,6 +19971,18 @@
       "pointer": "#/sections/0/components/0/props/columns/0/pinnedTop"
     },
     {
+      "schemaPointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-column-enums.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/enumValues/0/value"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-column-enums.json",
+      "pointer": "#/sections/0/components/0/props/columns/2/enumValues/0/value"
+    },
+    {
       "schemaPointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0",
       "module": "components/table.md",
       "file": "examples/filters-page.json",
@@ -20644,5 +20697,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "94f113bdec1411e74389438f719cc1e00a93eb9438d811fb0bf43373dcbaedee"
+  "semanticSourceDigest": "d06d7f07e7de1467703bf9b87f4c4cdd4454b7edfda7722c42f71a182bf83ffc"
 }

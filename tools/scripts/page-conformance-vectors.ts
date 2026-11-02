@@ -387,7 +387,9 @@ export const invariants: InvariantDefinition[] = [
     { case: 'union-invalid-key', base: 'paged-union-page', expect: /来源内行键/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKey = 'contract-decisionCount'; } },
     { case: 'union-source-navigation-field', base: 'paged-union-page', expect: /来源导航/, mutate: d => { d.sections[0].components[0].props.columns[0].navigateBySource.field = 'missing'; } }
   ] },
-  { id:'paged-join',description:'6.22 组合表全局视图与普通查询定义引用', valid:['paged-join-page','table-number-range-page'],cases:[
+  { id:'paged-join',description:'6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数', valid:['paged-join-page','table-number-range-page','record-join-query-params'],cases:[
+    {case:'paged-join-non-record-member-parameter',base:'paged-join-page',expect:/每个成员必须显式消费全部组合查询参数/,mutate:d=>{d.params={query:{dimensions:[{id:'approver-name',dim_name:'审批人姓名',required:false}]}};d.dataSources['office-meeting'].source.query.paramBindings={'approver-name':{target:'dimension',queryField:'审批人姓名'}};}},
+    {case:'record-join-unknown-member-parameter',base:'record-join-query-params',expect:/已声明的dimension参数/,mutate:d=>{d.params.query.dimensions=d.params.query.dimensions.filter((p:any)=>p.id!=='approver-name');}},
     {case:'table-number-range-before-6.22',base:'table-number-range-page',expect:/由 6.22 引入/,mutate:d=>{d.schemaVersion='6.21';}},
     {case:'paged-join-initial-predicate-null',base:'paged-join-page',expect:/默认视图/,mutate:d=>{d.schemaVersion='6.76';d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:0,view:{pageIndex:0,pageSize:3,sort:[{field:'bidding-amount',direction:'desc'}],predicates:[{field:'rep-office-name',op:'isNull'}]}};}},
     {case:'paged-join-initial-predicate-in',base:'paged-join-page',expect:/默认视图/,mutate:d=>{d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:0,view:{pageIndex:0,pageSize:3,sort:[{field:'bidding-amount',direction:'desc'}],predicates:[{field:'rep-office-name',op:'in',values:['上海',1]}]}};}},

@@ -1,6 +1,9 @@
 import type { InvariantDefinition } from '../page-conformance-vectors';
 /** Contract vectors exercise the same complete page used in Playground. */
-export const columnInvariants: InvariantDefinition[] = [{
+export const columnInvariants: InvariantDefinition[] = [{id:'table-column-enums',description:'前端列枚举值唯一及版本下限',valid:['table-column-enums'],cases:[
+    {case:'table-enums-old-version',base:'table-column-enums',expect:/表格列前端枚举/,mutate:document=>{document.schemaVersion='6.77';}},
+    {case:'table-enums-duplicate-value',base:'table-column-enums',expect:/列枚举的原始值不得重复/,mutate:document=>{document.sections[0].components[0].props.columns[1].enumValues.push({value:'0',label:'重复'});}}
+  ]},{
         id: 'table-column-visibility', description: '列显隐条件与版本下限', valid: ['table-column-visibility'],
         cases: [
             { case: 'table-column-old-version', base: 'table-column-visibility', expect: /表格字段列及分组列条件显隐/,

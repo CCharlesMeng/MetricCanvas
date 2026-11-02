@@ -1,0 +1,41 @@
+{
+  "case": "table-enums-duplicate-value",
+  "invariant": "table-column-enums",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "列枚举的原始值不得重复",
+      "paths": [
+        "/sections/0/components/0/props/columns/1/enumValues"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "enumValues": [
+                    {
+                      "value": "0",
+                      "label": "项目商务框架"
+                    },
+                    {
+                      "value": "1",
+                      "label": "项目非框架"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

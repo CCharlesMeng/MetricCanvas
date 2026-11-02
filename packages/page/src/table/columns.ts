@@ -37,13 +37,19 @@ function record(value: unknown): Record<string, unknown> | undefined {
 }
 /** Raw-document capability scanner also includes expanded-row templates. */
 export function columnConditionPaths(document: unknown): string[] {
+    return columnPropertyPaths(document, 'visibleWhen');
+}
+export function columnEnumPaths(document:unknown):string[]{
+    return columnPropertyPaths(document,'enumValues');
+}
+function columnPropertyPaths(document: unknown, property:string): string[] {
     const paths: string[] = [];
     const collect = (value: unknown, path: string) => {
         if (!Array.isArray(value))
             return;
         visitTableColumns(value, path, (column, own) => {
-            if (Object.hasOwn(column, 'visibleWhen'))
-                paths.push(`${own}/visibleWhen`);
+            if (Object.hasOwn(column, property))
+                paths.push(`${own}/${property}`);
         });
     };
     walkDocumentComponents(document, (node, path) => {

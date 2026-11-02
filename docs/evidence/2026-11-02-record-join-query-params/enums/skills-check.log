@@ -1,0 +1,21 @@
+$ pnpm skills:repair:check && pnpm authoring:check
+$ tsc --noEmit -p tools/tsconfig.skills.json && vitest run tests/repair-page-metadata.test.ts tests/skill-release.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/record-join-member-params/DataDashboard
+
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  18:10:58
+   Duration  6.58s (transform 292ms, setup 0ms, import 558ms, tests 11.65s, environment 0ms)
+
+$ pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/record-join-member-params/DataDashboard
+
+
+ Test Files  6 passed (6)
+      Tests  229 passed (229)
+   Start at  18:11:06
+   Duration  1064.28s (transform 2.72s, setup 0ms, import 11.34s, tests 1092.32s, environment 0ms)

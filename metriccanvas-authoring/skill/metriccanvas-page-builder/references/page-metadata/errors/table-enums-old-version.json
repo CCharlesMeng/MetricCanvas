@@ -1,0 +1,54 @@
+{
+  "case": "table-enums-old-version",
+  "invariant": "table-column-enums",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格列前端枚举展示及静态筛选 由 6.80 引入，文档声明的是 6.77",
+      "paths": [
+        "/sections/0/components/0/props/columns/1/enumValues",
+        "/sections/0/components/0/props/columns/2/enumValues"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "enumValues": [
+                    {
+                      "value": "0",
+                      "label": "项目商务框架"
+                    },
+                    {
+                      "value": "1",
+                      "label": "项目非框架"
+                    }
+                  ]
+                },
+                {
+                  "enumValues": [
+                    {
+                      "value": 0,
+                      "label": "数值零"
+                    },
+                    {
+                      "value": 1,
+                      "label": "数值一"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-enums-old-version.json"
+}

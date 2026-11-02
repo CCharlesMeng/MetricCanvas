@@ -453,12 +453,19 @@
                     {/if}
 
                     {#if interactive && column.filterable}
-                      <details class="filter" use:tableFilterPopover ontoggle={event => { if (column.filterable?.mode === 'select') oncandidateopen?.(columnField(column), event.currentTarget.open); }}>
+                      <details class="filter" use:tableFilterPopover ontoggle={event => { if (column.filterable?.mode === 'select' && !column.enumValues) oncandidateopen?.(columnField(column), event.currentTarget.open); }}>
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">{#if props.variant === 'reportCompact'}▼{:else}<TableControlIcon name="filter" />{/if}</summary>
                         <div class="menu" class:select-menu={column.filterable.mode === 'select'} popover="auto">
                           {#if column.filterable.mode === 'select'}
                             {#if view?.allowEmptyFilter}<button type="button" onclick={()=>onheaderfilter?.(columnField(column),{mode:'isNull'})}>为空</button>{/if}
-                            {#if columnCandidates}
+                            {#if column.enumValues}
+                              {#each column.enumValues as option (JSON.stringify([typeof option.value,option.value]))}
+                                <label class="option">
+                                  <input type="checkbox" checked={selectedValues(columnField(column)).includes(option.value)} onchange={()=>toggleFilterValue(columnField(column),option.value)} />
+                                  <span>{option.label}</span>
+                                </label>
+                              {/each}
+                            {:else if columnCandidates}
                               <ColumnCandidateOptions field={columnField(column)} snapshot={columnCandidates[columnField(column)]}
                                 selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(columnField(column), value)}
                                 onsearch={oncandidatesearch} onmore={oncandidatemore} onretry={oncandidateretry} />
@@ -599,7 +606,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row)}</span>
+                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -628,7 +635,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row)}</span>
+                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -641,7 +648,7 @@
                         class="rate-bar"
                         style={`width: ${rateBarWidth(bodyColumn, rawValue)}%;`}
                       ></span>
-                      <span class="cell-value">{alignedCellText(column.field, data, row)}</span>
+                      <span class="cell-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
                     </span>
                     {@render supplementaryFields()}
                     </div>
@@ -655,7 +662,7 @@
                           inline
                         />
                       {:else}
-                        <span class="cell-primary-value">{alignedCellText(column.field, data, row)}</span>
+                        <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
                       {/if}
                       {@render supplementaryFields()}
                     </div>

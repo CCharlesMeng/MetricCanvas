@@ -1,0 +1,43 @@
+{
+  "case": "paged-join-non-record-member-parameter",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "每个成员必须显式消费全部组合查询参数",
+      "paths": [
+        "/dataSources/office-overview/source/members/directory/source",
+        "/dataSources/office-overview/source/members/bidding/source",
+        "/dataSources/office-overview/source/members/support/source",
+        "/dataSources/office-overview/source/members/signed/source",
+        "/dataSources/office-overview/source/members/initiation/source"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "members": {
+            "directory": {
+              "source": "office-directory"
+            },
+            "bidding": {
+              "source": "office-bidding"
+            },
+            "support": {
+              "source": "office-support"
+            },
+            "signed": {
+              "source": "office-signed"
+            },
+            "initiation": {
+              "source": "office-initiation"
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/paged-join-non-record-member-parameter.json"
+}

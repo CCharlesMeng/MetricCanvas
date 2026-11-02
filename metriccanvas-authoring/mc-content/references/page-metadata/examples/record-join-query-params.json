@@ -1,0 +1,301 @@
+{
+  "schemaVersion": "6.80",
+  "id": "record-join-query-params",
+  "layout": "dashboard",
+  "dashboardToolbar": {
+    "variant": "compact",
+    "note": "合成数据：下钻查询参数仅由适用成员消费，不枚举审批人候选值。"
+  },
+  "meta": {
+    "title": "审批人下钻查询参数",
+    "description": "合成审批记录与商务基本信息补列；URL approver-name 只筛选主表，owner-name 只筛选补列源。不是实际 DQE 验收。"
+  },
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "approver-name",
+          "dim_name": "审批人姓名",
+          "required": false,
+          "label": "审批人"
+        },
+        {
+          "id": "owner-name",
+          "dim_name": "责任人名称",
+          "required": false,
+          "label": "责任人"
+        }
+      ]
+    }
+  },
+  "dataSources": {
+    "decisions": {
+      "fields": {
+        "record-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "审批记录ID",
+          "nullable": false
+        },
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "approver-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "审批人姓名",
+          "nullable": false
+        },
+        "sequence": {
+          "type": "number",
+          "role": "dimension",
+          "queryField": "审批顺序",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Approval Records",
+                "output_fields": [
+                  "审批记录ID",
+                  "商务ID",
+                  "审批人姓名",
+                  "审批顺序"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "paramBindings": {
+            "approver-name": {
+              "target": "dimension",
+              "queryField": "审批人姓名"
+            }
+          }
+        }
+      }
+    },
+    "basics": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "责任人名称",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "商务ID",
+                  "责任人名称"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "paramBindings": {
+            "owner-name": {
+              "target": "dimension",
+              "queryField": "责任人名称"
+            }
+          }
+        }
+      }
+    },
+    "joined": {
+      "fields": {
+        "record-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "approver-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "sequence": {
+          "type": "number",
+          "role": "dimension",
+          "nullable": false
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "record-id",
+        "domainMember": "decision",
+        "members": {
+          "decision": {
+            "source": "decisions",
+            "key": {
+              "field": "biz-id",
+              "queryField": "商务ID"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "basics",
+            "key": {
+              "field": "biz-id",
+              "queryField": "商务ID"
+            },
+            "canSelectPage": false
+          }
+        },
+        "projection": {
+          "record-id": {
+            "member": "decision",
+            "field": "record-id"
+          },
+          "biz-id": {
+            "member": "decision",
+            "field": "biz-id"
+          },
+          "approver-name": {
+            "member": "decision",
+            "field": "approver-name"
+          },
+          "sequence": {
+            "member": "decision",
+            "field": "sequence"
+          },
+          "owner-name": {
+            "member": "basic",
+            "field": "owner-name"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "sequence",
+              "direction": "asc"
+            }
+          ],
+          "sortableFields": [
+            "sequence"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 2
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "onMissing": "null",
+        "records": {
+          "batchSize": 2,
+          "maxBytes": 67108864,
+          "timeoutMs": 60000
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "container": "card",
+      "components": [
+        {
+          "id": "approvals",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "joined"
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "param": "approver-name"
+                },
+                " - 商务决策明细"
+              ]
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "record-id",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "审批人查询参数合成验收"
+              }
+            },
+            "columns": [
+              {
+                "field": "record-id",
+                "title": "审批记录",
+                "width": 140
+              },
+              {
+                "field": "biz-id",
+                "title": "商务ID",
+                "width": 120
+              },
+              {
+                "field": "approver-name",
+                "title": "审批人",
+                "width": 120
+              },
+              {
+                "field": "sequence",
+                "title": "审批顺序",
+                "width": 120,
+                "sortable": true
+              },
+              {
+                "field": "owner-name",
+                "title": "责任人",
+                "width": 120
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

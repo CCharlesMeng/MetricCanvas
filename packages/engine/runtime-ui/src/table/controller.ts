@@ -50,7 +50,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     }
     function preloadFields(table:TableComponent){
       if(isPagedJoinQuery(page.dataSources[table.data.main].source))return [];
-      return tableColumnLeaves(columns(table).component.props.columns).filter(column=>column.filterable?.mode==='select').flatMap(column=>{const field=mainColumnField(column.field);return field===undefined?[]:[field];});
+      return tableColumnLeaves(columns(table).component.props.columns).filter(column=>column.filterable?.mode==='select'&&!column.enumValues).flatMap(column=>{const field=mainColumnField(column.field);return field===undefined?[]:[field];});
     }
     const headers = new Map<string, Record<string, TableHeaderFilterValue>>();
     const searches = new Map<string, string>();

@@ -2,6 +2,7 @@ import { tablePinnedSlots, tableLeafColumns, restoreCellFallbacks, rowCellFallba
 import type { NamedDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { reportTableFormats, formatTableCell } from './cell-presentation';
+import {tableEnumLabel} from './enum-values';
 
 export interface AlignedTableRow {
   main: Row;
@@ -109,10 +110,11 @@ export function alignedFallback(binding: FieldBinding, data: NamedDataSlots, row
   const resolved = resolveField(binding, data);
   return rowCellFallback(row.bySlot[resolved.data], resolved.field);
 }
-export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow): string {
+export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow, enumValues?:TableColumn['enumValues']): string {
   const resolved = resolveField(binding, data);
   if (row.kind === 'pinnedTop' && resolved.data === '__unbound') return '';
   const fallback = alignedFallback(binding, data, row);
   if (fallback) return String(fallback.raw);
-  return formatTableCell(alignedFieldValue(binding, data, row), resolved.format, resolved.missingText);
+  const value=alignedFieldValue(binding,data,row);
+  return tableEnumLabel(value,enumValues)??formatTableCell(value, resolved.format, resolved.missingText);
 }

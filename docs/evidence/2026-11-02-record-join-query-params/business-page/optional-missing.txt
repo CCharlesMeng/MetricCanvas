@@ -1,0 +1,300 @@
+Browser tab: 1, Title: "页面试验场 · MetricCanvas", URL: "http://127.0.0.1:5187/pages/business-decision-all-details?mtime.from=2026-11&mtime.to=2026-11".
+1 AXWebArea 页面试验场 · MetricCanvas, URL: 127.0.0.1:5187/pages/business-decision-all-details?mtime.from=2026-11&mtime.to=2026-11
+	2 container
+		3 container 试验场导航
+			4 link Description: ← 页面目录, Value: 127.0.0.1:5187/
+			5 link Description: JSON 即时预览, Value: 127.0.0.1:5187/preview
+		6 container 页面 JSON
+			7 button (collapsed) 查看页面 JSON, Secondary Actions: Expand
+				8 text 查看页面 JSON
+		9 container
+			10 heading 商务决策明细(全部), Value: 1
+				11 text 商务决策明细(全部)
+			12 container c2
+				13 container 统计期间
+					14 container 统计期间
+						15 checkbox 年, Value: 0
+						16 checkbox 季, Value: 0
+						17 checkbox 月, Value: 1
+						18 checkbox 近一年, Value: 0
+					19 container
+						20 combo box (collapsed, settable) Description: 统计期间, Value: 2026-11, Secondary Actions: Expand
+						21 button 打开日期选择器
+				22 container 区域
+					23 pop up button (collapsed) Description: 区域, Secondary Actions: Expand
+			24 text 区域与统计期间筛选驱动全页查询；责任人及商务类型为当前快照
+		25 text 注：不含混合云（HCS）的数据
+		26 container
+			27 search text field (settable) 表格搜索
+			28 button 搜索
+			29 button 导出
+			30 table
+				31 row
+					32 cell
+						33 text 序号
+					34 cell
+						35 text 项目名称
+					36 cell
+						37 text 地区部
+					38 cell
+						39 text 代表处
+					40 cell
+						41 text 客户名称
+					42 cell
+						43 text 商务编码
+					44 cell
+						45 button 审批时间 排序:desc, Help: 点击排序,Shift+点击追加多列排序
+							46 text 审批时间
+							47 container 排序:desc
+					48 cell
+						49 text 审批人
+					50 cell
+						51 text 审批意见
+					52 cell
+						53 text 责任人
+					54 cell
+						55 text 商务类型
+						56 button (collapsed) Description: 表头筛选, Secondary Actions: Expand
+				57 row
+					58 cell
+						59 text 1
+					60 cell
+						61 text 合成项目14
+					62 cell
+						63 text 华东地区部
+					64 cell
+						65 text 上海代表处
+					66 cell
+						67 text 合成客户14
+					68 cell
+						69 text SIM-BIZ-014
+					70 cell
+						71 text 2026-11-28 12:00:00
+					72 cell
+						73 text 合成审批人乙
+					74 cell
+						75 text 合成审批意见28
+					76 cell
+						77 text 合成责任人14
+					78 cell
+						79 text 1
+				80 row
+					81 cell
+						82 text 2
+					83 cell
+						84 text 合成项目14
+					85 cell
+						86 text 华东地区部
+					87 cell
+						88 text 上海代表处
+					89 cell
+						90 text 合成客户14
+					91 cell
+						92 text SIM-BIZ-014
+					93 cell
+						94 text 2026-11-27 12:00:00
+					95 cell
+						96 text 合成审批人乙
+					97 cell
+						98 text 合成审批意见27
+					99 cell
+						100 text 合成责任人14
+					101 cell
+						102 text 1
+				103 row
+					104 cell
+						105 text 3
+					106 cell
+						107 text 合成项目13
+					108 cell
+						109 text 华东地区部
+					110 cell
+						111 text 上海代表处
+					112 cell
+						113 text 合成客户13
+					114 cell
+						115 text SIM-BIZ-013
+					116 cell
+						117 text 2026-11-26 12:00:00
+					118 cell
+						119 text 合成审批人乙
+					120 cell
+						121 text 合成审批意见26
+					122 cell
+						123 text 合成责任人13
+					124 cell
+						125 text 0
+				126 row
+					127 cell
+						128 text 4
+					129 cell
+						130 text 合成项目13
+					131 cell
+						132 text 华东地区部
+					133 cell
+						134 text 上海代表处
+					135 cell
+						136 text 合成客户13
+					137 cell
+						138 text SIM-BIZ-013
+					139 cell
+						140 text 2026-11-25 12:00:00
+					141 cell
+						142 text 合成审批人乙
+					143 cell
+						144 text 合成审批意见25
+					145 cell
+						146 text 合成责任人13
+					147 cell
+						148 text 0
+				149 row
+					150 cell
+						151 text 5
+					152 cell
+						153 text 合成项目12
+					154 cell
+						155 text 华东地区部
+					156 cell
+						157 text 上海代表处
+					158 cell
+						159 text 合成客户12
+					160 cell
+						161 text SIM-BIZ-012
+					162 cell
+						163 text 2026-11-24 12:00:00
+					164 cell
+						165 text 合成审批人甲
+					166 cell
+						167 text 合成审批意见24
+					168 cell
+						169 text 合成责任人12
+					170 cell
+						171 text 1
+				172 row
+					173 cell
+						174 text 6
+					175 cell
+						176 text 合成项目12
+					177 cell
+						178 text 华东地区部
+					179 cell
+						180 text 上海代表处
+					181 cell
+						182 text 合成客户12
+					183 cell
+						184 text SIM-BIZ-012
+					185 cell
+						186 text 2026-11-23 12:00:00
+					187 cell
+						188 text 合成审批人甲
+					189 cell
+						190 text 合成审批意见23
+					191 cell
+						192 text 合成责任人12
+					193 cell
+						194 text 1
+				195 row
+					196 cell
+						197 text 7
+					198 cell
+						199 text 合成项目11
+					200 cell
+						201 text 华东地区部
+					202 cell
+						203 text 上海代表处
+					204 cell
+						205 text 合成客户11
+					206 cell
+						207 text SIM-BIZ-011
+					208 cell
+						209 text 2026-11-22 12:00:00
+					210 cell
+						211 text 合成审批人甲
+					212 cell
+						213 text 合成审批意见22
+					214 cell
+						215 text 合成责任人11
+					216 cell
+						217 text 0
+				218 row
+					219 cell
+						220 text 8
+					221 cell
+						222 text 合成项目11
+					223 cell
+						224 text 华东地区部
+					225 cell
+						226 text 上海代表处
+					227 cell
+						228 text 合成客户11
+					229 cell
+						230 text SIM-BIZ-011
+					231 cell
+						232 text 2026-11-21 12:00:00
+					233 cell
+						234 text 合成审批人甲
+					235 cell
+						236 text 合成审批意见21
+					237 cell
+						238 text 合成责任人11
+					239 cell
+						240 text 0
+				241 row
+					242 cell
+						243 text 9
+					244 cell
+						245 text 合成项目10
+					246 cell
+						247 text 华东地区部
+					248 cell
+						249 text 上海代表处
+					250 cell
+						251 text 合成客户10
+					252 cell
+						253 text SIM-BIZ-010
+					254 cell
+						255 text 2026-11-20 12:00:00
+					256 cell
+						257 text 合成审批人甲
+					258 cell
+						259 text 合成审批意见20
+					260 cell
+						261 text 合成责任人10
+					262 cell
+						263 text 1
+				264 row
+					265 cell
+						266 text 10
+					267 cell
+						268 text 合成项目10
+					269 cell
+						270 text 华东地区部
+					271 cell
+						272 text 上海代表处
+					273 cell
+						274 text 合成客户10
+					275 cell
+						276 text SIM-BIZ-010
+					277 cell
+						278 text 2026-11-19 12:00:00
+					279 cell
+						280 text 合成审批人甲
+					281 cell
+						282 text 合成审批意见19
+					283 cell
+						284 text 合成责任人10
+					285 cell
+						286 text 1
+			287 text 总条数：  30
+			288 button (collapsed) Description: 每页 10 条, Help: 10, Secondary Actions: Expand
+				289 text 10
+			290 button (disabled) 上一页
+			291 button 1
+			292 button 2
+			293 button 3
+			294 button 下一页
+			295 text 跳至
+			296 text field (settable) Description: 跳转页码, Value: 1
+			297 text 页
+
+The focused UI element is 1 AXWebArea 页面试验场 · MetricCanvas, URL: 127.0.0.1:5187/pages/business-decision-all-details?mtime.from=2026-11&mtime.to=2026-11

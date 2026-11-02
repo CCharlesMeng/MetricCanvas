@@ -1,0 +1,65 @@
+Browser tab: 1, Title: "页面试验场 · MetricCanvas", URL: "http://127.0.0.1:5187/pages/business-decision-all-details?approver-name=%E6%B2%A1%E6%9C%89%E5%8C%B9%E9%85%8D%E8%AE%B0%E5%BD%95&mtime.from=2026-11&mtime.to=2026-11".
+1 AXWebArea 页面试验场 · MetricCanvas, URL: 127.0.0.1:5187/pages/business-decision-all-details?approver-name=%E6%B2%A1%E6%9C%89%E5%8C%B9%E9%85%8D%E8%AE%B0%E5%BD%95&mtime.from=2026-11&mtime.to=2026-11
+	2 container
+		3 container 试验场导航
+			4 link Description: ← 页面目录, Value: 127.0.0.1:5187/
+			5 link Description: JSON 即时预览, Value: 127.0.0.1:5187/preview
+		6 container 页面 JSON
+			7 button (collapsed) 查看页面 JSON, Secondary Actions: Expand
+				8 text 查看页面 JSON
+		9 container
+			10 heading 商务决策明细(全部), Value: 1
+				11 text 商务决策明细(全部)
+			12 container c2
+				13 container 统计期间
+					14 container 统计期间
+						15 checkbox 年, Value: 0
+						16 checkbox 季, Value: 0
+						17 checkbox 月, Value: 1
+						18 checkbox 近一年, Value: 0
+					19 container
+						20 combo box (collapsed, settable) Description: 统计期间, Value: 2026-11, Secondary Actions: Expand
+						21 button 打开日期选择器
+				22 container 区域
+					23 pop up button (collapsed) Description: 区域, Secondary Actions: Expand
+			24 text 区域与统计期间筛选驱动全页查询；责任人及商务类型为当前快照
+		25 text 注：不含混合云（HCS）的数据
+		26 container
+			27 heading 没有匹配记录 - 商务决策明细(全部), Value: 3
+				28 text 没有匹配记录 - 商务决策明细(全部)
+			29 search text field (settable) 表格搜索
+			30 button 搜索
+			31 button 导出
+			32 table
+				33 row
+					34 cell
+						35 text 序号
+					36 cell
+						37 text 项目名称
+					38 cell
+						39 text 地区部
+					40 cell
+						41 text 代表处
+					42 cell
+						43 text 客户名称
+					44 cell
+						45 text 商务编码
+					46 cell
+						47 button 审批时间 排序:desc, Help: 点击排序,Shift+点击追加多列排序
+							48 text 审批时间
+							49 container 排序:desc
+					50 cell
+						51 text 审批人
+					52 cell
+						53 text 审批意见
+					54 cell
+						55 text 责任人
+					56 cell
+						57 text 商务类型
+						58 button (collapsed) Description: 表头筛选, Secondary Actions: Expand
+				59 row
+					60 cell
+						61 text 暂无数据
+			62 text 总条数：  0
+
+The focused UI element is 1 AXWebArea 页面试验场 · MetricCanvas, URL: 127.0.0.1:5187/pages/business-decision-all-details?approver-name=%E6%B2%A1%E6%9C%89%E5%8C%B9%E9%85%8D%E8%AE%B0%E5%BD%95&mtime.from=2026-11&mtime.to=2026-11

@@ -118,3 +118,17 @@ curl 'http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute' \
   可加性与时间聚合方式是结构化字段，不再拼进 `description`。
 - 存量正式页面依赖的精确匹配分支保持原样，语义面只在它们全部落空
   之后生效。
+## 审批人下钻查询参数 HTTP 验收
+
+页面 `/pages/record-join-query-params?approver-name=合成审批人甲` 使用默认数据网关，普通 JSON 不含夹具行、initial、模拟开关或特殊网关声明。Sim 在 `src/record-query-params.ts` 认领精确查询签名，数据仅来自 `fixtures/record-query-params.json`。
+
+启动独立服务避免占用其他工作树端口：
+
+```sh
+DQE_SIM_PORT=18387 DQE_SIM_HOST=127.0.0.1 pnpm --filter @metriccanvas/dqe-sim dev
+DQE_SIM_PORT=18387 pnpm --filter playground dev --host 127.0.0.1 --port 5187 --strictPort
+```
+
+浏览器 Network 过滤 `execute`：审批人甲显示3条记录，发送3条标准POST（主表offset 0/2，补列按B-1/B-3）。主表 `filter.fields` 包含“审批人姓名”，补列不包含审批人条件，不发送单独的审批人候选查询。缺基本信息的A-4仍保留。响应带 `x-request-id:dqe-sim-…`，`total_count` 为筛选后总数且在窗口切片前计算。
+
+服务端拒绝未知字段、非等值谓词及非法窗口，不把不支持的查询伪装为空。HTTP运行时回归还通过Sim的404响应验证失败分类；实际浏览器不注入响应、不使用内存网关。此验收证明标准HTTP链路，不代表已连接真实内网DQE。

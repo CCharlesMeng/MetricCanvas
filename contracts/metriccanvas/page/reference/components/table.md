@@ -1,8 +1,18 @@
 # 明细表 table
 
-展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录。适用于明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细。数据形状：一个或多个 dimension/metric 字段组成的多行记录。
+展示可逐行核对、排序、筛选和通过单元格联动的明细记录，支持多级表头。数据形状为多个 dimension/metric 字段组成的行集。
 
 columns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。
+
+## 前端列枚举（6.80）
+
+字段列可声明 `enumValues:[{"value":"0","label":"项目商务框架"},{"value":"1","label":"项目非框架"}]`。它是创作期已确认的有限字典，不从当前页推断全集。数组1—1000项，value为字符串或数值，同类型原始值不得重复；数字0与字符串"0"分别匹配，label为非空纯文本。
+
+仅主字段的单元格及 Excel/PDF/PNG 展示使用枚举名称，不改写数据快照、查询、排序、行键、导航和筛选编码。次字段、徽标独立展示。缺失继续遵循 missingText，未知值及失配原文证据保留原文，不替换成任一已知枚举。Excel 的已知枚举导出文字标签，其余值保持原导出行为。
+
+同时声明 `filterable:{mode:"select"}` 时，表头直接按字典顺序显示完整静态选项，提交原始 value；不预热、查询或搜索动态候选。此字典不证明记录存在或用户具有数据权限，也不改变后端筛选能力。省略 enumValues 的列沿用动态候选。组合源的跨成员筛选限制仍生效。
+
+可观察入口 `/pages/table-column-enums`：合成编码0、1、未知9、空值分别显示两种中文标签、9、—；选择项目商务框架仅保留 B-1，导出使用中文标签。业务页 `/pages/business-decision-all-details` 使用同一映射，DQE Sim 继续返回原始编码。
 
 ## 决策意见明细合成预览
 
@@ -298,7 +308,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败显示持续错误和重试；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
 
 
-页面协议 6.79。结构真源为本册[schema.json](../schema.json)，SHA256 `de59871e73f1f5c7bd929d147e3482216b50599ad50e174e3795401276ff2914`。字段表自动生成；可选不等于有默认值。
+页面协议 6.80。结构真源为本册[schema.json](../schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1166,6 +1176,66 @@ Schema位置：`#/definitions/tableColumn/properties/kind`。
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "field" | 用于选择@tableColumn.kind分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f656e756d56616c756573"></a>
+
+### `@tableColumn.enumValues`
+
+Schema位置：`#/definitions/tableColumn/properties/enumValues`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1; maxItems=1000 | Schema未设默认；装配/运行时默认见语义说明 | 列主字段的前端枚举字典，1至1000项；原始值类型敏感且不得重复，统一显示、静态选项和导出标签，不改写查询编码。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f656e756d56616c7565732f6974656d73"></a>
+
+### `@tableColumn.enumValues[]`
+
+Schema位置：`#/definitions/tableColumn/properties/enumValues/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["value","label"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f656e756d56616c7565732f6974656d732f70726f706572746965732f76616c7565"></a>
+
+### `@tableColumn.enumValues[].value`
+
+Schema位置：`#/definitions/tableColumn/properties/enumValues/items/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f656e756d56616c7565732f6974656d732f70726f706572746965732f76616c75652f616e794f662f30"></a>
+
+### `@tableColumn.enumValues[].value · anyOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f656e756d56616c7565732f6974656d732f70726f706572746965732f76616c75652f616e794f662f31"></a>
+
+### `@tableColumn.enumValues[].value · anyOf[1]`
+
+Schema位置：`#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f656e756d56616c7565732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `@tableColumn.enumValues[].label`
+
+Schema位置：`#/definitions/tableColumn/properties/enumValues/items/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6669656c64"></a>
 
@@ -3465,7 +3535,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `pagination-initial-rows`：查询分页的内嵌初始行必须声明 totalCount 且是完整第一页。反例：[pagination-initial-without-total-count](../errors/pagination-initial-without-total-count.json)、[pagination-initial-not-full-page](../errors/pagination-initial-not-full-page.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `pagination-exclusive-source`：查询分页表格必须独占页面数据源。反例：[pagination-shared-source](../errors/pagination-shared-source.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-toolbar-search`：表格工具区由6.21引入，搜索显式引用文本标量字段。反例：[table-toolbar-before-6.21](../errors/table-toolbar-before-6.21.json)、[table-search-nontext-field](../errors/table-search-nontext-field.json)、[table-search-duplicate-field](../errors/table-search-duplicate-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `paged-join`：6.22 组合表全局视图与普通查询定义引用。反例：[table-number-range-before-6.22](../errors/table-number-range-before-6.22.json)、[paged-join-initial-predicate-null](../errors/paged-join-initial-predicate-null.json)、[paged-join-initial-predicate-in](../errors/paged-join-initial-predicate-in.json)、[paged-join-initial-predicate-numeric](../errors/paged-join-initial-predicate-numeric.json)、[paged-join-initial-predicate-date](../errors/paged-join-initial-predicate-date.json)、[paged-join-before-6.22](../errors/paged-join-before-6.22.json)、[paged-join-unknown-member](../errors/paged-join-unknown-member.json)、[paged-join-invalid-key](../errors/paged-join-invalid-key.json)、[paged-join-invalid-projection](../errors/paged-join-invalid-projection.json)、[paged-join-member-topn](../errors/paged-join-member-topn.json)、[paged-join-shared-root](../errors/paged-join-shared-root.json)、[paged-join-invalid-initial](../errors/paged-join-invalid-initial.json)、[table-number-range-non-numeric](../errors/table-number-range-non-numeric.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `paged-join`：6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数。反例：[paged-join-non-record-member-parameter](../errors/paged-join-non-record-member-parameter.json)、[record-join-unknown-member-parameter](../errors/record-join-unknown-member-parameter.json)、[table-number-range-before-6.22](../errors/table-number-range-before-6.22.json)、[paged-join-initial-predicate-null](../errors/paged-join-initial-predicate-null.json)、[paged-join-initial-predicate-in](../errors/paged-join-initial-predicate-in.json)、[paged-join-initial-predicate-numeric](../errors/paged-join-initial-predicate-numeric.json)、[paged-join-initial-predicate-date](../errors/paged-join-initial-predicate-date.json)、[paged-join-before-6.22](../errors/paged-join-before-6.22.json)、[paged-join-unknown-member](../errors/paged-join-unknown-member.json)、[paged-join-invalid-key](../errors/paged-join-invalid-key.json)、[paged-join-invalid-projection](../errors/paged-join-invalid-projection.json)、[paged-join-member-topn](../errors/paged-join-member-topn.json)、[paged-join-shared-root](../errors/paged-join-shared-root.json)、[paged-join-invalid-initial](../errors/paged-join-invalid-initial.json)、[table-number-range-non-numeric](../errors/table-number-range-non-numeric.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-search-options`：6.42 静态搜索选项唯一、默认项有效且每项引用文本字段。反例：[table-search-options-before-6.42](../errors/table-search-options-before-6.42.json)、[table-search-options-duplicate](../errors/table-search-options-duplicate.json)、[table-search-options-default-missing](../errors/table-search-options-default-missing.json)、[table-search-options-nontext](../errors/table-search-options-nontext.json)、[table-search-options-unmapped](../errors/table-search-options-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-expansion`：6.44单层子表格的作用域、只读及查询分页约束。反例：[row-expansion-before-6.44](../errors/row-expansion-before-6.44.json)、[row-expansion-missing-parent-key](../errors/row-expansion-missing-parent-key.json)、[row-expansion-query-local-page](../errors/row-expansion-query-local-page.json)、[row-expansion-unbound-parent](../errors/row-expansion-unbound-parent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-pinned-top`：独立完整查询置顶，明确字段及行域归属。反例：[pinned-top-version](../errors/pinned-top-version.json)、[pinned-top-main](../errors/pinned-top-main.json)、[pinned-top-window](../errors/pinned-top-window.json)、[pinned-top-unknown-field](../errors/pinned-top-unknown-field.json)、[pinned-top-incomplete](../errors/pinned-top-incomplete.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -3473,6 +3543,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `table-column-visibility`：列显隐条件与版本下限。反例：[table-column-old-version](../errors/table-column-old-version.json)、[table-column-row-context](../errors/table-column-row-context.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-column-search-fields`：列搜索须关联主、次或徽标字段。反例：[table-column-unowned-search](../errors/table-column-unowned-search.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-hierarchy-selection`：6.70显式归属定位、父行投影、私有选择及完整父子导出。反例：[hierarchy-old-version](../errors/hierarchy-old-version.json)、[hierarchy-parent-window](../errors/hierarchy-parent-window.json)、[hierarchy-without-selection](../errors/hierarchy-without-selection.json)、[hierarchy-export-fields](../errors/hierarchy-export-fields.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `table-column-enums`：前端列枚举值唯一及版本下限。反例：[table-enums-old-version](../errors/table-enums-old-version.json)、[table-enums-duplicate-value](../errors/table-enums-duplicate-value.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -3501,6 +3572,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-hierarchy-lookup-param](../examples/table-hierarchy-lookup-param.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-query-page](../examples/paged-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-query-page](../examples/record-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-column-enums](../examples/table-column-enums.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](../examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [table-multiple-pinned-page](../examples/table-multiple-pinned-page.json)：完整合法页面；查询仅为静态契约证据。
 
@@ -3541,6 +3613,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/detailViews/0/components/0/props/columns/0`。
 - `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/table-pinned-summary-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/table-multiple-pinned-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
+- `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/enumValues/0/value`。
+- `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/enumValues/0/value`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/city`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/7/components/0/props/columns/0/openDetail`。

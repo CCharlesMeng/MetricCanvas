@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.79",
+  "currentWriter": "6.80",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -825,6 +825,28 @@
           "id": "dashboard-toolbar-compact-read-only",
           "minor": 0,
           "description": "dashboard 紧凑页头与只读筛选说明"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-column-enums.json",
+      "requiredVersion": "6.80",
+      "capabilities": [
+        {
+          "id": "table-column-enums",
+          "minor": 80,
+          "description": "表格列前端枚举展示及静态筛选"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

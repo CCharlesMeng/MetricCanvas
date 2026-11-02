@@ -6,6 +6,7 @@
 
 
 IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或代表处，页面无需增加 URL 映射字段。同组参数按 URL 顺序取最后项，旧 value/level 链接继续兼容，普通页面筛选保持原行为。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)，合成入口 `/pages/ioc-region-url-demo`。本更新不新增页面字段或 Schema 能力下限。
+6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
 
 数据加载时先呈现真实组件结构，保留标题、容器、表头及工具栏；首次加载、筛选重查、查询翻页和 Tab 激活均不再用骨架块替换组件。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#加载时保留组件结构)，合成验收入口 `/pages/loading-structure-demo`。无需新增页面字段或升级 Schema。
 
@@ -58,6 +59,8 @@ IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提
 组合表格默认兼容动态异常数据：空值或缺字段局部补空，无效行跳过，同一来源重复 key 保留第一条；页面展示 warning，Excel 附“数据异常说明”。先完整整理可用行再排序、计数、分页，配置、权限、网络和资源限制保持。无需新增页面字段；声明、限制及合成入口 `/pages/table-data-recovery` 见[组合表格异常兼容](docs/page-metadata/data-sources.md#table-result-recovery)。
 
 ## 从需求到页面
+
+记录模式组合源 `pagedJoin.records` 的查询参数按成员显式绑定：下钻审批人可仅进入主表，不创建审批人筛选器或候选查询；补列源仍按关联键补列。非记录模式的全员参数约束与业务筛选规则保持。此为参数消费校验修复，不新增字段或 Schema 版本；需同步更新引擎。声明、可选标题缺值与合成验收入口见[记录模式](docs/page-metadata/data-sources.md)和 `/pages/record-join-query-params`。
 
 本地创作可先用页面 JSON 和指标说明 MD 识别组件用数、指标候选、取数条件与缺口；已有页面的局部呈现修改只查所涉属性，不要求重新读取全部数据协议。工具与证据分层见[本地 Skill 维护](docs/agents/local-authoring-skill-maintenance.md)，可观察页面见[指标匹配与字段呈现](pages/capabilities/layout/local-authoring-knowledge-demo.json)。匹配报告和查询候选是创作期产物，不新增页面字段，不等于真实查询已验证。 局部接数可按组件读取相关数据源及共享消费者，最终仍校验完整页面；已有可信绑定不要求重做全页指标报告。操作与范围边界见[局部接数示例](pages/capabilities/layout/README.md#局部接数共享指标与独立内容)。
 
