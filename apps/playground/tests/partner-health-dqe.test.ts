@@ -6,6 +6,7 @@ import {createPageDataExecutor} from '../../../packages/data-execution/src/execu
 import {installLocalDevRuntimeConfig, installRuntimeConfig} from '../src/lib/runtime-config';
 import {scenarioEnvironment} from '../src/lib/scenario-environment';
 import {pageExternalInputs} from '../fixtures/preview-inputs';
+import {createPartnerHealthUnionPreview} from '../fixtures/organization-union/gateway';
 
 const {transport} = vi.hoisted(() => ({transport: vi.fn<typeof fetch>()}));
 vi.mock('../src/lib/services', async () => {
@@ -65,7 +66,10 @@ describe('伙伴健康度使用共享DQE传输', () => {
       const body = JSON.parse(String(init?.body));
       return Response.json({retCode: 'CBC.0000', results: body.dsl_list.map(() => ({code: 'SUCCESS', data: [], total_count: 0}))});
     });
-    const output = await createPageDataExecutor({gateway: scenarioEnvironment('partner-health').dataGateway}).execute(document);
+    const candidates = createPartnerHealthUnionPreview().dataGateway;
+    const gateway = {...scenarioEnvironment('partner-health').dataGateway,
+      fetchDimensionValues: candidates.fetchDimensionValues, fetchFilterCandidates: candidates.fetchFilterCandidates};
+    const output = await createPageDataExecutor({gateway}).execute(document);
     expect(transport.mock.calls.length).toBeGreaterThan(0);
     expect(transport.mock.calls.every(([url]) => url === endpoint)).toBe(true);
     expect(document).toEqual(before);

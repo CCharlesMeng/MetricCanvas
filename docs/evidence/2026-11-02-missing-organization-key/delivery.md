@@ -27,3 +27,11 @@ local-authoring Skill 在 main 已为 1.17.0 的基础上升至 1.17.1，并从�
 复杂度口径继续为 `metriccanvas-ts-ast/1`、TypeScript 5.9.3。上游合并后的计算路径测量见 `complexity-delivery.json`，`evaluateRows` 为 9→12、`collectDependencies` 为 9→11，保留的上游 `validateComputedJoin` 为 4→4；全部新增/修改函数不超过15，无未关闭项。
 
 本文件记录提交前的内容与验证输入；提交、远端和 CI 的最终状态以 Git 提交与同 SHA 的 GitHub Actions 记录为准。没有内网部署或真实服务验收声明。
+
+## 首轮 CI 与 HTTP 测试夹具补齐
+
+首轮提交 `a5a4cef11b79de752917a54b44f6c61f4189a4b2` 的 CI `41414248386`：types、authoring、build、compatibility、Linux/Windows MC 分发通过，tests 与汇总 ci 失败；不标记首轮 CI 全绿。全仓测试暴露两组未同步的伙伴健康度 HTTP 夹具，共10个失败用例。
+
+补齐 `tests/partner-health-http.test.ts` 与 `apps/playground/tests/partner-health-dqe.test.ts` 的候选接入，复用现有组织夹具的 `fetchFilterCandidates`，数据取数仍经过各自的 HTTP/DQE 传输。下方对象输出断言同步为已确认的“组织+得分”，不再要求输出国内或海外。保持原空结果 initial、输入不变性、真实0/负数、33项无重复查询及页签缓存断言。未修改引擎、生产网关或业务 JSON。
+
+扩大回归到全部伙伴健康度测试和 Playground DQE 测试：9文件104项通过，补齐的两组失败均已覆盖。前后 AST 测量见 `http-complexity-before.json` 与 `http-complexity-after.json`；`httpGateway` 自身1→1，修改测试回调的复杂度不变，HTTP 文件所有函数最大9，Playground测试最大3，无新增超限项。

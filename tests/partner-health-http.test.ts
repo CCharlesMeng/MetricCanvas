@@ -11,16 +11,15 @@ import {orchestrate, type PageDataSnapshots} from '../packages/engine/runtime/sr
 import {barOption} from '../packages/engine/widgets/src/components/bar-chart/options';
 import {createFilterState} from '../packages/engine/runtime/src/filter-state';
 import type {RuntimeDataGateway} from '../packages/data-execution/src/ports';
-import {organizationDimensionValues} from '../apps/playground/fixtures/organization-union/organizations';
+import {createPartnerHealthUnionPreview} from '../apps/playground/fixtures/organization-union/gateway';
 
 const parsed = parsePage(document);
 if (!parsed.ok) throw Error('Invalid fixture page');
 const page = parsed.page;
 function httpGateway(config: Parameters<typeof createDqeGateway>[0]): RuntimeDataGateway {
-  return {...createDqeGateway(config), async fetchDimensionValues(dimension, options) {
-    options?.signal?.throwIfAborted();
-    return organizationDimensionValues(dimension);
-  }};
+  const candidates = createPartnerHealthUnionPreview().dataGateway;
+  return {...createDqeGateway(config), fetchDimensionValues: candidates.fetchDimensionValues,
+    fetchFilterCandidates: candidates.fetchFilterCandidates};
 }
 function isOverviewItem(item: JsonObject): boolean {
   const fields = item.output_fields ?? item.output_dims;
@@ -40,7 +39,7 @@ afterAll(async () => {
 });
 
 it.each(['ready', 'zeroTotal'])('%s：真实 HTTP 回执经过查询运行时得到15行并集', async state => {
-  const gateway = createDqeGateway({endpoint: `${endpoint}?fixture=partner-health&state=${state}`});
+  const gateway = httpGateway({endpoint: `${endpoint}?fixture=partner-health&state=${state}`});
   const program = createSourceProgram(page, {gateway});
   const updates = new Map<string, SourceUpdate>();
   try {
@@ -214,12 +213,12 @@ it.each(['中国区', '海外'])('%s：下方对象查询保留组织粒度且�
     const objects = items.filter(item => item.query_type === 'object');
     expect(objects).toHaveLength(8);
     for (const item of objects) {
-      expect(item.output_fields).toContain('国内或海外');
+      expect(item.output_fields).not.toContain('国内或海外');
       expect(item.output_fields).not.toContain('data_site_type');
       expect(item.filter).toEqual({fields: []});
     }
     const customer = objects.find(item => item.object_type === 'Partner Health/Custormer Partner Evaluation Score' && Array.isArray(item.output_fields) && item.output_fields.includes('地区部'));
-    expect(customer?.output_fields).toEqual(['地区部', '客户对伙伴的评价得分', '国内或海外']);
+    expect(customer?.output_fields).toEqual(['地区部', '客户对伙伴的评价得分']);
     expect(snapshots.get('health-scores-region')?.snapshot).toMatchObject({status: 'ready', totalCount: 15});
     expect(snapshots.get('health-scores-representative')?.snapshot).toMatchObject({status: 'ready', totalCount: 15});
   } finally { program.dispose(); }
