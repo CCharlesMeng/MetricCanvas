@@ -1,21 +1,23 @@
 import { restoreCellFallbacks, copyRowFallbacks, copyFieldFallback, pagedJoinProjectionFields } from '@metriccanvas/page/internal';
-import { queryResultFieldContract, validateContractRows, type FieldDefinition, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
+import { queryResultFieldContract, validateContractRows, type FieldDefinition, type DataSnapshot, type DataWarning, type Row } from '@metriccanvas/page/internal';
 import type { PagedJoinPlan } from './plan';
 import {memberFailure,memberKey,memberKeyLabel} from './member-diagnostics';
+import {withoutEmptySupplementKeys} from './supplement-keys';
 export const rowFailure = (message: string) => Object.assign(new Error(message), { code: 'DQE_ROW_CONTRACT_ERROR' });
 const queryResultFields = (fields: Record<string, FieldDefinition>) => Object.fromEntries(
   Object.entries(fields).map(([id, field]) => [id, queryResultFieldContract(field)])
 );
-export function memberRows(plan: PagedJoinPlan, id: string, result: DataSnapshot, keys?: readonly (string | number)[], window?: { offset: number; limit: number }): Map<string | number, Row> {
+export function memberRows(plan: PagedJoinPlan, id: string, result: DataSnapshot, keys?: readonly (string | number)[], window?: { offset: number; limit: number }, warnings?: DataWarning[]): Map<string | number, Row> {
   try {
     if (result.status === 'error') throw Object.assign(new Error(result.error.message), { code: result.error.code });
     if (result.status === 'loading') throw rowFailure('查询尚未完成，请等待查询返回后重试。');
     const rows = result.status === 'ready' ? result.rows : [], total = result.totalCount;
     if (result.status === 'ready') restoreCellFallbacks(rows, result.cellFallbacks);
     assertMemberRange(rows.length, total, (plan.source.source.fallback?.maxRows ?? 1000), window);
-    const validation=validateContractRows(rows, queryResultFields(plan.members.get(id)!.fields));
+    const usable=withoutEmptySupplementKeys(plan,id,rows,warnings);
+    const validation=validateContractRows(usable, queryResultFields(plan.members.get(id)!.fields));
     if (!validation.ok) throw rowFailure(`查询返回的数据格式不符合页面要求。请检查下面列出的字段。\n字段检查：${JSON.stringify(validation.issues[0])}`);
-    return indexMemberRows(plan,id,rows,keys);
+    return indexMemberRows(plan,id,usable,keys);
   } catch(cause) {throw memberFailure(plan,id,cause);}
 }
 

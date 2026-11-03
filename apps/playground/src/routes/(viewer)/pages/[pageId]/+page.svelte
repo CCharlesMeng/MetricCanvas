@@ -123,7 +123,7 @@
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
     if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;
-    if(input==='query-join')return createPagedJoinPreview().dataGateway;
+    if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready').dataGateway;
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
   }
 

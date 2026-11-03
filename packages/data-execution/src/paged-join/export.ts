@@ -1,17 +1,18 @@
 import {recordJoinReader} from './records-reader';
 import {isObjectDqeItem,queryLeaves} from '@metriccanvas/page/internal';
-import type { Row,DataSnapshot } from '@metriccanvas/page/internal';
+import type { Row,DataSnapshot,DataWarning } from '@metriccanvas/page/internal';
 import type { PagedJoinPlan } from './plan';
 import type { QueryRunner } from '../query-runner';
 import { executePagedJoin } from './execute';
 import { rawSnapshot } from '../snapshots';
 import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
 import { describeExportSource } from '../source-program/export-diagnostics';
+import {mergeJoinWarnings,joinWarningSnapshot} from './warnings';
 
 export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, allowPartial = false): Promise<Awaited<ReturnType<typeof executePagedJoin>>> {
   if(plan.source.source.records&&plan.strategy!=='queryPage')return recordJoinReader(runner).read(plan,scope,signal,true,true);
   if (!plan.selection) return executePagedJoin(plan, runner, scope, signal, true);
-  const rows: Row[] = [], keys = new Set<unknown>();
+  const rows: Row[] = [], warnings:DataWarning[]=[], keys = new Set<unknown>();
   const canReturnPartial=plan.strategy!=='queryPage'&&partialAllowed(plan,allowPartial);
   let expected: number | undefined;
   function partial() {
@@ -36,8 +37,9 @@ export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, 
       if (canReturnPartial && rows.length) return partial();
       throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出执行失败');
     }
+    mergeJoinWarnings(warnings,snapshot.warnings);
     expected=appendExportChunk(plan,snapshot,expected,!!result.viewCorrection,keys,rows);
-    if(rows.length===expected)return {snapshot:rawSnapshot(rows,expected)};
+    if(rows.length===expected)return {snapshot:joinWarningSnapshot(rows,expected,warnings)};
   }
 }
 

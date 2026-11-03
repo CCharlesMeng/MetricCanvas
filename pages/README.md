@@ -605,3 +605,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 
 列头筛选固定默认值：`/pages/table-header-filter-defaults`（内联）与 `/pages/table-header-filter-defaults-query`（HTTP/DQE Sim）。操作与预期结果见[表格场景](capabilities/table/README.md#列头筛选默认选中值)。
 - [IOC Header 分区组件](capabilities/ioc-header/section-component/README.md)：首分区混排、显隐、分组与吸顶。
+
+按页补列空关联键兼容：`/pages/paged-join-on-demand?supplementKey=empty`，说明及异常参数见[表格场景](capabilities/table/README.md#按页补列空关联编号兼容)。合成数据，不连接真实DQE。

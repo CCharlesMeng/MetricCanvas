@@ -444,6 +444,10 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 
 可观察来源：普通预览发布 `metriccanvas:synthetic-paged-join` 事件，含单源生效查询，验证limit/offset和键范围；每页默认10条、补列批次10条。截断、重复与范围外键由执行测试注入并验证失败后没有完整恢复。浏览器脚本 `apps/playground/tests/paged-join-query.browser.ts` 与页面使用同一声明。合成执行、Chrome交互、CI和真实DQE分别验收；真实分页/计数/空值能力未因此获得证明。
 
+### 按页补列空关联编号兼容
+
+同一完整页面 `/pages/paged-join-on-demand?supplementKey=empty` 注入第11条空关联编号：主表仍10行、总数80，显示来源与忽略1条的告警；下一页仍从P000011开始，只有当前页编码参与补列，不启动完整读取。`?supplementKey=all-empty` 显示10条主行且补列为空，告警计数10；`?supplementKey=truncated` 保留截断错误，`?supplementKey=failure` 保留权限错误。去掉参数恢复正常页并清除告警。完整导出按页取得80条并附异常说明，不把缺项文件冒充完整原始结果。数据和故障均来自 query-join-gateway.ts，不证明真实DQE。
+
 ## 父行展开缓存
 
 `/pages/table-row-expansion-cache`（`table-row-expansion-cache.json`）：启动 `pnpm dev:playground` 后直接打开，无参数、无需外部DQE，使用专属内存仿真Gateway。

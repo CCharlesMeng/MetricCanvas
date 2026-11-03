@@ -1,4 +1,4 @@
-import { isPagedJoinQuery, hasQueryFieldMapping, restoreCellFallbacks, dqeDefaultSort, pagedJoinHasComparison, type EffectiveQuery, type DataSnapshot, type TableQueryView, type Row } from '@metriccanvas/page/internal';
+import { isPagedJoinQuery, hasQueryFieldMapping, restoreCellFallbacks, dqeDefaultSort, pagedJoinHasComparison, type EffectiveQuery, type DataSnapshot, type DataWarning, type TableQueryView, type Row } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { PagedJoinPlan } from './plan';
 import { memberQuery, restrictKeys } from './member-query';
@@ -6,6 +6,7 @@ import { memberRows, projectRows, ordinalRows, rowFailure } from './rows';
 import { projectRecordRows } from './record-rows';
 import { validateRecordRows } from './record-batches';
 import { rawSnapshot } from '../snapshots';
+import {joinWarningSnapshot} from './warnings';
 
 function readyRows(snapshot:DataSnapshot):Row[]{
   if(snapshot.status==='error')throw Object.assign(new Error(snapshot.error.message),{code:snapshot.error.code});
@@ -57,7 +58,7 @@ async function selectPage(plan:PagedJoinPlan,runner:QueryRunner,scope:string,sig
   return {rows,total,pageIndex};
 }
 
-async function fillMember(plan:PagedJoinPlan,id:string,keys:(string|number)[],runner:QueryRunner,scope:string,signal?:AbortSignal){
+async function fillMember(plan:PagedJoinPlan,id:string,keys:(string|number)[],warnings:DataWarning[],runner:QueryRunner,scope:string,signal?:AbortSignal){
   const pagination=plan.source.source.pagination;
   if(!('batchSize' in pagination))throw rowFailure('查询分页缺少补列批次');
   const index=new Map<string|number,Row>();
@@ -67,7 +68,7 @@ async function fillMember(plan:PagedJoinPlan,id:string,keys:(string|number)[],ru
     if(!allowed.length)continue;
     query.pagination={offset:0,limit:pagination.batchSize};
     const snapshot=await runPageQuery(plan,id,query,runner,scope,signal);
-    const rows=memberRows(plan,id,snapshot,allowed);
+    const rows=memberRows(plan,id,snapshot,allowed,undefined,warnings);
     for(const [key,row] of rows){
       if(index.has(key))throw rowFailure('补列成员返回重复关联键');
       index.set(key,row);
@@ -89,13 +90,14 @@ export async function executeQueryPagedJoin(plan:PagedJoinPlan,runner:QueryRunne
   signal?.throwIfAborted();
   if(!isPagedJoinQuery(plan.source.source)||!plan.selection)throw rowFailure('查询分页计划无效');
   const selected=await selectPage(plan,runner,scope,signal),keys=selectedKeys(plan,selected.rows);
-  const members=new Map<string,Map<string|number,Row>>();
+  const members=new Map<string,Map<string|number,Row>>(),warnings:DataWarning[]=[];
   if(!plan.source.source.records)members.set(plan.selection,memberRows(plan,plan.selection,rawSnapshot(selected.rows,selected.rows.length)));
-  for(const id of plan.members.keys())if(id!==plan.selection)members.set(id,await fillMember(plan,id,keys,runner,scope,signal));
+  for(const id of plan.members.keys())if(id!==plan.selection)members.set(id,await fillMember(plan,id,keys,warnings,runner,scope,signal));
   signal?.throwIfAborted();
   const rows=plan.source.source.records?projectRecordRows(plan,selected.rows,members):projectRows(plan,keys,members);
   enforcePageBudget(plan,rows);
-  return {snapshot:rawSnapshot(ordinalRows(plan,rows,selected.pageIndex*plan.view.pageSize),selected.total),
+  if(warnings.length)console.warn('[MetricCanvas][TABLE_RESULT_RECOVERED] 已忽略空关联编号的补充记录',{pageId:plan.page.id,sourceId:plan.sourceId,warnings});
+  return {snapshot:joinWarningSnapshot(ordinalRows(plan,rows,selected.pageIndex*plan.view.pageSize),selected.total,warnings),
     ...(selected.pageIndex===plan.view.pageIndex?{}:{viewCorrection:{...plan.view,pageIndex:selected.pageIndex}})};
 }
 

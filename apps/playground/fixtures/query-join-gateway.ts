@@ -3,7 +3,7 @@ import type {DataGateway} from '../../../packages/data-execution/src';
 import {sortTableRows,filterTableRows,localColumnCandidates} from '../../../packages/data-execution/src/runtime';
 
 /** All data is synthetic. The request log demonstrates source windows, not real DQE support. */
-export function createPagedJoinPreview(count=80){
+export function createPagedJoinPreview(count=80,supplementKey='ready'){
   const calls:EffectiveQuery[]=[];
   function matching(query:EffectiveQuery){
     let rows:Row[]=Array.from({length:count},(_,index)=>({
@@ -26,9 +26,23 @@ export function createPagedJoinPreview(count=80){
       if(typeof globalThis.dispatchEvent==='function')globalThis.dispatchEvent(new CustomEvent('metriccanvas:synthetic-paged-join',{detail:query}));
       const rows=matching(query),window=query.pagination;
       const selected=window?rows.slice(window.offset,window.offset+window.limit):rows;
-      return {rows:selected.map(row=>Object.fromEntries(Object.keys(query.fieldMappings).map(field=>[field,row[field]]))),totalCount:rows.length};
+      const result={rows:selected.map(row=>Object.fromEntries(Object.keys(query.fieldMappings).map(field=>[field,row[field]]))),totalCount:rows.length};
+      return supplementKeyPreview(query,result,supplementKey);
     },
     async fetchColumnCandidates(request){return localColumnCandidates(matching(request.query),request.field,{pageIndex:0,pageSize:request.limit,sort:[],predicates:[]},request.search,request.offset,request.limit);}
   };
   return {dataGateway,calls};
+}
+
+/** Faults belong to the synthetic page gateway, never to product execution. */
+function supplementKeyPreview(query:EffectiveQuery,result:{rows:Row[];totalCount:number},mode:string){
+  if(!('project-status' in query.fieldMappings))return result;
+  if(mode==='failure')throw Object.assign(new Error('合成补充源无权限'),{code:'DQE_FORBIDDEN'});
+  if(mode==='empty'){
+    result.rows.push({...result.rows[0],'project-id':null});
+    result.totalCount=result.rows.length;
+  }
+  if(mode==='all-empty')result.rows=result.rows.map(row=>({...row,'project-id':null}));
+  if(mode==='truncated')result.rows.pop();
+  return result;
 }
