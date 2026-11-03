@@ -1,5 +1,7 @@
 # 页面文档结构与书写原则
 
+**作者默认筛选与用户会话（[ADR-0128](../0128-table-header-filter-declared-defaults.md)）：** 6.82 的 Table select 叶子列可声明 filterable.defaultValues；只持久化作者的初始意图，用户操作后的筛选仍不回写页面文档，局部澄清0086的会话态表述。省略或空数组初始不筛选；清空、重显、完整重置与恢复行为由引擎统一确定，不增加页面策略开关。
+
 **独立置顶汇总行：** [ADR-0122](../0120-table-scalar-fallback-and-independent-pinned-row.md) 新增 6.62 的组件及列级 pinnedTop，最多一行且每页显示，无序号、不计明细总数，汇总失败不阻断明细但阻止完整 Excel 导出；现有 rowKindField 和 grandTotal 不变。
 
 

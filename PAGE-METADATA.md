@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.82：select 列头筛选支持 `filterable.defaultValues` 固定原始值，首屏查询与选中态同步；清空后保持清空。声明、重置例外和数据源所有权见[列头筛选默认值](docs/page-metadata/components/table.md#列头筛选默认值682)，入口 `/pages/table-header-filter-defaults` 与 `/pages/table-header-filter-defaults-query`。
+
 引擎统一兼容组织键计算中的空记录：`unionKeys`、`joinAggregate` 跳过空组织行，保留有效组织、零分、负分及脱值数量告警；页面 Schema 不新增字段或开关。限制及 `/pages/missing-organization-key` 合成验收入口见[空组织键兼容](docs/page-metadata/compute.md#空组织键兼容)。
 
 6.79 支持多条独立完整汇总查询组成同一置顶行：`pinnedTop.additionalData` 声明额外查询槽，列级 `pinnedTop.text` 声明固定纯文本。明细不参与汇总计算，任一汇总异常保留明细并拒绝完整导出。见[表格模块](docs/page-metadata/components/table.md#独立查询置顶行660)，可观察入口 `/pages/business-result-metrics`（真实 DQE 查询配置，内网取数另验）。

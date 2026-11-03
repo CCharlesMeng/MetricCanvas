@@ -598,3 +598,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 父子表折叠缓存：[table-row-expansion-cache](capabilities/table/table-row-expansion-cache.json)，入口 `/pages/table-row-expansion-cache`；内存仿真Gateway，验证重开复用、父行隔离及父表翻页失效。
 
 - 同比环比按页补查：[使用与合成数据说明](capabilities/data/period-comparison/README.md#按页补查schema-678)，入口 `/pages/period-comparison-query-page`。
+
+列头筛选固定默认值：`/pages/table-header-filter-defaults`（内联）与 `/pages/table-header-filter-defaults-query`（HTTP/DQE Sim）。操作与预期结果见[表格场景](capabilities/table/README.md#列头筛选默认选中值)。

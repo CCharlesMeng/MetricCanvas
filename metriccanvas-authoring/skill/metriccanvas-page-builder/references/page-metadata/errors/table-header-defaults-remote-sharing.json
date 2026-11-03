@@ -1,0 +1,41 @@
+{
+  "case": "table-header-defaults-remote-sharing",
+  "invariant": "table-header-filter-defaults",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认筛选的远程表格必须独占页面数据源，不能共享组件或查询依赖",
+      "paths": [
+        "/sections/0/components/0/data/main",
+        "/sections/0/components/1/data/main"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询分页表格必须独占页面数据源 records，当前引用 2 次",
+      "paths": [
+        "/sections/0/components/0/data/main",
+        "/sections/0/components/1/data/main"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "data": {
+              "main": "records"
+            }
+          },
+          {
+            "data": {
+              "main": "records"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-defaults-remote-sharing.json"
+}

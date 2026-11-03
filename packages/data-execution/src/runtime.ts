@@ -12,6 +12,8 @@ export { initializePageParams } from './page-params';
 export { rawSnapshot } from './snapshots';
 
 export * from './table-view';
+export * from './table-presentation';
+export * from './table-defaults';
 export * from './compute';
 export * from './compute/join-aggregate';
 export * from './compute/time-fill';

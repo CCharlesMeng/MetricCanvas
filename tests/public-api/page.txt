@@ -334,6 +334,7 @@ collectTextValueCompositions
 collectTextValueReferences
 columnBindingKey
 columnConditionPaths
+columnDefaultPaths
 columnEnumPaths
 columnMainFields
 columnPrimaryFields
@@ -388,11 +389,13 @@ formatPeriodFact
 formatSuitsParamType
 hasAiSummaryBody
 hasColumnConditions
+hasHeaderDefaults
 hasPeriodComparison
 hasQueryFieldMapping
 hasQueryParamReferences
 hasQuerySelection
 hasTimeConstraints
+headerDefaultValues
 hierarchyLevelOf
 initialFilterTextValues
 initialModeRange
@@ -522,6 +525,7 @@ tabSearch
 tableAlignedSlots
 tableColumnLeaves
 tableColumnNavigation
+tableDefaultsRemote
 tableHeaders
 tableLeafColumns
 tablePinnedErrors

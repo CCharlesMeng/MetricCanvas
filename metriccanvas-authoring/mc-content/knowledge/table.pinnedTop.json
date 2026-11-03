@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.82",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.pinnedTop"
@@ -9,10 +9,25 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示可逐行核对、排序、筛选和通过单元格联动的明细记录，支持多级表头。数据形状为多个 dimension/metric 字段组成的行集。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
-        "## 独立查询置顶行（6.60）\n\nprops.pinnedTop 指定一个独立命名槽，叶子列的 pinnedTop 通过 field、secondaryField、badgeField 绑定该槽中的字段，字段绑定仍使用现有 FieldBinding。组件声明例为 data:{main:\"regions\",china:\"summary\"}、props.pinnedTop:{data:\"china\"}；列例为 {field:\"actual\",pinnedTop:{field:{data:\"china\",field:\"summary-actual\"}}}。指定的是槽名而非数据源 id。\n\n置顶槽引用普通 query 页面数据源并声明 source.resultScope:\"complete\"。结果完整返回零行或一行，不得使用 limit/offset 截断，不得依赖该表明细源。列绑定只消费指定置顶槽，类型、角色、币种及单位需与对应明细字段一致。其他多槽仍按既有 rowKey 对齐；置顶槽本身不要求 rowKey，也不增加只有 main 的表格的行键要求。普通字段不得反向使用置顶槽作为对齐源。\n\n每页在表头后显示一次汇总，不纵向吸顶，不占明细页大小、totalCount 或序号；序号及展开格留空。置顶字段格式依次取置顶绑定显式 format、同列对应明细的最终 format、置顶字段 defaultFormat。未绑定的格子留空，次字段和徽标不继承明细内容。复用现有列宽、对齐、固定列及单元格样式；不继承选择、导航、详情、展开或 mergeBy 合并动作。\n\n汇总只消费自身查询明确绑定的共同条件。地区选择、表内搜索、列表头条件和分页不隐式传给它；示例中的时间、产品绑定两源，地区只绑定明细。两源始终保留当前用户权限，不能通过省略页面筛选扩大权限；汇总值与业务标签由指标表的区域取数逻辑返回，前端不从明细补算。\n\n汇总加载不阻塞明细；完整零行不生成汇总；失败、总数不一致或多行时保留明细并记录诊断，不复用旧值。共同业务条件改变时旧汇总失效，迟到响应不能回写。明细零行但汇总成功时可仅显示汇总，明细 totalCount 仍为零。\n\nExcel 表头后写一次汇总，无序号，然后导出全部匹配明细。汇总无记录可以导出，汇总失败或行数不合法则整个表格导出失败；输出总数据行仍受10000行及60秒准备限制。PDF/PNG 使用同一投影，成功汇总在展开后的表格中仅出现一次，保留报告既有部分失败策略。首版不扩展行内子表的声明；已有详情限制继续生效。\n\n完整场景 `/pages/table-pinned-summary` 使用两个独立的 DQE Sim 查询，支持地区、共同时间和产品条件，以及零行、多行、失败场景；不能据此宣称真实 DQE 权限及汇总口径已经验收。"
+        "# 明细表 table\n\n展示 dimension/metric 行集，支持逐行核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
+        "## 独立查询置顶行（6.60）\n\nprops.pinnedTop 指定独立命名槽，列 pinnedTop 的 field、secondaryField、badgeField 以现有 FieldBinding 绑定该槽。例：data:{main:\"regions\",china:\"summary\"}、props.pinnedTop:{data:\"china\"}、列 {field:\"actual\",pinnedTop:{field:{data:\"china\",field:\"summary-actual\"}}}；data 是槽名，不是数据源 id。\n\n置顶槽须为普通 query、source.resultScope:\"complete\"，完整返回零或一行，无 limit/offset、不依赖本表明细。列只绑定指定置顶槽，类型、角色、币种和单位与对应明细一致。其他槽按既有 rowKey 对齐，置顶槽不要求 rowKey，也不增加单 main 表格的行键要求；普通字段不能反向以置顶槽对齐。\n\n每页在表头后显示一次汇总，不吸顶、不占明细页大小、totalCount 或序号；序号和展开格为空。格式优先级：置顶绑定显式 format、同列明细最终 format、置顶字段 defaultFormat。未绑定格留空，次字段及徽标不继承明细；沿用列宽、对齐、固定列和样式，不继承选择、导航、详情、展开或 mergeBy 动作。\n\n汇总仅消费自身查询显式绑定的共同条件，地区、表内搜索、列头条件和分页不隐式传入。示例时间、产品绑定两源，地区只绑定明细；两源始终保留用户权限，不得通过省略筛选扩大权限。值和标签由指标表区域取数返回，前端不从明细补算。\n\n汇总加载不阻塞明细；零行不生成汇总；失败、总数不符或多行保留明细并诊断，不复用旧值。共同条件变化使旧汇总失效，迟到响应不回写。明细零行时可仅显示成功汇总，明细 totalCount 仍为零。\n\nExcel 在表头后写一次无序号汇总，再写全部匹配明细。汇总零行可导出，失败或行数非法则整表导出失败；总数据行限10000、准备限60秒。PDF/PNG 同一投影，展开表格中的成功汇总只出现一次，保留报告部分失败策略。不扩展行内子表声明，已有详情限制保持。\n\n`/pages/table-pinned-summary` 使用两个独立 DQE Sim 查询，覆盖地区、共同时间/产品、零行、多行和失败；不证明真实 DQE 权限或汇总口径。"
       ],
       "rules": [
+        {
+          "id": "table-header-filter-defaults",
+          "description": "select 原始值默认筛选、字段类型与版本下限",
+          "valid": [
+            "table-header-filter-defaults",
+            "table-header-filter-defaults-query"
+          ],
+          "invalid": [
+            "table-header-defaults-old-version",
+            "table-header-defaults-duplicate",
+            "table-header-defaults-wrong-type",
+            "table-header-defaults-unknown-enum",
+            "table-header-defaults-remote-sharing"
+          ]
+        },
         {
           "id": "table-column-enums",
           "description": "前端列枚举值唯一及版本下限",
@@ -312,7 +327,9 @@
         "references/page-metadata/examples/record-join-query-page.json",
         "references/page-metadata/examples/table-column-enums.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/table-multiple-pinned-page.json"
+        "references/page-metadata/examples/table-multiple-pinned-page.json",
+        "references/page-metadata/examples/table-header-filter-defaults.json",
+        "references/page-metadata/examples/table-header-filter-defaults-query.json"
       ]
     }
   ],
@@ -333,7 +350,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.80",
+        "$id": "https://metriccanvas/page/v6.82",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

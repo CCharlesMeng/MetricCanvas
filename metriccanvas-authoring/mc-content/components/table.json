@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.80",
+  "currentWriter": "6.82",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -976,6 +976,80 @@
           "id": "cross-source-computation",
           "minor": 12,
           "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-header-filter-defaults.json",
+      "requiredVersion": "6.82",
+      "capabilities": [
+        {
+          "id": "table-select-default-values",
+          "minor": 82,
+          "description": "表格 select 列头筛选固定默认选中值"
+        },
+        {
+          "id": "table-column-enum-values",
+          "minor": 80,
+          "description": "表格列前端枚举展示及静态筛选"
+        },
+        {
+          "id": "conditional-table-columns",
+          "minor": 62,
+          "description": "表格字段列及分组列条件显隐"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-header-filter-defaults-query.json",
+      "requiredVersion": "6.82",
+      "capabilities": [
+        {
+          "id": "table-select-default-values",
+          "minor": 82,
+          "description": "表格 select 列头筛选固定默认选中值"
+        },
+        {
+          "id": "table-column-enum-values",
+          "minor": 80,
+          "description": "表格列前端枚举展示及静态筛选"
+        },
+        {
+          "id": "dqe-object-query",
+          "minor": 55,
+          "description": "DQE 对象查询、字段条件与显式时间绑定"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
         },
         {
           "id": "page-layout",

@@ -36,6 +36,7 @@ SourceProgram
 SourceRangeError
 SourceRead
 SourceUpdate
+TableColumnPresentation
 TimePointFilterValue
 TimeRangeFilterValue
 activeSourceIds
@@ -52,6 +53,7 @@ createCandidateGatewaySession
 createCandidateValidator
 createSourceProgram
 defaultSourceView
+defaultTableView
 evaluateTableView
 executeQuery
 executionSourceIds
@@ -59,16 +61,20 @@ filterCandidatesRequest
 filterTableRows
 filterTableRowsByHeaders
 initialFilterValues
+initialTableViews
 initializePageParams
 intersectQueryFilters
 joinAggregate
 localColumnCandidates
 preservedQueryError
 rawSnapshot
+remoteHeaderDefaultSources
 resolveQueryResultInputs
 reusableInitialSnapshot
 searchTableRows
 sortTableRows
+tableColumnPresentation
+tableDefaultInputsPending
 timeFill
 validFilterCandidates
 visibleSourceIds

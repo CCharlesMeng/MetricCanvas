@@ -5,6 +5,7 @@ import { tablePinnedErrors, tableAlignedSlots } from './table-pinned';
 import { pagedUnionErrors } from './validate-paged-union';
 import {columnScopeErrors} from './table/condition-scope';
 import {tableEnumErrors} from './table/enum-values';
+import {tableHeaderDefaultErrors} from './table/header-defaults';
 import {tableSearchErrors,conditionalTableNeedsOwner} from './table/validation';
 import { aiSummaryErrors, aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
 import { aiSummaryPositionErrors } from './ai-summary-region';
@@ -184,7 +185,7 @@ export function parsePage(
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
-  const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...filterGroupErrors(page)];
+  const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...filterGroupErrors(page)];
   try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant),...navigationErrors(variant),...urlInputErrors(variant));}
   catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   attachInitialFallbacks(page, materialized.initialFallbacks, materialized.initialWarnings);

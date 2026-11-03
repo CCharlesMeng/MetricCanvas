@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 80,
-  "current": "6.80",
+  "minor": 82,
+  "current": "6.82",
   "capabilities": {
+    "table-select-default-values": {
+      "minor": 82,
+      "description": "表格 select 列头筛选固定默认选中值",
+      "legacyReadable": false
+    },
     "paged-join-row-compute": {
       "minor": 78,
       "description": "查询分页组合逐行计算与按投影声明缺记录策略",
@@ -825,6 +830,8 @@
     "6.77",
     "6.78",
     "6.79",
-    "6.80"
+    "6.80",
+    "6.81",
+    "6.82"
   ]
 }

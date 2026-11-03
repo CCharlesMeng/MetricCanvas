@@ -2,7 +2,7 @@ import {comparisonFilterIds} from '@metriccanvas/page/internal';
 import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents,sourceFilterIds} from '@metriccanvas/page/internal';
-import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize } from '@metriccanvas/data-execution/runtime';
+import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, initialTableViews, remoteHeaderDefaultSources } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { executionSourceKey } from './execution';
@@ -30,6 +30,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   setQuerySort(dataSourceId: string, sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>): void;
   setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters, field?:string): void;
   setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string; match?: 'equals' }): void;
+  resetQueryDefault?(dataSourceId: string, view: TableQueryView): void;
 }
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
@@ -45,8 +46,11 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const tables = new Map<string, TableSession>();
     let values: FilterValues = filters ? new Map() : defaults;
     const first = filters?.subscribe(next => values = next); first?.();
+    const tableContext = () => ({declarations:page.filters??[],filters:values,displaySnapshot:timeContext.displayInputs?.(),filterRevision:timeContext.filterRevision?.()});
+    const initialization = initialTableViews(page,tableContext(),initialViews,compiled.limits);
+    const unsafeReceipts = affectedSourceIds(page.dataSources,remoteHeaderDefaultSources(page));
     let blocked = new Set(filterBlockedIds(filters));
-    const gated = (id: string) => [...conditionSourceIds(page,id)].some(key => {
+    const gated = (id: string) => initialization.pending.has(id) || [...conditionSourceIds(page,id)].some(key => {
       const source = page.dataSources[key];
       return sourceFilterIds(source).some(filterId => blocked.has(filterId));
     });
@@ -57,10 +61,13 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const views = () => new Map([...tables].map(([id, session]) => [id, session.snapshot()]));
     for (const id of ids) {
       const source = page.dataSources[id];
-      if (source?.source.type !== 'inline') tables.set(id, createTableSession(initialTableView(page,id,compiled.limits.get(id),initialViews), () => refetch(new Set([id])),
-        (view,field)=>program.prepareView(id,values,view,field)));
+      if (source?.source.type !== 'inline') tables.set(id, createTableSession(initialTableView(page,id,compiled.limits.get(id),initialization.views), () => refetch(new Set([id])),
+        (view,field)=>program.prepareView(id,values,view,field),initialization.defaults.get(id)));
     }
-    const reconcileColumns=()=>reconcileTableSources(page,tables,{declarations:page.filters??[],filters:values,displaySnapshot:timeContext.displayInputs?.(),filterRevision:timeContext.filterRevision?.()});
+    const reconcileColumns=()=>{
+      const initialized=initializePendingTableDefaults(page,tables,initialization.pending,tableContext(),compiled.limits,initialViews);
+      return new Set([...initialized,...reconcileTableSources(page,tables,tableContext())]);
+    };
     reconcileColumns();
     const matched = new Set<string>();
     // Initial candidate loading may hide an otherwise valid initial snapshot.
@@ -74,16 +81,13 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       if(initial?.status==='loading')initial=undefined;
       if(source.source.type==='inline'&&!initial)initial={status:source.source.rows.length?'ready':'empty',...(source.source.rows.length?{rows:source.source.rows}:{})} as DataSnapshot;
       const protectedSource=[...conditionSourceIds(page,id)].some(key=>{const s=page.dataSources[key];return s?.source.type==='query'&&(requiresQueryContext(s.source.query,page.filters));});
-      if (!protectedSource && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) { initial = receipt; matched.add(id); }
+      if (!protectedSource && !unsafeReceipts.has(id) && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) { initial = receipt; matched.add(id); }
       try {
         if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: timeContext.now ?? timeContext.clock?.() ?? new Date(), filters: page.filters, dataSource: source as QueryDataSource }, values, 0, [], {}))) initial = { status: 'empty', totalCount: 0 };
       } catch { /* 约束未就绪时沿用SourceProgram的候选与输入门禁。 */ }
-      if (gated(id)) { if(initial)pendingInitial.set(id,initial);initial = undefined; }
+      if (gated(id)) { if(initial&&!initialization.pending.has(id))pendingInitial.set(id,initial);initial = undefined; }
       raw.set(id, initial ?? { status: 'loading' });
-      if (compiled.automatic.has(id) && source.source.type === 'query') {
-        const size = automaticQueryPageSize(source as QueryDataSource, initial);
-        if (size) { compiled.limits.set(id, size); tables.get(id)?.correct(defaultSourceView(page, id, size), tables.get(id)!.generation); }
-      }
+      correctInitialTablePageSize(id,source,initial,compiled,tables);
     }
     const context = () => ({ currentYear: year,
       modes: new Map([...values].flatMap(([id, v]) => v.type === 'dimension' ? [[id, v.values] as const] : [])),
@@ -191,6 +195,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     setQuerySort(id, value) { const source=page.dataSources[id];const sortable=(source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion')?source.source.ordering.sortableFields:undefined;if(sortable&&value.some(rule=>!sortable.includes(rule.field)))return; if (active?.mutable(id)) active.tables.get(id)?.setSort(((source?.source.type === 'pagedUnion' || source?.source.type === 'pagedJoin'&&!isPagedJoinQuery(source.source))&&!value.length?source.source.ordering.default:value).map(v => ({ ...v }))); },
     setQueryHeaderFilters(id, value, field) { if (active?.mutable(id)) active.tables.get(id)?.setHeaders(value,field); },
     setQuerySearch(id, value) { active?.tables.get(id)?.setSearch({ ...value, fields: [...value.fields], query: value.query }); }
+    ,resetQueryDefault(id,view) { if(active?.tables.get(id)?.resetDefault(view))active.refresh(id); }
   };
 }
 function same(left: FilterValues, right: FilterValues) { return [...new Set([...left.keys(), ...right.keys()])].every(id => JSON.stringify(left.get(id)) === JSON.stringify(right.get(id))); }
@@ -198,3 +203,23 @@ function same(left: FilterValues, right: FilterValues) { return [...new Set([...
 function queryCondition(value: import('./filter-state').FilterValue | undefined): string | undefined { return JSON.stringify(value?.type === 'timeRange' ? {type:value.type,mode:value.mode,from:value.from,to:value.to} : value); }
 
 function initialTableView(page:Page,id:string,limit:number|undefined,views:ReadonlyMap<string,TableQueryView>):TableQueryView{return views.get(id)??defaultSourceView(page,id,limit);}
+
+function correctInitialTablePageSize(id: string, source: Page['dataSources'][string], initial: DataSnapshot | undefined, compiled: ReturnType<typeof compileSources>, sessions: ReadonlyMap<string, TableSession>): void {
+  if(!compiled.automatic.has(id)||source.source.type!=='query')return;
+  const size=automaticQueryPageSize(source as QueryDataSource,initial),session=sessions.get(id);
+  if(!size||!session)return;
+  compiled.limits.set(id,size);
+  session.correct({...session.snapshot(),pageSize:size},session.generation);
+}
+
+function initializePendingTableDefaults(page: Page, sessions: ReadonlyMap<string, TableSession>, pending: Set<string>, context: import('@metriccanvas/page/internal').ConditionContext, limits: ReadonlyMap<string, number>, restored: ReadonlyMap<string, TableQueryView>): Set<string> {
+  if (!pending.size) return new Set();
+  const next = initialTableViews(page,context,restored,limits), changed = new Set<string>();
+  for (const id of pending) {
+    if (next.pending.has(id)) continue;
+    const view=next.views.get(id);
+    if(view)sessions.get(id)?.initializeDefaults(view,next.defaults.get(id));
+    pending.delete(id);changed.add(id);
+  }
+  return changed;
+}

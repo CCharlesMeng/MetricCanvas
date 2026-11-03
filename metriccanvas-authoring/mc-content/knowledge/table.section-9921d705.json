@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.82",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-9921d705"
@@ -9,10 +9,25 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示可逐行核对、排序、筛选和通过单元格联动的明细记录，支持多级表头。数据形状为多个 dimension/metric 字段组成的行集。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
+        "# 明细表 table\n\n展示 dimension/metric 行集，支持逐行核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
         "## 标量原文展示与本地尾排（6.60）\n\n查询返回的标量与字段类型或当前绑定格式不符时，表格保留原始标量的 String 展示并按字段、原因聚合控制台告警，不阻断其他单元格。时间组合字符串不截断、不去除首尾空白，数值字段的非数字文本也保留原文；真正 null、undefined 和非有限数字保持缺失占位。结构化字段的结构与安全校验不放宽。inline 数据及文档字面量继续严格校验。\n\n查询归一化保留有效类型值和独立原文证据。计算、行键、动作、候选及查询输入消费有效类型值，原文不能被提升为可信业务键或查询条件；图表和指标卡沿用有效值及缺失规则。异常标量展示消费者为表格及其导出；嵌套 recordList 项保持既有数值容错，不新增项级原文协议。\n\n本地排序按有效值、非空降级文本、缺失值三个组比较，升降序都保持组的先后；方向只影响组内排序。null、undefined、非有限数字、空串、纯空格及首尾空白去除后仅由一个或多个 -、–、— 组成的文本均属于末组。0、false、负数、A-01 保持有效；多键排序继续后续键，最终相等时保留输入顺序。远程排序采用上游结果，不对当前窗口重排。\n\nExcel 原文单元格明确写入文本，不再猜测为日期或数值；合法数字保留数值类型。示例 `/pages/table-value-tolerance` 和 `/pages/table-missing-sort` 使用合成初始行及本地 DQE Sim。\n\n<a id=\"table-pinned-top\"></a>"
       ],
       "rules": [
+        {
+          "id": "table-header-filter-defaults",
+          "description": "select 原始值默认筛选、字段类型与版本下限",
+          "valid": [
+            "table-header-filter-defaults",
+            "table-header-filter-defaults-query"
+          ],
+          "invalid": [
+            "table-header-defaults-old-version",
+            "table-header-defaults-duplicate",
+            "table-header-defaults-wrong-type",
+            "table-header-defaults-unknown-enum",
+            "table-header-defaults-remote-sharing"
+          ]
+        },
         {
           "id": "table-column-enums",
           "description": "前端列枚举值唯一及版本下限",
@@ -312,7 +327,9 @@
         "references/page-metadata/examples/record-join-query-page.json",
         "references/page-metadata/examples/table-column-enums.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/table-multiple-pinned-page.json"
+        "references/page-metadata/examples/table-multiple-pinned-page.json",
+        "references/page-metadata/examples/table-header-filter-defaults.json",
+        "references/page-metadata/examples/table-header-filter-defaults-query.json"
       ]
     }
   ],

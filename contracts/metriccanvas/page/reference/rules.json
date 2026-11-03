@@ -53,6 +53,21 @@
       ]
     },
     {
+      "id": "table-header-filter-defaults",
+      "description": "select 原始值默认筛选、字段类型与版本下限",
+      "valid": [
+        "table-header-filter-defaults",
+        "table-header-filter-defaults-query"
+      ],
+      "invalid": [
+        "table-header-defaults-old-version",
+        "table-header-defaults-duplicate",
+        "table-header-defaults-wrong-type",
+        "table-header-defaults-unknown-enum",
+        "table-header-defaults-remote-sharing"
+      ]
+    },
+    {
       "id": "table-column-enums",
       "description": "前端列枚举值唯一及版本下限",
       "valid": [

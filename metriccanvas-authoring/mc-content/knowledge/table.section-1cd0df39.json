@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.82",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-1cd0df39"
@@ -9,10 +9,25 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示可逐行核对、排序、筛选和通过单元格联动的明细记录，支持多级表头。数据形状为多个 dimension/metric 字段组成的行集。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
+        "# 明细表 table\n\n展示 dimension/metric 行集，支持逐行核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
         "## 详情表格的浮层宽度\n\n`openDetail.view` 引用的详情视图只要包含 `table`，运行时自动使用宽版浮层；不新增页面宽度字段。从操作列、指标卡等任意入口打开同一视图，规则相同。居中弹窗与右侧抽屉的外框宽度均为 `min(容器宽度 × 90%, 1440px, 容器宽度 − 32px)`；弹窗居中，抽屉保持右侧展开。容器指运行时宿主的可用宽度，不读取浏览器窗口宽度。\n\n宽度按声明的组件类型判定，加载、空结果及错误时保持一致。仅字段详情或不含表格的详情视图沿用原宽度。列放不下时在表格内部横向滚动，保留列宽与字号。宽版弹窗上下至少留16px，抽屉继续占满容器高度。\n\n完整合成场景：`/pages/table-detail-overlay`；操作与预期结果见 `pages/README.md`。该场景不证明真实 DQE/Relay 取数。"
       ],
       "rules": [
+        {
+          "id": "table-header-filter-defaults",
+          "description": "select 原始值默认筛选、字段类型与版本下限",
+          "valid": [
+            "table-header-filter-defaults",
+            "table-header-filter-defaults-query"
+          ],
+          "invalid": [
+            "table-header-defaults-old-version",
+            "table-header-defaults-duplicate",
+            "table-header-defaults-wrong-type",
+            "table-header-defaults-unknown-enum",
+            "table-header-defaults-remote-sharing"
+          ]
+        },
         {
           "id": "table-column-enums",
           "description": "前端列枚举值唯一及版本下限",
@@ -312,7 +327,9 @@
         "references/page-metadata/examples/record-join-query-page.json",
         "references/page-metadata/examples/table-column-enums.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/table-multiple-pinned-page.json"
+        "references/page-metadata/examples/table-multiple-pinned-page.json",
+        "references/page-metadata/examples/table-header-filter-defaults.json",
+        "references/page-metadata/examples/table-header-filter-defaults-query.json"
       ]
     }
   ],

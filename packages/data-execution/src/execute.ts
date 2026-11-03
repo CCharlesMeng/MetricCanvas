@@ -5,6 +5,7 @@ import { initialFilterValues } from './filter-values';
 import { seedPageParamFilters } from './page-params';
 import type { RuntimeDataGateway } from './ports';
 import { initialQuerySourceIds } from './source-scope';
+import {initialTableViews,remoteHeaderDefaultSources} from './table-defaults';
 
 export interface PageDataExecutor { execute(metadata: PageDocument): Promise<PageDocument>; }
 /** One-shot adapter: fresh reads, raw ordinary initial, final combination initial. */
@@ -16,17 +17,30 @@ export function createPageDataExecutor(config: { gateway: RuntimeDataGateway;dis
     const output = structuredClone(resolved.document);
     for(const source of Object.values(output.dataSources))if(source.source.type==='query'&&requiresQueryContext(source.source.query,page.filters))delete source.source.initial;
     const now=config.now??new Date(),displayInputs=structuredClone(config.displayInputs?.()),filterRevision=config.filterRevision?.()??0;
+    const conditions=initialFilterValues(page.filters ?? [],now,displayInputs,filterRevision);
+    const {initialization,filtered}=prepareTableExecution(page,output,{declarations:page.filters??[],filters:conditions,displaySnapshot:displayInputs,filterRevision});
     const program = createSourceProgram(page, {...config,now,displayInputs:()=>displayInputs,filterRevision:()=>filterRevision??0});
     try {
-      for await (const update of program.read({ roots: initialQuerySourceIds(page), conditions: initialFilterValues(page.filters ?? [],now,displayInputs,filterRevision), freshness: 'refresh' })) {
+      for await (const update of program.read({ roots: initialQuerySourceIds(page), conditions, views:initialization.views, freshness: 'refresh' })) {
         const source = output.dataSources[update.sourceId].source;
         if(update.candidateRejected&&source.type!=='inline')delete source.initial;
-        if (!update.initial) continue;
+        if (!capturableInitial(update,filtered,source.type)) continue;
         captureSourceInitial(source, update.initial);
       }
     } finally { program.dispose(); }
     return output;
   } };
+}
+
+function prepareTableExecution(page: import('@metriccanvas/page/internal').Page, output: PageDocument, context: import('@metriccanvas/page/internal').ConditionContext) {
+  const initialization=initialTableViews(page,context);
+  if(initialization.pending.size)throw new Error('表格默认筛选的条件尚未就绪');
+  const filtered=remoteHeaderDefaultSources(page);
+  for(const id of filtered){const source=output.dataSources[id].source;if(source.type==='query')delete source.initial;}
+  return {initialization,filtered};
+}
+function capturableInitial(update: SourceUpdate, filtered: ReadonlySet<string>, type: string): update is SourceUpdate & {initial:NonNullable<SourceUpdate['initial']>} {
+  return !!update.initial && !(filtered.has(update.sourceId) && type==='query');
 }
 
 function captureSourceInitial(source: PageDocument['dataSources'][string]['source'], initial: NonNullable<SourceUpdate['initial']>): void {

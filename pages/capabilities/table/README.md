@@ -457,3 +457,11 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 ## 商务类型前端枚举（6.80）
 
 入口 `/pages/table-column-enums`，内联合成编码0、1、9和空值。单元格显示项目商务框架、项目非框架、9、—。打开商务类型筛选直接看到两项中文枚举，选择项目商务框架仅保留 B-1；清空后导出 Excel，前两条为中文标签。枚举选项不请求候选接口；查询页仍使用原始编码过滤。业务页 `/pages/business-decision-all-details?approver-name=合成审批人甲&mtime=month:2026-11` 通过 DQE Sim execute 返回原始编码，再由前端映射。
+
+## 列头筛选默认选中值
+
+入口 `/pages/table-header-filter-defaults`，页面 JSON 为 `table-header-filter-defaults.json`，显式 Dashboard，使用内联合成数据，无需 DQE。运行 `pnpm dev:playground`。第一表默认待审批且编码为数值1，显示 A001/A003；第二表共享源但独立默认已通过，显示 A002/A005；第三表默认 archived，显示空态，菜单仍保留可取消的已选值。
+
+清空第一表审批状态条件后编码1仍生效，共4行；切换到隐藏审批状态再显示，该列条件保持清除。清空编码后恢复6行，可翻页；第二表保持两条已通过记录。下载 Excel 使用当前条件，不重新套用默认值。刷新整个页面恢复声明默认。
+
+远程入口 `/pages/table-header-filter-defaults-query`，同名 JSON 使用已有 Demo/Approval Details 的 DQE Sim 合成夹具。分别启动 `DQE_SIM_PORT=18402 DQE_SIM_HOST=127.0.0.1 pnpm --filter @metriccanvas/dqe-sim dev` 和 `DQE_SIM_PORT=18402 pnpm --filter playground dev --host 127.0.0.1 --port 5202 --strictPort`。通过默认网关和同源 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` HTTP 代理读取。首个主请求 fields 条件包含区域=东区，每页2条；首屏 R001/R003，总数14。翻页仍只读东区，清空区域后总数28；清空状态的导出为28条，整页刷新恢复东区14条。候选请求与主请求应按实际字段投影区分。此场景不证明真实 DQE、Relay、权限或部署。

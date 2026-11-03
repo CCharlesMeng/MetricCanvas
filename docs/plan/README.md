@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| 表格列头筛选默认选中值 | Schema6.82、共享初始化及本地验收完成；Git尚未提交 | [主计划](2026-11-03-table-header-filter-defaults.md)：select 固定值、会话恢复、查询初始化、快照与导出 |
 | MC 内容包跨平台分发与调用防护 | 本仓实施与本地验收完成；远端 CI/Windows/Relay现场待验 | [实施方案](2026-10-31-mc-content-distribution-hardening.md)、[实施与验收](2026-10-31-mc-content-distribution-hardening/implementation.md)：51 项 MC、8 项同步、228 项 Skill 与新增定向回归；归档保真、加载隔离和旁路安装 |
 | pagedJoin 按需分页与单查询源操作 | 本仓实现、协议分发与本地验收完成；Git交付及真实DQE另验 | [实施主计划](2026-10-29-paged-join-on-demand-pagination.md)：Schema6.76、默认10/10、操作源覆盖、按页补列、候选资格及Skill1.13.0；[验收记录](../evidence/paged-join-on-demand-20261029/result.md) |
 | 重点国代与 IOC Region 约束 | 本仓实现与本地验收完成，真实宿主与服务待验 | [实施计划](2026-10-29-key-office-filter-integration.md)、[验收结果](../evidence/key-office-filter-integration-20261029/result.md)：Region 仅允许 Header 单个组织树，普通维度保留 |

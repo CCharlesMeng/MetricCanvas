@@ -808,6 +808,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-header-filter-defaults.json",
+      "target": "product-contracts/page/conformance/valid/table-header-filter-defaults.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/table-header-filter-defaults-query.json",
+      "target": "product-contracts/page/conformance/valid/table-header-filter-defaults-query.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-column-enums.json",
       "target": "product-contracts/page/conformance/valid/table-column-enums.json",
       "scope": "exact product contract"
@@ -990,6 +1000,31 @@
     {
       "source": "product:page/conformance/invalid/pie-table-native-legend.json",
       "target": "product-contracts/page/conformance/invalid/pie-table-native-legend.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-header-defaults-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/table-header-defaults-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-header-defaults-duplicate.json",
+      "target": "product-contracts/page/conformance/invalid/table-header-defaults-duplicate.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-header-defaults-wrong-type.json",
+      "target": "product-contracts/page/conformance/invalid/table-header-defaults-wrong-type.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-header-defaults-unknown-enum.json",
+      "target": "product-contracts/page/conformance/invalid/table-header-defaults-unknown-enum.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-header-defaults-remote-sharing.json",
+      "target": "product-contracts/page/conformance/invalid/table-header-defaults-remote-sharing.json",
       "scope": "exact product contract"
     },
     {
@@ -3560,6 +3595,31 @@
     {
       "source": "product:page/reference/errors/pie-table-native-legend.json",
       "target": "references/page-metadata/errors/pie-table-native-legend.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-header-defaults-old-version.json",
+      "target": "references/page-metadata/errors/table-header-defaults-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-header-defaults-duplicate.json",
+      "target": "references/page-metadata/errors/table-header-defaults-duplicate.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-header-defaults-wrong-type.json",
+      "target": "references/page-metadata/errors/table-header-defaults-wrong-type.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-header-defaults-unknown-enum.json",
+      "target": "references/page-metadata/errors/table-header-defaults-unknown-enum.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-header-defaults-remote-sharing.json",
+      "target": "references/page-metadata/errors/table-header-defaults-remote-sharing.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -6463,6 +6523,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-header-filter-defaults.json",
+      "target": "references/page-metadata/examples/table-header-filter-defaults.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/table-header-filter-defaults-query.json",
+      "target": "references/page-metadata/examples/table-header-filter-defaults-query.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/table.md",
       "target": "references/page-metadata/components/table.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6884,11 +6954,11 @@
     }
   ],
   "counts": {
-    "product": 1345,
+    "product": 1359,
     "authoring": 31,
     "modules": 33,
-    "topics": 227,
-    "nodes": 2471,
+    "topics": 229,
+    "nodes": 2478,
     "tools": 9,
     "components": 19
   },

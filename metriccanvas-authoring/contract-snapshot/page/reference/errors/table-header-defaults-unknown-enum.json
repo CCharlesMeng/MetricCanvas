@@ -1,0 +1,37 @@
+{
+  "case": "table-header-defaults-unknown-enum",
+  "invariant": "table-header-filter-defaults",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认筛选值必须存在于列枚举中",
+      "paths": [
+        "/sections/1/components/0/props/columns/1/filterable/defaultValues/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "defaultValues": [
+                      "unknown"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-defaults-unknown-enum.json"
+}

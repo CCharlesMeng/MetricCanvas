@@ -1,0 +1,38 @@
+{
+  "case": "table-header-defaults-wrong-type",
+  "invariant": "table-header-filter-defaults",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认筛选值必须符合字段原始类型",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/defaultValues/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "defaultValues": [
+                      "1"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -29,7 +29,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。
 
 
-页面协议 6.80。结构真源为本册[schema.json](../schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.82。结构真源为本册[schema.json](../schema.json)，SHA256 `9350a179287433b8df813a7f6f18b51ca74242a97ad1097955d1b7662fb1fe41`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

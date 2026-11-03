@@ -42,6 +42,12 @@ export function columnConditionPaths(document: unknown): string[] {
 export function columnEnumPaths(document:unknown):string[]{
     return columnPropertyPaths(document,'enumValues');
 }
+export function columnDefaultPaths(document: unknown): string[] {
+    return columnPropertyPaths(document, 'filterable').flatMap(path => {
+        const value = path.split('/').slice(1).reduce<unknown>((node, key) => record(node)?.[key.replaceAll('~1', '/').replaceAll('~0', '~')] ?? (Array.isArray(node) ? node[Number(key)] : undefined), document);
+        return record(value) && Object.hasOwn(value as object, 'defaultValues') ? [path + '/defaultValues'] : [];
+    });
+}
 function columnPropertyPaths(document: unknown, property:string): string[] {
     const paths: string[] = [];
     const collect = (value: unknown, path: string) => {

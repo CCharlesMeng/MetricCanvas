@@ -1,0 +1,38 @@
+{
+  "case": "table-header-defaults-duplicate",
+  "invariant": "table-header-filter-defaults",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认筛选原始值不得重复",
+      "paths": [
+        "/sections/1/components/0/props/columns/1/filterable/defaultValues"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "defaultValues": [
+                      "pending",
+                      "pending"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-defaults-duplicate.json"
+}

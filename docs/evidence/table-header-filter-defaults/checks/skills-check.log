@@ -1,0 +1,49 @@
+$ pnpm skills:repair:check && pnpm authoring:check
+$ tsc --noEmit -p tools/tsconfig.skills.json && vitest run tests/repair-page-metadata.test.ts tests/skill-release.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/table-header-filter-defaults/DataDashboard
+
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  12:02:54
+   Duration  12.25s (transform 1.02s, setup 0ms, import 1.65s, tests 22.30s, environment 0ms)
+
+$ pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/table-header-filter-defaults/DataDashboard
+
+ ❯ tests/authoring-export-isolation.test.ts (31 tests | 1 failed) 1209527ms
+     × 隔离新 minor 加入真实字段语义后，旧页检查与迁移均保留原件 91205ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 隔离新 minor 加入真实字段语义后，旧页检查与迁移均保留原件
+AssertionError: expected null to be +0 // Object.is equality
+
+- Expected:
+0
+
++ Received:
+null
+
+ ❯ tests/authoring-export-isolation.test.ts:352:50
+    350|       writeFileSync(referenceFile, JSON.stringify(reference));
+    351|       const generated = runExport([], folder);
+    352|       expect(generated.status, generated.stderr).toBe(0);
+       |                                                  ^
+    353|       const scripts = path.join(folder, 'metriccanvas-authoring/mc-con…
+    354|       const input = path.join(folder, 'pages/capabilities/layout/mc-la…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 233 passed (234)
+   Start at  12:03:09
+   Duration  1209.77s (transform 5.45s, setup 0ms, import 27.72s, tests 1266.80s, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.
+[ELIFECYCLE] Command failed with exit code 1.
+[ELIFECYCLE] Command failed with exit code 1.

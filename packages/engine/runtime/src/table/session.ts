@@ -2,10 +2,11 @@ import { reconcileColumnView, columnViewBehaviorChanged } from './reconcile-view
 import type { TableColumnPresentation } from './column-presentation';
 import { tableQueryViewZ, type TableQueryView, type TableHeaderFilters, tablePredicates } from '@metriccanvas/page/internal';
 /** Sole writer of committed table state. Draft strings never enter this module. */
-export function createTableSession(initial: TableQueryView, changed: (view: TableQueryView) => void = () => { }, prepare:(view:TableQueryView,field?:string)=>TableQueryView=view=>view) {
+export function createTableSession(initial: TableQueryView, changed: (view: TableQueryView) => void = () => { }, prepare:(view:TableQueryView,field?:string)=>TableQueryView=view=>view, declaredDefault: TableQueryView = initial) {
     let view = structuredClone(initial), generation = 0;
-    let userSorted = false;
-    const defaultSort = structuredClone(initial.sort);
+    let userSorted = JSON.stringify(initial.sort)!==JSON.stringify(declaredDefault.sort);
+    let baseline = structuredClone(declaredDefault);
+    let defaultSort = structuredClone(declaredDefault.sort);
     let controller = new AbortController();
     function commit(next: TableQueryView, notify = true, advance = true) {
         if (!tableQueryViewZ.safeParse(next).success || JSON.stringify(next) === JSON.stringify(view))
@@ -28,7 +29,8 @@ export function createTableSession(initial: TableQueryView, changed: (view: Tabl
             return false; return commit(prepare({ ...view, predicates: tablePredicates(filters), pageIndex: 0 },field??changedRuleField(view.predicates,tablePredicates(filters)))); },
         setSearch(search: NonNullable<TableQueryView['search']>) { return commit(prepare({ ...view, search: { ...search, fields: [...search.fields], query: search.query.trim() }, pageIndex: 0 })); },
         reconcileColumns(columns: TableColumnPresentation, notify = true) { const reconciled = reconcileColumnView(view, columns, defaultSort, userSorted), next=prepare(reconciled,reconciled.predicates[0]?.field), affects = columnViewBehaviorChanged(view, next); const committed = commit(next, notify && affects, affects); return committed && affects; },
-        resetDefault() { userSorted=false;return commit(structuredClone(initial),false); },
+        initializeDefaults(next: TableQueryView, defaults: TableQueryView = next) { baseline=structuredClone(defaults);defaultSort=structuredClone(defaults.sort);userSorted=JSON.stringify(next.sort)!==JSON.stringify(defaults.sort);return commit(next,false); },
+        resetDefault(next: TableQueryView = baseline) { userSorted=false;baseline=structuredClone(next);return commit(next,false); },
         resetPresentation() { userSorted = false; return commit({ ...view, pageIndex: 0, sort: [], predicates: [], search: undefined }, false); },
         resetPage() { return commit({ ...view, pageIndex: 0 }, false); },
         correct(next: TableQueryView, expectedGeneration: number) { return expectedGeneration === generation && commit(next, false, false); },

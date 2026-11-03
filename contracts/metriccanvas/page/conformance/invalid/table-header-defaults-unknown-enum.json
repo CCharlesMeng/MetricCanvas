@@ -1,0 +1,308 @@
+{
+  "case": "table-header-defaults-unknown-enum",
+  "invariant": "table-header-filter-defaults",
+  "input": {
+    "schemaVersion": "6.82",
+    "id": "table-header-filter-defaults",
+    "layout": "dashboard",
+    "meta": {
+      "title": "列头筛选默认选中值",
+      "description": "内联合成数据。默认选中、共享数据源隔离、候选缺项和隐藏恢复。"
+    },
+    "filters": [
+      {
+        "id": "show-status",
+        "type": "dimension",
+        "dimension": "column-visibility",
+        "label": "审批状态列",
+        "default": [
+          "show"
+        ],
+        "options": [
+          {
+            "value": "show",
+            "label": "显示审批状态"
+          },
+          {
+            "value": "hide",
+            "label": "隐藏审批状态"
+          }
+        ],
+        "selection": {
+          "mode": "single",
+          "required": true
+        }
+      }
+    ],
+    "dataSources": {
+      "records": {
+        "fields": {
+          "id": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "status": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "code": {
+            "type": "number",
+            "role": "dimension"
+          },
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "id": "A001",
+              "status": "pending",
+              "code": 1,
+              "region": "华东"
+            },
+            {
+              "id": "A002",
+              "status": "approved",
+              "code": 1,
+              "region": "华南"
+            },
+            {
+              "id": "A003",
+              "status": "pending",
+              "code": 1,
+              "region": "华北"
+            },
+            {
+              "id": "A004",
+              "status": "pending",
+              "code": 2,
+              "region": "华东"
+            },
+            {
+              "id": "A005",
+              "status": "approved",
+              "code": 2,
+              "region": "华北"
+            },
+            {
+              "id": "A006",
+              "status": "rejected",
+              "code": 1,
+              "region": "华南"
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "description",
+        "components": [
+          {
+            "id": "description",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "内联合成数据。清空列头条件后保持清空，隐藏审批状态列再显示不会恢复默认选择。"
+            }
+          }
+        ]
+      },
+      {
+        "id": "tables",
+        "components": [
+          {
+            "id": "default-records",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "待审批且编码为1",
+              "rowKey": "id",
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "记录编号",
+                  "width": 120
+                },
+                {
+                  "field": "status",
+                  "title": "审批状态",
+                  "enumValues": [
+                    {
+                      "value": "pending",
+                      "label": "待审批"
+                    },
+                    {
+                      "value": "approved",
+                      "label": "已通过"
+                    },
+                    {
+                      "value": "rejected",
+                      "label": "已拒绝"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "defaultValues": [
+                      "unknown"
+                    ]
+                  },
+                  "visibleWhen": {
+                    "filter": "show-status",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "show"
+                    ]
+                  },
+                  "width": 140
+                },
+                {
+                  "field": "code",
+                  "title": "数值编码",
+                  "filterable": {
+                    "mode": "select",
+                    "defaultValues": [
+                      1
+                    ]
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "region",
+                  "title": "区域",
+                  "width": 120
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "default-records"
+                }
+              }
+            }
+          },
+          {
+            "id": "other-records",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "同源独立默认值",
+              "rowKey": "id",
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "记录编号",
+                  "width": 120
+                },
+                {
+                  "field": "status",
+                  "title": "审批状态",
+                  "enumValues": [
+                    {
+                      "value": "pending",
+                      "label": "待审批"
+                    },
+                    {
+                      "value": "approved",
+                      "label": "已通过"
+                    },
+                    {
+                      "value": "rejected",
+                      "label": "已拒绝"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "defaultValues": [
+                      "approved"
+                    ]
+                  },
+                  "width": 140
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "other-records"
+                }
+              }
+            }
+          },
+          {
+            "id": "missing-records",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "默认值当前无匹配记录",
+              "rowKey": "id",
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "记录编号",
+                  "width": 120
+                },
+                {
+                  "field": "status",
+                  "title": "审批状态",
+                  "filterable": {
+                    "mode": "select",
+                    "defaultValues": [
+                      "archived"
+                    ]
+                  },
+                  "width": 140
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "missing-records"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/columns/1/filterable/defaultValues/0",
+      "message": "默认筛选值必须存在于列枚举中"
+    }
+  ]
+}

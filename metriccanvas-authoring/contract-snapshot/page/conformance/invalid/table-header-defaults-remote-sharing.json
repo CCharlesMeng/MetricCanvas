@@ -1,0 +1,225 @@
+{
+  "case": "table-header-defaults-remote-sharing",
+  "invariant": "table-header-filter-defaults",
+  "input": {
+    "schemaVersion": "6.82",
+    "id": "table-header-filter-defaults-query",
+    "layout": "dashboard",
+    "meta": {
+      "title": "列头默认筛选与查询分页",
+      "description": "DQE Sim 合成审批记录，经默认标准网关和 HTTP 代理读取。"
+    },
+    "dataSources": {
+      "records": {
+        "fields": {
+          "id": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "审批记录ID"
+          },
+          "business": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "商务编号"
+          },
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "区域"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "审批金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Demo/Approval Details",
+                  "output_fields": [
+                    "审批记录ID",
+                    "商务编号",
+                    "区域",
+                    "审批金额"
+                  ],
+                  "filter": {
+                    "fields": []
+                  },
+                  "order": {
+                    "order_by_field": "审批记录ID",
+                    "type": "ASC",
+                    "offset": 0,
+                    "limit": 2
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "query-records",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "东区审批记录（合成 DQE）",
+              "rowKey": "id",
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "记录编号",
+                  "width": 120
+                },
+                {
+                  "field": "business",
+                  "title": "商务编号",
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "region",
+                  "title": "区域",
+                  "enumValues": [
+                    {
+                      "value": "东区",
+                      "label": "东区"
+                    },
+                    {
+                      "value": "西区",
+                      "label": "西区"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "defaultValues": [
+                      "东区"
+                    ]
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "amount",
+                  "title": "金额",
+                  "width": 120
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "默认东区审批记录"
+                }
+              }
+            }
+          },
+          {
+            "id": "other-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "东区审批记录（合成 DQE）",
+              "rowKey": "id",
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "记录编号",
+                  "width": 120
+                },
+                {
+                  "field": "business",
+                  "title": "商务编号",
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "region",
+                  "title": "区域",
+                  "enumValues": [
+                    {
+                      "value": "东区",
+                      "label": "东区"
+                    },
+                    {
+                      "value": "西区",
+                      "label": "西区"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "defaultValues": [
+                      "东区"
+                    ]
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "amount",
+                  "title": "金额",
+                  "width": 120
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "默认东区审批记录"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data/main",
+      "message": "默认筛选的远程表格必须独占页面数据源，不能共享组件或查询依赖"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data/main",
+      "message": "默认筛选的远程表格必须独占页面数据源，不能共享组件或查询依赖"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data/main",
+      "message": "查询分页表格必须独占页面数据源 records，当前引用 2 次"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data/main",
+      "message": "查询分页表格必须独占页面数据源 records，当前引用 2 次"
+    }
+  ]
+}

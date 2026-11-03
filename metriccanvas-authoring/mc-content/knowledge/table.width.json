@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.82",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.width"
@@ -9,9 +9,24 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示可逐行核对、排序、筛选和通过单元格联动的明细记录，支持多级表头。数据形状为多个 dimension/metric 字段组成的行集。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。"
+        "# 明细表 table\n\n展示 dimension/metric 行集，支持逐行核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。"
       ],
       "rules": [
+        {
+          "id": "table-header-filter-defaults",
+          "description": "select 原始值默认筛选、字段类型与版本下限",
+          "valid": [
+            "table-header-filter-defaults",
+            "table-header-filter-defaults-query"
+          ],
+          "invalid": [
+            "table-header-defaults-old-version",
+            "table-header-defaults-duplicate",
+            "table-header-defaults-wrong-type",
+            "table-header-defaults-unknown-enum",
+            "table-header-defaults-remote-sharing"
+          ]
+        },
         {
           "id": "table-column-enums",
           "description": "前端列枚举值唯一及版本下限",
@@ -311,7 +326,9 @@
         "references/page-metadata/examples/record-join-query-page.json",
         "references/page-metadata/examples/table-column-enums.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/table-multiple-pinned-page.json"
+        "references/page-metadata/examples/table-multiple-pinned-page.json",
+        "references/page-metadata/examples/table-header-filter-defaults.json",
+        "references/page-metadata/examples/table-header-filter-defaults-query.json"
       ]
     }
   ],
@@ -332,7 +349,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.80",
+        "$id": "https://metriccanvas/page/v6.82",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

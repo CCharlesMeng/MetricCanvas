@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.80",
-  "schemaSha256": "be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d",
+  "schemaVersion": "6.82",
+  "schemaSha256": "9350a179287433b8df813a7f6f18b51ca74242a97ad1097955d1b7662fb1fe41",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -688,7 +688,9 @@
         "record-join-query-page",
         "table-column-enums",
         "period-comparison-query-page",
-        "table-multiple-pinned-page"
+        "table-multiple-pinned-page",
+        "table-header-filter-defaults",
+        "table-header-filter-defaults-query"
       ],
       "rules": [
         "table-row-key",
@@ -711,7 +713,8 @@
         "table-column-visibility",
         "table-column-search-fields",
         "table-hierarchy-selection",
-        "table-column-enums"
+        "table-column-enums",
+        "table-header-filter-defaults"
       ]
     },
     "components/mapChart.md": {
@@ -1206,7 +1209,9 @@
         "6.77",
         "6.78",
         "6.79",
-        "6.80"
+        "6.80",
+        "6.81",
+        "6.82"
       ]
     },
     {
@@ -13337,12 +13342,54 @@
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableColumn/properties/filterable/properties/mode",
-      "path": "@tableColumn.filterable.mode",
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0",
+      "path": "@tableColumn.filterable · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/mode",
+      "path": "@tableColumn.filterable · anyOf[0].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "select"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues",
+      "path": "@tableColumn.filterable · anyOf[0].defaultValues",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items",
+      "path": "@tableColumn.filterable · anyOf[0].defaultValues[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/0",
+      "path": "@tableColumn.filterable · anyOf[0].defaultValues[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/1",
+      "path": "@tableColumn.filterable · anyOf[0].defaultValues[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/1",
+      "path": "@tableColumn.filterable · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/1/properties/mode",
+      "path": "@tableColumn.filterable · anyOf[1].mode",
       "required": "本分支必填",
       "module": "components/table.md",
       "enum": [
-        "select",
         "dateRange",
         "numberRange"
       ]
@@ -19995,6 +20042,30 @@
       "pointer": "#/sections/0/components/0/props/columns/0/selection/writes/city"
     },
     {
+      "schemaPointer": "#/definitions/tableColumn/properties/filterable/anyOf/0",
+      "module": "components/table.md",
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/sections/0/components/0/props/columns/16/filterable"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-header-filter-defaults.json",
+      "pointer": "#/sections/1/components/0/props/columns/1/filterable/defaultValues/0"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-header-filter-defaults.json",
+      "pointer": "#/sections/1/components/0/props/columns/2/filterable/defaultValues/0"
+    },
+    {
+      "schemaPointer": "#/definitions/tableColumn/properties/filterable/anyOf/1",
+      "module": "components/table.md",
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/sections/0/components/0/props/columns/14/filterable"
+    },
+    {
       "schemaPointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0",
       "module": "components/table.md",
       "file": "examples/reference-export-column-actions.json",
@@ -20697,5 +20768,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "d06d7f07e7de1467703bf9b87f4c4cdd4454b7edfda7722c42f71a182bf83ffc"
+  "semanticSourceDigest": "534af74a9e0076e4f9755c16f11a71d5fcd5608f809c41b21a6533d8ff931aa0"
 }

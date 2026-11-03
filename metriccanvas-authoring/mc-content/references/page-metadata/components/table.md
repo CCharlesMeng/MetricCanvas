@@ -1,8 +1,20 @@
 # 明细表 table
 
-展示可逐行核对、排序、筛选和通过单元格联动的明细记录，支持多级表头。数据形状为多个 dimension/metric 字段组成的行集。
+展示 dimension/metric 行集，支持逐行核对、排序、筛选、单元格联动和多级表头。
 
 columns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。
+
+## 列头筛选默认值（6.82）
+
+select 叶子列可声明 `filterable: {"mode":"select","defaultValues":["pending"]}`，初次有效读取直接应用原始值，控件勾选、筛选标记、数据和导出保持一致。默认值为字符串或有限数值数组，保持原始类型，重复值非法；字段须是静态 main 维度绑定，普通远程查询还须有 queryField 映射，不能静默跳过条件。不支持 byFilter、其他数据槽、参数引用、日期范围、数值范围或行内子表。省略或空数组初始无该列条件；显式空数组仍要求本能力版本。
+
+有 enumValues 时默认项须属于字典，显示字典 label；无字典时沿用动态候选，不要求当前候选中存在默认项。候选尚未加载、无匹配或请求失败均保留已选值并允许取消，不自动扩大查询。多个默认值按集合 OR，多个列及页面业务条件继续 AND 收窄；空交集显示正常空态。默认值不改写原查询中的固定条件。
+
+首次初始化一次性提交全部默认项。用户清空后保持清空，翻页、排序、刷新数据、候选更新、Tab 切换及普通业务条件变化不补回默认值。列隐藏清除其条件，重显不恢复；展示字段切换仍遵循原有状态清理。组织父子表的地区选择属于完整重置，恢复当前可见列的声明默认值。显式恢复视图整体优先，包括已清空的空视图；重新打开页面运行实例按声明初始化。
+
+inline 与明确完整且无查询窗口的 query 按表格实例本地筛选，可共享源。远程默认筛选要求表格独占页面数据源，包括其他组件、AI 总结和查询依赖引用；不得让默认值影响共享消费者。按需 pagedJoin 的有效默认条件与默认排序须来自同一允许选页的查询成员，冲突拒绝，不逐列覆盖或退回当前页过滤。缺少视图证明的远程初始快照和执行回执不复用；独立取数与运行时遵循同一初始化规则。导出冻结当前已提交条件，用户已清空时不重新消费声明默认值。
+
+可观察入口 `/pages/table-header-filter-defaults` 使用内联合成数据，展示多列默认、数值类型、同源独立状态、候选缺项和列显隐；`/pages/table-header-filter-defaults-query` 使用默认网关通过 HTTP 代理访问 DQE Sim，验证首请求已带东区条件、查询分页、清空和 Excel。真实 DQE、Relay 和部署另验。
 
 ## 前端列枚举（6.80）
 
@@ -232,25 +244,25 @@ Excel 原文单元格明确写入文本，不再猜测为日期或数值；合�
 
 ## 独立查询置顶行（6.60）
 
-props.pinnedTop 指定一个独立命名槽，叶子列的 pinnedTop 通过 field、secondaryField、badgeField 绑定该槽中的字段，字段绑定仍使用现有 FieldBinding。组件声明例为 data:{main:"regions",china:"summary"}、props.pinnedTop:{data:"china"}；列例为 {field:"actual",pinnedTop:{field:{data:"china",field:"summary-actual"}}}。指定的是槽名而非数据源 id。
+props.pinnedTop 指定独立命名槽，列 pinnedTop 的 field、secondaryField、badgeField 以现有 FieldBinding 绑定该槽。例：data:{main:"regions",china:"summary"}、props.pinnedTop:{data:"china"}、列 {field:"actual",pinnedTop:{field:{data:"china",field:"summary-actual"}}}；data 是槽名，不是数据源 id。
 
-置顶槽引用普通 query 页面数据源并声明 source.resultScope:"complete"。结果完整返回零行或一行，不得使用 limit/offset 截断，不得依赖该表明细源。列绑定只消费指定置顶槽，类型、角色、币种及单位需与对应明细字段一致。其他多槽仍按既有 rowKey 对齐；置顶槽本身不要求 rowKey，也不增加只有 main 的表格的行键要求。普通字段不得反向使用置顶槽作为对齐源。
+置顶槽须为普通 query、source.resultScope:"complete"，完整返回零或一行，无 limit/offset、不依赖本表明细。列只绑定指定置顶槽，类型、角色、币种和单位与对应明细一致。其他槽按既有 rowKey 对齐，置顶槽不要求 rowKey，也不增加单 main 表格的行键要求；普通字段不能反向以置顶槽对齐。
 
-每页在表头后显示一次汇总，不纵向吸顶，不占明细页大小、totalCount 或序号；序号及展开格留空。置顶字段格式依次取置顶绑定显式 format、同列对应明细的最终 format、置顶字段 defaultFormat。未绑定的格子留空，次字段和徽标不继承明细内容。复用现有列宽、对齐、固定列及单元格样式；不继承选择、导航、详情、展开或 mergeBy 合并动作。
+每页在表头后显示一次汇总，不吸顶、不占明细页大小、totalCount 或序号；序号和展开格为空。格式优先级：置顶绑定显式 format、同列明细最终 format、置顶字段 defaultFormat。未绑定格留空，次字段及徽标不继承明细；沿用列宽、对齐、固定列和样式，不继承选择、导航、详情、展开或 mergeBy 动作。
 
-汇总只消费自身查询明确绑定的共同条件。地区选择、表内搜索、列表头条件和分页不隐式传给它；示例中的时间、产品绑定两源，地区只绑定明细。两源始终保留当前用户权限，不能通过省略页面筛选扩大权限；汇总值与业务标签由指标表的区域取数逻辑返回，前端不从明细补算。
+汇总仅消费自身查询显式绑定的共同条件，地区、表内搜索、列头条件和分页不隐式传入。示例时间、产品绑定两源，地区只绑定明细；两源始终保留用户权限，不得通过省略筛选扩大权限。值和标签由指标表区域取数返回，前端不从明细补算。
 
-汇总加载不阻塞明细；完整零行不生成汇总；失败、总数不一致或多行时保留明细并记录诊断，不复用旧值。共同业务条件改变时旧汇总失效，迟到响应不能回写。明细零行但汇总成功时可仅显示汇总，明细 totalCount 仍为零。
+汇总加载不阻塞明细；零行不生成汇总；失败、总数不符或多行保留明细并诊断，不复用旧值。共同条件变化使旧汇总失效，迟到响应不回写。明细零行时可仅显示成功汇总，明细 totalCount 仍为零。
 
-Excel 表头后写一次汇总，无序号，然后导出全部匹配明细。汇总无记录可以导出，汇总失败或行数不合法则整个表格导出失败；输出总数据行仍受10000行及60秒准备限制。PDF/PNG 使用同一投影，成功汇总在展开后的表格中仅出现一次，保留报告既有部分失败策略。首版不扩展行内子表的声明；已有详情限制继续生效。
+Excel 在表头后写一次无序号汇总，再写全部匹配明细。汇总零行可导出，失败或行数非法则整表导出失败；总数据行限10000、准备限60秒。PDF/PNG 同一投影，展开表格中的成功汇总只出现一次，保留报告部分失败策略。不扩展行内子表声明，已有详情限制保持。
 
-完整场景 `/pages/table-pinned-summary` 使用两个独立的 DQE Sim 查询，支持地区、共同时间和产品条件，以及零行、多行、失败场景；不能据此宣称真实 DQE 权限及汇总口径已经验收。
+`/pages/table-pinned-summary` 使用两个独立 DQE Sim 查询，覆盖地区、共同时间/产品、零行、多行和失败；不证明真实 DQE 权限或汇总口径。
 
 ## 多查询置顶行与固定文字（6.79）
 
 可通过 `props.pinnedTop.additionalData:["commercial","contract"]` 加入额外的独立完整查询槽，列级字段绑定可引用主置顶槽或其中任一槽。所有槽必须引用不同的普通 complete query，均不得依赖明细或带窗口；它们各自最多返回一行。主置顶槽零行时不生成该行；额外槽合法零行时仅对应格子缺失；任一槽加载、失败或行数异常时暂不生成置顶行，明细继续渲染，完整 Excel 在汇总失败或未就绪时拒绝。额外槽同样不参加明细对齐、排序、搜索、计数或分页。
 
-叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。既有单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页全部数据源均为 DQE 查询，不包含 inline 数据或初始行，真实指标聚合语义、授权及服务可执行性须在内网验证。自动化查询组装测试显式使用合成 HTTP 回执，不影响页面运行时网关。
+叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。既有单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。
 
 
 <a id="source-navigation"></a>
@@ -308,7 +320,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败显示持续错误和重试；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
 
 
-页面协议 6.80。结构真源为本册[schema.json](../schema.json)，SHA256 `be33afd5ad039b11b7642b60502a03b6215c1db7fefca6a3a4ac5a136388656d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.82。结构真源为本册[schema.json](../schema.json)，SHA256 `9350a179287433b8df813a7f6f18b51ca74242a97ad1097955d1b7662fb1fe41`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1490,21 +1502,94 @@ Schema位置：`#/definitions/tableColumn/properties/filterable`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 表头筛选能力，仅允许适用的维度列。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 表头筛选能力，仅允许适用的维度列。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f70726f706572746965732f6d6f6465"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f30"></a>
 
-### `@tableColumn.filterable.mode`
+### `@tableColumn.filterable · anyOf[0]`
 
-Schema位置：`#/definitions/tableColumn/properties/filterable/properties/mode`。
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["select","dateRange","numberRange"] | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+| "object" | 独立分支（不合并required） | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f302f70726f706572746965732f6d6f6465"></a>
+
+### `@tableColumn.filterable · anyOf[0].mode`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="select" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "select" | 下拉候选选择。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f302f70726f706572746965732f64656661756c7456616c756573"></a>
+
+### `@tableColumn.filterable · anyOf[0].defaultValues`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | select 列头初始选中的原始值数组；省略或空数组初始不筛选，用户清空后不补回。须符合静态 main 维度字段类型和已有列字典；详情及组合查询沿用各自执行约束。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f302f70726f706572746965732f64656661756c7456616c7565732f6974656d73"></a>
+
+### `@tableColumn.filterable · anyOf[0].defaultValues[]`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f302f70726f706572746965732f64656661756c7456616c7565732f6974656d732f616e794f662f30"></a>
+
+### `@tableColumn.filterable · anyOf[0].defaultValues[] · anyOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f302f70726f706572746965732f64656661756c7456616c7565732f6974656d732f616e794f662f31"></a>
+
+### `@tableColumn.filterable · anyOf[0].defaultValues[] · anyOf[1]`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f31"></a>
+
+### `@tableColumn.filterable · anyOf[1]`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f312f70726f706572746965732f6d6f6465"></a>
+
+### `@tableColumn.filterable · anyOf[1].mode`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/1/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["dateRange","numberRange"] | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
 | "dateRange" | 日期范围筛选控件。 |
 | "numberRange" | 数值度量的包含端点范围；按原始单位比较，一端可缺省。 |
 
@@ -3544,6 +3629,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `table-column-search-fields`：列搜索须关联主、次或徽标字段。反例：[table-column-unowned-search](../errors/table-column-unowned-search.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-hierarchy-selection`：6.70显式归属定位、父行投影、私有选择及完整父子导出。反例：[hierarchy-old-version](../errors/hierarchy-old-version.json)、[hierarchy-parent-window](../errors/hierarchy-parent-window.json)、[hierarchy-without-selection](../errors/hierarchy-without-selection.json)、[hierarchy-export-fields](../errors/hierarchy-export-fields.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-column-enums`：前端列枚举值唯一及版本下限。反例：[table-enums-old-version](../errors/table-enums-old-version.json)、[table-enums-duplicate-value](../errors/table-enums-duplicate-value.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `table-header-filter-defaults`：select 原始值默认筛选、字段类型与版本下限。反例：[table-header-defaults-old-version](../errors/table-header-defaults-old-version.json)、[table-header-defaults-duplicate](../errors/table-header-defaults-duplicate.json)、[table-header-defaults-wrong-type](../errors/table-header-defaults-wrong-type.json)、[table-header-defaults-unknown-enum](../errors/table-header-defaults-unknown-enum.json)、[table-header-defaults-remote-sharing](../errors/table-header-defaults-remote-sharing.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -3575,6 +3661,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-column-enums](../examples/table-column-enums.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](../examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [table-multiple-pinned-page](../examples/table-multiple-pinned-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-header-filter-defaults](../examples/table-header-filter-defaults.json)：完整合法页面；查询仅为静态契约证据。
+- [table-header-filter-defaults-query](../examples/table-header-filter-defaults-query.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -3612,6 +3700,10 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/enumValues/0/value`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/city`。
+- `#/definitions/tableColumn/properties/filterable/anyOf/0`：[合法完整页面](../examples/unified-overflow-header.json)，JSON Pointer `#/sections/0/components/0/props/columns/16/filterable`。
+- `#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/0`：[合法完整页面](../examples/table-header-filter-defaults.json)，JSON Pointer `#/sections/1/components/0/props/columns/1/filterable/defaultValues/0`。
+- `#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/1`：[合法完整页面](../examples/table-header-filter-defaults.json)，JSON Pointer `#/sections/1/components/0/props/columns/2/filterable/defaultValues/0`。
+- `#/definitions/tableColumn/properties/filterable/anyOf/1`：[合法完整页面](../examples/unified-overflow-header.json)，JSON Pointer `#/sections/0/components/0/props/columns/14/filterable`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/7/components/0/props/columns/0/openDetail`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/4/components/0/props/columns/0/openDetail`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/4/components/0/props/columns/0/openDetail/bindings/detail-customer`。

@@ -1,0 +1,75 @@
+{
+  "case": "table-header-defaults-old-version",
+  "invariant": "table-header-filter-defaults",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格 select 列头筛选固定默认选中值 由 6.82 引入，文档声明的是 6.80",
+      "paths": [
+        "/sections/1/components/0/props/columns/1/filterable/defaultValues",
+        "/sections/1/components/0/props/columns/2/filterable/defaultValues",
+        "/sections/1/components/1/props/columns/1/filterable/defaultValues",
+        "/sections/1/components/2/props/columns/1/filterable/defaultValues"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "defaultValues": [
+                      "pending"
+                    ]
+                  }
+                },
+                {
+                  "filterable": {
+                    "defaultValues": [
+                      1
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "defaultValues": [
+                      "approved"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "defaultValues": [
+                      "archived"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

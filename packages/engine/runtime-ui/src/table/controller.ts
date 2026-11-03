@@ -6,7 +6,8 @@ import { tableColumnPresentation } from '../../../runtime/src/table/column-prese
 import { fieldSelectionIds, sourceFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
 import { createColumnCandidatesSession } from '../../../runtime/src/table/column-candidates';
 import type { TableRenderBinding } from '../component-render';
-import { evaluateTableView, defaultSourceView, type ColumnCandidatesRead } from '@metriccanvas/data-execution/runtime';
+import { evaluateTableView, defaultSourceView, defaultTableView, tableDefaultInputsPending, type ColumnCandidatesRead } from '@metriccanvas/data-execution/runtime';
+import {hasHeaderDefaults,tableDefaultsRemote} from '@metriccanvas/page/internal';
 import { createTableSession, type TableSession } from '../../../runtime/src/table/session';
 import { remoteTableSearch } from './search';
 import type { PageSnapshotStream, FilterValues } from '../../../runtime/src';
@@ -37,6 +38,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       session.sync(hierarchyContext());
     }
     const sessions = new Map<string, TableSession>();
+    const pendingDefaults = new Set<string>();
     const candidates = new Map<string, ReturnType<typeof createColumnCandidatesSession>>();
     const notices = new Map<string,string>();
     function operate(table:TableComponent,run:()=>void){
@@ -56,14 +58,28 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     const searches = new Map<string, string>();
     const searchOptions = new Map<string, string>();
     const remote = (table: TableComponent) => stream()?.getQueryView(table.data.main) !== undefined &&
-        (table.props.pagination?.mode === 'query' || stream()?.getQueryPageSize(table.data.main) !== undefined || remoteTableSearch(page.dataSources[table.data.main]));
+        (hasHeaderDefaults(table.props.columns) ? tableDefaultsRemote(page,table) : (table.props.pagination?.mode === 'query' || stream()?.getQueryPageSize(table.data.main) !== undefined || remoteTableSearch(page.dataSources[table.data.main])));
     function local(table: TableComponent) {
+        const declaration=declarations.get(table.id)??table;
         let session = sessions.get(table.id);
         if (!session) {
-            session = createTableSession(defaultSourceView(page, table.data.main, table.props.pagination?.mode === 'local' ? table.props.pagination.pageSize : 20), changed);
+            const base=defaultSourceView(page, table.data.main, table.props.pagination?.mode === 'local' ? table.props.pagination.pageSize : 20);
+            if(tableDefaultInputsPending(declaration.props.columns,context()))pendingDefaults.add(table.id);
+            session = createTableSession(defaultTableView(page,declaration,context(),base), changed);
             sessions.set(table.id, session);
         }
+        if(pendingDefaults.has(table.id)&&!tableDefaultInputsPending(declaration.props.columns,context())){
+          session.initializeDefaults(defaultTableView(page,declaration,context(),defaultSourceView(page,table.data.main,session.snapshot().pageSize)));
+          pendingDefaults.delete(table.id);
+        }
         return session;
+    }
+    function resetHierarchyDefault(table: TableComponent): void {
+      if(!hasHeaderDefaults(table.props.columns)){local(table).resetDefault();return;}
+      const size=table.props.pagination?.mode==='local'?table.props.pagination.pageSize:undefined;
+      const baseline=defaultTableView(page,table,context(),defaultSourceView(page,table.data.main,size));
+      if(remote(table))stream()?.resetQueryDefault?.(table.data.main,baseline);
+      else local(table).resetDefault(baseline);
     }
     function view(table: TableComponent): TableQueryView { return remote(table) ? stream()?.getQueryView(table.data.main) ?? defaultSourceView(page, table.data.main) : local(table).snapshot(); }
     function candidateSession(table: TableComponent) {
@@ -241,7 +257,10 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         reset(table: TableComponent, previous: FilterValues, next: FilterValues) {
             const changedIds = new Set([...new Set([...previous.keys(), ...next.keys()])].filter(id => JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))));
             if(table.props.rowExpansion?.selection){
-                if(changedIds.has(table.props.rowExpansion.selection.filter)){headers.delete(table.id);searches.delete(table.id);searchOptions.delete(table.id);local(table).resetDefault();}
+                if(changedIds.has(table.props.rowExpansion.selection.filter)){
+                  headers.delete(table.id);searches.delete(table.id);searchOptions.delete(table.id);
+                  resetHierarchyDefault(table);
+                }
                 changed();return;
             }
             if (fieldSelectionIds(table.props).some(id => changedIds.has(id))) {

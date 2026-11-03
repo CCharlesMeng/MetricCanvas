@@ -826,14 +826,17 @@
         "record-join-query-page",
         "table-column-enums",
         "period-comparison-query-page",
-        "table-multiple-pinned-page"
+        "table-multiple-pinned-page",
+        "table-header-filter-defaults",
+        "table-header-filter-defaults-query"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
         "packages/embed/tests/browser/embed.spec.ts",
         "packages/page/src/table/expansion.ts",
         "packages/page/src/table/validate-expansion.ts",
-        "packages/page/src/table/validate-selection.ts"
+        "packages/page/src/table/validate-selection.ts",
+        "packages/page/src/table/header-defaults.ts"
       ],
       "rules": [
         "table-row-key",
@@ -856,7 +859,8 @@
         "table-column-visibility",
         "table-column-search-fields",
         "table-hierarchy-selection",
-        "table-column-enums"
+        "table-column-enums",
+        "table-header-filter-defaults"
       ]
     },
     "components/mapChart.md": {
@@ -1733,7 +1737,8 @@
     "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/onMissing": "单个度量缺关联记录时null或zero，省略null；不替换已返回的空值或失败。",
     "#/definitions/tableComponent/properties/props/properties/pinnedTop/properties/additionalData": "额外独立完整汇总查询的命名数据槽，每个槽返回零或一行；不参与明细对齐。",
     "#/definitions/tableColumn/properties/pinnedTop/anyOf/1/properties/text": "该列置顶格固定显示的非空纯文本，与字段绑定分支互斥，不修改明细或查询。",
-    "enumValues": "列主字段的前端枚举字典，1至1000项；原始值类型敏感且不得重复，统一显示、静态选项和导出标签，不改写查询编码。"
+    "enumValues": "列主字段的前端枚举字典，1至1000项；原始值类型敏感且不得重复，统一显示、静态选项和导出标签，不改写查询编码。",
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues": "select 列头初始选中的原始值数组；省略或空数组初始不筛选，用户清空后不补回。须符合静态 main 维度字段类型和已有列字典；详情及组合查询沿用各自执行约束。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2042,7 +2047,9 @@
     "6.77": "期间比较查询、逐度量缺记录策略及百分点格式。",
     "6.78": "查询分页期间比较、组合投影缺记录策略与逐行计算",
     "6.79": "多条独立查询组成置顶行，列级固定文字。",
-    "6.80": "表格列前端枚举展示、静态筛选及导出标签。"
+    "6.80": "表格列前端枚举展示、静态筛选及导出标签。",
+    "6.81": "兼容读取的中间次版本，本批能力由6.82引入。",
+    "6.82": "表格 select 列头固定默认选中值、统一初始化及状态恢复。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2685,6 +2692,17 @@
         "多查询置顶行与固定文字（6.79）"
       ],
       "dependencies": []
+    },
+    "table.headerDefaults": {
+      "module": "table",
+      "title": "列头筛选默认选中值",
+      "roots": [
+        "#/definitions/tableColumn/properties/filterable"
+      ],
+      "headings": [
+        "列头筛选默认值（6.82）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2825,6 +2843,7 @@
       "常量取值（6.59）"
     ],
     "components/table.md": [
+      "列头筛选默认值（6.82）",
       "前端列枚举（6.80）",
       "决策意见明细合成预览",
       "列条件显隐（6.62）",
