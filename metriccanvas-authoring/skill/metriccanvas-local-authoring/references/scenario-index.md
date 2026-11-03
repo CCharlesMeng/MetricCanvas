@@ -6,12 +6,15 @@
 
 包内示例可独立读取；Playground 列给出已有页面 id，有该运行环境时从 `/pages/<id>` 定位。示例覆盖相应逻辑，未必与 Playground 整页一一相同；取用数据逻辑时沿用目标页布局、身份与业务依据，仿真或内嵌行不证明真实服务可用。
 
+所有取数逻辑先执行[后端分页优先](query-pagination.md)的选型与验收；这不是仅在用户询问表格分页时才进入的分支。
+
 ## 先选操作
 
 | 操作与典型说法 | 首步与完成边界 |
 |---|---|
 | 新增：“加指标／表格／查询／筛选” | 确认结果粒度及可复用声明，再选下方逻辑；新查询进入[数据分析](data-analysis.md)，新增整页先[确认形态](page-form.md)。检查新引用及共享消费者。 |
 | 修改：“换口径／改字段／调整筛选或排序” | 定位原对象及依赖；已有可信绑定直接复用。字段身份、类型、单位或查询条件变化时核对引用两端及初始结果。按受影响逻辑验证。 |
+| 取数改造：“改为后端分页／按页加载／不要一次查全量” | 按[后端分页优先](query-pagination.md)盘点所有相关请求与完整结果消费者，选型后迁移；同时核对适用协议中的页大小和批次大小，以实际请求验收。 |
 | 删除：“删列／组件／查询／筛选／明细” | 先核对完整页面中的消费者与引用：数据槽、组合源成员、结果绑定、计算、条件、详情及导航。解除或迁移目标引用后删除声明；共享资源有剩余引用时保留。[共享消费者示例](page-metadata/examples/stored-count-measures.json)中图表与表格共用一个源，删除其中之一仍需保留源。局部 scan 未显示某引用不能作为无人使用的证明。 |
 | debug：“报错／没数据／数不对／交互不生效” | 先按下方症状定位失败层，再选对应数据逻辑。保留原始错误或请求证据，只修复原因；静态校验通过后继续核对实际数据或交互。 |
 | 仅分析：“匹配指标／查影响范围／列缺口” | 用[数据分析](data-analysis.md)的 scan/find；全页证据覆盖才用 draft/check。交匹配与缺口，不顺带修改页面。 |
@@ -54,7 +57,7 @@
 | 跨页明细：从清单进入详情页，传对象身份、筛选或期间 | [交互与导航](page-metadata/actions-and-navigation.md)；[来源页](page-metadata/examples/navigation-source-page.json)与[目标页](page-metadata/examples/navigation-detail-page.json)。核对显式传值和目标输入。 | `ioc-header-navigation-source-demo`；`ioc-header-navigation-detail-demo` |
 | 时间模式切换：年／季／月等模式需要不同静态查询时间声明 | `filters.timeModes`；[静态时间模式](page-metadata/examples/time-modes-page.json)。 | `ioc-header-time-modes-demo` |
 | 固定业务选项切换查询：不同选项采用不同查询体或绑定 | `query.modes`；[查询分支](page-metadata/examples/query-modes-page.json)。 | `query-mode-chart-demo` |
-| 表格搜索／列筛选／排序／分页／导出：变更记录集合或浏览范围 | `table.search`、`table.pagination`、`table.export` 中命中的主题；[搜索字段选择](page-metadata/examples/table-search-options-page.json)、[工具区](page-metadata/examples/table-toolbar-page.json)。区分本地完整数据与远端查询窗口。 | `table-search-options-demo`；`table-column-candidates`；`table-toolbar-demo` |
+| 表格搜索／列筛选／排序／分页／导出：变更记录集合或浏览范围 | 先按[后端分页优先](query-pagination.md)处理取数范围，再查 `table.search`、`table.pagination`、`table.export` 中命中的主题；[搜索字段选择](page-metadata/examples/table-search-options-page.json)、[工具区](page-metadata/examples/table-toolbar-page.json)。 | `table-search-options-demo`；`table-column-candidates`；`table-toolbar-demo` |
 
 结果绑定传递查询结果中的维度集合；候选级联更新可选值；点击联动写入筛选状态；行内查询接收父行输入。先按输入来自哪里选择上述路径，再查具体配置。
 
