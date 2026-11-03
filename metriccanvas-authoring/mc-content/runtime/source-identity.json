@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "1f5b899d278e30f2b6a524c0bab2ec30b1e17cd64080dea3bff448b84dacab50",
+  "sha256": "5f513fac9d24635906ad626d5e78ffb2eadbb1883c5179e3b8612e2e8f56cfa4",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/params-and-text-values.md",
-      "sha256": "5e5701b31d8624d0929362e1834fb735411a1bef914b6bf3865ee4c8ff5f153f"
+      "sha256": "94049338a14031507dcced1cf86e5700d81cb49e966550abded70b7c50d2f9a1"
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
@@ -152,7 +152,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "b9a3a73f296d9dca946708451f3dca5e0a550265cd4bdecfe0800ec66155809c"
+      "sha256": "78874711a8c5fb23238210b35e57316c61b0f0daacc600b6cef2c826659cafc7"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1912,7 +1912,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "622988ab76890fcd8f36093eb53d47da0f645bd9b662cc179158790b9987162a"
+      "sha256": "51ee24273a8dd2cc21a2a02d807fb0ad8bdf084faf32f29f5dd98b00d56fae28"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2352,7 +2352,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "167817e00052245e5cab76933ff7a7d6a0545172240150ee55efe66c7ae701ad"
+      "sha256": "e588dcb36e4181031eb71256e3df6423d50718885e3c7002f57d3327e834f30b"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
@@ -2392,7 +2392,11 @@
     },
     {
       "file": "pages/capabilities/navigation/README.md",
-      "sha256": "3ced0bdc90809f9b3d41430ce06f6b772720acb8e35cbe629fc838719c1cbc89"
+      "sha256": "af6c394ba71645d95c0dfd58c18c07614bc1807c0b7a599ea381bf80b01a6847"
+    },
+    {
+      "file": "pages/capabilities/navigation/embed-url-params.json",
+      "sha256": "63e86bebba904023432f6bb4184391c1acd688075e8e74e5a295be309ce5aeed"
     },
     {
       "file": "pages/capabilities/navigation/ioc-content-navigation.json",

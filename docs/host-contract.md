@@ -219,6 +219,10 @@ const runtime = MetricCanvas.mount('#dashboard', {
 
 集成应用实际切页、同页更换 URL 参数、浏览器前进/后退时，用完整 `update({ document, initialSearch, ... })` 重新初始化。`filter-change` 仅同步 URL 时不立即回灌；未编码的排序、分页和滚动位置不保证恢复。
 
+## Embed 默认 URL 输入
+
+Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离宿主 URL。只在挂载/更新时读取，不监听地址变化、不写 URL、不读取父窗口。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。
+
 ## 查询串约定
 
 | 输入 | 示例 |

@@ -99,7 +99,8 @@ test('AI generation continues across switching; Report export does not generate 
   expect(await page.evaluate(() => window.aiSummaryRequests.length)).toBe(1);
   await page.screenshot({ path: info.outputPath('tabs-summary-retained.png'), fullPage: true });
   await page.evaluate(document => { window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', {
-    document, dataGateway: MetricCanvas.createDqeGateway(), aiSummary: { generate: async (question, contextInfo) => {
+    // Ignore the previous session's tab URL when testing an unopened summary.
+    document, initialSearch: '', dataGateway: MetricCanvas.createDqeGateway(), aiSummary: { generate: async (question, contextInfo) => {
       window.aiSummaryRequests.push({ question, contextInfo });
       return '不应调用';
     } }

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query），显式值或空串优先；页面字段与 Schema 不变。规则和合成入口见 [URL 输入](docs/page-metadata/params-and-text-values.md#embed-的-url-输入)。
+
 6.82：select 列头筛选支持 `filterable.defaultValues` 固定原始值，首屏查询与选中态同步；清空后保持清空。声明、重置例外和数据源所有权见[列头筛选默认值](docs/page-metadata/components/table.md#列头筛选默认值682)，入口 `/pages/table-header-filter-defaults` 与 `/pages/table-header-filter-defaults-query`。
 
 按需组合分页忽略补充来源的空关联键行并明确告警，主行、分页和单账号条件保留；页面及导出共享告警，原始数量、身份和执行错误边界保持。无需新增页面字段，见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?supplementKey=empty`。

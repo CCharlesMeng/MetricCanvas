@@ -4,6 +4,7 @@ import {
 } from 'svelte';
 import { createDqeGateway } from '@metriccanvas/engine/dqe';
 import EmbedRoot from './EmbedRoot.svelte';
+import {resolveInitialSearch} from './initial-search';
 import type {
   MountOptions,
   RuntimeHandle,
@@ -100,15 +101,10 @@ function runtimeInput(input: RuntimeInput): RuntimeInput {
     ...(input.aiSummary !== undefined
       ? { aiSummary: input.aiSummary }
       : {}),
-    ...(input.initialSearch !== undefined
-      ? { initialSearch: normalizeSearch(input.initialSearch) }
-      : {})
+    initialSearch: resolveInitialSearch(input.initialSearch,window.location)
   };
 }
 
-function normalizeSearch(search: string): string {
-  return search.startsWith('?') ? search.slice(1) : search;
-}
 
 function resolveTarget(target: string | HTMLElement): HTMLElement {
   if (typeof document === 'undefined') {

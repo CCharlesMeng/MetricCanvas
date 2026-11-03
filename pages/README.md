@@ -607,3 +607,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 - [IOC Header 分区组件](capabilities/ioc-header/section-component/README.md)：首分区混排、显隐、分组与吸顶。
 
 按页补列空关联键兼容：`/pages/paged-join-on-demand?supplementKey=empty`，说明及异常参数见[表格场景](capabilities/table/README.md#按页补列空关联编号兼容)。合成数据，不连接真实DQE。
+
+Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/navigation/README.md#embed-自动读取-url-参数)，入口 `/pages/embed-url-params?account-name=合成账号甲`，实际 ES 包示例为 `examples/url-params.html`。

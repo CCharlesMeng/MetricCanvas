@@ -66,3 +66,11 @@ URL 仅提供初始化输入；未声明参数不生效，无效或重复值回�
 关键声明：`sections[].components[].props.initialTabUrlParam`。
 
 关联：[tab-url-source](tab-url-source.json)。
+
+## Embed 自动读取 URL 参数
+
+正式页面：[embed-url-params.json](embed-url-params.json)，入口 `/pages/embed-url-params?account-name=合成账号甲`。启动 `pnpm dev:playground`，正文应显示账号；缺失或重复单值账号时阻止呈现。此页面为纯内联参数演示，不访问真实账号或 DQE。
+
+验证实际 embed：先 `pnpm --filter @metriccanvas/embed build`，再 `pnpm --filter @metriccanvas/embed preview:examples`，打开 `http://127.0.0.1:4175/examples/url-params.html?account-name=合成账号甲`；省略 initialSearch 的 ES mount 自动读取账号。改为 `#/detail?account-name=合成账号乙` 同样显示乙；外层与 hash 同键时 hash 优先。显式传 `initialSearch: ''` 阻止自动继承。地址变化本身不重查；调用完整 update 且省略 initialSearch 才重新读取当前 URL。
+
+浏览器回归使用同一完整页面，覆盖 ES/global、显式覆盖/空串、更新、重复值校验；参数绑定查询另用既有 dimension-params-page 夹具验证有效条件及缺值不查数。真实 Operation Map 路由和账号权限另验。

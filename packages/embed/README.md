@@ -153,8 +153,10 @@ interface RuntimeInput {
 | `document` | 未校验的页面文档 |
 | `dataGateway` | 查询页面使用的数据网关 |
 | `aiSummary` | Report AI 总结调用与会话配置：`generate` 及可选节流、并发、缓存容量与过期时间 |
-| `initialSearch` | 不含前导 `?` 的页面参数与筛选查询串 |
+| `initialSearch` | 页面参数与筛选查询串；省略则自动读取当前 URL，显式空串禁用自动读取 |
 | `navigation` | 可选接管；`navigate(target)` 返回 `true` 时阻止默认跳转 |
+
+Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离宿主 URL。只在挂载/更新时读取，不监听地址变化、不写 URL、不读取父窗口。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。
 
 Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 

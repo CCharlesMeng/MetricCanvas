@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "6.82",
+  "id": "embed-url-params",
+  "layout": "dashboard",
+  "meta": {
+    "title": "Embed URL 账号参数",
+    "description": "纯内联参数场景：展示打开页面时的账号输入，不访问真实账号或 DQE。"
+  },
+  "strictURLInputs": true,
+  "params": [
+    {
+      "id": "account-name",
+      "type": "dimension",
+      "required": true,
+      "multiple": false,
+      "label": "华为云账号"
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "account",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "URL 账号参数",
+            "body": {
+              "param": "account-name"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
