@@ -2,6 +2,14 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## DQE 请求默认120秒超时
+
+入口 `/pages/dqe-request-timeout`；[页面 JSON](dqe-request-timeout.json)。无需 URL 参数。启动 `pnpm dev:dqe` 可查看 DQE Sim 审批合成数据；该页面没有内嵌初始行，打开即走普通 DQE 网关。
+
+启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5204`，运行 `DQE_TIMEOUT_BASE_URL=http://127.0.0.1:5204 node apps/playground/tests/dqe-request-timeout-browser.mjs <证据目录>`。脚本读取这份完整页面并在浏览器拦截 DQE HTTP，使用浏览器虚拟时钟模拟慢响应，无需等待两分钟或启动 DQE 服务：超过30秒仍加载，45秒返回后显示审批行；另一次请求等到120秒才报 `DQE_TIMEOUT`，不显示部分行。重新打开后可恢复成功。
+
+显式 `timeoutMs` 覆盖、维度候选值请求与120秒边界由网关行为测试覆盖。默认值由运行时统一提供，不需要页面字段；records 批次与完整读取/导出预算独立生效。本场景是合成 HTTP 与浏览器计时证据，不证明真实 DQE、网关代理或 Relay 的超时配置。
+
 ## 已存储计数直接绘制柱状图（6.56）
 
 入口：`/pages/stored-count-measures`；[页面 JSON](stored-count-measures.json)。无需 URL 参数。

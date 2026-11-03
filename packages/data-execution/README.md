@@ -28,7 +28,9 @@ metadata是完整页面文档，params已填写本次值。输出只有完整页
 |---|---|
 | `METRICCANVAS_DQE_ENDPOINT` | 绝对DQE执行URL |
 | `METRICCANVAS_DQE_HEADERS` | 当前调用身份所需请求头的JSON对象，缺省空对象 |
-| `METRICCANVAS_DQE_TIMEOUT_MS` | 可选单次HTTP超时；缺省使用数据网关默认值 |
+| `METRICCANVAS_DQE_TIMEOUT_MS` | 可选单次HTTP超时，单位毫秒；缺省为120000（120秒） |
+
+`createDqeGateway` 的普通查询批次及维度候选值请求默认均等待120秒，可由可信接入配置 `timeoutMs` 覆盖。页面另行声明的 `pagedJoin.records.timeoutMs`、完整读取或导出预算仍独立生效；服务端及代理超时由部署环境控制。
 
 端点、身份和命令属于可信接入配置，不来自模型或metadata。需要代理、证书或动态凭据时，程序化使用`executePageDataProgram(metadata, config)`，从`@metriccanvas/data-execution/node`导入并注入fetchImpl。
 

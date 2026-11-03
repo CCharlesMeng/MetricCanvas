@@ -110,6 +110,7 @@ export interface DqeGatewayConfig {
   endpoint?: string;
   headers?: Record<string, string>;
   fetchImpl?: typeof fetch;
+  /** 单次 HTTP 请求超时，默认 120000ms；显式配置优先。 */
   timeoutMs?: number;
   maxConcurrentBatches?: number;
   credentials?: RequestCredentials;
@@ -170,7 +171,7 @@ export function createDqeGateway(
     endpoint = DEFAULT_DQE_ENDPOINT,
     headers = {},
     fetchImpl = fetch,
-    timeoutMs = 30_000,
+    timeoutMs = 120_000,
     maxConcurrentBatches = 5,
     credentials = 'same-origin',
     diagnostics,

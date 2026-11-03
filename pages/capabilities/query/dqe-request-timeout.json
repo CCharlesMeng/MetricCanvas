@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "6.55",
+  "id": "dqe-request-timeout",
+  "layout": "dashboard",
+  "meta": {
+    "title": "DQE 请求超时",
+    "description": "DQE Sim 审批合成数据；浏览器验收模拟45秒响应及120秒超时。"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "record": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "审批记录ID",
+          "label": "审批记录ID",
+          "nullable": false
+        },
+        "business": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "商务编号",
+          "label": "商务编号",
+          "nullable": false
+        },
+        "approved": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "特价审批通过时间",
+          "label": "特价审批通过时间",
+          "nullable": false
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域",
+          "nullable": false
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "审批金额",
+          "label": "审批金额",
+          "nullable": false
+        },
+        "budget": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "预算金额",
+          "label": "预算金额",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Approval Details",
+                "output_fields": [
+                  "审批记录ID",
+                  "商务编号",
+                  "特价审批通过时间",
+                  "区域",
+                  "审批金额",
+                  "预算金额"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "特价审批通过时间",
+                      "value_list": [
+                        "2025-01-01 00:00:00"
+                      ],
+                      "operator": ">="
+                    },
+                    {
+                      "field_name": "特价审批通过时间",
+                      "value_list": [
+                        "2025-01-31 23:59:59"
+                      ],
+                      "operator": "<="
+                    }
+                  ]
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 5,
+                  "order_by_field": "审批记录ID",
+                  "type": "asc"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "timeout-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "审批记录 · 合成数据",
+            "columns": [
+              {
+                "field": "record",
+                "title": "审批记录ID"
+              },
+              {
+                "field": "amount",
+                "title": "审批金额"
+              }
+            ],
+            "rowKey": "record"
+          }
+        }
+      ]
+    }
+  ]
+}

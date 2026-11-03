@@ -1,0 +1,25 @@
+{
+  "page": "dqe-request-timeout",
+  "clock": "virtual",
+  "transport": "synthetic HTTP",
+  "results": [
+    {
+      "mode": "success",
+      "errors": [],
+      "consoleErrors": []
+    },
+    {
+      "mode": "timeout",
+      "errors": [],
+      "consoleErrors": [
+        "[MetricCanvas][DQE_TIMEOUT] DQE 请求超过 120000ms 未返回 {pageId: dqe-request-timeout, dataSourceIds: Array(1), executionId: dqe-exec-1, batchId: dqe-batch-1, requestId: undefined}",
+        "[MetricCanvas][DQE_TIMEOUT] DQE 请求超过 120000ms 未返回 {pageId: dqe-request-timeout, dataSourceId: records, dataSourcePath: /dataSources/records, components: Array(1), code: DQE_TIMEOUT}"
+      ]
+    },
+    {
+      "mode": "success",
+      "errors": [],
+      "consoleErrors": []
+    }
+  ]
+}

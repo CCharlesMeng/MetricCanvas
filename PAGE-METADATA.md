@@ -248,6 +248,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 4. 页面数据源与结果字段契约 → [模块参考](contracts/metriccanvas/page/reference/data-sources.md)。
 
+DQE 数据网关单次 HTTP 请求默认超时为120秒，可信接入配置可覆盖；页面显式批次超时、完整读取和导出预算独立生效。无需新增字段或升级 Schema。合成验收入口 `/pages/dqe-request-timeout`，详见[页面数据源](docs/page-metadata/data-sources.md)。
+
 <a id="41-数据模式"></a>
 
 4.1 数据模式 → [模块参考](contracts/metriccanvas/page/reference/data-sources.md)。

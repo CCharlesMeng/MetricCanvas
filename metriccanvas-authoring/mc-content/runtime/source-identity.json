@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f1bdba649cc872c45a83639695cfe4a2d9cb6ee5f1ed1cc1e7aff4ccdd62a7e9",
+  "sha256": "f0d2a2d71a30961ac8eba1beeecb4b41f32d6b2ca3f833e3c6801e7653c39ad6",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -112,7 +112,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "1a244437505a9aff0541a581fe600f8099e833777cfe40b696fb91739f08b3b7"
+      "sha256": "4adb9159ce8a8af16622d33ea91b6aa4188028c8617511abbfcf5fdd5da23d85"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -2408,7 +2408,7 @@
     },
     {
       "file": "pages/capabilities/query/README.md",
-      "sha256": "ce5d1029988315ecf1736e2dba175cfa6006e82f539b71ede6e8e54afc46f291"
+      "sha256": "3aed08c8353949a83e049fdc5dea94160a389a69bc716e2742c778c356cf1f19"
     },
     {
       "file": "pages/capabilities/query/authoring-contract-reliability.json",
@@ -2421,6 +2421,10 @@
     {
       "file": "pages/capabilities/query/dqe-object-query-demo.json",
       "sha256": "9aa1977e777595193bd33b1b1a7aae4d600b5c75965622dee81ad2bdbb92dacb"
+    },
+    {
+      "file": "pages/capabilities/query/dqe-request-timeout.json",
+      "sha256": "aebc869cd2b69c29937bbeb5931f8ef88413df2cb3bc5deb210c681923fe3ad3"
     },
     {
       "file": "pages/capabilities/query/object-record-join-demo.json",

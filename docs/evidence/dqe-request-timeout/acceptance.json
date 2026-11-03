@@ -1,0 +1,49 @@
+{
+  "baseCommit": "e441eed5645ad8335ac1f8ee3ec4b9d9dcc9c598",
+  "runtimeValidationBase": "108c75c7d4f8772fb4e06243148dd3768cba9f03",
+  "runtimeEvidenceReuse": "The later e441eed56 commit changes only seven authoring workflow/lock files; runtime code, test inputs, build configuration and pnpm-lock.yaml are unchanged. Local-authoring and MC checks reran after integration.",
+  "lockfileSha256": "1a33c68c0755b6d9bf6d05bbf45438b9b5e2b9bc574a6f41908944dfe5fc2f4f",
+  "defaultTimeoutMs": {
+    "before": 30000,
+    "after": 120000
+  },
+  "explicitTimeoutOverride": "preserved",
+  "independentBudgets": "records batch, complete reads and export budgets preserved",
+  "schemaFieldDelta": 0,
+  "skillVersion": "1.19.1",
+  "mapping": {
+    "page": "/pages/dqe-request-timeout",
+    "documentation": "docs/page-metadata/data-sources.md",
+    "skill": "metriccanvas-authoring/skill/metriccanvas-local-authoring"
+  },
+  "checks": {
+    "dqeRegression": "32 tests passed in 5 files",
+    "dqeBrowser": "45s success, 120s timeout, fresh page recovery; synthetic HTTP and virtual time; see result.json",
+    "dataExecutionTypes": "passed",
+    "embedBuildAndTypes": "passed; Svelte 0 errors and 0 warnings",
+    "embedBrowser": "246 passed, including copied ES/global distribution",
+    "embedDist": "build gate and independent check:dist passed",
+    "embedArchive": {
+      "jsFiles": 14,
+      "largest": {
+        "file": "chunks/excel~exceljs.min-CSE3Njtv.js",
+        "bytes": 929901
+      },
+      "archive": "/tmp/metriccanvas-dqe-timeout-delivery/metriccanvas-embed-1.0.0-rc.4.tgz",
+      "archiveSha256": "2fadcda43b0b8dcf63c325acd771bd5df1202af08e981bd6f86bfa4ee3a9c92a",
+      "allArchiveJsMatchDist": true
+    },
+    "localAuthoring": "203 passed in 5 files; knowledge, external installation and page validation",
+    "mcTests": "52 passed",
+    "mcSourceCoverage": "passed",
+    "mcFixtures": "generated and final consistency check passed",
+    "authoringContractExport": "generated and final consistency check passed (1423 product, 4 authoring, 1 interface files)"
+  },
+  "complexity": "complexity.json",
+  "boundaries": {
+    "realDqe": "not_run",
+    "relay": "not_run",
+    "deployment": "not_run",
+    "remoteCi": "skip requested by user; no passing CI claim"
+  }
+}
