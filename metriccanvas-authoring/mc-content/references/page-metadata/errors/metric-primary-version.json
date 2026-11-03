@@ -11,7 +11,9 @@
         "/sections/0/components/2",
         "/sections/0/components/3",
         "/sections/1/components/0",
-        "/sections/1/components/1"
+        "/sections/1/components/1",
+        "/sections/2/components/2",
+        "/sections/2/components/3"
       ]
     }
   ],
@@ -133,6 +135,50 @@
                 "…（共1项）"
               ],
               "actions": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "id": "mixed-primary-two",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ],
+              "secondaryRows": [
+                "…（共2项）"
+              ]
+            }
+          },
+          {
+            "id": "mixed-primary-one",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                "…（共1项）"
+              ],
+              "secondaryRows": [
                 "…（共1项）"
               ]
             }

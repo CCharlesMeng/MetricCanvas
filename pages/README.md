@@ -1,5 +1,9 @@
 # 页面示例与验收场景
 
+- [指标卡混排等高](capabilities/layout/README.md#主指标与多行次级指标)：`/pages/metric-card-primary-detail` 的 `mixed-variants` 分区，单面板 `compactStack` 与 `primaryDetail` 保留各自视觉、同排卡面等高，窄屏自然高度；仅内联合成数据。
+
+- [代表处指标卡业务页](business/dashboard/ioc/approval/README.md)：用户提供的行权效率与业务结果页面，保留查询及已确认视觉；顶部卡面同排等高，真实取数尚未验收。
+
 - [商务类型前端枚举](capabilities/table/README.md#商务类型前端枚举680)：`/pages/table-column-enums`，静态筛选、中文展示与导出，原始编码保留。
 
 - [商务决策明细审批人筛选](business/dashboard/ioc/commercial/README.md)：原业务页的 `approver-name` 只下推主表，动态标题与 IOC Header；数据经 DQE Sim execute HTTP，分页保留原方式。

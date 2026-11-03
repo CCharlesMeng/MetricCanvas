@@ -336,6 +336,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 6.65 新增 `variant: "primaryDetail"`：`rows` 恰好一个主指标，`secondaryRows` 为零到多行14px次级指标（指标名＋带下划线的指标值，每行上方8px）；同一栅格视觉行内卡面随最高内容等高，窄屏逐卡自然高度。字段和点击行为复用原有协议，见[指标卡语义](docs/page-metadata/components/metricCard.md)与[主次指标示例](pages/capabilities/layout/metric-card-primary-detail.json)。
 
+单面板 `compactStack` 与 `primaryDetail` 混排时，卡面同样按所在视觉行等高；保留各自的内部排版，只在短卡底部留白。无需高度字段或修改 variant；次级面板及进度环的既有布局保持，见上述示例的 `mixed-variants` 分区。
+
 6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；整组自动拉宽至所占列宽，以 1px 灰边、16px 圆角白底区域包裹，每张小卡保留独立白底灰边，文字双侧 gap 固定；完整场景见 [指标卡连接排布](pages/capabilities/layout/metric-card-equation.json)。
 
 <a id="75-图表组件"></a>
