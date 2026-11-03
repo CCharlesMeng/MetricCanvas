@@ -1,0 +1,36 @@
+{
+  "case": "scalar-join-sum",
+  "invariant": "compute-scalar-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "无键关联要求独立单行结果，仅允许 unique，不重新汇总指标",
+      "paths": [
+        "/dataSources/offices/compute/0/values/0/aggregate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "sum 要求依赖字段显式声明 collapsible: true",
+      "paths": [
+        "/dataSources/offices/compute/0/values/0/aggregate"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "offices": {
+        "compute": [
+          {
+            "values": [
+              {
+                "aggregate": "sum"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

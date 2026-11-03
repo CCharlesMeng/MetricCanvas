@@ -1,0 +1,310 @@
+{
+  "case": "scalar-join-version",
+  "invariant": "compute-scalar-join",
+  "input": {
+    "schemaVersion": "6.82",
+    "id": "chart-global-benchmark",
+    "layout": "dashboard",
+    "meta": {
+      "title": "代表处与全局均值"
+    },
+    "dashboardToolbar": {
+      "note": "合成演示数据，不来自真实系统",
+      "variant": "compact"
+    },
+    "filters": [
+      {
+        "id": "dept",
+        "type": "dimension",
+        "dimension": "dept",
+        "label": "地区部",
+        "display": "select",
+        "options": [
+          {
+            "label": "东区",
+            "value": "东区"
+          },
+          {
+            "label": "西区",
+            "value": "西区"
+          }
+        ]
+      },
+      {
+        "id": "month",
+        "type": "dimension",
+        "dimension": "month",
+        "label": "统计月份",
+        "display": "select",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "default": [
+          "2026-10"
+        ],
+        "options": [
+          {
+            "label": "2026-10",
+            "value": "2026-10"
+          },
+          {
+            "label": "2026-11",
+            "value": "2026-11"
+          }
+        ]
+      },
+      {
+        "id": "site",
+        "type": "dimension",
+        "dimension": "site",
+        "label": "站点",
+        "display": "select",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "default": [
+          "国内"
+        ],
+        "options": [
+          {
+            "label": "国内",
+            "value": "国内"
+          },
+          {
+            "label": "海外",
+            "value": "海外"
+          }
+        ]
+      }
+    ],
+    "dataSources": {
+      "offices": {
+        "fields": {
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处"
+          },
+          "actual": {
+            "type": "number",
+            "role": "measure",
+            "unit": "%",
+            "defaultFormat": "percent-1",
+            "queryField": "演示净商务折扣"
+          },
+          "mom": {
+            "type": "number",
+            "role": "measure",
+            "unit": "P",
+            "defaultFormat": "points-1-signed",
+            "queryField": "演示净商务折扣环比"
+          },
+          "yoy": {
+            "type": "number",
+            "role": "measure",
+            "unit": "P",
+            "defaultFormat": "points-1-signed",
+            "queryField": "演示净商务折扣同比"
+          },
+          "average": {
+            "type": "number",
+            "role": "measure",
+            "unit": "%",
+            "defaultFormat": "percent-1",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "演示净商务折扣",
+                    "演示净商务折扣环比",
+                    "演示净商务折扣同比"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "month": {
+                "target": "dimension",
+                "queryField": "统计月份"
+              },
+              "site": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              },
+              "dept": {
+                "target": "dimension",
+                "queryField": "地区部"
+              }
+            }
+          }
+        },
+        "compute": [
+          {
+            "op": "joinAggregate",
+            "source": "benchmark",
+            "keys": [],
+            "values": [
+              {
+                "field": "average",
+                "output": "average",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          }
+        ]
+      },
+      "benchmark": {
+        "fields": {
+          "average": {
+            "type": "number",
+            "role": "measure",
+            "unit": "%",
+            "defaultFormat": "percent-1",
+            "nullable": true,
+            "queryField": "演示净商务折扣均值"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [],
+                  "output_metrics": [
+                    "演示净商务折扣均值"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "month": {
+                "target": "dimension",
+                "queryField": "统计月份"
+              },
+              "site": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "comparison",
+        "components": [
+          {
+            "id": "mixed",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "categoryField": "office",
+              "dualAxis": true,
+              "showValueLabels": true,
+              "series": [
+                {
+                  "field": "actual",
+                  "label": "净商务折扣",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "field": "average",
+                  "label": "全局均值",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "field": "mom",
+                  "label": "环比",
+                  "kind": "line",
+                  "axis": "secondary"
+                },
+                {
+                  "field": "yoy",
+                  "label": "同比",
+                  "kind": "line",
+                  "axis": "secondary"
+                }
+              ]
+            }
+          },
+          {
+            "id": "values",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "office",
+                  "title": "代表处"
+                },
+                {
+                  "field": "actual",
+                  "title": "净商务折扣"
+                },
+                {
+                  "field": "average",
+                  "title": "全局均值"
+                },
+                {
+                  "field": "mom",
+                  "title": "环比"
+                },
+                {
+                  "field": "yoy",
+                  "title": "同比"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/offices",
+      "message": "独立单行度量无键关联到全部主行 由 6.83 引入，文档声明的是 6.82"
+    }
+  ]
+}

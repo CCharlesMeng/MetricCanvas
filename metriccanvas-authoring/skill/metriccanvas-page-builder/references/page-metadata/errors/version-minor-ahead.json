@@ -4,14 +4,14 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "文档格式版本 6.83 高于运行时当前次版本 6.82",
+      "message": "文档格式版本 6.84 高于运行时当前次版本 6.83",
       "paths": [
         "/schemaVersion"
       ]
     }
   ],
   "inputExcerpt": {
-    "schemaVersion": "6.83"
+    "schemaVersion": "6.84"
   },
   "fullInput": "page/conformance/invalid/version-minor-ahead.json"
 }

@@ -1,0 +1,16 @@
+[
+  "packages/page/src/validate-compute-dependencies.ts",
+  "packages/data-execution/src/compute/snapshots.ts",
+  "packages/page/src/version.ts",
+  "apps/playground/src/lib/scenario-environment.ts",
+  "apps/playground/fixtures/global-benchmark.ts",
+  "apps/playground/tests/global-benchmark-browser.mjs",
+  "apps/playground/tests/business-comparison-runtime-fixture.ts",
+  "packages/data-execution/tests/scalar-join.test.ts",
+  "packages/engine/widgets/tests/global-benchmark.test.ts",
+  "packages/page/tests/scalar-join.test.ts",
+  "packages/page/tests/version.test.ts",
+  "tools/scripts/page-conformance-vectors.ts",
+  "tools/scripts/page-conformance-sources.ts",
+  "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte"
+]

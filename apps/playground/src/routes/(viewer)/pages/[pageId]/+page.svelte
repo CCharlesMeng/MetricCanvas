@@ -1,5 +1,6 @@
 <script lang="ts">
   import {createRegionURLGateway} from '../../../../../fixtures/region-url';
+  import {createGlobalBenchmarkPreview} from '../../../../../fixtures/global-benchmark';
   import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
   import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
@@ -121,6 +122,7 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='global-benchmark')return createGlobalBenchmarkPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
     if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;
     if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready').dataGateway;

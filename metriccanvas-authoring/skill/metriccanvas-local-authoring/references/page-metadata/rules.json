@@ -1,6 +1,18 @@
 {
   "invariants": [
     {
+      "id": "compute-scalar-join",
+      "description": "独立单行指标只允许6.83无键unique关联，依赖保持完整结果",
+      "valid": [
+        "chart-global-benchmark"
+      ],
+      "invalid": [
+        "scalar-join-version",
+        "scalar-join-sum",
+        "scalar-join-window"
+      ]
+    },
+    {
       "id": "ioc-header-component",
       "description": "首section首组件全宽、唯一且不混写旧根字段",
       "valid": [

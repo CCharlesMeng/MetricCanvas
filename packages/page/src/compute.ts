@@ -91,6 +91,7 @@ export interface PivotOperator {
 export interface JoinAggregateOperator {
   op: 'joinAggregate';
   source: string;
+  /** 6.83 起显式 [] 将完整单行依赖的度量用于每个主行，仅允许 unique。 */
   keys: Array<{ local: string; foreign: string }>;
   values: Array<{ field: string; output: string; aggregate: 'unique' | 'sum'; onMissing?: 'null' | 'zero' }>;
   onMissing: 'null';

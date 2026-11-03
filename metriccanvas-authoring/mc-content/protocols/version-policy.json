@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 82,
-  "current": "6.82",
+  "minor": 83,
+  "current": "6.83",
   "capabilities": {
+    "compute-scalar-join": {
+      "minor": 83,
+      "description": "独立单行度量无键关联到全部主行",
+      "legacyReadable": false
+    },
     "table-select-default-values": {
       "minor": 82,
       "description": "表格 select 列头筛选固定默认选中值",
@@ -837,6 +842,7 @@
     "6.79",
     "6.80",
     "6.81",
-    "6.82"
+    "6.82",
+    "6.83"
   ]
 }

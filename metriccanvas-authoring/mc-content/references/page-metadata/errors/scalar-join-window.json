@@ -1,0 +1,25 @@
+{
+  "case": "scalar-join-window",
+  "invariant": "compute-scalar-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "跨源计算要求完整行集；查询源 benchmark 必须声明 resultScope: complete，且不得带查询分页窗口",
+      "paths": [
+        "/dataSources/offices/compute/0/source"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "offices": {
+        "compute": [
+          {
+            "source": "benchmark"
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,32 @@
+{
+  "baseline": "2b6bbeee072d5c31fe5aa1356b758a42524bc176",
+  "schemaVersion": "6.83",
+  "localAuthoringVersion": "1.20.0",
+  "targetedTests": {
+    "files": 16,
+    "passed": 148
+  },
+  "timeoutRecheck": {
+    "files": 4,
+    "passed": 33
+  },
+  "localAuthoring": {
+    "files": 5,
+    "passed": 204
+  },
+  "repair": {
+    "files": 2,
+    "passed": 16
+  },
+  "mcTests": 52,
+  "embedBrowserTests": 261,
+  "pnpmCheck": "pass",
+  "pnpmPackagesCheck": "pass",
+  "pageDirectoryValidation": "pass",
+  "fullLocalTest": "aborted-after-example-failure-and-timeouts",
+  "fullLocalSkillsCheck": "aborted-outside-default-local-authoring-scope",
+  "mcFinalFixtureRecheck": "pass-after-removing-generated-bytecode-cache",
+  "realDQE": "not-run",
+  "relay": "not-run",
+  "deployment": "not-run"
+}

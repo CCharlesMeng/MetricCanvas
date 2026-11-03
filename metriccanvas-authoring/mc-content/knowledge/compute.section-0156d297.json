@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.82",
+  "schemaVersion": "6.83",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "compute.section-0156d297"
@@ -9,7 +9,7 @@
       "module": "compute",
       "reference": "references/page-metadata/compute.md",
       "blocks": [
-        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。",
+        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。\n\n<a id=\"独立单行指标关联683\"></a>",
         "## 汇总的全空结果（6.12）\n\n`groupSubtotal`和`grandTotal`可声明`allMissing: \"null\" | \"zero\"`。省略或null保持原行为：某项度量整组没有数值时输出null；zero仅将全部为null/缺失的汇总输出0，不改明细。无效非空输入不因此变成0；溢出仍为null。空行集不生成汇总，总计继续排除小计行。策略属于该次计算，不属于字段的全局缺失规则。6.11不能使用该声明。"
       ],
       "rules": [
@@ -85,7 +85,8 @@
         "references/page-metadata/examples/reference-export-compute-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/missing-organization-key.json"
+        "references/page-metadata/examples/missing-organization-key.json",
+        "references/page-metadata/examples/chart-global-benchmark.json"
       ]
     }
   ],

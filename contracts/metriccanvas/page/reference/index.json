@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.82",
-  "schemaSha256": "675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee",
+  "schemaVersion": "6.83",
+  "schemaSha256": "62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -268,7 +268,7 @@
     },
     {
       "file": "packages/page/src/schema/compute.ts",
-      "sha256": "c3b614cb7589ce5cefe4701e4c905b3dbeec6cab7f6a8ed196d72a5a3c261a5f"
+      "sha256": "3b1eb53d01f7b3c1c18d301b38dfd534ffe27aa5d271d1fe3dcf6e6e0c1fc5b9"
     },
     {
       "file": "packages/page/src/schema/condition.ts",
@@ -360,7 +360,7 @@
     },
     {
       "file": "packages/page/src/validate-compute-dependencies.ts",
-      "sha256": "6fa6a6d29a8dd38b2a3108d58001ea0b9ccc539f0634c6466207a4bdb97c0c27"
+      "sha256": "5451e79c95ffb5842bfb97a160c69978b611515a6d8375ef885c0a155e90b8da"
     },
     {
       "file": "packages/page/src/validate-object-query.ts",
@@ -388,7 +388,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "ba58745f38c1f45bf9b2eb2276332036940a2e0437fdef25795b99c4a5061261"
+      "sha256": "6ea05dd11044b456616fa8b4c7fc5bf399018367e1075d4cb42e4ca09b4d1aa8"
     }
   ],
   "modules": {
@@ -682,7 +682,8 @@
         "reference-export-compute-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "missing-organization-key"
+        "missing-organization-key",
+        "chart-global-benchmark"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1858,7 +1859,8 @@
         "6.79",
         "6.80",
         "6.81",
-        "6.82"
+        "6.82",
+        "6.83"
       ]
     },
     {

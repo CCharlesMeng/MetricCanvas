@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.82",
-  "schemaSha256": "675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee",
+  "schemaVersion": "6.83",
+  "schemaSha256": "62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -240,7 +240,8 @@
         "reference-export-compute-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "missing-organization-key"
+        "missing-organization-key",
+        "chart-global-benchmark"
       ],
       "rules": [
         "compute-operator-inputs",
@@ -1236,7 +1237,8 @@
         "6.79",
         "6.80",
         "6.81",
-        "6.82"
+        "6.82",
+        "6.83"
       ]
     },
     {
@@ -21127,5 +21129,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "62a5c51541df4cb9023a028b61c01ccbe97e253308bacf9a7f27194167a7e1b6"
+  "semanticSourceDigest": "661f0301cda2674ed2e1fdd65b4c602f2c245db12de585e79fe1f162227d9cb7"
 }

@@ -290,7 +290,8 @@
         "reference-export-compute-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "missing-organization-key"
+        "missing-organization-key",
+        "chart-global-benchmark"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2111,7 +2112,8 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"firstRow\"": "按实际换行收起到首行。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout=\"inline\"": "标题与筛选行内排布；窄容器换行。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout=\"stacked\"": "身份区与筛选区上下排布；缺省。",
-    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。"
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。",
+    "6.83": "独立完整单行指标通过无键unique关联用于全部主行。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2825,6 +2827,7 @@
       "期间比较按当前页业务键补查（6.78）"
     ],
     "compute.md": [
+      "独立单行指标关联（6.83）",
       "组织键并集（6.74）",
       "空组织键兼容",
       "查阅方式",

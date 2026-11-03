@@ -1,5 +1,8 @@
 # 页面示例与验收场景
 
+- [独立全局均值与柱线混合图](capabilities/chart/README.md#独立全局均值683)：`/pages/chart-global-benchmark`，代表处柱旁显示相同全局均值，区域不影响均值，月份与站点同步刷新；合成数据。
+
+
 - [指标卡混排等高](capabilities/layout/README.md#主指标与多行次级指标)：`/pages/metric-card-primary-detail` 的 `mixed-variants` 分区，单面板 `compactStack` 与 `primaryDetail` 保留各自视觉、同排卡面等高，窄屏自然高度；仅内联合成数据。
 
 - [代表处指标卡业务页](business/dashboard/ioc/approval/README.md)：用户提供的行权效率与业务结果页面，保留查询及已确认视觉；顶部卡面同排等高，真实取数尚未验收。

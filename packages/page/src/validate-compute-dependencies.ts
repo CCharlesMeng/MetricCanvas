@@ -85,6 +85,11 @@ function joinErrors(page: Page, source: DataSource, op: JoinOperator, available:
   const dependency = Object.hasOwn(page.dataSources, op.source) ? page.dataSources[op.source] : undefined;
   if (!dependency) { error(`${path}/source`, `未知数据依赖:${op.source}`); return; }
   full(op.source, dependency, `${path}/source`);
+  if (op.keys.length === 0) {
+    op.values.forEach((value, index) => {
+      if (value.aggregate !== 'unique') error(`${path}/values/${index}/aggregate`, '无键关联要求独立单行结果，仅允许 unique，不重新汇总指标');
+    });
+  }
   joinKeyErrors(source, dependency, op.keys, available, path, error);
   joinValueErrors(source, dependency, op.values, path, error);
 }

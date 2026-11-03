@@ -41,8 +41,10 @@ function fail(message: string): DataSnapshot { return {status:'error',error:{cod
 function collectDependencies(source: DataSource, sources: ReadonlyMap<string, DataSource>, visit: (id:string)=>DataSnapshot, allowZeroTotal: boolean): Dependencies {
   const result: Dependencies = {rows:new Map(),warnings:[]};
   const unionSources = new Set((source.compute ?? []).flatMap(op => op.op === 'unionKeys' ? op.sources : []));
+  const scalarSources = new Set((source.compute ?? []).flatMap(op => op.op === 'joinAggregate' && op.keys.length === 0 ? [op.source] : []));
   for (const dependency of computeDependencies(source.compute ?? [])) {
-    const snapshot = completeDependency(sources.get(dependency), visit(dependency), unionSources.has(dependency), allowZeroTotal);
+    const scalar = scalarSources.has(dependency);
+    const snapshot = completeDependency(sources.get(dependency), visit(dependency), scalar || unionSources.has(dependency), !scalar && allowZeroTotal);
     if ('warnings' in snapshot) result.warnings.push(...(snapshot.warnings ?? []).filter(warning => warning.code === 'COMPUTE_MISSING_KEY_ROWS'));
     if (snapshot.status === 'error') result.state = snapshot;
     else if (snapshot.status === 'loading' && result.state?.status !== 'error') result.state = snapshot;
@@ -95,7 +97,7 @@ function completeDependency(source: DataSource | undefined, snapshot: DataSnapsh
   const provisional = allowZeroTotal && hasZeroTotalRows(source, snapshot);
   if (!provisional && requireCompleteCount && (snapshot.status === 'ready' || snapshot.status === 'empty') &&
     snapshot.totalCount !== undefined && snapshot.totalCount !== (snapshot.status === 'ready' ? snapshot.rows.length : 0)) {
-    return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'并集依赖结果与 totalCount 不一致，不能证明完整行集'}};
+    return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'完整依赖结果与 totalCount 不一致，不能证明完整行集'}};
   }
   return source ? checkOrdinaryRange(source, snapshot, undefined, undefined, {allowZeroTotal: provisional}) : snapshot;
 }

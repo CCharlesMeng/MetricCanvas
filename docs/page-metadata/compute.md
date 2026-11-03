@@ -6,6 +6,22 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。
 
+<a id="独立单行指标关联683"></a>
+
+## 独立单行指标关联（6.83）
+
+`joinAggregate.keys: []` 显式把完整依赖源的单行度量用于全部现有主行。只允许 `aggregate: "unique"`：整体均值、目标值等指标由查询提供，不在前端求和或平均。主行身份、顺序与 totalCount 保持，空主行集不制造类别。
+
+```json
+{"op":"joinAggregate","source":"global-average","keys":[],"values":[{"field":"average","output":"average","aggregate":"unique"}],"onMissing":"null"}
+```
+
+依赖只能返回零行或一行；多行（即使值相同）失败。空行集按既有逐度量 onMissing 规则取空，已返回 null 保持空，真实零值保留；失败、截断及 totalCount 与返回行数不一致不能作为单值使用，显示兼容的零总数也不适用于无键关联依赖。字段类型、单位、币种、依赖环和完整结果约束沿用键关联。6.82及以下不得使用空键关联，省略 keys 仍非法，既有非空键语义保持。
+
+均值查询的范围由自身 filterBindings 明确决定。全局均值不绑定区域筛选；期间和站点可与代表处查询绑定同一筛选。依赖更新沿统一 SourceProgram 批次隔离、取消、完整读取和导出路径，不向页面行写固定常量、不添加假关联键。
+
+完整合成场景 `/pages/chart-global-benchmark` 展示代表处实际值柱、同高全局均值柱及同环比折线；切地区部保留全局均值，切月份或站点同步更新。错误、空值、零值及重复行步骤见图表示例目录 README。
+
 ## 组织键并集（6.74）
 
 完整声明见 `/pages/union-keys-demo`。以下 `scores` 是 `dataSources` 中的一项，`a`、`b` 是页面已声明的完整来源，各含相同类型、单位的 `org` 标量维度：

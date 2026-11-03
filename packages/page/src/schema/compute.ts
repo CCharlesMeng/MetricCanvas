@@ -94,7 +94,7 @@ const pivotOperatorZ = z
 const joinAggregateOperatorZ = z.object({
   op: z.literal('joinAggregate'),
   source: idZ,
-  keys: z.array(z.object({ local: fieldNameZ, foreign: fieldNameZ }).strict()).min(1),
+  keys: z.array(z.object({ local: fieldNameZ, foreign: fieldNameZ }).strict()).meta({description:'关联维度键；6.83起显式空数组把独立单行结果复制到全部主行，仅允许unique'}),
   values: z.array(z.object({
     field: fieldNameZ, output: fieldNameZ, aggregate: z.enum(['unique', 'sum']), onMissing: z.enum(['null','zero']).optional()
   }).strict()).min(1),

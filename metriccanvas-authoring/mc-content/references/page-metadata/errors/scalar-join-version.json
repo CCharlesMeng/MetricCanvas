@@ -1,0 +1,49 @@
+{
+  "case": "scalar-join-version",
+  "invariant": "compute-scalar-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "独立单行度量无键关联到全部主行 由 6.83 引入，文档声明的是 6.82",
+      "paths": [
+        "/dataSources/offices"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "offices": {
+        "fields": {
+          "office": {
+            "…": "共3个键"
+          },
+          "actual": {
+            "…": "共5个键"
+          },
+          "mom": {
+            "…": "共5个键"
+          },
+          "yoy": {
+            "…": "共5个键"
+          },
+          "average": {
+            "…": "共5个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "…": "共3个键"
+          }
+        },
+        "compute": [
+          {
+            "…": "共5个键"
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

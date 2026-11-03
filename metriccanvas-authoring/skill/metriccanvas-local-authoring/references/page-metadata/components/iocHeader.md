@@ -5,7 +5,7 @@
 完整合成场景：`ioc-header-section-placement`（混排与显隐）、`ioc-header-section-groups`（分组）、`ioc-header-section-sticky`（吸顶）。均可在Playground按页面id访问。
 
 
-页面协议 6.82。结构真源为本册[schema.json](../schema.json)，SHA256 `675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee`。字段表自动生成；可选不等于有默认值。
+页面协议 6.83。结构真源为本册[schema.json](../schema.json)，SHA256 `62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

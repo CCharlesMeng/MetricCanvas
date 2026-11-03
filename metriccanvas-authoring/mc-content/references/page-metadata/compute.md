@@ -6,6 +6,22 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。
 
+<a id="独立单行指标关联683"></a>
+
+## 独立单行指标关联（6.83）
+
+`joinAggregate.keys: []` 显式把完整依赖源的单行度量用于全部现有主行。只允许 `aggregate: "unique"`：整体均值、目标值等指标由查询提供，不在前端求和或平均。主行身份、顺序与 totalCount 保持，空主行集不制造类别。
+
+```json
+{"op":"joinAggregate","source":"global-average","keys":[],"values":[{"field":"average","output":"average","aggregate":"unique"}],"onMissing":"null"}
+```
+
+依赖只能返回零行或一行；多行（即使值相同）失败。空行集按既有逐度量 onMissing 规则取空，已返回 null 保持空，真实零值保留；失败、截断及 totalCount 与返回行数不一致不能作为单值使用，显示兼容的零总数也不适用于无键关联依赖。字段类型、单位、币种、依赖环和完整结果约束沿用键关联。6.82及以下不得使用空键关联，省略 keys 仍非法，既有非空键语义保持。
+
+均值查询的范围由自身 filterBindings 明确决定。全局均值不绑定区域筛选；期间和站点可与代表处查询绑定同一筛选。依赖更新沿统一 SourceProgram 批次隔离、取消、完整读取和导出路径，不向页面行写固定常量、不添加假关联键。
+
+完整合成场景 `/pages/chart-global-benchmark` 展示代表处实际值柱、同高全局均值柱及同环比折线；切地区部保留全局均值，切月份或站点同步更新。错误、空值、零值及重复行步骤见图表示例目录 README。
+
 ## 组织键并集（6.74）
 
 完整声明见 `/pages/union-keys-demo`。以下 `scores` 是 `dataSources` 中的一项，`a`、`b` 是页面已声明的完整来源，各含相同类型、单位的 `org` 标量维度：
@@ -87,7 +103,7 @@ Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证�
 缺记录策略声明在 `source.projection` 的具体字段：`{"member":"previous","field":"sales","onMissing":"zero"}`；省略或null取空，仅数值度量允许zero。仅成功查询没有该键记录时补零；存在记录中的null/降级标量不补零，查询失败、截断或重复键整轮失败。比较组合的initial不在缺少可信事实证明时复用或采集。完整声明、合成操作和边界见 `/pages/period-comparison-query-page`。
 
 
-页面协议 6.82。结构真源为本册[schema.json](schema.json)，SHA256 `675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee`。字段表自动生成；可选不等于有默认值。
+页面协议 6.83。结构真源为本册[schema.json](schema.json)，SHA256 `62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -163,7 +179,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/0/properties/keys`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 按 local/foreign 显式声明跨源匹配字段。 |
+| "array" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 按 local/foreign 显式声明跨源匹配字段。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6b6579732f6974656d73"></a>
 
@@ -1261,6 +1277,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/10/properties/keys/items`。
 - [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [missing-organization-key](examples/missing-organization-key.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-global-benchmark](examples/chart-global-benchmark.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

@@ -8,6 +8,8 @@
 
 ## 默认柱宽
 
+独立查询提供的整体均值可通过 `joinAggregate.keys: []` 关联为主行集的一列，再用普通 bar 系列展示；不需要给每个代表处保存重复常量。完整语义见[独立单行指标关联](../compute.md#独立单行指标关联683)，场景 `/pages/chart-global-benchmark` 为两根分组柱与两条折线。均值源自行绑定期间及站点，省略区域绑定可保持全局范围。
+
 所有内置柱系列的默认宽度统一为 **16 CSS px**，包括普通、分组、堆叠、横向条形、`reportForecast` 以及混合图中的柱系列；横向图的16px表示条形厚度。折线系列不设置柱宽。宽度不随容器或类别数量自动放大。
 
 这是公共呈现默认值，不新增页面字段或协议版本。已有高级 `props.echartsOption.series[].barWidth` 显式配置仍按高级扩展规则覆盖默认值；普通页面无需为16px添加高级配置。
@@ -39,7 +41,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。
 
 
-页面协议 6.82。结构真源为本册[schema.json](../schema.json)，SHA256 `675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee`。字段表自动生成；可选不等于有默认值。
+页面协议 6.83。结构真源为本册[schema.json](../schema.json)，SHA256 `62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

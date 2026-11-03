@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVersions, versionErrors, versionPolicy } from '../src/version';
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
+  'compute-scalar-join':83,
   'table-select-default-values':82,
   'ioc-header-component':81,
   "table-multiple-pinned-sources": 79,

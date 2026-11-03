@@ -55,6 +55,11 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'compute-scalar-join',description:'独立单行指标只允许6.83无键unique关联，依赖保持完整结果',valid:['chart-global-benchmark'],cases:[
+    {case:'scalar-join-version',base:'chart-global-benchmark',expect:/6.83/,mutate:d=>{d.schemaVersion='6.82';}},
+    {case:'scalar-join-sum',base:'chart-global-benchmark',expect:/仅允许 unique/,mutate:d=>{d.dataSources.offices.compute[0].values[0].aggregate='sum';}},
+    {case:'scalar-join-window',base:'chart-global-benchmark',expect:/完整行集/,mutate:d=>{d.dataSources.benchmark.source.query.body.dsl_list[0].order={limit:1};}}
+  ]},
   {id:'ioc-header-component',description:'首section首组件全宽、唯一且不混写旧根字段',valid:['ioc-header-section-placement'],cases:[
     {case:'ioc-component-detail',base:'ioc-header-section-placement',expect:/首分区/,mutate:d=>{const header=structuredClone(firstComponent(d));header.id='detail-header';d.detailViews=[{id:'detail',mode:'snapshot',components:[header]}];}},
     {case:'ioc-component-position',base:'ioc-header-section-placement',expect:/首分区/,mutate:d=>{d.sections[0].components.reverse();}},
