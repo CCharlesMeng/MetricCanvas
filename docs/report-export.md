@@ -24,7 +24,7 @@
 
 ## 分发与失败
 
-Worker代码由 `pnpm report-pdf:build` 内嵌生成，截图Adapter也由同一命令从锁定上游生成；`pnpm report-pdf:check` 校验漂移。npm和HTML ES/IIFE单文件分发均携带代码，不使用CDN、独立Worker路由、Service Worker、服务端Chromium或打印窗口。产品构建时不要求集成应用支持特殊Worker import语法。
+Worker代码由 `pnpm report-pdf:build` 内嵌生成，截图Adapter也由同一命令从锁定上游生成；`pnpm report-pdf:check` 校验漂移。npm和HTML ES/global分包分发均携带代码，不使用CDN、独立Worker路由、Service Worker、服务端Chromium或打印窗口。产品构建时不要求集成应用支持特殊Worker import语法。
 
 运行环境需要Worker、ImageBitmap、OffscreenCanvas及PNG编码，宿主CSP须允许 `worker-src blob:`（Worker构造还受其回退规则约束）。启动失败明确显示错误，不静默回退到阻塞编码器。单实例只允许一个导出；不同实例独立执行。页面文档更新、实例销毁、准备超时和错误仍触发内部中止及清理，移除用户取消入口不等于删除生命周期管理。Worker每次消息处理60秒未响应、或生成阶段60秒没有分页进展时失败释放；数据与视图准备期限仍为60秒，和编码期限分别计算。关闭页面后不承诺继续执行。
 

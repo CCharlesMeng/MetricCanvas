@@ -9,7 +9,8 @@
 <body>
   <main><p id="status" role="status">本地合成数据，正在加载…</p><div id="report"></div></main>
   <script src="../dist/metriccanvas-runtime.global.js"></script>
-  <script>
+  <script type="module">
+      await MetricCanvas.ready;
     (async () => {
       try {
         const response = await fetch('/pages/report-pdf-export.json');

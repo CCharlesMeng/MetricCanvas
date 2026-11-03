@@ -1,11 +1,20 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { defineConfig, version as viteVersion } from 'vite';
+import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 
-// #115：最低 Svelte 版本使用兼容的 Vite 6 工具链；两种构建器均保持单文件。
-const singleFileOutput = Number(viteVersion.split('.')[0]) >= 8
-  ? { codeSplitting: false as const }
-  : { inlineDynamicImports: true };
+// Shared modules are grouped by responsibility; optional imports retain their lazy boundary.
+const chunkGroups = [
+  { name: 'graphics', test: /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?zrender\// },
+  { name: 'charts', test: /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?echarts\// },
+  { name: 'excel', test: /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?exceljs\// },
+  { name: 'vendor', test: /node_modules\// },
+  { name: 'export-codecs', test: /\/report-(?:pdf-worker-source|png-worker-source|pdf-capture)\.ts$/ },
+  { name: 'runtime', test: /\/packages\/(?:page|data-execution|engine\/(?:runtime|data-gateway))\// },
+  { name: 'widgets', test: /\/packages\/(?:ui|engine\/widgets)\// },
+  { name: 'runtime-ui', test: /\/packages\/engine\/runtime-ui\// }
+];
 
 export default defineConfig({
   define: {
@@ -15,10 +24,25 @@ export default defineConfig({
     svelte({
       // 组件样式随 JS 注入其挂载根；嵌入模式的根是 ShadowRoot。
       emitCss: false
-    })
+    }),
+    {
+      name: 'metriccanvas-global-entry',
+      generateBundle() {
+        const bridge = readFileSync(new URL('./build-tools/global-bridge.js', import.meta.url), 'utf8');
+        const hash = createHash('sha256').update(bridge).digest('hex').slice(0, 8);
+        const bridgePath = `chunks/global-bridge-${hash}.js`;
+        this.emitFile({ type: 'asset', fileName: bridgePath, source: bridge });
+        this.emitFile({
+          type: 'asset',
+          fileName: 'metriccanvas-runtime.global.js',
+          source: readFileSync(new URL('./build-tools/global-loader.js', import.meta.url), 'utf8')
+            .replace('__METRICCANVAS_GLOBAL_BRIDGE__', `./${bridgePath}`)
+        });
+      }
+    }
   ],
   build: {
-    target: 'es2020',
+    target: 'es2022',
     outDir: 'dist',
     emptyOutDir: true,
     minify: true,
@@ -26,15 +50,22 @@ export default defineConfig({
     lib: {
       entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
       name: 'MetricCanvas',
-      formats: ['es', 'iife'],
-      fileName(format) {
-        return format === 'es'
-          ? 'metriccanvas-runtime.es.js'
-          : 'metriccanvas-runtime.global.js';
-      }
+      formats: ['es'],
+      fileName: () => 'metriccanvas-runtime.es.js'
     },
-    rollupOptions: {
-      output: singleFileOutput
+    rolldownOptions: {
+      output: {
+        minify: true,
+        chunkFileNames: 'chunks/[name]-[hash].js',
+        codeSplitting: {
+          groups: chunkGroups.map((group, index) => ({
+            ...group,
+            priority: chunkGroups.length - index,
+            entriesAware: true
+          }))
+        },
+        strictExecutionOrder: true
+      }
     }
   }
 });

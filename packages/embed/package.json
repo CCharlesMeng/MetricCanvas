@@ -15,7 +15,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "vite build && tsc -p tsconfig.build.json && pnpm check:dist",
+    "check:dist": "node --test tests/bundle-output.test.mjs",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "preview:examples": "node tests/serve.mjs",
     "test:browser": "pnpm build && playwright test",

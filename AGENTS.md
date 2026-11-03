@@ -40,6 +40,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 提交、push、跨分支交付或分支/工作树清理使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。每次交付收口执行其中的已合并分支与工作树清理，并报告保留项及原因。
 
+### Embed 分发基线（必选）
+
+修改运行时、组件、依赖或打包配置并交付 embed 时，执行 [Embed 分发基线](docs/agents/embed-distribution.md)：每个发布 JS 文件未压缩体积 ≤1,000,000 字节，ES/global 公共入口、完整分包闭合与浏览器接入均须通过构建门禁。
+
 ### 功能与协议能力验收（必选）
 
 所有新功能及页面协议能力更新（新增、调整、修复、收紧或废弃），均须按 [功能与协议能力验收要求](docs/agents/feature-acceptance.md) 完成 Playground 可观察场景、页面元数据文档及 `metriccanvas-local-authoring` 同步，作为实施完成条件。

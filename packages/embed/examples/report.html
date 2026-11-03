@@ -130,7 +130,8 @@
     </div>
 
     <script src="../dist/metriccanvas-runtime.global.js"></script>
-    <script>
+    <script type="module">
+      await MetricCanvas.ready;
       (() => {
         const status = document.querySelector('#report-status');
         const statusMessage = document.querySelector('#report-status-message');

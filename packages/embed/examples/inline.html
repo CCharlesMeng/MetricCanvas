@@ -62,7 +62,8 @@
       }
     </script>
     <script src="../dist/metriccanvas-runtime.global.js"></script>
-    <script>
+    <script type="module">
+      await MetricCanvas.ready;
       window.pageDocument = JSON.parse(
         document.querySelector('#dashboard-page').textContent
       );

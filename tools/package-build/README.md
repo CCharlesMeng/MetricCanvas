@@ -1,6 +1,6 @@
 # 引擎交付物构建
 
-`pnpm build:packages` 构建 ui、page、data-execution、engine、metric-canvas；默认 `pnpm build` 继续构建 embed 和平台。五个库包产出 ESM JS、类型声明和预处理后的 Svelte 组件。embed 维持自包含 ESM / IIFE 产物。
+`pnpm build:packages` 构建 ui、page、data-execution、engine、metric-canvas；默认 `pnpm build` 继续构建 embed 和平台。五个库包产出 ESM JS、类型声明和预处理后的 Svelte 组件。embed 提供共用模块的 ESM / global 两种入口，完整 dist 自包含；复制方式与 global 的 ready 加载时序见 [接入说明](../../packages/embed/README.md)。
 
 仓内 package.json 的 exports 保持源码入口；发布入口明确写在 publishConfig.exports。**使用 pnpm pack 打包**：pnpm 会把发布配置写成 tarball 中真正的 exports、main、types，并把 workspace 依赖改为版本号。集成应用只看到 dist 入口，可以使用自己的包管理器安装，不需要源码别名或 MetricCanvas 专用的 Svelte 预处理配置。不要用 npm pack 代替发布流程。
 
@@ -16,6 +16,8 @@
 - `files: ["dist"]` 收窄产物；仓内校验 CLI、测试、构建暂存副本不发布。prepack 自动执行 build，避免代码与声明陈旧。
 
 `pnpm packages:check` 实际打包六个交付物，检查 tarball 的全部入口、运行导出、声明导出、相对引用、文件范围，并用标准 Svelte 编译器编译全部组件。该门禁已接入 CI。
+
+Embed 的逐文件体积、ES/global 入口、分块闭合与浏览器接入执行[固定分发基线](../../docs/agents/embed-distribution.md)。`build` 和 `prepack` 自动运行 `check:dist`，CI 产品构建后显式复核同一门禁。
 
 ## 仓外兼容性门禁
 

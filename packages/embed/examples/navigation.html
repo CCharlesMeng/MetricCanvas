@@ -5,6 +5,7 @@
   <main id="dashboard"></main>
   <script src="/dist/metriccanvas-runtime.global.js"></script>
   <script type="module">
+    await MetricCanvas.ready;
     // 内容服务在 /pages/<id> 返回此 HTML，在 /pages/<id>.json 返回页面资产。
     // 宿主只负责加载文档；没有 pageId 导航解析器或跳转回调。
     const url = new URL(location.href);

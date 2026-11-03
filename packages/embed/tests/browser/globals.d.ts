@@ -7,6 +7,7 @@ import type { DqeGatewayConfig, RuntimeDataGateway } from '../../src';
 
 declare global {
   const MetricCanvas: {
+    readonly ready: Promise<typeof import('../../src')>;
     projectNavigationInputs: typeof import('../../src').projectNavigationInputs;
     mount(target: string | HTMLElement, options: MountOptions): RuntimeHandle;
     createDqeGateway(config?: DqeGatewayConfig): RuntimeDataGateway;

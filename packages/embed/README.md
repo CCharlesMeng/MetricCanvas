@@ -10,8 +10,9 @@
 
 | 文件 | 用途 |
 |---|---|
-| `dist/metriccanvas-runtime.global.js` | 经典 `<script>`，全局名为 `MetricCanvas` |
+| `dist/metriccanvas-runtime.global.js` | 经典 `<script>` 加载入口，等待 `MetricCanvas.ready` 后使用全局 API |
 | `dist/metriccanvas-runtime.es.js` | ES module |
+| `dist/chunks/*.js` | 两种入口共用的模块，带内容哈希，由浏览器自动加载 |
 | `dist/index.d.ts` | TypeScript 类型声明 |
 
 ## 构建
@@ -20,12 +21,37 @@
 pnpm --filter @metriccanvas/embed build
 ```
 
+构建面向支持原生 ES modules 的现代浏览器，语法目标为 ES2022。产物按图表、绘图基础、运行时、组件、第三方依赖和导出编码等职责拆为约十个模块；单个 JS 文件原始体积不得超过 1,000,000 字节，由构建检查强制保证。Excel 与底图保持按需加载。组件样式仍由 JS 注入 Shadow DOM，不需要额外加载 CSS 或安装运行依赖。
+
+后续修改和交付统一执行[Embed 分发基线](../../docs/agents/embed-distribution.md)。可用 `pnpm --filter @metriccanvas/embed check:dist` 独立检查已构建目录；build、prepack 与 CI 自动执行同一门禁。
+
+### 复制到项目后直接 import
+
+将**完整 `dist/` 内容**复制到项目的静态资源目录（例如 `public/metriccanvas/`），保持两个入口与 `chunks/` 的相对位置，再从一个公共入口使用：
+
+```html
+<div id="dashboard"></div>
+<script type="module">
+  import { mount } from '/metriccanvas/metriccanvas-runtime.es.js';
+  const runtime = mount('#dashboard', { document: pageDocument });
+</script>
+```
+
+`pageDocument` 为集成应用已取得的页面文档。在项目自身的 JS module 中也可以使用相对路径 import；浏览器或项目构建器会处理依赖，ES 接入无须等待 `ready`，`mount` 仍同步返回具有 `update` / `destroy` 的实例。
+
+通过 HTTP/HTTPS 提供文件，JS 响应使用 JavaScript MIME；跨域部署须允许模块请求的 CORS，宿主 CSP 须允许该资源地址的模块脚本。不要只复制入口文件，不使用 `file://` 直接打开。global 也消费同一份 ESM 模块，因此不作为旧浏览器降级包。
+
+升级时发布完整目录，入口不设永久缓存，带哈希的 chunks 可长期缓存；保留仍被旧页面引用的 chunks，或采用版本目录发布。
+
+**global 加载时序变更：** 旧的同步 `<script>` 后立即调用 API 改为等待 `MetricCanvas.ready`。Promise 完成后所有既有公开 API 可用，失败时 Promise 拒绝；`mount`、`update`、`destroy` 本身的同步调用方式不变。重复加载同一个 global 入口复用已有对象与 ready。
+
 ## 挂载仅内联页面
 
 ```html
 <div id="dashboard"></div>
 <script src="./metriccanvas-runtime.global.js"></script>
-<script>
+<script type="module">
+  await MetricCanvas.ready;
   const pageDocument = {
     schemaVersion: '6.1', layout: 'report',
     id: 'hello',
@@ -242,7 +268,7 @@ ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行
 
 ## 完整 PDF 接入
 
-从页面协议6.28起，Report顶层页头声明`props.pdfExport: {label: "下载报告", filename: "经营分析报告.pdf"}`即可启用内置下载；两项可省略，默认按钮为“下载 PDF”，文件名取页头标题。按钮与filterIds共用工具带，无日期控件也可显示。HTML运行时单文件已包含PDF依赖，集成应用无需自行安装html2canvas或jsPDF，也无需编写下载回调。更新使用包含本能力的新运行时产物。
+从页面协议6.28起，Report顶层页头声明`props.pdfExport: {label: "下载报告", filename: "经营分析报告.pdf"}`即可启用内置下载；两项可省略，默认按钮为“下载 PDF”，文件名取页头标题。按钮与filterIds共用工具带，无日期控件也可显示。HTML运行时分包已包含PDF依赖，集成应用无需自行安装html2canvas或jsPDF，也无需编写下载回调。更新使用包含本能力的新运行时产物。
 
 `withExportView`及其静态DOM类型已移除，不提供旧入口兼容。整页PDF只通过页面声明的内置按钮下载，没有取消按钮。图片与PDF编码在Dedicated Worker执行，主线程分批处理DOM；浏览器须支持Worker、ImageBitmap、OffscreenCanvas，宿主CSP允许`worker-src blob:`。范围、固定限额、错误与生命周期见[接入说明](../../docs/report-export.md)。
 

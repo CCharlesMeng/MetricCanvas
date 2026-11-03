@@ -12,7 +12,8 @@
   <body>
     <div id="dashboard"></div>
     <script src="../dist/metriccanvas-runtime.global.js"></script>
-    <script>
+    <script type="module">
+      await MetricCanvas.ready;
       const rows = [
         { region: '华东', gmv: 386000 },
         { region: '华南', gmv: 271000 },
