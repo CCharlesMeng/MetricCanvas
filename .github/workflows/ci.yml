@@ -213,6 +213,24 @@ jobs:
           name: metriccanvas-platform-microfrontend-${{ github.sha }}
           path: apps/platform/dist
 
+  embed-distribution:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - name: 验证原生与混合模块路径的分包归属
+        run: pnpm test tests/embed-chunking.test.ts
+      - name: 原生构建 Embed 并严格检查每个 JS 不超过 1 MB
+        run: pnpm --filter @metriccanvas/embed build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: metriccanvas-embed-${{ matrix.os }}-${{ github.sha }}
+          path: packages/embed/dist
+
   compatibility:
     runs-on: ubuntu-latest
     steps:
@@ -242,7 +260,7 @@ jobs:
 
   ci:
     if: ${{ always() }}
-    needs: [authoring, mc-distribution, tests, types, build, compatibility]
+    needs: [authoring, mc-distribution, tests, types, build, compatibility, embed-distribution]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

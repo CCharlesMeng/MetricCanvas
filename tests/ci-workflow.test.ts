@@ -30,7 +30,7 @@ describe('parallel CI keeps a complete required gate', () => {
     const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
     const {ci, ...checks} = workflow.jobs;
     expect([...ci.needs].sort()).toEqual(Object.keys(checks).sort());
-    expect(Object.keys(checks).sort()).toEqual(['authoring','build','compatibility','mc-distribution','tests','types']);
+    expect(Object.keys(checks).sort()).toEqual(['authoring','build','compatibility','embed-distribution','mc-distribution','tests','types']);
     expect(ci.if).toBe('${{ always() }}');
     expect(ci.steps.at(-1).env.CI_JOB_RESULTS).toBe('${{ toJSON(needs) }}');
     expect(ci.steps.at(-1).run).toBe('node tools/scripts/check-ci-results.mjs');
@@ -58,6 +58,17 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(paths).toContain('${{ runner.temp }}/metriccanvas-compatibility/*/*.tgz');
     expect(paths).not.toContain('${{ runner.temp }}/metriccanvas-compatibility');
     for(const path of paths) expect(path).not.toMatch(/node_modules|\/source(?:\/|$)/);
+  });
+
+  it('requires real Linux and Windows embed builds with the unchanged distribution guard', () => {
+    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
+    const distribution = workflow.jobs['embed-distribution'];
+    expect(workflow.jobs.ci.needs).toContain('embed-distribution');
+    expect(distribution['runs-on']).toBe('${{ matrix.os }}');
+    expect(distribution.strategy.matrix.os).toEqual(['ubuntu-latest', 'windows-latest']);
+    expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm test tests/embed-chunking.test.ts')).toBe(true);
+    expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm --filter @metriccanvas/embed build')).toBe(true);
+    expect(distribution.steps.at(-1).with.path).toBe('packages/embed/dist');
   });
 });
 

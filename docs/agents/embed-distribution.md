@@ -18,6 +18,8 @@
 4. `pnpm --filter @metriccanvas/embed exec playwright test`：验证 ES/global、复制完整目录、公开 API、模块复用、加载失败与已有页面行为。更换源码基线或转移实现后，对对应产物重新执行。
 5. 实际打包并核对归档包含全部 JS；ZIP 或 tarball 解包后逐文件沿用相同体积上限。发布兼容性继续按 [构建与仓外兼容性门禁](../../tools/package-build/README.md) 执行。
 
+分包匹配统一处理正斜杠、反斜杠与混合分隔符；依赖和产品源码的归属由 `tests/embed-chunking.test.ts` 对实际 Vite 配置回归。CI 的 `embed-distribution` 矩阵必须在 Linux、Windows **各自原生构建 embed**，执行同一 1 MB 门禁并上传完整 dist；该矩阵纳入最终 `ci` 汇总。Windows 上其他产品的分发通过，不能替代 Windows embed 构建通过。
+
 验收记录给出源码提交/树与锁文件、构建参数、JS 文件数、最大文件及精确字节数、两种入口和浏览器结论。体积检查不能替代浏览器行为验收，源码检查不能替代发布归档核验。真实 DQE/Relay、远端 CI 与部署分别按实际证据报告。
 
 机器检查真源为 `packages/embed/tests/bundle-output.test.mjs`；本页拥有基线口径，接入代码与完整复制方式见 [embed README](../../packages/embed/README.md)。
