@@ -25,7 +25,7 @@ import { isNumericMeasure } from './query-output-measures';
 import {amountErrors,moneyComputeErrors} from './amount-validation';
 import {fieldSelectionErrors} from './field-selection';
 import { filterExtensionErrors,filterScopeErrors } from './filter-dependencies';
-import { iocHeaderErrors } from './ioc-header';
+import { iocHeaderErrors, emptyIocHeaderErrors } from './ioc-header';
 import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
@@ -37,7 +37,8 @@ import { isObjectDqeItem, objectOutputFields } from './dqe-object';
 import { objectQueryErrors } from './validate-object-query';
 import { paramBindingErrors } from './param-bindings';
 import { navigationErrors, urlInputErrors } from './navigate';
-import { Ajv, type ErrorObject } from 'ajv';
+import type { ErrorObject } from 'ajv';
+import {pageStructureValidator} from './structure-validator';
 import { dataSourceStructureErrors } from './data-source-structure-errors';
 import {
   isInlineDataSource,
@@ -97,14 +98,12 @@ import {
   type RowContractIssue
 } from './result-field-contract';
 import { barForecastBoundaryIssues } from './bar-forecast-boundary';
-import { pageSchema } from './schema';
 import { capabilityFloorErrors, versionErrors } from './version';
 import { layoutCompatibilityErrors, canonicalLayoutDocument } from './layout-compatibility';
 import { adaptLegacyPageDocument } from './legacy-compatibility';
 import type { PageDocument } from './page-document';
 
-const ajv = new Ajv({ allErrors: true, strict: false });
-const validateStructure = ajv.compile(pageSchema);
+
 
 export type PageParseResult =
   | { ok: true; page: Page; errors: [] }
@@ -132,6 +131,7 @@ export function parsePage(
     return { ok: false, errors: [...optionErrors, ...(other.ok ? [] : other.errors)] };
   }
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
+  const validateStructure=pageStructureValidator(compatibleDocument);
   if (!validateStructure(compatibleDocument)) {
     const structural = dataSourceStructureErrors(compatibleDocument, validateStructure.errors ?? []).map(toTypedError);
     const guided = [...versionErrors(compatibleDocument), ...compositeCardStructureErrors(compatibleDocument), ...tabContainerStructureErrors(compatibleDocument)];
@@ -145,13 +145,10 @@ export function parsePage(
   // 能力下限与页面参数判定都必须跑在文本取值替换之前:替换会把引用消解掉,
   // 拿解析产物去判会漏掉「声明 5.0 却引用了页面参数」这类文档。
   const declarations = pageParamDeclarations(compatibleDocument);
-  const inputHeader = (compatibleDocument as Page).iocHeader;
-  const inputIdentity = inputHeader?.identity;
-  const emptyHeader = inputHeader && !inputIdentity?.title && !inputIdentity?.code && !inputIdentity?.description && !inputIdentity?.tags?.length && !inputIdentity?.facts?.length && !inputHeader.filterIds?.length && !inputHeader.back;
   const documentErrors = [
     ...metricBeforeErrors(compatibleDocument),
     ...((compatibleDocument as Page).strictURLInputs&&declarations.some(p=>!p.path&&(p.value!==undefined||p.type==='timeRange'))?[schemaError('/strictURLInputs','严格URL输入不支持旧数组固定参数，请使用分组参数')]:[]),
-    ...(emptyHeader ? [schemaError('/iocHeader','IOC 页头需要身份、筛选或返回意图')] : []),
+    ...emptyIocHeaderErrors(compatibleDocument),
     ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
     ...capabilityFloorErrors(compatibleDocument).map(error => error.path.endsWith('/props/echartsOption') ? { ...error, type: 'CHART_OPTION_ERROR' as const } : error),
     ...aiSummaryPositionErrors(compatibleDocument as Page),
@@ -502,7 +499,7 @@ function sectionColumnTrackErrors(section: PageSection, sectionIndex: number): T
   const columnCount = section.columnTracks?.length;
   if (columnCount === undefined) return [];
   return section.components.flatMap((component, componentIndex) =>
-    component.layout.layer !== 'backdrop' && component.layout.span > columnCount
+    component.type !== 'iocHeader' && component.layout.layer !== 'backdrop' && component.layout.span > columnCount
       ? [
           schemaError(
             `/sections/${sectionIndex}/components/${componentIndex}/layout/span`,

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "6.82",
-  "schemaSha256": "9350a179287433b8df813a7f6f18b51ca74242a97ad1097955d1b7662fb1fe41",
+  "schemaSha256": "675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -24,7 +24,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
-      "sha256": "02821f8fc4a9f26511b9aa8c41ff7abc77c9c5f0d7fde9ceda43206b386de0e6"
+      "sha256": "8117a58bffbaae8a84b3cfeba1c849c271f6c3bff59ae76f1e1c83ff0c49714f"
     },
     {
       "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
@@ -48,7 +48,7 @@
     },
     {
       "file": "packages/engine/runtime/src/navigation-inputs.ts",
-      "sha256": "23f8e9dbbca0264ca2bf0dd79f38ded8bac91b844ee2c77ad707982f145957e0"
+      "sha256": "97cedd518cf1a8047075701e913ca4183f3fb1b2f8941846fe9bc53a3c03db05"
     },
     {
       "file": "packages/engine/runtime/src/presentation.ts",
@@ -131,8 +131,12 @@
       "sha256": "284d8785f61a682ed1066240508f9a06d19740f29cf89839471b3a44e4b90951"
     },
     {
+      "file": "packages/page/src/header-binding.ts",
+      "sha256": "9e0653fbed166f1defd3818cee2b18185e76a863353f6077720aaffbdabf0d44"
+    },
+    {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "5b820b7e5b6aae14d34f75c7ddd4ae8ed7cf1652b31cb61a9f7d8926f4bc45ce"
+      "sha256": "33b59eba1322336295a3ee61cf50d566330ce81efda2f07585d8f54075db5b73"
     },
     {
       "file": "packages/page/src/metric-before.ts",
@@ -140,7 +144,7 @@
     },
     {
       "file": "packages/page/src/navigate.ts",
-      "sha256": "30b1d70eb8be7b697a1929280c20a27d511b8f99a751e817ef0f1ee88b66eb18"
+      "sha256": "6d0b18f646f30e63d1e2ecc55d1a87b993ff08b8fe5c817d65583486af12d74f"
     },
     {
       "file": "packages/page/src/object-query-params.ts",
@@ -180,7 +184,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "e94011a7f5d0fa4c7b0e344a69ac154744174411dee0c2fbf403785b38b9be9a"
+      "sha256": "1177b5d022ec830cfc4ae49583ccd30e2097fbcbb1400f6eb07bf532033d165a"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -221,6 +225,10 @@
     {
       "file": "packages/page/src/schema/components/gauge.ts",
       "sha256": "de25a4904660fc612465b4f03b8b4d26a58ac571dafa18556420797f53b6455f"
+    },
+    {
+      "file": "packages/page/src/schema/components/ioc-header.ts",
+      "sha256": "4ccfbd3702fbbbc76b8a24fc39a7a9221287f381ffb12adaa89ed833d1d335d0"
     },
     {
       "file": "packages/page/src/schema/components/key-value-panel.ts",
@@ -284,7 +292,7 @@
     },
     {
       "file": "packages/page/src/schema/page.ts",
-      "sha256": "0e52ff3a9ac19e8ff75b8ba31e4805939664c29451357a9e1dfb3e911cc2a932"
+      "sha256": "dd51ee2f336f3a883c3e0bd7f9e409ec1dbeb30aa3506acbbf3d9a3b1e4abd0c"
     },
     {
       "file": "packages/page/src/schema/paged-union.ts",
@@ -316,11 +324,11 @@
     },
     {
       "file": "packages/page/src/text-value.ts",
-      "sha256": "2a8ea2df97b575376867df9e47eb45daf970e7382974af37d3f35d7ba8bd539e"
+      "sha256": "fec33b5c3d62d4ae4f146c9fcbe90582b6efbe2a32c185b4a3aaec92cf5d797b"
     },
     {
       "file": "packages/page/src/time-extension-validation.ts",
-      "sha256": "929d6581f3b6bb5e3a4390164d54322a355d2a47d21ab4c9ef619b8e5df081e5"
+      "sha256": "2bd9c6a88be33a04a574181f0b09db7faf115c5a5fa514a6430f04325e198bf2"
     },
     {
       "file": "packages/page/src/time-filter-boundary.ts",
@@ -340,7 +348,11 @@
     },
     {
       "file": "packages/page/src/upgrade-document.ts",
-      "sha256": "b2fcc9ec7291f1e0c747bdd48245ec4b7356b6de127c8336eee6b4490ced7d73"
+      "sha256": "74c3ac997488da69d9e57fcb4ddef7561935a96beaa1a588d9a4912b16f98a2d"
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "sha256": "c9fefa39a46ca0e81209d092f3292a576c2e47a39f55f983d04abb0b855d1385"
     },
     {
       "file": "packages/page/src/upgrade-types.ts",
@@ -368,7 +380,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "01775b20cefcf5005a17606779ca079e699c61fb134f53baf912d1af65f42154"
+      "sha256": "3b11b15f58a8bdedf8aa6942d123d8835ff4f4141bd40cb6f63d22d12fd39bfc"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -376,7 +388,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "858f9567dc77f550025dbb57dc5db4e612c151f5802e626d8e27fedc02786a5f"
+      "sha256": "ba58745f38c1f45bf9b2eb2276332036940a2e0437fdef25795b99c4a5061261"
     }
   ],
   "modules": {
@@ -410,7 +422,8 @@
         "ioc-header-models",
         "ioc-header-months",
         "ioc-header-unconfigured",
-        "tab-mixed-content"
+        "tab-mixed-content",
+        "ioc-header-section-placement"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -423,7 +436,9 @@
         "packages/page/src/time-extension-validation.ts",
         "packages/page/src/upgrade-document.ts",
         "packages/page/src/upgrade-chart-filters.ts",
-        "packages/page/src/upgrade-types.ts"
+        "packages/page/src/upgrade-types.ts",
+        "packages/page/src/header-binding.ts",
+        "packages/page/src/upgrade-ioc-header.ts"
       ],
       "rules": [
         "page-layout-compatibility",
@@ -1643,6 +1658,32 @@
         "filter-group",
         "filter-group-presentation"
       ]
+    },
+    "components/iocHeader.md": {
+      "title": "IOC 页头",
+      "definitions": [
+        "iocHeaderComponent"
+      ],
+      "keywords": [
+        "iocHeader",
+        "页头",
+        "身份",
+        "页级筛选"
+      ],
+      "examples": [
+        "ioc-header-section-placement",
+        "ioc-component-availability-page",
+        "ioc-component-ioc-header-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/ioc-header.ts",
+        "packages/page/src/header-binding.ts",
+        "packages/page/src/ioc-header.ts",
+        "packages/page/src/upgrade-ioc-header.ts"
+      ],
+      "rules": [
+        "ioc-header-component"
+      ]
     }
   },
   "components": [
@@ -1721,6 +1762,10 @@
     {
       "type": "filterGroup",
       "file": "components/filterGroup.md"
+    },
+    {
+      "type": "iocHeader",
+      "file": "components/iocHeader.md"
     }
   ],
   "nodes": [
@@ -18355,6 +18400,301 @@
       "ref": "#/definitions/filterGroupComponent"
     },
     {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/19",
+      "path": "$.detailViews[].components[] · oneOf[19]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/iocHeaderComponent"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent",
+      "path": "@iocHeaderComponent",
+      "required": "类型/分支",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/id",
+      "path": "@iocHeaderComponent.id",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/visibleWhen",
+      "path": "@iocHeaderComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/visibleWhen/allOf/0",
+      "path": "@iocHeaderComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/type",
+      "path": "@iocHeaderComponent.type",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "const": "iocHeader"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/layout",
+      "path": "@iocHeaderComponent.layout",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/componentLayout"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props",
+      "path": "@iocHeaderComponent.props",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity",
+      "path": "@iocHeaderComponent.props.identity",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/title",
+      "path": "@iocHeaderComponent.props.identity.title",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/title/allOf/0",
+      "path": "@iocHeaderComponent.props.identity.title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/code",
+      "path": "@iocHeaderComponent.props.identity.code",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/code/properties/label",
+      "path": "@iocHeaderComponent.props.identity.code.label",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/code/properties/value",
+      "path": "@iocHeaderComponent.props.identity.code.value",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description",
+      "path": "@iocHeaderComponent.props.identity.description",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/text",
+      "path": "@iocHeaderComponent.props.identity.description.text",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/presentation",
+      "path": "@iocHeaderComponent.props.identity.description.presentation",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "inline",
+        "tooltip"
+      ]
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags",
+      "path": "@iocHeaderComponent.props.identity.tags",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items",
+      "path": "@iocHeaderComponent.props.identity.tags[]",
+      "required": "每个数组项",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/id",
+      "path": "@iocHeaderComponent.props.identity.tags[].id",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/text",
+      "path": "@iocHeaderComponent.props.identity.tags[].text",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/tone",
+      "path": "@iocHeaderComponent.props.identity.tags[].tone",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "neutral",
+        "info",
+        "success",
+        "warning",
+        "danger"
+      ]
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts",
+      "path": "@iocHeaderComponent.props.identity.facts",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items",
+      "path": "@iocHeaderComponent.props.identity.facts[]",
+      "required": "每个数组项",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/id",
+      "path": "@iocHeaderComponent.props.identity.facts[].id",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/kind",
+      "path": "@iocHeaderComponent.props.identity.facts[].kind",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "queryPeriod",
+        "latestDataPeriod",
+        "refreshedAt",
+        "generatedAt"
+      ]
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/label",
+      "path": "@iocHeaderComponent.props.identity.facts[].label",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value",
+      "path": "@iocHeaderComponent.props.identity.facts[].value",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/0",
+      "path": "@iocHeaderComponent.props.identity.facts[].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1",
+      "path": "@iocHeaderComponent.props.identity.facts[].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1/properties/fact",
+      "path": "@iocHeaderComponent.props.identity.facts[].value · anyOf[1].fact",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1/properties/part",
+      "path": "@iocHeaderComponent.props.identity.facts[].value · anyOf[1].part",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "latest",
+        "latestComplete",
+        "refreshedAt",
+        "generatedAt"
+      ]
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back",
+      "path": "@iocHeaderComponent.props.back",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md",
+      "const": true
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/readOnly",
+      "path": "@iocHeaderComponent.props.readOnly",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/note",
+      "path": "@iocHeaderComponent.props.note",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterIds",
+      "path": "@iocHeaderComponent.props.filterIds",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterIds/items",
+      "path": "@iocHeaderComponent.props.filterIds[]",
+      "required": "每个数组项",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/presentation",
+      "path": "@iocHeaderComponent.props.presentation",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/density",
+      "path": "@iocHeaderComponent.props.presentation.density",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "normal",
+        "compact"
+      ]
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse",
+      "path": "@iocHeaderComponent.props.presentation.collapse",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "none",
+        "firstRow",
+        "overflow"
+      ]
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout",
+      "path": "@iocHeaderComponent.props.presentation.layout",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "stacked",
+        "inline"
+      ]
+    },
+    {
       "pointer": "#/properties/sectionGroups",
       "path": "$.sectionGroups",
       "required": "本分支可选",
@@ -18683,6 +19023,13 @@
       "required": "独立分支（不合并required）",
       "module": "sections-and-layout.md",
       "ref": "#/definitions/filterGroupComponent"
+    },
+    {
+      "pointer": "#/definitions/section/properties/components/items/oneOf/19",
+      "path": "@section.components[] · oneOf[19]",
+      "required": "独立分支（不合并required）",
+      "module": "sections-and-layout.md",
+      "ref": "#/definitions/iocHeaderComponent"
     }
   ],
   "exampleCoverage": [
@@ -19058,6 +19405,12 @@
       "file": "examples/component-filterGroup.json",
       "pointer": "#/sections/0/components/0",
       "source": "page/conformance/valid/tab-content-mapchart.json"
+    },
+    {
+      "type": "iocHeader",
+      "file": "examples/component-iocHeader.json",
+      "pointer": "#/sections/0/components/0",
+      "source": "page/conformance/valid/table-header-filter-defaults-query.json"
     }
   ],
   "branchCoverage": [
@@ -19082,14 +19435,14 @@
     {
       "schemaPointer": "#/definitions/nonEmptyTextValue/anyOf/3",
       "module": "params-and-text-values.md",
-      "file": "examples/text-composition-page.json",
-      "pointer": "#/sections/0/components/0/props/title"
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/components/0/props/identity/title"
     },
     {
       "schemaPointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/0",
       "module": "params-and-text-values.md",
-      "file": "examples/text-composition-page.json",
-      "pointer": "#/sections/0/components/0/props/title/parts/1"
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/components/0/props/identity/title/parts/0"
     },
     {
       "schemaPointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/1",
@@ -19100,8 +19453,8 @@
     {
       "schemaPointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/2",
       "module": "params-and-text-values.md",
-      "file": "examples/text-composition-page.json",
-      "pointer": "#/sections/0/components/0/props/title/parts/0"
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/components/0/props/identity/title/parts/1"
     },
     {
       "schemaPointer": "#/definitions/dashboardToolbar/anyOf/0",
@@ -20084,8 +20437,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/4",
       "module": "conditions.md",
-      "file": "examples/period-query-columns-demo.json",
-      "pointer": "#/sections/0/components/0/props/columns/1/visibleWhen"
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/visibleWhen"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
@@ -20102,8 +20455,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
       "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/6/value"
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/visibleWhen/value"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/5",
@@ -21332,6 +21685,28 @@
       }
     },
     {
+      "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/19",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/ioc-component-detail.json",
+        "reason": "IOC页头仅首分区首组件，详情中不允许。",
+        "rule": "ioc-header-component",
+        "source": "packages/page/src/ioc-header.ts"
+      }
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/0",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-component-availability-page.json",
+      "pointer": "#/sections/0/components/0/props/identity/facts/0/value"
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-component-availability-page.json",
+      "pointer": "#/sections/0/components/0/props/identity/facts/1/value"
+    },
+    {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",
       "module": "sections-and-layout.md",
       "file": "examples/component-reportHeader.json",
@@ -21443,6 +21818,12 @@
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/18",
       "module": "sections-and-layout.md",
       "file": "examples/component-filterGroup.json",
+      "pointer": "#/sections/0/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/section/properties/components/items/oneOf/19",
+      "module": "sections-and-layout.md",
+      "file": "examples/component-iocHeader.json",
       "pointer": "#/sections/0/components/0"
     }
   ],

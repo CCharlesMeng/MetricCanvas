@@ -374,6 +374,151 @@
             }
           }
         ]
+      },
+      {
+        "id": "mixed-variants",
+        "title": "混排：保留紧凑卡与主次指标卡的内部样式，同排等高",
+        "container": "plain",
+        "components": [
+          {
+            "id": "mixed-compact-change",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "compactStack",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "unit": "万元",
+                  "valueField": {
+                    "data": "main",
+                    "field": "revenue",
+                    "format": "number-grouped"
+                  },
+                  "changes": [
+                    {
+                      "label": "同比增加",
+                      "tone": "positive",
+                      "field": {
+                        "data": "main",
+                        "field": "refund",
+                        "format": "number-grouped"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "mixed-compact",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "compactStack",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "unit": "万元",
+                  "valueField": {
+                    "data": "main",
+                    "field": "revenue",
+                    "format": "number-grouped"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "mixed-primary-two",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "unit": "万元",
+                  "valueField": {
+                    "data": "main",
+                    "field": "revenue",
+                    "format": "number-grouped"
+                  }
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "已回款",
+                  "unit": "万元",
+                  "valueField": {
+                    "data": "main",
+                    "field": "paid",
+                    "format": "number-grouped"
+                  }
+                },
+                {
+                  "label": "待回款",
+                  "unit": "万元",
+                  "valueField": {
+                    "data": "main",
+                    "field": "pending",
+                    "format": "number-grouped"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "mixed-primary-one",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "unit": "万元",
+                  "valueField": {
+                    "data": "main",
+                    "field": "revenue",
+                    "format": "number-grouped"
+                  }
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "已回款",
+                  "unit": "万元",
+                  "valueField": {
+                    "data": "main",
+                    "field": "paid",
+                    "format": "number-grouped"
+                  }
+                }
+              ]
+            }
+          }
+        ]
       }
     ],
     "detailViews": [

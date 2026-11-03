@@ -42,7 +42,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 柱状图公共默认柱宽统一为16px，覆盖普通、横向、堆叠、预测和混合柱系列；显式高级覆盖仍生效。声明与验收入口见[柱状图默认柱宽](docs/page-metadata/components/barChart.md#默认柱宽)。
 
-6.41 将通用 DashboardToolbar 的呈现能力并入 IocHeader，只保留一个页头实现。新页面使用 `iocHeader`，旧 `dashboardToolbar` 只作兼容读取；布局、更多筛选、只读和说明见[唯一页头](docs/page-metadata/page.md#唯一页头641)。仅选年份使用共享 `periodModes:["year"]`，见[现有期间页面](pages/capabilities/filters/dashboard-period-filter.json)。 Header组件默认自带16px底部外间距，声明和兼容边界见同一页头模块。
+6.41 将通用 DashboardToolbar 的呈现能力并入 IocHeader，只保留一个页头实现。6.81起新页面使用首 section 首组件 `type:"iocHeader"`，业务属性位于 `props`；根级 `iocHeader` 保留兼容读取，旧 `dashboardToolbar` 只作兼容读取；布局、更多筛选、只读和说明见[唯一页头](docs/page-metadata/page.md#唯一页头641)。仅选年份使用共享 `periodModes:["year"]`，见[现有期间页面](pages/capabilities/filters/dashboard-period-filter.json)。 Header组件默认自带16px底部外间距，声明和兼容边界见同一页头模块。
 
 6.63 为组合卡增加 `filterLayout:"toolbar"`：左侧按钮组与右侧多个下拉在同一工具栏排列，右组整体贴右且按内容宽度紧凑排列，窄屏整组回流。示例 `/pages/filter-group-parallel-selects`；声明与边界见[组合卡](docs/page-metadata/components/compositeCard.md#筛选工具栏663)。普通栅格与已有单下拉弹层修复保持。
 
@@ -338,6 +338,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 6.65 新增 `variant: "primaryDetail"`：`rows` 恰好一个主指标，`secondaryRows` 为零到多行14px次级指标（指标名＋带下划线的指标值，每行上方8px）；同一栅格视觉行内卡面随最高内容等高，窄屏逐卡自然高度。字段和点击行为复用原有协议，见[指标卡语义](docs/page-metadata/components/metricCard.md)与[主次指标示例](pages/capabilities/layout/metric-card-primary-detail.json)。
 
+单面板 `compactStack` 与 `primaryDetail` 混排时，卡面同样按所在视觉行等高；保留各自的内部排版，只在短卡底部留白。无需高度字段或修改 variant；次级面板及进度环的既有布局保持，见上述示例的 `mixed-variants` 分区。
+
 6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；整组自动拉宽至所占列宽，以 1px 灰边、16px 圆角白底区域包裹，每张小卡保留独立白底灰边，文字双侧 gap 固定；完整场景见 [指标卡连接排布](pages/capabilities/layout/metric-card-equation.json)。
 
 <a id="75-图表组件"></a>
@@ -559,3 +561,5 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 6.77：组合查询源通过 `pagination:{mode:"query",pageSize:10,batchSize:10}` 显式按需分页，后操作成员覆盖其他成员表格状态；记录模式需真实记录标识，不自动完整回退。候选自动预热仅在新模式关闭。`isNull` 声明为空语义，未确认后端完整能力时明确不可用。见[按需查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand`、`/pages/record-join-on-demand`。
 
 对象查询参数确认（2026-10-30）：所有对象调用统一使用 query_type/object_type/output_fields、filter.fields 的 field_name/value_list/operator 以及 order；无条件和无排序仍显式发送空结构。对象表头候选通过同一协议仅投影目标字段，完整返回后去重，不读取其余明细输出字段；主查询仍每页10条。声明、限制及用户范例见[对象查询](docs/page-metadata/queries-and-bindings.md#object-query-parameters)，本地HTTP验收入口 `/pages/business-rejection-details-pagination-10`。
+
+6.81 IOC Header 组件化：首分区首位、全宽、最多一个，随 section 显隐；无声明不补页头。旧读、新写与迁移边界见[分区页头](docs/page-metadata/page.md#ioc-页头进入分区681)，完整入口见[验收场景](pages/capabilities/ioc-header/section-component/README.md)。

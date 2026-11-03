@@ -66,6 +66,18 @@
       "id": "main",
       "components": [
         {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "列头默认筛选与查询分页"
+            }
+          }
+        },
+        {
           "id": "query-records",
           "type": "table",
           "layout": {

@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run --exclude tests/authoring-export-isolation.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/table-header-filter-defaults/DataDashboard
+
+
+ Test Files  438 passed (438)
+      Tests  3925 passed | 4 skipped (3929)
+   Start at  14:43:16
+   Duration  46.53s (transform 23.07s, setup 0ms, import 249.04s, tests 347.78s, environment 25ms)

@@ -2,10 +2,6 @@
   "schemaVersion": "6.82",
   "id": "record-join-query-params",
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "note": "合成数据：下钻查询参数仅由适用成员消费，不枚举审批人候选值。"
-  },
   "meta": {
     "title": "审批人下钻查询参数",
     "description": "合成审批记录与商务基本信息补列；URL approver-name 只筛选主表，owner-name 只筛选补列源。不是实际 DQE 验收。"

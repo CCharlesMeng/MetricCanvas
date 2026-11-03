@@ -36,7 +36,7 @@
       const observer = new ResizeObserver(measure);
       observer.observe(node);
       node.tabIndex = 0;
-      node.setAttribute('aria-label', `组件：${typeof component.props.title === 'string' ? component.props.title : component.id}`);
+      node.setAttribute('aria-label', `组件：${componentTitle(component) ?? component.id}`);
       const listeners = [
         ['click', (event: MouseEvent) => select(event, component.id), true],
         ['dragstart', (event: DragEvent) => { if (!(event.target instanceof Element) || !event.target.closest('.authoring-drag-handle')) event.preventDefault(); }, false],
@@ -210,10 +210,14 @@
     }
   }
 
+  function componentTitle(component:Component):string|undefined {
+    return component.type==='iocHeader'?component.props.identity?.title:component.props.title;
+  }
+
   function editTitle(event: Event, component: Component) {
     if (!authoring) return;
     const title = (event.currentTarget as HTMLInputElement).value;
-    if (title === (component.props.title ?? '')) return;
+    if (title === (componentTitle(component) ?? '')) return;
     authoring.onintent({
       type: 'edit_component',
       locator: locator(component.id),
@@ -296,13 +300,13 @@
               <span>画布内标题</span>
               <input
                 aria-label={`${component.id} 画布内标题`}
-                value={component.props.title ?? ''}
+                value={componentTitle(component) ?? ''}
                 onchange={(event) => editTitle(event, component)}
               />
             </label>
             <span class="authoring-span">{component.layout.span}/{columnCount}</span>
-            <button type="button" aria-label="缩小组件" onclick={() => resize(component, -1)}>−</button>
-            <button type="button" aria-label="加宽组件" onclick={() => resize(component, 1)}>＋</button>
+            <button type="button" aria-label="缩小组件" disabled={component.type==='iocHeader'} onclick={() => resize(component, -1)}>−</button>
+            <button type="button" aria-label="加宽组件" disabled={component.type==='iocHeader'} onclick={() => resize(component, 1)}>＋</button>
           </div>
         {/if}
   {/snippet}
@@ -310,7 +314,7 @@
 
 {#if authoring && contextualActions && selectedComponent}
   <CanvasSelectionActions target={selectionCell}
-    title={typeof selectedComponent.props.title === 'string' ? selectedComponent.props.title : selectedComponent.id}
+    title={componentTitle(selectedComponent) ?? selectedComponent.id}
     componentId={selectedComponent.id} index={selectedIndex} count={section.components.length}
     allowDelete={authoring.allowDelete} onmove={moveSelected} ondelete={() => remove(selectedComponent)} />
 {/if}

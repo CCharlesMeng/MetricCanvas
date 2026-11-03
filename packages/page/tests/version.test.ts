@@ -3,6 +3,7 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
   'table-select-default-values':82,
+  'ioc-header-component':81,
   "table-multiple-pinned-sources": 79,
   'paged-join-row-compute':78,
   'paged-period-comparison':78,

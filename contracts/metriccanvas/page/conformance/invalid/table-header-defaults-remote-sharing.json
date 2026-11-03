@@ -69,6 +69,18 @@
         "id": "main",
         "components": [
           {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "列头默认筛选与查询分页"
+              }
+            }
+          },
+          {
             "id": "query-records",
             "type": "table",
             "layout": {
@@ -203,22 +215,22 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/data/main",
-      "message": "默认筛选的远程表格必须独占页面数据源，不能共享组件或查询依赖"
-    },
-    {
-      "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/1/data/main",
       "message": "默认筛选的远程表格必须独占页面数据源，不能共享组件或查询依赖"
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/data/main",
+      "path": "/sections/0/components/2/data/main",
+      "message": "默认筛选的远程表格必须独占页面数据源，不能共享组件或查询依赖"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data/main",
       "message": "查询分页表格必须独占页面数据源 records，当前引用 2 次"
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/data/main",
+      "path": "/sections/0/components/2/data/main",
       "message": "查询分页表格必须独占页面数据源 records，当前引用 2 次"
     }
   ]

@@ -55,6 +55,15 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'ioc-header-component',description:'首section首组件全宽、唯一且不混写旧根字段',valid:['ioc-header-section-placement'],cases:[
+    {case:'ioc-component-detail',base:'ioc-header-section-placement',expect:/首分区/,mutate:d=>{const header=structuredClone(firstComponent(d));header.id='detail-header';d.detailViews=[{id:'detail',mode:'snapshot',components:[header]}];}},
+    {case:'ioc-component-position',base:'ioc-header-section-placement',expect:/首分区/,mutate:d=>{d.sections[0].components.reverse();}},
+    {case:'ioc-component-span',base:'ioc-header-section-placement',expect:/span 为12/,mutate:d=>{firstComponent(d).layout.span=6;}},
+    {case:'ioc-component-mixed',base:'ioc-header-section-placement',expect:/混写/,mutate:d=>{d.dashboardToolbar='hidden';}},
+    {case:'ioc-component-count',base:'ioc-header-section-placement',expect:/最多/,mutate:d=>{d.sections[1].components.push({...firstComponent(d),id:'extra-header'});}},
+    {case:'ioc-component-old-version',base:'ioc-header-section-placement',expect:/由 6.81 引入/,mutate:d=>{d.schemaVersion='6.80';}},
+    {case:'ioc-component-legacy-version',base:'ioc-header-section-placement',expect:/由 6.81 引入/,mutate:d=>{d.schemaVersion='5.4';}}
+  ]},
   {id:'ioc-region-default-url',description:'IOC Header 默认保留地区部与代表处 URL 参数名，页面无需映射',valid:['ioc-region-url-demo'],cases:[
     {case:'ioc-region-url-reserved-key',base:'ioc-region-url-demo',expect:/URL 参数名重复:rep-office/,mutate:d=>{d.filters.push({id:'rep-office',type:'search',visible:false});}},
     {case:'ioc-region-url-no-custom-map',base:'ioc-region-url-demo',expect:/存在未定义字段 byLevel/,mutate:d=>{d.filters[0].urlParams={byLevel:{office:'rep-office'}};}}

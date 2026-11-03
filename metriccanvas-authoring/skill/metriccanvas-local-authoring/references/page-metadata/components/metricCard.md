@@ -12,6 +12,8 @@
 
 同一栅格视觉行内的卡片按最高卡片的自然内容高度拉伸，短卡底部保留空白；无固定卡高、行数截断或补齐空行。窄屏堆叠后各卡恢复自然内容高度，下一行不与上一行取同一最大值。卡面复用现有白底、浅灰边和16px圆角。
 
+与单面板 `compactStack` 混排时，该紧凑卡的外层及唯一面板共同拉伸，同一视觉行的卡面底边保持一致；各自的 variant、文字、字体、颜色、间距及内容在卡内的位置保持原样，仅在较短卡的底部留白。不需要新增高度字段或切换 variant。带次级面板或进度环的 `compactStack` 保留原有多块内容布局，不把每块面板强制等分高度。混排验收见 `/pages/metric-card-primary-detail` 的 `mixed-variants` 分区。
+
 下划线是该形态的视觉样式。只有显式声明 `row.link: true` 且有合法的 `navigate` / `openDetail` 动作，指标值才成为可聚焦、可点击的入口；普通次级指标仍为文本。`valueField`、单位、格式、数据槽与筛选联动均复用现有绑定协议。`secondaryRows` 在其他形态中保持既有呈现。
 
 验收入口：`/pages/metric-card-primary-detail`，完整页面为 `pages/capabilities/layout/metric-card-primary-detail.json`；仅内联合成数据，覆盖0/1/3/6行等高、长名称、零、缺失值与显式链接。该场景不证明真实DQE/Relay接入。
@@ -38,7 +40,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.82。结构真源为本册[schema.json](../schema.json)，SHA256 `9350a179287433b8df813a7f6f18b51ca74242a97ad1097955d1b7662fb1fe41`。字段表自动生成；可选不等于有默认值。
+页面协议 6.82。结构真源为本册[schema.json](../schema.json)，SHA256 `675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -8,6 +8,11 @@
       "description": "表格 select 列头筛选固定默认选中值",
       "legacyReadable": false
     },
+    "ioc-header-component": {
+      "minor": 81,
+      "description": "IOC 页头作为首分区首组件",
+      "legacyReadable": false
+    },
     "paged-join-row-compute": {
       "minor": 78,
       "description": "查询分页组合逐行计算与按投影声明缺记录策略",

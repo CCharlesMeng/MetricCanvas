@@ -1,6 +1,22 @@
 {
   "invariants": [
     {
+      "id": "ioc-header-component",
+      "description": "首section首组件全宽、唯一且不混写旧根字段",
+      "valid": [
+        "ioc-header-section-placement"
+      ],
+      "invalid": [
+        "ioc-component-detail",
+        "ioc-component-position",
+        "ioc-component-span",
+        "ioc-component-mixed",
+        "ioc-component-count",
+        "ioc-component-old-version",
+        "ioc-component-legacy-version"
+      ]
+    },
+    {
       "id": "ioc-region-default-url",
       "description": "IOC Header 默认保留地区部与代表处 URL 参数名，页面无需映射",
       "valid": [

@@ -1,0 +1,186 @@
+{
+  "type": "iocHeader",
+  "label": "IOC 页头",
+  "aliases": [
+    "IocHeader",
+    "公共页头",
+    "页面页头"
+  ],
+  "purpose": "页面身份、返回和页级筛选；位于首分区首组件并占满分区宽度",
+  "chooseWhen": [
+    "IOC 页面页头；沿用页级筛选及查询绑定，跟随所在分区显隐"
+  ],
+  "dataShape": "不绑定页面数据源",
+  "authoringShape": {
+    "bindsData": false
+  },
+  "requiredProps": [],
+  "title": "optional",
+  "defaultSpan": 12,
+  "renderable": true,
+  "assembled": false,
+  "data_editable": false,
+  "knowledge": "iocHeader.overview",
+  "reference": "references/page-metadata/components/iocHeader.md",
+  "versionPolicy": "protocol/version-policy",
+  "currentWriter": "6.82",
+  "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/ioc-header-section-placement.json",
+      "requiredVersion": "6.81",
+      "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
+        },
+        {
+          "id": "section-column-tracks",
+          "minor": 0,
+          "description": "内容分区的受控列轨权重(ADR-0054)"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/ioc-component-availability-page.json",
+      "requiredVersion": "6.81",
+      "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "time-availability",
+          "minor": 39,
+          "description": "可信期间事实与显式日期边界"
+        },
+        {
+          "id": "time-point-min",
+          "minor": 24,
+          "description": "时间点筛选的包含式最早日期或月份下限"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "filter-binding-non-dimension-targets",
+          "minor": 9,
+          "description": "timePoint / boolean / numberRange 筛选器的查询绑定目标"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-time-point",
+          "minor": 0,
+          "description": "timePoint 筛选器(ADR-0050)"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/ioc-component-ioc-header-page.json",
+      "requiredVersion": "6.81",
+      "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "period-filter",
+          "minor": 27,
+          "description": "Dashboard 年季月与近一年期间筛选"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "filter-text-values",
+          "minor": 15,
+          "description": "显式筛选文本引用及统一 period 日期格式"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "filter-binding-level-query-fields",
+          "minor": 7,
+          "description": "层级维度筛选绑定逐级声明谓词字段"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-hierarchy",
+          "minor": 0,
+          "description": "层级维度筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    }
+  ],
+  "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."
+}

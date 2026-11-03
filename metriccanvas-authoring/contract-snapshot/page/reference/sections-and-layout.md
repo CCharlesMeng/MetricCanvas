@@ -47,7 +47,7 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.82。结构真源为本册[schema.json](schema.json)，SHA256 `9350a179287433b8df813a7f6f18b51ca74242a97ad1097955d1b7662fb1fe41`。字段表自动生成；可选不等于有默认值。
+页面协议 6.82。结构真源为本册[schema.json](schema.json)，SHA256 `675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -471,6 +471,16 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/18`。�
 |---|---|---|---|---|
 | 引用 #/definitions/filterGroupComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f73656374696f6e2f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f3139"></a>
+
+### `@section.components[] · oneOf[19]`
+
+Schema位置：`#/definitions/section/properties/components/items/oneOf/19`。目标：[#/definitions/iocHeaderComponent](components/iocHeader.md#schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/iocHeaderComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `section-id-unique`：内容分区 id 唯一。反例：[duplicate-section-id](errors/duplicate-section-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -514,3 +524,4 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/18`。�
 - `#/definitions/section/properties/components/items/oneOf/16`：[合法完整页面](examples/component-aiSummary.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/17`：[合法完整页面](examples/component-button.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/18`：[合法完整页面](examples/component-filterGroup.json)，JSON Pointer `#/sections/0/components/0`。
+- `#/definitions/section/properties/components/items/oneOf/19`：[合法完整页面](examples/component-iocHeader.json)，JSON Pointer `#/sections/0/components/0`。

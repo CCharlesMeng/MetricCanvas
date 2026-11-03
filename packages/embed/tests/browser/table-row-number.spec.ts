@@ -72,7 +72,7 @@ test('parent expansion spans the generated column and children number independen
   const document=JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-row-expansion-inline.json',import.meta.url),'utf8'));
   document.schemaVersion='6.48'; document.sections=document.sections.slice(0,1);
   const props=document.sections[0].components[0].props; props.rowNumber={fixed:'left'}; props.rowExpansion.table.rowNumber={};
-  await mount(page,document); const table=page.locator('article').first();
+  await mount(page,document); const table=page.locator('article[data-component-type="table"]').first();
   await table.getByRole('button',{name:'展开子表格',exact:true}).first().click();
   await expect(table.locator('td.row-expansion-cell')).toHaveAttribute('colspan',String(props.columns.length+2));
   const child=table.getByRole('region',{name:'子表格',exact:true});

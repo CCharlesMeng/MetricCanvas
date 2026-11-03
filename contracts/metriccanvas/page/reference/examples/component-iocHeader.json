@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "6.82",
+  "id": "table-header-filter-defaults-query",
+  "layout": "dashboard",
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "列头默认筛选与查询分页"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

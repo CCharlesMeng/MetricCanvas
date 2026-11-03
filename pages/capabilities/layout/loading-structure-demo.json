@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.74",
+  "schemaVersion": "6.81",
   "id": "loading-structure-demo",
   "layout": "dashboard",
   "meta": {
@@ -376,6 +376,18 @@
       "id": "gallery-intro",
       "container": "plain",
       "components": [
+        {
+          "id": "loading-ioc-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterIds": [
+              "demo-region"
+            ]
+          }
+        },
         {
           "id": "gallery-text",
           "type": "text",
@@ -950,10 +962,5 @@
       ],
       "title": "Tab、查询分页与展开明细"
     }
-  ],
-  "iocHeader": {
-    "filterIds": [
-      "demo-region"
-    ]
-  }
+  ]
 }

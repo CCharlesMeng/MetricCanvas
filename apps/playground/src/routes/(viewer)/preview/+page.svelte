@@ -1,6 +1,7 @@
 <script lang="ts">
   import { dev } from '$app/environment';
   import { page } from '$app/state';
+  import IocHeaderComponentExample from '$lib/prototypes/IocHeaderComponentExample.svelte';
   import ReportDateExample from '$lib/ReportDateExample.svelte';
   import { validate } from '@metriccanvas/page';
   import {
@@ -22,6 +23,8 @@
 
 {#if dev && page.url.searchParams.get('prototype') === 'report-date'}
   <ReportDateExample />
+{:else if dev && page.url.searchParams.get('prototype') === 'ioc-header-component'}
+  <IocHeaderComponentExample/>
 {:else}
 <div class="preview-page">
   <div class="preview-heading">

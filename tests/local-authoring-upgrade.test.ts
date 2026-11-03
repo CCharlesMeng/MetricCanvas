@@ -29,6 +29,7 @@ describe('旧页面的显式创作期升级', () => {
 
   it('同步最新协议后完整保留对象查询，不将新能力伪装成旧版本', () => {
     const input = JSON.parse(readFileSync('packages/page/fixtures/contract-valid/object-query-page.json', 'utf8'));
+    input.dashboardToolbar='hidden';
     const result = upgradePageDocument(input);
     expect(result.ok, JSON.stringify(result.errors)).toBe(true);
     if (!result.ok) return;

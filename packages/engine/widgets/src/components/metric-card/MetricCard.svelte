@@ -285,9 +285,13 @@
     --mc-metric-panel-min-height: 0;
   }
   .compact-stack {
+    flex: 1;
     --mc-compact-summary-flow: row;
     --mc-compact-summary-row-columns: minmax(0, 1fr);
     --mc-metric-panel-min-height: 0;
+  }
+  .compact-stack > .metric-panel:only-child {
+    flex: 1;
   }
   .compact-strip,
   .compact-stack {

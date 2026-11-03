@@ -1,0 +1,42 @@
+{
+  "case": "ioc-component-position",
+  "invariant": "ioc-header-component",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头只允许位于首分区的第一个组件",
+      "paths": [
+        "/sections/0/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "…": "共1个键"
+              },
+              "filterIds": [
+                "…（共1项）"
+              ],
+              "back": true,
+              "presentation": {
+                "…": "共3个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-component-position.json"
+}

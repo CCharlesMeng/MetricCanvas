@@ -5,25 +5,6 @@
   "meta": {
     "title": "IOC页头 · 协同小组权限输入"
   },
-  "iocHeader": {
-    "identity": {
-      "title": "协同小组权限输入",
-      "tags": [
-        {
-          "text": "合成候选与查询",
-          "id": "tag-0"
-        }
-      ]
-    },
-    "back": true,
-    "filterIds": [
-      "group"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
-  },
   "filters": [
     {
       "id": "group",
@@ -100,6 +81,38 @@
   },
   "sections": [
     {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "协同小组权限输入",
+              "tags": [
+                {
+                  "text": "合成候选与查询",
+                  "id": "tag-0"
+                }
+              ]
+            },
+            "back": true,
+            "filterIds": [
+              "group"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "main",
       "components": [
         {
@@ -140,6 +153,5 @@
         }
       ]
     }
-  ],
-  "dashboardToolbar": "hidden"
+  ]
 }

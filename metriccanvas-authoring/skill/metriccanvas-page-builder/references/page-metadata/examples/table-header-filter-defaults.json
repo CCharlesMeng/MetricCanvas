@@ -99,6 +99,21 @@
       "id": "description",
       "components": [
         {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "列头筛选默认选中值"
+            },
+            "filterIds": [
+              "show-status"
+            ]
+          }
+        },
+        {
           "id": "description",
           "type": "text",
           "layout": {

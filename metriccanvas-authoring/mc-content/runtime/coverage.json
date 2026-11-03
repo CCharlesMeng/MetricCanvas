@@ -818,6 +818,21 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-header-section-placement.json",
+      "target": "product-contracts/page/conformance/valid/ioc-header-section-placement.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-header-section-groups.json",
+      "target": "product-contracts/page/conformance/valid/ioc-header-section-groups.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-header-section-sticky.json",
+      "target": "product-contracts/page/conformance/valid/ioc-header-section-sticky.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-column-enums.json",
       "target": "product-contracts/page/conformance/valid/table-column-enums.json",
       "scope": "exact product contract"
@@ -888,6 +903,216 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-component-availability-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-business-filter-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-business-filter-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-calendar-window-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-calendar-window-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-currency-selection-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-currency-selection-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-dual-axis-alignment.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-dual-axis-alignment.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-business.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-business.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-currency.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-currency.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-dense.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-dense.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-detail.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-detail.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-groups.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-groups.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-incentives.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-incentives.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-inputs.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-inputs.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-models.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-models.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-months.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-months.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-standard.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-standard.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-time.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-time.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-unconfigured.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-unconfigured.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-navigation-detail-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-navigation-detail-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-navigation-list-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-navigation-list-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-navigation-source-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-navigation-source-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-paged-union-branches.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-paged-union-branches.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-paged-union-composite-branches.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-paged-union-composite-branches.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-paged-union-composite-key.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-paged-union-composite-key.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-paged-union-generated-key.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-paged-union-generated-key.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-paged-union-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-paged-union-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-period-comparison-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-period-comparison-demo.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-period-comparison-query-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-period-comparison-query-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-period-query-branches.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-period-query-branches.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-period-query-columns-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-period-query-columns-demo.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-pie-table-legend.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-pie-table-legend.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-query-mode-binding-branches-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-query-mode-binding-branches-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-table-hierarchy-lookup-param.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-table-hierarchy-lookup-param.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-table-hierarchy-selection.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-table-hierarchy-selection.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-time-binding-branches-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-time-binding-branches-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-time-modes-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-time-modes-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-time-presets-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-time-presets-page.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-unified-overflow-header.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-unified-overflow-header.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-unified-year-header.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-unified-year-header.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-region-url-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-region-url-demo.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-key-office-filter-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-filter-demo.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-key-office-filter-target.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-filter-target.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/layout-compatibility.json",
       "target": "product-contracts/page/conformance/layout-compatibility.json",
       "scope": "exact product contract"
@@ -920,6 +1145,41 @@
     {
       "source": "product:page/conformance/parameter-extraction.json",
       "target": "product-contracts/page/conformance/parameter-extraction.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-component-detail.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-component-detail.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-component-position.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-component-position.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-component-span.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-component-span.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-component-mixed.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-component-mixed.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-component-count.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-component-count.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-component-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-component-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-component-legacy-version.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-component-legacy-version.json",
       "scope": "exact product contract"
     },
     {
@@ -3518,6 +3778,46 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/component-iocHeader.json",
+      "target": "references/page-metadata/examples/component-iocHeader.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-component-detail.json",
+      "target": "references/page-metadata/errors/ioc-component-detail.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-component-position.json",
+      "target": "references/page-metadata/errors/ioc-component-position.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-component-span.json",
+      "target": "references/page-metadata/errors/ioc-component-span.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-component-mixed.json",
+      "target": "references/page-metadata/errors/ioc-component-mixed.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-component-count.json",
+      "target": "references/page-metadata/errors/ioc-component-count.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-component-old-version.json",
+      "target": "references/page-metadata/errors/ioc-component-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-component-legacy-version.json",
+      "target": "references/page-metadata/errors/ioc-component-legacy-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/ioc-region-url-reserved-key.json",
       "target": "references/page-metadata/errors/ioc-region-url-reserved-key.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -5933,6 +6233,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/ioc-header-section-placement.json",
+      "target": "references/page-metadata/examples/ioc-header-section-placement.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/page.md",
       "target": "references/page-metadata/page.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6768,6 +7073,21 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/ioc-component-availability-page.json",
+      "target": "references/page-metadata/examples/ioc-component-availability-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/ioc-component-ioc-header-page.json",
+      "target": "references/page-metadata/examples/ioc-component-ioc-header-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/components/iocHeader.md",
+      "target": "references/page-metadata/components/iocHeader.md",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/README.md",
       "target": "references/page-metadata/README.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6954,13 +7274,13 @@
     }
   ],
   "counts": {
-    "product": 1359,
+    "product": 1423,
     "authoring": 31,
-    "modules": 33,
-    "topics": 229,
-    "nodes": 2478,
+    "modules": 34,
+    "topics": 231,
+    "nodes": 2520,
     "tools": 9,
-    "components": 19
+    "components": 20
   },
   "checks": [
     "source-denominator",

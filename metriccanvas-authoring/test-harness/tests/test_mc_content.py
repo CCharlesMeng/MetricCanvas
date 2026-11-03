@@ -206,6 +206,7 @@ class McContentTest(unittest.TestCase):
     def test_schema_compatibility_is_not_version_string_replacement(self):
         document = page()
         document['schemaVersion'] = '6.1'
+        document['dashboardToolbar'] = 'hidden'
         result = inspect_schema(document, root=CONTENT)
         self.assertFalse(result['readable'])
         self.assertTrue(result['upgrade']['possible'])
@@ -215,6 +216,14 @@ class McContentTest(unittest.TestCase):
         document['schemaVersion'] = '999.0'
         result = inspect_schema(document, root=CONTENT)
         self.assertFalse(result['upgrade']['possible'])
+
+    def test_legacy_toolbar_stays_readable_but_needs_manual_ioc_migration(self):
+        document = page()
+        document['schemaVersion'] = '6.80'
+        result = inspect_schema(document, root=CONTENT)
+        self.assertTrue(result['readable'])
+        self.assertFalse(result['upgrade']['possible'])
+        self.assertIn('/dashboardToolbar', [item['path'] for item in result['upgrade']['errors']])
 
     def test_future_schema_releases_use_product_policy_without_an_mc_version_copy(self):
         policy = query_content('protocol', 'version-policy', root=CONTENT)['content']
@@ -250,6 +259,7 @@ class McContentTest(unittest.TestCase):
             original = Path(folder) / 'mc-content-layout-demo.json'
             value = page()
             value['schemaVersion'] = '6.1'
+            value['dashboardToolbar'] = 'hidden'
             bytes_before = (json.dumps(value, ensure_ascii=False, indent=2) + '\n').encode()
             original.write_bytes(bytes_before)
             target = Path(folder) / 'upgrade'

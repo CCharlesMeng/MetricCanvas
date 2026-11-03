@@ -227,16 +227,19 @@ export function editComponent(
   if (!component) return { ok: false, message: '选中的组件不在当前文档里' };
   if (edit.title !== undefined) {
     const props = recordOf(component.props) ?? {};
-    if (edit.title.trim() === '') delete props.title;
-    else props.title = edit.title;
+    const target=component.type==='iocHeader'?recordOf(props.identity)??{}:props;
+    if (edit.title.trim() === '') delete target.title;
+    else target.title = edit.title;
+    if(component.type==='iocHeader')props.identity=target;
     component.props = props;
   }
   if (edit.span !== undefined) {
+    if(component.type==='iocHeader'&&edit.span!==12)return {ok:false,message:'IOC 页头必须占满分区，span 为12'};
     const layout = recordOf(component.layout) ?? {};
     const section = findSection(next, locator.sectionId);
     const tracks = section?.columnTracks;
     const columnCount = Array.isArray(tracks) ? tracks.length : 12;
-    layout.span = Math.min(columnCount, Math.max(1, Math.round(edit.span)));
+    layout.span = component.type==='iocHeader'?12:Math.min(columnCount, Math.max(1, Math.round(edit.span)));
     component.layout = layout;
   }
   return projectCanvasDraft(next);

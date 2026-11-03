@@ -6,13 +6,6 @@
     "title": "层级筛选联动父子表格",
     "description": "合成 DQE Sim：完整地区部指标、独立归属定位与按需代表处明细。父指标始终为地区部整体。"
   },
-  "iocHeader": {
-    "filterIds": [
-      "region",
-      "year",
-      "product"
-    ]
-  },
   "dataSources": {
     "region-summary": {
       "fields": {
@@ -279,6 +272,26 @@
     }
   ],
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterIds": [
+              "region",
+              "year",
+              "product"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "hierarchy",
       "components": [

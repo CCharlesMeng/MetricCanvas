@@ -1,3 +1,4 @@
+import { headerDeclarations } from './header-binding';
 import { chartOptionScopes } from './chart-option';
 import type { ValueFormatPreset } from './field';
 import { isFilterTextValueReference } from './filter-text-value';
@@ -59,22 +60,7 @@ function resolveTexts(document: unknown, resolution: TextValueResolution, preser
   const opaque = chartOptionScopes(document);
   const source = document as Record<string, unknown>;
   const resolved = visit(textValueScope(source)) as Record<string, unknown>;
-  if (resolved.iocHeader && typeof resolved.iocHeader === 'object') {
-    const header = resolved.iocHeader as Record<string, unknown>;
-    const identity = header.identity as Record<string, unknown> | undefined;
-    const original = (source.iocHeader as {identity?:{title?:unknown}} | undefined)?.identity;
-    if (identity) {
-      if (original?.title !== undefined && !identity.title) identity.title = '未命名';
-      const code = identity.code as {label?:unknown;value?:unknown}|undefined;
-      if (code && (!code.value || !code.label)) delete identity.code;
-      const description=identity.description as {text?:unknown}|undefined;
-      if(description && !description.text) delete identity.description;
-      for (const key of ['tags','facts']) {
-        const items=identity[key] as Array<Record<string,unknown>>|undefined;
-        if(items) {const filtered=items.filter(item=>key==='tags'?item.text:item.value && item.label);if(filtered.length)identity[key]=filtered;else delete identity[key];}
-      }
-    }
-  }
+  normalizeHeaderIdentities(source,resolved);
 
   return Object.hasOwn(source, 'dataSources')
     ? { ...resolved, dataSources: source.dataSources }
@@ -150,4 +136,26 @@ function defaultFormatter(value: PageParamValue): string {
   if (typeof value === 'object' && !Array.isArray(value)) return formatPeriod(value);
   if (Array.isArray(value)) return value.join('、');
   return String(value);
+}
+
+function normalizeHeaderIdentities(source:unknown,resolved:unknown):void {
+  const originals=new Map(headerDeclarations(source).map(header=>[header.path,header.props]));
+  for(const header of headerDeclarations(resolved))normalizeHeaderIdentity(header.props,originals.get(header.path));
+}
+function normalizeHeaderIdentity(header:Record<string,unknown>,original?:Record<string,unknown>):void {
+  const identity=header.identity as Record<string,unknown>|undefined;
+  if(!identity)return;
+  const originalIdentity=original?.identity as Record<string,unknown>|undefined;
+  if(originalIdentity?.title!==undefined&&!identity.title)identity.title='未命名';
+  const code=identity.code as {label?:unknown;value?:unknown}|undefined;
+  if(code&&(!code.value||!code.label))delete identity.code;
+  const description=identity.description as {text?:unknown}|undefined;
+  if(description&&!description.text)delete identity.description;
+  for(const key of ['tags','facts'])normalizeIdentityItems(identity,key);
+}
+function normalizeIdentityItems(identity:Record<string,unknown>,key:string):void {
+  const items=identity[key] as Array<Record<string,unknown>>|undefined;
+  if(!items)return;
+  const filtered=items.filter(item=>key==='tags'?item.text:item.value&&item.label);
+  if(filtered.length)identity[key]=filtered;else delete identity[key];
 }

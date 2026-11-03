@@ -1,3 +1,5 @@
+import { headerDeclarations } from './header-binding';
+import type { IocHeaderDeclaration } from './schema/ioc-header';
 import {queryBudgetErrors,timeQueryErrors} from './query-selection-validation';
 import {validateCalendarTimeRange} from './filter';
 import {initialModeRange} from './time-mode';
@@ -25,6 +27,17 @@ export function timeExtensionErrors(page:Page):TypedError[]{
   if(filter.min&&filter.max&&filter.min>filter.max)fail(path,'日期上下限顺序不合法');
  }
  errors.push(...timeQueryErrors(page));
- for(const fact of page.iocHeader?.identity?.facts??[])if(typeof fact.value==='object'&&'fact' in fact.value){const expected=fact.kind==='latestDataPeriod'?['latest','latestComplete']:[fact.kind];if(!expected.includes(fact.value.part))fail('/iocHeader/identity/facts','期间事实part与kind不匹配');}
+ errors.push(...headerFactErrors(page));
+
+ return errors;
+}
+
+function headerFactErrors(page:Page):TypedError[] {
+ const errors:TypedError[]=[];
+ for(const {props,path} of headerDeclarations(page))for(const fact of (props as IocHeaderDeclaration).identity?.facts??[]){
+  if(typeof fact.value!=='object'||!('fact' in fact.value))continue;
+  const expected=fact.kind==='latestDataPeriod'?['latest','latestComplete']:[fact.kind];
+  if(!expected.includes(fact.value.part))errors.push({type:'SCHEMA_ERROR',path:path+'/identity/facts',message:'期间事实part与kind不匹配'});
+ }
  return errors;
 }

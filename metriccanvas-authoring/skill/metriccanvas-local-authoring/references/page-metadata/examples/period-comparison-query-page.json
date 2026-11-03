@@ -19,17 +19,6 @@
       }
     }
   ],
-  "iocHeader": {
-    "identity": {
-      "title": "同比环比：按页补查（合成数据）"
-    },
-    "filterIds": [
-      "period"
-    ],
-    "presentation": {
-      "layout": "inline"
-    }
-  },
   "dataSources": {
     "current": {
       "fields": {
@@ -397,6 +386,30 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "同比环比：按页补查（合成数据）"
+            },
+            "filterIds": [
+              "period"
+            ],
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "comparison",
       "components": [

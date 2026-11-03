@@ -2,27 +2,9 @@
   "schemaVersion": "6.82",
   "id": "navigation-source-page",
   "layout": "dashboard",
-  "dashboardToolbar": "hidden",
   "meta": {
     "title": "IOC B5：概览传值",
     "description": "本地合成跨页传值验收；不保存或恢复来源视图。"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "IOC B5：概览传值",
-      "tags": [
-        {
-          "id": "synthetic",
-          "text": "合成验收",
-          "tone": "info"
-        }
-      ]
-    },
-    "filterIds": [
-      "period",
-      "currency",
-      "regions"
-    ]
   },
   "filters": [
     {
@@ -88,6 +70,36 @@
   ],
   "dataSources": {},
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "IOC B5：概览传值",
+              "tags": [
+                {
+                  "id": "synthetic",
+                  "text": "合成验收",
+                  "tone": "info"
+                }
+              ]
+            },
+            "filterIds": [
+              "period",
+              "currency",
+              "regions"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "links",
       "container": "plain",

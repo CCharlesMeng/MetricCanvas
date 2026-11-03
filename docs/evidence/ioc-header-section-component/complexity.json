@@ -1,0 +1,6531 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "scope": "57 edited or added TS/JS files and extracted Svelte scripts; generated bundles excluded; template callbacks reviewed separately",
+  "maxNewSelfCC": 10,
+  "newOver15": [],
+  "newFunctionsAndCallbacks": [
+    {
+      "file": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "function": "removeHeaderFilter",
+      "line": 86,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "function": "removeHeaderFilter/<anonymous@88:37>",
+      "line": 88,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/platform/tests/workbench/document-edit.test.ts",
+      "function": "<anonymous@315:91>",
+      "line": 315,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "apps/platform/tests/workbench/report-date-edit.test.ts",
+      "function": "<anonymous@38:100>",
+      "line": 38,
+      "before": null,
+      "after": 5
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/filter-text.ts",
+      "function": "periodFactPage/<anonymous@34:27>/<anonymous@36:41>",
+      "line": 36,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/metric-canvas/src/AuthoringSection.svelte",
+      "function": "componentTitle",
+      "line": 213,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "componentPlacementErrors",
+      "line": 62,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "componentPlacementErrors/fail",
+      "line": 65,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "componentPlacementErrors/<anonymous@66:27>",
+      "line": 66,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "emptyIocHeaderErrors",
+      "line": 78,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "emptyIocHeaderErrors/<anonymous@79:47>",
+      "line": 79,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeHeaderIdentities",
+      "line": 141,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeHeaderIdentities/<anonymous@142:58>",
+      "line": 142,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeHeaderIdentity",
+      "line": 145,
+      "before": null,
+      "after": 10
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeIdentityItems",
+      "line": 156,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeIdentityItems/<anonymous@159:31>",
+      "line": 159,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/time-extension-validation.ts",
+      "function": "headerFactErrors",
+      "line": 35,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@425:38>/<anonymous@425:124>",
+      "line": 425,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@777:9>",
+      "line": 777,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@778:13>",
+      "line": 778,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 782,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tests/page-reference.test.ts",
+      "function": "<anonymous@157:85>",
+      "line": 157,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2523,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2524,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2525,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2526,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2527,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2528,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2532,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "documentFor",
+      "line": 14,
+      "before": null,
+      "after": 6
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "back",
+      "line": 26,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "shadowRuntime",
+      "line": 27,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "shadowRuntime/destroy",
+      "line": 30,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "exportState",
+      "line": 32,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "<anonymous@8:21>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "scene",
+      "line": 11,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "selectedB",
+      "line": 12,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "<anonymous@19:76>",
+      "line": 19,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "<anonymous@51:29>",
+      "line": 51,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/IocHeaderFrame.svelte",
+      "function": "<anonymous@8:11>",
+      "line": 8,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/IocHeaderFrame.svelte",
+      "function": "<anonymous@8:11>/<anonymous@8:62>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/IocHeaderFrame.svelte",
+      "function": "<anonymous@9:11>",
+      "line": 9,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "compatibilityHeaderSection",
+      "line": 4,
+      "before": null,
+      "after": 6
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "compatibilityHeaderSection/<anonymous@8:43>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "compatibilityHeaderSection/<anonymous@8:99>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "availableId",
+      "line": 12,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "leadingHeaderSectionId",
+      "line": 17,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "scrollBoundary",
+      "line": 2,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "movePreservingFocus",
+      "line": 8,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "closePopovers",
+      "line": 14,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame",
+      "line": 17,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/<anonymous@19:19>",
+      "line": 19,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/restore",
+      "line": 23,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/update",
+      "line": 27,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/schedule",
+      "line": 40,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/<anonymous@45:10>",
+      "line": 45,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility",
+      "line": 53,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility/<anonymous@55:19>",
+      "line": 55,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility/update",
+      "line": 56,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility/<anonymous@59:19>",
+      "line": 59,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "object",
+      "line": 6,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "documentIocHeader",
+      "line": 11,
+      "before": null,
+      "after": 5
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "headerDeclarations",
+      "line": 23,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "headerDeclarations/<anonymous@27:35>",
+      "line": 27,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "hasLegacyDefaultHeader",
+      "line": 35,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "resolveHeaderBinding",
+      "line": 49,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "usesIocRegion",
+      "line": 61,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "iocHeaderDeclaration",
+      "line": 65,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "mapIocHeader",
+      "line": 70,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "mapIocHeader/<anonymous@74:46>",
+      "line": 74,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "mapIocHeader/<anonymous@74:46>/<anonymous@74:119>",
+      "line": 74,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "withoutHeaderBranch",
+      "line": 10,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "withoutHeaderBranch/<anonymous@11:45>",
+      "line": 11,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "withoutHeaderBranch/<anonymous@15:54>",
+      "line": 15,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "pageStructureValidator",
+      "line": 18,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "pageStructureValidator/<anonymous@20:35>",
+      "line": 20,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader",
+      "line": 9,
+      "before": null,
+      "after": 6
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader/<anonymous@15:35>",
+      "line": 15,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader/<anonymous@17:46>",
+      "line": 17,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader/<anonymous@18:35>",
+      "line": 18,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "availableId",
+      "line": 26,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeLegacyToolbar",
+      "line": 31,
+      "before": null,
+      "after": 7
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "load",
+      "line": 13,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "page",
+      "line": 14,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "errors",
+      "line": 17,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>",
+      "line": 19,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@20:99>",
+      "line": 20,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@26:99>",
+      "line": 26,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@31:79>",
+      "line": 31,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>",
+      "line": 36,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>/<anonymous@38:155>",
+      "line": 38,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>/<anonymous@39:100>",
+      "line": 39,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>/<anonymous@40:80>",
+      "line": 40,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@43:86>",
+      "line": 43,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@43:86>/<anonymous@47:36>",
+      "line": 47,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@43:86>/<anonymous@49:69>",
+      "line": 49,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@51:94>",
+      "line": 51,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@51:94>/<anonymous@53:48>",
+      "line": 53,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@56:56>",
+      "line": 56,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@60:90>",
+      "line": 60,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@67:101>",
+      "line": 67,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@76:95>",
+      "line": 76,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@80:65>",
+      "line": 80,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-sources.ts",
+      "function": "appendIocComponentFixtures",
+      "line": 5,
+      "before": null,
+      "after": 4
+    }
+  ],
+  "modifiedOver15": [
+    {
+      "file": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "function": "editReportDate",
+      "line": 32,
+      "before": 42,
+      "after": 38
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "run",
+      "line": 386,
+      "before": 48,
+      "after": 48
+    },
+    {
+      "file": "packages/page/src/time-extension-validation.ts",
+      "function": "timeExtensionErrors",
+      "line": 8,
+      "before": 61,
+      "after": 55
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "function": "parsePage",
+      "line": 121,
+      "before": 31,
+      "after": 23
+    }
+  ],
+  "conservativeChangedFunctionRows": [
+    {
+      "file": "apps/platform/src/lib/workbench/document-edit.ts",
+      "function": "editComponent",
+      "line": 220,
+      "before": 8,
+      "after": 14
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "function": "editReportDate",
+      "line": 32,
+      "before": 42,
+      "after": 38
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "function": "removeHeaderFilter",
+      "line": 86,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "function": "removeHeaderFilter/<anonymous@88:37>",
+      "line": 88,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/platform/tests/workbench/document-edit.test.ts",
+      "function": "<anonymous@315:91>",
+      "line": 315,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "apps/platform/tests/workbench/report-date-edit.test.ts",
+      "function": "<anonymous@38:100>",
+      "line": 38,
+      "before": null,
+      "after": 5
+    },
+    {
+      "file": "apps/playground/src/lib/scenario-guide.ts",
+      "function": "componentConfiguration",
+      "line": 64,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "file": "apps/playground/tests/scenario-directory.test.ts",
+      "function": "<anonymous@14:20>",
+      "line": 14,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/scenario-directory.test.ts",
+      "function": "<anonymous@14:20>/<anonymous@51:45>",
+      "line": 51,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/scenario-directory.test.ts",
+      "function": "<anonymous@14:20>/<anonymous@51:45>/<anonymous@61:34>",
+      "line": 61,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "run",
+      "line": 386,
+      "before": 48,
+      "after": 48
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "run/<anonymous@492:97>",
+      "line": 492,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "run/<anonymous@492:193>",
+      "line": 492,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "run/<anonymous@492:193>/<anonymous@492:277>",
+      "line": 492,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "run/displayInputs",
+      "line": 513,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "run/readOnly",
+      "line": 513,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "parseFilterURL",
+      "line": 737,
+      "before": 1,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "function": "mergedSearch",
+      "line": 741,
+      "before": 4,
+      "after": 5
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/filter-text.ts",
+      "function": "periodFactPage",
+      "line": 33,
+      "before": 2,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/filter-text.ts",
+      "function": "periodFactPage/<anonymous@34:27>",
+      "line": 34,
+      "before": 4,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/filter-text.ts",
+      "function": "periodFactPage/<anonymous@34:27>/<anonymous@36:41>",
+      "line": 36,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/page-header.ts",
+      "function": "pageFiltersReadOnly",
+      "line": 18,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/page-header.ts",
+      "function": "legacyHeader",
+      "line": 22,
+      "before": 5,
+      "after": 7
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/page-header.ts",
+      "function": "resolvePageHeader",
+      "line": 29,
+      "before": 9,
+      "after": 9
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/widget-host-state.ts",
+      "function": "rendersWithoutWidgetHost",
+      "line": 22,
+      "before": 7,
+      "after": 8
+    },
+    {
+      "file": "packages/engine/runtime/src/navigation-inputs.ts",
+      "function": "projectNavigationInputs",
+      "line": 15,
+      "before": 8,
+      "after": 8
+    },
+    {
+      "file": "packages/engine/runtime/src/navigation-inputs.ts",
+      "function": "projectNavigationInputs/<anonymous@20:149>",
+      "line": 20,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime/src/navigation-inputs.ts",
+      "function": "projectNavigationInputs/<anonymous@20:270>",
+      "line": 20,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/widgets/tests/responsive-contract.test.ts",
+      "function": "<anonymous@21:36>",
+      "line": 21,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/widgets/tests/responsive-contract.test.ts",
+      "function": "<anonymous@21:36>/<anonymous@22:52>",
+      "line": 22,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/widgets/tests/responsive-contract.test.ts",
+      "function": "<anonymous@21:36>/<anonymous@22:52>/<anonymous@26:54>",
+      "line": 26,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/metric-canvas/src/AuthoringSection.svelte",
+      "function": "attachCell",
+      "line": 26,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/metric-canvas/src/AuthoringSection.svelte",
+      "function": "attachCell/<anonymous@27:12>",
+      "line": 27,
+      "before": 6,
+      "after": 6
+    },
+    {
+      "file": "packages/metric-canvas/src/AuthoringSection.svelte",
+      "function": "componentTitle",
+      "line": 213,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/metric-canvas/src/AuthoringSection.svelte",
+      "function": "editTitle",
+      "line": 217,
+      "before": 4,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "iocHeaderErrors",
+      "line": 8,
+      "before": 7,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "iocHeaderErrors/<anonymous@18:30>",
+      "line": 18,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "iocHeaderErrors/<anonymous@25:29>",
+      "line": 25,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "iocHeaderErrors/<anonymous@29:28>",
+      "line": 29,
+      "before": 7,
+      "after": 7
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "iocRegionErrors",
+      "line": 39,
+      "before": 12,
+      "after": 13
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "componentPlacementErrors",
+      "line": 62,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "componentPlacementErrors/fail",
+      "line": 65,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "componentPlacementErrors/<anonymous@66:27>",
+      "line": 66,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "emptyIocHeaderErrors",
+      "line": 78,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/ioc-header.ts",
+      "function": "emptyIocHeaderErrors/<anonymous@79:47>",
+      "line": 79,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/layout-compatibility.ts",
+      "function": "canonicalLayoutDocument",
+      "line": 17,
+      "before": 5,
+      "after": 10
+    },
+    {
+      "file": "packages/page/src/navigate.ts",
+      "function": "urlInputErrors",
+      "line": 89,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/navigate.ts",
+      "function": "urlInputErrors/<anonymous@92:32>",
+      "line": 92,
+      "before": 7,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/page-list-entry.ts",
+      "function": "pageListEntry",
+      "line": 10,
+      "before": 6,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/page.ts",
+      "function": "documentUsesRuntimeBackToolbar",
+      "line": 270,
+      "before": 11,
+      "after": 11
+    },
+    {
+      "file": "packages/page/src/page.ts",
+      "function": "isDataComponent",
+      "line": 291,
+      "before": 7,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/report-date-filters.ts",
+      "function": "periodDeclarationErrors",
+      "line": 70,
+      "before": 14,
+      "after": 14
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "resolveTexts",
+      "line": 55,
+      "before": 19,
+      "after": 6
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeHeaderIdentities",
+      "line": 141,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeHeaderIdentities/<anonymous@142:58>",
+      "line": 142,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeHeaderIdentity",
+      "line": 145,
+      "before": null,
+      "after": 10
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeIdentityItems",
+      "line": 156,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "function": "normalizeIdentityItems/<anonymous@159:31>",
+      "line": 159,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/time-extension-validation.ts",
+      "function": "timeExtensionErrors",
+      "line": 8,
+      "before": 61,
+      "after": 55
+    },
+    {
+      "file": "packages/page/src/time-extension-validation.ts",
+      "function": "headerFactErrors",
+      "line": 35,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/upgrade-document.ts",
+      "function": "upgradePageDocument",
+      "line": 41,
+      "before": 12,
+      "after": 13
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "function": "parsePage",
+      "line": 121,
+      "before": 31,
+      "after": 23
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "function": "sectionColumnTrackErrors",
+      "line": 497,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "function": "sectionColumnTrackErrors/<anonymous@500:37>",
+      "line": 500,
+      "before": 3,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 58,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@58:128>",
+      "line": 58,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 60,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 63,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 66,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 68,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 69,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 71,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 74,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 76,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 78,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 80,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@80:120>",
+      "line": 80,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 82,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@82:195>",
+      "line": 82,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 84,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@84:134>",
+      "line": 84,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 86,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 88,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@88:47>",
+      "line": 88,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 91,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@91:47>",
+      "line": 91,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 93,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 96,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 100,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 102,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 104,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@104:51>",
+      "line": 104,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 108,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@108:133>",
+      "line": 108,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 110,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 111,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@111:136>",
+      "line": 111,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 115,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 117,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 120,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 129,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 137,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 139,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@139:142>",
+      "line": 139,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 142,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@142:50>",
+      "line": 142,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 144,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 147,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 159,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 161,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 163,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 164,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 168,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 177,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 179,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 182,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@184:36>",
+      "line": 184,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 187,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@187:171>",
+      "line": 187,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 196,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@196:108>",
+      "line": 196,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 201,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@201:149>",
+      "line": 201,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 205,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@205:181>",
+      "line": 205,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 208,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@208:130>",
+      "line": 208,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 209,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 210,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@210:102>",
+      "line": 210,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@210:102>/<anonymous@210:149>",
+      "line": 210,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@210:206>",
+      "line": 210,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@210:206>/<anonymous@210:324>",
+      "line": 210,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@210:378>",
+      "line": 210,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 211,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 212,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@212:110>",
+      "line": 212,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@212:110>/<anonymous@212:158>",
+      "line": 212,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 213,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@213:103>",
+      "line": 213,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@213:103>/<anonymous@213:150>",
+      "line": 213,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 214,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@214:95>",
+      "line": 214,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@214:239>",
+      "line": 214,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@214:239>/<anonymous@214:284>",
+      "line": 214,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 215,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 216,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@216:144>",
+      "line": 216,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@216:144>/<anonymous@216:165>",
+      "line": 216,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 217,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@217:86>",
+      "line": 217,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 219,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 222,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@222:50>",
+      "line": 222,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 226,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@226:50>",
+      "line": 226,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 231,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@231:50>",
+      "line": 231,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 235,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@235:50>",
+      "line": 235,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 239,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@239:47>",
+      "line": 239,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 243,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@243:47>",
+      "line": 243,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 247,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@247:68>",
+      "line": 247,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 250,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@250:55>",
+      "line": 250,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 254,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@254:50>",
+      "line": 254,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 258,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@266:40>",
+      "line": 266,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@266:40>/<anonymous@268:57>",
+      "line": 268,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 274,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@274:51>",
+      "line": 274,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@274:51>/<anonymous@276:55>",
+      "line": 276,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 281,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 285,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 289,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 294,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 300,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@301:57>",
+      "line": 301,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@302:104>",
+      "line": 302,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 308,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@308:51>",
+      "line": 308,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 312,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@312:51>",
+      "line": 312,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 316,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@317:35>",
+      "line": 317,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@319:36>",
+      "line": 319,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 324,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@324:51>",
+      "line": 324,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 329,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@329:50>",
+      "line": 329,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 333,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@333:50>",
+      "line": 333,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@338:32>/<anonymous@339:55>",
+      "line": 339,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 344,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@344:151>",
+      "line": 344,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 348,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 354,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@354:53>/<anonymous@356:61>",
+      "line": 356,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 361,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@363:11>",
+      "line": 363,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 367,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@367:52>",
+      "line": 367,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@367:52>/<anonymous@369:53>",
+      "line": 369,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@370:11>",
+      "line": 370,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 374,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@374:53>",
+      "line": 374,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@374:53>/<anonymous@375:89>",
+      "line": 375,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 381,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@381:53>",
+      "line": 381,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@381:53>/<anonymous@382:89>",
+      "line": 382,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@384:14>",
+      "line": 384,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@401:123>",
+      "line": 401,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 408,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@409:36>",
+      "line": 409,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@409:36>/<anonymous@410:90>",
+      "line": 410,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@412:16>",
+      "line": 412,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@413:36>",
+      "line": 413,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@415:13>",
+      "line": 415,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@424:27>",
+      "line": 424,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@425:38>",
+      "line": 425,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@425:38>/<anonymous@425:124>",
+      "line": 425,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@425:164>",
+      "line": 425,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@435:27>",
+      "line": 435,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@436:67>",
+      "line": 436,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@437:102>",
+      "line": 437,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 466,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@481:14>",
+      "line": 481,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 486,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@489:9>",
+      "line": 489,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 496,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 501,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 507,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 515,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 520,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@523:9>",
+      "line": 523,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 529,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@532:9>",
+      "line": 532,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 538,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 544,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 550,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 555,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 560,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 565,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 570,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 578,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 586,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 594,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 599,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 605,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 611,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@614:9>",
+      "line": 614,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 620,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 626,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 632,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@635:9>",
+      "line": 635,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 641,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@644:9>",
+      "line": 644,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 650,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@653:9>",
+      "line": 653,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@655:13>",
+      "line": 655,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 660,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 665,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 670,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@671:29>",
+      "line": 671,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@672:9>",
+      "line": 672,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 678,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@679:29>",
+      "line": 679,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@680:9>",
+      "line": 680,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 686,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 691,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@694:9>",
+      "line": 694,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 700,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@703:9>",
+      "line": 703,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 709,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@712:9>",
+      "line": 712,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@716:9>",
+      "line": 716,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 723,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 728,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 733,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@736:9>",
+      "line": 736,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@740:9>",
+      "line": 740,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 747,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 752,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 757,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@760:9>",
+      "line": 760,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 774,
+      "before": 3,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@777:9>",
+      "line": 777,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt/<anonymous@778:13>",
+      "line": 778,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "function": "usedAt",
+      "line": 782,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/canonical-writers.test.ts",
+      "function": "<anonymous@7:39>",
+      "line": 7,
+      "before": 7,
+      "after": 11
+    },
+    {
+      "file": "packages/page/tests/layout-compatibility.test.ts",
+      "function": "<anonymous@8:31>",
+      "line": 8,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "file": "packages/page/tests/layout-compatibility.test.ts",
+      "function": "<anonymous@8:31>/<anonymous@11:59>",
+      "line": 11,
+      "before": 3,
+      "after": 4
+    },
+    {
+      "file": "packages/page/tests/query-output-measures.test.ts",
+      "function": "<anonymous@11:31>",
+      "line": 11,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/query-output-measures.test.ts",
+      "function": "<anonymous@11:31>/<anonymous@12:38>",
+      "line": 12,
+      "before": 3,
+      "after": 3
+    },
+    {
+      "file": "tests/local-authoring-upgrade.test.ts",
+      "function": "<anonymous@17:25>",
+      "line": 17,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tests/local-authoring-upgrade.test.ts",
+      "function": "<anonymous@17:25>/<anonymous@30:37>",
+      "line": 30,
+      "before": 2,
+      "after": 2
+    },
+    {
+      "file": "tests/page-reference.test.ts",
+      "function": "<anonymous@23:52>",
+      "line": 23,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tests/page-reference.test.ts",
+      "function": "<anonymous@28:25>",
+      "line": 28,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tests/page-reference.test.ts",
+      "function": "<anonymous@28:25>/<anonymous@122:42>",
+      "line": 122,
+      "before": 7,
+      "after": 11
+    },
+    {
+      "file": "tests/page-reference.test.ts",
+      "function": "<anonymous@147:92>",
+      "line": 147,
+      "before": 3,
+      "after": 1
+    },
+    {
+      "file": "tests/page-reference.test.ts",
+      "function": "<anonymous@157:85>",
+      "line": 157,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "tools/dqe-sim/tests/loading-structure.test.ts",
+      "function": "<anonymous@8:75>",
+      "line": 8,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/export-authoring-contracts.ts",
+      "function": "buildProductOutputs",
+      "line": 83,
+      "before": 15,
+      "after": 15
+    },
+    {
+      "file": "tools/scripts/local-authoring-overview-example.ts",
+      "function": "overviewMapLedExample",
+      "line": 2,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/local-authoring-patterns.ts",
+      "function": "pagePattern",
+      "line": 39,
+      "before": 10,
+      "after": 10
+    },
+    {
+      "file": "tools/scripts/local-authoring-projection.ts",
+      "function": "referenceProjection",
+      "line": 139,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/local-authoring-projection.ts",
+      "function": "referenceProjection/<anonymous@140:90>",
+      "line": 140,
+      "before": 5,
+      "after": 9
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 59,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 60,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 61,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 62,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 63,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 64,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 65,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 68,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 69,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 72,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 73,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 74,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 75,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 82,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 86,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 87,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 90,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 96,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 97,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 98,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 99,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 100,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 101,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 106,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 107,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 108,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 109,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 115,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 116,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 117,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 118,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 119,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 130,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 132,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 142,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 144,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 146,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 154,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 155,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 156,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 157,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 158,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 159,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 163,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 164,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 165,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 166,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 169,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 170,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 171,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 172,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 175,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 178,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 179,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 182,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 183,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 184,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 185,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 186,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 187,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 191,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 192,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 193,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 194,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 196,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 197,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 200,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 201,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 202,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 203,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 205,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 206,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 209,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 210,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 211,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 212,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 213,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 216,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 218,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 219,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 220,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 221,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 222,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 226,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 227,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 228,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 229,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 230,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 232,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 235,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 236,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 237,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 238,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 239,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 240,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 244,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 245,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 246,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 247,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 248,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 249,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 251,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 255,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 256,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 257,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 258,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 259,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 260,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 264,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 265,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 266,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 267,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 268,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 271,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 273,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 274,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 275,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 276,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 279,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 280,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 281,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 284,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 285,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 286,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 287,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 290,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 291,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 292,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 293,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 296,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 297,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 299,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 300,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 303,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 304,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 305,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 306,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 307,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 310,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 312,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 313,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 314,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 315,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 318,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 319,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 323,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 324,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 325,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 326,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 327,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 328,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 330,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 336,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 337,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 338,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 339,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 340,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 346,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 347,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 348,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 354,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 355,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 356,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 357,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 358,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 364,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 365,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 366,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 367,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 368,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 369,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 371,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 375,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 376,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 377,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 378,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 379,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 380,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 384,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 385,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 386,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 387,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 388,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 389,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 393,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 394,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 395,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 396,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 397,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 400,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 402,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 403,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 404,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 405,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 406,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 409,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 410,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 411,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 412,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 413,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 414,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 420,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 422,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 424,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 431,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 433,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 435,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 437,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 439,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 446,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 448,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 450,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 457,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 459,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 461,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 468,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 470,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 472,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 479,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 481,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 488,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 495,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 502,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 509,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 517,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 518,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 519,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 520,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 528,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 529,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 530,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 531,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 532,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 533,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 535,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 536,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 537,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 538,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 539,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 540,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 554,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 560,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 568,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 576,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 585,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 600,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 608,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 623,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 631,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 641,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 649,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 659,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 678,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 693,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 708,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 723,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 738,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 753,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 768,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 785,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 803,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 818,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 824,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 832,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 840,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 848,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 856,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 864,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 872,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 881,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 898,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 913,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 921,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 931,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 940,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 955,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 970,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 978,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 986,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 994,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1009,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1017,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1032,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1048,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1056,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1071,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1086,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1094,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1102,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1110,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1125,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1142,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1157,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1170,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1185,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1200,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1215,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1232,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1240,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1255,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1272,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1280,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1288,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1296,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1304,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1312,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1320,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1328,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1336,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1344,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1352,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1367,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1375,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1390,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1403,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1421,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1436,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1444,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1452,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1460,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1468,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1476,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1484,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1500,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1509,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1518,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1527,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1538,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1549,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1561,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1572,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1580,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1592,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1600,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1608,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1616,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1627,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1635,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1653,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1661,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1669,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1688,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1696,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1712,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1727,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1735,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1750,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1765,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1782,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1797,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1805,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1820,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1835,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1849,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1865,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1874,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1883,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1895,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1897,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1899,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1901,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1903,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1912,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1914,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1916,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1918,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1920,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1929,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1931,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1933,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1935,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1937,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1939,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1951,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1959,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1967,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1979,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 1987,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2006,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2021,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2029,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2044,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2052,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2060,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2068,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2084,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2092,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2107,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2122,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2130,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2145,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2160,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2175,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2190,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2205,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2213,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2221,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2236,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2244,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2252,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2260,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2272,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2274,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2276,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2278,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2290,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2298,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2313,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2321,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2336,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2344,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2352,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2388,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2396,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2411,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2426,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2441,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2456,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2464,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2479,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2487,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2502,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2518,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2519,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2520,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2521,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2522,
+      "before": 1,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2523,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2524,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2525,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2526,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2527,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2528,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "function": "mutate",
+      "line": 2532,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "documentFor",
+      "line": 14,
+      "before": null,
+      "after": 6
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "back",
+      "line": 26,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "shadowRuntime",
+      "line": 27,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "shadowRuntime/destroy",
+      "line": 30,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/src/lib/prototypes/IocHeaderComponentExample.svelte",
+      "function": "exportState",
+      "line": 32,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "<anonymous@8:21>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "scene",
+      "line": 11,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "selectedB",
+      "line": 12,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "<anonymous@19:76>",
+      "line": 19,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "apps/playground/tests/ioc-header-component-browser.mjs",
+      "function": "<anonymous@51:29>",
+      "line": 51,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/IocHeaderFrame.svelte",
+      "function": "<anonymous@8:11>",
+      "line": 8,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/IocHeaderFrame.svelte",
+      "function": "<anonymous@8:11>/<anonymous@8:62>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/IocHeaderFrame.svelte",
+      "function": "<anonymous@9:11>",
+      "line": 9,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "compatibilityHeaderSection",
+      "line": 4,
+      "before": null,
+      "after": 6
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "compatibilityHeaderSection/<anonymous@8:43>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "compatibilityHeaderSection/<anonymous@8:99>",
+      "line": 8,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "availableId",
+      "line": 12,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/render-plan.ts",
+      "function": "leadingHeaderSectionId",
+      "line": 17,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "scrollBoundary",
+      "line": 2,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "movePreservingFocus",
+      "line": 8,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "closePopovers",
+      "line": 14,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame",
+      "line": 17,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/<anonymous@19:19>",
+      "line": 19,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/restore",
+      "line": 23,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/update",
+      "line": 27,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/schedule",
+      "line": 40,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "attachHeaderFrame/<anonymous@45:10>",
+      "line": 45,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility",
+      "line": 53,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility/<anonymous@55:19>",
+      "line": 55,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility/update",
+      "line": 56,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ioc-header/sticky-frame.ts",
+      "function": "watchHeaderVisibility/<anonymous@59:19>",
+      "line": 59,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "object",
+      "line": 6,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "documentIocHeader",
+      "line": 11,
+      "before": null,
+      "after": 5
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "headerDeclarations",
+      "line": 23,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "headerDeclarations/<anonymous@27:35>",
+      "line": 27,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "hasLegacyDefaultHeader",
+      "line": 35,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "resolveHeaderBinding",
+      "line": 49,
+      "before": null,
+      "after": 8
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "usesIocRegion",
+      "line": 61,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "iocHeaderDeclaration",
+      "line": 65,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "mapIocHeader",
+      "line": 70,
+      "before": null,
+      "after": 3
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "mapIocHeader/<anonymous@74:46>",
+      "line": 74,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/header-binding.ts",
+      "function": "mapIocHeader/<anonymous@74:46>/<anonymous@74:119>",
+      "line": 74,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "withoutHeaderBranch",
+      "line": 10,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "withoutHeaderBranch/<anonymous@11:45>",
+      "line": 11,
+      "before": null,
+      "after": 4
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "withoutHeaderBranch/<anonymous@15:54>",
+      "line": 15,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "pageStructureValidator",
+      "line": 18,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/structure-validator.ts",
+      "function": "pageStructureValidator/<anonymous@20:35>",
+      "line": 20,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader",
+      "line": 9,
+      "before": null,
+      "after": 6
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader/<anonymous@15:35>",
+      "line": 15,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader/<anonymous@17:46>",
+      "line": 17,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeIocHeader/<anonymous@18:35>",
+      "line": 18,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "availableId",
+      "line": 26,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/src/upgrade-ioc-header.ts",
+      "function": "upgradeLegacyToolbar",
+      "line": 31,
+      "before": null,
+      "after": 7
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "load",
+      "line": 13,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "page",
+      "line": 14,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "errors",
+      "line": 17,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>",
+      "line": 19,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@20:99>",
+      "line": 20,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@26:99>",
+      "line": 26,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@31:79>",
+      "line": 31,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>",
+      "line": 36,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>/<anonymous@38:155>",
+      "line": 38,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>/<anonymous@39:100>",
+      "line": 39,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@36:92>/<anonymous@40:80>",
+      "line": 40,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@43:86>",
+      "line": 43,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@43:86>/<anonymous@47:36>",
+      "line": 47,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@43:86>/<anonymous@49:69>",
+      "line": 49,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@51:94>",
+      "line": 51,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@51:94>/<anonymous@53:48>",
+      "line": 53,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@56:56>",
+      "line": 56,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@60:90>",
+      "line": 60,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@67:101>",
+      "line": 67,
+      "before": null,
+      "after": 2
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@76:95>",
+      "line": 76,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "packages/page/tests/ioc-header-component.test.ts",
+      "function": "<anonymous@19:59>/<anonymous@80:65>",
+      "line": 80,
+      "before": null,
+      "after": 1
+    },
+    {
+      "file": "tools/scripts/page-conformance-sources.ts",
+      "function": "appendIocComponentFixtures",
+      "line": 5,
+      "before": null,
+      "after": 4
+    }
+  ],
+  "python": {
+    "analyzer": "Radon",
+    "version": "6.0.1",
+    "file": "metriccanvas-authoring/test-harness/tests/test_mc_content.py",
+    "functions": [
+      {
+        "function": "test_schema_compatibility_is_not_version_string_replacement",
+        "before": 1,
+        "after": 1
+      },
+      {
+        "function": "test_schema_upgrade_preserves_original_and_refuses_existing_destination",
+        "before": 1,
+        "after": 1
+      },
+      {
+        "function": "test_legacy_toolbar_stays_readable_but_needs_manual_ioc_migration",
+        "before": null,
+        "after": 2
+      }
+    ]
+  }
+}

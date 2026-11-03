@@ -33,6 +33,7 @@ class AuthoringCapability:
 
 # 显式覆盖产品目录的全部组件；新增产品组件必须在这里补一行，哪怕两项都是 False。
 AUTHORING_CAPABILITIES: Mapping[str, AuthoringCapability] = {
+    "iocHeader": AuthoringCapability(assembled=False, data_editable=False),
     "button": AuthoringCapability(assembled=False, data_editable=False),
     "filterGroup": AuthoringCapability(assembled=False, data_editable=False),
     "reportHeader": AuthoringCapability(assembled=False, data_editable=False),

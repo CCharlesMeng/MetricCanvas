@@ -1,6 +1,6 @@
 # 旧页头快速迁移为 iocHeader
 
-用户要求“旧 header 换新版”“reportHeader 换 iocHeader”或“工具栏迁移”时使用。直接在用户指定页面完成局部替换，沿用原 Dashboard/Report 形态。`iocHeader` 是页面根级声明，不是 `sections[].components[]` 中的组件，也不是把 `type:"reportHeader"` 改个名字。
+用户要求“旧 header 换新版”“reportHeader 换 iocHeader”或“工具栏迁移”时使用。直接在用户指定页面完成局部替换，沿用原 Dashboard/Report 形态。6.81起 `iocHeader` 是首 section 的第一个组件，使用普通 `id/type/layout/props` 外壳，span固定12；旧根级写法兼容读取。不能只重命名reportHeader而不处理属性、筛选和操作差异。
 
 从原始页面元数据盘点功能，再按[旧页升级](page-upgrade.md)保留原件、检查并完成可执行的协议升级，最后做页头替换。升级脚本不执行页头语义迁移。字段、版本下限与运行行为以包内[页面](page-metadata/page.md)的“IOC 公共页头”“唯一页头”为准；涉及动态标题再查[参数与文字](page-metadata/params-and-text-values.md)。
 
@@ -15,7 +15,7 @@
 | 身份与说明 | 标题、副标题、标签、badge、asOf、generatedBy、note；保留文字、顺序、TextValue 引用、格式及缺值行为。标题回退等隐式行为须记录协议依据。 |
 | 筛选 | 每个控件的归属、顺序、类型、默认值、候选依赖、查询绑定、只读及显示条件；同时检查通用筛选区、filterGroup 与正文页头的认领关系。 |
 | 操作 | 已声明的导出配置，以及有输入依据的返回意图和集成应用依赖；未提供的宿主按钮或导航接线标记“信息不足”，不从猜测补齐。 |
-| 条件与引用 | 检查旧组件及祖先的 visibleWhen、动态参数/筛选文字引用和对旧组件/分区 id 的引用；移到根级后这些约束仍须等价成立。 |
+| 条件与引用 | 检查旧组件及祖先的 visibleWhen、动态参数/筛选文字引用和对旧组件/分区 id 的引用；进入section后这些约束仍须等价成立，页头和父section一起显隐。 |
 | 呈现 | 单独记录布局、密度、折叠和装饰。新版结构、技术 id 与必要呈现配置不算新增业务功能，但不能借调整布局增删文字、控件或操作。 |
 
 只展开与清单有关的筛选、参数、条件和数据源绑定；查询与正文完整内容保留在原文件，不因盘点重新生成。遇到未知字段先查包内定义并记录用途；无法解释的字段或无法保留的条件列为缺口。元数据未给出的业务含义只澄清该项，其余可独立项继续分析。
@@ -26,9 +26,9 @@
 
 | 旧页特征 | 迁移动作 |
 |---|---|
-| Dashboard 的 `dashboardToolbar` 缺省或为 `"visible"` | 声明根级 `iocHeader`；将原先实际显示的标题显式写入 `identity.title`，保留 `meta.title`。按原顺序认领应在页头的筛选，使用 `presentation:{layout:"inline",density:"normal",collapse:"overflow"}` 承接旧工具栏呈现。删除显式 `dashboardToolbar`。 |
+| Dashboard 的 `dashboardToolbar` 缺省或为 `"visible"` | 声明首分区首位 `type:"iocHeader"` 组件，以下属性位于props；将原先实际显示的标题显式写入 `identity.title`，保留 `meta.title`。按原顺序认领应在页头的筛选，使用 `presentation:{layout:"inline",density:"normal",collapse:"overflow"}` 承接旧工具栏呈现。删除显式 `dashboardToolbar`。 |
 | `dashboardToolbar:{variant:"compact",readOnly,note}` | 使用 `presentation:{layout:"inline",density:"compact",collapse:"none"}`；将原 `readOnly`、`note` 原值搬到 `iocHeader`，再删除旧声明。不得因删除旧工具栏解锁原只读筛选。 |
-| `dashboardToolbar:"hidden"`，正文 `reportHeader` 承担整页身份 | 按下表映射身份，将该页头认领的筛选转交 `iocHeader`。确认内容均承接后删除旧页头；只移除因此变空且无其他语义或引用的分区。`hidden` 可兼容保留，也可随替换删除。 |
+| `dashboardToolbar:"hidden"`，正文 `reportHeader` 承担整页身份 | 按下表映射身份，将该页头认领的筛选转交 `iocHeader`。确认内容均承接后删除旧页头；只移除因此变空且无其他语义或引用的分区。新组件不能与dashboardToolbar混写，须删除hidden；旧文档读取可保留。 |
 | 首个 `reportHeader` 或 `variant:"projectDetail"` | 逐项处理身份与附属内容；与 `iocHeader` 并存会被校验拒绝。遇到下述能力缺口时保留原页及候选，不通过丢功能制造迁移成功。 |
 | 正文中独立章节的 `reportHeader`、普通标题或说明文字 | 保留；不能按组件类型全量删除。仅替换实际承担页面身份的对象。没有页头的页面也不能仅因 `hidden` 自动新增身份。 |
 
@@ -43,9 +43,9 @@
 | `props.tags[]` | 转为 `identity.tags[]`，每项添加稳定且唯一的 `id`，`text` 保留原 TextValue；无业务色调依据时省略 tone。 |
 | `props.badge` | 可转为独立 tag 并保留原文字；仅当原材料明确区分编码标签和值时才使用 `identity.code:{label,value}`。不猜测编码含义。 |
 | `props.asOf` | 先确定是查询期间、最新数据期、刷新时间还是生成时间，再写对应 `identity.facts[]`，保留 label/value。无法确认时保留为正文说明并列缺口，不将浏览器当前时间当事实。 |
-| `props.filterIds` | Report 旧日期工具带认领的日期筛选按原顺序迁至根级 `iocHeader.filterIds`；Dashboard 的其他页级筛选从原通用筛选区选取。筛选声明、默认值、候选依赖及查询绑定保持原样。 |
+| `props.filterIds` | Report 旧日期工具带认领的日期筛选按原顺序迁至组件 `props.filterIds`；Dashboard 的其他页级筛选从原通用筛选区选取。筛选声明、默认值、候选依赖及查询绑定保持原样。 |
 
-`subtitleFormat:"semanticHtml"` 不能直接塞入纯文本 description：用正文 `text` 的对应合法语义保留原内容，或先明确接受纯文本转换。`generatedBy` 是作者/来源说明，不等于 generatedAt；需保留时放正文说明。`decoration`、旧页头卡面及布局跨度不属于根级页头属性，不透传到 `iocHeader`；新版自带 16px 底部外间距，不再添加空白组件补同一份间距。
+`subtitleFormat:"semanticHtml"` 不能直接塞入纯文本 description：用正文 `text` 的对应合法语义保留原内容，或先明确接受纯文本转换。`generatedBy` 是作者/来源说明，不等于 generatedAt；需保留时放正文说明。`decoration`、旧页头卡面及布局跨度不属于组件页头props属性，不透传到 `iocHeader`；新版自带 16px 底部外间距，不再添加空白组件补同一份间距。
 
 `exportButtons`、`pdfExport`、`pngExport` 没有对应的 `iocHeader` 字段。Report 下载能力先查[报告页头](page-metadata/components/reportHeader.md)：有合法独立章节页头时评估承接并验证下载；无法保留时明确报告能力缺口，保留原件与未完成候选，不删按钮、不改变 layout 绕过限制。集成应用提供的主题、全屏或其他按钮也不能写成未支持的 `iocHeader.actions`。
 
@@ -83,11 +83,14 @@
 }
 ```
 
-目标根级声明：
+目标组件声明（放入首section首位）：
 
 ```json
 {
-  "iocHeader": {
+  "id": "page-header",
+  "type": "iocHeader",
+  "layout": {"span": 12},
+  "props": {
     "identity": {
       "title": {"param": "project-name"},
       "description": {"text": "项目经营情况", "presentation": "inline"},
@@ -99,7 +102,7 @@
 }
 ```
 
-在完整页面里新增该根级对象，删除 `old-header` 和仅为它存在的空 `heading` 分区，其余正文顺序及原 `project-name` 参数保持。示例不补 `back`、期间事实或新查询。完整结构按需参照[身份与筛选](page-metadata/examples/ioc-header-page.json)、[密集页头](page-metadata/examples/unified-overflow-header.json)、[导航详情](page-metadata/examples/navigation-detail-page.json)，只取所需页头结构，不复制示例业务与数据。
+在完整页面首section首位新增该组件，删除 `old-header` 和仅为它存在的空 `heading` 分区，其余正文顺序及原 `project-name` 参数保持。示例不补 `back`、期间事实或新查询。完整结构按需参照[身份与筛选](page-metadata/examples/ioc-header-page.json)、[密集页头](page-metadata/examples/unified-overflow-header.json)、[导航详情](page-metadata/examples/navigation-detail-page.json)，只取所需页头结构，不复制示例业务与数据。
 
 ## 完成检查
 
@@ -114,3 +117,10 @@
 有目标运行环境时，预览精确文件的宽/窄容器：身份仅一份，标题/标签/说明与原材料一致；筛选顺序、默认值、折叠、只读、清空、级联及原数据结果一致；有来源/直接打开两种返回状态正确；原有导出仍可用。可参考 Playground `/pages/ioc-header-standard`、`/pages/ioc-header-dense`、`/pages/ioc-header-detail`，这些合成页不能代替目标业务页验收。
 
 交付目标文件、旧页头类型、逐项功能对账、原件路径、完整校验结果，以及未承接能力或缺运行环境的具体项。只要求元数据分析时交付清单、候选映射与缺口即可，不要求寻找 HTML。静态校验、语义对账、浏览器交互、真实查询分别报告；依赖待验时说明尚不能保证相应运行行为。只升级版本或只新增 `iocHeader` 而遗留重复身份不算完成。
+
+
+## 6.81读取与升级边界
+
+已有根级IOC可由upgrade-page工具转为常显首section中的组件，保持旧页头不随旧正文隐藏；用户确认需要一起显隐时，可放到实际业务首section。新页面不要求专用section，允许紧随正文。旧根级与新组件不可混写，新页面无声明不补默认工具栏。
+
+普通旧工具栏不会自动升级为IOC组件：其普通Region、无returnContext的legacyBack以及原先不导出Header的语义可能改变，工具明确blocked并保留原件。人工处理时逐项记录变化；不能猜地区层级或编造返回上下文。不通过仅修改schemaVersion绕过迁移。运行时兼容读取保持旧工具栏非IOC模式及原导出范围。

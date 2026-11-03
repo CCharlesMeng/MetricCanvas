@@ -19,7 +19,11 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
         if (normalized.ok) {
           // This author scenario deliberately exercises tolerant reading; writing drops invalid scales.
           if (basename(name) === 'report-export-scale-fallback.json') expect(normalizePageDocument(normalized.document)).toEqual(normalized);
-          else expect(normalized.document, name).toEqual({ ...raw, schemaVersion: ['6.5','6.13','6.14'].includes(raw.schemaVersion) ? raw.schemaVersion : versionPolicy.current });
+          else {
+            const legacyDefault=raw.layout==='dashboard'&&!raw.iocHeader&&raw.dashboardToolbar===undefined&&Number(raw.schemaVersion.split('.')[1])<81;
+            const outputVersion=['6.5','6.13','6.14'].includes(raw.schemaVersion)?raw.schemaVersion:legacyDefault?'6.80':versionPolicy.current;
+            expect(normalized.document, name).toEqual({...raw,schemaVersion:outputVersion});
+          }
         }
       }
     }

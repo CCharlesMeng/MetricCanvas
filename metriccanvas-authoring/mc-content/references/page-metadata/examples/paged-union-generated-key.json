@@ -6,26 +6,6 @@
     "title": "多来源表格：可选前端UUID行键",
     "description": "合成数据；成员显式选择前端生成UUID，允许可空业务字段，保留上游重复业务行；仍验证排序、计数与完整分页。"
   },
-  "iocHeader": {
-    "identity": {
-      "title": "可选UUID行键",
-      "description": {
-        "text": "信任上游行域与分页；UUID只标识本次读取的记录",
-        "presentation": "inline"
-      },
-      "tags": [
-        {
-          "id": "synthetic",
-          "text": "合成演示",
-          "tone": "neutral"
-        }
-      ]
-    },
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
-  },
   "dataSources": {
     "contract": {
       "fields": {
@@ -522,6 +502,39 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "可选UUID行键",
+              "description": {
+                "text": "信任上游行域与分页；UUID只标识本次读取的记录",
+                "presentation": "inline"
+              },
+              "tags": [
+                {
+                  "id": "synthetic",
+                  "text": "合成演示",
+                  "tone": "neutral"
+                }
+              ]
+            },
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "main",
       "container": "card",

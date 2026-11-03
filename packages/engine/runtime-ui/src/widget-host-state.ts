@@ -23,6 +23,7 @@ export function rendersWithoutWidgetHost(component: Component): boolean {
   return (
     component.type === 'filterGroup' ||
     component.type === 'button' ||
+    component.type === 'iocHeader' ||
     component.type === 'reportHeader' ||
     component.type === 'text' ||
     component.type === 'aiSummary' ||

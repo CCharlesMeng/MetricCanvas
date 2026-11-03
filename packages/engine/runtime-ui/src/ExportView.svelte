@@ -5,7 +5,8 @@
   import { chartOptionPaths } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import FilterBar from './filters/FilterBar.svelte';
-  import IocHeader from './ioc-header/IocHeader.svelte';
+  import { compatibilityHeaderSection } from './ioc-header/render-plan';
+  import { iocHeaderDeclaration } from '@metriccanvas/page/internal';
   import { resolvedIocHeader } from './ioc-header/model';
   import { setContext, untrack } from 'svelte';
   import { projectFieldSelections, type Component } from '@metriccanvas/page/internal';
@@ -25,21 +26,19 @@
   function table(component:Component):TableRenderBinding|undefined {
     return component.type==='table'?{view:state.tables[component.id]??{pageIndex:0,sort:[],headerFilters:{}},filterOptions:{},paginationConfig:{mode:'none'},onpage:()=>{},onpagesize:()=>{},onsort:()=>{},onheaderfilter:()=>{},oncellselect:()=>{}}:undefined;
   }
+  const legacyHeader=$derived(compatibilityHeaderSection(state.page,true));
+  const header=$derived(iocHeaderDeclaration(state.page));
   const nested:NestedComponentRender={summarySnapshot:c=>state.summaries[c.id],map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
 <div class="export-view" data-page-layout-form={state.page.layout ?? 'report'} data-export-view style:width={`${width}px`} style:padding={padding}>
-  {#if state.page.iocHeader}
-    <IocHeader model={resolvedIocHeader(state.page.iocHeader)} filterIds={state.page.iocHeader.filterIds??[]} controls={iocStaticControls} note={state.page.iocHeader.note} staticView/>
-  {/if}
   {#snippet iocStaticControls(id:string,readOnly:boolean)}
     <FilterBar timeContext={{snapshot:state.displaySnapshot,revision:state.filterRevision}} declarations={(state.page.filters??[]).filter(f=>f.id===id)} values={state.filters} candidates={new Map()} {readOnly}
       ondimension={()=>{}} ontimerange={()=>{}} ontimepoint={()=>{}} onboolean={()=>{}} onnumberrange={()=>{}} onsearch={()=>{}}/>
   {/snippet}
-  <div class="export-content" style:gap={gap}>
-  {#each state.page.filters??[] as filter}{#if filter.type==='timeRange' && filter.display==='period' && !state.page.iocHeader?.filterIds?.includes(filter.id)}{@const applied=state.filters.get(filter.id)}{#if applied?.type==='timeRange'}<p data-export-period>{filter.label??'统计期间'}：{applied.from} 至 {applied.to}</p>{/if}{/if}{/each}
   {#snippet componentContent(component:Component)}
     <div data-export-component={component.id}>
-    <ComponentRenderer {component} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}
+    <ComponentRenderer {component}
+      iocHeader={header?{model:resolvedIocHeader(header),filterIds:header.filterIds??[],controls:iocStaticControls,note:header.note,readOnly:true}:undefined} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}
       filterGroupValue={component => {
         if (component.type !== 'filterGroup') return undefined;
         const value = state.filters.get(component.props.filterId);
@@ -50,6 +49,9 @@
       headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters,state.page.schemaVersion)}/>
     </div>
   {/snippet}
+  {#if legacyHeader}<RuntimeSection section={legacyHeader} {componentContent}/>{/if}
+  <div class="export-content" style:gap={gap}>
+  {#each state.page.filters??[] as filter}{#if filter.type==='timeRange' && filter.display==='period' && !header?.filterIds?.includes(filter.id)}{@const applied=state.filters.get(filter.id)}{#if applied?.type==='timeRange'}<p data-export-period>{filter.label??'统计期间'}：{applied.from} 至 {applied.to}</p>{/if}{/if}{/each}
   {#each presentation.sections as section (section.id)}
     <RuntimeSection {section} {componentContent}/>
   {/each}

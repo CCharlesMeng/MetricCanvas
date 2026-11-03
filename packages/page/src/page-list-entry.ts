@@ -10,7 +10,8 @@ export interface PageListEntry {
 export function pageListEntry(
   page: Pick<Page, 'id' | 'meta' | 'sections'>
 ): PageListEntry {
-  let title = page.meta?.title;
+  const first=page.sections[0]?.components[0];
+  let title = page.meta?.title ?? (first?.type==='iocHeader'?first.props.identity?.title:undefined);
   if (!title) {
     for (const section of page.sections) {
       const header = section.components.find(

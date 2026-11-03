@@ -1,0 +1,123 @@
+{
+  "case": "ioc-component-span",
+  "invariant": "ioc-header-component",
+  "input": {
+    "schemaVersion": "6.81",
+    "id": "ioc-header-section-placement",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC 页头与 section 同行"
+    },
+    "dataSources": {},
+    "filters": [
+      {
+        "id": "team",
+        "type": "dimension",
+        "dimension": "team",
+        "label": "团队",
+        "selection": {
+          "mode": "single"
+        },
+        "options": [
+          {
+            "value": "A",
+            "label": "团队甲"
+          },
+          {
+            "value": "B",
+            "label": "团队乙"
+          }
+        ],
+        "default": [
+          "A"
+        ]
+      },
+      {
+        "id": "show-header",
+        "type": "boolean",
+        "label": "显示首分区",
+        "default": true
+      }
+    ],
+    "sections": [
+      {
+        "id": "main",
+        "container": "plain",
+        "visibleWhen": {
+          "filter": "show-header",
+          "part": "value",
+          "op": "eq",
+          "value": true
+        },
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 6
+            },
+            "props": {
+              "identity": {
+                "title": {
+                  "parts": [
+                    "当前团队：",
+                    {
+                      "filter": "team"
+                    }
+                  ]
+                }
+              },
+              "filterIds": [
+                "team"
+              ],
+              "back": true,
+              "presentation": {
+                "layout": "inline",
+                "density": "normal",
+                "collapse": "none"
+              }
+            }
+          },
+          {
+            "id": "same-section-body",
+            "type": "text",
+            "layout": {
+              "span": 3
+            },
+            "props": {
+              "body": "页头与这一段正文属于同一个 section。"
+            }
+          }
+        ],
+        "columnTracks": [
+          1,
+          2,
+          1
+        ]
+      },
+      {
+        "id": "persistent",
+        "container": "plain",
+        "components": [
+          {
+            "id": "persistent-body",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "切换显示首分区后，页头和正文一起隐藏；团队筛选值仍保留。"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/layout",
+      "message": "IOC 页头必须占满分区，span 为12且不能作为背景"
+    }
+  ]
+}

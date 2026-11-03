@@ -1,6 +1,6 @@
 # 表格列头筛选默认选中值方案
 
-日期：2026-11-03。状态：Schema6.82、引擎实现、浏览器/HTTP和分发验收已完成。实施证据见[验收记录](../evidence/table-header-filter-defaults/acceptance.md)；尚未提交或推送。
+日期：2026-11-03。状态：Schema6.82、引擎实现、浏览器/HTTP和分发验收已完成。实施证据见[验收记录](../evidence/table-header-filter-defaults/acceptance.md)；按用户要求继续集成、推送main并核对对应CI。
 
 首期仅支持 `select` 多选枚举，默认值由页面 JSON 声明固定值。在叶子列的 `filterable` 下增加 `defaultValues`，由引擎在第一次有效读取前转换为现有表格查询视图。默认条件与用户后续提交的条件走同一执行路径，不能只在控件上勾选。
 
@@ -53,7 +53,7 @@ type TableColumnFilter =
 
 ### 版本及兼容
 
-这是可选声明的增量能力，按现行版本策略分配新的次版本和能力扫描项。基线 `versionPolicy` 为6.80，主工作区已有并行页面使用6.81；本批在隔离工作树采用6.82，能力标识为 `table-select-default-values`，不改动并行6.81内容。
+这是可选声明的增量能力，按现行版本策略分配新的次版本和能力扫描项。基线 `versionPolicy` 为6.80，主工作区已有并行页面使用6.81；本批在隔离工作树采用6.82，能力标识为 `table-select-default-values`，交付时已集成main正式发布的6.81 IOC页头组件，保留双方能力。
 
 旧文档不填写新字段时保持原行为；是否可读仍由现行 `supportedVersions` 决定，不承诺扩大历史读取范围。新能力不允许写在能力下限之前的版本里。扫描器必须定位分组列、详情 Table 和行内子表模板中的新字段，非法位置也不能漏过版本检查。
 

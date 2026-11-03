@@ -1,0 +1,497 @@
+{
+  "schemaVersion": "6.81",
+  "id": "ioc-header-section-sticky",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC 页头 section 内吸顶"
+  },
+  "dataSources": {},
+  "filters": [
+    {
+      "id": "team",
+      "type": "dimension",
+      "dimension": "team",
+      "label": "团队",
+      "selection": {
+        "mode": "single"
+      },
+      "options": [
+        {
+          "value": "A",
+          "label": "团队甲"
+        },
+        {
+          "value": "B",
+          "label": "团队乙"
+        }
+      ],
+      "default": [
+        "A"
+      ]
+    },
+    {
+      "id": "show-header",
+      "type": "boolean",
+      "label": "显示首分区",
+      "default": true
+    }
+  ],
+  "sections": [
+    {
+      "id": "main",
+      "container": "plain",
+      "visibleWhen": {
+        "filter": "show-header",
+        "part": "value",
+        "op": "eq",
+        "value": true
+      },
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": {
+                "parts": [
+                  "当前团队：",
+                  {
+                    "filter": "team"
+                  }
+                ]
+              }
+            },
+            "filterIds": [
+              "team"
+            ],
+            "back": true,
+            "presentation": {
+              "layout": "inline",
+              "density": "compact",
+              "collapse": "overflow"
+            }
+          }
+        },
+        {
+          "id": "same-section-body",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "页头与这一段正文属于同一个 section。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "persistent",
+      "container": "plain",
+      "components": [
+        {
+          "id": "scroll-row-0",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 0"
+          }
+        },
+        {
+          "id": "scroll-row-1",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 1"
+          }
+        },
+        {
+          "id": "scroll-row-2",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 2"
+          }
+        },
+        {
+          "id": "scroll-row-3",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 3"
+          }
+        },
+        {
+          "id": "scroll-row-4",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 4"
+          }
+        },
+        {
+          "id": "scroll-row-5",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 5"
+          }
+        },
+        {
+          "id": "scroll-row-6",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 6"
+          }
+        },
+        {
+          "id": "scroll-row-7",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 7"
+          }
+        },
+        {
+          "id": "scroll-row-8",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 8"
+          }
+        },
+        {
+          "id": "scroll-row-9",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 9"
+          }
+        },
+        {
+          "id": "scroll-row-10",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 10"
+          }
+        },
+        {
+          "id": "scroll-row-11",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 11"
+          }
+        },
+        {
+          "id": "scroll-row-12",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 12"
+          }
+        },
+        {
+          "id": "scroll-row-13",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 13"
+          }
+        },
+        {
+          "id": "scroll-row-14",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 14"
+          }
+        },
+        {
+          "id": "scroll-row-15",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 15"
+          }
+        },
+        {
+          "id": "scroll-row-16",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 16"
+          }
+        },
+        {
+          "id": "scroll-row-17",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 17"
+          }
+        },
+        {
+          "id": "scroll-row-18",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 18"
+          }
+        },
+        {
+          "id": "scroll-row-19",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 19"
+          }
+        },
+        {
+          "id": "scroll-row-20",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 20"
+          }
+        },
+        {
+          "id": "scroll-row-21",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 21"
+          }
+        },
+        {
+          "id": "scroll-row-22",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 22"
+          }
+        },
+        {
+          "id": "scroll-row-23",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 23"
+          }
+        },
+        {
+          "id": "scroll-row-24",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 24"
+          }
+        },
+        {
+          "id": "scroll-row-25",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 25"
+          }
+        },
+        {
+          "id": "scroll-row-26",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 26"
+          }
+        },
+        {
+          "id": "scroll-row-27",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 27"
+          }
+        },
+        {
+          "id": "scroll-row-28",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 28"
+          }
+        },
+        {
+          "id": "scroll-row-29",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 29"
+          }
+        },
+        {
+          "id": "scroll-row-30",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 30"
+          }
+        },
+        {
+          "id": "scroll-row-31",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 31"
+          }
+        },
+        {
+          "id": "scroll-row-32",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 32"
+          }
+        },
+        {
+          "id": "scroll-row-33",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 33"
+          }
+        },
+        {
+          "id": "scroll-row-34",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 34"
+          }
+        },
+        {
+          "id": "scroll-row-35",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 35"
+          }
+        },
+        {
+          "id": "scroll-row-36",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 36"
+          }
+        },
+        {
+          "id": "scroll-row-37",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 37"
+          }
+        },
+        {
+          "id": "scroll-row-38",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 38"
+          }
+        },
+        {
+          "id": "scroll-row-39",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成滚动内容 39"
+          }
+        }
+      ]
+    }
+  ]
+}

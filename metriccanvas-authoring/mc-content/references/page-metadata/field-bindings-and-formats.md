@@ -115,7 +115,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 验收入口：`/pages/chart-number-format`，内联合成数据，覆盖默认两位小数、零、负值、缺失、格式继承和显式保留原值。
 
 
-页面协议 6.82。结构真源为本册[schema.json](schema.json)，SHA256 `9350a179287433b8df813a7f6f18b51ca74242a97ad1097955d1b7662fb1fe41`。字段表自动生成；可选不等于有默认值。
+页面协议 6.82。结构真源为本册[schema.json](schema.json)，SHA256 `675894a5dbf3a079b01d324e467a24a52cca23fc1f278fe1d15827c2462bbdee`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -1,3 +1,4 @@
+import { iocHeaderDeclaration } from '../../packages/page/src/header-binding';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -39,6 +40,7 @@ export function pagePattern(source: PatternSource, content: string) {
   const parsed = parsePage(JSON.parse(content));
   if (!parsed.ok) throw new Error(`Invalid pattern source ${source.pageId}: ${JSON.stringify(parsed.errors)}`);
   const page = parsed.page;
+  const header=iocHeaderDeclaration(page);
   const layout = page.layout ?? 'report';
   if (page.id !== source.pageId || layout !== source.layout) {
     throw new Error(`Pattern source identity/layout changed: ${source.pageId}`);
@@ -48,13 +50,13 @@ export function pagePattern(source: PatternSource, content: string) {
     kind: 'structural-pattern',
     source: {pageId: page.id, sha256: createHash('sha256').update(content).digest('hex')},
     layout,
-    iocHeader: page.iocHeader ? {
-      hasIdentity:!!page.iocHeader.identity,
-      filterCount:page.iocHeader.filterIds?.length ?? 0,
-      presentation:page.iocHeader.presentation,
-      readOnly:page.iocHeader.readOnly
+    iocHeader: header ? {
+      hasIdentity:!!header.identity,
+      filterCount:header.filterIds?.length ?? 0,
+      presentation:header.presentation,
+      readOnly:header.readOnly
     } : undefined,
-    legacyHeader:page.dashboardToolbar==='hidden'&&!page.iocHeader?'content':undefined,
+    legacyHeader:page.dashboardToolbar==='hidden'&&!header?'content':undefined,
     filters: (page.filters ?? []).map(filter => ({type: filter.type})),
     sections: page.sections.map(section => ({
       container: section.container,

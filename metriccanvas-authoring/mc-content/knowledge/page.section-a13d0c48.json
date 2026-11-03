@@ -1,0 +1,214 @@
+{
+  "schemaVersion": "6.82",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "page.section-a13d0c48"
+  ],
+  "semantics": [
+    {
+      "module": "page",
+      "reference": "references/page-metadata/page.md",
+      "blocks": [
+        "# 页面、版本与布局\n\n页面元数据是统一运行时消费的声明式文档；数据上下文、会话、修订和执行身份由宿主管理。页面id、字段id、组件id分别属于自己的命名空间，组件id在整页唯一。\n\n平台云宝创作时，页面 ID 与会话 ID 是独立身份；删除会话 ID 后仍能按页面 ID 查询并渲染元数据，另建会话。每轮输入采用前端收齐并冻结的完整页面文档，包含尚未保存的布局与组件修改，不能用服务端旧文档替代。页面标题直接更新 meta.title；管理入口可直接更新标题、描述与可访问路径。会话、工作副本锁与部署访问路径不写入页面 params、筛选器或新建 meta 字段；本文档版本保持原义。flow-page 是合成内容演示，完整对话与恢复行为在 Platform 本地验收入口运行，不由统一运行时生成会话。\n\n作者版本以本册 [index.json](index.json) 的 schemaVersion 为准，可读版本以 [schema.json](schema.json) 的 schemaVersion 分支为准。能力下限由独立校验脚本检查。历史页面先校验，再按明确需求修改；不得只改版本号假装完成迁移。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。",
+        "## IOC 页头进入分区（6.81）\n\nIOC Header 使用普通组件外壳 `id/type/layout/props`，限定在 `sections[0].components[0]`，每页最多一个，`layout.span:12` 且不能作为 backdrop。始终跨满 section 当前列轨道；不要求独占 section，正文可紧随其后。不允许位于其他分区、Tab、组合卡或 detailViews，不允许与根级 iocHeader 或 dashboardToolbar 混写。业务属性复用旧页头，不新增数据槽或显示开关。\n\n```json\n{\"id\":\"page-header\",\"type\":\"iocHeader\",\"layout\":{\"span\":12},\"props\":{\"identity\":{\"title\":\"经营概览\"},\"filterIds\":[\"period\"],\"presentation\":{\"layout\":\"inline\"}}}\n```\n\n页头和父 section 一起走条件显隐与分组切换；自身也可声明公共 visibleWhen。隐藏不清空页级筛选、URL、候选、只读或返回接管，不停止查询；已认领筛选不回流正文。候选阻塞仍生效，切回后显示原因和重试入口。页头隐藏期间可能没有可见返回按钮，集成应用不自动补回。\n\n默认布局在整个首分区之后、其他分区之前放页内导航；首分区含正文时该正文也在导航之前。定制 sectionsContent 保持一次整体调用和原签名，新文档按声明分区交付，导航在整次回调之前；旧文档回调仍接收原正文，不注入虚拟兼容分区。\n\ninline+compact 保持整页吸顶。位置切换使用同一个控件实例；父级隐藏、自身隐藏或布局卸载清理浮动层与弹层。恢复保留页级状态，不保证局部展开或焦点恢复。导出采用冻结输入和同一组件路径；条件隐藏不导出，分组/Tab按既有展开规则，去掉返回和吸顶交互。\n\n旧根级页头通过内部常显兼容分区呈现，不插入可能隐藏的旧首分区，不写回原始修订。旧默认/显式 Dashboard 工具栏保留普通 Region URL 规则及不导出页头的历史行为；显示工具栏不意味着开启 IOC 模式。6.80及之前的隐式 Dashboard 缺省保持；规范化读取保留必要的旧版本边界，6.81无声明时不生成页头。\n\n显式升级将合法旧根级 IOC 物化为常显首分区的新组件，并删除旧根字段，id确定且避冲突，重复升级不插入第二份。旧隐藏工具栏可移除。普通旧工具栏的 Region、legacyBack、导出语义不能自动等价转为正式 IOC；工具返回迁移错误且不写目标文件，原件仍可读，按迁移手册人工处理。不猜组织树、候选、返回上下文或查询映射。\n\n可观察页面：`ioc-header-section-placement`（混排/显隐/动态文字）、`ioc-header-section-groups`（分组）、`ioc-header-section-sticky`（紧凑吸顶）。均为静态合成示例，不证明真实DQE或集成应用接线。"
+      ],
+      "rules": [
+        {
+          "id": "currency-range-presets",
+          "description": "6.46单位case内的币种预设保持单一金额状态",
+          "valid": [
+            "ioc-header-currency"
+          ],
+          "invalid": [
+            "currency-presets-version",
+            "currency-presets-missing",
+            "currency-presets-shared",
+            "currency-presets-invalid"
+          ]
+        },
+        {
+          "id": "independent-filter-candidates",
+          "description": "6.46显式无依赖候选使用V2及局部门禁",
+          "valid": [
+            "ioc-header-business",
+            "ioc-header-unconfigured"
+          ],
+          "invalid": [
+            "independent-candidates-version"
+          ]
+        },
+        {
+          "id": "required-multiple-selection",
+          "description": "6.46必选多选保持非空离散集合",
+          "valid": [
+            "ioc-header-months"
+          ],
+          "invalid": [
+            "required-multiple-version",
+            "required-multiple-empty"
+          ]
+        },
+        {
+          "id": "unified-page-header",
+          "description": "6.41 唯一页头及自然年选择",
+          "valid": [
+            "unified-year-header",
+            "unified-overflow-header"
+          ],
+          "invalid": [
+            "unified-header-version",
+            "unified-header-conflict",
+            "period-modes-empty",
+            "period-modes-duplicate",
+            "period-modes-default",
+            "period-modes-plain-range"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "ioc-header",
+          "description": "6.36 页级IOC身份与唯一筛选归属",
+          "valid": [
+            "ioc-header-page"
+          ],
+          "invalid": [
+            "ioc-header-before-6.36",
+            "ioc-header-empty",
+            "ioc-header-toolbar-conflict",
+            "ioc-header-hidden-filter",
+            "ioc-header-missing-filter",
+            "ioc-header-duplicate-identity"
+          ]
+        },
+        {
+          "id": "page-layout-compatibility",
+          "description": "6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取",
+          "valid": [
+            "legacy-layout-report",
+            "legacy-layout-dashboard",
+            "layout-6-1-report",
+            "layout-6-1-dashboard"
+          ],
+          "invalid": [
+            "layout-before-6.1",
+            "layout-dual-equal",
+            "layout-dual-conflict",
+            "layout-invalid-value"
+          ]
+        },
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "schema-version-supported",
+          "description": "schemaVersion 必须是当前主版本内的受支持次版本",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "version-major-unsupported",
+            "version-minor-ahead"
+          ]
+        },
+        {
+          "id": "detail-view-component-types",
+          "description": "详情只允许说明、图表和表格；共享 Schema 其它组件分支有显式拒绝见证",
+          "valid": [
+            "detail-views"
+          ],
+          "invalid": [
+            "detail-component-reject-reportheader",
+            "detail-component-reject-metriccard",
+            "detail-component-reject-mapchart",
+            "detail-component-reject-tabcontainer",
+            "detail-component-reject-compositecard",
+            "detail-component-reject-rankingcard",
+            "detail-component-reject-rankingdetailcard",
+            "detail-component-reject-keyvaluepanel",
+            "detail-component-reject-categorybreakdown",
+            "detail-component-reject-fieldtext",
+            "detail-component-reject-aisummary",
+            "detail-component-reject-button"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/inline-report.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/detail-views.json",
+        "references/page-metadata/examples/report-date-filters-page.json",
+        "references/page-metadata/examples/reference-export-detail-branches.json",
+        "references/page-metadata/examples/ioc-header-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/unified-year-header.json",
+        "references/page-metadata/examples/unified-overflow-header.json",
+        "references/page-metadata/examples/ioc-header-business.json",
+        "references/page-metadata/examples/ioc-header-currency.json",
+        "references/page-metadata/examples/ioc-header-groups.json",
+        "references/page-metadata/examples/ioc-header-incentives.json",
+        "references/page-metadata/examples/ioc-header-models.json",
+        "references/page-metadata/examples/ioc-header-months.json",
+        "references/page-metadata/examples/ioc-header-unconfigured.json",
+        "references/page-metadata/examples/tab-mixed-content.json",
+        "references/page-metadata/examples/ioc-header-section-placement.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

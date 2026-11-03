@@ -6,26 +6,6 @@
     "title": "多来源表格：异字段映射与整体排序",
     "description": "合成数据；通用 pagedUnion 协议验收，两个独立查询接口均由本地模拟网关提供。"
   },
-  "iocHeader": {
-    "identity": {
-      "title": "决策意见明细",
-      "description": {
-        "text": "合同与商务审批意见统计",
-        "presentation": "inline"
-      },
-      "tags": [
-        {
-          "id": "synthetic",
-          "text": "合成演示",
-          "tone": "neutral"
-        }
-      ]
-    },
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
-  },
   "dataSources": {
     "contract": {
       "fields": {
@@ -538,6 +518,39 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "决策意见明细",
+              "description": {
+                "text": "合同与商务审批意见统计",
+                "presentation": "inline"
+              },
+              "tags": [
+                {
+                  "id": "synthetic",
+                  "text": "合成演示",
+                  "tone": "neutral"
+                }
+              ]
+            },
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "main",
       "container": "card",

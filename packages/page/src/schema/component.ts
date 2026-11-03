@@ -1,3 +1,4 @@
+import { iocHeaderComponentZ } from './components/ioc-header';
 import { filterGroupComponentZ } from './components/filter-group';
 import { buttonComponentZ } from './components/button';
 import { z } from 'zod';
@@ -42,6 +43,7 @@ export const componentSchemas: readonly [
   typeof aiSummaryComponentZ,
   typeof buttonComponentZ,
   typeof filterGroupComponentZ,
+  typeof iocHeaderComponentZ,
 ] = [
   reportHeaderComponentZ,
   metricCardComponentZ,
@@ -61,13 +63,15 @@ export const componentSchemas: readonly [
   textComponentZ,
   aiSummaryComponentZ,
   buttonComponentZ,
-  filterGroupComponentZ
+  filterGroupComponentZ,
+  iocHeaderComponentZ
 ] as const;
 
 // Preserve the exact component tuple without expanding every nested schema in package declarations.
 export const componentZ: z.ZodDiscriminatedUnion<typeof componentSchemas, 'type'> = z.discriminatedUnion('type', componentSchemas);
 
 export {
+  iocHeaderComponentZ,
   filterGroupComponentZ,
   buttonComponentZ,
   reportHeaderComponentZ,

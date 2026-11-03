@@ -2,11 +2,6 @@
   "schemaVersion": "6.82",
   "id": "tab-content-categorybreakdown",
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true,
-    "note": "只读"
-  },
   "dataSources": {
     "summary": {
       "fields": {

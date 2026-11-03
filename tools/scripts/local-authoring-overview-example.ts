@@ -21,7 +21,6 @@ export function overviewMapLedExample(schemaVersion: string) {
   }});
   return {
     schemaVersion, id: 'overview-map-led', layout: 'dashboard', meta: {title: '市场概览（布局演示）'},
-    iocHeader: {identity:{title:'市场概览（布局演示）'},presentation:{layout:'inline'}},
     dataSources: {
       totals: {fields: {visits: measure('访问'), orders: measure('订单'), completed: measure('完成')},
         source: {type: 'inline', rows: [{visits: 240, orders: 60, completed: 18}]}},
@@ -33,6 +32,7 @@ export function overviewMapLedExample(schemaVersion: string) {
       ]}}
     },
     sections: [
+      {id:'page-header-section',container:'plain',components:[{id:'page-header',type:'iocHeader',layout:{span:12},props:{identity:{title:'市场概览（布局演示）'},presentation:{layout:'inline'}}}]},
       {id: 'summary-cards', container: 'plain', components: [
         card('traffic', '流量概况', 'visits', 'visit-groups'),
         card('orders', '订单进度', 'orders', 'order-groups'),

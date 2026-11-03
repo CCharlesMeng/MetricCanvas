@@ -1,0 +1,39 @@
+{
+  "installedDirectory": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ioc-final-skill-_bepa9kt/metriccanvas-local-authoring",
+  "checks": [
+    {
+      "args": [
+        "--version"
+      ],
+      "exitCode": 0,
+      "result": "{\"schemaVersion\":\"6.81\",\"validation\":\"page-and-file-name\"}"
+    },
+    {
+      "args": [
+        "--expected-layout",
+        "dashboard",
+        "/Users/moon/.codex/worktrees/ioc-header-section/DataDashboard/pages/capabilities/ioc-header/section-component/ioc-header-section-groups.json"
+      ],
+      "exitCode": 0,
+      "result": "{\"file\":\"/Users/moon/.codex/worktrees/ioc-header-section/DataDashboard/pages/capabilities/ioc-header/section-component/ioc-header-section-groups.json\",\"ok\":true,\"errors\":[]}"
+    },
+    {
+      "args": [
+        "--expected-layout",
+        "dashboard",
+        "/Users/moon/.codex/worktrees/ioc-header-section/DataDashboard/pages/capabilities/ioc-header/section-component/ioc-header-section-sticky.json"
+      ],
+      "exitCode": 0,
+      "result": "{\"file\":\"/Users/moon/.codex/worktrees/ioc-header-section/DataDashboard/pages/capabilities/ioc-header/section-component/ioc-header-section-sticky.json\",\"ok\":true,\"errors\":[]}"
+    },
+    {
+      "args": [
+        "--expected-layout",
+        "dashboard",
+        "/Users/moon/.codex/worktrees/ioc-header-section/DataDashboard/pages/capabilities/ioc-header/section-component/ioc-header-section-placement.json"
+      ],
+      "exitCode": 0,
+      "result": "{\"file\":\"/Users/moon/.codex/worktrees/ioc-header-section/DataDashboard/pages/capabilities/ioc-header/section-component/ioc-header-section-placement.json\",\"ok\":true,\"errors\":[]}"
+    }
+  ]
+}

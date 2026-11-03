@@ -25,7 +25,7 @@ async function mount(page: Page, kind: string) {
 
 test('clean inline child tables reuse the existing pager and keep independent views', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  await mount(page, 'inline'); const parent = page.locator('article').first();
+  await mount(page, 'inline'); const parent = page.locator('article[data-component-type="table"]').first();
   await parent.getByRole('row', { name: '展开子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
   await parent.getByRole('row', { name: '展开子表格 远山制造 21,600', exact: true }).getByRole('button').click();
   const first = parent.getByRole('region', { name: '子表格', exact: true }).nth(0), second = parent.getByRole('region', { name: '子表格', exact: true }).nth(1);
@@ -43,7 +43,7 @@ test('clean inline child tables reuse the existing pager and keep independent vi
 });
 
 test('query child requests are lazy, isolated, cached across folds and reset after leaving the parent page', async ({ page }) => {
-  await mount(page, 'query'); const parent = page.locator('article').first();
+  await mount(page, 'query'); const parent = page.locator('article[data-component-type="table"]').first();
   const calls = () => page.evaluate(() => (window as unknown as { rowQueries: unknown[] }).rowQueries);
   expect(await calls()).toHaveLength(0);
   await parent.getByRole('row', { name: '展开子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
@@ -72,7 +72,7 @@ test('query child requests are lazy, isolated, cached across folds and reset aft
 });
 
 test('title, search and sorting are opt-in; single mode closes the previous child', async ({ page }) => {
-  await mount(page, 'inline'); const parent = page.locator('article').nth(1);
+  await mount(page, 'inline'); const parent = page.locator('article[data-component-type="table"]').nth(1);
   await parent.getByRole('row', { name: '展开子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
   const child = parent.getByRole('region', { name: '子表格', exact: true });
   await expect(child.getByRole('heading', { name: '订单明细', exact: true })).toBeVisible();
@@ -87,7 +87,7 @@ test('title, search and sorting are opt-in; single mode closes the previous chil
 
 test('narrow expanded tables own their overflow and retain working page controls', async ({ page }, info) => {
   await page.setViewportSize({ width: 390, height: 900 }); await mount(page, 'query');
-  const parent = page.locator('article').first();
+  const parent = page.locator('article[data-component-type="table"]').first();
   await parent.getByRole('row', { name: '展开子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
   const child = parent.getByRole('region', { name: '子表格', exact: true });
   await child.getByRole('button', { name: '2', exact: true }).click();
@@ -105,7 +105,7 @@ test('narrow expanded tables own their overflow and retain working page controls
 
 
 test('query sort resets only its own window and retry keeps the failed target page', async ({ page }) => {
-  await mount(page, 'query'); const parent = page.locator('article').nth(1);
+  await mount(page, 'query'); const parent = page.locator('article[data-component-type="table"]').nth(1);
   await parent.getByRole('row', { name: '展开子表格 北辰科技 30,000', exact: true }).getByRole('button').click();
   const child = parent.getByRole('region', { name: '子表格', exact: true });
   await child.getByRole('button', { name: '2', exact: true }).click();

@@ -121,8 +121,10 @@ GroupedMeasureQueryFieldDefinition
 GroupedPageParams
 GroupedQueryDataSource
 GroupedQueryFields
+HeaderBinding
 InlineDataSource
 InlineSource
+IocHeaderComponent
 IocHeaderDeclaration
 JoinAggregateOperator
 JsonObject
@@ -360,6 +362,7 @@ deriveComponentCapabilities
 derivePageCapabilities
 dimensionOfLevel
 dimensionSelectionIssue
+documentIocHeader
 documentLayoutForm
 documentUsesRuntimeBackToolbar
 dqeDefaultSort
@@ -390,17 +393,20 @@ formatSuitsParamType
 hasAiSummaryBody
 hasColumnConditions
 hasHeaderDefaults
+hasLegacyDefaultHeader
 hasPeriodComparison
 hasQueryFieldMapping
 hasQueryParamReferences
 hasQuerySelection
 hasTimeConstraints
+headerDeclarations
 headerDefaultValues
 hierarchyLevelOf
 initialFilterTextValues
 initialModeRange
 initialTabSelections
 initializeQueryParams
+iocHeaderDeclaration
 isBoundedResultSource
 isChartComponent
 isChartOptionError
@@ -431,6 +437,7 @@ isValueFormatPreset
 isoWeekLabel
 isoWeekRange
 mainColumnField
+mapIocHeader
 matchesFieldValue
 matchesParamDeclaration
 matchesTimeValue
@@ -488,6 +495,7 @@ requiresQueryContext
 requiresTimeValidation
 resolveDataSourceFields
 resolveFilterTextValue
+resolveHeaderBinding
 resolveInlineQueryParams
 resolvePageParams
 resolveParamTextValues
@@ -548,6 +556,7 @@ toLocalDate
 toLocalTime
 unionMemberKeyFields
 urlInputErrors
+usesIocRegion
 validUnionKeyPart
 validate
 validateCalendarTimeRange

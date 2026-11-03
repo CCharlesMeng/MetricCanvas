@@ -203,7 +203,8 @@
         "references/page-metadata/examples/ioc-header-models.json",
         "references/page-metadata/examples/ioc-header-months.json",
         "references/page-metadata/examples/ioc-header-unconfigured.json",
-        "references/page-metadata/examples/tab-mixed-content.json"
+        "references/page-metadata/examples/tab-mixed-content.json",
+        "references/page-metadata/examples/ioc-header-section-placement.json"
       ]
     }
   ],
@@ -271,10 +272,10 @@
       "path": "@dashboardToolbar",
       "module": "page",
       "required": "类型/分支",
-      "note": "旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader",
+      "note": "旧页面兼容字段；统一由 IocHeader 呈现，新页面配置首section首组件 type:iocHeader",
       "enums": {},
       "facts": {
-        "description": "旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader",
+        "description": "旧页面兼容字段；统一由 IocHeader 呈现，新页面配置首section首组件 type:iocHeader",
         "deprecated": true,
         "anyOf": [
           "#/definitions/dashboardToolbar/anyOf/0",

@@ -1,3 +1,4 @@
+import { iocHeaderDeclaration } from './header-binding';
 import { isObjectDqeItem } from './dqe-object';
 import {ordinaryQuery} from './time-mode';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
@@ -71,7 +72,7 @@ function periodDeclarationErrors(page: Page, filter: RangeFilter, path: string, 
     if (isPeriodSelection(filter.default) || filter.initialMode || filter.periodModes) error(path, '期间选择只能用于 display=period');
     return;
   }
-  if (page.layout !== 'dashboard' && !page.iocHeader?.filterIds?.includes(filter.id)) error(path, '期间筛选仅支持 Dashboard 顶部筛选或 IOC 页头');
+  if (page.layout !== 'dashboard' && !iocHeaderDeclaration(page)?.filterIds?.includes(filter.id)) error(path, '期间筛选仅支持 Dashboard 顶部筛选或 IOC 页头');
   if (filter.precision === 'datetime') error(path, '期间筛选不支持 datetime');
   if (!filter.initialParam && !isPeriodSelection(filter.default)) error(`${path}/default`, '期间筛选需要期间默认选择或参数初值');
   if (filter.initialParam && !filter.initialMode) error(`${path}/initialMode`, '参数初始化期间筛选必须显式声明模式');

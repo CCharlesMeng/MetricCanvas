@@ -1,3 +1,4 @@
+import { documentIocHeader, hasLegacyDefaultHeader } from './header-binding';
 import type { TypedError } from './errors';
 import type { PageLayoutForm } from './page';
 import { versionPolicy } from './version';
@@ -20,5 +21,7 @@ export function canonicalLayoutDocument<T extends {
   // 6.13/6.14 的页头日期文字语义必须保留；不能升级版本后静默取消旧联动。
   const canonicalMinor = document.schemaVersion === '6.5' ? 5 :
     ['6.13', '6.14'].includes(document.schemaVersion) ? Number(document.schemaVersion.split('.')[1]) : versionPolicy.minor;
-  return { ...rest, schemaVersion: `${versionPolicy.major}.${canonicalMinor}`, layout: document.layout ?? layoutForm ?? 'report' };
+  const legacyDefault=(document.layout??layoutForm)==='dashboard' && !('dashboardToolbar' in document) && !documentIocHeader(document) && hasLegacyDefaultHeader(document);
+  const outputMinor=legacyDefault?Math.min(canonicalMinor,80):canonicalMinor;
+  return { ...rest, schemaVersion: `${versionPolicy.major}.${outputMinor}`, layout: document.layout ?? layoutForm ?? 'report' };
 }

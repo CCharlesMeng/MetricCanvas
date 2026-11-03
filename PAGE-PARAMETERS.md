@@ -494,7 +494,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 
 ### IOC身份与独立详情月份（6.36）
 
-根iocHeader的title/code/description/tags/facts消费同一TextValue引用与一层parts；参数不反向读取筛选草稿。显式标题缺值显示“未命名”，可选身份项缺值整体省略，不生成当前刷新时间。详情用timePoint.initialParam取得单月初值，后续修改只改变FilterState；完整例见[详情单月](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json)，行为与限制由[页面模块](docs/page-metadata/page.md#ioc-公共页头632)拥有。
+IOC Header组件props.identity（旧文档为根iocHeader.identity）的title/code/description/tags/facts消费同一TextValue引用与一层parts；参数不反向读取筛选草稿。显式标题缺值显示“未命名”，可选身份项缺值整体省略，不生成当前刷新时间。详情用timePoint.initialParam取得单月初值，后续修改只改变FilterState；完整例见[详情单月](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json)，行为与限制由[页面模块](docs/page-metadata/page.md#ioc-公共页头632)拥有。
 
 业务筛选6.37的selection/options也约束initialParam物化值、URL和restore；参数仍只初始化，不随页内筛选回写。详见[业务筛选](docs/page-metadata/filters.md#business-filters)。
 
@@ -524,3 +524,5 @@ DQE object 查询复用分组参数及筛选初值；维度原位引用放在 `f
 IOC Header 中的 Region 默认识别地区部 `region-dept` 与代表处 `rep-office`，无需页面配置 URL 映射，也不新增两个页面参数。值须匹配合法候选稳定值，可以是中文。同组按 URL 顺序取最后一项，例如 `?region-dept=中国地区部&rep-office=上海代表处` 选中代表处；反向顺序选择地区部。
 
 任一标准参数出现时优先于旧 value/level 输入；都未传时沿用页面初值。树内改选后回写标准参数；最后空值和未知候选按既有严格 URL 模式及候选门禁处理。普通页面的同名 region 筛选不自动启用这些组织键。详细说明见[筛选声明](docs/page-metadata/filters.md#region-level-url)，完整合成入口 `/pages/ioc-region-url-demo`。
+
+6.81页头文字引用位于 `/sections/0/components/0/props/identity/...`，复用参数/筛选文字取值；组件显隐不改变页级参数和URL状态。旧根级路径继续兼容。

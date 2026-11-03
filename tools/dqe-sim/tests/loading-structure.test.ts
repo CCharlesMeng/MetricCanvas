@@ -9,7 +9,7 @@ it('covers every product component across the two legal review surfaces', () => 
   const report = JSON.parse(readFileSync(new URL('../../../pages/capabilities/layout/loading-ai-summary-demo.json', import.meta.url), 'utf8'));
   const types = new Set([...flattenPageComponents(page), ...flattenPageComponents(report)].map(component => component.type));
   expect([...types].sort()).toEqual(componentCatalog.map(component => component.type).sort());
-  expect(page.iocHeader).toBeDefined();
+  expect(page.sections[0].components[0].type).toBe('iocHeader');
 });
 
 it('replays all declared query sources with a new review-round identity', () => {

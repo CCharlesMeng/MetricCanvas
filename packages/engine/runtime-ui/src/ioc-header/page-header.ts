@@ -1,3 +1,4 @@
+import { iocHeaderDeclaration, hasLegacyDefaultHeader } from '@metriccanvas/page/internal';
 import { pageListEntry, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
 import { contentFilterDeclarations } from '../report-date-header';
 import { visibleFilterDeclarations } from '../filters/filter-bar';
@@ -14,12 +15,12 @@ export interface PageHeaderPresentation {
 }
 
 /** Legacy metadata is accepted at this seam; every page uses IocHeader to render. */
-export function pageFiltersReadOnly(page: Pick<Page,'iocHeader'|'dashboardToolbar'>): boolean {
-  return page.iocHeader?.readOnly === true || typeof page.dashboardToolbar === 'object' && page.dashboardToolbar.readOnly === true;
+export function pageFiltersReadOnly(page: Page): boolean {
+  return iocHeaderDeclaration(page)?.readOnly === true || typeof page.dashboardToolbar === 'object' && page.dashboardToolbar.readOnly === true;
 }
 
 function legacyHeader(page: Page): ResolvedIocHeader | undefined {
-  if (page.layout !== 'dashboard' || page.dashboardToolbar === 'hidden') return undefined;
+  if (page.layout !== 'dashboard' || page.dashboardToolbar === 'hidden' || page.dashboardToolbar===undefined&&!hasLegacyDefaultHeader(page)) return undefined;
   const compact = typeof page.dashboardToolbar === 'object' && page.dashboardToolbar.variant === 'compact';
   return {...resolvedIocHeader({identity:{title:pageListEntry(page).title},back:true,presentation:{layout:'inline',collapse:'overflow',density:compact?'compact':'normal'}}),legacyBack:true};
 }
@@ -27,7 +28,7 @@ function legacyHeader(page: Page): ResolvedIocHeader | undefined {
 /** Owns filter placement, not filter state, candidates, or queries. */
 export function resolvePageHeader(page: Page, declarations: FilterDeclaration[]): PageHeaderPresentation {
   const available = contentFilterDeclarations(page, declarations);
-  const header = page.iocHeader;
+  const header = iocHeaderDeclaration(page);
   const model = header ? resolvedIocHeader(header) : legacyHeader(page);
   const readOnly = pageFiltersReadOnly(page);
   const note = header?.note ?? (typeof page.dashboardToolbar === 'object' ? page.dashboardToolbar.note : undefined);

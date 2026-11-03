@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "6.81",
+  "skillVersion": "1.18.0",
+  "sourceWorktree": "/Users/moon/.codex/worktrees/ioc-header-section/DataDashboard",
+  "baselineCommit": "552ef5c1228ce292ad9a2ec66673fa82e1c67ba4",
+  "previewWorktree": "/Users/moon/.codex/worktrees/approver-params-delivery/DataDashboard",
+  "previewBase": "http://127.0.0.1:5189",
+  "tests": {
+    "passed": 3905,
+    "skipped": 5,
+    "files": 435,
+    "excludedFile": "tests/authoring-export-isolation.test.ts"
+  },
+  "isolation": {
+    "passed": 4,
+    "notSelected": 27
+  },
+  "browser": {
+    "passed": 15,
+    "pageErrors": 0
+  },
+  "mcPythonPassed": 52,
+  "pagesValidated": 163,
+  "committed": false,
+  "pushed": false,
+  "ci": "not_run",
+  "realIntegration": "not_run",
+  "recordPhase": "local_acceptance_before_commit"
+}

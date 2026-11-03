@@ -34,14 +34,6 @@
       ]
     }
   ],
-  "iocHeader": {
-    "identity": {
-      "title": "Region URL 初始化"
-    },
-    "filterIds": [
-      "region"
-    ]
-  },
   "dataSources": {
     "offices": {
       "fields": {
@@ -91,6 +83,27 @@
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "Region URL 初始化"
+            },
+            "filterIds": [
+              "region"
+            ]
+          }
+        }
+      ]
+    },
     {
       "id": "results",
       "components": [

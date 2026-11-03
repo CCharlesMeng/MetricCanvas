@@ -1,0 +1,121 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "tools/scripts/table/column-conformance.ts",
+      "functions": [
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 4,
+          "endLine": 4,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 5,
+          "endLine": 5,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 6,
+          "endLine": 6,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@8:175>",
+          "qualifiedName": "mutate/<anonymous@8:175>",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 10,
+          "endLine": 10,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 11,
+          "endLine": 11,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 16,
+          "endLine": 16,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "mutate",
+          "qualifiedName": "mutate",
+          "line": 23,
+          "endLine": 23,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}
