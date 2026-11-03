@@ -1,25 +1,9 @@
 {
-  "schemaVersion": "6.46",
+  "schemaVersion": "6.81",
   "id": "ioc-header-demo",
   "layout": "dashboard",
   "meta": {
     "title": "IOC Header · 经营概览"
-  },
-  "iocHeader": {
-    "identity": {
-      "title": "经营概览"
-    },
-    "back": true,
-    "filterIds": [
-      "key",
-      "period",
-      "region",
-      "customer-type"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "collapse": "none"
-    }
   },
   "filters": [
     {
@@ -467,6 +451,29 @@
       "id": "overview",
       "container": "plain",
       "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "经营概览"
+            },
+            "back": true,
+            "filterIds": [
+              "key",
+              "period",
+              "region",
+              "customer-type"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        },
         {
           "id": "metric-signings-card",
           "type": "compositeCard",
