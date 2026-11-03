@@ -226,6 +226,10 @@ jobs:
         run: pnpm test tests/embed-chunking.test.ts
       - name: 原生构建 Embed 并严格检查每个 JS 不超过 1 MB
         run: pnpm --filter @metriccanvas/embed build
+      - name: 安装 Embed 接入回归浏览器
+        run: pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome
+      - name: 验证完整复制、ES/global 与 Webpack 5 接入
+        run: pnpm --filter @metriccanvas/embed exec playwright test distribution.spec.ts webpack-consumer.spec.ts --workers=1
       - uses: actions/upload-artifact@v4
         with:
           name: metriccanvas-embed-${{ matrix.os }}-${{ github.sha }}

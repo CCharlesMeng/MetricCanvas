@@ -8,6 +8,10 @@ import ts from 'typescript';
 const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const files = readdirSync(dist, { recursive: true }).filter((file) => /\.[cm]?js$/.test(file));
 
+test('copied distribution declares its ESM package scope for integrating bundlers', () => {
+  assert.equal(JSON.parse(readFileSync(resolve(dist, 'package.json'), 'utf8')).type, 'module');
+});
+
 test('distribution contains about ten bounded JS files and the two stable entries', () => {
   assert(files.length >= 10 && files.length <= 14, `Expected 10–14 JS files, got ${files.length}`);
   for (const entry of ['metriccanvas-runtime.es.js', 'metriccanvas-runtime.global.js']) {

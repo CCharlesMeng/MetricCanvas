@@ -28,6 +28,8 @@ export default defineConfig({
     {
       name: 'metriccanvas-global-entry',
       generateBundle() {
+        // Preserve ESM interpretation when dist is copied out of this package.
+        this.emitFile({ type: 'asset', fileName: 'package.json', source: '{"type":"module"}\n' });
         const bridge = readFileSync(new URL('./build-tools/global-bridge.js', import.meta.url), 'utf8');
         const hash = createHash('sha256').update(bridge).digest('hex').slice(0, 8);
         const bridgePath = `chunks/global-bridge-${hash}.js`;

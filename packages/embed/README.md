@@ -13,6 +13,7 @@
 | `dist/metriccanvas-runtime.global.js` | 经典 `<script>` 加载入口，等待 `MetricCanvas.ready` 后使用全局 API |
 | `dist/metriccanvas-runtime.es.js` | ES module |
 | `dist/chunks/*.js` | 两种入口共用的模块，带内容哈希，由浏览器自动加载 |
+| `dist/package.json` | ESM 类型声明，复制到项目中仍须保留 |
 | `dist/index.d.ts` | TypeScript 类型声明 |
 
 ## 构建
@@ -38,6 +39,8 @@ pnpm --filter @metriccanvas/embed build
 ```
 
 `pageDocument` 为集成应用已取得的页面文档。在项目自身的 JS module 中也可以使用相对路径 import；浏览器或项目构建器会处理依赖，ES 接入无须等待 `ready`，`mount` 仍同步返回具有 `update` / `destroy` 的实例。
+
+复制到 Webpack 5 项目的 `src/` 下时，连同 `package.json` 一起复制；其中的 `"type": "module"` 只作用于该分发目录，使构建器按 ESM 处理内部模块。旧版目录缺少此文件时，可在 `metriccanvas-runtime.es.js` 同级新增 `package.json`，内容为 `{"type":"module"}`，再重新构建项目。无需修改项目根目录的模块类型。缺失时，Webpack 可能对 Rolldown 的 CommonJS 兼容辅助代码产生 `Critical dependency: require function is used...` 警告。
 
 通过 HTTP/HTTPS 提供文件，JS 响应使用 JavaScript MIME；跨域部署须允许模块请求的 CORS，宿主 CSP 须允许该资源地址的模块脚本。不要只复制入口文件，不使用 `file://` 直接打开。global 也消费同一份 ESM 模块，因此不作为旧浏览器降级包。
 

@@ -68,6 +68,8 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(distribution.strategy.matrix.os).toEqual(['ubuntu-latest', 'windows-latest']);
     expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm test tests/embed-chunking.test.ts')).toBe(true);
     expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm --filter @metriccanvas/embed build')).toBe(true);
+    expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome')).toBe(true);
+    expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm --filter @metriccanvas/embed exec playwright test distribution.spec.ts webpack-consumer.spec.ts --workers=1')).toBe(true);
     expect(distribution.steps.at(-1).with.path).toBe('packages/embed/dist');
   });
 });

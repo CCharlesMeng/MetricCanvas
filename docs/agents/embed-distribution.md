@@ -9,6 +9,7 @@
 - 保留稳定的 `metriccanvas-runtime.es.js` 与 `metriccanvas-runtime.global.js`。两种风格共用内部模块，ES 直接 import；global 在 `MetricCanvas.ready` 完成后提供原公开 API，`mount` 同步返回 `update` / `destroy` 实例。
 - 以约十个分块为目标，当前门禁为完整分发 10–14 个 JS 文件；公共入口各小于 10,000 字节。Excel 与底图保留按需导入，组件样式继续注入挂载根。
 - 完整目录须自包含：所有静态与动态字面量导入指向包内实际文件。复制、发布和升级均包含完整 `chunks/`，分块由浏览器自动加载。
+- 分发目录携带 `package.json` 的 `"type": "module"` 声明；复制到集成应用的源码目录时必须保留，不能依赖本仓或 npm 包外层的 ESM 声明。
 
 ## 必须执行的验证
 
@@ -19,6 +20,8 @@
 5. 实际打包并核对归档包含全部 JS；ZIP 或 tarball 解包后逐文件沿用相同体积上限。发布兼容性继续按 [构建与仓外兼容性门禁](../../tools/package-build/README.md) 执行。
 
 分包匹配统一处理正斜杠、反斜杠与混合分隔符；依赖和产品源码的归属由 `tests/embed-chunking.test.ts` 对实际 Vite 配置回归。CI 的 `embed-distribution` 矩阵必须在 Linux、Windows **各自原生构建 embed**，执行同一 1 MB 门禁并上传完整 dist；该矩阵纳入最终 `ci` 汇总。Windows 上其他产品的分发通过，不能替代 Windows embed 构建通过。
+
+该矩阵同时执行 `distribution.spec.ts` 与 `webpack-consumer.spec.ts`：完整复制到仓外独立目录，原生 ES/global 接入通过；Webpack 5 development/production 默认模块解析不得出现构建错误或依赖警告，重新打包后挂载、按需 Excel 导出与销毁通过。不得通过忽略 Critical dependency 警告或更改集成应用根模块类型代替修复分发边界。
 
 验收记录给出源码提交/树与锁文件、构建参数、JS 文件数、最大文件及精确字节数、两种入口和浏览器结论。体积检查不能替代浏览器行为验收，源码检查不能替代发布归档核验。真实 DQE/Relay、远端 CI 与部署分别按实际证据报告。
 

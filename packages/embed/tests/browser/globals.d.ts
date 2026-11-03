@@ -17,6 +17,7 @@ declare global {
   function iocGateway(): RuntimeDataGateway;
 
   interface Window {
+    rebundledMetricCanvas: typeof import('../../src');
     pageDocument: any;
     runtime: RuntimeHandle;
     queryPageDocument: any;
