@@ -125,13 +125,20 @@ def component_rows(source, evidence):
     return rows, count
 
 
-def block_component(block, sources, pattern='custom', *, relations=(), evidence=None):
+def block_component(block, sources, pattern='custom', *, relations=(), evidence=None, evidence_records=None):
     """Reuse executed sources, never execute queries or aggregate result rows."""
     if block['type'] == 'text':
         props = {'body': block['body']}
         if 'title' in block:
             props['title'] = block['title']
         return {'id': block['id'], 'type': 'text', 'layout': {'span': 12}, 'props': props}
+    if 'tableSlots' in block:
+        from metriccanvas_authoring.pages.components.multislot_table import build_multislot_table
+        return build_multislot_table(block, sources, evidence_records or {}, pattern)
+    return _single_source_block(block, sources, pattern, relations, evidence)
+
+
+def _single_source_block(block, sources, pattern, relations, evidence):
     source = sources.get(block['source'])
     if source is None:
         raise StructureError('STRUCTURE_SOURCE_NOT_FOUND', '/source', candidates=tuple(sources))

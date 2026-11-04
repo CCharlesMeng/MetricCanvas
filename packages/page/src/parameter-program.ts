@@ -1,22 +1,23 @@
+import type { TemporalEvaluation } from './temporal-evaluation';
 import {extractPageParams,applyPageParamSelection,type ExtractionContext} from './extract-page-params';
 import {resolvePageParams} from './resolve-page-params';
 import type {TextValue} from './page-param';
 
 export type ParameterProgramRequest =
-  | {action:'resolve';document:unknown;suppliedValues?:Record<string,unknown>}
-  | {action:'extract'|'prepare';document:unknown;context:ExtractionContext;selectedIds?:string[];textReplacements?:Record<string,TextValue>};
+  | {action:'resolve';document:unknown;evaluation?:TemporalEvaluation;suppliedValues?:Record<string,unknown>}
+  | {action:'extract'|'prepare';document:unknown;evaluation?:TemporalEvaluation;context:ExtractionContext;selectedIds?:string[];textReplacements?:Record<string,TextValue>};
 
 /** Trusted serializable program interface; no renderer, I/O, storage or model channel. */
 export function runPageParameterProgram(request:ParameterProgramRequest) {
   if(request.action==='resolve') {
-    const result=resolvePageParams(request.document,request.suppliedValues);
+    const result=resolvePageParams(request.document,request.suppliedValues,request.evaluation);
     return result.ok?{...result,effectiveInputs:Object.fromEntries(result.effectiveInputs)}:result;
   }
-  const extraction=extractPageParams(request.document,request.context);
+  const extraction=extractPageParams(request.document,request.context,request.evaluation);
   if(!extraction.ok)return extraction;
   if(request.action==='prepare') {
     const selected=request.selectedIds??extraction.candidates.filter(c=>c.defaultSelected).map(c=>c.id);
-    const result=applyPageParamSelection(extraction,selected,request.textReplacements);
+    const result=applyPageParamSelection(extraction,selected,request.textReplacements,request.evaluation);
     return result.ok?{...result,baseline:extraction.baseline,sourceKey:extraction.sourceKey,candidates:extraction.candidates,skipped:extraction.skipped,selectedIds:selected}:result;
   }
   if(request.action!=='extract')throw Error('Unknown parameter program action');

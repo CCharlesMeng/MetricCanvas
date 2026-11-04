@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-02",
+  "head": "552ef5c1228ce292ad9a2ec66673fa82e1c67ba4",
+  "branch": "main",
+  "remoteRefreshed": false,
+  "gitStatus": " M AGENTS.md\n M CONTEXT.md\n M apps/platform/README.md\n M docs/plan/2026-10-29-key-office-filter-integration.md\n M docs/plan/2026-10-29-paged-join-on-demand-pagination.md\n M docs/plan/README.md\n M packages/engine/runtime/tests/query-cascade.test.ts\n M pages/README.md\n M pages/business/report/sdt/README.md\n M pages/temporary/business-rejection-pagination-10/README.md\n?? .archify/\n?? apps/playground/tests/empty-cascade-browser.mjs\n?? artifacts/approver-name-filter/business-decision-all-details-2.json\n?? artifacts/business-result-pinned-20261102/\n?? artifacts/feature-usage-v0.1.0/\n?? artifacts/mc-distribution-hardening-20261031/\n?? artifacts/metriccanvas-relay-design-review-20261102-v1.1.zip\n?? artifacts/metriccanvas-relay-design-review-20261102-v1.1.zip.sha256\n?? artifacts/metriccanvas-relay-design-review-20261102-v1.verification.json\n?? artifacts/metriccanvas-relay-design-review-20261102-v1.zip\n?? artifacts/metriccanvas-relay-design-review-20261102-v1.zip.sha256\n?? artifacts/missing-measures-20261031/\n?? artifacts/page-repair-20261030/\n?? artifacts/pangu-handoff-2db7f26ee.zip\n?? artifacts/pangu-handoff-2db7f26ee.zip.sha256\n?? artifacts/pangu-handoff-2db7f26ee/\n?? artifacts/relay-authoring-review-20261102-v1.1/\n?? artifacts/relay-authoring-review-20261102-v1/\n?? artifacts/revenue-render-repro-20261031/\n?? docs/data-fetching-scenarios.md\n?? docs/evidence/2026-11-02-empty-cascade/\n?? docs/evidence/2026-11-02-feature-usage-skill/\n?? docs/evidence/2026-11-02-relay-authoring-static-audit/\n?? docs/evidence/2026-11-02-relay-design-feedback/\n?? docs/evidence/core-skills-sync-20261029/\n?? docs/evidence/data-source-diagnostics-20261030/\n?? docs/evidence/rep-office-approval-detail-20261031/\n?? docs/plan/2026-10-29-core-skills-sync-and-repair.md\n?? docs/plan/2026-10-31-contract-skill-closeout-handoff.md\n?? docs/plan/2026-11-02-feature-usage-skill-spec.md\n?? docs/plan/2026-11-02-product-relay-evolution.md\n?? docs/plan/2026-11-02-product-relay-evolution/\n?? feature-usage-skill/\n?? packages/data-execution/tests/empty-cascade.test.ts\n?? pages/business/dashboard/ioc/approval/\n?? pages/capabilities/data/sum-fields-zero.json\n",
+  "worktrees": "worktree /Users/moon/Documents/Code/公司项目/DataDashboard\nHEAD 552ef5c1228ce292ad9a2ec66673fa82e1c67ba4\nbranch refs/heads/main\n\nworktree /Users/moon/.codex/worktrees/approver-params-delivery/DataDashboard\nHEAD 552ef5c1228ce292ad9a2ec66673fa82e1c67ba4\ndetached\n\nworktree /Users/moon/.codex/worktrees/presentation-knowledge/DataDashboard\nHEAD 2133241a6b4f259fc19ff54bfdd9a0dcb9c96e06\ndetached\n\n",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "0b312a4678b1a3cec9e72dbf13065d65bd320544708fcb782a7b4f7a4dad43d9"
+    },
+    {
+      "path": "CONTEXT.md",
+      "sha256": "261fbb0646d781d1983aa46e8d14d4717b3e3e8cafedf85764522a750d3cb8a9"
+    },
+    {
+      "path": "docs/plan/2026-11-02-product-relay-evolution/implementation-handoff.md",
+      "sha256": "7e8fffeb98d4830cf147eefaa8284f9b9a25e6c987cc2a4c324505765d26cc46"
+    },
+    {
+      "path": "docs/plan/2026-11-02-product-relay-evolution/relay-review-design-v1.1.md",
+      "sha256": "4bf064fcc0d1cc5e3c423df550c6acaaa0b9344189a48d93ff2dbcfed25bf38c"
+    },
+    {
+      "path": "tools/scripts/local-authoring-data-analysis.ts",
+      "sha256": "b9a60818e5b4c416130bd53169ab3f686a4c56405f94ee8142e92f6cff5af0c1"
+    },
+    {
+      "path": "tools/scripts/local-authoring-data-scope.ts",
+      "sha256": "2fc8d32f4576d351599b8a4a43f5d00eb08e7feee1752b3c0fcdaf6d0a1167e5"
+    },
+    {
+      "path": "tools/scripts/local-authoring-data-cli.ts",
+      "sha256": "2aa9212ac76769942cc8e9600cb94aebb6730d090c17b76f95c746e9de378750"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py",
+      "sha256": "512b77a8a98b4815aadf5dee155358ef0b84197920f37cfc10330efbd0580243"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-lock.json",
+      "sha256": "776a040b26a8e23f21bf8415d952223bd9ce295a6d1695cb04b64277affcf6aa"
+    }
+  ],
+  "purpose": "implementation handoff; evidence/design files may be untracked and are not automatically copied to a new worktree"
+}

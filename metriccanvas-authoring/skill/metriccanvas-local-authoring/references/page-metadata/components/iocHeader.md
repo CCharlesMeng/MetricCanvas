@@ -482,7 +482,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
   },
   "props": {
     "identity": {
-      "title": "列头默认筛选与查询分页"
+      "title": "多槽与呈现（合成证据）"
     }
   }
 }

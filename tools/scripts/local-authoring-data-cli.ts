@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkAnalysis, draftAnalysis, findBlocks, hashBytes, markdownBlocks, projectDataSources, scanPageData } from './local-authoring-data-analysis';
-import { scopePageData } from './local-authoring-data-scope';
+import { checkAnalysis, draftAnalysis, findBlocks, hashBytes, markdownBlocks } from './local-authoring-data-analysis';
+import { projectDataSources, scanPageData } from '../../metriccanvas-authoring/core/page/data-scan';
+import { scopePageData } from '../../metriccanvas-authoring/core/page/data-scope';
 import { parsePage } from '../../packages/page/src/validate';
 import { versionPolicy } from '../../packages/page/src/version';
 

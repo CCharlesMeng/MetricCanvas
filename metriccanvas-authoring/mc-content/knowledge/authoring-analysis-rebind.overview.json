@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring-analysis-rebind.overview"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-analysis-rebind",
+      "reference": "references/page-metadata/authoring-analysis-rebind.md",
+      "blocks": [
+        "# 创作分析关联与受控换源\n\n`page.analyze` 和 `page.rebind` 是独立创作操作，不新增 `PageDocument` 字段。二者只读取显式输入，在本地 Node 程序或产品纯核心执行；不发起查询、不读取 Relay 私有存储、不授权、不保存。返回始终标记 `execution: \"not-run\"`，换源候选另标记 `saveStatus: \"not_requested\"`。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/authoring-analysis-rebind.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -38,12 +38,19 @@
     "mc:content:benchmark": "python3 tools/scripts/mc-content-benchmark.py",
     "skills:repair:check": "tsc --noEmit -p tools/tsconfig.skills.json && vitest run tests/repair-page-metadata.test.ts tests/skill-release.test.ts",
     "skills:check": "pnpm skills:repair:check && pnpm authoring:check",
-    "skills:pack": "python3 tools/scripts/skill-release.py pack"
+    "skills:pack": "python3 tools/scripts/skill-release.py pack",
+    "relay:build": "python3 -B tools/relay-reference/build.py",
+    "relay:test": "python3 -B -m unittest discover -s tools/relay-reference -p \"test_*.py\"",
+    "relay:core:test": "python3 -B tools/relay-reference/core_tests.py",
+    "relay:pack": "python3 -B tools/relay-reference/package_cli.py pack",
+    "relay:verify": "python3 -B tools/relay-reference/package_cli.py verify",
+    "relay:replay": "python3 -B tools/relay-reference/package_cli.py replay"
   },
   "devDependencies": {
     "@sveltejs/package": "2.5.8",
     "@sveltejs/vite-plugin-svelte": "7.2.0",
     "@types/node": "^24.13.4",
+    "ajv": "^8.17.1",
     "esbuild": "0.28.1",
     "svelte": "5.56.6",
     "tsx": "^4.23.1",

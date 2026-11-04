@@ -76,7 +76,9 @@ export function columnPrimaryFields(nodes:readonly TableColumnNode[]):Set<string
   return 'field' in field?[field.field]:[];
  }));
 }
+/** Stable slot/field identity; presentation overrides and byFilter case insertion order are irrelevant. */
 export function columnBindingKey(binding:FieldBinding):string{
  if(typeof binding==='string')return JSON.stringify(['main',binding]);
- return 'field' in binding?JSON.stringify([binding.data,binding.field]):JSON.stringify(binding);
+ if ('field' in binding) return JSON.stringify([binding.data, binding.field]);
+ return JSON.stringify(['byFilter', binding.byFilter.filterId, Object.keys(binding.byFilter.cases).sort().map(key => [key, columnBindingKey(binding.byFilter.cases[key])])]);
 }

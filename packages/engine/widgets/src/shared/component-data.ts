@@ -1,5 +1,6 @@
 import {
-  fieldName, staticFieldBinding,
+  staticFieldBinding,
+  resolveField, type ResolvedField,
   type DataSnapshot,
   type FieldBinding,
   type ResolvedFieldDefinition,
@@ -26,42 +27,11 @@ export type MetricDataSlots = MainDataSlots & {
 };
 export type NamedDataSlots = Record<string, ComponentDataSlot | undefined>;
 
-export interface ResolvedField {
-  data: string;
-  field: string;
-  definition?: ResolvedFieldDefinition;
-  /** 当前组件绑定最终生效的展示格式。 */
-  format?: ValueFormatPreset;
-  missingText?: string;
-}
 
 export interface SemanticHtmlFieldPresentation {
   source: string;
   format: ValueFormatPreset | undefined;
   visual: 'signed' | undefined;
-}
-
-/**
- * 字符串字段绑定固定落到 main；显式绑定按命名槽解析。
- * 组件绑定 format 优先于元数据快照或旧页面归一出的 defaultFormat。
- */
-export function resolveField(
-  binding: FieldBinding,
-  data: NamedDataSlots
-): ResolvedField {
-  binding=staticFieldBinding(binding);
-  const dataName = typeof binding === 'string' ? 'main' : binding.data;
-  const field = fieldName(binding);
-  const definition = data[dataName]?.fields[field];
-  return {
-    data: dataName,
-    field,
-    definition,
-    missingText: typeof binding === 'string' ? undefined : binding.missingText,
-    format:
-      (typeof binding === 'string' ? undefined : binding.format) ??
-      (definition?.role === 'detail' ? undefined : definition?.defaultFormat)
-  };
 }
 
 /**
@@ -127,3 +97,5 @@ export function fieldLabel(binding: FieldBinding, data: NamedDataSlots): string 
   const resolved = resolveField(binding, data);
   return resolved.definition?.label ?? resolved.field;
 }
+
+export { resolveField, type ResolvedField } from '@metriccanvas/page/internal';

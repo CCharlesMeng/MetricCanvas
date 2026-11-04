@@ -25,6 +25,8 @@ MC 内容与布局能力的诊断说明；下面的修复方向供调用方决�
 - RESULT_VERSION_STALE：只核对并更新受影响的取数项。
 - QUERY_ITEM_INVALID / STRUCTURE_BLOCK_INVALID：按路径修正失败项，复用成功结果；页面已保存时用 edit_page 修复。
 - PRESENTATION_DEFAULTED / COMPONENT_FALLBACK_TABLE：工具已采用默认展示或同字段表格，检查实际结果后继续交付。
+- PRESENTATION_FORMAT_ADJUSTED：来源格式建议已按可信百分数刻度修正；核对 dataSourceId、fieldId 与 from/to，组件显式格式继续优先，不需重查或重存。
+- PRESENTATION_PRECISION_LIMIT：百分比非零原值在所用精度下显示为零；保留百分号与原值，按需用原值明细核对，不靠删除单位或更改业务值消除告警。
 - SOURCE_DESCRIPTION_UNAVAILABLE / 查询拒绝：保留错误范围；不自动删筛选或改指标。
 - AUTHORING_BUDGET_EXHAUSTED / 相同无进展错误：终止对应分支，说明未完成部分。
 - WORK_VERSION_CONFLICT / WORK_BUSY：读取工作稿状态；并发或迟到结果不能覆盖新工作。

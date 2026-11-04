@@ -1,3 +1,4 @@
+import type { TemporalEvaluation } from './temporal-evaluation';
 import { upgradeIocHeader } from './upgrade-ioc-header';
 import { adaptLegacyPageDocument } from './legacy-compatibility';
 import { walkDocumentComponents } from './component-walk';
@@ -38,7 +39,7 @@ function semanticMigrationErrors(document: JsonObject): TypedError[] {
 }
 
 /** Explicit authoring migration only. Runtime acceptance and historical revisions stay unchanged. */
-export function upgradePageDocument(input: unknown, target = versionPolicy.current): PageUpgrade {
+export function upgradePageDocument(input: unknown, target = versionPolicy.current, evaluation?: TemporalEvaluation): PageUpgrade {
   const report: MigrationReport = {
     fromVersion: typeof object(input)?.schemaVersion === 'string' ? String(object(input)!.schemaVersion) : undefined,
     toVersion: target, changes: [], warnings: [], errors: sourceVersionErrors(input, target)
@@ -55,7 +56,7 @@ export function upgradePageDocument(input: unknown, target = versionPolicy.curre
   report.errors=upgradeIocHeader(document,report.changes);
   if(report.errors.length)return {...report,ok:false};
   document.schemaVersion = target;
-  const normalized = normalizePageDocument(document);
+  const normalized = normalizePageDocument(document, {evaluation});
   if (!normalized.ok) return { ...report, ok: false, errors: normalized.errors };
   if ('layoutForm' in original) report.changes.push({ rule: 'layout', path: '/layoutForm', message: '旧布局声明转为 layout，保留原形态' });
   if (report.fromVersion !== target) report.changes.push({ rule: 'version', path: '/schemaVersion', message: `${report.fromVersion} → ${target}；已检查能力下限、已知语义断点及完整目标协议` });

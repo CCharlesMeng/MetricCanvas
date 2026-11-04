@@ -16,8 +16,6 @@ from .grouped_params import declarations as _param_declarations, query_reference
 from .filter_text_values import capability_paths as _filter_text_capability_paths, reference_issues as _filter_text_reference_issues, composition_paths as _text_composition_paths
 
 
-BUNDLE_ROOT = bundle_root()
-PRODUCT_CONTRACT_ROOT = BUNDLE_ROOT / "contract-snapshot"
 DATETIME_PATTERN = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}"
     r"(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})?$"
@@ -90,18 +88,23 @@ def _uses_product_bridge(node):
     return any(_uses_product_bridge(value) for value in node.values())
 
 
-def validate_page_document(value: Any) -> list[PageContractIssue]:
+def validate_page_document(value: Any, *, schema: Mapping[str, Any] | None = None,
+                           node_resources=None) -> list[PageContractIssue]:
     """Validate structure plus query-result semantics used by Page parsing."""
-    if _uses_product_bridge(value):
+    if node_resources is not None or _uses_product_bridge(value):
         from .node_validator import validate_with_node
-        return validate_with_node(value)
-    return _validate_python_document(value)
+        return validate_with_node(value, resources=node_resources)
+    return _validate_python_document(value, schema=schema)
 
 
-def _validate_python_document(value: Any) -> list[PageContractIssue]:
-    schema = json.loads(
-        (PRODUCT_CONTRACT_ROOT / "page" / "schema.json").read_text(encoding="utf-8")
-    )
+def _page_schema(schema: Mapping[str, Any] | None) -> Mapping[str, Any]:
+    if schema is not None:
+        return schema
+    return json.loads((bundle_root() / "contract-snapshot/page/schema.json").read_text(encoding="utf-8"))
+
+
+def _validate_python_document(value: Any, *, schema: Mapping[str, Any] | None = None) -> list[PageContractIssue]:
+    schema = _page_schema(schema)
     validator = Draft202012Validator(schema)
     issues = _schema_issues(validator, value)
     if issues:
@@ -215,18 +218,19 @@ def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractI
     return []
 
 
-def normalize_page_document(value: Any) -> dict[str, Any]:
+def normalize_page_document(value: Any, *, schema: Mapping[str, Any] | None = None,
+                            node_resources=None) -> dict[str, Any]:
     """Validate a complete baseline and copy it into the canonical write form.
 
     This preserves source fields and rows, including parameter references; it
     never writes validation-time materialized values back into the document.
     Verify persisted content hashes before calling this function.
     """
-    issues = validate_page_document(value)
+    issues = validate_page_document(value, schema=schema, node_resources=node_resources)
     if issues:
         return {"ok": False, "errors": [issue.as_dict() for issue in issues]}
     document = deepcopy(value)
-    schema = json.loads((PRODUCT_CONTRACT_ROOT / "page" / "schema.json").read_text(encoding="utf-8"))
+    schema = _page_schema(schema)
     versions = schema["properties"]["schemaVersion"]["enum"]
     if document["schemaVersion"] not in ("6.5", "6.13", "6.14"):
         document["schemaVersion"] = max(versions, key=lambda v: tuple(map(int, v.split("."))))

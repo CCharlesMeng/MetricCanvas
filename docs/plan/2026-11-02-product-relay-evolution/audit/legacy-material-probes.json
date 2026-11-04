@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-02",
+  "head": "2133241a6b4f259fc19ff54bfdd9a0dcb9c96e06",
+  "workspace": "dirty; concurrent changes preserved; no fetch or delivery",
+  "materials": [
+    {
+      "title": "MCP Tools 架子/内容分离设计",
+      "path": "/Users/moon/.codex/attachments/8a20b338-84ce-4c43-be91-ab11b9fedad7/已粘贴的文本.txt",
+      "sha256": "e728af264156ea51930779025fb725fddaf0eecb1cad11f2728480518abb4ee1",
+      "evidence": "user-supplied material; Relay state not independently verified"
+    },
+    {
+      "title": "工具迁移详细清单",
+      "path": "/Users/moon/.codex/attachments/fa4ca392-b887-4dd2-8ffa-4e0fac7e79d3/已粘贴的文本.txt",
+      "sha256": "a7ed7a652a102aebe9be4c966e0400e13056ae9e884aaad9a16d5f9f68888111",
+      "evidence": "user-supplied material; Relay state not independently verified"
+    },
+    {
+      "title": "多槽表格缺口修复专项",
+      "path": "/Users/moon/.codex/attachments/100bc246-c619-4b3d-b875-c448cd063744/已粘贴的文本.txt",
+      "sha256": "8b3cc5b958ed4703c457bb8365092ee58e9e492b1ace44ebf78e178196883769",
+      "evidence": "user-supplied material; Relay state not independently verified"
+    }
+  ],
+  "contractProbes": [
+    {
+      "name": "single-source",
+      "input": {
+        "id": "revenue-table",
+        "title": "收入",
+        "type": "data",
+        "component": "table",
+        "fields": [
+          "org",
+          "revenue"
+        ],
+        "purpose": "comparison",
+        "source": "revenue"
+      },
+      "valid": true,
+      "errors": []
+    },
+    {
+      "name": "proposed-multi-source",
+      "input": {
+        "id": "revenue-table",
+        "title": "收入",
+        "type": "data",
+        "component": "table",
+        "fields": [
+          "org",
+          "revenue"
+        ],
+        "purpose": "comparison",
+        "sources": {
+          "main": "revenue",
+          "yoy": "revenue-yoy"
+        },
+        "rowKey": "org",
+        "columnBindings": [
+          {
+            "data": "main",
+            "field": "revenue"
+          },
+          {
+            "data": "yoy",
+            "field": "change"
+          }
+        ]
+      },
+      "valid": false,
+      "errors": [
+        {
+          "path": "/",
+          "message": "Additional properties are not allowed ('columnBindings', 'rowKey', 'sources' were unexpected)"
+        },
+        {
+          "path": "/",
+          "message": "'source' is a required property"
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "command": "pnpm exec vitest run packages/engine/widgets/tests/table-rows.test.ts packages/page/tests/dqe-query.test.ts",
+    "exitCode": 0,
+    "filesPassed": 2,
+    "testsPassed": 15,
+    "durationMs": 960,
+    "scope": "local; no browser, real Relay/DQE/Java, recall or model validation"
+  },
+  "sourceFingerprints": [
+    {
+      "path": "metriccanvas-authoring/ownership.json",
+      "sha256": "8cad2a229be26dd9b5c6b73ea71413afcb1a72d7d6976c2b842fc36304ddc8d8"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/mcp/platform_mcp.py",
+      "sha256": "97bcb93ff59229ae5aff897468557bf39a5fdb52778a61a5f80aa7febd64a826"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/compose_contract.py",
+      "sha256": "c1c846dfa9d8c3fcfbc5865f94d7cd6f61a7c43393f986cc83bb7b9c08c413f7"
+    },
+    {
+      "path": "metriccanvas-authoring/contracts/authored/page-structure-plan.schema.json",
+      "sha256": "5d4aca5be884f988673d8b5fe391ae53c8e949c2745b83819e9613a58585c520"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "sha256": "b93535be20c9c95959c7c34652edd5abd7faac4167d7b7ef477ca57b805b7c81"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_building.py",
+      "sha256": "8ebac28f89a16f384a3f7e1199116b97aad8c6b228ca478a77765c030087f676"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/section_editing.py",
+      "sha256": "2a01a03d75b3c377614db9fadc2bf7c0a16c462e74aa51ce6c7f629d583fbe7e"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/bootstrap/deployment.py",
+      "sha256": "2c296c1e3294ee2926f6d2f71d47ed71f8006841b9f816e480de4c9b3a3c033a"
+    },
+    {
+      "path": "packages/page/src/schema/primitives.ts",
+      "sha256": "59749656cffbcca0eeb6576a6014017339436b9d281c34c4f76287d1e151b176"
+    },
+    {
+      "path": "packages/page/src/validate.ts",
+      "sha256": "cde02357d904a94ab472851bec284297937ece87da75f557a2dfd2779ca2d19e"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/table/rows.ts",
+      "sha256": "1216e560676edc6288f7837fea1a391dc5b4ad0051b7af7c19b865025f57137f"
+    }
+  ],
+  "notVerified": [
+    "Relay current 6.11 deployment claim",
+    "actual private tool registration/loading",
+    "historical session 2bf03612db664601a38b305268ec9452",
+    "F5 query constraint",
+    "recall-report and external plugin behavior"
+  ]
+}

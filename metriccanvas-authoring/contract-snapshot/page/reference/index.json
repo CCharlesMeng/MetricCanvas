@@ -3,6 +3,38 @@
   "schemaSha256": "62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11",
   "semanticSources": [
     {
+      "file": "metriccanvas-authoring/core/page/analysis-report.ts",
+      "sha256": "026bde6e6c22dd8d8c417fdb482ce047b9ebcd40d336c2c8797ed74b65854ea7"
+    },
+    {
+      "file": "metriccanvas-authoring/core/page/data-scan.ts",
+      "sha256": "b348f9a10591039fb3562c4076145a890bec3531c11feee6397d743763b094ac"
+    },
+    {
+      "file": "metriccanvas-authoring/core/page/extension-contract.ts",
+      "sha256": "1f91c147203acbf0a15b1bc31afeea306c24e93f3817540d9e0defa996b77ae2"
+    },
+    {
+      "file": "metriccanvas-authoring/core/page/product-contract.ts",
+      "sha256": "eab5af539f22cee2e2237f2174a0b22c858580e5c809d134a4ce76a3668ec98b"
+    },
+    {
+      "file": "metriccanvas-authoring/core/page/source-rebind.ts",
+      "sha256": "9b98341840090c1efb6fae2f27824c3b5c9355a54fc118a7ab9176d9e861bf5d"
+    },
+    {
+      "file": "metriccanvas-authoring/core/presentation/audit.ts",
+      "sha256": "0cc825c68ce8bd5742bc8cc7e4810f2a7ee976f0abc4a3771e0794a05c2ed78e"
+    },
+    {
+      "file": "metriccanvas-authoring/core/presentation/policy.json",
+      "sha256": "ca4eb3ddc9d2af90e3c4ff30f5ca8b8978ec664b869faa4fa6655f6ff5c119c7"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py",
+      "sha256": "223fc7a3f142ae0e6e6cc7bcbc727e6b9d0df4ce2fcd28b5f4ef512ccb42597e"
+    },
+    {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
       "sha256": "27579112a4412fa09a660c5cf1d75304a7e442787707fc6c321ed94eee3f1ff3"
     },
@@ -109,6 +141,10 @@
     {
       "file": "packages/page/src/dqe-object.ts",
       "sha256": "2d7c3bbeff933f4cddbe3891996301f9f3a91cbda96345a1c8ea58d5301b4a22"
+    },
+    {
+      "file": "packages/page/src/field-resolution.ts",
+      "sha256": "06362258ae3992f4d5a8198c137e651cf05d0e5035861e4be5b02c67c461e38c"
     },
     {
       "file": "packages/page/src/field-selection.ts",
@@ -332,7 +368,7 @@
     },
     {
       "file": "packages/page/src/time-filter-boundary.ts",
-      "sha256": "9da5a32596a8b0ea6da3ab9c9e7d859f04086c45f9193ba69820abf0c5a13ef5"
+      "sha256": "85a6ce8ececfdad4e5e43e677b910dea69325cb77c72e9681ee95f01856f1149"
     },
     {
       "file": "packages/page/src/time-mode.ts",
@@ -348,7 +384,7 @@
     },
     {
       "file": "packages/page/src/upgrade-document.ts",
-      "sha256": "74c3ac997488da69d9e57fcb4ddef7561935a96beaa1a588d9a4912b16f98a2d"
+      "sha256": "ad796b1a44e758e6950ce494817f3491de3906fdd9a9625647a022baaaef6680"
     },
     {
       "file": "packages/page/src/upgrade-ioc-header.ts",
@@ -380,11 +416,15 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "3b11b15f58a8bdedf8aa6942d123d8835ff4f4141bd40cb6f63d22d12fd39bfc"
+      "sha256": "061c90ef947af604269cec9785b1a845561aeb8d0d63627579cc2b0c8cbea085"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
       "sha256": "e2a447e13ae9f9cdee1ac5c82d3b25c003efd7edd0926de0b102901872e922c8"
+    },
+    {
+      "file": "tools/scripts/authoring-analysis-adapter.ts",
+      "sha256": "252a389256cfba32f8f8ee2bba745d0fa3ab67611ae9ff0004ef575497760bdf"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
@@ -748,7 +788,8 @@
         "period-query-columns-demo",
         "key-office-filter-demo",
         "key-office-filter-target",
-        "ioc-region-url-demo"
+        "ioc-region-url-demo",
+        "authoring-evaluation-context"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -855,7 +896,8 @@
         "currency-selection-page",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "period-comparison-demo"
+        "period-comparison-demo",
+        "authoring-percent-coverage"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1685,6 +1727,44 @@
       "rules": [
         "ioc-header-component"
       ]
+    },
+    "authoring-analysis-rebind.md": {
+      "title": "创作分析关联与受控换源",
+      "definitions": [],
+      "keywords": [
+        "authoring-analysis-rebind",
+        "创作分析关联与受控换源"
+      ],
+      "examples": [
+        "authoring-analysis-rebind"
+      ],
+      "sources": [
+        "metriccanvas-authoring/core/page/analysis-report.ts",
+        "metriccanvas-authoring/core/page/source-rebind.ts",
+        "metriccanvas-authoring/core/page/data-scan.ts",
+        "metriccanvas-authoring/core/page/product-contract.ts",
+        "metriccanvas-authoring/core/page/extension-contract.ts",
+        "tools/scripts/authoring-analysis-adapter.ts"
+      ],
+      "rules": []
+    },
+    "authoring-presentation.md": {
+      "title": "创作数值呈现与受控多槽装配",
+      "definitions": [],
+      "keywords": [
+        "authoring-presentation",
+        "创作数值呈现与受控多槽装配"
+      ],
+      "examples": [
+        "relay-multislot-presentation"
+      ],
+      "sources": [
+        "metriccanvas-authoring/core/presentation/audit.ts",
+        "metriccanvas-authoring/core/presentation/policy.json",
+        "packages/page/src/field-resolution.ts",
+        "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py"
+      ],
+      "rules": []
     }
   },
   "components": [
@@ -19101,7 +19181,7 @@
       "variant": "primaryDetail",
       "file": "examples/component-metricCard-primaryDetail.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/metric-card-primary-detail.json"
+      "source": "page/conformance/valid/authoring-percent-coverage.json"
     },
     {
       "type": "barChart",
@@ -19412,7 +19492,7 @@
       "type": "iocHeader",
       "file": "examples/component-iocHeader.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/table-header-filter-defaults-query.json"
+      "source": "page/conformance/valid/ioc-component-relay-multislot-presentation.json"
     }
   ],
   "branchCoverage": [
@@ -19725,8 +19805,8 @@
     {
       "schemaPointer": "#/definitions/scalar/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/usage/source/rows/0/month"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/dataSources/rates/source/rows/0/case"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/1",
@@ -19744,7 +19824,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/3",
       "module": "fields.md",
       "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/dataSources/metrics/source/rows/0/missing"
+      "pointer": "#/dataSources/rates/source/rows/4/rate"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
@@ -20759,8 +20839,8 @@
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
+      "file": "examples/inline-report.json",
+      "pointer": "#/sections/0/components/1/props/rows/0/valueField"
     },
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
@@ -21011,7 +21091,7 @@
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/5",
       "module": "page.md",
-      "file": "examples/component-metricCard-primaryDetail.json",
+      "file": "examples/detail-views.json",
       "pointer": "#/detailViews/0/components/0"
     },
     {
@@ -21029,8 +21109,8 @@
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/0",
       "module": "components/table.md",
-      "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/detailViews/0/components/0/props/columns/0"
+      "file": "examples/component-table.json",
+      "pointer": "#/sections/0/components/0/props/columns/0"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0",

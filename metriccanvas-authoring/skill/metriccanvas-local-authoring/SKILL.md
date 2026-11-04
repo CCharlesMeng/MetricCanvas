@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.20.0"
+  version: "1.21.0"
 ---
 
 # 本地页面创作
@@ -18,7 +18,7 @@ metadata:
 | 旧 header 换成 iocHeader | 读[页头迁移](references/ioc-header-migration.md)，从原始页面元数据盘点功能、默认行为与依赖，按映射最小替换并双向对账；沿用原布局形态。 |
 | 局部呈现或已有可信字段绑定修改 | 定位相关对象，沿用原形态、数据和查询，直接改最小对象；只查受影响属性。大页面按对象提取，不打印全部数据行。 |
 | 指标表、详情表、级联或多来源等逻辑选型 | 按[场景索引](references/scenario-index.md)选择操作与数据逻辑，只读命中的主题和示例。 |
-| 新增口径、指标匹配或查询修改 | 读[数据识别与接数](references/data-analysis.md)，先确认数据依据和项目已提供的执行入口，再分析受影响范围。完整报告按需生成。 |
+| 新增口径、指标匹配、查询或数据源替换 | 读[数据识别与接数](references/data-analysis.md)，先确认数据依据和项目已提供的执行入口，再分析受影响范围；换源保留原组件意图并核对全部共享消费者。完整关联报告按需生成。 |
 | 新建、整页重组、切换形态 | 读[形态识别与确认](references/page-form.md)，确认本目标页 Dashboard/Report 后，只选[看板](references/dashboard-patterns.md)或[报表](references/report-patterns.md)的一张范式卡与摘要。 |
 | 已确认Report的区域划分、背景或卡片布局调整 | 读[报表范式](references/report-patterns.md)指向的PC章节组合，先判断表达与卡面边界，再查相关组件属性；沿用已确认形态和数据。 |
 | 删除列、组件、数据源或筛选 | 按[场景索引](references/scenario-index.md)核对完整引用与共享依赖，删除目标后完整校验。 |
@@ -44,11 +44,9 @@ node "<skill-dir>/scripts/read-knowledge.mjs" show --topic table.width
 
 ## 数据与验证
 
-所有查数场景均优先使用后端分页，不以用户再次提出分页要求为前提。新建或修改取数时，按[后端分页优先](references/query-pagination.md)核对本轮涉及的全部动态数据源，选择普通查询、按页补列、级联或多来源合并路径；已有本地分页也纳入迁移判断。完整结果语义或服务能力限制需要保留时，逐源说明原因与验收缺口。
+新增口径、查询或换源时，按[数据识别与接数](references/data-analysis.md)核对查询边界、后端分页、业务标识及执行证据。缺执行环境时交未执行候选；演示使用 inline 并说明性质。已有可信字段的局部呈现修改沿用当前数据。
 
-新增或调整 `output_metrics` 时，先按[数据识别与接数](references/data-analysis.md)中的“指标合并与查询拆分”选择查询边界；生成 DQE 查询遵循同页的中文业务标识规则。
-
-新增/修改查询需可信数据上下文，真实执行后才写回目标页。无执行环境时保留未执行候选，继续完成可验证部分。演示用 inline 并说明性质；名称匹配、静态通过、用户确认或演示行不证明真实取数。
+数值格式或字段绑定变化时，按[数值与绑定检查](references/authoring-presentation.md)核对本次范围和实际回执；仅改标题、列宽等任务沿用既有数值声明。
 
 局部任务改最小对象；整页生成先总结原始需求覆盖，再组织章节、组件、数据源与交互。验收期望来自原始输入，不从生成结果反推。明确要求运行时 SSE 才用 aiSummary。业务数值、百分刻度、完整性、initial、日期与交互按[本地创作与验收](references/local-workflow.md)命中的章节核对。
 

@@ -6,7 +6,7 @@
 
 沿用用户已明确的真实数据或演示意图。编写查询前核对项目已提供的可信数据上下文、已验证查询及执行入口；无入口时交未执行候选和缺口，原目标页保持不变，不自动改为 inline 或扩大环境排障。补字段保留布局，修改共享页面数据源时核对其全部消费者及依赖。
 
-查询范围统一按[后端分页优先](query-pagination.md)选型，覆盖本轮涉及的主查询、补列、级联和候选请求；先检查是否需要完整结果，再选择查询边界。
+所有查数场景默认优先后端分页，无需用户重复要求。按[后端分页优先](query-pagination.md)核对本轮主查询、补列、级联和候选请求；已有本地分页也纳入迁移判断。需要完整结果或受服务能力限制时逐源说明原因与验收缺口，再选择查询边界。
 
 ## 指标合并与查询拆分
 
@@ -63,6 +63,8 @@ node "<skill-dir>/scripts/analyze-data.mjs" check --page page.json --md metrics.
 以 draft 输出编辑分析 JSON，保留 use 与输入身份。matching 为 unresolved/matched/ambiguous/not-found/conflict；execution 保持 not-run。matched 提供 metricName、reason 与 evidence：`{from:起始行,to:结束行,quote:"原文片段"}`。未解决条目引用 gaps 中的问题 id，问题 paths 覆盖所有影响位置。Markdown 摘要仅在用户审阅或解释缺口时另写。
 
 check 核对输入哈希、全页位置覆盖、状态、原文证据和问题引用，不判定业务解释正确。材料改变后重新分析，不能删掉未解决位置制造覆盖率。退出码 0/1/2 为通过/报告或候选错误/调用或文件错误。
+
+需要需求—取数单元—结果—位置关联，或保留组件与字段意图更换普通数据源时，转[关联与受控换源](data-association.md)。只做 Markdown 指标匹配继续使用本页原报告格式。
 
 ## 多源与增量修改
 

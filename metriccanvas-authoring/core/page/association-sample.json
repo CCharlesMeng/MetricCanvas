@@ -1,0 +1,128 @@
+{
+  "document": {
+    "schemaVersion": "6.82",
+    "id": "association-self-test",
+    "layout": "dashboard",
+    "dataSources": {
+      "sales": {
+        "fields": {
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "unit": "元",
+            "nullable": true,
+            "defaultFormat": "number-grouped"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "amount": 10
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "association-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sales"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "amount",
+                    "format": "number-2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "requirements": [
+    {
+      "id": "amount",
+      "text": "保留金额字段和表格，以显式结果关联来源"
+    }
+  ],
+  "context": {
+    "binding": {
+      "sessionId": "self-test-session",
+      "turnId": "self-test-turn"
+    },
+    "dataContextVersion": "self-test-v1",
+    "validationPolicy": "self-test-policy"
+  },
+  "request": {
+    "dataSourceId": "new-sales",
+    "businessDomain": "合成销售",
+    "metrics": [
+      {
+        "kind": "metric",
+        "name": "成交额"
+      }
+    ],
+    "groupBy": [],
+    "filters": [],
+    "time": null
+  },
+  "resultRef": "result-self-test-sales",
+  "source": {
+    "fields": {
+      "value-output": {
+        "type": "number",
+        "role": "measure",
+        "queryField": "成交额",
+        "unit": "元",
+        "nullable": true
+      }
+    },
+    "source": {
+      "type": "query",
+      "query": {
+        "language": "dqe",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [],
+              "output_metrics": [
+                "成交额"
+              ],
+              "filter": {
+                "dims": [],
+                "metrics": []
+              },
+              "order": {}
+            }
+          ]
+        }
+      }
+    }
+  },
+  "fieldMap": {
+    "amount": "value-output"
+  },
+  "links": [
+    {
+      "requirementId": "amount",
+      "dataRequestId": "new-sales",
+      "useId": "use:association-table:table:sales:main:amount::field",
+      "outputField": "value-output",
+      "resultRef": "result-self-test-sales"
+    }
+  ]
+}

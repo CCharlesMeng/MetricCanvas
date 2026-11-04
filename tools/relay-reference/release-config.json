@@ -1,0 +1,32 @@
+{
+  "format": "metriccanvas-relay-release-config/2",
+  "releaseVersion": "0.2.1",
+  "interfaceVersion": "1.1.0",
+  "output": "dist/relay-reference",
+  "pythonOperations": [
+    "metriccanvas_authoring.data.product_operations",
+    "metriccanvas_authoring.pages.product_operations",
+    "metriccanvas_authoring.work.product_operations",
+    "metriccanvas_authoring.data.presentation_operations",
+    "metriccanvas_authoring.pages.multislot_operations"
+  ],
+  "coreTests": [
+    "test_product*.py",
+    "test_authoring_explicit_resources.py",
+    "test_field_presentation.py",
+    "test_parameter_preparation.py",
+    "test_platform_v2.py",
+    "test_authoring_formats.py",
+    "test_multislot_authoring.py"
+  ],
+  "consumers": [
+    {
+      "path": "tools/relay-reference/fixtures/consumer-0.2.0-schema683.json",
+      "sha256": "9e0f9dbbbb46f266836d4681569405fa91f2d78af59323c2625de32a6fd3846e"
+    }
+  ],
+  "adoption": {
+    "path": "tools/relay-reference/fixtures/schema683-first-adoption-v1.json",
+    "sha256": "599b1fe5f1f48ca76557b9525a4147c3d3d45c58c6b544ecf1d2139003b8f4ca"
+  }
+}

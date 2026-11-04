@@ -808,8 +808,23 @@
       "scope": "exact product contract"
     },
     {
-      "source": "product:page/conformance/valid/chart-global-benchmark.json",
-      "target": "product-contracts/page/conformance/valid/chart-global-benchmark.json",
+      "source": "product:page/conformance/valid/authoring-analysis-rebind.json",
+      "target": "product-contracts/page/conformance/valid/authoring-analysis-rebind.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/relay-multislot-presentation.json",
+      "target": "product-contracts/page/conformance/valid/relay-multislot-presentation.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/authoring-percent-coverage.json",
+      "target": "product-contracts/page/conformance/valid/authoring-percent-coverage.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/authoring-evaluation-context.json",
+      "target": "product-contracts/page/conformance/valid/authoring-evaluation-context.json",
       "scope": "exact product contract"
     },
     {
@@ -905,6 +920,11 @@
     {
       "source": "product:page/conformance/valid/query-missing-measures.json",
       "target": "product-contracts/page/conformance/valid/query-missing-measures.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/chart-global-benchmark.json",
+      "target": "product-contracts/page/conformance/valid/chart-global-benchmark.json",
       "scope": "exact product contract"
     },
     {
@@ -1100,6 +1120,11 @@
     {
       "source": "product:page/conformance/valid/ioc-component-unified-year-header.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-unified-year-header.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-relay-multislot-presentation.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-relay-multislot-presentation.json",
       "scope": "exact product contract"
     },
     {
@@ -6608,6 +6633,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/authoring-evaluation-context.json",
+      "target": "references/page-metadata/examples/authoring-evaluation-context.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/filters.md",
       "target": "references/page-metadata/filters.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6660,6 +6690,11 @@
     {
       "source": "product:page/reference/examples/chart-constant-branches.json",
       "target": "references/page-metadata/examples/chart-constant-branches.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/authoring-percent-coverage.json",
+      "target": "references/page-metadata/examples/authoring-percent-coverage.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -7128,6 +7163,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/authoring-analysis-rebind.json",
+      "target": "references/page-metadata/examples/authoring-analysis-rebind.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/authoring-analysis-rebind.md",
+      "target": "references/page-metadata/authoring-analysis-rebind.md",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/relay-multislot-presentation.json",
+      "target": "references/page-metadata/examples/relay-multislot-presentation.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/authoring-presentation.md",
+      "target": "references/page-metadata/authoring-presentation.md",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/README.md",
       "target": "references/page-metadata/README.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7298,6 +7353,11 @@
       "scope": "authoring contract; not all are model inputs"
     },
     {
+      "source": "authoring:exported/authoring-presentation-policy.json",
+      "target": "authoring-contracts/exported/authoring-presentation-policy.json",
+      "scope": "authoring contract; not all are model inputs"
+    },
+    {
       "source": "authoring:exported/agent-conformance.json",
       "target": "authoring-contracts/exported/agent-conformance.json",
       "scope": "authoring contract; not all are model inputs"
@@ -7314,10 +7374,10 @@
     }
   ],
   "counts": {
-    "product": 1431,
-    "authoring": 31,
-    "modules": 34,
-    "topics": 233,
+    "product": 1442,
+    "authoring": 32,
+    "modules": 36,
+    "topics": 248,
     "nodes": 2520,
     "tools": 9,
     "components": 20

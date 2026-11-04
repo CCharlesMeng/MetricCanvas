@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import time
 from typing import Protocol
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
+from metriccanvas_authoring.work.rules import reserve_work, finish_work
 from metriccanvas_authoring.canonical import canonical_sha256 as digest
 
 
@@ -78,19 +79,13 @@ class TurnState:
 
     async def reserve(self, prepared, expected_version, request_hash):
         version, work = await self.read(prepared)
-        failed_before_save = (work['lastResult'] or {}).get('status') == 'failed' and (work['lastResult'] or {}).get('saveStatus') == 'not_requested'
-        if work['lastRequest'] == request_hash and not failed_before_save:
-            return None, work, deepcopy(work['lastResult'])
-        require(work['active'] is None, 'WORK_BUSY')
-        require(work['lastResult'] is None or work['lastResult'].get('saveStatus') not in {'unknown', 'pending', 'rejected'}, 'SAVE_RECONCILIATION_REQUIRED')
-        require(work['workVersion'] == expected_version, 'WORK_VERSION_CONFLICT')
-        work.pop('submission', None)
-        work['active'] = request_hash
+        decision = reserve_work(work, expected_version, request_hash)
+        work = decision['work']
+        if decision['decision'] == 'reuse':
+            return None, work, decision['result']
         require(await self.store.compare_and_swap('work', self.key(prepared), version, work), 'WORK_VERSION_CONFLICT')
         return version + 1, work, None
 
     async def finish(self, prepared, version, work, request_hash, result):
-        require(work['active'] == request_hash, 'WORK_VERSION_CONFLICT')
-        updated = deepcopy(work)
-        updated.update(active=None, lastRequest=request_hash, lastResult=deepcopy(result))
+        updated = finish_work(work, request_hash, result)
         require(await self.store.compare_and_swap('work', self.key(prepared), version, updated), 'WORK_VERSION_CONFLICT')

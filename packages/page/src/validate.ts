@@ -1,3 +1,4 @@
+import type { TemporalEvaluation } from './temporal-evaluation';
 import {sourceFilterIds} from './data-source-references';
 import { attachInitialFallbacks } from './cell-fallback';
 import { tablePinnedErrors, tableAlignedSlots } from './table-pinned';
@@ -110,6 +111,7 @@ export type PageParseResult =
   | { ok: false; errors: TypedError[] };
 
 export interface PageParseOptions {
+  evaluation?: TemporalEvaluation;
   /**
    * 本次打开的页面参数取值与展示格式化。缺省时按校验期代入处理:
    * 必需参数代入默认值或占位符,可选参数按缺席处理(见 `validationResolution`)。
@@ -183,7 +185,7 @@ export function parsePage(
   const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
   const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...filterGroupErrors(page)];
-  try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant),...navigationErrors(variant),...urlInputErrors(variant));}
+  try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant, options.evaluation),...navigationErrors(variant),...urlInputErrors(variant));}
   catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   attachInitialFallbacks(page, materialized.initialFallbacks, materialized.initialWarnings);
   return errors.length === 0
@@ -196,15 +198,15 @@ export function parsePage(
  * 完整文档的兼容读取/唯一写出边界。先校验再复制，仅升级布局表示；
  * 不写入参数物化值、字段展开或归一化后的 initial 行。原始修订/hash 由调用方先核验。
  */
-export function normalizePageDocument(document: unknown):
+export function normalizePageDocument(document: unknown, options: PageParseOptions = {}):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
   const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
-  if (optionErrors.length) return { ok: false, errors: parsePage(document).errors };
+  if (optionErrors.length) return { ok: false, errors: parsePage(document, options).errors };
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
-  const parsed = parsePage(compatibleDocument);
+  const parsed = parsePage(compatibleDocument, options);
   if (!parsed.ok) return parsed;
   // JSON 文档也可能是 Svelte Proxy，使用 JSON 树复制，不使用 structuredClone。
   const cloned = JSON.parse(JSON.stringify(compatibleDocument)) as PageDocument;
@@ -323,7 +325,7 @@ export function validate(document: unknown): TypedError[] {
   return parsePage(document).errors;
 }
 
-function invariantErrors(page: Page): TypedError[] {
+function invariantErrors(page: Page, evaluation?: TemporalEvaluation): TypedError[] {
   const errors: TypedError[] = [];
   const filters = page.filters ?? [];
   const filterIds = new Set<string>();
@@ -335,7 +337,7 @@ function invariantErrors(page: Page): TypedError[] {
     }
     filterIds.add(filter.id);
     filtersById.set(filter.id, filter);
-    errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`));
+    errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`, evaluation));
   });
   errors.push(...filterDependsOnErrors(filters), ...filterExtensionErrors(filters), ...filterScopeErrors(page));
   errors.push(...iocHeaderErrors(page));
@@ -405,7 +407,7 @@ function invariantErrors(page: Page): TypedError[] {
   });
   errors.push(...hiddenHierarchyPickerErrors(page));
   errors.push(...queryPaginationErrors(page));
-  errors.push(...rowExpansionErrors(page, invariantErrors));
+  errors.push(...rowExpansionErrors(page, nested => invariantErrors(nested, evaluation)));
 
   return errors;
   function checkDetailView(view: NonNullable<Page['detailViews']>[number], index: number): void {
@@ -571,7 +573,8 @@ function sectionLayerErrors(section: PageSection, sectionIndex: number): TypedEr
 function filterDeclarationErrors(
   filter: FilterDeclaration,
   _index: number,
-  path: string
+  path: string,
+  evaluation?: TemporalEvaluation
 ): TypedError[] {
   const errors: TypedError[] = [];
   switch (filter.type) {
@@ -607,7 +610,7 @@ function filterDeclarationErrors(
       if (issue) errors.push(schemaError(`${path}/min`, issue));
     }
     if (filter.default !== undefined) {
-      const issue = validateTimePointValue(filter.default, filter.granularity, filter.min, filter.disableFuture);
+      const issue = validateTimePointValue(filter.default, filter.granularity, filter.min, filter.disableFuture, undefined, evaluation);
       if (issue) errors.push(schemaError(`${path}/default`, issue));
     }
 

@@ -40,7 +40,7 @@ class FieldPresentationTest(unittest.TestCase):
         self.assertEqual(self.present([0, 0.0001, 1e13]), 'number')
         self.assertEqual(self.present([0, -10000, 1e13]), 'compact-wan-1')
         self.assertEqual(self.present([0.01, 1e8], unit='元'), 'number')
-        self.assertEqual(self.present([0.0001, 10], unit='%'), 'number')
+        self.assertEqual(self.present([0.0001, 10], unit='%'), 'percent-2')
 
     def test_existing_scales_and_empty_values(self):
         for unit in ('万元', '亿元', '百万美元', '千次'):
@@ -70,6 +70,44 @@ class FieldPresentationTest(unittest.TestCase):
         for total in (None, 2):
             result = apply_field_presentation(unit, DqeExecutionResult(rows=[{'a':1e13}], total_count=total))
             self.assertEqual(result.fields['a']['defaultFormat'], 'number')
+
+    def test_percentage_semantics_survive_coverage_and_provider_number_suggestions(self):
+        for total in (1, 2, None):
+            for descriptor in (None, {'queryField': 'rate', 'scale': 'percent'},
+                               {'queryField': 'rate', 'scale': 'percent', 'defaultFormat': 'number-2'}):
+                with self.subTest(total=total, descriptor=descriptor):
+                    field = {'queryField': 'rate', 'type': 'number', 'role': 'measure', 'unit': '%'}
+                    if descriptor and descriptor.get('defaultFormat'):
+                        field['defaultFormat'] = descriptor['defaultFormat']
+                    unit = replace(self.unit, fields={'rate': field})
+                    execution = DqeExecutionResult(rows=[{'rate': 12.5}], total_count=total)
+                    before = deepcopy((unit, execution, descriptor))
+                    description = {'fields': [descriptor]} if descriptor else None
+                    result = apply_field_presentation(unit, execution, description)
+                    self.assertEqual(result.fields['rate']['defaultFormat'], 'percent-2')
+                    self.assertEqual((unit, execution, descriptor), before)
+                    self.assertEqual(replace(result, fields=unit.fields), unit)
+
+    def test_explicit_intent_and_unknown_or_scaled_evidence_are_not_reinterpreted(self):
+        self.assertEqual(self.present([12.5], unit='%', defaultFormat='number-1'), 'number-1')
+        for scale in ('fraction', 'unknown', 'currency-wan'):
+            unit = replace(self.unit, fields={'rate': {'queryField': 'rate', 'type': 'number', 'role': 'measure'}})
+            result = apply_field_presentation(unit, DqeExecutionResult(rows=[{'rate': 0.42}], total_count=1),
+                                             {'fields': [{'queryField': 'rate', 'scale': scale}]})
+            self.assertEqual(result.fields['rate']['defaultFormat'], 'number')
+
+    def test_small_percentages_keep_unit_and_report_precision_limit(self):
+        for values in ([0.0001, -0.0001, 0, None], [0, None], []):
+            unit = replace(self.unit, fields={'rate': {'queryField': 'rate', 'type': 'number', 'role': 'measure', 'unit': '%'}})
+            execution = DqeExecutionResult(rows=[{'rate': value} for value in values])
+            warnings = []
+            result = apply_field_presentation(unit, execution, warnings=warnings)
+            self.assertEqual(result.fields['rate']['defaultFormat'], 'percent-2')
+            self.assertEqual(bool(warnings), bool(values and values[0]))
+            if warnings:
+                self.assertEqual(warnings[0]['code'], 'PRESENTATION_PRECISION_LIMIT')
+                self.assertEqual(warnings[0]['fieldId'], 'rate')
+            self.assertEqual(execution.rows, [{'rate': value} for value in values])
 
     def test_fixed_currency_scale_never_changes_between_rows(self):
         self.assertEqual(self.present([5000, 125000000], unit='元'), 'compact-wan-1')

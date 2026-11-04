@@ -1,0 +1,148 @@
+{
+  "scope": "local dirty working-tree deterministic tests; no browser, remote CI, real DQE/Relay/Java or model requests",
+  "head": "2133241a6b4f259fc19ff54bfdd9a0dcb9c96e06",
+  "typescriptTests": [
+    {
+      "file": "tests/local-authoring-row-expansion.test.ts",
+      "run": 12,
+      "passed": 12,
+      "failed": 0
+    },
+    {
+      "file": "tests/local-authoring-tools.test.ts",
+      "run": 32,
+      "passed": 32,
+      "failed": 0
+    },
+    {
+      "file": "apps/platform/tests/workbench/document-edit.test.ts",
+      "run": 15,
+      "passed": 15,
+      "failed": 0
+    },
+    {
+      "file": "apps/platform/tests/workbench/working-copy-agent.test.ts",
+      "run": 9,
+      "passed": 9,
+      "failed": 0
+    }
+  ],
+  "pythonTests": [
+    {
+      "module": "test_platform_v2",
+      "run": 37,
+      "failures": [],
+      "errors": []
+    },
+    {
+      "module": "test_page_editing",
+      "run": 22,
+      "failures": [],
+      "errors": []
+    },
+    {
+      "module": "test_paged_join",
+      "run": 3,
+      "failures": [],
+      "errors": []
+    },
+    {
+      "module": "test_page_parameters_mcp",
+      "run": 12,
+      "failures": [],
+      "errors": []
+    },
+    {
+      "module": "test_interaction_editing",
+      "run": 29,
+      "failures": [
+        {
+          "test": "test_interaction_editing.NavigationInputsEditingTest.test_guarded_table_link_saves_reopens_and_invalid_intention_rolls_back",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 371, in test_guarded_table_link_saves_reopens_and_invalid_intention_rolls_back\n    self.assertEqual(reopened['schemaVersion'], '6.40')\nAssertionError: '6.77' != '6.40'\n- 6.77\n+ 6.40\n\n"
+        },
+        {
+          "test": "test_interaction_editing.ReportDateEditingTest.test_dashboard_period_add_update_preserves_query_aggregation",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 193, in test_dashboard_period_add_update_preserves_query_aggregation\n    self.assertEqual(added['status'],'changed',added)\nAssertionError: 'invalid_baseline' != 'changed'\n- invalid_baseline\n+ changed\n : {'status': 'invalid_baseline', 'document': None, 'operations': [], 'issues': [{'code': 'BASELINE_INVALID', 'path': '/iocHeader/filterIds/0'}]}\n"
+        }
+      ],
+      "errors": [
+        {
+          "test": "test_interaction_editing.BusinessFilterEditingTest.test_date_edit_reopens_with_common_interaction_fields",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 290, in test_date_edit_reopens_with_common_interaction_fields\n    page = json.loads((root / 'pages/capabilities/ioc-header/ioc-header-business-options-demo.json').read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/capabilities/ioc-header/ioc-header-business-options-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.BusinessFilterEditingTest.test_real_business_pages_create_edit_and_reopen",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 247, in test_real_business_pages_create_edit_and_reopen\n    page = json.loads((root / f'pages/ioc-header-business-{name}-demo.json').read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/ioc-header-business-options-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.BusinessFilterEditingTest.test_structural_tree_edit_preserves_each_level_binding",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 280, in test_structural_tree_edit_preserves_each_level_binding\n    page = json.loads((root / 'pages/capabilities/ioc-header/ioc-header-business-tree-demo.json').read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/capabilities/ioc-header/ioc-header-business-tree-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.CurrencyRangeEditingTest.test_add_amount_and_invalid_update_rollback",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 320, in test_add_amount_and_invalid_update_rollback\n    original=self.page();op=self.operation(original,'add_number_range_filter');base=deepcopy(original)\n             ^^^^^^^^^^^\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 303, in page\n    return json.loads((Path(__file__).resolve().parents[3]/'pages/capabilities/ioc-header/ioc-header-currency-demo.json').read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/capabilities/ioc-header/ioc-header-currency-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.CurrencyRangeEditingTest.test_amount_update_reopen_and_case_column_edit_preserve_branches",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 311, in test_amount_update_reopen_and_case_column_edit_preserve_branches\n    original=self.page();op=self.operation(original);op['declaration']['presets'].append({'id':'extra-large','label':'大额','range':{'from':300}})\n             ^^^^^^^^^^^\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 303, in page\n    return json.loads((Path(__file__).resolve().parents[3]/'pages/capabilities/ioc-header/ioc-header-currency-demo.json').read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/capabilities/ioc-header/ioc-header-currency-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.IocHeaderEditingTest.test_create_edit_and_reopen_acceptance_headers_without_touching_data",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 216, in test_create_edit_and_reopen_acceptance_headers_without_touching_data\n    original = json.loads((root / f'pages/ioc-header-{name}-demo.json').read_text())\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/ioc-header-overview-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.IocHeaderEditingTest.test_invalid_header_conflicts_roll_back_the_whole_operation",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 236, in test_invalid_header_conflicts_roll_back_the_whole_operation\n    doc = json.loads((root / 'pages/capabilities/ioc-header/ioc-header-overview-demo.json').read_text())\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/capabilities/ioc-header/ioc-header-overview-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.TimeProgramEditingTest.test_atomic_time_program_save_reopen_and_invalid_case_rollback",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 331, in test_atomic_time_program_save_reopen_and_invalid_case_rollback\n    baseline = self.page()\n               ^^^^^^^^^^^\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 328, in page\n    return json.loads((Path(__file__).resolve().parents[3] / 'pages/capabilities/ioc-header/ioc-header-time-modes-demo.json').read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/capabilities/ioc-header/ioc-header-time-modes-demo.json'\n"
+        },
+        {
+          "test": "test_interaction_editing.TimeProgramEditingTest.test_candidate_window_preserved_in_controlled_dimension_edit",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py\", line 350, in test_candidate_window_preserved_in_controlled_dimension_edit\n    page = json.loads((Path(__file__).resolve().parents[3] / 'pages/capabilities/ioc-header/ioc-header-calendar-window-demo.json').read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Users/moon/Documents/Code/公司项目/DataDashboard/pages/capabilities/ioc-header/ioc-header-calendar-window-demo.json'\n"
+        }
+      ]
+    },
+    {
+      "module": "test_compose_page",
+      "run": 14,
+      "failures": [
+        {
+          "test": "test_compose_page.ComposePageHarnessTest.test_manifest_candidates_match_the_rejected_closed_set (case='time-granularity')",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_compose_page.py\", line 510, in test_manifest_candidates_match_the_rejected_closed_set\n    self.assertEqual(\nAssertionError: Tuples differ: () != ('month',)\n\nSecond tuple contains 1 additional elements.\nFirst extra element 0:\n'month'\n\n- ()\n+ ('month',)\n"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "module": "test_mc_content",
+      "run": 33,
+      "failures": [],
+      "errors": []
+    }
+  ],
+  "total": 218,
+  "failureCount": 3,
+  "errorCount": 9,
+  "contracts": {
+    "command": "pnpm authoring:contracts:check",
+    "returncode": 1,
+    "tail": [
+      "$ tsx tools/scripts/export-authoring-contracts.ts --check",
+      "/Users/moon/Documents/Code/公司项目/DataDashboard/tools/scripts/export-authoring-contracts.ts:775",
+      "    throw new Error(`authoring contract export drifted:\\n${drift.join('\\n')}`);",
+      "          ^",
+      "",
+      "Error: authoring contract export drifted:",
+      "mc-content/runtime/source-identity.json: stale",
+      "mc-content/mc-content.version.json: stale",
+      "    at assertCurrent (/Users/moon/Documents/Code/公司项目/DataDashboard/tools/scripts/export-authoring-contracts.ts:775:11)",
+      "    at async <anonymous> (/Users/moon/Documents/Code/公司项目/DataDashboard/tools/scripts/export-authoring-contracts.ts:859:23)",
+      "",
+      "Node.js v24.11.1",
+      "[ELIFECYCLE] Command failed with exit code 1."
+    ]
+  },
+  "passedCount": 206
+}

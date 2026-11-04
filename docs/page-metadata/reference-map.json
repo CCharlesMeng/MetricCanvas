@@ -356,7 +356,8 @@
         "period-query-columns-demo",
         "key-office-filter-demo",
         "key-office-filter-target",
-        "ioc-region-url-demo"
+        "ioc-region-url-demo",
+        "authoring-evaluation-context"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -463,7 +464,8 @@
         "currency-selection-page",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "period-comparison-demo"
+        "period-comparison-demo",
+        "authoring-percent-coverage"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1293,6 +1295,44 @@
       "rules": [
         "ioc-header-component"
       ]
+    },
+    "authoring-analysis-rebind.md": {
+      "title": "创作分析关联与受控换源",
+      "definitions": [],
+      "keywords": [
+        "authoring-analysis-rebind",
+        "创作分析关联与受控换源"
+      ],
+      "examples": [
+        "authoring-analysis-rebind"
+      ],
+      "sources": [
+        "metriccanvas-authoring/core/page/analysis-report.ts",
+        "metriccanvas-authoring/core/page/source-rebind.ts",
+        "metriccanvas-authoring/core/page/data-scan.ts",
+        "metriccanvas-authoring/core/page/product-contract.ts",
+        "metriccanvas-authoring/core/page/extension-contract.ts",
+        "tools/scripts/authoring-analysis-adapter.ts"
+      ],
+      "rules": []
+    },
+    "authoring-presentation.md": {
+      "title": "创作数值呈现与受控多槽装配",
+      "definitions": [],
+      "keywords": [
+        "authoring-presentation",
+        "创作数值呈现与受控多槽装配"
+      ],
+      "examples": [
+        "relay-multislot-presentation"
+      ],
+      "sources": [
+        "metriccanvas-authoring/core/presentation/audit.ts",
+        "metriccanvas-authoring/core/presentation/policy.json",
+        "packages/page/src/field-resolution.ts",
+        "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py"
+      ],
+      "rules": []
     }
   },
   "fieldNotes": {
@@ -2351,7 +2391,8 @@
         "#/definitions/staticFieldBinding"
       ],
       "headings": [
-        "柱线图数值格式一致性"
+        "柱线图数值格式一致性",
+        "百分比创作与覆盖边界"
       ],
       "dependencies": []
     },
@@ -2773,6 +2814,53 @@
         "列头筛选默认值（6.82）"
       ],
       "dependencies": []
+    },
+    "authoring.evaluation": {
+      "module": "filters",
+      "title": "创作期工具的评估时间与业务时区",
+      "roots": [],
+      "headings": [
+        "创作期工具的评估时间与业务时区"
+      ],
+      "dependencies": []
+    },
+    "authoring.analysis": {
+      "module": "authoring-analysis-rebind",
+      "title": "完整基线与用数关联",
+      "roots": [],
+      "headings": [
+        "完整基线和关联报告"
+      ],
+      "dependencies": []
+    },
+    "authoring.rebind": {
+      "module": "authoring-analysis-rebind",
+      "title": "保留页面意图受控换源",
+      "roots": [],
+      "headings": [
+        "受控换源",
+        "本地入口与合成验收"
+      ],
+      "dependencies": []
+    },
+    "authoring.presentation": {
+      "module": "authoring-presentation",
+      "title": "Tokens 与最终字段格式检查",
+      "roots": [],
+      "headings": [
+        "Tokens 与实际字段绑定",
+        "本地适用检查"
+      ],
+      "dependencies": []
+    },
+    "authoring.multislot": {
+      "module": "authoring-presentation",
+      "title": "多槽装配与完整性证据",
+      "roots": [],
+      "headings": [
+        "受控多槽与结果覆盖"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2841,6 +2929,7 @@
       "期间选择与查询消费",
       "IOC Region 默认 URL 输入",
       "时间选择的默认上限",
+      "创作期工具的评估时间与业务时区",
       "Dashboard 期间选择（6.27）",
       "时间点下限（6.24）",
       "禁止未来时间（6.25）",
@@ -2862,6 +2951,7 @@
       "查阅方式"
     ],
     "field-bindings-and-formats.md": [
+      "百分比创作与覆盖边界",
       "带符号普通数值（6.17起）",
       "按百万呈现",
       "显式数字颜色与图表标签（6.16）",
@@ -2996,6 +3086,16 @@
     "components/filterGroup.md": [
       "固定单选下拉与对齐（6.47）"
     ],
-    "components/iocHeader.md": []
+    "components/iocHeader.md": [],
+    "authoring-analysis-rebind.md": [
+      "完整基线和关联报告",
+      "受控换源",
+      "本地入口与合成验收"
+    ],
+    "authoring-presentation.md": [
+      "Tokens 与实际字段绑定",
+      "受控多槽与结果覆盖",
+      "本地适用检查"
+    ]
   }
 }

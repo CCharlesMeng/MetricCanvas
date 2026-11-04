@@ -1,0 +1,55 @@
+{
+  "format": "metriccanvas-authoring-presentation-policy/1",
+  "tokensUnits": [
+    "token",
+    "tokens"
+  ],
+  "scaledUnitMarkers": [
+    "万",
+    "亿",
+    "百万",
+    "千",
+    "million",
+    "billion",
+    "thousand"
+  ],
+  "tokensFormat": "compact-million-1",
+  "percentFormat": "percent-2",
+  "baseScales": [
+    "none",
+    "currency-base",
+    "percent"
+  ],
+  "scaleDivisors": {
+    "compact-wan-0": 10000,
+    "compact-wan-1": 10000,
+    "compact-million-0": 1000000,
+    "compact-million-1": 1000000,
+    "compact-million-2": 1000000,
+    "compact-yi-1": 100000000
+  },
+  "minimumScaledNonzero": 0.05,
+  "percentUnits": [
+    "%",
+    "％"
+  ],
+  "percentScales": [
+    "none",
+    "percent"
+  ],
+  "millionFormats": [
+    "compact-million-0",
+    "compact-million-1",
+    "compact-million-2"
+  ],
+  "scalingFormats": [
+    "compact-wan-0",
+    "compact-wan-1",
+    "compact-million-0",
+    "compact-million-1",
+    "compact-million-2",
+    "compact-yi-1",
+    "cny-adaptive",
+    "usd-adaptive"
+  ]
+}

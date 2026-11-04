@@ -1,0 +1,21 @@
+{
+  "code": "PRESENTATION_FORMAT_ADJUSTED",
+  "guidance": {
+    "message": "来源格式建议已按可信百分数刻度修正；核对 dataSourceId、fieldId 与 from/to，组件显式格式继续优先，不需重查或重存。",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py",
+      "line": 93
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

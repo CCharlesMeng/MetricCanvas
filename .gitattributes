@@ -5,3 +5,6 @@ tools/scripts/mc-content*.ts text eol=lf
 # Generated, digest-pinned resources must retain their exact committed bytes.
 metriccanvas-authoring/** -text
 contracts/metriccanvas/** -text
+/tools/relay-reference/fixtures/consumer-*.json text eol=lf
+/tools/relay-reference/fixtures/consumer-*.sha256 text eol=lf
+/tools/relay-reference/fixtures/schema683-*.json text eol=lf

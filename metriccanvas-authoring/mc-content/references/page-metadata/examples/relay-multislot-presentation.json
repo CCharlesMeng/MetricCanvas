@@ -1,0 +1,181 @@
+{
+  "id": "relay-multislot-presentation",
+  "schemaVersion": "6.83",
+  "layout": "dashboard",
+  "dataSources": {
+    "current": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "unit": "Tokens",
+          "defaultFormat": "compact-million-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "a",
+            "amount": 2000000
+          },
+          {
+            "region": "b",
+            "amount": 3000000
+          }
+        ]
+      }
+    },
+    "prior": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "unit": "Tokens",
+          "defaultFormat": "compact-million-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "b",
+            "amount": 1000000
+          },
+          {
+            "region": "c",
+            "amount": 4000000
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "多槽与呈现（合成证据）"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "container": "panel",
+      "components": [
+        {
+          "id": "comparison",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "current",
+            "prior": "prior"
+          },
+          "props": {
+            "title": "同名行键按槽对齐；缺匹配显示空值",
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "region"
+                },
+                "title": "region"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount"
+                },
+                "title": "amount"
+              },
+              {
+                "field": {
+                  "data": "prior",
+                  "field": "amount"
+                },
+                "title": "amount"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "presentation",
+      "container": "panel",
+      "components": [
+        {
+          "id": "tokens-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "current"
+          },
+          "props": {
+            "title": "Tokens 百万",
+            "categoryField": "region",
+            "series": [
+              {
+                "field": "amount",
+                "label": "用量"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "tokens-line",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "current"
+          },
+          "props": {
+            "title": "相同字段格式",
+            "xField": "region",
+            "series": [
+              {
+                "field": "amount",
+                "label": "用量"
+              }
+            ],
+            "showValueLabels": true
+          }
+        }
+      ]
+    }
+  ]
+}

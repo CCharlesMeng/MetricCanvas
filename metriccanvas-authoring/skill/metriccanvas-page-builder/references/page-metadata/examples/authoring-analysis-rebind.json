@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "6.83",
+  "id": "authoring-analysis-rebind",
+  "layout": "dashboard",
+  "meta": {
+    "title": "共享用数关联与受控换源（合成）"
+  },
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "nullable": false
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元",
+          "nullable": true,
+          "defaultFormat": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "CN",
+            "value": 10
+          },
+          {
+            "region": "EU",
+            "value": 20
+          }
+        ]
+      }
+    },
+    "control": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "nullable": false
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元",
+          "nullable": true,
+          "defaultFormat": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "CONTROL",
+            "value": 999
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "shared",
+      "title": "共享来源",
+      "container": "card",
+      "components": [
+        {
+          "id": "sales-main",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "销售明细",
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "width": 160
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-2"
+                },
+                "width": 200
+              }
+            ]
+          }
+        },
+        {
+          "id": "sales-shared",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "共享消费者",
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "width": 160
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-2"
+                },
+                "width": 200
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-section",
+      "title": "独立对照",
+      "container": "card",
+      "components": [
+        {
+          "id": "control-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "control"
+          },
+          "props": {
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "width": 160
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-2"
+                },
+                "width": 200
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "baseline": "552ef5c1228ce292ad9a2ec66673fa82e1c67ba4",
+  "cases": [
+    {
+      "page": "pages/capabilities/layout/local-authoring-knowledge-demo.json",
+      "components": [
+        "summary-table"
+      ],
+      "scanSha256": "f911b5089b53d7e2dc91454bd46a3839a563c245a36ed5efb3c362158775a534",
+      "scopeSha256": "552a567d949f8903e8ae19dde0d515d70552222bd34597538f2febbc42f94f13",
+      "diagnostics": []
+    },
+    {
+      "page": "pages/capabilities/layout/local-authoring-scoped-data-demo.json",
+      "components": [
+        "region-table"
+      ],
+      "scanSha256": "381147cda636f18bbdf8a9059c8f243225b4238dca69bcf09197c8bc58930a14",
+      "scopeSha256": "3e83716bd0db71b1f803483b3f7304186a9bdf9d0bd02dcfa7de289cfa95aa53",
+      "diagnostics": []
+    },
+    {
+      "page": "pages/capabilities/table/table-row-expansion-query.json",
+      "components": [
+        "customers-default"
+      ],
+      "scanSha256": "6982f1d92a61805eaf13972c8989ad94781539ef9fdbe67e971bf14c7bdcd1ab",
+      "scopeSha256": "42726a699d103c6e91ac6f037970814debe6705dab02c9b113f706c23d9a9fb1",
+      "diagnostics": []
+    },
+    {
+      "page": "pages/capabilities/table/table-row-expansion-inline.json",
+      "components": [],
+      "scanSha256": "6ef4313e006669dcddbb0062f9dcb4ff142b9f9a59c12a2d0c279e5d67b0ef9f",
+      "scopeSha256": null,
+      "diagnostics": []
+    },
+    {
+      "page": "pages/capabilities/table/table-hierarchy-selection.json",
+      "components": [],
+      "scanSha256": "5bf46507429e3282136f1d227d17aaeae5b7e0cb89c748f71964359f8f89a681",
+      "scopeSha256": null,
+      "diagnostics": []
+    },
+    {
+      "document": {
+        "id": "invalid-scan",
+        "sections": [
+          {
+            "components": [
+              {
+                "id": "bad",
+                "type": "unknown"
+              },
+              {
+                "id": "card",
+                "type": "metricCard",
+                "data": {
+                  "main": "missing"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "bad",
+                      "valueField": "lost"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "dataSources": {},
+        "filters": [],
+        "params": []
+      },
+      "components": [],
+      "scanSha256": "02a1ba51d6d8a01df523ab9c4c5ec962200c5eba467c54acc5c49ff3332ffd11",
+      "scopeSha256": null,
+      "diagnostics": [
+        {
+          "path": "/sections/0/components/0",
+          "type": "UNKNOWN_COMPONENT",
+          "componentType": "unknown"
+        },
+        {
+          "path": "/sections/0/components/1/props/rows/0/valueField",
+          "type": "UNKNOWN_FIELD",
+          "source": "missing",
+          "field": "lost"
+        }
+      ]
+    }
+  ]
+}

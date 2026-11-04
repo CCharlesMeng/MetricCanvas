@@ -6,6 +6,7 @@ import asyncio
 import json
 import time
 from metriccanvas_authoring.data.query_attempts import RetryingDqe
+from metriccanvas_authoring.data.result_rules import project_result_evidence, check_result_record
 from metriccanvas_authoring.work.diagnostics import issue_details
 from metriccanvas_authoring.data.request_diagnostics import request_issues, query_issue, locate_results, domain_candidates
 from jsonschema import Draft202012Validator
@@ -216,44 +217,7 @@ class QueryResults:
             item['relationCoverage'].update(shownCount=len(item['relations']), truncated=True)
 
     def evidence(self, record, source_id=None):
-        result = {'resultRef': record['resultRef'], 'dataSourceId': source_id or record['request']['dataSourceId'],
-                  'status': record['status'], 'scope': deepcopy(record['request']),
-                  'attempt': record.get('attempt', 1), 'retryCount': record.get('retryCount', 0),
-                  'executionFailures': deepcopy(record.get('executionFailures', []))}
-        result.update(validationMode=record.get('validationMode', 'strict'),
-            warnings=deepcopy(record.get('warnings', [])), normalizations=deepcopy(record.get('normalizations', [])))
-        result['scope']['dataSourceId'] = result['dataSourceId']
-        if record['status'] not in {'ready', 'empty'}:
-            result['issues'] = deepcopy(record.get('issues', []))
-            if 'domainCandidates' in record:
-                result['domainCandidates'] = deepcopy(record['domainCandidates'])
-            if record['status'] == 'pending':
-                expired = record.get('expiresAt', float('inf')) < time.time()
-                result['issues'] = [{'code': 'QUERY_ATTEMPT_EXPIRED' if expired else 'RESULT_NOT_READY', 'path': '',
-                                     'action': 'retry_original_request' if expired and record.get('attempt', 1) < 2 else 'check_execution_owner' if expired else 'read_result_status'}]
-            return result
-        fields = record['source']['fields']
-        # Detail/HTML/recordList values stay in the program channel.
-        def project_visible_fields():
-            allowed = {key: field for key, field in fields.items() if field.get('role') in {'dimension', 'measure'} and field.get('type') not in {'recordList', 'semanticHtml'}}
-            result['fields'] = {key: {k: deepcopy(v) for k, v in field.items() if k in {'label', 'role', 'type', 'unit', 'defaultFormat'}} for key, field in allowed.items()}
-            result['rows'] = [{key: row.get(field.get('queryField', key)) for key, field in allowed.items()} for row in record['rows']]
-            return allowed
-
-        allowed = project_visible_fields()
-        shown, returned, total = len(result['rows']), record['returnedCount'], record['totalCount']
-        result['coverage'] = {'shownCount': shown, 'returnedCount': returned, 'totalCount': total,
-                              'truncated': shown < returned or total is not None and returned < total,
-                              'complete': total is not None and shown == returned == total,
-                              'resultComplete': total is not None and returned == total,
-                              'sampleTruncated': shown < returned,
-                              'basis': 'returned rows; no ranking or aggregation inferred'}
-        entries = relation_evidence(record.get('relations', []), allowed)
-        result['relations'] = entries[:20]
-        result['relationCoverage'] = {'status': record.get('relationStatus', 'unknown'),
-            'shownCount': len(result['relations']), 'totalCount': len(entries), 'truncated': len(entries) > 20}
-        result['capturedAt'] = record['capturedAt']
-        return result
+        return project_result_evidence(record, source_id, now=time.time())
 
     async def require(self, prepared, ref, current, *, usable=True, allow_unready=False):
         _, record = await self.state.store.read('query', ref)
@@ -270,9 +234,8 @@ class QueryResults:
         require(not issues and context.version == record['dataContextVersion'], 'RESULT_VERSION_STALE')
         await self.authorize(prepared, record['request'], record['dataContextVersion'])
         await current()
-        if usable and not allow_unready:
-            require(record['status'] in {'ready', 'empty'}, 'RESULT_NOT_READY')
-        return deepcopy(record)
+        return check_result_record(record, dict(prepared.binding), context.version, policy.identity,
+                                   usable=usable, allow_unready=allow_unready)
 
     async def read(self, prepared, ref, current):
         record = await self.require(prepared, ref, current, usable=False)

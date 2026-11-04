@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring-presentation.overview"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-presentation",
+      "reference": "references/page-metadata/authoring-presentation.md",
+      "blocks": [
+        "# 创作数值呈现与受控多槽装配\n\n创作工具复用既有页面 Schema、数据槽和字段绑定，PageDocument 字段净增减为零。Tokens 百万是新创作政策；已有合法金额百万格式继续由引擎支持。原始数值、查询身份和已确认的业务刻度保持。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/relay-multislot-presentation.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

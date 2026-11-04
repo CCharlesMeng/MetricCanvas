@@ -1715,10 +1715,10 @@ Schema位置：`#/definitions/cellFallbacks/propertyNames`。
 - `#/definitions/field/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/fields/items`。
 - `#/definitions/field/anyOf/2`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/fields/body`。
 - `#/definitions/fieldValue/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/metrics/source/rows/0/amount`。
-- `#/definitions/scalar/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/usage/source/rows/0/month`。
+- `#/definitions/scalar/anyOf/0`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/dataSources/rates/source/rows/0/case`。
 - `#/definitions/scalar/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/metrics/source/rows/0/amount`。
 - `#/definitions/scalar/anyOf/2`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/flag`。
-- `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/dataSources/metrics/source/rows/0/missing`。
+- `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/dataSources/rates/source/rows/4/rate`。
 - `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/items`。
 - `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/name`。
 - `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/name`。

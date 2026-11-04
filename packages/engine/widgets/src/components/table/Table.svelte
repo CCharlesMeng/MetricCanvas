@@ -11,7 +11,7 @@
   import type { TableColumnCandidates } from './view-state';
   import type {TablePaginationState,TableSelectedCell} from './view-state';
   import { getContext, type Snippet } from 'svelte';
-  import { currentTimeValue } from '@metriccanvas/page/internal';
+  import { columnBindingKey, currentTimeValue } from '@metriccanvas/page/internal';
   let dateMaximum = $state(currentTimeValue('date'));
   let dateError = $state('');
   import { Empty } from '@metriccanvas/ui';
@@ -164,13 +164,13 @@
     let left = (expandable ? 40 : 0) + (props.rowNumber?.fixed ? rowNumberWidth : 0);
     for (const column of leaves) {
       if (column.fixed !== 'left') continue;
-      offsets.set(columnField(column), left);
+      offsets.set(columnBindingKey(column.field), left);
       left += column.width ?? FALLBACK_FIXED_WIDTH;
     }
     let right = 0;
     for (const column of [...leaves].reverse()) {
       if (column.fixed !== 'right') continue;
-      offsets.set(columnField(column), right);
+      offsets.set(columnBindingKey(column.field), right);
       right += column.width ?? FALLBACK_FIXED_WIDTH;
     }
     return offsets;
@@ -178,7 +178,7 @@
 
   function cellStyle(column: TableColumn): string {
     if (!column.fixed) return '';
-    const offset = stickyOffsets.get(columnField(column)) ?? 0;
+    const offset = stickyOffsets.get(columnBindingKey(column.field)) ?? 0;
     return `position: sticky; ${column.fixed}: ${offset}px;`;
   }
 
@@ -337,7 +337,7 @@
         const numeric = finiteNumber(alignedFieldValue(column.field, data, row));
         if (numeric !== undefined) maximum = Math.max(maximum, Math.abs(numeric));
       }
-      maxima.set(columnField(column), maximum);
+      maxima.set(columnBindingKey(column.field), maximum);
     }
     return maxima;
   });
@@ -347,7 +347,7 @@
     value: FieldValue | undefined
   ): number {
     const numeric = finiteNumber(value);
-    const maximum = rateBarMaxima.get(columnField(column)) ?? 0;
+    const maximum = rateBarMaxima.get(columnBindingKey(column.field)) ?? 0;
     if (numeric === undefined || maximum === 0) return 0;
     return Math.min(100, (Math.abs(numeric) / maximum) * 100);
   }
@@ -394,7 +394,7 @@
       <colgroup>
         {#if expandable}<col style="width:40px;min-width:40px" />{/if}
         {#if props.rowNumber}<col style={props.fit === 'container' ? `width: ${rowNumberWidth / columnWidthTotal * 100}%;` : `width: ${rowNumberWidth}px; min-width: ${rowNumberWidth}px;`} />{/if}
-        {#each leaves as column (columnField(column))}
+        {#each leaves as column (columnBindingKey(column.field))}
           <col style={columnStyle(column)} />
         {/each}
       </colgroup>
@@ -424,8 +424,8 @@
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   data-column-field={columnField(column)}
-                  data-column-index={leaves.findIndex(leaf => columnField(leaf) === columnField(column)) + leadingColumnCount}
-                  class:last-column={columnField(column) === columnField(leaves[leaves.length - 1])}
+                  data-column-index={leaves.indexOf(column) + leadingColumnCount}
+                  class:last-column={column === leaves[leaves.length - 1]}
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
                   style={`${cellStyle(column)} top: ${headerTop(rowIndex)}px;`}
@@ -548,7 +548,7 @@
             {#if props.rowNumber}
               <td class:fixed={props.rowNumber.fixed === 'left'} data-row-number data-column-index={expandable ? 1 : 0} style={rowNumberStyle}>{row.kind === 'pinnedTop' ? '' : rowNumberOffset + (row.bodyIndex ?? i) + 1}</td>
             {/if}
-            {#each leaves as bodyColumn, columnIndex (columnField(bodyColumn))}
+            {#each leaves as bodyColumn, columnIndex (columnBindingKey(bodyColumn.field))}
               {@const column = tableRowColumn(bodyColumn, row, data)}
               <!-- 合并列上被并入上方单元格的行不渲染该列 -->
               {#if row.kind === 'pinnedTop' || columnField(bodyColumn) !== mergedColumnField || rowSpans[i] !== 0}

@@ -26,6 +26,7 @@ Skill 版本以 [SKILL.md](../SKILL.md) 前置元数据的 `metadata.version` �
 | scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md | 从产品校验器及锁定依赖生成，运行只依赖 Node 内建模块 |
 | references/knowledge.json | 锁定生成文件的版本与SHA256；不包含作者说明文件的哈希 |
 | references/authoring-knowledge/、scripts/read-knowledge.mjs | 从同一协议/语义生成；按主题或 Schema Pointer 返回局部知识，失败时深查完整参考 |
+| scripts/associate-data.mjs | 从同源创作核心打包；关联原始页面、需求和显式结果，受控普通换源及最终数值绑定检查；只输出报告或候选 |
 | scripts/analyze-data.mjs | 从维护源打包；扫描页面、分块/检索用户MD、检查匹配报告和未执行查询候选；只读用户输入 |
 | scripts/upgrade-page.mjs | 从产品创作期迁移规则打包；检查旧页面，向新目录写出原件、迁移结果与报告；与校验器同版分发 |
 

@@ -1,3 +1,4 @@
+import { evaluationTimeValue, type TemporalEvaluation } from './temporal-evaluation';
 import type { PeriodMode, PeriodSelection } from './period-filter';
 import type { TextValue } from './page-param';
 
@@ -479,7 +480,8 @@ export function validateTimePointValue(
   granularity: 'month' | 'date',
   min?: string,
   disableFuture = false,
-  now: Date = new Date()
+  now?: Date,
+  evaluation?: TemporalEvaluation
 ): string | undefined {
   if (granularity === 'month') {
     const match = /^(\d{4})-(\d{2})$/.exec(value);
@@ -492,9 +494,15 @@ export function validateTimePointValue(
   }
   if (min !== undefined && value < min) return `时间点不得早于 ${min}`;
   if (disableFuture) {
-    const month = `${String(now.getFullYear()).padStart(4, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const maximum = granularity === 'month' ? month : `${month}-${String(now.getDate()).padStart(2, '0')}`;
+    const maximum = timePointMaximum(granularity, now, evaluation);
     if (value > maximum) return granularity === 'month' ? '时间点不得晚于当前月份' : '时间点不得晚于当前日期';
   }
   return undefined;
+}
+
+function timePointMaximum(granularity: 'month' | 'date', now?: Date, evaluation?: TemporalEvaluation): string {
+  if (evaluation) return evaluationTimeValue(granularity, evaluation);
+  const clock = now ?? new Date();
+  const month = `${String(clock.getFullYear()).padStart(4, '0')}-${String(clock.getMonth() + 1).padStart(2, '0')}`;
+  return granularity === 'month' ? month : `${month}-${String(clock.getDate()).padStart(2, '0')}`;
 }

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.82",
-  "id": "table-header-filter-defaults-query",
+  "id": "relay-multislot-presentation",
+  "schemaVersion": "6.83",
   "layout": "dashboard",
   "dataSources": {},
   "sections": [
@@ -15,7 +15,7 @@
           },
           "props": {
             "identity": {
-              "title": "列头默认筛选与查询分页"
+              "title": "多槽与呈现（合成证据）"
             }
           }
         }

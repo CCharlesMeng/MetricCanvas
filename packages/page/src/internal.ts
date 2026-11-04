@@ -100,3 +100,5 @@ export * from './table/columns';
 export { hasHeaderDefaults, headerDefaultValues, tableDefaultsRemote } from './table/header-defaults';
 
 export { normalizeQueryTime, QueryTimeRangeError } from './query-time';
+
+export * from './field-resolution';

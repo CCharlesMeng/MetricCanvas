@@ -1,0 +1,37 @@
+{
+  "code": "TABLE_SLOT_PAGINATION_UNVERIFIED",
+  "guidance": {
+    "message": "Consume the structured type/code, path and message from the actual receipt; consult the product rule and source locations. No automatic repair or retry is implied.",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/multislot_table.py",
+      "line": 111
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/multislot_table.py",
+      "line": 120
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/multislot_table.py",
+      "line": 124
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/multislot_table.py",
+      "line": 128
+    },
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/multislot_table.py",
+      "line": 130
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": false
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

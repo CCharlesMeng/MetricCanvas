@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring.rebind"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-analysis-rebind",
+      "reference": "references/page-metadata/authoring-analysis-rebind.md",
+      "blocks": [
+        "# 创作分析关联与受控换源\n\n`page.analyze` 和 `page.rebind` 是独立创作操作，不新增 `PageDocument` 字段。二者只读取显式输入，在本地 Node 程序或产品纯核心执行；不发起查询、不读取 Relay 私有存储、不授权、不保存。返回始终标记 `execution: \"not-run\"`，换源候选另标记 `saveStatus: \"not_requested\"`。",
+        "## 受控换源\n\n`page.rebind` 接收报告、原数据源 ID、显式结果引用和完整字段映射。每个原字段必须有唯一输出字段，且保持角色、类型、单位、币种、可空性。程序从当前完整文档重新构建报告，核对原始基线、Schema、材料、语义用数身份与当前位置，重新获取全部消费者，拒绝陈旧或篡改的报告。\n\n首个切片支持普通 `inline` 或单分支 DQE `query` 来源替换为普通 `query` 来源。它核对可观察的分组粒度、时间窗口、时间聚合、静态筛选、参数/筛选/结果绑定与结果范围。原 `inline` 无法观察的粒度须由显式 `baselineScope` 事实补足，包含同一原始字节摘要、数据源 ID 和事实引用；此事实不能覆盖已可观察的查询范围。\n\n所有按行键对齐的数据槽均须提供完整结果行与明确总数，以核对行键非空和唯一。独立置顶汇总单独核对完整零或一行，不要求主表行键。结果记录中的业务行只用于本次核对，不进入报告或页面候选的 `initial`。按父行执行的展开查询、计算、成员、查询分页或无法证明等价的动态分支拒绝本次换源，并保留原文档。\n\n成功候选保留原数据源 ID、字段 ID、分组字段声明、组件 ID、列标题、列宽、格式、布局、交互和无关配置，只替换目标查询及字段到输出列的映射。目标及受影响依赖的旧 `initial` 被清除；无关来源保持。候选经过同一页面解析与全量校验。失败返回 `document: null`，不产生半改文档。产品未获得等价证据时拒绝，不将未知解释为通过。\n\nRelay 负责真实结果查找及可信 `queryRef`、权限、当前工作副本、CAS、Java 保存和未知保存状态恢复。传入一致的字符串只证明本次输入自洽，不能替代这些边界。",
+        "## 本地入口与合成验收\n\n独立 Skill 分发脚本为 `scripts/associate-data.mjs`，仅需 Node 22 或更高版本：\n\n```sh\nnode scripts/associate-data.mjs page.analyze --page page.json --input association.json\nnode scripts/associate-data.mjs page.rebind --page page.json --input rebind.json\n```\n\n本地包装器直接读取完整原文件并计算原始字节摘要，结果写入 stdout，不覆盖页面。产品拒绝退出码为 2，包装器参数或文件错误为 3。`page.presentation` 也复用此文件入口，输入仍按该独立操作的契约处理。\n\n可观察 Dashboard 场景：`/pages/authoring-analysis-rebind`。场景说明提供完整命令、候选与重复行键拒绝步骤。页面协议字段增减为零；关联、证据核对、范围比较及原子换源均由创作核心承接。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/authoring-analysis-rebind.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

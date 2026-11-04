@@ -611,4 +611,10 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 
 按页补列空关联键兼容：`/pages/paged-join-on-demand?supplementKey=empty`，说明及异常参数见[表格场景](capabilities/table/README.md#按页补列空关联编号兼容)。合成数据，不连接真实DQE。
 
+## 创作期工具与时间上下文
+
+[显式评估时间与业务时区](capabilities/authoring/evaluation-context/README.md)：`/pages/authoring-evaluation-context`，Dashboard 原有时间点筛选及正文引用，2020 年日常初值；不依赖数据服务，工具上下文不写页面 JSON。覆盖边界见同目录 README。百分比创作的呈现与原值对照见[数据场景](capabilities/data/README.md#创作百分比与覆盖边界)。
+
 Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/navigation/README.md#embed-自动读取-url-参数)，入口 `/pages/embed-url-params?account-name=合成账号甲`，实际 ES 包示例为 `examples/url-params.html`。
+
+创作关联与普通换源：[/pages/authoring-analysis-rebind](capabilities/authoring/analysis-rebind/README.md)，覆盖共享消费者和原子拒绝。受控多槽与 Tokens 呈现：[/pages/relay-multislot-presentation](capabilities/authoring/relay-multislot-presentation/README.md)，覆盖乱序、缺匹配和百万显示，均为合成数据。

@@ -206,6 +206,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 格式由组件字段绑定声明，页面数据源可以提供 `defaultFormat` 建议，原始数据保留基础单位。格式清单、覆盖优先级及百万单位的用法统一见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md)。
 
+创作期已确认的百分数刻度不因查询覆盖不完整而丢失百分号；来源格式建议、可信刻度与组件显式格式分别处理。微小非零值的精度限制见[百分比创作与覆盖边界](docs/page-metadata/field-bindings-and-formats.md#百分比创作与覆盖边界)，合成对照场景 `/pages/authoring-percent-coverage`。
+
 柱状图、折线图及混合图的标签、悬浮提示和同格式数值轴统一采用通用格式化；未配置格式时默认两位小数，元数据可覆盖；旧柱图标签不再隐式缩放为万。规则及兼容说明见[柱线图数值格式一致性](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，场景 `/pages/chart-number-format`。
 
 饼图外围百分比标签统一使用通用 `percent-1`，按有效原值合计直接计算，零合计显示“—”；规则及边界见[饼图外围标签](docs/page-metadata/components/pieChart.md#percentage-labels)，对照场景 `/pages/chart-number-format`。
@@ -572,3 +574,13 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 对象查询参数确认（2026-10-30）：所有对象调用统一使用 query_type/object_type/output_fields、filter.fields 的 field_name/value_list/operator 以及 order；无条件和无排序仍显式发送空结构。对象表头候选通过同一协议仅投影目标字段，完整返回后去重，不读取其余明细输出字段；主查询仍每页10条。声明、限制及用户范例见[对象查询](docs/page-metadata/queries-and-bindings.md#object-query-parameters)，本地HTTP验收入口 `/pages/business-rejection-details-pagination-10`。
 
 6.81 IOC Header 组件化：首分区首位、全宽、最多一个，随 section 显隐；无声明不补页头。旧读、新写与迁移边界见[分区页头](docs/page-metadata/page.md#ioc-页头进入分区681)，完整入口见[验收场景](pages/capabilities/ioc-header/section-component/README.md)。
+
+## 创作期显式时间上下文
+
+纯产品工具校验时间敏感候选时，使用程序显式供给的 `evaluation`（instant、IANA timeZone），旧渲染期不传上下文的默认行为保持。该上下文不属于页面字段，也不进入查询定义；字段净增减为零。语义、专用诊断及跨年例子见[筛选的创作期评估上下文](docs/page-metadata/filters.md#创作期工具的评估时间与业务时区)，合成可观察入口 `/pages/authoring-evaluation-context`。
+
+## 创作关联、呈现与多槽装配
+
+创作报告关联需求、取数单元、结果与稳定用数身份；普通换源原子保留组件和字段意图。见[分析与换源](docs/page-metadata/authoring-analysis-rebind.md)，合成入口 `/pages/authoring-analysis-rebind`。新增创作接口不扩展 PageDocument。
+
+Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创作呈现](docs/page-metadata/authoring-presentation.md)，合成入口 `/pages/relay-multislot-presentation`；旧合法引擎格式保留。页面 Schema 字段净增减为零。

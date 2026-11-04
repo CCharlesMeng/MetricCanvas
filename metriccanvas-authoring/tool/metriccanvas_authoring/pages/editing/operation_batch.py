@@ -11,8 +11,9 @@ from metriccanvas_authoring.pages.validation.page_validation import normalize_pa
 from metriccanvas_authoring.pages.composition.table_pagination import add_query_table_pagination, _components
 
 
-def operation_batch(baseline, request, operation_schema):
-    normalized = normalize_page_document(baseline)
+def operation_batch(baseline, request, operation_schema, *, validation=None):
+    validation = validation or {}
+    normalized = normalize_page_document(baseline, **validation)
     if not normalized['ok']:
         return {'status': 'invalid_baseline', 'document': None, 'operations': [],
                 'issues': [{'code': 'BASELINE_INVALID', 'path': e['path']} for e in normalized['errors']]}
@@ -25,20 +26,20 @@ def operation_batch(baseline, request, operation_schema):
     results, states = [], {}
     validator = Draft202012Validator(operation_schema)
     for index, op in enumerate(operations):
-        document, result = yield from _apply_operation(document, op, index, validator, states)
+        document, result = yield from _apply_operation(document, op, index, validator, states, validation)
         results.append(result)
         states[op['id']] = result['status']
     changed = document != original
     failed = any(r['status'] in {'failed', 'skipped'} for r in results)
     status = ('partial' if failed else 'changed') if changed else (
         'failed' if all(r['status'] in {'failed', 'skipped'} for r in results) else 'unchanged')
-    if validate_page_document(document):
+    if validate_page_document(document, **validation):
         return {'status': 'failed', 'document': None, 'operations': [],
                 'issues': [{'code': 'EDIT_RESULT_INVALID', 'path': ''}]}
     return {'status': status, 'document': document if changed else None, 'operations': results, 'issues': []}
 
 
-def _apply_operation(document, op, index, validator, states):
+def _apply_operation(document, op, index, validator, states, validation):
     result = {'id': op['id'], 'status': 'failed', 'issues': [], 'adjustments': []}
     invalid = schema_issues(validator.schema, op, 'OPERATION_INVALID')
     if invalid:
@@ -53,7 +54,7 @@ def _apply_operation(document, op, index, validator, states):
             new_tables = {component['id'] for component in _components(candidate)
                           if component['type'] == 'table' and prior_types.get(component['id']) != 'table'}
             add_query_table_pagination(candidate, new_tables)
-            errors = validate_page_document(candidate)
+            errors = validate_page_document(candidate, **validation)
             if errors:
                 result['issues'] = [{**issue_details(e.type, e.path), 'pathScope': 'document'} for e in errors]
             else:

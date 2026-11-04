@@ -1,3 +1,5 @@
+import { authoringPresentationPolicy } from './export-authoring-presentation-policy';
+import {exportRelayReference} from './export-relay-reference';
 import { appendIocComponentFixtures,featureConformancePages } from './page-conformance-sources';
 import { pageFilesById } from './page-files.mjs';
 import { buildPublicationSchema } from '../../metriccanvas-authoring/contracts/authored/publication-contract.ts';
@@ -424,6 +426,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   const buildPageConformance = json(buildPageVector);
   const agentConformance = await legacyContract('agent-conformance.json');
   outputs.set('exported/analysis-intents.json', analysisIntents);
+  outputs.set('exported/authoring-presentation-policy.json', await authoringPresentationPolicy(repoRoot));
   outputs.set('exported/agent-conformance.json', agentConformance);
   outputs.set('exported/build-page-conformance.json', buildPageConformance);
   outputs.set(
@@ -600,7 +603,7 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     for (const file of await listFiles(path.join(bundleRoot, directory))) {
       if (mode !== 'none' && file.startsWith('references/page-metadata/')) continue;
       if (mode === 'local-page-metadata' && file.startsWith('references/page-patterns/')) continue;
-      if (mode === 'local-page-metadata' && (file.startsWith('references/authoring-knowledge/') || ['scripts/read-knowledge.mjs','scripts/analyze-data.mjs','scripts/upgrade-page.mjs'].includes(file))) continue;
+      if (mode === 'local-page-metadata' && (file.startsWith('references/authoring-knowledge/') || ['scripts/read-knowledge.mjs','scripts/analyze-data.mjs','scripts/upgrade-page.mjs','scripts/associate-data.mjs'].includes(file))) continue;
       if (mode === 'local-page-metadata' && ['scripts/validate-page.mjs', 'scripts/THIRD-PARTY-LICENSES.md', 'references/knowledge.json', 'references/map-regions.json', 'assets/layouts/overview-map-led.json'].includes(file)) continue;
       documents.set(file, await readFile(path.join(bundleRoot, directory, file), 'utf8'));
     }
@@ -609,7 +612,7 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     const generated = mode === 'local-page-metadata' ? await localValidatorOutputs(repoRoot) : undefined;
     if (generated) {
       for (const [file,content] of await localAuthoringKnowledge(repoRoot,projected)) generated.set(file,content);
-      for (const [entry,output] of [['local-authoring-knowledge-reader','read-knowledge'],['local-authoring-data-cli','analyze-data'],['local-authoring-upgrade','upgrade-page']]) {
+      for (const [entry,output] of [['local-authoring-knowledge-reader','read-knowledge'],['local-authoring-data-cli','analyze-data'],['local-authoring-upgrade','upgrade-page'],['local-authoring-association','associate-data']]) {
         for (const [file,content] of await localValidatorOutputs(repoRoot,`tools/scripts/${entry}.ts`,`scripts/${output}.mjs`)) {
           if (file.endsWith('.mjs')) generated.set(file,content);
         }
@@ -868,3 +871,18 @@ if (!process.argv.includes('--mc-coverage')) console.log(
     : `exported authoring contracts (${productOutputs.size} product, ` +
         `${authoringOutputs.size} authoring, ${interfaceOutputs.size} interface files)`
 );
+
+const relayOption = process.argv.indexOf('--relay-reference-output');
+if (relayOption >= 0) {
+  const output = process.argv[relayOption + 1];
+  if (!output || checkOnly) throw new Error('--relay-reference-output requires a new output directory and write mode');
+  const relayConfig = JSON.parse(await readFile(path.join(repoRoot, 'tools/relay-reference/release-config.json'), 'utf8')) as {releaseVersion: string; interfaceVersion: string; pythonOperations: string[]};
+  const releaseOption = process.argv.indexOf('--relay-release-version');
+  const releaseVersion = releaseOption >= 0 ? process.argv[releaseOption + 1] : relayConfig.releaseVersion;
+  if (!releaseVersion) throw new Error('Missing --relay-release-version value');
+  const modules = process.argv.flatMap((value, index) => value === '--relay-python-operations' ? [process.argv[index + 1]!] : []);
+  const interfaceOption = process.argv.indexOf('--relay-interface-version');
+  const interfaceVersion = interfaceOption >= 0 ? process.argv[interfaceOption + 1] : relayConfig.interfaceVersion;
+  if (!interfaceVersion) throw new Error('Missing --relay-interface-version value');
+  await exportRelayReference(repoRoot, output, releaseVersion, modules.length ? modules : relayConfig.pythonOperations, interfaceVersion);
+}

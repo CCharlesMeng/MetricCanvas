@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring-analysis-rebind.section-e5041ca9"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-analysis-rebind",
+      "reference": "references/page-metadata/authoring-analysis-rebind.md",
+      "blocks": [
+        "# 创作分析关联与受控换源\n\n`page.analyze` 和 `page.rebind` 是独立创作操作，不新增 `PageDocument` 字段。二者只读取显式输入，在本地 Node 程序或产品纯核心执行；不发起查询、不读取 Relay 私有存储、不授权、不保存。返回始终标记 `execution: \"not-run\"`，换源候选另标记 `saveStatus: \"not_requested\"`。",
+        "## 完整基线和关联报告\n\n调用方提供完整 `documentJson` 与其 UTF-8 原始字节 SHA-256；空白变化也视为不同基线。产品解析并校验完整页面，报告同时记录页面 ID、来源是文件还是工作副本、工作副本版本及绑定、材料摘要和产品页面 Schema 摘要。Schema 摘要明确采用 `JSON.stringify(product-page-schema)` 序列化，与原始页面文件摘要分别解释。工作副本必须有版本和绑定；相同页面 ID 不代表相同内容。\n\n`page.analyze` 输出 `metriccanvas-analysis/1` 报告。`uses` 保留组件、数据源、数据槽、字段和行明细上下文的语义身份，同时携带当前 JSON pointer。组件或列重排可保留 `useId`，当前位置仍须重新读取。相同字段的合法多处引用合并为一个语义用数位置，保留全部 pointer、角色和标签；重复组件 ID 形成歧义并报告，不用数组序号掩盖。\n\n报告通过 `requirementId → dataRequestId → resultRef → useId` 显式关联需求、现有取数单元、结果记录和页面位置，并生成反向索引。`dataRequests` 复用现有 `DataRequest` 契约。材料引用必须对上原材料的行号和原文，不从标签或相似名称猜测关联。未关联、未提供结果证据的位置列为缺口。\n\n`componentIds` 仅限定阅读视图。报告仍扫描完整页面，保留共享消费者、独立消费者及依赖闭包；它不产生权限范围，也不缩小完整校验。结果记录由调用方显式提供并核对当前绑定、数据上下文版本、校验政策、状态、请求和字段契约。报告不复制结果业务行、`initial` 或结果记录查询正文，不建立行缓存。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/authoring-analysis-rebind.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

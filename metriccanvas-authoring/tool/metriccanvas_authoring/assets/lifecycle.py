@@ -9,16 +9,9 @@ from .lifecycle_ports import LifecycleError, LifecycleServicePort, LifecycleProg
 
 REQUEST_SCHEMA = json.loads((bundle_root() / 'contracts/authored/lifecycle-request.schema.json').read_text())
 VALIDATOR = Draft202012Validator(REQUEST_SCHEMA)
-REF_KEYS = {'pageId', 'revisionId', 'resourceId'}
-SAFE_CODES = {'INVALID_PAGE', 'INVALID_REQUEST', 'UNAUTHENTICATED', 'FORBIDDEN',
-    'REVISION_NOT_FOUND', 'REVISION_CONFLICT', 'IDEMPOTENCY_CONFLICT',
-    'CAPABILITY_UNAVAILABLE', 'RESPONSE_MISMATCH', 'PROGRAM_UNAVAILABLE',
-    'PROGRAM_TOKEN_INVALID', 'PROGRAM_NOT_FOUND'}
-
-
-def valid_ref(ref):
-    return isinstance(ref, dict) and set(ref) == REF_KEYS and all(
-        isinstance(v, str) and 0 < len(v) <= 256 for v in ref.values())
+from metriccanvas_authoring.work.receipt_rules import (
+    REF_KEYS, SAFE_CODES, valid_ref, check_receipt_status, check_provider_receipt,
+)
 
 
 def require(condition, code='RESPONSE_MISMATCH'):
@@ -56,31 +49,11 @@ class Lifecycle:
         return command
 
     def saved(self, response, command):
-        require(isinstance(response, dict))
-        require(response.get('operationId') == command['context']['operationId'])
-        status = response.get('status')
-        require(status in {'saved', 'pending', 'unknown', 'rejected', 'not-applied'})
-        if status != 'saved':
-            require('ref' not in response)
-            result = {'status': status, 'operationId': response['operationId']}
-            if status == 'not-applied':
-                require(isinstance(response.get('retrySafe'), bool))
-                result['retrySafe'] = response['retrySafe']
-            if status == 'rejected':
-                result['code'] = response.get('code') if response.get('code') in SAFE_CODES else 'SERVICE_REJECTED'
-                result['retryable'] = False
-                result['message'] = result['code']
+        result = check_receipt_status(response, command)
+        if result is not None:
             return result
         if self.service.capabilities.single_save:
-            from metriccanvas_authoring.canonical import canonical_json
-            require(valid_ref(response.get('ref')) and response['ref']['pageId'] == command['pageId'])
-            require(response.get('base') == command['base'] and response.get('assurance') == 'provider-response')
-            require(type(response.get('revisionNumber')) is int and response['revisionNumber'] > 0)
-            require(response.get('isDraft') is True)
-            require(command['base'] is None or response['ref']['resourceId'] == command['base']['resourceId'] and response['ref']['revisionId'] != command['base']['revisionId'])
-            require(isinstance(response.get('document'),dict) and not validate_page_document(response['document']))
-            require(canonical_json(response['document']) == canonical_json(command['document']))
-            return {k:deepcopy(response[k]) for k in ('status','operationId','ref','base','revisionNumber','isDraft','document','assurance')}
+            return check_provider_receipt(response, command)
         require({'ref','base','contentHash','canonicalization','revisionNumber'} <= set(response))
         require(isinstance(response['contentHash'], str) and re.fullmatch('[a-f0-9]{64}', response['contentHash']))
         require(isinstance(response['canonicalization'], str) and bool(response['canonicalization']))

@@ -1,0 +1,96 @@
+{
+  "head": "2133241a6b4f259fc19ff54bfdd9a0dcb9c96e06",
+  "note": "Selected source fingerprints recorded after local audit; not an immutable checkout snapshot; unrelated parallel work exists",
+  "python": "3.12.13",
+  "node": "v24.11.1",
+  "files": [
+    {
+      "file": "tools/scripts/local-authoring-data-analysis.ts",
+      "sha256": "b9a60818e5b4c416130bd53169ab3f686a4c56405f94ee8142e92f6cff5af0c1"
+    },
+    {
+      "file": "tools/scripts/local-authoring-data-cli.ts",
+      "sha256": "2aa9212ac76769942cc8e9600cb94aebb6730d090c17b76f95c746e9de378750"
+    },
+    {
+      "file": "tools/scripts/local-authoring-data-scope.ts",
+      "sha256": "2fc8d32f4576d351599b8a4a43f5d00eb08e7feee1752b3c0fcdaf6d0a1167e5"
+    },
+    {
+      "file": "tools/scripts/mc-content.ts",
+      "sha256": "7e75bc21280099790b545c9119276c9865b10601e73b12df43ef499562922e3b"
+    },
+    {
+      "file": "tools/scripts/mc-content-knowledge.ts",
+      "sha256": "8828fffa90bdff939b8e233e1bb7f0880a266b92ba12098df9c3b354403aae53"
+    },
+    {
+      "file": "tools/scripts/mc-contracts.py",
+      "sha256": "3c1a34b7ed31a03f983cc0292e7db9457d78332e08e0a13879d9f079e7101f2f"
+    },
+    {
+      "file": "tools/scripts/export-authoring-contracts.ts",
+      "sha256": "ae2800f3e42fc0e918b4dd30c207ec9d7757b2b9b79c07d3a4235747253ba328"
+    },
+    {
+      "file": "tools/scripts/local-authoring-projection.ts",
+      "sha256": "a0bbecba78fb7aa983b5adca97066e53c9cea0eccb10ce9b4aea5742e6832aaa"
+    },
+    {
+      "file": "metriccanvas-authoring/skill/metriccanvas-local-authoring/SKILL.md",
+      "sha256": "084c0fbf24af21d088747db5764d13575381115d40c6a5717c05bb286568474e"
+    },
+    {
+      "file": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+      "sha256": "e3fd6d4c9ed9fcba2adfd3ee1266b8fc468ca5ca37fe9570eb8bb4859050fbba"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py",
+      "sha256": "6c06f4f262571832fb798c4e948057ff7f960c7373ddd79bb9b2cc64f1daeae7"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/compose_contract.py",
+      "sha256": "c1c846dfa9d8c3fcfbc5865f94d7cd6f61a7c43393f986cc83bb7b9c08c413f7"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/operation_batch.py",
+      "sha256": "88cd0120831b78007d1637ffcc66b0731ca2e6b70c22cbbc5c5302fa40d4c88c"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/platform_authoring.py",
+      "sha256": "895aee63557bc155d9dca751a327a0c1d50458b12cf0b7e3c87caa90f58dd041"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/results.py",
+      "sha256": "00d4a0de36ea63e9d31c78f0bd0274948610f67cd8ef196ea212d961fa9d7686"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/authorization.py",
+      "sha256": "31b352319d6fe24bf71d82134448cab6b8a142c9e3e2df6db1c4a428b18047ba"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/mcp/platform_mcp.py",
+      "sha256": "97bcb93ff59229ae5aff897468557bf39a5fdb52778a61a5f80aa7febd64a826"
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/bootstrap/adapter_contract.py",
+      "sha256": "89a30f0e3b9b69cf73e3a42825197f37636927de64f989eced6c4e4b949b3f06"
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/working-copy-agent.ts",
+      "sha256": "90dacf9305496b06f486fba61483aa530357014f0e338af870db0b46ef468aa9"
+    },
+    {
+      "file": "apps/platform/src/lib/integration/contract.ts",
+      "sha256": "961230d6bd1bbe20e405ec4dbb5c61593a5373448790036eb877dfb48ec1f9d4"
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/document-edit.ts",
+      "sha256": "8cb9feaf9790bab57982358cdc39118e5c3e7d53093c081148b61db6046b2524"
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "sha256": "e4bd54a6ae9d9e56bbe7c86e9b26e5f7c6adee865f9dac0aaccc795b06fa94f9"
+    }
+  ]
+}

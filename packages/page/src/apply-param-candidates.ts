@@ -1,3 +1,4 @@
+import type { TemporalEvaluation } from './temporal-evaluation';
 import { ordinaryQuery } from './time-mode';
 import { isPeriodSelection } from './period-filter';
 import { flattenPageComponents } from './component-walk';
@@ -18,7 +19,7 @@ type OriginalValues = Record<string, PageParamValue>;
 const fail = (message: string, path = '/dataSources'): Failure => ({ ok: false, issues: [{ code: 'INVALID_PAGE', path, message }] });
 const structuralTextKeys = new Set(['id', 'type', 'param', 'filter', 'format', 'filterIds', 'data', 'layout', 'actions', 'links', 'navigate', 'writeFilter', 'hierarchyFilter']);
 
-export function applyParameterCandidates(extraction: PageParamExtraction, selectedIds: readonly string[], textReplacements: Readonly<Record<string, TextValue>>): { ok: true; document: PageDocument; originalValues: OriginalValues; issues: [] } | Failure {
+export function applyParameterCandidates(extraction: PageParamExtraction, selectedIds: readonly string[], textReplacements: Readonly<Record<string, TextValue>>, evaluation?: TemporalEvaluation): { ok: true; document: PageDocument; originalValues: OriginalValues; issues: [] } | Failure {
   const invalidSelection = selectionError(extraction, selectedIds);
   if (invalidSelection) return invalidSelection;
   const selected = extraction.candidates.filter(c => selectedIds.includes(c.id));
@@ -33,7 +34,7 @@ export function applyParameterCandidates(extraction: PageParamExtraction, select
   const pending = remainingLiteralPaths(document, selected);
   if (pending.length) return fail(`以下文本仍含原值，须显式替换或改为参数引用：${pending.join('、')}`, pending[0]);
   if (selected.length) discardInitialData(document);
-  const resolved = resolvePageParams(document, originalValues);
+  const resolved = resolvePageParams(document, originalValues, evaluation);
   if (!resolved.ok) return resolved;
   const inequivalent = originalQueryError(extraction.source, resolved.resolvedPage, selected);
   return inequivalent ?? { ok: true, document, originalValues, issues: [] };

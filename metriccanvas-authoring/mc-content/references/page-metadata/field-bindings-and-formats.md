@@ -6,6 +6,14 @@ format优先于字段defaultFormat；未设置时走组件/类型的既有格式
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
 
+## 百分比创作与覆盖边界
+
+创作工具使用可信 `scale: "percent"`，或无冲突的 `%` / `％` 原始单位，确认原值已是百分数刻度。完整、部分和未知覆盖均可默认采用 `percent-2`；覆盖率只限制依赖全量分布的紧凑尺度推断。来源 `defaultFormat: "number*"` 是显示建议，不能覆盖已确认的百分数刻度；工具改用 `percent-2` 并返回 `PRESENTATION_FORMAT_ADJUSTED`，关联数据源和字段身份。来源原始描述保留。`fraction`、`unknown` 和已缩放刻度不能据名称猜为百分数，也不自动乘100。
+
+组件显式 `format` 仍优先，已有页面或没有来源描述的显式默认格式保持；本批不重写已有页面或保存规则。`percent-*` 最多保留两位小数，微小非零值如 `0.0001` 用 `percent-2` 显示 `0.00%`。工具保留百分号及原值，并返回 `PRESENTATION_PRECISION_LIMIT`，不改成无单位的 number 来掩盖限制；需要核对时可在明细列显式用 `number` 查看原值。零与缺失分别显示 `0.00%` 与缺失文案。
+
+场景 `/pages/authoring-percent-coverage` 使用程序格式决策对应的 inline 合成数据：12.5 显示 12.50%，微小正负值在相邻原值列可核对，显式 `percent-1` 显示 12.5%。它验证渲染与覆盖优先级；真实查询覆盖、格式调整和精度告警由查询回归验证，不代表真实 DQE 或 Relay 已接入。local 直接编辑页面沿此相同格式语义，静态校验不宣称已验证来源业务刻度。
+
 ## 带符号普通数值（6.17起）
 
 全部 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则：
@@ -630,12 +638,13 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - [chart-constant-values-page](examples/chart-constant-values-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-branches](examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
+- [authoring-percent-coverage](examples/authoring-percent-coverage.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
 - `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/staticFieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
-- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
 - `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/colorRule`。

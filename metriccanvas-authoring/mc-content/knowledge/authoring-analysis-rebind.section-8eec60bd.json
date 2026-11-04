@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring-analysis-rebind.section-8eec60bd"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-analysis-rebind",
+      "reference": "references/page-metadata/authoring-analysis-rebind.md",
+      "blocks": [
+        "# 创作分析关联与受控换源\n\n`page.analyze` 和 `page.rebind` 是独立创作操作，不新增 `PageDocument` 字段。二者只读取显式输入，在本地 Node 程序或产品纯核心执行；不发起查询、不读取 Relay 私有存储、不授权、不保存。返回始终标记 `execution: \"not-run\"`，换源候选另标记 `saveStatus: \"not_requested\"`。",
+        "## 本地入口与合成验收\n\n独立 Skill 分发脚本为 `scripts/associate-data.mjs`，仅需 Node 22 或更高版本：\n\n```sh\nnode scripts/associate-data.mjs page.analyze --page page.json --input association.json\nnode scripts/associate-data.mjs page.rebind --page page.json --input rebind.json\n```\n\n本地包装器直接读取完整原文件并计算原始字节摘要，结果写入 stdout，不覆盖页面。产品拒绝退出码为 2，包装器参数或文件错误为 3。`page.presentation` 也复用此文件入口，输入仍按该独立操作的契约处理。\n\n可观察 Dashboard 场景：`/pages/authoring-analysis-rebind`。场景说明提供完整命令、候选与重复行键拒绝步骤。页面协议字段增减为零；关联、证据核对、范围比较及原子换源均由创作核心承接。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/authoring-analysis-rebind.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

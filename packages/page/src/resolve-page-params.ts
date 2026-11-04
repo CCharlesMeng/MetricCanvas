@@ -1,3 +1,4 @@
+import type { TemporalEvaluation } from './temporal-evaluation';
 import {queryFilterIds} from './amount-filter';
 import { timeFilterBoundaryError } from './time-filter-boundary';
 import { periodSelectionFromRange } from './period-filter';
@@ -22,8 +23,8 @@ export type ResolvePageParamsResult =
   | {ok:false; issues:ParamResolutionIssue[]};
 
 /** Pure public entry: validate, fill a reference document, materialize an execution copy. */
-export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<string,unknown>>={}):ResolvePageParamsResult {
-  const structural=parsePage(page);
+export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<string,unknown>>={}, evaluation?:TemporalEvaluation):ResolvePageParamsResult {
+  const structural=parsePage(page,{evaluation});
   if(!structural.ok)return {ok:false,issues:structural.errors.map(e=>issue(e))};
   if(!suppliedValues||typeof suppliedValues!=='object'||Array.isArray(suppliedValues))return {ok:false,issues:[{code:'INVALID_VALUE',path:'/params',message:'输入必须是id到值的映射'}]};
   const document=JSON.parse(JSON.stringify(normalizeReportExportScales(page))) as PageDocument;
@@ -55,11 +56,11 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
     const source = document.dataSources[id]?.source;
     if (source && source.type !== 'inline') delete source.initial;
   }
-  const parsed=parsePage(document,{textValues:{values}});
+  const parsed=parsePage(document,{textValues:{values},evaluation});
   if(!parsed.ok)return {ok:false,issues:parsed.errors.map(e=>issue(e,'INVALID_MATERIALIZATION'))};
   let resolvedPage:Page;
   try {
-    resolvedPage=materializePageParams(parsed.page,values);
+    resolvedPage=materializePageParams(parsed.page,values,evaluation);
     const filterValues = initialFilterTextValues(resolvedPage.filters ?? []);
     resolvedPage = applyFilterTextValues(resolvedPage, collectFilterTextValueReferences(resolveParamTextValues(document, { values })),
       reference => resolveFilterTextValue(reference, { values, filterValues }));
@@ -67,7 +68,7 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
   return {ok:true,document,resolvedPage,effectiveInputs:values,issues:[]};
 }
 /** Internal boundary for an already parsed Page (its text references are no longer present). */
-export function materializePageParams(page:Page,values:ReadonlyMap<string,PageParamValue>):Page {
+export function materializePageParams(page:Page,values:ReadonlyMap<string,PageParamValue>,evaluation?:TemporalEvaluation):Page {
   for(const p of page.params??[]) {
     const value=values.get(p.id);
     if(value===undefined?p.required!==false:!matchesParamDeclaration(value,p))throw Error(`参数取值缺失或类型错误:${p.id}`);
@@ -79,33 +80,39 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     if (changed.has(id)) delete source.source.initial;
   }
   for (const id of changed) { const source = resolved.dataSources[id]?.source; if (source && source.type !== 'inline') delete source.initial; }
-  for (const filter of resolved.filters ?? []) {
+  initializeTimeFilters(resolved, values, evaluation);
+  return resolved;
+}
+
+function initializeTimeFilters(page: Page, values: ReadonlyMap<string, PageParamValue>, evaluation?: TemporalEvaluation): void {
+  for (const filter of page.filters ?? []) {
     if (filter.type !== 'timePoint' && filter.type !== 'timeRange') continue;
     if (!filter.initialParam) continue;
     const value = values.get(filter.initialParam);
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      if (filter.type === 'timePoint') {
-        const error = validateTimePointValue(value.start, filter.granularity, filter.min, filter.disableFuture !== false);
-        if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
-        filter.default = value.start;
-      }
-      else {
-        const range = {from:value.start,to:value.end};
-        if (filter.display === 'period') {
-          const selection = periodSelectionFromRange(range,filter.initialMode ?? 'month',filter.precision === 'month' ? 'month' : 'date');
-          if (!selection) throw new Error(`筛选器 ${filter.id}: 参数不是完整自然期间`);
-          const error = timeFilterBoundaryError(filter, {type:'timeRange',...range,selection});
-          if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
-          filter.default = selection;
-        } else {
-          const error = timeFilterBoundaryError(filter, {type:'timeRange', ...range});
-          if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
-          filter.default = range;
-        }
-      }
-    }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    initializeTimeFilter(filter, value, evaluation);
   }
-  return resolved;
+}
+
+function initializeTimeFilter(filter: Extract<import('./filter').FilterDeclaration, {type:'timePoint'|'timeRange'}>, value: {start:string;end:string}, evaluation?: TemporalEvaluation): void {
+  if (filter.type === 'timePoint') {
+    const error = validateTimePointValue(value.start, filter.granularity, filter.min, filter.disableFuture !== false, undefined, evaluation);
+    if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
+    filter.default = value.start;
+    return;
+  }
+  const range = {from:value.start,to:value.end};
+  if (filter.display === 'period') {
+    const selection = periodSelectionFromRange(range,filter.initialMode ?? 'month',filter.precision === 'month' ? 'month' : 'date');
+    if (!selection) throw new Error(`筛选器 ${filter.id}: 参数不是完整自然期间`);
+    const error = timeFilterBoundaryError(filter, {type:'timeRange',...range,selection}, undefined, evaluation);
+    if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
+    filter.default = selection;
+  } else {
+    const error = timeFilterBoundaryError(filter, {type:'timeRange', ...range}, undefined, evaluation);
+    if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
+    filter.default = range;
+  }
 }
 function issue(e:TypedError,code:ParamResolutionIssue['code']='INVALID_PAGE'):ParamResolutionIssue{return {code,path:e.path,message:e.message};}
 

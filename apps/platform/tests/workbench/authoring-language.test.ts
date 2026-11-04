@@ -176,8 +176,9 @@ it('waits for durable browser protection before acquiring a language lease', asy
   const f = await setup(); let protect!: () => void;
   f.coordinator.enableAutoSync({ storage: { read: async () => null, write: async () => { await new Promise<void>(resolve => protect = resolve); return 1; } },
     port: { stableSave: false, save: async () => { throw Error('not used'); }, lookup: async () => { throw Error('not used'); }, verifySaved: async () => false } });
-  await flush(); const run = f.language.start('edit'); await flush(); expect(f.port.run).not.toHaveBeenCalled();
-  protect(); await flush(); expect(f.port.run).toHaveBeenCalledTimes(1);
+  await vi.waitFor(() => expect(protect).toBeTypeOf('function'));
+  const run = f.language.start('edit'); await flush(); expect(f.port.run).not.toHaveBeenCalled();
+  protect(); await vi.waitFor(() => expect(f.port.run).toHaveBeenCalledTimes(1));
   await f.resolve({ status: 'text', operations: [] }); await run;
 });
 it('storage failure leaves language pending and cancellation never invokes Relay', async () => {

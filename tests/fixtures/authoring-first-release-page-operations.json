@@ -1,0 +1,550 @@
+{
+  "sourceRelease": "55b2c482617005e95c353523b8e8926b8db538e5872bb06362cde28edd00f9ff",
+  "operations": {
+    "page.parameters": {
+      "errorCodes": [
+        "INVALID_REQUEST",
+        "INVALID_PAGE",
+        "UNKNOWN_INPUT",
+        "MISSING_INPUT",
+        "INVALID_VALUE",
+        "INVALID_TIME_RULE",
+        "INVALID_MATERIALIZATION",
+        "EVALUATION_CONTEXT_REQUIRED",
+        "INVALID_EVALUATION_CONTEXT"
+      ],
+      "inputSchema": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "extract",
+                    "prepare"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "context"
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "extract",
+              "prepare",
+              "resolve"
+            ]
+          },
+          "context": {
+            "properties": {
+              "baseline": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "baseline"
+            ],
+            "type": "object"
+          },
+          "document": {},
+          "evaluation": {
+            "additionalProperties": false,
+            "properties": {
+              "instant": {
+                "type": "string"
+              },
+              "timeZone": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "instant",
+              "timeZone"
+            ],
+            "type": "object"
+          },
+          "selectedIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "suppliedValues": {
+            "type": "object"
+          },
+          "textReplacements": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "action",
+          "document"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "oneOf": [
+          {
+            "properties": {
+              "baseline": {
+                "type": "string"
+              },
+              "candidates": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "ok": {
+                "const": true
+              },
+              "skipped": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "source": {
+                "type": "object"
+              },
+              "sourceKey": {
+                "type": "string"
+              },
+              "textSlots": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "ok",
+              "baseline",
+              "source",
+              "sourceKey",
+              "candidates",
+              "skipped",
+              "textSlots"
+            ],
+            "type": "object"
+          },
+          {
+            "properties": {
+              "baseline": {
+                "type": "string"
+              },
+              "candidates": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "document": {
+                "type": "object"
+              },
+              "issues": {
+                "maxItems": 0,
+                "type": "array"
+              },
+              "ok": {
+                "const": true
+              },
+              "originalValues": {
+                "type": "object"
+              },
+              "selectedIds": {
+                "type": "array"
+              },
+              "skipped": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "sourceKey": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "ok",
+              "baseline",
+              "sourceKey",
+              "document",
+              "originalValues",
+              "candidates",
+              "skipped",
+              "selectedIds",
+              "issues"
+            ],
+            "type": "object"
+          },
+          {
+            "properties": {
+              "document": {
+                "type": "object"
+              },
+              "effectiveInputs": {
+                "type": "object"
+              },
+              "issues": {
+                "maxItems": 0,
+                "type": "array"
+              },
+              "ok": {
+                "const": true
+              },
+              "resolvedPage": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "ok",
+              "document",
+              "resolvedPage",
+              "effectiveInputs",
+              "issues"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "sideEffects": "none"
+    },
+    "page.project": {
+      "errorCodes": [
+        "INVALID_REQUEST",
+        "SCHEMA_ERROR",
+        "CHART_OPTION_ERROR",
+        "FIELD_CONTRACT_ERROR",
+        "QUERY_MAPPING_ERROR",
+        "FILTER_BINDING_ERROR",
+        "DQE_PROTOCOL_ERROR",
+        "DQE_EXECUTION_ERROR",
+        "DATA_CONTEXT_ERROR",
+        "EVALUATION_CONTEXT_REQUIRED",
+        "INVALID_EVALUATION_CONTEXT"
+      ],
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "document": {},
+          "evaluation": {
+            "additionalProperties": false,
+            "properties": {
+              "instant": {
+                "type": "string"
+              },
+              "timeZone": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "instant",
+              "timeZone"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "document"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "capabilityErrors": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "components": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "dataCoverage": {},
+          "declaredVersion": {},
+          "fieldUses": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "note": {
+            "type": "string"
+          },
+          "readable": {
+            "type": "boolean"
+          },
+          "readableVersions": {
+            "type": "array"
+          },
+          "requiredVersion": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "current",
+              "readable",
+              "upgrade_required",
+              "needs_review"
+            ]
+          },
+          "targetVersion": {
+            "type": "string"
+          },
+          "upgrade": {
+            "type": "object"
+          },
+          "validationErrors": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "declaredVersion",
+          "targetVersion",
+          "readableVersions",
+          "readable",
+          "requiredVersion",
+          "capabilityErrors",
+          "validationErrors",
+          "fieldUses",
+          "components",
+          "dataCoverage",
+          "upgrade",
+          "status",
+          "note"
+        ],
+        "type": "object"
+      },
+      "sideEffects": "none"
+    },
+    "page.scan": {
+      "errorCodes": [
+        "INVALID_REQUEST",
+        "INVALID_READING_SCOPE",
+        "EVALUATION_CONTEXT_REQUIRED",
+        "INVALID_EVALUATION_CONTEXT"
+      ],
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "componentIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "document": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "document"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "diagnostics": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "filters": {},
+          "params": {},
+          "sources": {
+            "type": "object"
+          },
+          "uses": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "uses",
+          "diagnostics",
+          "sources",
+          "filters",
+          "params"
+        ],
+        "type": "object"
+      },
+      "sideEffects": "none"
+    },
+    "page.upgrade": {
+      "errorCodes": [
+        "INVALID_REQUEST",
+        "SCHEMA_ERROR",
+        "CHART_OPTION_ERROR",
+        "FIELD_CONTRACT_ERROR",
+        "QUERY_MAPPING_ERROR",
+        "FILTER_BINDING_ERROR",
+        "DQE_PROTOCOL_ERROR",
+        "DQE_EXECUTION_ERROR",
+        "DATA_CONTEXT_ERROR",
+        "EVALUATION_CONTEXT_REQUIRED",
+        "INVALID_EVALUATION_CONTEXT"
+      ],
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "document": {},
+          "evaluation": {
+            "additionalProperties": false,
+            "properties": {
+              "instant": {
+                "type": "string"
+              },
+              "timeZone": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "instant",
+              "timeZone"
+            ],
+            "type": "object"
+          },
+          "target": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "document"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "changed": {
+            "type": "boolean"
+          },
+          "changes": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "document": {
+            "type": "object"
+          },
+          "errors": {
+            "maxItems": 0,
+            "type": "array"
+          },
+          "ok": {
+            "const": true
+          },
+          "toVersion": {
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "ok",
+          "changed",
+          "document",
+          "toVersion",
+          "changes",
+          "warnings",
+          "errors"
+        ],
+        "type": "object"
+      },
+      "sideEffects": "none"
+    },
+    "page.validate": {
+      "errorCodes": [
+        "INVALID_REQUEST",
+        "SCHEMA_ERROR",
+        "CHART_OPTION_ERROR",
+        "FIELD_CONTRACT_ERROR",
+        "QUERY_MAPPING_ERROR",
+        "FILTER_BINDING_ERROR",
+        "DQE_PROTOCOL_ERROR",
+        "DQE_EXECUTION_ERROR",
+        "DATA_CONTEXT_ERROR",
+        "EVALUATION_CONTEXT_REQUIRED",
+        "INVALID_EVALUATION_CONTEXT"
+      ],
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "document": {},
+          "evaluation": {
+            "additionalProperties": false,
+            "properties": {
+              "instant": {
+                "type": "string"
+              },
+              "timeZone": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "instant",
+              "timeZone"
+            ],
+            "type": "object"
+          },
+          "expectedLayout": {
+            "enum": [
+              "dashboard",
+              "report"
+            ]
+          },
+          "fileName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "document"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "errors": {
+            "maxItems": 0,
+            "type": "array"
+          },
+          "ok": {
+            "const": true
+          },
+          "schemaVersion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ok",
+          "schemaVersion",
+          "errors"
+        ],
+        "type": "object"
+      },
+      "sideEffects": "none"
+    }
+  }
+}

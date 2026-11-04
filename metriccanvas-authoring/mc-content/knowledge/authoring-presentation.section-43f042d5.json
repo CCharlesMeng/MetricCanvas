@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring-presentation.section-43f042d5"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-presentation",
+      "reference": "references/page-metadata/authoring-presentation.md",
+      "blocks": [
+        "# 创作数值呈现与受控多槽装配\n\n创作工具复用既有页面 Schema、数据槽和字段绑定，PageDocument 字段净增减为零。Tokens 百万是新创作政策；已有合法金额百万格式继续由引擎支持。原始数值、查询身份和已确认的业务刻度保持。",
+        "## 本地适用检查\n\n安装目录仅需 Node 22+，读取完整实际页面；输入文件可提供 evaluation、baseline 和 presentationIntent：\n\n```sh\nnode scripts/associate-data.mjs page.presentation --page page.json --input presentation-input.json\n```\n\n空对象输入检查全页；提供 baseline 时比较受影响语义。产品拒绝退出 2，调用或文件错误退出 3，结果只写 stdout。它不查询、不保存、不重写页面。合成 Dashboard 入口为 `/pages/relay-multislot-presentation`，用于观察 Tokens 百万显示、乱序对齐、缺匹配留空及原值对照。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/relay-multislot-presentation.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

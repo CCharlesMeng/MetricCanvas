@@ -300,7 +300,8 @@
         "period-query-columns-demo",
         "key-office-filter-demo",
         "key-office-filter-target",
-        "ioc-region-url-demo"
+        "ioc-region-url-demo",
+        "authoring-evaluation-context"
       ],
       "rules": [
         "filter-id-unique",
@@ -382,7 +383,8 @@
         "currency-selection-page",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "period-comparison-demo"
+        "period-comparison-demo",
+        "authoring-percent-coverage"
       ],
       "rules": [
         "data-slot-known-source",
@@ -1063,6 +1065,30 @@
       "rules": [
         "ioc-header-component"
       ]
+    },
+    "authoring-analysis-rebind.md": {
+      "title": "创作分析关联与受控换源",
+      "definitions": [],
+      "keywords": [
+        "authoring-analysis-rebind",
+        "创作分析关联与受控换源"
+      ],
+      "examples": [
+        "authoring-analysis-rebind"
+      ],
+      "rules": []
+    },
+    "authoring-presentation.md": {
+      "title": "创作数值呈现与受控多槽装配",
+      "definitions": [],
+      "keywords": [
+        "authoring-presentation",
+        "创作数值呈现与受控多槽装配"
+      ],
+      "examples": [
+        "relay-multislot-presentation"
+      ],
+      "rules": []
     }
   },
   "components": [
@@ -19046,8 +19072,8 @@
     {
       "schemaPointer": "#/definitions/scalar/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/usage/source/rows/0/month"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/dataSources/rates/source/rows/0/case"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/1",
@@ -19065,7 +19091,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/3",
       "module": "fields.md",
       "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/dataSources/metrics/source/rows/0/missing"
+      "pointer": "#/dataSources/rates/source/rows/4/rate"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
@@ -20066,8 +20092,8 @@
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
+      "file": "examples/inline-report.json",
+      "pointer": "#/sections/0/components/1/props/rows/0/valueField"
     },
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
@@ -20318,7 +20344,7 @@
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/5",
       "module": "page.md",
-      "file": "examples/component-metricCard-primaryDetail.json",
+      "file": "examples/detail-views.json",
       "pointer": "#/detailViews/0/components/0"
     },
     {
@@ -20336,8 +20362,8 @@
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/0",
       "module": "components/table.md",
-      "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/detailViews/0/components/0/props/columns/0"
+      "file": "examples/component-table.json",
+      "pointer": "#/sections/0/components/0/props/columns/0"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0",
@@ -21129,5 +21155,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "661f0301cda2674ed2e1fdd65b4c602f2c245db12de585e79fe1f162227d9cb7"
+  "semanticSourceDigest": "4084bfeb2053d299b6dd7502e3aa2487e82185edabe5c5b929f36130f33b55f3"
 }

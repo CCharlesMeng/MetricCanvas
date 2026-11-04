@@ -1,0 +1,9 @@
+[
+  {"unit":"Tokens","rows":[1000000],"totalCount":1,"expectedFormat":"compact-million-1","expectedFinding":null},
+  {"unit":"Tokens","rows":[1000000],"totalCount":2,"expectedFormat":"number","expectedFinding":null},
+  {"unit":"Tokens","rows":[1000000],"totalCount":null,"expectedFormat":"number","expectedFinding":null},
+  {"unit":"百万Tokens","rows":[1000000],"totalCount":1,"expectedFormat":"number","expectedFinding":null},
+  {"unit":"%","rows":[0.0001],"totalCount":null,"expectedFormat":"percent-2","expectedFinding":null},
+  {"unit":"元","rows":[1000000],"totalCount":1,"explicitFormat":"compact-million-1","expectedFormat":"compact-million-1","expectedFinding":"PRESENTATION_TOKENS_SCALE_CONFLICT"},
+  {"unit":"%","rows":[12.5],"totalCount":1,"explicitFormat":"number-1","expectedFormat":"number-1","expectedFinding":"PRESENTATION_PERCENT_UNIT_CONFLICT"}
+]

@@ -1,0 +1,21 @@
+{
+  "code": "PRESENTATION_PRECISION_LIMIT",
+  "guidance": {
+    "message": "百分比非零原值在所用精度下显示为零；保留百分号与原值，按需用原值明细核对，不靠删除单位或更改业务值消除告警。",
+    "action": null,
+    "owner": "caller"
+  },
+  "sourceLocations": [
+    {
+      "source": "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py",
+      "line": 39
+    }
+  ],
+  "coverage": {
+    "literalCallSite": true,
+    "queryClosedSet": false,
+    "pageErrorType": false,
+    "authoredGuidance": true
+  },
+  "note": "Dynamic codes and deployment errors may be returned at runtime. Consume structured issue fields; no retry or permission is granted by this reference."
+}

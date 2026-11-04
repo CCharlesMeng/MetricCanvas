@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "6.83",
+  "id": "authoring-percent-coverage",
+  "layout": "dashboard",
+  "meta": {
+    "title": "创作百分比与覆盖边界",
+    "description": "内联合成数据；百分数刻度与原值核对，不代表真实 DQE 或 Relay。"
+  },
+  "dataSources": {
+    "rates": {
+      "fields": {
+        "case": {
+          "type": "string",
+          "role": "dimension",
+          "label": "场景"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%",
+          "nullable": true,
+          "defaultFormat": "percent-2"
+        },
+        "raw": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%",
+          "nullable": true,
+          "defaultFormat": "percent-2"
+        },
+        "explicit": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%",
+          "nullable": true,
+          "defaultFormat": "percent-2"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "case": "普通百分比",
+            "rate": 12.5,
+            "raw": 12.5,
+            "explicit": 12.5
+          },
+          {
+            "case": "微小正值",
+            "rate": 0.0001,
+            "raw": 0.0001,
+            "explicit": 0.0001
+          },
+          {
+            "case": "微小负值",
+            "rate": -0.0001,
+            "raw": -0.0001,
+            "explicit": -0.0001
+          },
+          {
+            "case": "真实零",
+            "rate": 0,
+            "raw": 0,
+            "explicit": 0
+          },
+          {
+            "case": "缺失",
+            "rate": null,
+            "raw": null,
+            "explicit": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "percentage",
+      "components": [
+        {
+          "id": "rate-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rates"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "百分比",
+                "valueField": "rate"
+              }
+            ]
+          }
+        },
+        {
+          "id": "rate-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rates"
+          },
+          "props": {
+            "title": "百分比与原值",
+            "columns": [
+              {
+                "field": "case",
+                "title": "场景",
+                "width": 160
+              },
+              {
+                "field": "rate",
+                "title": "继承百分比",
+                "width": 160,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "raw",
+                  "format": "number"
+                },
+                "title": "原值核对",
+                "width": 160
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "explicit",
+                  "format": "percent-1"
+                },
+                "title": "显式一位",
+                "width": 160
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1464,7 +1464,7 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/detailViews/items/properties/components/items/oneOf/2`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/2`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/3`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/3`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/4`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/4`。
-- `#/properties/detailViews/items/properties/components/items/oneOf/5`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/detailViews/0/components/0`。
+- `#/properties/detailViews/items/properties/components/items/oneOf/5`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/detailViews/0/components/0`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/6`：[语义拒绝反例](errors/detail-component-reject-mapchart.json)：详情的展示闭集拒绝 mapChart；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
 - `#/properties/detailViews/items/properties/components/items/oneOf/7`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/5`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/8`：[语义拒绝反例](errors/detail-component-reject-tabcontainer.json)：详情的展示闭集拒绝 tabContainer；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。

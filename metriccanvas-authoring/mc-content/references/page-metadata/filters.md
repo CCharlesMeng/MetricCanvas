@@ -53,6 +53,18 @@ Dashboard 的年、季、月按所选自然期间判断：当前年／当前季�
 
 页面试验场统一入口：`report-date-filter-example` 覆盖单月、月份范围、日期、日期范围和精确时间范围；`dashboard-period-filter` 展示统一页头仅选年份；完整年／季／月／近一年保留于期间契约夹具。合成数据与控件验收不证明真实 DQE 接入。
 
+## 创作期工具的评估时间与业务时区
+
+创作期工具使用程序显式供给的 `input.evaluation = {instant, timeZone}` 检查时间敏感的页面候选；它属于工具输入，不是页面字段，不进入 `PageDocument`、筛选声明或查询定义。`instant` 是带 `Z` 或明确偏移的有效 ISO 时间，`timeZone` 是 IANA 命名时区（例如 `Asia/Shanghai`）；业务时区决定当前日期、月份和自然期间上限，不能从进程默认时区、筛选值或报告 `asOf` 推导。Relay 程序按创作轮次冻结并供给该上下文，不让模型覆盖。
+
+`page.validate`、`page.project`、`page.upgrade` 检查开启 `disableFuture:true` 且带默认值的 `timePoint` 时，需要该上下文。`page.parameters` 的 `prepare`／`resolve` 遇到未来禁止未显式关闭的时间筛选时也要求完整上下文；`extract` 中实际受当前日期约束的时间点同样适用。非时间请求无新增必填；`page.scan` 不执行时钟求值。
+
+缺少必需上下文返回 `EVALUATION_CONTEXT_REQUIRED`，非法时间、无偏移时间、非法／不可用 IANA 时区或未知上下文字段返回 `INVALID_EVALUATION_CONTEXT`，定位 `/evaluation`。它们是创作期输入诊断，不表示 DQE 权限或数据查询失败。时间值超过业务时区中的当前上限时，保留原有页面诊断及筛选路径，不截断、改写原值或静默放行。
+
+例如 `instant:"2026-12-31T16:30:00Z"` 在 `Asia/Shanghai` 已是 2027-01-01，在 `America/Los_Angeles` 仍是 2026-12-31；开启未来禁止的默认日期 2027-01-01 因而分别通过或被拒绝。同一显式上下文在不同进程 `TZ` 下应产生相同有序诊断。未传上下文的既有渲染期调用保留原来按执行环境当前时间判断的行为；工具上下文不改变浏览器设备时钟或运行时筛选状态。
+
+页面试验场入口 `/pages/authoring-evaluation-context` 使用原有 Dashboard 筛选栏、时间点和正文文本引用，日常初值为 2020 年，不含 `evaluation` 或任何查询。页面交互、工具边界复现步骤和数据／服务证据范围见该场景同目录 README；浏览器正常展示不等于真实 Relay、Java 或 DQE 接通。本次页面协议字段净增减为零。
+
 ## Dashboard 期间选择（6.27）
 
 6.67 新绑定由查询 periodPolicy 决定粒度，旧绑定继续按原 precision 配对；同一选择可驱动不同查询粒度。具体策略见 query.period-policy 主题。
@@ -2822,6 +2834,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [key-office-filter-demo](examples/key-office-filter-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [key-office-filter-target](examples/key-office-filter-target.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-region-url-demo](examples/ioc-region-url-demo.json)：完整合法页面；查询仅为静态契约证据。
+- [authoring-evaluation-context](examples/authoring-evaluation-context.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

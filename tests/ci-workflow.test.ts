@@ -30,7 +30,7 @@ describe('parallel CI keeps a complete required gate', () => {
     const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
     const {ci, ...checks} = workflow.jobs;
     expect([...ci.needs].sort()).toEqual(Object.keys(checks).sort());
-    expect(Object.keys(checks).sort()).toEqual(['authoring','build','compatibility','embed-distribution','mc-distribution','tests','types']);
+    expect(Object.keys(checks).sort()).toEqual(['authoring','build','compatibility','embed-distribution','mc-distribution','relay-distribution','relay-release','tests','types']);
     expect(ci.if).toBe('${{ always() }}');
     expect(ci.steps.at(-1).env.CI_JOB_RESULTS).toBe('${{ toJSON(needs) }}');
     expect(ci.steps.at(-1).run).toBe('node tools/scripts/check-ci-results.mjs');
@@ -38,7 +38,7 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(workflow.jobs.types.steps.at(-1).run).toBe('pnpm check');
     // Source checks execute independently, rather than serially behind other jobs.
     for(const [name, job] of Object.entries(checks)) {
-      if(name !== 'mc-distribution') expect(job).not.toHaveProperty('needs');
+      if(!['mc-distribution', 'relay-distribution'].includes(name)) expect(job).not.toHaveProperty('needs');
     }
     const distribution = workflow.jobs['mc-distribution'];
     expect(distribution.needs).toBe('authoring');
@@ -71,6 +71,43 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome')).toBe(true);
     expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm --filter @metriccanvas/embed exec playwright test distribution.spec.ts webpack-consumer.spec.ts --workers=1')).toBe(true);
     expect(distribution.steps.at(-1).with.path).toBe('packages/embed/dist');
+  });
+
+  it('builds and round-trips actual four artifacts independently from mc-content', () => {
+    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
+    const job = workflow.jobs['relay-release'];
+    const commands = job.steps.flatMap((step: {run?: string}) => step.run ? [step.run] : []);
+    expect(job.env.METRICCANVAS_PYTHON).toBe('python');
+    expect(commands.some((command: string) => command.startsWith('pnpm relay:build '))).toBe(true);
+    expect(commands).toContain('pnpm relay:test');
+    expect(commands).toContain('pnpm relay:core:test');
+    expect(commands).toContain('python -B -m unittest discover -s tools/relay-reference -p test_adoption.py');
+    expect(job.steps.find((step: {env?: {METRICCANVAS_RELAY_CANDIDATE?: string}}) => step.env?.METRICCANVAS_RELAY_CANDIDATE).env.METRICCANVAS_RELAY_CANDIDATE).toBe('${{ runner.temp }}/relay-reference');
+    expect(commands.some((command: string) => command.startsWith('pnpm relay:pack '))).toBe(true);
+    expect(commands.some((command: string) => command.startsWith('pnpm relay:verify ') && command.includes('--probe'))).toBe(true);
+    const upload = job.steps.find((step: {uses?: string}) => step.uses === 'actions/upload-artifact@v4');
+    expect(upload.with.name).toBe('relay-reference-${{ github.sha }}');
+    expect(upload.with.path).toContain('metriccanvas-relay-reference.zip.release.json');
+    const download = job.steps.find((step: {uses?: string}) => step.uses === 'actions/download-artifact@v4');
+    expect(download.with.name).toBe(upload.with.name);
+    expect(workflow.jobs.ci.needs).toContain('relay-release');
+  });
+
+  it('requires native minimum Node 22 consumers with only six initial dependencies', () => {
+    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
+    const job = workflow.jobs['relay-distribution'];
+    expect(job.needs).toBe('relay-release');
+    expect(job.strategy.matrix.os).toEqual(['ubuntu-latest', 'windows-latest']);
+    expect(job['runs-on']).toBe('${{ matrix.os }}');
+    expect(job.steps.find((step: {uses?: string}) => step.uses === 'actions/setup-node@v4').with['node-version']).toBe(22);
+    expect(job.steps.find((step: {uses?: string}) => step.uses === 'actions/setup-python@v5').with['python-version']).toBe('3.12');
+    const commands = job.steps.flatMap((step: {run?: string}) => step.run ? [step.run] : []);
+    expect(commands).toContain('python -m pip install -r tools/relay-reference/runtime-requirements.txt');
+    expect(commands).toContain('python -B -m unittest discover -s tools/relay-reference -p test_adoption.py');
+    expect(commands.some((command: string) => command.includes('package_cli.py extract') && command.includes('relay-native-current-test'))).toBe(true);
+    expect(commands.some((command: string) => command.includes('package_cli.py verify') && command.includes('--probe') && command.includes('--expected-source'))).toBe(true);
+    expect(commands.some((command: string) => command.includes('pnpm') || command.includes('pip install -e'))).toBe(false);
+    expect(workflow.jobs.ci.needs).toContain('relay-distribution');
   });
 });
 

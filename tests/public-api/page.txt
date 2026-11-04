@@ -101,6 +101,7 @@ FieldContractIssue
 FieldContractViolation
 FieldDefinition
 FieldReference
+FieldResolutionSlots
 FieldRole
 FieldTextComponent
 FieldTextProps
@@ -238,6 +239,7 @@ RelativeTimeUnit
 ReportHeaderComponent
 ReportHeaderProps
 ResolvePageParamsResult
+ResolvedField
 ResolvedFieldDefinition
 ResolvedPeriodQuery
 Row
@@ -494,6 +496,7 @@ requiredMinorVersion
 requiresQueryContext
 requiresTimeValidation
 resolveDataSourceFields
+resolveField
 resolveFilterTextValue
 resolveHeaderBinding
 resolveInlineQueryParams

@@ -1944,6 +1944,18 @@
       "sha256": "6ed296cb61b4703d480801bcb733683c51dc5714bef0352bbe05b9ab6a1e1622"
     },
     {
+      "file": "page/conformance/valid/authoring-analysis-rebind.json",
+      "sha256": "bc813fcfe1ea2a5da8c759d3fda207a654acfa2a142c7925a89c48c439ed64d2"
+    },
+    {
+      "file": "page/conformance/valid/authoring-evaluation-context.json",
+      "sha256": "6852dc1bfe146ea2604fef32e8e3c86b459289be55a778b6dba5b53228f96f30"
+    },
+    {
+      "file": "page/conformance/valid/authoring-percent-coverage.json",
+      "sha256": "ac6ac50ffcc73b1e19e814623fe762300f9eb86026088287d611ca5a46d976fc"
+    },
+    {
       "file": "page/conformance/valid/availability-page.json",
       "sha256": "83bec5e851c19f91b520f3c94285c8d22fc68b89805db4ac86fe5de2dcccd777"
     },
@@ -2218,6 +2230,10 @@
     {
       "file": "page/conformance/valid/ioc-component-query-mode-binding-branches-page.json",
       "sha256": "4b5c589d70e0a0e29bd3ea7761ef8ea70faaaf961ea14806ff9b0d6d439af0a3"
+    },
+    {
+      "file": "page/conformance/valid/ioc-component-relay-multislot-presentation.json",
+      "sha256": "8b155e0c86c77a6ec716bb21b5e452fe49ef4c074c3169578fb4c2379a7df010"
     },
     {
       "file": "page/conformance/valid/ioc-component-table-hierarchy-lookup-param.json",
@@ -2552,6 +2568,10 @@
       "sha256": "75ef847271fcd904bbba3ec7bb4e6a5ebb7e01292e34e14af4de1a7cbe5c5013"
     },
     {
+      "file": "page/conformance/valid/relay-multislot-presentation.json",
+      "sha256": "75debf14758ff9aa0f1e4cbff457325289c5d93ad476c4fdf59f4ab9c682b36c"
+    },
+    {
       "file": "page/conformance/valid/report-ai-summary-regions.json",
       "sha256": "7b3585028a6928b22cd9f5f013e26c3983d34edbe2562e7d9d88177982584084"
     },
@@ -2812,6 +2832,14 @@
       "sha256": "0627550cf520a77a1ef7b03744e273745b70c4c4abac30e90b5ddd9928212507"
     },
     {
+      "file": "page/reference/authoring-analysis-rebind.md",
+      "sha256": "111e64bdba412cd5ea71c20477c067da2dc7e2863c7a72f6781e6e7b0f009858"
+    },
+    {
+      "file": "page/reference/authoring-presentation.md",
+      "sha256": "f6b733fff8336d323ab0fca5e444ecc25ebf39d98d2c35e1bb20ee2bd018d7f3"
+    },
+    {
       "file": "page/reference/chart-option.md",
       "sha256": "55793ee915985d3c3ee908b8d15ca0197aa199167da1d4fbedafb315e8406f5f"
     },
@@ -2849,7 +2877,7 @@
     },
     {
       "file": "page/reference/components/iocHeader.md",
-      "sha256": "5f3ebd21b3802db4910ab6db820bc60abe5738ded92f109c921ace0f2ccfd37c"
+      "sha256": "92aa2a66889c04fd3b185a2996f5af94302b98814e22c6945aced349d3cc56e3"
     },
     {
       "file": "page/reference/components/keyValuePanel.md",
@@ -2893,7 +2921,7 @@
     },
     {
       "file": "page/reference/components/table.md",
-      "sha256": "902e00395f584190ca3cc092de49fa0daa60f69469b72c810b9a32534fbb1aee"
+      "sha256": "5397ab1e5cf708ae06a013b18b591801b336c941f7c9efd590b0aa47226762e2"
     },
     {
       "file": "page/reference/components/text.md",
@@ -4800,6 +4828,18 @@
       "sha256": "f8d5ec7435d5fb4f575b4e302881b6229c5a810169c01d8cf621cddbfc51a739"
     },
     {
+      "file": "page/reference/examples/authoring-analysis-rebind.json",
+      "sha256": "bc813fcfe1ea2a5da8c759d3fda207a654acfa2a142c7925a89c48c439ed64d2"
+    },
+    {
+      "file": "page/reference/examples/authoring-evaluation-context.json",
+      "sha256": "6852dc1bfe146ea2604fef32e8e3c86b459289be55a778b6dba5b53228f96f30"
+    },
+    {
+      "file": "page/reference/examples/authoring-percent-coverage.json",
+      "sha256": "ac6ac50ffcc73b1e19e814623fe762300f9eb86026088287d611ca5a46d976fc"
+    },
+    {
       "file": "page/reference/examples/availability-page.json",
       "sha256": "83bec5e851c19f91b520f3c94285c8d22fc68b89805db4ac86fe5de2dcccd777"
     },
@@ -4917,7 +4957,7 @@
     },
     {
       "file": "page/reference/examples/component-iocHeader.json",
-      "sha256": "f2164506bb6b429eb7ba6335f92c2a270cb00bf51e87700043f02971ccf86088"
+      "sha256": "34e06496b82eb0105caca5f044d20384051a44ff2c0cc111f0fee036a39eb770"
     },
     {
       "file": "page/reference/examples/component-keyValuePanel-counterStrip.json",
@@ -4969,7 +5009,7 @@
     },
     {
       "file": "page/reference/examples/component-metricCard-primaryDetail.json",
-      "sha256": "487a039fd0724ebb9059d01b1a81896d700652e1bac7a83430aca5b47a1a24a2"
+      "sha256": "fe8e96bbc5e81a9fb43dd96dbf622e25d35d404372035749f70ed09ffd6daf87"
     },
     {
       "file": "page/reference/examples/component-metricCard-summary.json",
@@ -5420,6 +5460,10 @@
       "sha256": "75ef847271fcd904bbba3ec7bb4e6a5ebb7e01292e34e14af4de1a7cbe5c5013"
     },
     {
+      "file": "page/reference/examples/relay-multislot-presentation.json",
+      "sha256": "75debf14758ff9aa0f1e4cbff457325289c5d93ad476c4fdf59f4ab9c682b36c"
+    },
+    {
       "file": "page/reference/examples/report-ai-summary-regions.json",
       "sha256": "7b3585028a6928b22cd9f5f013e26c3983d34edbe2562e7d9d88177982584084"
     },
@@ -5665,23 +5709,23 @@
     },
     {
       "file": "page/reference/field-bindings-and-formats.md",
-      "sha256": "f11583ed9bc325fcaeed6b824f5438ffd586161ee6b0dc94d960b3aacf11a5dc"
+      "sha256": "1952e1dad01d05b070735bb15256fc3094a396320097f8aad8a7d6ed1b21ba7c"
     },
     {
       "file": "page/reference/fields.md",
-      "sha256": "2cc8b5e1553058a30e754728d4c8c7750e7e29e8b722de3daf39a8f81d187cf2"
+      "sha256": "348bb22aab1a96ba1322f2b2d12489a8241fa819a8c5d78cbca23c03b9b17ca7"
     },
     {
       "file": "page/reference/filters.md",
-      "sha256": "d8b7e2b80440e7b75a190249e1725ee46a5706bcb1df3bb5684d90c44e88a2e3"
+      "sha256": "648bbcbac287c8ded372ee8ab0d176218bc6369a685700aa36c9c04c69fa98b2"
     },
     {
       "file": "page/reference/index.json",
-      "sha256": "e71e0df43834a3ec4f3b3be6dd930524319bc2dcacbecdd1cae6b82fd6588c55"
+      "sha256": "91cc913d70837ce4bcf6a7bbc4d3f210bfb915e1224598b99cc2e8b32e86b156"
     },
     {
       "file": "page/reference/page.md",
-      "sha256": "5b58850aeb7eac58f17f7ad394ecd1cf30340949adfd77882889f9200ff57b43"
+      "sha256": "ee4097e71ea84bc2ff9b49c11a5688c72b55e40e8a59c75e9c42e9b8a7474840"
     },
     {
       "file": "page/reference/params-and-text-values.md",

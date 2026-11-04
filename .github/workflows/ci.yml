@@ -138,6 +138,84 @@ jobs:
       - name: 回归跨平台编码、缓存和错误诊断
         run: python -B -m unittest discover -s metriccanvas-authoring/test-harness/tests -p test_mc_distribution.py
 
+  relay-release:
+    runs-on: ubuntu-latest
+    env:
+      METRICCANVAS_PYTHON: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: metriccanvas-authoring/tool/requirements.lock
+      - name: 准备 MC 构建侧锁定环境
+        run: python -m pip install --require-hashes -r metriccanvas-authoring/tool/requirements.lock
+      - name: 构建共享产品包
+        run: pnpm build:packages
+      - name: 从实际产品真源生成四项
+        run: pnpm relay:build --output "${{ runner.temp }}/relay-reference"
+      - name: 验证四项发行回归（包含原42场景）
+        run: pnpm relay:test
+      - name: 验证核心 Python 同源回归
+        run: pnpm relay:core:test
+      - name: 首次基线不能绕过旧 current 的迁移门禁
+        env:
+          METRICCANVAS_RELAY_CANDIDATE: ${{ runner.temp }}/relay-reference
+        run: python -B -m unittest discover -s tools/relay-reference -p test_adoption.py
+      - name: 冻结消费者回放并打包完整四项及来源回执
+        run: pnpm relay:pack --candidate "${{ runner.temp }}/relay-reference" --output "${{ runner.temp }}/metriccanvas-relay-reference.zip"
+      - name: 上传四项归档及来源回执
+        uses: actions/upload-artifact@v4
+        with:
+          name: relay-reference-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/metriccanvas-relay-reference.zip
+            ${{ runner.temp }}/metriccanvas-relay-reference.zip.release.json
+      - name: 下载实际上传的四项归档
+        uses: actions/download-artifact@v4
+        with:
+          name: relay-reference-${{ github.sha }}
+          path: ${{ runner.temp }}/relay-downloaded
+      - name: 验证下载字节、来源与隔离产品运行
+        run: pnpm relay:verify --archive "${{ runner.temp }}/relay-downloaded/metriccanvas-relay-reference.zip" --expected-source "${{ github.sha }}" --probe
+
+  relay-distribution:
+    needs: relay-release
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: 保留冻结消费样本的原始字节
+        shell: bash
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 首次准备六个精确运行依赖（不安装本仓 wheel）
+        run: python -m pip install -r tools/relay-reference/runtime-requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: relay-reference-${{ github.sha }}
+          path: ${{ runner.temp }}/relay-native
+      - name: 原生校验实际归档、正式与历史冻结调用、自检及失败边界
+        run: python -I -B tools/relay-reference/package_cli.py verify --archive "${{ runner.temp }}/relay-native/metriccanvas-relay-reference.zip" --expected-source "${{ github.sha }}" --probe
+      - name: 回归原生归档安全与拒绝覆盖
+        run: python -B -m unittest discover -s tools/relay-reference -p test_archive.py
+      - name: 解压到新的原生门禁测试目录（不激活）
+        run: python -I -S -B tools/relay-reference/package_cli.py extract --archive "${{ runner.temp }}/relay-native/metriccanvas-relay-reference.zip" --destination "${{ runner.temp }}/relay-native-current-test"
+      - name: 原生验证历史失败入回执且 current 迁移仍拒绝
+        env:
+          METRICCANVAS_RELAY_CANDIDATE: ${{ runner.temp }}/relay-native-current-test
+        run: python -B -m unittest discover -s tools/relay-reference -p test_adoption.py
+
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -264,7 +342,7 @@ jobs:
 
   ci:
     if: ${{ always() }}
-    needs: [authoring, mc-distribution, tests, types, build, compatibility, embed-distribution]
+    needs: [authoring, mc-distribution, relay-release, relay-distribution, tests, types, build, compatibility, embed-distribution]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "6.82",
+  "id": "authoring-evaluation-context",
+  "layout": "dashboard",
+  "meta": {
+    "title": "创作期时间校验"
+  },
+  "filters": [
+    {
+      "id": "business-date",
+      "type": "timePoint",
+      "granularity": "date",
+      "label": "日期",
+      "required": true,
+      "default": "2020-01-01",
+      "disableFuture": true
+    },
+    {
+      "id": "business-month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "月份",
+      "required": true,
+      "default": "2020-01",
+      "disableFuture": true
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "current-selection",
+      "title": "当前选择",
+      "container": "card",
+      "components": [
+        {
+          "id": "selected-date",
+          "type": "text",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "日期",
+            "body": {
+              "filter": "business-date",
+              "format": "period"
+            }
+          }
+        },
+        {
+          "id": "selected-month",
+          "type": "text",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "月份",
+            "body": {
+              "filter": "business-month",
+              "format": "period"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "boundary",
+      "container": "plain",
+      "components": [
+        {
+          "id": "boundary-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "日期和月份默认禁止未来时间。修改筛选后，正文同步显示已应用的选择。"
+          }
+        }
+      ]
+    }
+  ]
+}

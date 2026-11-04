@@ -3693,7 +3693,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/2/props/toolbar/search`。
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1`：[合法完整页面](../examples/table-search-options-page.json)，JSON Pointer `#/sections/0/components/0/props/toolbar/search`。
-- `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/detailViews/0/components/0/props/columns/0`。
+- `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-table.json)，JSON Pointer `#/sections/0/components/0/props/columns/0`。
 - `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/table-pinned-summary-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/table-multiple-pinned-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/enumValues/0/value`。

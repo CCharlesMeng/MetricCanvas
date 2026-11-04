@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring.multislot"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-presentation",
+      "reference": "references/page-metadata/authoring-presentation.md",
+      "blocks": [
+        "# 创作数值呈现与受控多槽装配\n\n创作工具复用既有页面 Schema、数据槽和字段绑定，PageDocument 字段净增减为零。Tokens 百万是新创作政策；已有合法金额百万格式继续由引擎支持。原始数值、查询身份和已确认的业务刻度保持。",
+        "## 受控多槽与结果覆盖\n\n`page.compose.v2` 和 `page.edit.v2` 同时接受单源和受控 `tableSlots`。它是创作输入，不进入页面协议；每槽明确来源、字段与期间，以既有 `data`、`rowKey` 和槽级字段绑定装配页面。度量字段按各列槽归属独立选择，按行对齐的槽须共享同 ID、同类型的稳定行键，不要求度量字段相同。\n\n辅助普通 query 必须声明 complete 且结果证据证明完整，空结果 0/0 合法；缺匹配按引擎对齐语义留空，辅助额外行不扩充主行。覆盖报告只计算本次返回主键范围，不把部分查询样本当成全集。重复、空值、错误类型键、失败或未知完整性以及期间不匹配拒绝受影响块。主槽 partial 仅在可证明的第一查询窗口和单维行键下启用查询分页，不回退为本地分页，不生成第二份 join 行缓存。\n\n新 compose/edit 操作通过可信程序调用同一 `page.presentation` 做最终适用检查；partial 保留可审查候选与诊断，error 不返回半改文档。旧十三项操作描述和默认行为保留，逐操作旧消费者回放与新版本验收分别进行。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/relay-multislot-presentation.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

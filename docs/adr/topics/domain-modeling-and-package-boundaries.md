@@ -12,6 +12,8 @@
 
 **现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
 
+**四项交付与线上执行归属（[ADR-0129](../0129-four-artifact-product-tools-and-relay-execution.md)）：** MC 交付资源、两份指南和无网络产品工具，确定性规则及同源生成仍归 MC；真实 MCP 装配、授权/查询、状态/CAS、Java 保存与程序产物交接归 Relay。稳定 facade、资源 ID 和版本化机器契约隔离内部重构，固定回归和整批切换保证普通升级可自动采用。此项修订下文 0060/0061 的交付及接线归属，不改变引擎/Java/local 独立安装职责；目标迁移尚未全部完成，实际状态见 Spec/执行台账。
+
 **创作流程与版本术语硬切换([ADR-0090](../0090-authoring-flow-hard-cutover-and-version-vocabulary.md)):** 生产只保留一套平台页面创作流程和一套现行页面结构计划。结构计划、页面 Schema、Bundle 与外部 API 是不同版本序列；文档出现 v1/v2/v3 时必须标注所属序列。内容工具可提交平台草稿，Java 页面资产服务负责持久化与发布状态，Relay 负责会话检查点和产物交付；普通问数仍不自动落库。旧创作入口与候选提交链只能作为归档或迁移证据，不得作为生产 fallback。
 
 部署目标已由 ADR-0060 改为静态 Svelte SPA + 外部 Java 页面资产服务 + Relay Skill-Play + Python FastMCP Tool：Java 拥有页面资产，Python 拥有确定性页面装配算法，Relay 拥有内网模型、Skill 与分析会话，生产不运行 Node 服务端。`apps/platform` 已成为纯前端 SPA（当前按 ADR-0093 使用普通 Svelte 与客户端 URL 路由），删除全部 `+server.ts`、server hook 与服务端生命周期/持久化依赖；页面资产客户端按 ADR-0070 直接消费提供方 `user-page-metadata` 接口。当前资产接线按 ADR-0080 使用单次保存和回执确认，历史精确读取不作为接入前置；真实部署载体及盘古接线仍需提供方验收。

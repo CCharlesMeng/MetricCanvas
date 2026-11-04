@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "6.83",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "authoring-presentation.section-860e8fa1"
+  ],
+  "semantics": [
+    {
+      "module": "authoring-presentation",
+      "reference": "references/page-metadata/authoring-presentation.md",
+      "blocks": [
+        "# 创作数值呈现与受控多槽装配\n\n创作工具复用既有页面 Schema、数据槽和字段绑定，PageDocument 字段净增减为零。Tokens 百万是新创作政策；已有合法金额百万格式继续由引擎支持。原始数值、查询身份和已确认的业务刻度保持。",
+        "## Tokens 与实际字段绑定\n\n`results.normalize.v2` 显式选择新创作政策。可信基础刻度、完整结果且最小非零值缩放后满足安全阈值时，Tokens 默认使用 `compact-million-1`。partial、unknown 不从当前样本推断量级；已缩放结果不再缩放。其他单位沿用原 number、万、亿选择。未知刻度与显式冲突保留并报告，不能把建议当成事实。\n\n`page.presentation` 通过实际 Schema 绑定遍历及同一字段解析器检查最终有效格式，包括表格、指标、图表和行明细的字段引用。它返回 data-only 范围及具体 binding pointer，不声称完成视口或 DOM 验收。轴、标签和 Tooltip 的呈现须通过实际运行时预览。\n\n可提供原始页面 `baseline`，只报告新增或数值契约变化的冲突；标题、列宽、布局及对象键或组件重排沿用既有数值声明。明确希望百分比显示原数值时，`presentationIntent.rawValuePaths` 必须指向实际 number 系列绑定；不能据此豁免币种或二次缩放冲突。显式配置始终保留，检查不自动覆盖用户意图。"
+      ],
+      "rules": [],
+      "examples": [
+        "references/page-metadata/examples/relay-multislot-presentation.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

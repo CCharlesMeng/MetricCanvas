@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 127 份 ADR（0001–0128）：现行 120、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 128 份 ADR（0001–0129）：现行 121、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -77,8 +77,8 @@
 | [0057](./0057-proportional-row-packing-and-page-header-in-assembly.md) | 装配期按比例装箱铺满行宽,并产出页面级页头 | 现行；装箱纯函数与页头均已实现；defaultSpan 重新表述为比例基线 |
 | [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) | 分析会话保存最新检查点以恢复临时页面态 | 现行；部分修订 0030 的会话内容边界；不产生页面修订 |
 | [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行；不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁 |
-| [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte、Java 页面治理与 Relay/Python 创作期取代 Node 平台 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)、[0105](./0105-shared-page-data-execution-and-initial-consumption.md) 修订；目标架构，尚未完成迁移；Python 直接保存修订已退出 |
-| [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle 与中立契约单向导出 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)、[0105](./0105-shared-page-data-execution-and-initial-consumption.md) 修订；迁移实施基线；build_page 保存职责已退出 |
+| [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte、Java 页面治理与 Relay/Python 创作期取代 Node 平台 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)、[0105](./0105-shared-page-data-execution-and-initial-consumption.md)、[0129](./0129-four-artifact-product-tools-and-relay-execution.md) 修订；目标架构，尚未完成迁移；Python 直接保存修订已退出 |
+| [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle 与中立契约单向导出 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)、[0105](./0105-shared-page-data-execution-and-initial-consumption.md)、[0129](./0129-four-artifact-product-tools-and-relay-execution.md) 修订；迁移实施基线；build_page 保存职责已退出 |
 | [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行；部分由 [0070](./0070-consume-host-java-page-assets-api.md) 修订；J1–J4 已完成：校验器、四个 Interface、内存与 MySQL 仓储、Python / platform Java Adapter 与一键纵切 pnpm slice:page-assets；CloudBuild Testcontainers 探针与并入宿主时机待用户；目标宿主 CDINL2DataBuilderService |
 | [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 修订；身份、DQE 与打包事实继续生效；Python 保存幂等与取消后修订语义已退出 |
 | [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) | Agent 返回页面构建产物，Relay 会话与 Java 页面资产分别持久化 | 现行；现行目标；Agent 不保存页面，Relay 需新增模型摘要/完整 artifact 双通道 |
@@ -100,7 +100,7 @@
 | [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) | 按外部 Java 契约单次保存，发布更新页面状态 | 现行；当前 Java 接入依据；本仓实现已落地，真实联调另验 |
 | [0081](./0081-read-schema-5-x-with-6-x-runtime.md) | 6.x 运行时兼容读取 Schema 5.x | 现行；平台与页面试验场读取 5.0—5.4 后规范化为 6.x |
 | [0082](./0082-explicit-business-sections-in-platform-authoring.md) | 完整页面创作以业务章节组织，口径组不强制决定分区 | 现行；计划不进入渲染协议；首期不含自动分析结论 |
-| [0083](./0083-platform-evidence-work-and-internal-draft-save.md) | 平台创作先取证据，维护单份工作稿并在内容工具内保存草稿 | 现行；部分由 [0118](./0118-cloud-dialogue-and-frontend-working-copy.md) 修订；部分替代 0064/0079 的平台不保存与候选选择；单份工作稿加工具内保存草稿 |
+| [0083](./0083-platform-evidence-work-and-internal-draft-save.md) | 平台创作先取证据，维护单份工作稿并在内容工具内保存草稿 | 现行；部分由 [0118](./0118-cloud-dialogue-and-frontend-working-copy.md)、[0129](./0129-four-artifact-product-tools-and-relay-execution.md) 修订；部分替代 0064/0079 的平台不保存与候选选择；单份工作稿加工具内保存草稿 |
 | [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md) | 层级维度筛选绑定逐级声明谓词字段 | 现行；补齐 ADR-0050 层级维度筛选器在查询侧的绑定形状；6.7 新增分支，6.8 按 ADR-0051 例外收紧 |
 | [0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md) | timePoint / boolean / numberRange 各有自己的查询绑定目标 | 现行；补齐 ADR-0050 闭集里三类筛选器在查询侧的绑定目标；交付页面协议 6.9 |
 | [0086](./0086-server-side-sorting-and-header-filters-under-query-pagination.md) | 查询分页下由上游执行排序与表头筛选 | 现行；部分由 [0114](./0114-table-column-candidates-use-matching-results.md)、[0128](./0128-table-header-filter-declared-defaults.md) 修订；解除 ADR-0049 查询分页与排序/表头筛选的互斥；排序编码待真实环境复验 |
@@ -145,6 +145,7 @@
 | [0126](./0126-folded-child-table-session-cache.md) | 已成功的子表查询会话可在父行折叠后恢复 | 现行；用户确认实现同一页面会话内的子表折叠缓存，条件或权限变化失效，失败与取消不缓存 |
 | [0127](./0127-query-paged-period-comparison-and-row-computation.md) | 期间比较复用组合查询分页并在投影后执行逐行计算 | 现行；用户确认主查询选页、本页业务键补查历史期及组合后计算，批准实施方案 |
 | [0128](./0128-table-header-filter-declared-defaults.md) | 表格列声明默认筛选意图并复用会话查询视图 | 现行；用户确认 select 固定默认值并授权按 Schema 与架构冲突方案实施 |
+| [0129](./0129-four-artifact-product-tools-and-relay-execution.md) | MC 交付稳定的资源与纯产品工具，Relay 拥有线上执行和 MCP 装配 | 现行；目标职责与稳定发行裁决；MC 纯核心与四项分发已完成本地集成验收；真实 Relay 迁移未完成 |
 
 <!-- adr-index:end -->
 
@@ -158,10 +159,10 @@
 |---|---|---|
 | [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 0095 0096 0124 |
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 0110 |
-| [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 |
+| [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 0129 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 0111 0112 0113 0115 0116 0119 0120 0122 0123 0128 |
 | [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 0112 0114 0117 0120 0121 0123 0125 0126 0127 0128 |
-| [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 0118 |
+| [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 0118 0129 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |
 | [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 0118 |
 | [AI 总结组件](./topics/ai-summary-component.md) | Report 的 AI 正文与区域生成由 aiSummary 承载，普通说明使用 text；它是垂直组件，不是第三种数据源。 | 0019 0025 0027 0029 |

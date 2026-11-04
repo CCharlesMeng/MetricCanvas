@@ -110,11 +110,11 @@ export interface McBuildGraph { product: Outputs; authoring: Outputs; lock: stri
 async function buildInputSources(root: string, sources: string[]): Promise<string[]> {
   const inputs = new Set(sources);
   for (const folder of ['packages/page/src', 'packages/page/fixtures', 'docs/page-metadata', 'pages',
-    'tools/mc-content', 'tools/fixtures/legacy-contracts', 'metriccanvas-authoring/contracts/authored']) {
+    'tools/mc-content', 'tools/fixtures/legacy-contracts', 'metriccanvas-authoring/contracts/authored', 'metriccanvas-authoring/core']) {
     for (const file of (await copyTree(path.join(root, folder))).keys()) inputs.add(`${folder}/${file}`);
   }
   for (const file of await readdir(path.join(root, 'tools/scripts'))) {
-    if (/^(mc-|local-authoring-|page-|query-result-conformance|export-authoring-contracts)/.test(file)) inputs.add(`tools/scripts/${file}`);
+    if (/^(mc-|local-authoring-|authoring-|build-authoring-|page-|query-result-conformance|export-authoring-)/.test(file)) inputs.add(`tools/scripts/${file}`);
   }
   for (const file of ['pnpm-lock.yaml', 'package.json', 'packages/page/package.json', 'docs/schema-metadata.md',
     'docs/schema-metadata.schema.json', 'docs/examples/schema-metadata.example.json',

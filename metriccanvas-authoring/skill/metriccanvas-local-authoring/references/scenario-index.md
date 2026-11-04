@@ -76,3 +76,5 @@
 地图概览、主题分析、筛选清单、对象详情见 [Dashboard 范式](dashboard-patterns.md)；经营月报、分析简报见 [Report 范式](report-patterns.md)。形态确认沿用[页面形态规则](page-form.md)，已有有效选择时直接继续。
 
 例如：“删除级联表”＝删除＋查询结果级联；“详情表翻页缺行”＝debug＋对象记录／查询分页；“给指标表补不同来源的列”＝修改＋组合查询源。只组合命中的路径，不展开操作与逻辑的全部组合。
+
+涉及最终数值格式或绑定时读[数值与绑定检查](authoring-presentation.md)；需求到结果关联及普通换源读[关联与受控换源](data-association.md)。受控多槽装配的完整性与键约束按主题 `authoring.multislot` 精确读取，页面沿用既有多槽协议。

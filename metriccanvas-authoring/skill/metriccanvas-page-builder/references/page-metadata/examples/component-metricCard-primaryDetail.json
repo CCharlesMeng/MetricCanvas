@@ -1,63 +1,69 @@
 {
   "schemaVersion": "6.83",
-  "id": "metric-card-primary-detail",
+  "id": "authoring-percent-coverage",
   "layout": "dashboard",
   "dataSources": {
-    "metrics": {
+    "rates": {
       "fields": {
-        "revenue": {
-          "type": "number",
-          "role": "measure",
-          "nullable": true
+        "case": {
+          "type": "string",
+          "role": "dimension",
+          "label": "场景"
         },
-        "paid": {
+        "rate": {
           "type": "number",
           "role": "measure",
-          "nullable": true
+          "unit": "%",
+          "nullable": true,
+          "defaultFormat": "percent-2"
         },
-        "pending": {
+        "raw": {
           "type": "number",
           "role": "measure",
-          "nullable": true
+          "unit": "%",
+          "nullable": true,
+          "defaultFormat": "percent-2"
         },
-        "target": {
+        "explicit": {
           "type": "number",
           "role": "measure",
-          "nullable": true
-        },
-        "forecast": {
-          "type": "number",
-          "role": "measure",
-          "nullable": true
-        },
-        "refund": {
-          "type": "number",
-          "role": "measure",
-          "nullable": true
-        },
-        "zero": {
-          "type": "number",
-          "role": "measure",
-          "nullable": true
-        },
-        "missing": {
-          "type": "number",
-          "role": "measure",
-          "nullable": true
+          "unit": "%",
+          "nullable": true,
+          "defaultFormat": "percent-2"
         }
       },
       "source": {
         "type": "inline",
         "rows": [
           {
-            "revenue": 1280,
-            "paid": 960,
-            "pending": 320,
-            "target": 1500,
-            "forecast": 1420,
-            "refund": 12,
-            "zero": 0,
-            "missing": null
+            "case": "普通百分比",
+            "rate": 12.5,
+            "raw": 12.5,
+            "explicit": 12.5
+          },
+          {
+            "case": "微小正值",
+            "rate": 0.0001,
+            "raw": 0.0001,
+            "explicit": 0.0001
+          },
+          {
+            "case": "微小负值",
+            "rate": -0.0001,
+            "raw": -0.0001,
+            "explicit": -0.0001
+          },
+          {
+            "case": "真实零",
+            "rate": 0,
+            "raw": 0,
+            "explicit": 0
+          },
+          {
+            "case": "缺失",
+            "rate": null,
+            "raw": null,
+            "explicit": null
           }
         ]
       }
@@ -68,53 +74,22 @@
       "id": "main",
       "components": [
         {
-          "id": "details-0",
+          "id": "rate-card",
           "type": "metricCard",
-          "layout": {
-            "span": 3
-          },
-          "data": {
-            "main": "metrics"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "销售收入",
-                "valueField": {
-                  "field": "revenue",
-                  "format": "number-grouped",
-                  "data": "main"
-                },
-                "unit": "万元"
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ],
-  "detailViews": [
-    {
-      "id": "payment-detail",
-      "mode": "snapshot",
-      "components": [
-        {
-          "id": "payment-table",
-          "type": "table",
           "layout": {
             "span": 12
           },
           "data": {
-            "main": "metrics"
+            "main": "rates"
           },
           "props": {
-            "columns": [
+            "rows": [
               {
-                "field": "paid",
-                "title": "已回款（万元）"
+                "label": "百分比",
+                "valueField": "rate"
               }
-            ]
+            ],
+            "variant": "primaryDetail"
           }
         }
       ]
