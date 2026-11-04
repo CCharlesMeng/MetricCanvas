@@ -1,7 +1,7 @@
 {
   "baseline": "56e822b4d20aed73c56aa1344dd22dac8840733b",
   "snapshot": "working-tree identified by after.json.gz file SHA256 values; sourceCommit is pre-amend checkout HEAD",
-  "inventorySha256": "a5ca64989304cc4016d44906f6c38c02624531a2ca3c19179bca8ec0fb14c97e",
+  "inventorySha256": "e0df50949e9e92bd73da0b660bbd04e43d8333a6a95dcfcf21dc27fbae532cc6",
   "hotspots": [
     {
       "file": "apps/platform/src/lib/workbench/authoring-publication.ts",
@@ -54,5 +54,6 @@
     "archiveJsFiles": 16,
     "largestJsBytes": 929901
   },
-  "remoteCI": "verified separately after final commit and push"
+  "remoteCI": "verified separately after final commit and push",
+  "formatFollowup": "Only normalized historical CSV/log line endings and removed one trailing blank line in filter-state.ts; formal export reproduced identical generated contents. Executable structure and metrics unchanged."
 }

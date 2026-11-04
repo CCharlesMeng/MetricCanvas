@@ -1,15 +1,15 @@
 $ node --test tools/scripts/measure-ts-complexity.test.mjs tools/scripts/audit-code-complexity.test.mjs && node tools/scripts/audit-code-complexity.mjs --check
-✔ uses an unrounded function-weighted average, with 5 excluded (0.44875ms)
-✔ reports individual hotspots even when the average passes; strict function check is explicit (0.275875ms)
-✔ keeps generated and historical code separately visible rather than treating duplicate copies as fixes (0.264709ms)
-✔ parses actual Svelte script blocks, preserves source lines, and explicitly excludes template branches (16.775166ms)
-✔ Python inventory includes nested callables and class methods once, and rejects invalid sources (22.990875ms)
-✔ rejects new, increased, moved and duplicated high-complexity functions without treating line shifts as new debt (0.231333ms)
-✔ measures closures and returned methods separately from factory setup (4.311333ms)
-✔ counts runtime defaults and logical expressions, excluding conditional types and optional access (1.076708ms)
-✔ counts loops, cases, catches and logical assignment; default and finally add no branch (0.614208ms)
-✔ includes constructors, accessors, generators and anonymous callbacks (0.932292ms)
-✔ rejects parse errors instead of reporting a misleading successful measurement (0.514167ms)
+✔ uses an unrounded function-weighted average, with 5 excluded (0.730708ms)
+✔ reports individual hotspots even when the average passes; strict function check is explicit (0.39925ms)
+✔ keeps generated and historical code separately visible rather than treating duplicate copies as fixes (0.286208ms)
+✔ parses actual Svelte script blocks, preserves source lines, and explicitly excludes template branches (19.8355ms)
+✔ Python inventory includes nested callables and class methods once, and rejects invalid sources (34.004958ms)
+✔ rejects new, increased, moved and duplicated high-complexity functions without treating line shifts as new debt (0.271541ms)
+✔ measures closures and returned methods separately from factory setup (4.275625ms)
+✔ counts runtime defaults and logical expressions, excluding conditional types and optional access (1.108708ms)
+✔ counts loops, cases, catches and logical assignment; default and finally add no branch (0.703209ms)
+✔ includes constructors, accessors, generators and anonymous callbacks (0.805916ms)
+✔ rejects parse errors instead of reporting a misleading successful measurement (0.599042ms)
 ℹ tests 11
 ℹ suites 0
 ℹ pass 11
@@ -17,15 +17,15 @@ $ node --test tools/scripts/measure-ts-complexity.test.mjs tools/scripts/audit-c
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 362.960125
+ℹ duration_ms 359.995292
 {
   "analyzers": {
     "typescript": "metriccanvas-ts-ast/1",
     "typescriptVersion": "5.9.3",
     "python": "radon/6.0.1"
   },
-  "sourceCommit": "3bb8942fe84a14441fdec75de0c03ad2f07070aa",
-  "inventorySha256": "a5ca64989304cc4016d44906f6c38c02624531a2ca3c19179bca8ec0fb14c97e",
+  "sourceCommit": "4196284c08863dee5338a9b76c5cae447e4e075e",
+  "inventorySha256": "e0df50949e9e92bd73da0b660bbd04e43d8333a6a95dcfcf21dc27fbae532cc6",
   "snapshot": "working-tree",
   "limits": {
     "averageExclusive": 5,
