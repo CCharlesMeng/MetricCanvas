@@ -78,3 +78,5 @@ Relay发行仍由Schema6.83冻结消费者拒绝本批Schema6.84：`needs_migrat
 最终又承接main `3cf712bb5` 的Relay消费者断言及MC夹具修复，重新生成当前来源回执。完整embed浏览器检查发现页头候选上下文中的Svelte页面代理误入表格候选复制，已将时间上下文与页头上下文分开；原有表头候选、双实例导航与全球相关9项回归通过，随后执行完整浏览器复测。
 
 修复后的完整embed浏览器273项全部通过，Playground全球场景再次通过，Runtime UI49文件239项回归通过，整仓类型和最终复杂度门禁通过。最终embed归档 `/tmp/ioc-global-embed-final/metriccanvas-embed-1.0.0-rc.4.tgz` 复核16个JS、最大929901字节。
+
+提交47b56e202的CI中，types、全量测试、build、两平台embed分发、Relay发行/两平台分发及authoring均通过。仓外消费者578项中576项通过，Chrome/Edge的同一新增导出测试因工作目录变化读取不到夹具失败（ENOENT）；改用import.meta.url相对测试文件定位，避免依赖进程cwd。从仓库根目录启动同一组3项浏览器测试通过，测试类型通过；原生HTTP和XLSX断言保留，测试回调selfCC4→4，不涉及产品源码或Schema变更。修复后的完整CI以新提交回执为准。

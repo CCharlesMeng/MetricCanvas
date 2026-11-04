@@ -29,7 +29,7 @@ test('native HTTP query and complete XLSX omit only global Region',async({page},
  await page.goto('/pages/ioc-opportunity-list?region.level=geo&region='+encodeURIComponent('全球')+'&mtime=2026-04');
  await expect(rows(page)).toHaveCount(5);
  const exported=await spreadsheet(page);
- const fixture=JSON.parse(readFileSync('../../tools/dqe-sim/fixtures/ioc-opportunity-list.json','utf8'));
+ const fixture=JSON.parse(readFileSync(new URL('../../../../tools/dqe-sim/fixtures/ioc-opportunity-list.json',import.meta.url),'utf8'));
  for(const row of fixture.rows)expect(exported).toContain(row.opportunity_code);
  const business=items.filter(item=>item.output_dims?.includes('opportunity_code'));
  expect(business.length).toBeGreaterThan(1);
