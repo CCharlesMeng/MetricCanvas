@@ -38,17 +38,28 @@ class AdoptionTests(unittest.TestCase):
         reports, historical = self.reports()
         return aggregate(self.policy, self.config, reports, historical)
 
-    def test_pins_both_baselines_and_reviewed_eight_calls_three_reasons(self):
+    def test_pins_baselines_and_preserves_behavior_during_public_path_migration(self):
         self.assertEqual(self.policy["primary"][0]["manifest"]["defaultPageSchema"], "6.83")
         self.assertEqual(len(self.policy["primary"][0]["vectors"]), 35)
         self.assertEqual(len(self.policy["historical"][0]["vectors"]), 23)
         expected = self.policy["expectedHistory"]
         self.assertEqual(expected["status"], "needs_migration")
         self.assertEqual(sum(not item["passed"] for item in expected["checks"]), 8)
-        self.assertEqual(len(expected["contractReasons"][0]), 3)
+        self.assertEqual(len(expected["contractReasons"][0]), 6)
+        self.assertEqual(self.policy["primary"][0]["interface"]["entrypoint"], "mc-tools/cli.py")
         old_ops = self.policy["historical"][0]["interface"]["operations"]
         positives = {v["operation"] for v in self.policy["primary"][0]["vectors"] if v["expected"]["status"] == "ok"}
         self.assertTrue(set(self.policy["primary"][0]["interface"]["operations"]) - set(old_ops) <= positives)
+
+    def test_plural_baseline_keeps_all_35_previous_requests_and_expectations(self):
+        previous = read_json(Path(__file__).with_name("fixtures") / "consumer-0.2.0-schema683.json")
+        primary = self.policy["primary"][0]
+        self.assertEqual(primary["vectors"], previous["vectors"])
+        self.assertEqual(primary["interface"]["operations"], previous["interface"]["operations"])
+        report = compare_states(previous, primary)
+        self.assertEqual(report["status"], "needs_migration")
+        self.assertEqual(report["details"], ["interfaceVersion: incompatible version",
+            "entrypoint: explicit integration upgrade required", "publicPaths: previous public path was removed"])
 
     def test_initial_gate_keeps_historical_migration_visible(self):
         report = self.gate()
@@ -144,7 +155,7 @@ class ActualCurrentGateTests(unittest.TestCase):
             manifest = verify(current)["manifest"]
             metadata = {key: manifest[key] for key in METADATA_FIELDS}
             metadata.update(defaultPageSchema="6.82", releaseVersion="0.1.0")
-            (current / "mc-tool/release.json").unlink()
+            (current / "mc-tools/release.json").unlink()
             seal(current, metadata)
             command = [sys.executable, "-I", "-S", "-B", str(Path(__file__).with_name("package_cli.py")),
                        "replay", "--candidate", str(candidate), "--current", str(current)]

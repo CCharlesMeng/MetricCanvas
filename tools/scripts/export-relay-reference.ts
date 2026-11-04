@@ -5,7 +5,7 @@ import path from 'node:path';
 import {authoringPageProgramOutputs} from './build-authoring-page-program';
 
 /** Publish-side only; the target needs neither this source nor a package build. */
-export async function exportRelayReference(root: string, output: string, releaseVersion: string, modules: string[] = ['metriccanvas_authoring.data.product_operations', 'metriccanvas_authoring.pages.product_operations', 'metriccanvas_authoring.work.product_operations'], interfaceVersion = '1.0.0'): Promise<void> {
+export async function exportRelayReference(root: string, output: string, releaseVersion: string, modules: string[] = ['metriccanvas_authoring.data.product_operations', 'metriccanvas_authoring.pages.product_operations', 'metriccanvas_authoring.work.product_operations'], interfaceVersion = '2.0.0'): Promise<void> {
   const staging = await mkdtemp(path.join(tmpdir(), 'mc-authoring-node-'));
   try {
     for (const [file, text] of await authoringPageProgramOutputs(root)) {

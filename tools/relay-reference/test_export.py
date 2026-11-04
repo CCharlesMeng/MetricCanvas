@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import tempfile
 import unittest
 
-from export import resolved_descriptions, write_json
+from export import resolved_descriptions, write_examples, write_json
 from python_closure import closure
 from release import ReleaseError, read_json
 
@@ -14,7 +14,7 @@ class ExportGates(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.relative = "mc-tool/resources/contracts/exported/temporal-evaluation.schema.json"
+        self.relative = "mc-tools/resources/contracts/exported/temporal-evaluation.schema.json"
         self.module = SimpleNamespace(__name__="test.provider", SCHEMA_BINDINGS={"evaluation": "authoring.evaluation"},
             OPERATIONS={"test": {"inputSchema": {"properties": {"evaluation": {}, "arbitrary": {}}}}})
 
@@ -44,7 +44,7 @@ class ExportGates(unittest.TestCase):
         result = resolved_descriptions(self.root, self.module)
         self.assertEqual(result["test"]["inputSchema"]["properties"], {"evaluation": shared, "arbitrary": {}})
         self.assertEqual(self.module.OPERATIONS["test"]["inputSchema"]["properties"]["evaluation"], {})
-        report = read_json(self.root / "mc-tool/_impl/schema-bindings.json")
+        report = read_json(self.root / "mc-tools/_impl/schema-bindings.json")
         self.assertEqual(report[0]["operations"], ["test"])
         self.assertEqual(len(report[0]["sha256"]), 64)
 
@@ -55,6 +55,19 @@ class ExportGates(unittest.TestCase):
         with self.assertRaises(ReleaseError) as raised:
             closure(self.root, ["metriccanvas_authoring.online"])
         self.assertEqual(raised.exception.code, "PRODUCT_IMPORT_FORBIDDEN")
+
+    def test_public_examples_preserve_frozen_input_and_expected_diagnostic(self):
+        samples = [{"operation": "page.validate", "input": {"document": None},
+                    "expectedStatus": "error", "expectedDiagnostic": "SCHEMA_ERROR"}]
+        write_examples(self.root, samples)
+        index = read_json(self.root / "mc-tools/examples/index.json")
+        entry = index["examples"][0]
+        request = read_json(self.root / "mc-tools" / entry["request"])
+        self.assertEqual(request, {"format": "metriccanvas-mc-request/1", "requestId": "example-0001",
+                                   "input": {"document": None}})
+        self.assertEqual(entry["operation"], "page.validate")
+        self.assertEqual(entry["expectedStatus"], "error")
+        self.assertEqual(entry["expectedDiagnostic"], "SCHEMA_ERROR")
 
 
 if __name__ == "__main__":

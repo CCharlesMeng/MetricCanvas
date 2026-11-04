@@ -10,7 +10,10 @@ from mc_resources import ContentError, diagnose_package, package_root
 
 def run_node(arguments, value=None, *, timeout=30, failure_code='CONTENT_RUNTIME_UNAVAILABLE', accept_report=False):
     try:
-        result = subprocess.run(['node', *arguments], input=json.dumps(value, ensure_ascii=False) if value is not None else None,
+        node = shutil.which('node')
+        if node is None:
+            raise FileNotFoundError('Node executable not found on PATH')
+        result = subprocess.run([node, *arguments], input=json.dumps(value, ensure_ascii=False) if value is not None else None,
             capture_output=True, encoding='utf-8', errors='strict', timeout=timeout, check=False)
     except subprocess.TimeoutExpired as error:
         raise ContentError('CONTENT_RUNTIME_TIMEOUT', message='The Node operation timed out.', timeoutSeconds=timeout,
@@ -52,11 +55,14 @@ def compile_dependency_check():
 
 def node_check():
     try:
-        result = subprocess.run(['node', '--version'], capture_output=True, encoding='utf-8', timeout=10, check=False)
+        node = shutil.which('node')
+        if node is None:
+            raise FileNotFoundError('Node executable not found on PATH')
+        result = subprocess.run([node, '--version'], capture_output=True, encoding='utf-8', timeout=10, check=False)
         version = result.stdout.strip()
         if result.returncode or int(version.lstrip('v').split('.')[0]) < 22:
             raise ValueError('unsupported Node version')
-        return {'status': 'ok', 'version': version, 'executable': shutil.which('node')}
+        return {'status': 'ok', 'version': version, 'executable': node}
     except (OSError, ValueError, UnicodeError, subprocess.TimeoutExpired):
         return {'status': 'not_run', 'code': 'CONTENT_RUNTIME_UNAVAILABLE', 'action': 'Install Node.js 22+ and check the caller PATH.'}
 

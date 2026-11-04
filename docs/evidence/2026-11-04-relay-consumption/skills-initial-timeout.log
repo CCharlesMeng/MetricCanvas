@@ -1,0 +1,29 @@
+$ tsc --noEmit -p tools/tsconfig.skills.json && vitest run tests/repair-page-metadata.test.ts tests/skill-release.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/relay-tools-plural/DataDashboard
+
+ ❯ tests/repair-page-metadata.test.ts (11 tests | 1 failed) 17946ms
+     × keeps product ordered errors for filename 5947ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/repair-page-metadata.test.ts > repair-page-metadata real CLI > keeps product ordered errors for filename
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/repair-page-metadata.test.ts:38:53
+     36|   });
+     37|
+     38|   it.each(['filename', 'version', 'url', 'binding'])('keeps product or…
+       |                                                     ^
+     39|     const page = structuredClone(sample);
+     40|     page.schemaVersion = versionPolicy.current;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 15 passed (16)
+   Start at  16:15:08
+   Duration  25.25s (transform 2.53s, setup 0ms, import 3.29s, tests 42.70s, environment 0ms)
+
+[ELIFECYCLE] Command failed with exit code 1.

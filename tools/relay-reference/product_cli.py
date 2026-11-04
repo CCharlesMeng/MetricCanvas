@@ -13,7 +13,7 @@ def launch():
         return main(Path(__file__).resolve().parents[1], sys.argv[1:])
     except (ImportError, SyntaxError, OSError, ValueError) as error:
         result = {"format": "metriccanvas-mc-result/1", "requestId": "", "operation": "", "status": "error",
-                  "data": {}, "diagnostics": [{"code": "PRODUCT_ENTRY_UNAVAILABLE", "path": "mc-tool",
+                  "data": {}, "diagnostics": [{"code": "PRODUCT_ENTRY_UNAVAILABLE", "path": "mc-tools",
                   "message": str(error)}]}
         sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode("utf-8") + b"\n")
         return 3

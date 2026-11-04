@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-f14ee63864f60398",
-  "contentSha256": "f14ee63864f60398b87f02264cd51088489ec3e21f4a8e6734cf3a80f6ab5eb1",
+  "contentVersion": "1-9bae0a1c010ce013",
+  "contentSha256": "9bae0a1c010ce01338b4041415c90a858e7db9b089984efc2c432bd5e27ae8f1",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -373,7 +373,7 @@
     },
     {
       "file": "errors/CONTENT_DEPENDENCY_UNAVAILABLE.json",
-      "sha256": "61a26dc00088932dff90e66c9c445d8d4fb8bb7f58cfa46823a1ae53f29a6aaa"
+      "sha256": "ca1e5f91db571997255e99a4ea5cdc4f8f53a7ef26612ce29907822cd8102451"
     },
     {
       "file": "errors/CONTENT_ENTRY_UNAVAILABLE.json",
@@ -413,15 +413,15 @@
     },
     {
       "file": "errors/CONTENT_RUNTIME_OUTPUT_INVALID.json",
-      "sha256": "4d30acf9d2a7d92387c30a97815a29bcc9427c3bc5abe976b8316551f8aa912b"
+      "sha256": "4129df72cd467d86c7cc90604064e3c7bb61b82301fa58f11337bcf4a734ff81"
     },
     {
       "file": "errors/CONTENT_RUNTIME_TIMEOUT.json",
-      "sha256": "31a2becaa726772b0ea1260c683bd00a12f022fc07ad508fbb3d25ca3be7db01"
+      "sha256": "b7fe9b6e7dc2bb500b24aba30591f931486b6b1e42b22019313670541926e0d0"
     },
     {
       "file": "errors/CONTENT_RUNTIME_UNAVAILABLE.json",
-      "sha256": "c7071913951773f5e788ed093906c2b52df888e846a53a6f12dd37ff678f5d2e"
+      "sha256": "3aae73ab6d7484f9bbf1220690a810bafeec2e7ceffc954f040dd1943846531b"
     },
     {
       "file": "errors/CONTENT_SNAPSHOT_MISMATCH.json",
@@ -1209,7 +1209,7 @@
     },
     {
       "file": "errors/QUERY_ARGUMENTS_INVALID.json",
-      "sha256": "2eb8c7147b04915b622cfaefb6e51bbcf090318dc2d07c067d02da49a86aca8c"
+      "sha256": "5e044fa8f37909fea30dd43742c88c3cf6d5b4cdb941a43239e2f3de52668d0e"
     },
     {
       "file": "errors/QUERY_ID_CONFLICT.json",
@@ -8617,7 +8617,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "d24c72d813534267f702181e6374ad441d7a6a93770edcd65396344fdde4ae87"
+      "sha256": "eb47f80e4f3af7569ec8265861848ece90bd2340e03130373a8b622533cf67b1"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -8661,7 +8661,7 @@
     },
     {
       "file": "scripts/mc_runtime.py",
-      "sha256": "b20c26ab079b0373789534513289a952990b3e33581891f6e73f7c02b677c3a2"
+      "sha256": "5dc992ca779cff9a7d22cb313a2b96bfdd225593d74834a8ec4e800bd3c18713"
     },
     {
       "file": "scripts/mc_schema_selection.py",

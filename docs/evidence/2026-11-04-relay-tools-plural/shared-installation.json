@@ -1,0 +1,160 @@
+{
+  "status": "ok",
+  "releaseId": "3f41121f55445666865cefa4e9e70f87a3e49d9268dbcd9cbe83a8d6804424d8",
+  "checks": [
+    {
+      "command": [
+        "check-release"
+      ],
+      "exitCode": 0,
+      "receipt": {
+        "automaticPromotion": false,
+        "code": "RELEASE_VERIFIED",
+        "details": [],
+        "eligibleForSmoke": false,
+        "format": "metriccanvas-relay-release-check/1",
+        "releaseId": "3f41121f55445666865cefa4e9e70f87a3e49d9268dbcd9cbe83a8d6804424d8",
+        "status": "ok"
+      }
+    },
+    {
+      "command": [
+        "invoke",
+        "page.project"
+      ],
+      "exitCode": 0,
+      "receipt": {
+        "data": {
+          "capabilityErrors": [],
+          "components": [
+            {
+              "data": {},
+              "id": "explanation",
+              "path": "/sections/0/components/0",
+              "sectionId": "main",
+              "type": "text"
+            }
+          ],
+          "dataCoverage": {
+            "declarationScope": "all declared data slots, filter branches and source dependencies; no query bodies or data rows",
+            "diagnostics": [],
+            "sources": []
+          },
+          "declaredVersion": "6.5",
+          "fieldUses": [],
+          "note": "Read-only diagnosis. Upgrade writes only to an explicitly chosen new directory; never edit schemaVersion alone.",
+          "readable": true,
+          "readableVersions": [
+            "5.0",
+            "5.1",
+            "5.2",
+            "5.3",
+            "5.4",
+            "6.5",
+            "6.11",
+            "6.12",
+            "6.13",
+            "6.14",
+            "6.15",
+            "6.16",
+            "6.17",
+            "6.18",
+            "6.19",
+            "6.20",
+            "6.21",
+            "6.22",
+            "6.23",
+            "6.24",
+            "6.25",
+            "6.26",
+            "6.27",
+            "6.28",
+            "6.29",
+            "6.30",
+            "6.31",
+            "6.32",
+            "6.33",
+            "6.34",
+            "6.35",
+            "6.36",
+            "6.37",
+            "6.38",
+            "6.39",
+            "6.40",
+            "6.41",
+            "6.42",
+            "6.43",
+            "6.44",
+            "6.45",
+            "6.46",
+            "6.47",
+            "6.48",
+            "6.49",
+            "6.50",
+            "6.51",
+            "6.52",
+            "6.53",
+            "6.54",
+            "6.55",
+            "6.56",
+            "6.57",
+            "6.58",
+            "6.59",
+            "6.60",
+            "6.61",
+            "6.62",
+            "6.63",
+            "6.64",
+            "6.65",
+            "6.66",
+            "6.67",
+            "6.68",
+            "6.69",
+            "6.70",
+            "6.71",
+            "6.72",
+            "6.73",
+            "6.74",
+            "6.75",
+            "6.76",
+            "6.77",
+            "6.78",
+            "6.79",
+            "6.80",
+            "6.81",
+            "6.82",
+            "6.83"
+          ],
+          "requiredVersion": "6.1",
+          "status": "readable",
+          "targetVersion": "6.83",
+          "upgrade": {
+            "changes": [
+              {
+                "message": "6.5 → 6.83；已检查能力下限、已知语义断点及完整目标协议",
+                "path": "/schemaVersion",
+                "rule": "version"
+              }
+            ],
+            "errors": [],
+            "possible": true,
+            "warnings": [
+              "迁移通过是目标协议静态校验结果；继续开发前预览受影响交互，查询及真实服务需单独验证。"
+            ]
+          },
+          "validationErrors": []
+        },
+        "diagnostics": [],
+        "format": "metriccanvas-mc-result/1",
+        "operation": "page.project",
+        "requestId": "shared-final",
+        "status": "ok"
+      }
+    }
+  ],
+  "hostBytesUnchanged": true,
+  "strictStaging": {
+    "rejected": true,
+    "code": "RELEASE_LAYOUT_INVALID"
+  }
+}

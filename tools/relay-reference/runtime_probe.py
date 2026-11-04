@@ -37,7 +37,7 @@ def prefix(dependencies):
 
 
 def call(candidate, args, dependencies, cwd, value=None, environment=None):
-    command = prefix(dependencies) + [str(candidate / "mc-tool/cli.py"), *args]
+    command = prefix(dependencies) + [str(candidate / "mc-tools/cli.py"), *args]
     env = {**os.environ, "PYTHONPATH": "", "NODE_PATH": "", "NODE_OPTIONS": ""}
     env.update(environment or {})
     result = subprocess.run(command, input=None if value is None else canonical(value),
@@ -88,10 +88,10 @@ def network_probes(candidate, cwd):
                "from product_runtime import offline_audit;sys.addaudithook(offline_audit);"
                "socket.create_connection(('127.0.0.1',9))")
     python = subprocess.run([sys.executable, "-I", "-S", "-B", "-c", program,
-                             str(candidate / "mc-tool/_impl")], capture_output=True, cwd=cwd, timeout=10)
+                             str(candidate / "mc-tools/_impl")], capture_output=True, cwd=cwd, timeout=10)
     require(python.returncode != 0 and b"PRODUCT_NETWORK_FORBIDDEN" in python.stderr,
             "PRODUCT_ARCHIVE_PROBE_FAILED", "Python network guard did not reject the attempt")
-    node = subprocess.run(["node", "--import", (candidate / "mc-tool/_impl/network_guard.mjs").as_uri(),
+    node = subprocess.run(["node", "--import", (candidate / "mc-tools/_impl/network_guard.mjs").as_uri(),
                            "--input-type=module", "-e", "import net from 'node:net';net.connect(9,'127.0.0.1')"],
                           capture_output=True, cwd=cwd, timeout=10)
     require(node.returncode != 0 and b"PRODUCT_NETWORK_FORBIDDEN" in node.stderr,

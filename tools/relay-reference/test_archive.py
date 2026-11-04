@@ -109,8 +109,8 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(destination.exists())
 
     def test_traversal_absolute_drive_backslash_alias_and_reserved_paths_are_rejected(self):
-        for index, name in enumerate(["../outside", "/outside", "C:/outside", "mc-tool/../outside",
-            "mc-tool\\outside", "mc-tool//a", "mc-tool/CON.txt", "mc-tool/end.", "mc-content.md/child", "unexpected/file"]):
+        for index, name in enumerate(["../outside", "/outside", "C:/outside", "mc-tools/../outside",
+            "mc-tool\\outside", "mc-tools//a", "mc-tools/CON.txt", "mc-tools/end.", "mc-content.md/child", "unexpected/file"]):
             archive = self.root / (str(index) + ".zip")
             write_zip(archive, [(name, b"bad")])
             destination = self.root / ("dest-" + str(index))
@@ -132,19 +132,19 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(destination.exists())
 
     def test_duplicate_case_and_file_directory_collisions_are_rejected(self):
-        for entries in [[("mc-tool/a", 1), ("mc-tool/A", 1)],
-                        [("mc-tool/a", 1), ("mc-tool/a", 1)],
-                        [("mc-tool/a", 1), ("mc-tool/a/b", 1)]]:
+        for entries in [[("mc-tools/a", 1), ("mc-tools/A", 1)],
+                        [("mc-tools/a", 1), ("mc-tools/a", 1)],
+                        [("mc-tools/a", 1), ("mc-tools/a/b", 1)]]:
             with self.assertRaises(ReleaseError):
                 check_members(entries)
 
     def test_zip_symlinks_and_nonfixed_metadata_are_rejected(self):
         archive = self.root / "link.zip"
-        write_zip(archive, [("mc-tool/link", b"../outside")], mode=stat.S_IFLNK | 0o777)
+        write_zip(archive, [("mc-tools/link", b"../outside")], mode=stat.S_IFLNK | 0o777)
         with self.assertRaises(ReleaseError):
             extract_archive(archive, self.root / "link-target", "zip")
         archive = self.root / "timestamp.zip"
-        write_zip(archive, [("mc-tool/file", b"x")], timestamp=(2026, 1, 1, 0, 0, 0))
+        write_zip(archive, [("mc-tools/file", b"x")], timestamp=(2026, 1, 1, 0, 0, 0))
         with self.assertRaises(ReleaseError):
             extract_archive(archive, self.root / "timestamp-target", "zip")
 
@@ -152,12 +152,12 @@ class ArchiveTests(unittest.TestCase):
         types = [tarfile.SYMTYPE, tarfile.LNKTYPE, tarfile.CHRTYPE, tarfile.FIFOTYPE, tarfile.DIRTYPE]
         for index, kind in enumerate(types):
             archive = self.root / (str(index) + ".tar.gz")
-            item = tarfile.TarInfo("mc-tool/link")
+            item = tarfile.TarInfo("mc-tools/link")
             item.type, item.mode, item.linkname = kind, 0o644, "../../outside"
             write_tar_item(archive, item)
             with self.assertRaises(ReleaseError):
                 extract_archive(archive, self.root / ("tar-" + str(index)), "tar.gz")
-        item = tarfile.TarInfo("mc-tool/file")
+        item = tarfile.TarInfo("mc-tools/file")
         item.mode, item.pax_headers = 0o644, {"comment": "not fixed metadata"}
         archive = self.root / "pax.tar.gz"
         write_tar_item(archive, item, tarfile.PAX_FORMAT)
@@ -182,7 +182,7 @@ class ArchiveTests(unittest.TestCase):
         runtime = self.candidate / "mc-content/runtime"
         runtime.mkdir()
         (runtime / "source-identity.json").write_bytes(canonical({"files": [{"file": "input.py", "sha256": digest(b"old")}]}))
-        for actual, author in [("mc-tool/cli.py", "product_cli.py"), ("mc-content.md", "guides/mc-content.md"), ("mc-tool.md", "guides/mc-tool.md")]:
+        for actual, author in [("mc-tools/cli.py", "product_cli.py"), ("mc-content.md", "guides/mc-content.md"), ("mc-tools.md", "guides/mc-tools.md")]:
             path = source / "tools/relay-reference" / author
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes((self.candidate / actual).read_bytes())

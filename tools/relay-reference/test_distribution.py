@@ -45,7 +45,7 @@ class DistributionTests(unittest.TestCase):
                "METRICCANVAS_BUNDLE_ROOT": "/does-not-exist", "METRICCANVAS_PRODUCT_ROOT": "/wrong"}
         env.update(environment or {})
         result = subprocess.run([sys.executable, "-I", "-B", *python_args,
-            str((root or self.candidate) / "mc-tool/cli.py"), *args],
+            str((root or self.candidate) / "mc-tools/cli.py"), *args],
             input=None if value is None else canonical(value), capture_output=True,
             cwd=self.external, env=env, timeout=60)
         return result.returncode, json.loads(result.stdout)
@@ -56,7 +56,7 @@ class DistributionTests(unittest.TestCase):
 
     def test_real_facade_self_test_and_closed_inventory(self):
         self.assertEqual({p.name for p in self.candidate.iterdir()},
-                         {"mc-content", "mc-content.md", "mc-tool", "mc-tool.md"})
+                         {"mc-content", "mc-content.md", "mc-tools", "mc-tools.md"})
         self.assertEqual(self.cli(["self-test"])[0], 0)
         code, interface = self.cli(["describe"])
         self.assertEqual(code, 0)
@@ -67,6 +67,45 @@ class DistributionTests(unittest.TestCase):
             "referencing": "==0.37.0", "rpds-py": "==2026.6.3", "typing-extensions": "==4.16.0"})
         self.assertFalse(list(self.candidate.rglob("*.pyc")))
         self.assertFalse(list(self.candidate.rglob("node_modules")))
+
+    def test_shared_installation_preserves_host_files_but_staging_remains_strict(self):
+        installed = self.external / "shared-references"
+        shutil.copytree(self.candidate, installed)
+        host = installed / "relay-owned.md"
+        host.write_bytes(b"Relay configuration\r\n")
+        (installed / "relay-owned").mkdir()
+        (installed / "relay-owned/cache.pyc").write_bytes(b"host-owned runtime data")
+        expected = verify(self.candidate)["manifest"]
+        self.assertEqual(verify(installed, installed=True)["manifest"], expected)
+        self.assertEqual(self.cli(["check-release"], root=installed)[0], 0)
+        self.assertEqual(self.cli(["self-test"], root=installed)[0], 0)
+        self.assertEqual(host.read_bytes(), b"Relay configuration\r\n")
+        with self.assertRaises(ValueError):
+            verify(installed)
+
+    def test_shared_installation_still_rejects_changes_inside_product_artifacts(self):
+        installed = self.external / "shared-negative"
+        shutil.copytree(self.candidate, installed)
+        host = installed / "relay-owned.md"
+        host.write_bytes(b"keep me")
+        extra = installed / "mc-tools/unlisted.py"
+        extra.write_bytes(b"unlisted product file")
+        self.assertEqual(self.cli(["check-release"], root=installed)[0], 3)
+        extra.unlink()
+        guide = installed / "mc-tools.md"
+        guide.write_bytes(guide.read_bytes().replace(b"\n", b"\r\n"))
+        self.assertEqual(self.cli(["check-release"], root=installed)[0], 3)
+        self.assertEqual(host.read_bytes(), b"keep me")
+
+    def test_exported_example_request_executes_through_public_facade(self):
+        index = read_json(self.candidate / "mc-tools/examples/index.json")
+        entry = next(item for item in index["examples"]
+                     if item["operation"] == "page.compose" and item["expectedStatus"] == "ok")
+        request = read_json(self.candidate / "mc-tools" / entry["request"])
+        code, result = self.cli(["invoke", entry["operation"]], request)
+        self.assertEqual(code, 0, result)
+        self.assertEqual(result["status"], entry["expectedStatus"])
+        self.assertEqual(result["requestId"], request["requestId"])
 
     def test_archived_cli_uses_utf8_with_windows_legacy_locale(self):
         # Reproduce Windows' legacy defaults without changing explicit encodings.
@@ -81,7 +120,7 @@ class DistributionTests(unittest.TestCase):
             "runpy.run_path(sys.argv[0],run_name='__main__')"
         )
         result = subprocess.run([sys.executable, "-I", "-S", "-B", "-c", bootstrap, str(dependencies),
-                                 str(self.candidate / "mc-tool/cli.py"), "self-test"],
+                                 str(self.candidate / "mc-tools/cli.py"), "self-test"],
                                 capture_output=True, cwd=self.external, timeout=120)
         self.assertEqual(result.returncode, 0, result.stdout.decode("utf-8"))
         receipt = json.loads(result.stdout)
@@ -118,7 +157,7 @@ class DistributionTests(unittest.TestCase):
         shutil.copytree(self.candidate, broken)
         (broken / "mc-content/index.json").unlink()
         self.assertEqual(self.cli(["self-test"], root=broken)[0], 3)
-        (broken / "mc-tool/_impl/product_runtime.py").unlink()
+        (broken / "mc-tools/_impl/product_runtime.py").unlink()
         code, result = self.cli(["self-test"], root=broken)
         self.assertEqual(code, 3)
         self.assertEqual(result["diagnostics"][0]["code"], "PRODUCT_ENTRY_UNAVAILABLE")
@@ -130,7 +169,7 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual(self.invoke("content.read", {"topic": "missing"})[0], 2)
         code, rejected = self.invoke("content.read", {"topic": "node", "key": "#/does-not-exist"})
         self.assertEqual(code, 2, rejected)
-        descriptor = read_json(self.candidate / "mc-tool/interface.json")["operations"]["content.read"]
+        descriptor = read_json(self.candidate / "mc-tools/interface.json")["operations"]["content.read"]
         self.assertIn(rejected["diagnostics"][0]["code"], descriptor["errorCodes"])
 
     def test_legacy_mcp_resources_are_marked_without_renaming_ids(self):
@@ -182,7 +221,7 @@ class DistributionTests(unittest.TestCase):
         for version in ("0.1.1", "0.1.2"):
             candidate = self.external / version
             shutil.copytree(self.candidate, candidate)
-            guide = candidate / "mc-tool.md"
+            guide = candidate / "mc-tools.md"
             guide.write_text(guide.read_text() + "\nCompatibility fixture " + version + "\n")
             self.reseal(candidate, version)
             versions.append(candidate)
@@ -209,10 +248,10 @@ class DistributionTests(unittest.TestCase):
         code = """import sys;sys.path.insert(0,sys.argv[1]);from product_runtime import offline_audit
 import socket;sys.addaudithook(offline_audit);socket.create_connection(('127.0.0.1',9))"""
         python = subprocess.run([sys.executable, "-I", "-B", "-c", code,
-            str(self.candidate / "mc-tool/_impl")], capture_output=True, cwd=self.external)
+            str(self.candidate / "mc-tools/_impl")], capture_output=True, cwd=self.external)
         self.assertNotEqual(python.returncode, 0)
         self.assertIn(b"PRODUCT_NETWORK_FORBIDDEN", python.stderr)
-        node = subprocess.run(["node", "--import", str(self.candidate / "mc-tool/_impl/network_guard.mjs"),
+        node = subprocess.run(["node", "--import", str(self.candidate / "mc-tools/_impl/network_guard.mjs"),
             "--input-type=module", "-e", "import net from 'node:net';net.connect(9,'127.0.0.1')"],
             capture_output=True, cwd=self.external)
         self.assertNotEqual(node.returncode, 0)
@@ -224,7 +263,7 @@ import socket;sys.addaudithook(offline_audit);socket.create_connection(('127.0.0
         self.copy_dependencies(pins, dependencies)
         bootstrap = """import runpy,sys;sys.path.insert(0,sys.argv[1]);sys.argv=sys.argv[2:];runpy.run_path(sys.argv[0],run_name='__main__')"""
         result = subprocess.run([sys.executable, "-I", "-S", "-B", "-c", bootstrap, str(dependencies),
-            str(self.candidate / "mc-tool/cli.py"), "self-test"], cwd=self.external,
+            str(self.candidate / "mc-tools/cli.py"), "self-test"], cwd=self.external,
             env={**os.environ, "PYTHONPATH": "", "NODE_PATH": "", "NODE_OPTIONS": ""}, capture_output=True, timeout=60)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(json.loads(result.stdout)["status"], "ok")
@@ -275,8 +314,8 @@ import socket;sys.addaudithook(offline_audit);socket.create_connection(('127.0.0
         self.assertEqual(receipts[0][0], 0, receipts)
 
     def test_shared_evaluation_schema_is_inlined_from_one_build_output(self):
-        interface = read_json(self.candidate / "mc-tool/interface.json")
-        shared = read_json(self.candidate / "mc-tool/resources/contracts/exported/temporal-evaluation.schema.json")
+        interface = read_json(self.candidate / "mc-tools/interface.json")
+        shared = read_json(self.candidate / "mc-tools/resources/contracts/exported/temporal-evaluation.schema.json")
         for name in ("page.compose", "page.edit", "receipt.check", "page.validate"):
             self.assertEqual(interface["operations"][name]["inputSchema"]["properties"]["evaluation"], shared)
         self.assertNotIn("evaluation", interface["operations"]["work.check"]["inputSchema"]["properties"])
@@ -291,7 +330,7 @@ import socket;sys.addaudithook(offline_audit);socket.create_connection(('127.0.0
     def test_success_data_is_checked_without_replacing_error_diagnostics(self):
         candidate = self.external / "output-contract-negative"
         shutil.copytree(self.candidate, candidate)
-        target = candidate / "mc-tool/interface.json"
+        target = candidate / "mc-tools/interface.json"
         interface = read_json(target)
         interface["operations"]["page.validate"]["outputSchema"] = {"type": "object", "required": ["missing-output"]}
         target.write_bytes(canonical(interface) + b"\n")
@@ -307,21 +346,21 @@ import socket;sys.addaudithook(offline_audit);socket.create_connection(('127.0.0
     def test_internal_relocation_keeps_frozen_consumer(self):
         moved = self.external / "relocated"
         shutil.copytree(self.candidate, moved)
-        (moved / "mc-tool/python").rename(moved / "mc-tool/product-python")
-        runtime = moved / "mc-tool/_impl/product_runtime.py"
+        (moved / "mc-tools/python").rename(moved / "mc-tools/product-python")
+        runtime = moved / "mc-tools/_impl/product_runtime.py"
         runtime.write_text(runtime.read_text().replace('"python"', '"product-python"'))
         self.reseal(moved, "0.1.1")
         self.assertEqual(compare(self.candidate, moved)["status"], "ok")
-        sample = next(item for item in read_json(moved / "mc-tool/_impl/self-tests.json") if item["operation"] == "page.compose")
+        sample = next(item for item in read_json(moved / "mc-tools/_impl/self-tests.json") if item["operation"] == "page.compose")
         code, receipt = self.invoke("page.compose", sample["input"], moved)
         self.assertEqual(code, 0, receipt)
 
     def reseal(self, root, version):
-        old = read_json(root / "mc-tool/release.json")
+        old = read_json(root / "mc-tools/release.json")
         metadata = {key: old[key] for key in ("releaseVersion", "resourceIndexVersion", "runtime",
                                               "pageSchemaVersions", "defaultPageSchema")}
         metadata["releaseVersion"] = version
-        (root / "mc-tool/release.json").unlink()
+        (root / "mc-tools/release.json").unlink()
         seal(root, metadata)
 
 

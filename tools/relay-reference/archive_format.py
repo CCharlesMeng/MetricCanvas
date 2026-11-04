@@ -27,7 +27,7 @@ def member_name(name):
     require(unicodedata.normalize("NFC", name) == name and all(portable_part(part) for part in parts),
             "ARCHIVE_PATH_INVALID", "Non-portable archive path: " + name)
     require(parts[0] in TOP_LEVEL, "ARCHIVE_LAYOUT_INVALID", name)
-    require((len(parts) == 1) == (parts[0] in {"mc-content.md", "mc-tool.md"}),
+    require((len(parts) == 1) == (parts[0] in {"mc-content.md", "mc-tools.md"}),
             "ARCHIVE_LAYOUT_INVALID", name)
     return name
 

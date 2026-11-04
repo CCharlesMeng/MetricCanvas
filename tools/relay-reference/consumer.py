@@ -7,7 +7,7 @@ import sys
 import tempfile
 
 from compatibility import compare, compare_states
-from release import canonical, digest, finite_float, read_json, reject_constant, require, unique_object, verify
+from release import canonical, digest, finite_float, read_json, reject_constant, require, tools_directory, unique_object, verify
 
 
 def load_consumer(path, checksum):
@@ -52,7 +52,7 @@ def content_errors(result, expected):
 
 def run_vector(candidate, vector, python_prefix=None):
     command = list(python_prefix or [sys.executable, "-I", "-B"])
-    command += [str(candidate / "mc-tool/cli.py"), "invoke", vector["operation"]]
+    command += [str(candidate / tools_directory(candidate) / "cli.py"), "invoke", vector["operation"]]
     with tempfile.TemporaryDirectory(prefix="mc-frozen-consumer-") as cwd:
         child = subprocess.run(command, input=canonical(vector["request"]), capture_output=True, cwd=cwd, timeout=60)
     try:

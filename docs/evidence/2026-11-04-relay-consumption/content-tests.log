@@ -1,0 +1,23 @@
+test_cli_error_is_utf8_even_with_legacy_stdout_encoding (test_mc_distribution.DistributionTest.test_cli_error_is_utf8_even_with_legacy_stdout_encoding) ... ok
+test_crlf_is_diagnosed_but_never_accepted (test_mc_distribution.DistributionTest.test_crlf_is_diagnosed_but_never_accepted) ... ok
+test_damaged_entry_code_returns_installation_recovery (test_mc_distribution.DistributionTest.test_damaged_entry_code_returns_installation_recovery) ... ok
+test_diagnostics_bound_extra_file_samples (test_mc_distribution.DistributionTest.test_diagnostics_bound_extra_file_samples) ... ok
+test_diagnostics_distinguish_missing_extra_and_transformed_bytes (test_mc_distribution.DistributionTest.test_diagnostics_distinguish_missing_extra_and_transformed_bytes) ... ok
+test_entry_refuses_timestamp_and_hash_bytecode_before_loading (test_mc_distribution.DistributionTest.test_entry_refuses_timestamp_and_hash_bytecode_before_loading) ... ok
+test_entry_rejects_preloaded_module_from_another_package (test_mc_distribution.DistributionTest.test_entry_rejects_preloaded_module_from_another_package) ... ok
+test_manifest_identity_and_bom_have_actionable_errors (test_mc_distribution.DistributionTest.test_manifest_identity_and_bom_have_actionable_errors) ... ok
+test_missing_dependencies_and_node_are_structured (test_mc_distribution.DistributionTest.test_missing_dependencies_and_node_are_structured) ... ok
+test_node_timeout_and_invalid_json_are_environment_errors (test_mc_distribution.DistributionTest.test_node_timeout_and_invalid_json_are_environment_errors) ... ok
+test_node_uses_utf8_under_gbk_locale (test_mc_distribution.DistributionTest.test_node_uses_utf8_under_gbk_locale) ... ok
+test_preflight_and_business_status_are_separate (test_mc_distribution.DistributionTest.test_preflight_and_business_status_are_separate) ... ok
+test_archive_extraction_rejects_unsafe_and_duplicate_entries (test_mc_distribution.ReleaseTest.test_archive_extraction_rejects_unsafe_and_duplicate_entries) ... ok
+test_archive_roundtrip_corruption_and_source_identity (test_mc_distribution.ReleaseTest.test_archive_roundtrip_corruption_and_source_identity) ... ok
+test_existing_receipt_is_preserved_before_pack (test_mc_distribution.ReleaseTest.test_existing_receipt_is_preserved_before_pack) ... ok
+test_git_checkout_preserves_manifest_bytes_with_autocrlf_enabled (test_mc_distribution.ReleaseTest.test_git_checkout_preserves_manifest_bytes_with_autocrlf_enabled) ... ok
+test_publish_failure_does_not_leave_an_archive_without_receipt (test_mc_distribution.ReleaseTest.test_publish_failure_does_not_leave_an_archive_without_receipt) ... ok
+test_windows_promotion_uses_an_absent_target (test_mc_distribution.ReleaseTest.test_windows_promotion_uses_an_absent_target) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 89.872s
+
+OK

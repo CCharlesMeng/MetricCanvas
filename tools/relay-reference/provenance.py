@@ -37,8 +37,8 @@ def source_inputs(root, candidate):
         actual = file_digest(checked_source(root, name))
         require(actual == item["sha256"], "ARCHIVE_SOURCE_DRIFT", name)
         files[name] = actual
-    for path in sorted((candidate / "mc-tool/python").rglob("*.py")):
-        name = "metriccanvas-authoring/tool/" + path.relative_to(candidate / "mc-tool/python").as_posix()
+    for path in sorted((candidate / "mc-tools/python").rglob("*.py")):
+        name = "metriccanvas-authoring/tool/" + path.relative_to(candidate / "mc-tools/python").as_posix()
         actual = file_digest(checked_source(root, name))
         require(actual == file_digest(path), "ARCHIVE_SOURCE_DRIFT", name)
         files[name] = actual
@@ -47,9 +47,9 @@ def source_inputs(root, candidate):
 
 
 def private_inputs(root, candidate):
-    pairs = {"mc-tool/cli.py": "product_cli.py", "mc-content.md": "guides/mc-content.md", "mc-tool.md": "guides/mc-tool.md"}
+    pairs = {"mc-tools/cli.py": "product_cli.py", "mc-content.md": "guides/mc-content.md", "mc-tools.md": "guides/mc-tools.md"}
     for name in ("release.py", "product_runtime.py", "network_guard.mjs", "content_operation.py"):
-        pairs["mc-tool/_impl/" + name] = name
+        pairs["mc-tools/_impl/" + name] = name
     files = {}
     for target, source in pairs.items():
         if not (candidate / target).is_file():

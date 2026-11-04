@@ -6,7 +6,7 @@ note: 目标职责与稳定发行裁决；MC 纯核心与四项分发已完成�
 
 # MC 交付稳定的资源与纯产品工具，Relay 拥有线上执行和 MCP 装配
 
-Relay 需要普通升级只同步 `mc-content/`、`mc-content.md`、`mc-tool/`、`mc-tool.md` 四项。若直接同步内部 Python/Node/内容分片结构，MC 每次重构都会迫使 Relay 重新适配；若只给现有 MCP 注入 Port，页面用例仍可能查询、保存和访问存储，无法满足无 Web 调用的产品工具要求。
+Relay 需要普通升级只同步 `mc-content/`、`mc-content.md`、`mc-tools/`、`mc-tools.md` 四项。若直接同步内部 Python/Node/内容分片结构，MC 每次重构都会迫使 Relay 重新适配；若只给现有 MCP 注入 Port，页面用例仍可能查询、保存和访问存储，无法满足无 Web 调用的产品工具要求。
 
 MC 因而保留确定性页面/查询派生/结果处理、通用作用域/版本/回执核对规则、产品资源和可重复导出。工具接收显式完整输入，返回候选与诊断，不通过 Client 或回调执行在线 I/O。Relay 自有程序维护真实 MCP 工厂、身份/轮次、授权/数据发现/DQE、状态及原子 CAS、Java 单次保存/unknown 恢复和精确前端交接；Skill 负责选择任务、解释回执。规则留 MC 不代表 MC 持有线上状态，显式哈希也不等于可信授权。
 

@@ -40,8 +40,8 @@ def bundle_root() -> Path:
 def product_resources(root: Path) -> Path:
     """An explicit four-artifact root never falls back to a development checkout."""
     root = root.expanduser().resolve()
-    resources = root / "mc-tool" / "resources"
-    required = [root / "mc-content" / "index.json", root / "mc-tool" / "interface.json",
+    resources = root / "mc-tools" / "resources"
+    required = [root / "mc-content" / "index.json", root / "mc-tools" / "interface.json",
                 resources / "bundle.json"]
     if not all(path.is_file() for path in required):
         raise RuntimeError(f"{PRODUCT_ROOT_ENV} has incomplete product resources: {root}")

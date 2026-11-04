@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "9fb311663eb0b745d98046affbd024c3421c6d1755f8298a4e68ac7e81a2f229",
+  "sha256": "3096ed1b23af8fc8d4757618372b6cd9d644156792e57db81be9e4fb86bc6aab",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -792,7 +792,7 @@
     },
     {
       "file": "metriccanvas-authoring/tool/metriccanvas_authoring/runtime_assets.py",
-      "sha256": "88fd62b965ba3257f7e926ac501f3983b3d60a0747a1d5aa3aceb85779d46a86"
+      "sha256": "acffa317317113f7a798640e16da4d5f16755063969ba1c35151c06dc6612f00"
     },
     {
       "file": "metriccanvas-authoring/tool/metriccanvas_authoring/schema_projection.py",
@@ -3212,7 +3212,7 @@
     },
     {
       "file": "tools/mc-content/scripts/mc_runtime.py",
-      "sha256": "b20c26ab079b0373789534513289a952990b3e33581891f6e73f7c02b677c3a2"
+      "sha256": "5dc992ca779cff9a7d22cb313a2b96bfdd225593d74834a8ec4e800bd3c18713"
     },
     {
       "file": "tools/mc-content/scripts/mc_schema_selection.py",

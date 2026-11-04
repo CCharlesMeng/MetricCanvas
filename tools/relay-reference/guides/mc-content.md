@@ -1,6 +1,6 @@
 # MC 产品资源
 
-当前离线操作从 `runtime:offline-interface` 查找，Schema 指针统一指向 `mc-tool/interface.json`。操作或稳定入口返回的诊断按 `error:CODE` 查阅；新增条目从实际操作声明与入口源码生成，原有条目保留。未列入静态索引的动态诊断仍以真实回执为准，不表示操作未实现。
+已知操作时读 `runtime:operation.<操作名>`，例如 `runtime:operation.page.edit.v2`；它只返回本次操作的输入字段概览。程序从 `mc-tools/interface.json` 校验完整契约。需要发现全部能力时再读 `runtime:offline-interface`。实际诊断按 `error:CODE` 查阅；知识和诊断目录均由同源声明生成，真实回执保持原顺序。
 
 `runtime:coverage` 是原公共 MC 来源图，包含旧 MCP 契约，不能证明当前离线操作覆盖或部署完成；其原始内容保持不变。当前声明见 `runtime:offline-interface`，实际行为分别运行固定自检及冻结消费者回放。
 
@@ -9,7 +9,7 @@
 通过稳定产品入口读取：
 
 ```sh
-python -B /absolute/references/mc-tool/cli.py invoke content.read <<'JSON'
+python -B /absolute/references/mc-tools/cli.py invoke content.read <<'JSON'
 {"format":"metriccanvas-mc-request/1","requestId":"read-1","input":{"topic":"index","key":"knowledge"}}
 JSON
 ```
@@ -35,8 +35,8 @@ JSON
 
 页面先行：`reference` / `component` 核对既有页面意图 → `knowledge` 核对局部约束 → 产品工具投影、扫描和校验 → Relay 补齐用数证据后形成候选。数据先行：`protocol` 核对显式数据材料 → `scenario` / `layout` 选择结构 → 产品工具准备查询、归一化已供给结果并装配候选。遇到失败按原诊断码读 `error` / `runtime:error-repair`，不跳过失败修改页面版本。
 
-`data.truncated` 为 true 时，原子整体保留，按 `continuation` 增大预算或分页；不能把缺省正文当作完整规则。资源含旧线上工具的迁移参考时，实际可用的离线操作仍以 [Interface](mc-tool/interface.json) 为准。
+`data.truncated` 为 true 时，原子整体保留，按 `continuation` 增大预算或分页；不能把缺省正文当作完整规则。资源含旧线上工具的迁移参考时，实际可用的离线操作仍以 [Interface](mc-tools/interface.json) 为准。
 
 页面先行从完整工作副本核对结构、用数和绑定；数据先行从显式数据上下文、取数单元和已有执行证据形成页面候选。两种创作逻辑共用产品规则。真实发现、授权、DQE、状态和保存由 Relay 程序提供。
 
-普通更新完整替换 `mc-content/`、`mc-content.md`、`mc-tool/`、`mc-tool.md`。资源版本、工具 Interface、页面版本、运行环境分别记录。索引或清单通过只证明结构与字节相配；实际 Relay 接入、权限和部署另验。
+普通更新完整替换 `mc-content/`、`mc-content.md`、`mc-tools/`、`mc-tools.md`。资源版本、工具 Interface、页面版本、运行环境分别记录。索引或清单通过只证明结构与字节相配；实际 Relay 接入、权限和部署另验。

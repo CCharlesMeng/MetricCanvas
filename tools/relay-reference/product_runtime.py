@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import shutil
 
 from release import (RECEIPT_FORMAT, ReleaseError, canonical, finite_float, read_json,
                      reject_constant, require, unique_object, verify)
@@ -26,8 +27,14 @@ def initialize(root):
     os.environ["METRICCANVAS_PRODUCT_ROOT"] = str(root)
     os.environ.pop("METRICCANVAS_BUNDLE_ROOT", None)
     os.environ["NODE_PATH"] = ""
-    os.environ["NODE_OPTIONS"] = "--import=" + (root / "mc-tool/_impl/network_guard.mjs").as_uri()
-    sys.path.insert(0, str(root / "mc-tool" / "python"))
+    os.environ["NODE_OPTIONS"] = "--import=" + (root / "mc-tools/_impl/network_guard.mjs").as_uri()
+    sys.path.insert(0, str(root / "mc-tools" / "python"))
+
+
+def node_executable():
+    node = shutil.which("node")
+    require(node is not None, "PRODUCT_RUNTIME_UNAVAILABLE", "Node.js >=22 is required on PATH")
+    return node
 
 
 def runtime_check(manifest):
@@ -36,7 +43,7 @@ def runtime_check(manifest):
         installed = importlib.metadata.version(name)
         require(constraint == "==" + installed, "PRODUCT_DEPENDENCY_UNAVAILABLE",
                 f"Expected {name}{constraint}; found {installed}")
-    node = subprocess.run(["node", "--version"], capture_output=True, text=True, encoding="utf-8", timeout=5, check=True)
+    node = subprocess.run([node_executable(), "--version"], capture_output=True, text=True, encoding="utf-8", timeout=5, check=True)
     require(int(node.stdout.strip().lstrip("v").split(".")[0]) >= 22,
             "PRODUCT_RUNTIME_UNAVAILABLE", "Node.js >=22 is required")
 
@@ -54,10 +61,10 @@ def parse_request(text):
 
 
 def node_operation(root, handler, operation, value):
-    guard = root / "mc-tool" / "_impl" / "network_guard.mjs"
-    script = root / "mc-tool" / handler["path"]
+    guard = root / "mc-tools" / "_impl" / "network_guard.mjs"
+    script = root / "mc-tools" / handler["path"]
     env = {**os.environ, "NODE_PATH": "", "NODE_OPTIONS": ""}
-    result = subprocess.run(["node", "--import", guard.as_uri(), str(script)],
+    result = subprocess.run([node_executable(), "--import", guard.as_uri(), str(script)],
                             input=canonical({"operation": operation, "input": value}),
                             capture_output=True, timeout=60, env=env)
     require(result.returncode in {0, 2}, "PRODUCT_PROGRAM_FAILED", result.stderr.decode("utf-8"))
@@ -99,9 +106,9 @@ def resource_arguments(root, names):
         return {}
     require(names == ["page-validation"], "PRODUCT_RESOURCE_UNKNOWN", str(names))
     from metriccanvas_authoring.pages.validation.node_validator import NodeValidationResources
-    manifest = read_json(root / "mc-tool/release.json")
-    program = "mc-tool/scripts/authoring-page-program.mjs"
-    schema = read_json(root / "mc-tool/resources/contract-snapshot/page/schema.json")
+    manifest = read_json(root / "mc-tools/release.json")
+    program = "mc-tools/scripts/authoring-page-program.mjs"
+    schema = read_json(root / "mc-tools/resources/contract-snapshot/page/schema.json")
     resources = NodeValidationResources(root / program, manifest["files"][program], manifest["defaultPageSchema"])
     return {"page_schema": schema, "node_resources": resources}
 
@@ -152,7 +159,7 @@ def evaluation_issue(root, descriptor, handler, value):
 
 def self_test(root, interface, handlers):
     reports = []
-    vectors = read_json(root / "mc-tool" / "_impl" / "self-tests.json")
+    vectors = read_json(root / "mc-tools" / "_impl" / "self-tests.json")
     require(bool(vectors), "PRODUCT_SELF_TEST_MISSING", "No product self-test vectors")
     for vector in vectors:
         result = invoke(root, interface, handlers, vector["operation"], vector["input"])
@@ -170,7 +177,7 @@ def receipt(code, message):
 
 
 def run(root, args):
-    state = verify(root)
+    state = verify(root, installed=True)
     command = args[0] if args else ""
     if args == ["check-release"]:
         return {"format": RECEIPT_FORMAT, "status": "ok", "code": "RELEASE_VERIFIED", "details": [],
@@ -178,7 +185,7 @@ def run(root, args):
     runtime_check(state["manifest"])
     if args == ["describe"]:
         return state["interface"], 0
-    handlers = read_json(root / "mc-tool" / "_impl" / "handlers.json")
+    handlers = read_json(root / "mc-tools" / "_impl" / "handlers.json")
     if args == ["self-test"]:
         return self_test(root, state["interface"], handlers), 0
     require(command == "invoke" and len(args) == 2, "PRODUCT_COMMAND_INVALID",

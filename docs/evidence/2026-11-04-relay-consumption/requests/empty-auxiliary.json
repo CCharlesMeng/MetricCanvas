@@ -1,0 +1,182 @@
+{
+  "format": "metriccanvas-mc-request/1",
+  "input": {
+    "pageId": "multislot-test",
+    "request": {
+      "layout": "dashboard",
+      "sections": [
+        {
+          "blocks": [
+            {
+              "component": "table",
+              "fields": [
+                "region",
+                "amount"
+              ],
+              "id": "comparison",
+              "pagination": {
+                "mode": "local",
+                "pageSize": 5
+              },
+              "periods": {
+                "main": {
+                  "end": "2026-01",
+                  "granularity": "month",
+                  "start": "2026-01"
+                },
+                "prior": {
+                  "end": "2026-01",
+                  "granularity": "month",
+                  "start": "2026-01"
+                }
+              },
+              "purpose": "reconciliation",
+              "rowKey": "region",
+              "source": "current",
+              "tableSlots": {
+                "prior": {
+                  "fields": [
+                    "amount"
+                  ],
+                  "source": "prior"
+                }
+              },
+              "title": "期间对比",
+              "type": "data"
+            }
+          ],
+          "id": "main",
+          "pattern": "custom"
+        }
+      ],
+      "sources": {
+        "current": "current-ref",
+        "prior": "prior-ref"
+      },
+      "title": "显式合成证据"
+    },
+    "resultRecords": {
+      "current": {
+        "request": {
+          "time": {
+            "end": "2026-01",
+            "granularity": "month",
+            "start": "2026-01"
+          }
+        },
+        "rows": [
+          {
+            "amount": 2,
+            "region": "a"
+          },
+          {
+            "amount": 3,
+            "region": "b"
+          }
+        ],
+        "source": {
+          "fields": {
+            "amount": {
+              "nullable": false,
+              "queryField": "amount",
+              "role": "measure",
+              "type": "number"
+            },
+            "region": {
+              "nullable": false,
+              "queryField": "region",
+              "role": "dimension",
+              "type": "string"
+            }
+          },
+          "source": {
+            "initial": {
+              "capturedAt": "2026-02-01T00:00:00Z",
+              "rows": [
+                {
+                  "amount": 2,
+                  "region": "a"
+                },
+                {
+                  "amount": 3,
+                  "region": "b"
+                }
+              ],
+              "totalCount": 2
+            },
+            "query": {
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "region"
+                    ],
+                    "output_metrics": [
+                      "amount"
+                    ]
+                  }
+                ]
+              },
+              "language": "dqe"
+            },
+            "resultScope": "complete",
+            "type": "query"
+          }
+        },
+        "totalCount": 2
+      },
+      "prior": {
+        "request": {
+          "time": {
+            "end": "2026-01",
+            "granularity": "month",
+            "start": "2026-01"
+          }
+        },
+        "rows": [],
+        "source": {
+          "fields": {
+            "amount": {
+              "nullable": false,
+              "queryField": "amount",
+              "role": "measure",
+              "type": "number"
+            },
+            "region": {
+              "nullable": false,
+              "queryField": "region",
+              "role": "dimension",
+              "type": "string"
+            }
+          },
+          "source": {
+            "initial": {
+              "capturedAt": "2026-02-01T00:00:00Z",
+              "rows": [],
+              "totalCount": 0
+            },
+            "query": {
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "region"
+                    ],
+                    "output_metrics": [
+                      "amount"
+                    ]
+                  }
+                ]
+              },
+              "language": "dqe"
+            },
+            "resultScope": "complete",
+            "type": "query"
+          }
+        },
+        "totalCount": 0
+      }
+    }
+  },
+  "requestId": "empty-auxiliary"
+}

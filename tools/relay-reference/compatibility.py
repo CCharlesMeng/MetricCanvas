@@ -29,6 +29,8 @@ def environment_reasons(old, new):
 
 def interface_reasons(old, new):
     reasons = []
+    if old["entrypoint"] != new["entrypoint"]:
+        reasons.append("entrypoint: explicit integration upgrade required")
     for name, operation in sorted(old["operations"].items()):
         if canonical(new["operations"].get(name)) != canonical(operation):
             reasons.append("operation:" + name + ": removed or changed contract")

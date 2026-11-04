@@ -13,7 +13,7 @@ FORMAT = "metriccanvas-relay-archive/1"
 
 
 def package_files(root, state):
-    return {**state["manifest"]["files"], "mc-tool/release.json": file_digest(root / "mc-tool/release.json")}
+    return {**state["manifest"]["files"], "mc-tools/release.json": file_digest(root / "mc-tools/release.json")}
 
 
 def archive_kind(path):

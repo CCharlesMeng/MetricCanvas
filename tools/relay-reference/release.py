@@ -10,10 +10,10 @@ import re
 FORMAT = "metriccanvas-relay-reference-release/1"
 INTERFACE_FORMAT = "metriccanvas-mc-tool-interface/1"
 RECEIPT_FORMAT = "metriccanvas-relay-release-check/1"
-MANIFEST = "mc-tool/release.json"
-TOP_LEVEL = {"mc-content", "mc-content.md", "mc-tool", "mc-tool.md"}
-PUBLIC_PATHS = {"mc-content/index.json", "mc-content.md", "mc-tool/cli.py",
-                "mc-tool/interface.json", MANIFEST, "mc-tool.md"}
+MANIFEST = "mc-tools/release.json"
+TOP_LEVEL = {"mc-content", "mc-content.md", "mc-tools", "mc-tools.md"}
+PUBLIC_PATHS = {"mc-content/index.json", "mc-content.md", "mc-tools/cli.py",
+                "mc-tools/interface.json", MANIFEST, "mc-tools.md"}
 METADATA_FIELDS = {"releaseVersion", "resourceIndexVersion", "runtime",
                    "pageSchemaVersions", "defaultPageSchema"}
 
@@ -94,21 +94,40 @@ def relative_path(value):
     return value
 
 
-def inventory(root):
+def tools_directory(root):
+    """Read historical sealed candidates without changing their public paths."""
+    return "mc-tools" if (Path(root) / "mc-tools").exists() else "mc-tool"
+
+
+def artifact_names(root):
+    tool = tools_directory(root)
+    return {"mc-content", "mc-content.md", tool, tool + ".md"}
+
+
+def inventory(root, *, installed=False):
     root = Path(root)
     require(not root.is_symlink() and root.is_dir(), "RELEASE_LAYOUT_INVALID", "Expected release directory")
-    require({p.name for p in root.iterdir()} == TOP_LEVEL,
-            "RELEASE_LAYOUT_INVALID", "Candidate must contain exactly four artifacts")
-    require(all((root / name).is_dir() for name in ("mc-content", "mc-tool")),
+    names = TOP_LEVEL if installed else artifact_names(root)
+    present = {p.name for p in root.iterdir()}
+    require(names <= present if installed else present == names,
+            "RELEASE_LAYOUT_INVALID", "Missing or unexpected product artifacts")
+    tool = "mc-tools" if installed else tools_directory(root)
+    require(all((root / name).is_dir() for name in ("mc-content", tool)),
             "RELEASE_LAYOUT_INVALID", "Content and tool must be directories")
-    require(all((root / name).is_file() for name in ("mc-content.md", "mc-tool.md")),
+    require(all((root / name).is_file() for name in ("mc-content.md", tool + ".md")),
             "RELEASE_LAYOUT_INVALID", "Both guides must be files")
-    return file_inventory(root)
+    return file_inventory(root, names, tool + "/release.json")
 
 
-def file_inventory(root):
+def file_inventory(root, names, manifest):
     files, seen = {}, set()
-    for path in sorted(root.rglob("*")):
+    paths = set()
+    for name in names:
+        artifact = root / name
+        require(not artifact.is_symlink(), "RELEASE_PATH_INVALID", "Symlink: " + name)
+        paths.add(artifact)
+        paths.update(artifact.rglob("*"))
+    for path in sorted(paths):
         name = relative_path(path.relative_to(root).as_posix())
         require(not path.is_symlink(), "RELEASE_PATH_INVALID", "Symlink: " + name)
         require(name.casefold() not in seen, "RELEASE_PATH_INVALID", "Case collision: " + name)
@@ -118,7 +137,7 @@ def file_inventory(root):
         if path.is_dir():
             continue
         require(path.is_file(), "RELEASE_PATH_INVALID", "Special file: " + name)
-        if name != MANIFEST:
+        if name != manifest:
             files[name] = digest(path.read_bytes())
     return files
 
@@ -153,14 +172,16 @@ def validate_operation(operation, name):
 
 
 def read_interface(root, files):
-    interface = read_json(root / "mc-tool/interface.json")
+    tool = tools_directory(root)
+    interface = read_json(root / tool / "interface.json")
     shape(interface, {"format", "version", "entrypoint", "publicPaths", "operations"}, "interface")
-    require(interface["format"] == INTERFACE_FORMAT and interface["entrypoint"] == "mc-tool/cli.py",
+    require(interface["format"] == INTERFACE_FORMAT and interface["entrypoint"] == tool + "/cli.py",
             "RELEASE_CONTRACT_INVALID", "Unsupported Interface or entrypoint")
     version(interface["version"])
     strings(interface["publicPaths"], "publicPaths", allow_empty=False)
     paths = {relative_path(path) for path in interface["publicPaths"]}
-    require(PUBLIC_PATHS <= paths and paths <= set(files) | {MANIFEST},
+    required = {path.replace("mc-tools", tool, 1) for path in PUBLIC_PATHS}
+    require(required <= paths and paths <= set(files) | {tool + "/release.json"},
             "RELEASE_RESOURCE_MISSING", "Public path missing from contract or inventory")
     operations = interface["operations"]
     require(isinstance(operations, dict), "RELEASE_CONTRACT_INVALID", "Expected operation map")
@@ -185,9 +206,9 @@ def read_resources(root, files):
     return resources
 
 
-def manifest_body(root, metadata):
+def manifest_body(root, metadata, *, installed=False):
     validate_metadata(metadata)
-    files = inventory(root)
+    files = inventory(root, installed=installed)
     interface = read_interface(Path(root), files)
     read_resources(Path(root), files)
     return {"format": FORMAT, **metadata, "interfaceVersion": interface["version"], "files": files}
@@ -197,7 +218,7 @@ def seal(root, metadata):
     body = manifest_body(root, metadata)
     manifest = {**body, "releaseId": digest(canonical(body))}
     payload = canonical(manifest) + b"\n"
-    target = Path(root) / MANIFEST
+    target = Path(root) / tools_directory(root) / "release.json"
     if target.exists():
         require(target.read_bytes() == payload, "RELEASE_IMMUTABLE", "Existing manifest differs; seal a new candidate")
     else:
@@ -206,17 +227,18 @@ def seal(root, metadata):
     return manifest
 
 
-def verify(root):
+def verify(root, *, installed=False):
     root = Path(root)
     # Inspect paths before reading metadata, including the excluded manifest path.
-    inventory(root)
-    manifest = read_json(root / MANIFEST)
+    inventory(root, installed=installed)
+    manifest_path = root / tools_directory(root) / "release.json"
+    manifest = read_json(manifest_path)
     shape(manifest, METADATA_FIELDS | {"format", "interfaceVersion", "files", "releaseId"}, "release")
     require(manifest["format"] == FORMAT, "RELEASE_MANIFEST_INVALID", "Unsupported release format")
     metadata = {key: manifest[key] for key in METADATA_FIELDS}
-    body = manifest_body(root, metadata)
+    body = manifest_body(root, metadata, installed=installed)
     expected = {**body, "releaseId": digest(canonical(body))}
-    require(manifest == expected and (root / MANIFEST).read_bytes() == canonical(expected) + b"\n",
+    require(manifest == expected and manifest_path.read_bytes() == canonical(expected) + b"\n",
             "RELEASE_CONTENT_MISMATCH", "Release identity, canonical manifest or file inventory mismatch")
     return {"manifest": manifest, "interface": read_interface(root, body["files"]),
             "resources": read_resources(root, body["files"])}

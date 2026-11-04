@@ -30,7 +30,7 @@ class InterfaceResourceTests(unittest.TestCase):
         description = deepcopy(old["operations"]["page.validate"])
         description["errorCodes"] = ["NEW_METADATA_DIAGNOSTIC"]
         self.interface["operations"]["test.metadata.only"] = description
-        (self.root / "mc-tool/interface.json").write_bytes(canonical(self.interface) + b"\n")
+        (self.root / "mc-tools/interface.json").write_bytes(canonical(self.interface) + b"\n")
 
     def inventory(self):
         return {path.relative_to(self.root).as_posix(): digest(path.read_bytes())
@@ -51,7 +51,7 @@ class InterfaceResourceTests(unittest.TestCase):
         self.assertEqual(projected["runtime"]["offline-interface"], "runtime/offline-interface.json")
         node = read_json(self.root / "mc-content" / projected["error"]["NEW_METADATA_DIAGNOSTIC"])
         self.assertEqual(node["operations"], ["test.metadata.only"])
-        self.assertEqual(node["interfacePath"], "mc-tool/interface.json")
+        self.assertEqual(node["interfacePath"], "mc-tools/interface.json")
         summary = read_json(self.root / "mc-content/runtime/offline-interface.json")
         self.assertEqual(summary["legacyCoverage"]["scope"], "legacy MC/source graph")
         self.assertNotIn("inputSchema", summary["operations"]["page.validate"])
@@ -70,6 +70,17 @@ class InterfaceResourceTests(unittest.TestCase):
         result = json.loads(child.stdout)
         self.assertFalse(result["truncated"])
         self.assertEqual(result["content"]["code"], "NEW_METADATA_DIAGNOSTIC")
+
+    def test_operation_guide_is_bounded_and_does_not_embed_validation_schemas(self):
+        publish_interface(self.root / "mc-content", self.interface)
+        index = read_json(self.root / "mc-content/index.json")
+        card = read_json(self.root / "mc-content" / index["runtime"]["operation.page.validate"])
+        self.assertEqual(card["operation"], "page.validate")
+        self.assertEqual(card["required"], self.interface["operations"]["page.validate"]["inputSchema"]["required"])
+        self.assertEqual(card["schemas"]["input"], "#/operations/page.validate/inputSchema")
+        self.assertNotIn("inputSchema", card)
+        self.assertNotIn("definitions", card)
+        self.assertLess(len(canonical(card)), 2048)
 
 
 if __name__ == "__main__":

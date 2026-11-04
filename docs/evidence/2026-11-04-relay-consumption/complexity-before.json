@@ -1,0 +1,186 @@
+{
+  "tools/relay-reference/product_runtime.py": [
+    {
+      "name": "offline_audit",
+      "complexity": 2
+    },
+    {
+      "name": "initialize",
+      "complexity": 3
+    },
+    {
+      "name": "runtime_check",
+      "complexity": 2
+    },
+    {
+      "name": "parse_request",
+      "complexity": 3
+    },
+    {
+      "name": "node_operation",
+      "complexity": 1
+    },
+    {
+      "name": "dispatch",
+      "complexity": 2
+    },
+    {
+      "name": "postprocess",
+      "complexity": 10
+    },
+    {
+      "name": "resource_arguments",
+      "complexity": 2
+    },
+    {
+      "name": "validate_result",
+      "complexity": 4
+    },
+    {
+      "name": "invoke",
+      "complexity": 3
+    },
+    {
+      "name": "evaluation_issue",
+      "complexity": 8
+    },
+    {
+      "name": "self_test",
+      "complexity": 6
+    },
+    {
+      "name": "receipt",
+      "complexity": 1
+    },
+    {
+      "name": "run",
+      "complexity": 6
+    },
+    {
+      "name": "run_request",
+      "complexity": 4
+    },
+    {
+      "name": "main",
+      "complexity": 2
+    }
+  ],
+  "tools/mc-content/scripts/mc_runtime.py": [
+    {
+      "name": "run_node",
+      "complexity": 11
+    },
+    {
+      "name": "require_compile_dependency",
+      "complexity": 2
+    },
+    {
+      "name": "compile_dependency_check",
+      "complexity": 2
+    },
+    {
+      "name": "node_check",
+      "complexity": 4
+    },
+    {
+      "name": "preflight",
+      "complexity": 7
+    }
+  ],
+  "tools/relay-reference/interface_resources.py": [
+    {
+      "name": "pointer",
+      "complexity": 1
+    },
+    {
+      "name": "call_codes",
+      "complexity": 7
+    },
+    {
+      "name": "runtime_codes",
+      "complexity": 12
+    },
+    {
+      "name": "declared_errors",
+      "complexity": 3
+    },
+    {
+      "name": "interface_summary",
+      "complexity": 2
+    },
+    {
+      "name": "write_generated",
+      "complexity": 2
+    },
+    {
+      "name": "add_error_resources",
+      "complexity": 4
+    },
+    {
+      "name": "refresh_manifest",
+      "complexity": 6
+    },
+    {
+      "name": "publish_interface",
+      "complexity": 1
+    }
+  ],
+  "tools/relay-reference/export.py": [
+    {
+      "name": "write_json",
+      "complexity": 1
+    },
+    {
+      "name": "copy_tree",
+      "complexity": 5
+    },
+    {
+      "name": "copy_resources",
+      "complexity": 4
+    },
+    {
+      "name": "install_private",
+      "complexity": 3
+    },
+    {
+      "name": "add_operations",
+      "complexity": 2
+    },
+    {
+      "name": "add_python",
+      "complexity": 4
+    },
+    {
+      "name": "postprocess_metadata",
+      "complexity": 8
+    },
+    {
+      "name": "resolved_descriptions",
+      "complexity": 5
+    },
+    {
+      "name": "record_schema_binding",
+      "complexity": 2
+    },
+    {
+      "name": "add_node",
+      "complexity": 1
+    },
+    {
+      "name": "dependency_constraints",
+      "complexity": 9
+    },
+    {
+      "name": "build",
+      "complexity": 3
+    },
+    {
+      "name": "finish",
+      "complexity": 3
+    },
+    {
+      "name": "main",
+      "complexity": 1
+    }
+  ]
+}

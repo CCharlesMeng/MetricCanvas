@@ -53,10 +53,37 @@ def interface_summary(interface, global_codes):
         base = "#/operations/" + pointer(name)
         operations[name] = {"schemas": {"input": base + "/inputSchema", "output": base + "/outputSchema"},
                             "errorCodes": descriptor["errorCodes"], "sideEffects": descriptor["sideEffects"]}
-    return {"format": FORMAT, "interfaceVersion": interface["version"], "interfacePath": "mc-tool/interface.json",
+    return {"format": FORMAT, "interfaceVersion": interface["version"], "interfacePath": "mc-tools/interface.json",
             "entrypoint": interface["entrypoint"], "operations": operations, "globalDiagnostics": global_codes,
             "scope": "registered offline declarations; actual behavior, authorization and deployment require separate evidence",
             "legacyCoverage": {"resourceId": "runtime:coverage", "scope": "legacy MC/source graph"}}
+
+
+def operation_guide(interface, name, descriptor):
+    schema = descriptor["inputSchema"]
+    base = "#/operations/" + pointer(name)
+    fields = {key: {"pointer": base + "/inputSchema/properties/" + pointer(key),
+                    "required": key in schema.get("required", [])}
+              for key in schema.get("properties", {})}
+    return {"format": "metriccanvas-operation-guide/1", "operation": name,
+            "interfaceVersion": interface["version"], "entrypoint": interface["entrypoint"],
+            "scope": "input field overview; not a complete validator or MCP registration schema",
+            "required": schema.get("required", []), "fields": fields,
+            "schemas": {"artifact": "mc-tools/interface.json", "input": base + "/inputSchema",
+                        "output": base + "/outputSchema"},
+            "sideEffects": descriptor["sideEffects"],
+            "result": "Preserve ok/partial/error and ordered diagnostics; product computation does not execute queries or save.",
+            "diagnostics": "Read error:CODE for an actual diagnostic; the full closed set remains in the machine Interface."}
+
+
+def add_operation_guides(root, index, interface):
+    entries = index.setdefault("runtime", {})
+    for name, descriptor in sorted(interface["operations"].items()):
+        relative = "runtime/operations/" + digest(name.encode("utf-8"))[:24] + ".json"
+        key = "operation." + name
+        require(entries.get(key, relative) == relative, "PRODUCT_RESOURCE_COLLISION", key)
+        write_generated(root / relative, operation_guide(interface, name, descriptor))
+        entries[key] = relative
 
 
 def write_generated(path, value):
@@ -76,8 +103,8 @@ def add_error_resources(root, index, interface, global_codes):
             continue
         relative = "errors/offline-" + digest(code.encode("utf-8"))[:24] + ".json"
         value = {"format": "metriccanvas-offline-error-index/1", "code": code, "operations": operations,
-                 "globalDiagnostic": code in global_codes, "interfacePath": "mc-tool/interface.json",
-                 "operationGuide": "mc-tool.md", "scope": "declared offline diagnostics",
+                 "globalDiagnostic": code in global_codes, "interfacePath": "mc-tools/interface.json",
+                 "operationGuide": "mc-tools.md", "scope": "declared offline diagnostics",
                  "guidance": "Read the complete ordered code/type, path and message from the actual receipt; this index grants no authorization or retry."}
         write_generated(root / relative, value)
         entries[code] = relative
@@ -98,12 +125,13 @@ def refresh_manifest(root, manifest):
 def publish_interface(root, interface):
     verify_content(root)
     manifest, index = read_json(root / "mc-content.version.json"), read_json(root / "index.json")
-    codes = runtime_codes(root.parent / "mc-tool")
+    codes = runtime_codes(root.parent / "mc-tools")
     relative = "runtime/offline-interface.json"
     entries = index.setdefault("runtime", {})
     require(entries.get("offline-interface", relative) == relative, "PRODUCT_RESOURCE_COLLISION", "runtime:offline-interface")
     write_generated(root / relative, interface_summary(interface, codes))
     entries["offline-interface"] = relative
+    add_operation_guides(root, index, interface)
     add_error_resources(root, index, interface, codes)
     (root / "index.json").write_bytes(pretty(index))
     manifest["relayProjection"]["offlineInterface"] = {"resourceId": "runtime:offline-interface",

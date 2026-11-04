@@ -33,15 +33,15 @@ def write_json(path, value):
 
 def fixture(root):
     (root / "mc-content").mkdir(parents=True)
-    (root / "mc-tool").mkdir()
+    (root / "mc-tools").mkdir()
     (root / "mc-content.md").write_text("Resource guide\n")
-    (root / "mc-tool.md").write_text("Tool guide\n")
+    (root / "mc-tools.md").write_text("Tool guide\n")
     # Structural placeholder only; no real page operation is claimed here.
-    (root / "mc-tool/cli.py").write_text("# structural release fixture\n")
+    (root / "mc-tools/cli.py").write_text("# structural release fixture\n")
     (root / "mc-content/page.md").write_text("Page resource\n")
     write_json(root / "mc-content/index.json", {"reference": {"page": "page.md"}})
-    write_json(root / "mc-tool/interface.json", {"format": INTERFACE_FORMAT, "version": "1.0.0",
-               "entrypoint": "mc-tool/cli.py", "publicPaths": sorted(PUBLIC_PATHS),
+    write_json(root / "mc-tools/interface.json", {"format": INTERFACE_FORMAT, "version": "1.0.0",
+               "entrypoint": "mc-tools/cli.py", "publicPaths": sorted(PUBLIC_PATHS),
                "operations": {"validate": deepcopy(OLD_OPERATION)}})
 
 
@@ -57,7 +57,7 @@ class ReleaseTests(unittest.TestCase):
         self.metadata = {**deepcopy(BASE_METADATA), "releaseVersion": "1.0.1"}
 
     def interface(self, change):
-        path = self.candidate / "mc-tool/interface.json"
+        path = self.candidate / "mc-tools/interface.json"
         value = read_json(path)
         change(value)
         write_json(path, value)
@@ -81,19 +81,19 @@ class ReleaseTests(unittest.TestCase):
         before = deepcopy(self.metadata)
         seal(self.candidate, self.metadata)
         self.assertEqual(before, self.metadata)
-        (self.candidate / "mc-tool.md").write_text("Changed guide\n")
+        (self.candidate / "mc-tools.md").write_text("Changed guide\n")
         with self.assertRaisesRegex(ReleaseError, "Existing manifest differs"):
             seal(self.candidate, self.metadata)
 
     def test_private_restructure_and_resource_relocation_allow_smoke(self):
-        (self.candidate / "mc-tool/private-v2.py").write_text("# private implementation\n")
+        (self.candidate / "mc-tools/private-v2.py").write_text("# private implementation\n")
         (self.candidate / "mc-content/page.md").rename(self.candidate / "mc-content/internal-page.md")
         write_json(self.candidate / "mc-content/index.json", {"reference": {"page": "internal-page.md"}})
         result = self.outcome()
         self.assertTrue(result["eligibleForSmoke"])
         self.assertFalse(result["unchanged"])
         self.assertEqual([], result["details"])
-        self.assertEqual(OLD_OPERATION, read_json(self.current / "mc-tool/interface.json")["operations"]["validate"])
+        self.assertEqual(OLD_OPERATION, read_json(self.current / "mc-tools/interface.json")["operations"]["validate"])
 
     def test_new_operation_requires_minor_version_and_keeps_old_operation(self):
         self.interface(lambda value: value["operations"].update(inspect=deepcopy(OLD_OPERATION)))
@@ -111,8 +111,8 @@ class ReleaseTests(unittest.TestCase):
             with self.subTest(change=changes.index(change)):
                 if (self.candidate / MANIFEST).exists():
                     (self.candidate / MANIFEST).unlink()
-                original = read_json(self.current / "mc-tool/interface.json")
-                write_json(self.candidate / "mc-tool/interface.json", original)
+                original = read_json(self.current / "mc-tools/interface.json")
+                write_json(self.candidate / "mc-tools/interface.json", original)
                 self.interface(change)
                 result = self.outcome()
                 self.assertEqual("needs_migration", result["status"])
@@ -123,7 +123,7 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn("resource:reference:page", self.outcome()["details"][0])
         (self.candidate / MANIFEST).unlink()
         # A removed optional public path is detected even if its file still exists.
-        path = self.current / "mc-tool/interface.json"
+        path = self.current / "mc-tools/interface.json"
         old = read_json(path)
         old["publicPaths"].append("mc-content/page.md")
         write_json(path, old)
@@ -155,7 +155,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_integrity_detects_bytes_extra_files_and_manifest_tamper(self):
         seal(self.candidate, self.metadata)
-        tests = [("mc-content/page.md", b"changed"), ("mc-tool/extra.py", b"extra")]
+        tests = [("mc-content/page.md", b"changed"), ("mc-tools/extra.py", b"extra")]
         for name, content in tests:
             with self.subTest(name=name):
                 path = self.candidate / name
@@ -195,15 +195,15 @@ class ReleaseTests(unittest.TestCase):
             seal(self.candidate, self.metadata)
 
     def test_symlinks_and_case_collisions_are_rejected(self):
-        link = self.candidate / "mc-tool/link.py"
-        link.symlink_to(self.current / "mc-tool/cli.py")
+        link = self.candidate / "mc-tools/link.py"
+        link.symlink_to(self.current / "mc-tools/cli.py")
         with self.assertRaisesRegex(ReleaseError, "Symlink"):
             seal(self.candidate, self.metadata)
         link.unlink()
-        interface = read_json(self.candidate / "mc-tool/interface.json")
+        interface = read_json(self.candidate / "mc-tools/interface.json")
         interface["publicPaths"].append("mc-content/Page.md")
         (self.candidate / "mc-content/Page.md").write_text("case duplicate")
-        write_json(self.candidate / "mc-tool/interface.json", interface)
+        write_json(self.candidate / "mc-tools/interface.json", interface)
         # On case-insensitive macOS the write aliases page.md; the public path
         # still cannot claim both spellings. Case-sensitive hosts reject inventory.
         with self.assertRaises(ReleaseError):
@@ -216,7 +216,7 @@ class ReleaseTests(unittest.TestCase):
                 path.write_text(source)
                 with self.assertRaises(ReleaseError):
                     read_json(path)
-        for name in ("mc-tool/__pycache__", "mc-content/.DS_Store", "mc-tool/cache.pyc"):
+        for name in ("mc-tools/__pycache__", "mc-content/.DS_Store", "mc-tools/cache.pyc"):
             with self.subTest(name=name):
                 path = self.candidate / name
                 path.write_text("not distributable")

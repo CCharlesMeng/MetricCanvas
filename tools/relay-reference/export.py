@@ -47,12 +47,12 @@ def copy_resources(bundle, target):
 
 
 def install_private(target):
-    implementation = target / "mc-tool" / "_impl"
+    implementation = target / "mc-tools" / "_impl"
     implementation.mkdir(parents=True)
     for name in ("release.py", "product_runtime.py", "network_guard.mjs", "content_operation.py"):
         shutil.copyfile(HERE / name, implementation / name)
-    shutil.copyfile(HERE / "product_cli.py", target / "mc-tool" / "cli.py")
-    for name in ("mc-content.md", "mc-tool.md"):
+    shutil.copyfile(HERE / "product_cli.py", target / "mc-tools" / "cli.py")
+    for name in ("mc-content.md", "mc-tools.md"):
         shutil.copyfile(HERE / "guides" / name, target / name)
 
 
@@ -68,7 +68,7 @@ def add_python(root, target, modules, operations, handlers, samples):
     source = root / "metriccanvas-authoring" / "tool"
     files, dependencies = closure(source, modules)
     for file in files.values():
-        destination = target / "mc-tool" / "python" / file.relative_to(source)
+        destination = target / "mc-tools" / "python" / file.relative_to(source)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(file, destination)
     sys.path.insert(0, str(source))
@@ -78,7 +78,7 @@ def add_python(root, target, modules, operations, handlers, samples):
         module = importlib.import_module(name)
         required = getattr(module, "RESOURCES", [])
         require(set(required) <= {"page-validation"}, "PRODUCT_RESOURCE_UNKNOWN", str(required))
-        require(not required or (target / "mc-tool/scripts/authoring-page-program.mjs").is_file(),
+        require(not required or (target / "mc-tools/scripts/authoring-page-program.mjs").is_file(),
                 "PRODUCT_PROGRAM_MISSING", "Python page validation requires the prebuilt page program")
         descriptions = resolved_descriptions(target, module)
         hooks = postprocess_metadata(module, operations, handlers)
@@ -112,7 +112,7 @@ def resolved_descriptions(target, module):
     bindings = getattr(module, "SCHEMA_BINDINGS", {})
     for property_name, binding in bindings.items():
         require(binding == "authoring.evaluation", "PRODUCT_SCHEMA_BINDING_UNKNOWN", str(binding))
-        relative = "mc-tool/resources/contracts/exported/temporal-evaluation.schema.json"
+        relative = "mc-tools/resources/contracts/exported/temporal-evaluation.schema.json"
         shared = read_json(target / relative)
         require(isinstance(shared, dict) and bool(shared), "PRODUCT_SCHEMA_BINDING_UNRESOLVED", binding)
         resolved = []
@@ -127,7 +127,7 @@ def resolved_descriptions(target, module):
 
 
 def record_schema_binding(target, module, property_name, relative, resolved):
-    report = target / "mc-tool/_impl/schema-bindings.json"
+    report = target / "mc-tools/_impl/schema-bindings.json"
     records = read_json(report) if report.exists() else []
     records.append({"provider": module, "property": property_name, "source": relative,
                     "authorSource": "metriccanvas-authoring/core/page/product-contract.ts#EVALUATION_SCHEMA",
@@ -140,13 +140,13 @@ def add_node(source, target, operations, handlers, samples):
     descriptions = read_json(source / "operations.json")
     program_info = read_json(source / "program-info.json")
     shared = read_json(source / "evaluation-schema.json")
-    write_json(target / "mc-tool/resources/contracts/exported/temporal-evaluation.schema.json", shared)
+    write_json(target / "mc-tools/resources/contracts/exported/temporal-evaluation.schema.json", shared)
     policy = read_json(target / "mc-content/protocols/version-policy.json")
     require(program_info["schemaVersion"] == policy["current"], "PRODUCT_SCHEMA_MISMATCH",
             "Node program and content default page Schema must match")
-    copy_tree(source / "scripts", target / "mc-tool" / "scripts")
+    copy_tree(source / "scripts", target / "mc-tools" / "scripts")
     program = "scripts/authoring-page-program.mjs"
-    require((target / "mc-tool" / program).is_file(), "PRODUCT_PROGRAM_MISSING", program)
+    require((target / "mc-tools" / program).is_file(), "PRODUCT_PROGRAM_MISSING", program)
     add_operations(operations, handlers, descriptions, {"kind": "node", "path": program})
     samples.extend(read_json(source / "self-tests.json"))
 
@@ -173,13 +173,13 @@ def dependency_constraints(root, names):
     return dict(sorted(constraints.items()))
 
 
-def build(root, target, release_version, node_bundle=None, modules=(), interface_version="1.0.0"):
+def build(root, target, release_version, node_bundle=None, modules=(), interface_version="2.0.0"):
     require(not target.exists(), "PRODUCT_OUTPUT_EXISTS", "Use a new candidate directory: " + str(target))
     bundle = root / "metriccanvas-authoring"
     copy_tree(bundle / "mc-content", target / "mc-content")
     annotate(target / "mc-content")
     install_private(target)
-    resources = target / "mc-tool" / "resources"
+    resources = target / "mc-tools" / "resources"
     resources.mkdir()
     copy_resources(bundle, resources)
     import content_operation
@@ -197,19 +197,35 @@ def build(root, target, release_version, node_bundle=None, modules=(), interface
     return finish(root, target, release_version, operations, handlers, samples, dependencies, interface_version)
 
 
+def write_examples(target, samples):
+    entries = []
+    for number, sample in enumerate(samples, 1):
+        relative = f"examples/requests/{number:04d}.json"
+        request = {"format": "metriccanvas-mc-request/1", "requestId": f"example-{number:04d}",
+                   "input": sample["input"]}
+        write_json(target / "mc-tools" / relative, request)
+        entries.append({"id": f"{number:04d}", "operation": sample["operation"], "request": relative,
+                        "expectedStatus": sample["expectedStatus"],
+                        "expectedDiagnostic": sample.get("expectedDiagnostic")})
+    write_json(target / "mc-tools/examples/index.json", {"format": "metriccanvas-product-examples/1",
+        "scope": "frozen synthetic inputs; not live execution, authorization or save evidence", "examples": entries})
+
+
 def finish(root, target, release_version, operations, handlers, samples, dependencies, interface_version):
     require(set(operations) <= {sample["operation"] for sample in samples},
             "PRODUCT_SELF_TEST_MISSING", "Every advertised operation needs a fixed product sample")
-    write_json(target / "mc-tool/_impl/handlers.json", handlers)
-    write_json(target / "mc-tool/_impl/self-tests.json", samples)
+    write_json(target / "mc-tools/_impl/handlers.json", handlers)
+    write_json(target / "mc-tools/_impl/self-tests.json", samples)
+    write_examples(target, samples)
     interface = {"format": "metriccanvas-mc-tool-interface/1",
-        "version": interface_version, "entrypoint": "mc-tool/cli.py", "publicPaths": sorted(PUBLIC_PATHS),
+        "version": interface_version, "entrypoint": "mc-tools/cli.py",
+        "publicPaths": sorted(PUBLIC_PATHS | {"mc-tools/examples/index.json"}),
         "operations": operations}
-    write_json(target / "mc-tool/interface.json", interface)
+    write_json(target / "mc-tools/interface.json", interface)
     publish_interface(target / "mc-content", interface)
     policy = read_json(target / "mc-content/protocols/version-policy.json")
     constraints = dependency_constraints(root, dependencies)
-    (target / "mc-tool/requirements.txt").write_bytes("".join(name + pin + "\n" for name, pin in constraints.items()).encode("utf-8"))
+    (target / "mc-tools/requirements.txt").write_bytes("".join(name + pin + "\n" for name, pin in constraints.items()).encode("utf-8"))
     manifest = seal(target, {"releaseVersion": release_version, "resourceIndexVersion": "1.0.0",
         "runtime": {"python": ">=3.12", "node": ">=22", "dependencies": constraints},
         "pageSchemaVersions": policy["readableVersions"], "defaultPageSchema": policy["current"]})
@@ -222,7 +238,7 @@ def main():
     parser.add_argument("--root", type=Path, default=HERE.parents[1])
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--release-version", default="0.1.0")
-    parser.add_argument("--interface-version", default="1.0.0")
+    parser.add_argument("--interface-version", default="2.0.0")
     parser.add_argument("--node-bundle", type=Path)
     parser.add_argument("--python-operations", action="append", default=[])
     args = parser.parse_args()

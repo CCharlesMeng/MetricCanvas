@@ -6,7 +6,7 @@
 
 ## 1. 目标、归属和范围
 
-Relay 初次准备 Python、Node 及约定第三方依赖后，普通升级仅同步 `mc-content/`、`mc-content.md`、`mc-tool/`、`mc-tool.md` 四项，不构建、不安装本仓 wheel、不读取其他源码目录、不在线安装依赖。MC 内部结构变化由导出层吸收，Relay 包装不依赖私有模块路径。
+Relay 初次准备 Python、Node 及约定第三方依赖后，普通升级仅同步 `mc-content/`、`mc-content.md`、`mc-tools/`、`mc-tools.md` 四项，不构建、不安装本仓 wheel、不读取其他源码目录、不在线安装依赖。MC 内部结构变化由导出层吸收，Relay 包装不依赖私有模块路径。
 
 MC 维护无网络的页面/查询派生/结果处理/作用域与回执规则、产品资源及可重复发行；Relay 维护真实 MCP 装配、可信身份与轮次、数据发现和 DQE、实际状态/CAS、Java 保存/恢复及前端交接。Skill 选择任务、解释状态；完整修改保存过程由 Relay 程序协调。产品规则不得通过回调/Port 间接联网；哈希或布尔授权标记不证明权限。
 
@@ -19,27 +19,29 @@ references/
 ├── mc-content/
 │   └── index.json
 ├── mc-content.md
-├── mc-tool/
+├── mc-tools/
 │   ├── cli.py
 │   ├── interface.json
 │   ├── release.json
 │   └── [私有实现与预构建 Node 程序]
-└── mc-tool.md
+└── mc-tools.md
 ```
 
 这四项是一次发行的完整文件集合；部署目录可另有 Relay 自有文件，但候选暂存根必须只有这四项。`release.json` 校验范围只包含这四项，升级程序不得覆盖其他 references。无第五个必需同步文件。
+
+产品CLI按安装范围校验四项，忽略四项之外的宿主文件，并对四项内部完整文件集合、原始字节和非法路径继续严格检查；构建侧seal/verify/compare默认使用严格候选范围。Interface2正式路径使用复数mc-tools，旧Interface1的单数发行由构建侧检查器只读识别，公开路径变化返回needs_migration。请求/结果格式及19项操作不因目录更名改变。
 
 固定入口、请求/结果信封、操作标识、错误语义、公开资源 ID 和 `publicPaths` 是兼容面。内部 Python/Node 文件可迁移，Relay 不直接导入/执行它们。资源索引负责寻址，公共文档链接路径若改动必须保留兼容别名。主版内不得删除已有公开操作/资源。
 
 ## 3. Interface 与调用（S02）
 
-`mc-tool/interface.json` 固定为对象，字段不隐式扩展：
+`mc-tools/interface.json` 固定为对象，字段不隐式扩展：
 
 | 字段 | 类型与含义 |
 |---|---|
 | `format` | 常量 `metriccanvas-mc-tool-interface/1` |
 | `version` | 工具 Interface 的三段非负整数版本，禁止前导零和 prerelease |
-| `entrypoint` | 常量 `mc-tool/cli.py` |
+| `entrypoint` | 常量 `mc-tools/cli.py` |
 | `publicPaths` | 无重复的相对文件路径数组，包含本节布局中的入口、两份根指南、Interface、release 和资源索引 |
 | `operations` | 操作 ID 到描述的对象；首版只能列入真实实现并通过仓外验收的能力 |
 
@@ -48,10 +50,10 @@ references/
 稳定产品 CLI：
 
 ```text
-python -B mc-tool/cli.py describe
-python -B mc-tool/cli.py check-release
-python -B mc-tool/cli.py self-test
-python -B mc-tool/cli.py invoke <operation>   # stdin: UTF-8 JSON
+python -B mc-tools/cli.py describe
+python -B mc-tools/cli.py check-release
+python -B mc-tools/cli.py self-test
+python -B mc-tools/cli.py invoke <operation>   # stdin: UTF-8 JSON
 ```
 
 `invoke` 请求固定为 `{ "format": "metriccanvas-mc-request/1", "requestId": "...", "input": {...} }`。输出固定为 `{ "format": "metriccanvas-mc-result/1", "requestId": "...", "operation": "...", "status": "ok|partial|error", "data": {}, "diagnostics": [] }`；`data` 的实际类型和业务诊断由各操作 Schema 定义。结果仅表示产品计算，不表示外部查询/保存/发布成功。stdin/stdout 仅一份 JSON，日志走 stderr；成功/部分成功退出 0，产品拒绝退出 2，运行环境/发行错误退出 3；不使用网络补齐缺输入。
@@ -84,11 +86,13 @@ python -B mc-tool/cli.py invoke <operation>   # stdin: UTF-8 JSON
 
 沿用 `mc-content/index.json` 的 `topic → key → content-relative-path` 对象结构，空 topic 允许；每个 topic/key/path 必须是非空字符串。topic 不含冒号，资源 ID 为 `topic:key`，与正文哈希无关。每个路径必须指向四项中 `mc-content/` 下的实际文件，不允许绝对路径、父级跳转、反斜杠或路径别名。
 
+0.3.2按实际Interface为各操作增加`runtime:operation.<操作名>`输入概览，包含必填项与完整契约指针，不作为完整校验器或MCP注册Schema。完整Interface由程序持有，模型按任务读取概览和必要属性；公开请求从`mc-tools/examples/index.json`选择并通过固定入口执行。
+
 旧 ID 必须继续解析；可调整内部存储地址。旧公开路径的保留由 `publicPaths` 检查。两份指南按任务解释资源，不复制全量产品规则；索引、链接和生成物同源检查。
 
 ## 5. 发行清单与确定性（S03）
 
-`mc-tool/release.json` 字段有且仅有：
+`mc-tools/release.json` 字段有且仅有：
 
 | 字段 | 约束 |
 |---|---|
@@ -102,7 +106,7 @@ python -B mc-tool/cli.py invoke <operation>   # stdin: UTF-8 JSON
 | `files` | 每个相对文件路径到原始字节 SHA-256 小写十六进制摘要的映射，包含两份指南 |
 | `releaseId` | 下述规范化内容的 SHA-256 |
 
-清单生成只从明确的候选目录及元数据读取；元数据为构建侧输入，非第五项运行输入。`files` 包含四项中的全部普通文件，但排除 `mc-tool/release.json`，以消除自引用。`releaseId` 对去掉 releaseId 字段后的整个清单做规范化 JSON 计算：UTF-8、键排序、紧凑分隔符、`ensure_ascii=False`、无末尾换行、禁止 NaN/Infinity。清单落盘采用同一规范化字节加一个 LF；verify 同时要求清单字节符合此规范。所有输入 JSON 必须 UTF-8，数值指数溢出为 Infinity 也拒绝。
+清单生成只从明确的候选目录及元数据读取；元数据为构建侧输入，非第五项运行输入。`files` 包含四项中的全部普通文件，但排除 `mc-tools/release.json`，以消除自引用。`releaseId` 对去掉 releaseId 字段后的整个清单做规范化 JSON 计算：UTF-8、键排序、紧凑分隔符、`ensure_ascii=False`、无末尾换行、禁止 NaN/Infinity。清单落盘采用同一规范化字节加一个 LF；verify 同时要求清单字节符合此规范。所有输入 JSON 必须 UTF-8，数值指数溢出为 Infinity 也拒绝。
 
 路径必须规范化、大小写不冲突；符号链接、特殊文件、Python bytecode、`__pycache__`、`.DS_Store` 均拒绝。JSON 拒绝重复键和非有限数字。校验必须同时发现缺项、多项、摘要变化和清单篡改。完整性只证明字节相配，不证明来源可信或运行语义正确；来源由实际采用流程记录。
 

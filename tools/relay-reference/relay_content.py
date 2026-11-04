@@ -8,7 +8,7 @@ import sys
 from release import digest, read_json, require
 
 NOTICE = ("> 迁移参考：本文的旧 MCP 名称、context_ref/resultRef、工具内部查数、保存及交接描述属于迁移前的在线包装。"
-          "当前离线操作以 mc-tool/interface.json 为准；真实 MCP、授权、DQE、状态/CAS、Java 保存与交接由 Relay 维护。"
+          "当前离线操作以 mc-tools/interface.json 为准；真实 MCP、授权、DQE、状态/CAS、Java 保存与交接由 Relay 维护。"
           "共享页面协议、数据和呈现规则仍按正文使用。\n\n")
 ONLINE_TERMS = ("context_ref", "query_data", "内部保存", "Java 保存", "Java 当前", "MCP", "expected_version", "artifact_ref", "workVersion")
 
@@ -51,7 +51,7 @@ def annotate(root: Path):
         if file.parent == root / "tool-contracts" and file.suffix == ".json":
             value = read_json(file)
             value["referenceScope"] = {"kind": "legacy-online-mcp-migration", "executionOwner": "Relay",
-                                       "offlineInterface": "mc-tool/interface.json"}
+                                       "offlineInterface": "mc-tools/interface.json"}
             file.write_bytes(pretty(value))
             changed.append(item["file"])
         elif file.suffix == ".md" and "scripts" not in file.relative_to(root).parts and any(term in file.read_text(encoding="utf-8") for term in ONLINE_TERMS):
