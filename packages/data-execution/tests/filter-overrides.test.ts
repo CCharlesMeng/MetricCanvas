@@ -32,9 +32,14 @@ describe('explicit boolean override contract',()=>{
     expect(parsePage(raw).ok).toBe(true);
     expect(parsePage({...raw,schemaVersion:'6.80'}).ok).toBe(false);
   });
-  it.each([['missing'],['key-office'],['region','region']])('rejects invalid override references %s',ids=>{
+  it.each([
+    {ids:['missing'],message:'覆盖筛选必须引用'},
+    {ids:['key-office'],message:'覆盖筛选必须引用'},
+    {ids:['region','region'],message:'duplicate items'}
+  ])('rejects invalid override references $ids',({ids,message})=>{
     const copy=structuredClone(raw);copy.filters[1].overridesFilters=ids;
-    expect(parsePage(copy).ok).toBe(false);
+    const result=parsePage(copy);expect(result.ok).toBe(false);
+    if(!result.ok)expect(result.errors.some(error=>error.message.includes(message))).toBe(true);
   });
   it('rejects a query missing the replacement binding before Region can be dropped',()=>{
     const copy=structuredClone(raw);delete copy.dataSources.offices.source.query.filterBindings['key-office'];
