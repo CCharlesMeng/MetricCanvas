@@ -19,3 +19,5 @@
 Radon6.0.1覆盖全部21个Python变更源文件，包含方法及闭包：298→328个函数，最高CC均为12，本批无超过15项。前后实测见[基线](complexity-base.json)/[合并后](complexity-after.json)。仓库新增全项目平均复杂度门禁已通过；存量热点按其固定基线核对。新增adoption检查只审查版本、原请求保留和过期报告拒绝，不修改产品业务分支。
 
 TypeScript导出器仍只有路径替换，AST测量selfCC4→4。产品页面协议新增属于既有main的6.84，本轮未另增字段或改变页面引擎。旧compile/inspect的等价公开能力仍未提供，见[交接映射](../../plan/2026-11-02-product-relay-evolution/relay-adapter-mapping-20261104.md)。真实Relay模型装载、DQE、Java保存、取消/迟到及unknown恢复仍须现场验收。
+
+最终集成基线为`5db4a4212`，发行0.3.4 / Interface2.0.0 / Schema6.84；releaseId `aadbc493a52a130badba25a723fb16fd4615f346eef8ada668d0cf73a7422ea5`。此批承接main的embed材料更新，0.3.3冻结消费基线保持原字节。

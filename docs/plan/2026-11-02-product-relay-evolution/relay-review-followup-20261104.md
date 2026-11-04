@@ -10,6 +10,8 @@
 - [接入映射与可执行样例](relay-adapter-mapping-20261104.md)：旧compile/inspect的非等价缺口明确列出，Relay可据此立即接入。
 - [第二批本地验收](../../evidence/2026-11-04-relay-consumption/README.md)：Node路径、19项按操作概览、35条公开请求及上下文读取字节。
 
+主线交付批次已接续为release0.3.4 / Interface2.0.0 / Schema6.84，整合已发布main的协议与embed材料；[交付验收](../../evidence/2026-11-04-mc-tools-main-delivery/README.md)另记。下文0.3.1/0.3.2是各批本地验收时点，真实Relay边界保持。
+
 ## 已确认命名
 
 用户于2026-11-04确认后续正式名称为复数 `mc-tools/`、`mc-tools.md`，固定入口改为 `mc-tools/cli.py`。现场回复单已同步，实际导出/清单/回放及迁移判定已在隔离工作树实施；当前根目录仍保留旧主检出的总体Spec和原始产物事实。
