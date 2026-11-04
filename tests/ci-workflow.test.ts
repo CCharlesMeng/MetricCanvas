@@ -34,7 +34,7 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(ci.if).toBe('${{ always() }}');
     expect(ci.steps.at(-1).env.CI_JOB_RESULTS).toBe('${{ toJSON(needs) }}');
     expect(ci.steps.at(-1).run).toBe('node tools/scripts/check-ci-results.mjs');
-    expect(workflow.jobs.tests.steps.at(-1).run).toBe('pnpm test');
+    expect(workflow.jobs.tests.steps.at(-1).run).toBe('pnpm test --maxWorkers=2');
     expect(workflow.jobs.types.steps.at(-1).run).toBe('pnpm check');
     // Source checks execute independently, rather than serially behind other jobs.
     for(const [name, job] of Object.entries(checks)) {

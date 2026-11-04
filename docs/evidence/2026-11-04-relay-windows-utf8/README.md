@@ -21,3 +21,7 @@
 9d12cc4d4原生Windows/Linux完整归档产品probe均通过。随后Windows test_archive.py拒绝反斜杠案例失败：ZipInfo构造器依据os.sep将mc-tool\outside改成mc-tool/outside，旧测试辅助函数实际写出了合法路径，生产解包器没有接到恶意名字。新增模拟Windows的回归先实证原始名字丢失（0.003秒红），再在测试write_zip中显式保留原成员名；同时检查归档原始成员名与生产extract拒绝。生产解包策略未改、未放宽断言。write_zip CC2→2，新回归CC1；正式四项字节不变，版本0.2.2保持，来源回执绑定新测试提交。
 
 夹具修正后完整发行82项带实际0.2.2候选全部通过、零跳过（78.341秒）；此前81项也全通过，新增第82项锁定Windows原始成员名。无产品源码/契约/归档字节变化。
+
+## 全仓CI并发对齐
+
+9d12cc4d4的全仓tests job实际为4182通过/2超时/5跳过，并非取消即视为通过。两项均在authoring-temporal-evaluation.test.ts：program-only非页面路由检查超过默认5秒，多时区完整回放超过20秒；没有业务断言不一致。本地最终全仓453文件4184通过使用maxWorkers=2，而CI仍用默认并发。现将CI根套件同步为pnpm test --maxWorkers=2，保留原超时、断言及所有套件；既有workflow契约期望同步，2文件25项定向回归通过（16.14秒）。CI结构回调自身复杂度不变（metriccanvas-ts-ast/1，TypeScript5.9.3），不改任何四项运行字节或发行/消费版本。最终门禁以该配置提交的CI为准。

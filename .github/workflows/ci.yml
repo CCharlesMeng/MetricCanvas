@@ -228,7 +228,7 @@ jobs:
           cache-dependency-path: metriccanvas-authoring/tool/requirements.lock
       - name: 安装契约注册探查依赖
         run: python -m pip install --require-hashes -r metriccanvas-authoring/tool/requirements.lock
-      - run: pnpm test
+      - run: pnpm test --maxWorkers=2
 
   types:
     runs-on: ubuntu-latest

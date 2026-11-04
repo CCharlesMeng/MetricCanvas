@@ -173,3 +173,5 @@ Relay可以在本地先完成：读取两份指南；登记19项实际Interface�
 本次编码边界存量例外：`text_map_building.add_map_chart` CC21→21，仅将地图JSON资源读取显式为UTF-8，未改组件装配和校验分支；为避免扩展这一跨平台修复的行为面，本次不拆分，后续在该函数承接地图资源/组件装配职责分离时关闭。Node桥 `_checked_program` 4→4、`validate_with_resources` 10→10、`validate_with_node` 11→11、`edit_presentation_with_node` 8→8；新增隔离回归2、bootstrap lambda1。之前buildSkillProjections52→52仍按原记录保留。
 
 0.2.2的实际ZIP已通过9d12cc4d4原生Windows/Linux完整产品探测；随后Windows安全单元测试发现测试ZIP写入器先把恶意反斜杠归一成合法斜杠，造成无效反例。修正测试夹具保留原始成员名，新增同时断言原始名字与生产解包拒绝的Windows模拟回归，不修改生产解包器及冻结预期。此测试侧修正不改变四项任何字节，维持release0.2.2；最终来源与CI以新提交回执为准。
+
+CI根全仓命令已对齐本地最终通过的 `pnpm test --maxWorkers=2`，未增加业务测试超时或删除断言。此前默认并发的9d12cc4d4曾出现2项进程回放超时（4182通过/5跳过），该轮失败及取消不作为整体通过。并发配置/时间上下文的25项定向测试通过，四项运行包字节保持不变；最终CI按最新来源提交核对。
