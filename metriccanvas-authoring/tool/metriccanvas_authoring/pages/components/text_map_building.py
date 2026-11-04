@@ -80,7 +80,7 @@ def add_map_chart(page, op):
     asset = bundle_root() / "contract-snapshot/page/map-regions.json"
     if not asset.is_file():
         raise EditFailure("MAP_REGIONS_CONTRACT_UNAVAILABLE")
-    regions = json.loads(asset.read_text())["maps"][op["map"]]["regions"]
+    regions = json.loads(asset.read_text(encoding="utf-8"))["maps"][op["map"]]["regions"]
     names = set(regions)
     mapping = op.get("nameMap", {})
     if not rows or any(not isinstance(row.get(op["nameField"]), str) or mapping.get(row[op["nameField"]], row[op["nameField"]]) not in names for row in rows):

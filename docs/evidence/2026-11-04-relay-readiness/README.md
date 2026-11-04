@@ -25,9 +25,9 @@
 
 归档与同名 `.release.json` 是交付和验真的载体；运行时只需解包后的四项。可用性报告、构建侧测试与消费样本不作为第五项运行依赖。
 
-交付包为 `metriccanvas-relay-reference-0.2.1.zip` 与同名 `.release.json`，SHA/字节数/源码提交身份均以同批来源回执为准。首次6.83评审样本固定在0.2.0；最后源码格式整理按不可变发行规则产生0.2.1补丁，不改旧预期。0.2.0已实际解包并在仅六依赖的仓外环境通过35自检、9负例和35正式消费回放；最终补丁沿同一门禁复验，旧23迁移失败完整保留。
+交付包为 `metriccanvas-relay-reference-0.2.2.zip` 与同名 `.release.json`，SHA/字节数/源码提交身份均以同批来源回执为准。首次6.83评审样本固定在0.2.0，冻结预期不改。首轮0.2.1的macOS与Linux producer归档完全同字节，Linux原生消费通过，但Windows消费暴露默认编码问题；0.2.2在实际Python闭包的13处资源读取与6处Node文本通道显式指定UTF-8，新增实际四项在CP1252默认环境下的隔离回归，先红后绿。没有使用PYTHONUTF8变量掩盖隔离模式问题。
 
-当前交付版本：release0.2.1、Interface1.1.0、Schema6.83。正式候选四项位于 `/tmp/metriccanvas-relay-reference-0.2.1`，对接交付目录为 `/Users/moon/Documents/Code/公司项目/DataDashboard/deliverables/relay-reference-0.2.1/references`，releaseId `91096c5dc84def84073ba03e96096b19730eaf2ac1088de9a5badaa96defb020`；3834文件。实际19个操作如下。
+当前交付版本：release0.2.2、Interface1.1.0、Schema6.83。正式候选四项位于 `/tmp/mc-relay-reference-0.2.2-final`，对接交付目录为 `/Users/moon/Documents/Code/公司项目/DataDashboard/deliverables/relay-reference-0.2.2/references`，releaseId `6d7b466b5bd49ce9ff4ed8b5d07be26123ea927c438bd0bb6619017d1b89e915`；3834文件。实际19个操作如下。
 
 | 任务 | 操作与限制 |
 |---|---|
@@ -44,17 +44,17 @@ Tokens百万与最终字段绑定检查属于创作政策；原始数值保持�
 
 ## 已取得的证据
 
-以下均来自同一最终产品来源；测试数量存在覆盖重叠，不相加作为独立覆盖率。
+全仓TypeScript、类型和浏览器证据基于3846ba52c；0.2.2仅改Python编码边界，所有6个预构建Node文件及完整Interface与0.2.1逐字节相同，因此复用上述相同输入证据。受影响Python、发行、Skill和同源知识重新验收。测试数量存在覆盖重叠，不相加作为独立覆盖率。
 
 | 层次 | 实际结果 |
 |---|---|
 | 全仓TypeScript测试 | `pnpm test --maxWorkers=2`：453文件通过，4184项通过，5项跳过，无失败 |
 | 全仓类型 | `pnpm check`通过；Svelte零错误/警告；后续测试修复另行noEmit通过 |
 | 受影响产品/时间/表格/隔离/CI结构 | 10文件118项通过；完整有序错误、输入不变、原子拒绝、仓外Node等覆盖 |
-| 本地Skill | 204项通过；独立完整目录/知识/脚本/页面校验；Skill1.21.0官方打包与仓外回验通过 |
+| 本地Skill | 204项通过；独立完整目录/知识/脚本/页面校验；Skill1.21.1官方打包与仓外回验通过 |
 | 常规repair入口 | 16项通过，未追加真实模型专项验收 |
 | Python产品核心 | 99项通过，含新呈现与多槽回归 |
-| 发行工程 | 带实际0.2.1候选运行80项全部通过、零跳过；首次采用与真实current迁移门禁均实际运行；CI结构8项复验通过 |
+| 发行工程 | 带实际0.2.2候选运行81项全部通过、零跳过；首次采用与真实current迁移门禁均实际运行；新增实际四项CP1252隔离回归；CI结构8项前批复验通过 |
 | Playground新场景 | 3项Chrome通过；宽窄屏、共享消费者、同名跨槽列、百万Canvas/真实Tooltip |
 | Embed浏览器 | 261项通过，含ES/global、完整目录复制及Webpack接入 |
 | Embed构建/实际归档 | 14个JS，最大929901未压缩字节，全部≤1000000；公共入口和分块闭合门禁通过 |
@@ -123,7 +123,7 @@ JSON
 cd /Users/moon/.codex/worktrees/relay-reference-final/DataDashboard
 export METRICCANVAS_PYTHON=/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/.venv/bin/python
 export PYTHONDONTWRITEBYTECODE=1
-export METRICCANVAS_RELAY_CANDIDATE=/Users/moon/Documents/Code/公司项目/DataDashboard/deliverables/relay-reference-0.2.1/references
+export METRICCANVAS_RELAY_CANDIDATE=/Users/moon/Documents/Code/公司项目/DataDashboard/deliverables/relay-reference-0.2.2/references
 pnpm relay:test
 pnpm relay:core:test
 pnpm test --maxWorkers=2
@@ -164,3 +164,9 @@ Relay可以在本地先完成：读取两份指南；登记19项实际Interface�
 使用metriccanvas-ts-ast/1（TypeScript5.9.3）与Radon6.0.1逐函数自身CC计量，含辅助函数/回调。A关联入口6/换源6；原checkAnalysis19→6并拆helper8/7；共享resolver6→6；列身份3→3；主控buildAuthoringOutputs7→7/buildInputSources6→6；固定Python376函数max15；发行聚合增量共259函数/lambda，max12，replay_all4→1、verify_or_extract11→6、新inspect_product5。新增函数均≤15；除下列明确登记的存量例外，修改函数均≤15。
 
 存量 `buildSkillProjections` 52→52未关闭：此次只扩展同类固定生成列表，未新增分支；更大注册器重构另行处理。未改validate_plan24仍属原存量。完整口径及来源见本批complexity-summary。未取得真实模型/真实服务证据，报告不据此推断业务正确率或模型token收益。
+
+## Windows修复与版本追溯
+
+0.2.1首轮CI不能作为跨平台通过：Windows消费失败，其余未完成任务已取消。0.2.2保留19项接口和全部冻结预期，仅修正UTF-8传输/资源读取；固定0.2.0消费与真实0.2.1 current仍须通过，历史6.82仍明确needs_migration。仓库中的[UTF-8证据](../2026-11-04-relay-windows-utf8/README.md)记录先红后绿、精确错误与测量。新增隔离回归CC2、bootstrap lambda CC1，既有相关函数CC均不变，Schema字段净增减0。完整源码身份、原生CI与最终归档探测结论以同批交付资料补充。
+
+本次编码边界存量例外：`text_map_building.add_map_chart` CC21→21，仅将地图JSON资源读取显式为UTF-8，未改组件装配和校验分支；为避免扩展这一跨平台修复的行为面，本次不拆分，后续在该函数承接地图资源/组件装配职责分离时关闭。Node桥 `_checked_program` 4→4、`validate_with_resources` 10→10、`validate_with_node` 11→11、`edit_presentation_with_node` 8→8；新增隔离回归2、bootstrap lambda1。之前buildSkillProjections52→52仍按原记录保留。

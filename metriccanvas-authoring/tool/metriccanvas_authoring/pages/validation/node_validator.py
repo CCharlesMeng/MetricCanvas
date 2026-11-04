@@ -23,7 +23,7 @@ def _checked_program(resources: NodeValidationResources) -> str:
     node = shutil.which("node")
     if not node or hashlib.sha256(resources.program.read_bytes()).hexdigest() != resources.sha256:
         raise ValueError("Product program unavailable or changed")
-    version = subprocess.run([node, "--version"], capture_output=True, text=True, timeout=5, check=True)
+    version = subprocess.run([node, "--version"], capture_output=True, text=True, encoding="utf-8", timeout=5, check=True)
     if int(version.stdout.strip().lstrip("v").split(".")[0]) < 22:
         raise ValueError("Node.js 22+ required")
     return node
@@ -37,7 +37,7 @@ def validate_with_resources(document: Any, resources: NodeValidationResources):
         request["evaluation"] = resources.evaluation
     result = subprocess.run([node, str(resources.program.resolve())],
         input=json.dumps({"operation": "page.validate", "input": request}, ensure_ascii=False, allow_nan=False),
-        capture_output=True, text=True, timeout=20, check=False)
+        capture_output=True, text=True, encoding="utf-8", timeout=20, check=False)
     if result.returncode not in (0, 2):
         raise ValueError("Product program failed")
     receipt = json.loads(result.stdout)
@@ -91,14 +91,14 @@ def validate_with_node(document: Any, *, resources: NodeValidationResources | No
     if not node or not bridge.is_file():
         return unavailable
     try:
-        lock=json.loads((bundle_root()/'bundle.lock.json').read_text())
+        lock=json.loads((bundle_root()/'bundle.lock.json').read_text(encoding="utf-8"))
         expected=next((item['sha256'] for item in lock['artifacts'] if item['file']=='scripts/page-validation-bridge.mjs'),None)
         if expected!=hashlib.sha256(bridge.read_bytes()).hexdigest():return unavailable
-        version = subprocess.run([node, "--version"], capture_output=True, text=True, timeout=5, check=True)
+        version = subprocess.run([node, "--version"], capture_output=True, text=True, encoding="utf-8", timeout=5, check=True)
         if int(version.stdout.strip().lstrip("v").split(".")[0]) < 22:
             return unavailable
         result = subprocess.run([node, str(bridge)], input=json.dumps({"document": document}, ensure_ascii=False),
-                                capture_output=True, text=True, timeout=20, check=True)
+                                capture_output=True, text=True, encoding="utf-8", timeout=20, check=True)
         receipt = json.loads(result.stdout)
         from metriccanvas_authoring.bundle_info import load_bundle_info
         if receipt.get('schemaVersion') != load_bundle_info()['pageSchemaVersion']:
@@ -116,11 +116,11 @@ def edit_presentation_with_node(document, operation):
     if not node or not bridge.is_file():
         return None
     try:
-        lock = json.loads((bundle_root() / 'bundle.lock.json').read_text())
+        lock = json.loads((bundle_root() / 'bundle.lock.json').read_text(encoding="utf-8"))
         expected = next((item['sha256'] for item in lock['artifacts'] if item['file'] == 'scripts/page-validation-bridge.mjs'), None)
         if expected != hashlib.sha256(bridge.read_bytes()).hexdigest():
             return None
-        result = subprocess.run([node, str(bridge)], input=json.dumps({'document': document, 'operation': operation}, ensure_ascii=False), capture_output=True, text=True, timeout=20, check=True)
+        result = subprocess.run([node, str(bridge)], input=json.dumps({'document': document, 'operation': operation}, ensure_ascii=False), capture_output=True, text=True, encoding="utf-8", timeout=20, check=True)
         receipt = json.loads(result.stdout)
         if receipt.get('schemaVersion') != load_bundle_info()['pageSchemaVersion']:
             return None

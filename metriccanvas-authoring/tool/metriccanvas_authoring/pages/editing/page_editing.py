@@ -10,7 +10,7 @@ from metriccanvas_authoring.pages.components.container_building import CONTAINER
 from metriccanvas_authoring.pages.components.text_map_building import TEXT_MAP_HANDLERS
 from metriccanvas_authoring.runtime_assets import bundle_root
 
-EDIT_SCHEMA = json.loads((bundle_root() / "contracts/authored/page-edit-request.schema.json").read_text())
+EDIT_SCHEMA = json.loads((bundle_root() / "contracts/authored/page-edit-request.schema.json").read_text(encoding="utf-8"))
 OPERATION_SCHEMA = EDIT_SCHEMA["properties"]["operations"]["items"]
 OPERATION_HANDLERS = {**COMPONENT_HANDLERS, **TEXT_MAP_HANDLERS, **CONTAINER_HANDLERS, **INTERACTION_HANDLERS, **PRESENTATION_HANDLERS}
 

@@ -71,3 +71,7 @@
 三个会话ID、授权出处、文件所有权与通信记录见[协调表](relay-reference-parallel-tasks.md)。本仓不会创建假Relay替身关闭真实接入。
 
 本次实际首次交付补丁为0.2.1（Interface1.1.0/Schema6.83），消费基线0.2.0保持冻结。最后只规范共享resolver末尾空行，CC6→6，全部6个预构建mjs字节和完整Interface不变；按不可变版本规则升PATCH并验证固定消费及本地0.2.0→0.2.1兼容，不修改原预期。
+
+## Windows原生消费修复批次
+
+3846ba52c已推main；0.2.1的Linux producer/native与macOS归档同字节，但Windows self-test暴露CP1252默认编码缺口，首轮CI未通过并取消未结束项。新增实际归档CP1252隔离回归（修复前精确0x8d/517、修复后通过），在13处资源读取/6处Node文本通道显式UTF-8，发行0.2.2、Skill1.21.1，Interface1.1.0/Schema6.83及冻结基线不变。最终交付以此修复批次及其CI为准；旧0.2.1保留诊断证据，不称为跨平台可用。

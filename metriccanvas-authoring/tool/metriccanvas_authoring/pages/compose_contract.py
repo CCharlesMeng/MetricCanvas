@@ -9,8 +9,8 @@ from metriccanvas_authoring.runtime_assets import bundle_root
 from metriccanvas_authoring.schema_projection import inline_local_refs
 
 ROOT = bundle_root()
-PATTERNS = json.loads((ROOT / 'contracts/authored/section-patterns.json').read_text())
-PLAN_SCHEMA = json.loads((ROOT / 'contracts/authored/page-structure-plan.schema.json').read_text())
+PATTERNS = json.loads((ROOT / 'contracts/authored/section-patterns.json').read_text(encoding="utf-8"))
+PLAN_SCHEMA = json.loads((ROOT / 'contracts/authored/page-structure-plan.schema.json').read_text(encoding="utf-8"))
 CURRENT_PLAN_SCHEMA, = PLAN_SCHEMA['oneOf']
 for version_schema in PLAN_SCHEMA['oneOf']:
     version_schema['properties']['scene']['enum'] = list(PATTERNS['scenes'])
@@ -32,11 +32,11 @@ RESULT_SECTION = deepcopy(SECTION)
 RESULT_SECTION['required'] = ['id', 'pattern', 'blocks']
 for block_schema in RESULT_SECTION['properties']['blocks']['items']['oneOf']:
     block_schema['required'] = [key for key in block_schema['required'] if key != 'purpose']
-_edit_schema = json.loads((ROOT / 'contracts/authored/page-edit-request.schema.json').read_text())
+_edit_schema = json.loads((ROOT / 'contracts/authored/page-edit-request.schema.json').read_text(encoding="utf-8"))
 DATE_FILTER_OPERATIONS = [o for o in _edit_schema['properties']['operations']['items']['oneOf'] if o['properties']['type']['const'] == 'add_date_filter']
 COMPOSE_SCHEMA = obj({'title': TEXT, 'layout': {'enum': ['report', 'dashboard']}, 'sources': SOURCE_REFS,
     'sections': {'type': 'array', 'minItems': 1, 'maxItems': 12, 'items': RESULT_SECTION},
     'dateFilters': {'type': 'array', 'maxItems': 8, 'items': {'oneOf': DATE_FILTER_OPERATIONS}}}, ['title', 'sources', 'sections'])
-_page_schema = json.loads((ROOT / 'contract-snapshot/page/schema.json').read_text())
+_page_schema = json.loads((ROOT / 'contract-snapshot/page/schema.json').read_text(encoding="utf-8"))
 COMPOSE_SCHEMA['properties']['pagedJoins'] = {'type': 'object', 'propertyNames': ID,
     'additionalProperties': inline_local_refs(_page_schema['definitions']['pagedJoinSource'], _page_schema)}

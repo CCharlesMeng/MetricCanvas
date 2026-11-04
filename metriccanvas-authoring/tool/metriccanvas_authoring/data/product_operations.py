@@ -21,7 +21,7 @@ def _object(properties, required):
 
 
 _ROOT = bundle_root()
-_SPEC = json.loads((_ROOT / 'contracts/authored/page-build-spec.schema.json').read_text())
+_SPEC = json.loads((_ROOT / 'contracts/authored/page-build-spec.schema.json').read_text(encoding="utf-8"))
 _CONTEXT = {'type': 'object'}  # The existing parser validates the full governed snapshot.
 _EXECUTION = _object({'rows': {'type': 'array', 'items': {'type': 'object'}},
     'totalCount': {'type': ['integer', 'null'], 'minimum': 0},

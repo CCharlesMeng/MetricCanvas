@@ -36,7 +36,7 @@ def runtime_check(manifest):
         installed = importlib.metadata.version(name)
         require(constraint == "==" + installed, "PRODUCT_DEPENDENCY_UNAVAILABLE",
                 f"Expected {name}{constraint}; found {installed}")
-    node = subprocess.run(["node", "--version"], capture_output=True, text=True, timeout=5, check=True)
+    node = subprocess.run(["node", "--version"], capture_output=True, text=True, encoding="utf-8", timeout=5, check=True)
     require(int(node.stdout.strip().lstrip("v").split(".")[0]) >= 22,
             "PRODUCT_RUNTIME_UNAVAILABLE", "Node.js >=22 is required")
 

@@ -14,7 +14,7 @@ def _object(properties, required):
     return {'type': 'object', 'additionalProperties': False, 'properties': properties, 'required': required}
 
 
-_PAGE = json.loads((bundle_root() / 'contract-snapshot/page/schema.json').read_text())
+_PAGE = json.loads((bundle_root() / 'contract-snapshot/page/schema.json').read_text(encoding="utf-8"))
 _SOURCE = deepcopy(_PAGE['definitions']['queryDataSource'])
 _RECORD = {'type': 'object', 'properties': {'source': _SOURCE,
     'rows': {'type': 'array', 'items': {'type': 'object'}},

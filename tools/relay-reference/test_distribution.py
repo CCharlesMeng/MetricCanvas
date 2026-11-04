@@ -68,6 +68,26 @@ class DistributionTests(unittest.TestCase):
         self.assertFalse(list(self.candidate.rglob("*.pyc")))
         self.assertFalse(list(self.candidate.rglob("node_modules")))
 
+    def test_archived_cli_uses_utf8_with_windows_legacy_locale(self):
+        # Reproduce Windows' legacy defaults without changing explicit encodings.
+        dependencies = self.external / "windows-dependencies"
+        pins = verify(self.candidate)["manifest"]["runtime"]["dependencies"]
+        self.copy_dependencies(pins, dependencies)
+        bootstrap = (
+            "import functools,pathlib,runpy,subprocess,sys;"
+            "pathlib.Path.read_text=functools.partialmethod(pathlib.Path.read_text,encoding='cp1252');"
+            "subprocess._text_encoding=lambda:'cp1252';"
+            "sys.path.insert(0,sys.argv[1]);sys.argv=sys.argv[2:];"
+            "runpy.run_path(sys.argv[0],run_name='__main__')"
+        )
+        result = subprocess.run([sys.executable, "-I", "-S", "-B", "-c", bootstrap, str(dependencies),
+                                 str(self.candidate / "mc-tool/cli.py"), "self-test"],
+                                capture_output=True, cwd=self.external, timeout=120)
+        self.assertEqual(result.returncode, 0, result.stdout.decode("utf-8"))
+        receipt = json.loads(result.stdout)
+        self.assertEqual(receipt["status"], "ok")
+        self.assertTrue(all(check["passed"] for check in receipt["checks"]))
+
     def test_frozen_page_read_validate_upgrade_parameters(self):
         document = deepcopy(self.frozen)
         for operation in ("page.project", "page.validate"):

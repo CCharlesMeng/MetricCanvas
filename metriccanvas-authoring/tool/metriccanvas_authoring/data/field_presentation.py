@@ -10,7 +10,7 @@ import math
 import json
 from metriccanvas_authoring.runtime_assets import bundle_root
 
-_POLICY = json.loads((bundle_root() / "contracts/exported/authoring-presentation-policy.json").read_text())
+_POLICY = json.loads((bundle_root() / "contracts/exported/authoring-presentation-policy.json").read_text(encoding="utf-8"))
 
 # Exact unit evidence only: captions such as '流水' are not currency evidence.
 _CNY_BASE_UNITS = {'元', '人民币元', '人民币（元）', '人民币(元)', 'CNY', 'RMB'}
