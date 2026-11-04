@@ -48,7 +48,7 @@ for (const mode of ['development', 'production'] as const) {
         const output = resolve(root, 'output');
         const file = resolve(output, pathname.slice('/webpack-consumer/'.length));
         if (!file.startsWith(output + sep)) return route.fulfill({ status: 404 });
-        await route.fulfill({ body: await readFile(file), contentType: 'text/javascript; charset=utf-8' });
+        await route.fulfill({ path: file });
       });
       await page.route('**/webpack-host', route => route.fulfill({
         contentType: 'text/html', body: '<!doctype html><meta charset="utf-8"><div id="dashboard"></div>'
@@ -70,6 +70,18 @@ for (const mode of ['development', 'production'] as const) {
       const bytes = await readFile((await file.path())!);
       expect(bytes.subarray(0, 2).toString()).toBe('PK');
       expect(requests.slice(loadedBeforeExport).some(path => path.startsWith('/webpack-consumer/'))).toBe(true);
+      await page.evaluate(() => window.runtime.update({ document: {
+        schemaVersion: '6.11', layout: 'dashboard', id: 'webpack-images', dataSources: {},
+        sections: [{ id: 'main', components: [{
+          id: 'title', type: 'reportHeader', layout: { span: 12 },
+          props: { title: 'Webpack images', decoration: 'shortBar', generatedBy: 'AI' }
+        }] }]
+      } }));
+      const image = page.locator('img[data-decorative-image="header-flow-background"]');
+      await expect.poll(() => image.evaluate(node => {
+        const image = node as HTMLImageElement;
+        return image.complete && image.naturalWidth > 0 && new URL(image.currentSrc).pathname.startsWith('/webpack-consumer/');
+      })).toBe(true);
       await page.evaluate(() => window.runtime.destroy());
       await expect(page.locator('[data-metriccanvas-runtime]')).toHaveCount(0);
       expect(errors).toEqual([]);

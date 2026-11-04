@@ -1,4 +1,4 @@
-import { cp, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { cp, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve, sep } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
@@ -27,7 +27,7 @@ async function serveCopiedDistribution(page: Page) {
       await route.fulfill({ status: 404 });
       return;
     }
-    await route.fulfill({ body: await readFile(file), contentType: 'text/javascript' });
+    await route.fulfill({ path: file });
   });
   await page.route('**/distribution-host', (route) => route.fulfill({
     contentType: 'text/html',
@@ -45,7 +45,8 @@ test('copied ESM entry mounts synchronously and shares chunks with the global en
     const document = {
       schemaVersion: '6.11', layout: 'dashboard', id: 'copied-distribution', dataSources: {},
       sections: [{ id: 'main', components: [{
-        id: 'title', type: 'reportHeader', layout: { span: 12 }, props: { title: 'Copied runtime' }
+        id: 'title', type: 'reportHeader', layout: { span: 12 },
+        props: { title: 'Copied runtime', decoration: 'shortBar', generatedBy: 'AI' }
       }] }]
     };
     window.runtime = runtime.mount('#dashboard', { document });
@@ -53,6 +54,7 @@ test('copied ESM entry mounts synchronously and shares chunks with the global en
   }, `${publicPath}metriccanvas-runtime.es.js`);
   expect(exports).toEqual(runtimeExports);
   await expect(page.getByRole('heading', { name: 'Copied runtime' }).first()).toBeVisible();
+  await expectHeaderImages(page, publicPath);
   const chunkRequests = requests.filter((path) => path.includes('/chunks/'));
   expect(chunkRequests.length).toBeGreaterThan(5);
   expect(chunkRequests.some((path) => /excel|china|world/.test(path))).toBe(false);
@@ -67,6 +69,15 @@ test('copied ESM entry mounts synchronously and shares chunks with the global en
   await page.evaluate(() => { window.runtime.destroy(); window.runtime.destroy(); });
   await expect(page.locator('[data-metriccanvas-runtime]')).toHaveCount(0);
 });
+
+async function expectHeaderImages(page: Page, prefix: string) {
+  const images = page.locator('img[data-decorative-image], img[data-decorative-icon]');
+  await expect(images).toHaveCount(2);
+  await expect.poll(() => images.evaluateAll((nodes, path) => nodes.every(node => {
+    const image = node as HTMLImageElement;
+    return image.complete && image.naturalWidth > 0 && new URL(image.currentSrc).pathname.startsWith(`${path}assets/`);
+  }), prefix)).toBe(true);
+}
 
 test('classic global entry resolves beside its own URL and exposes the same public API', async ({ page }) => {
   await serveCopiedDistribution(page);
@@ -85,6 +96,17 @@ test('classic global entry resolves beside its own URL and exposes the same publ
     await loaded;
     return MetricCanvas === original && MetricCanvas.ready === original.ready;
   }, `${publicPath}metriccanvas-runtime.global.js`)).toBe(true);
+  await page.evaluate(() => {
+    window.runtime = MetricCanvas.mount('#dashboard', { document: {
+      schemaVersion: '6.11', layout: 'dashboard', id: 'global-images', dataSources: {},
+      sections: [{ id: 'main', components: [{
+        id: 'title', type: 'reportHeader', layout: { span: 12 },
+        props: { title: 'Global images', decoration: 'shortBar', generatedBy: 'AI' }
+      }] }]
+    } });
+  });
+  await expectHeaderImages(page, publicPath);
+  await page.evaluate(() => window.runtime.destroy());
 });
 
 test('global ready rejects when a required chunk cannot be loaded', async ({ page }) => {

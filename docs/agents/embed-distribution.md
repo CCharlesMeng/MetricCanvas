@@ -7,8 +7,9 @@
 - **每个发布 JavaScript 文件未压缩原始体积 ≤1,000,000 字节。** `1M` 固定采用十进制口径；`.js`、`.mjs`、`.cjs`、公共入口与异步分块全部计入。压缩传输体积、归档体积或平均值不能替代逐文件检查。
 - 超限时调整模块边界或减少依赖；上限属于用户确认的产品基线，调整上限需要用户明确变更要求。
 - 保留稳定的 `metriccanvas-runtime.es.js` 与 `metriccanvas-runtime.global.js`。两种风格共用内部模块，ES 直接 import；global 在 `MetricCanvas.ready` 完成后提供原公开 API，`mount` 同步返回 `update` / `destroy` 实例。
-- 以约十个分块为目标，当前门禁为完整分发 10–14 个 JS 文件；公共入口各小于 10,000 字节。Excel 与底图保留按需导入，组件样式继续注入挂载根。
-- 完整目录须自包含：所有静态与动态字面量导入指向包内实际文件。复制、发布和升级均包含完整 `chunks/`，分块由浏览器自动加载。
+- 以约十个分块为目标，widgets 按表格、图表组件和其他控件继续拆分后，当前门禁为完整分发 10–16 个 JS 文件；公共入口各小于 10,000 字节。Excel 与底图保留按需导入，组件样式继续注入挂载根。
+- 完整目录须自包含：所有静态与动态字面量导入、`new URL(..., import.meta.url)` 图片引用指向包内实际文件。复制、发布和升级均包含完整 `chunks/` 与 `assets/`，分块和图片由浏览器自动加载。
+- 源码导入图片独立输出至带哈希的 `assets/`，不随图片大小增长而撑大 JS；Embed 构建同时处理图片的普通导入、`?url` 和 `?inline`。`?raw` 文本和第三方预置数据 URL 保持原语义。以大于 1 MB 的图片通过实际库构建回归，防止 Vite 库模式重新内联。图片自身不计入 JS 体积门禁。
 - 分发目录携带 `package.json` 的 `"type": "module"` 声明；复制到集成应用的源码目录时必须保留，不能依赖本仓或 npm 包外层的 ESM 声明。
 
 ## 必须执行的验证
@@ -16,7 +17,7 @@
 1. `pnpm --filter @metriccanvas/embed build`：构建 JS 与声明，并自动执行 `check:dist`。任何文件超限、入口缺失、分块数量或引用闭合不符合要求，命令失败。
 2. `pnpm --filter @metriccanvas/embed check:dist`：对本次已经生成的产物单独复核。CI 的产品构建 job 显式执行此项；prepack 通过 build 执行同一门禁。
 3. `pnpm --filter @metriccanvas/embed check`：组件与宿主类型检查。
-4. `pnpm --filter @metriccanvas/embed exec playwright test`：验证 ES/global、复制完整目录、公开 API、模块复用、加载失败与已有页面行为。更换源码基线或转移实现后，对对应产物重新执行。
+4. `pnpm --filter @metriccanvas/embed exec playwright test`：验证 ES/global、复制完整目录、公开 API、模块复用、加载失败与已有页面行为。独立图片须在页面 `<base>` 不同于分发地址时正确加载；Webpack 5 development/production 重新打包后的图片同样可用。更换源码基线或转移实现后，对对应产物重新执行。
 5. 实际打包并核对归档包含全部 JS；ZIP 或 tarball 解包后逐文件沿用相同体积上限。发布兼容性继续按 [构建与仓外兼容性门禁](../../tools/package-build/README.md) 执行。
 
 分包匹配统一处理正斜杠、反斜杠与混合分隔符；依赖和产品源码的归属由 `tests/embed-chunking.test.ts` 对实际 Vite 配置回归。CI 的 `embed-distribution` 矩阵必须在 Linux、Windows **各自原生构建 embed**，执行同一 1 MB 门禁并上传完整 dist；该矩阵纳入最终 `ci` 汇总。Windows 上其他产品的分发通过，不能替代 Windows embed 构建通过。

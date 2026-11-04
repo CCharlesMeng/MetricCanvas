@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { staticImages } from './build-tools/static-images';
 
 // Shared modules are grouped by responsibility; optional imports retain their lazy boundary.
 const chunkGroups = [
@@ -12,6 +13,8 @@ const chunkGroups = [
   { name: 'vendor', test: /node_modules\// },
   { name: 'export-codecs', test: /\/report-(?:pdf-worker-source|png-worker-source|pdf-capture)\.ts$/ },
   { name: 'runtime', test: /\/packages\/(?:page|data-execution|engine\/(?:runtime|data-gateway))\// },
+  { name: 'widgets-table', test: /\/packages\/engine\/widgets\/src\/components\/table\// },
+  { name: 'widgets-charts', test: /\/packages\/engine\/widgets\/src\/(?:components\/(?:bar-chart|line-chart|pie-chart|gauge|map-chart)\/|shared\/EChart\.svelte)/ },
   { name: 'widgets', test: /\/packages\/(?:ui|engine\/widgets)\// },
   { name: 'runtime-ui', test: /\/packages\/engine\/runtime-ui\// }
 ];
@@ -21,6 +24,7 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production')
   },
   plugins: [
+    staticImages(),
     svelte({
       // 组件样式随 JS 注入其挂载根；嵌入模式的根是 ShadowRoot。
       emitCss: false
@@ -59,6 +63,7 @@ export default defineConfig({
       output: {
         minify: true,
         chunkFileNames: 'chunks/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
         codeSplitting: {
           groups: chunkGroups.map((group, index) => ({
             ...group,

@@ -13,6 +13,7 @@
 | `dist/metriccanvas-runtime.global.js` | 经典 `<script>` 加载入口，等待 `MetricCanvas.ready` 后使用全局 API |
 | `dist/metriccanvas-runtime.es.js` | ES module |
 | `dist/chunks/*.js` | 两种入口共用的模块，带内容哈希，由浏览器自动加载 |
+| `dist/assets/*` | 独立输出的图片资源，带内容哈希，按组件使用加载 |
 | `dist/package.json` | ESM 类型声明，复制到项目中仍须保留 |
 | `dist/index.d.ts` | TypeScript 类型声明 |
 
@@ -22,13 +23,15 @@
 pnpm --filter @metriccanvas/embed build
 ```
 
-构建面向支持原生 ES modules 的现代浏览器，语法目标为 ES2022。产物按图表、绘图基础、运行时、组件、第三方依赖和导出编码等职责拆为约十个模块；单个 JS 文件原始体积不得超过 1,000,000 字节，由构建检查强制保证。Excel 与底图保持按需加载。组件样式仍由 JS 注入 Shadow DOM，不需要额外加载 CSS 或安装运行依赖。
+构建面向支持原生 ES modules 的现代浏览器，语法目标为 ES2022。产物按图表、绘图基础、运行时、组件、第三方依赖和导出编码等职责拆为约十个模块；widgets 进一步分为表格、图表组件和其他控件，当前完整分发为 16 个 JS。单个 JS 文件原始体积不得超过 1,000,000 字节，由构建检查强制保证。Excel 与底图保持按需加载。组件样式仍由 JS 注入 Shadow DOM，不需要额外加载 CSS 或安装运行依赖。
+
+源码导入的 SVG、PNG、JPEG、GIF、WebP、AVIF、ICO 图片独立输出到 `assets/`，在 Embed 构建中 `?inline` 也采用独立文件，避免库模式将大图编码进 JS。图片 URL 相对于引用它的模块解析，不依赖页面地址或 `<base>`；Webpack 5 本地 import 时会继续将图片作为资源处理。源码中的 `?raw` 文本导入、业务传入的图片地址和第三方代码内已有的数据 URL 不受此规则处理。
 
 后续修改和交付统一执行[Embed 分发基线](../../docs/agents/embed-distribution.md)。可用 `pnpm --filter @metriccanvas/embed check:dist` 独立检查已构建目录；build、prepack 与 CI 自动执行同一门禁。
 
 ### 复制到项目后直接 import
 
-将**完整 `dist/` 内容**复制到项目的静态资源目录（例如 `public/metriccanvas/`），保持两个入口与 `chunks/` 的相对位置，再从一个公共入口使用：
+将**完整 `dist/` 内容**复制到项目的静态资源目录（例如 `public/metriccanvas/`），保持两个入口、`chunks/`、`assets/` 与 `package.json` 的相对位置，再从一个公共入口使用：
 
 ```html
 <div id="dashboard"></div>
@@ -42,9 +45,9 @@ pnpm --filter @metriccanvas/embed build
 
 复制到 Webpack 5 项目的 `src/` 下时，连同 `package.json` 一起复制；其中的 `"type": "module"` 只作用于该分发目录，使构建器按 ESM 处理内部模块。旧版目录缺少此文件时，可在 `metriccanvas-runtime.es.js` 同级新增 `package.json`，内容为 `{"type":"module"}`，再重新构建项目。无需修改项目根目录的模块类型。缺失时，Webpack 可能对 Rolldown 的 CommonJS 兼容辅助代码产生 `Critical dependency: require function is used...` 警告。
 
-通过 HTTP/HTTPS 提供文件，JS 响应使用 JavaScript MIME；跨域部署须允许模块请求的 CORS，宿主 CSP 须允许该资源地址的模块脚本。不要只复制入口文件，不使用 `file://` 直接打开。global 也消费同一份 ESM 模块，因此不作为旧浏览器降级包。
+通过 HTTP/HTTPS 提供文件，JS 响应使用 JavaScript MIME，图片响应使用对应图片 MIME；跨域部署须允许模块请求的 CORS，宿主 CSP 须允许该资源地址的模块脚本与图片。不要只复制入口文件，不使用 `file://` 直接打开。global 也消费同一份 ESM 模块，因此不作为旧浏览器降级包。
 
-升级时发布完整目录，入口不设永久缓存，带哈希的 chunks 可长期缓存；保留仍被旧页面引用的 chunks，或采用版本目录发布。
+升级时发布完整目录，入口不设永久缓存，带哈希的 chunks 和 assets 可长期缓存；保留仍被旧页面引用的 chunks 和 assets，或采用版本目录发布。
 
 **global 加载时序变更：** 旧的同步 `<script>` 后立即调用 API 改为等待 `MetricCanvas.ready`。Promise 完成后所有既有公开 API 可用，失败时 Promise 拒绝；`mount`、`update`、`destroy` 本身的同步调用方式不变。重复加载同一个 global 入口复用已有对象与 ready。
 

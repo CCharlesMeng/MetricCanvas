@@ -1587,7 +1587,7 @@ test('流水报告页头背景、表头、分析宽度与客户标签保持统�
       + '[data-component="customer-analysis/risk-table"] tbody tr:first-child td[data-column-field="customer-name"]'
   );
 
-  await expect(headerBackground).toHaveAttribute('src', /^data:image\/svg\+xml,/);
+  await expect(headerBackground).toHaveAttribute('src', /\/dist\/assets\/header-flow-background-[^/]+\.svg$/);
   await expect.poll(async () => headerBackground.evaluate((image) =>
     image instanceof HTMLImageElement &&
     image.complete &&
@@ -1947,7 +1947,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(summaries.first().locator('.inline-icon')).toHaveCSS('height', '20px');
   await expect(summaries.first().locator('.inline-icon')).toHaveAttribute(
     'src',
-    /^data:image\/svg\+xml,/
+    /\/dist\/assets\/ai-summary-icon-[^/]+\.svg$/
   );
   await expect(summaries.first()).toHaveCSS('display', 'block');
   await expect(summaries.first().locator('.semantic-body')).toHaveCSS('display', 'inline');
@@ -2025,7 +2025,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   );
   const headerBackground = host.locator('[data-decorative-image="header-flow-background"]');
   await expect(reportCover).toHaveCount(1);
-  await expect(reportAssistantIcon).toHaveAttribute('src', /^data:image\/svg\+xml/);
+  await expect(reportAssistantIcon).toHaveAttribute('src', /\/dist\/assets\/report-assistant-icon-[^/]+\.svg$/);
   await expect(reportAssistantIcon).toHaveCSS('width', '28px');
   await expect(reportAssistantIcon).toHaveCSS('height', '28px');
   await expect.poll(async () => reportAssistantIcon.evaluate((image) =>
@@ -2126,7 +2126,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
     );
   }))).toBe(true);
   await expect(headerBackground).toHaveCount(1);
-  await expect(headerBackground).toHaveAttribute('src', /^data:image\/svg\+xml/);
+  await expect(headerBackground).toHaveAttribute('src', /\/dist\/assets\/header-flow-background-[^/]+\.svg$/);
   await expect(headerBackground).toHaveCSS('object-fit', 'cover');
   await expect.poll(async () => headerBackground.evaluate((image) => {
     if (!(image instanceof HTMLImageElement)) return false;
@@ -2162,7 +2162,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(host.locator('[data-decorative-icon="ranking-growth"]')).toHaveCount(1);
   await expect(host.locator('[data-decorative-icon="ranking-decline"]')).toHaveCount(1);
   await expect(decorativeIcons).toHaveCount(12);
-  await expect(decorativeIcons.first()).toHaveAttribute('src', /^data:image\/svg\+xml/);
+  await expect(decorativeIcons.first()).toHaveAttribute('src', /\/dist\/assets\/[^/]+\.svg$/);
   const riskNotices = host.locator('.text-block.risk-notice');
   await expect(riskNotices).toHaveCount(1);
   await expect.poll(async () => riskNotices.evaluateAll((notices) => notices.every((notice) => {

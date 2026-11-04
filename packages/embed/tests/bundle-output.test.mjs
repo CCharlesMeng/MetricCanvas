@@ -13,7 +13,7 @@ test('copied distribution declares its ESM package scope for integrating bundler
 });
 
 test('distribution contains about ten bounded JS files and the two stable entries', () => {
-  assert(files.length >= 10 && files.length <= 14, `Expected 10–14 JS files, got ${files.length}`);
+  assert(files.length >= 10 && files.length <= 16, `Expected 10–16 JS files, got ${files.length}`);
   for (const entry of ['metriccanvas-runtime.es.js', 'metriccanvas-runtime.global.js']) {
     assert(files.includes(entry), `Missing public entry ${entry}`);
     assert(statSync(resolve(dist, entry)).size < 10_000, `${entry} must remain a small entry`);
@@ -26,7 +26,7 @@ test('distribution contains about ten bounded JS files and the two stable entrie
   console.info(JSON.stringify({ baseline: 'embed-distribution', maxJsBytes: 1_000_000, jsFiles: files.length, largest }));
 });
 
-test('every static and lazy ESM dependency resolves inside the copied distribution', () => {
+test('every ESM dependency and module-relative image resolves inside the copied distribution', () => {
   for (const file of files.filter((name) => name !== 'metriccanvas-runtime.global.js')) {
     const fullPath = resolve(dist, file);
     const source = ts.createSourceFile(file, readFileSync(fullPath, 'utf8'), ts.ScriptTarget.Latest, true);
@@ -36,7 +36,11 @@ test('every static and lazy ESM dependency resolves inside the copied distributi
       if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
         specifier = node.arguments[0];
       }
-      if (specifier && ts.isStringLiteral(specifier)) {
+      if (ts.isNewExpression(node) && node.expression.getText(source) === 'URL'
+        && node.arguments?.[1]?.getText(source) === 'import.meta.url') {
+        specifier = node.arguments[0];
+      }
+      if (specifier && (ts.isStringLiteral(specifier) || ts.isNoSubstitutionTemplateLiteral(specifier))) {
         assert(specifier.text.startsWith('.'), `${file} contains an external dependency: ${specifier.text}`);
         const target = resolve(dirname(fullPath), specifier.text);
         assert(target.startsWith(dist), `${file} escapes dist`);

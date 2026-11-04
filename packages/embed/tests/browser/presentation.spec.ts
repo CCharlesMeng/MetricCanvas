@@ -4,6 +4,7 @@ import type { Component } from '@metriccanvas/page/internal';
 import { configuredTitles, drawingCount, presentationFixtures, scalarPage } from './presentation-fixtures';
 
 async function show(page: Page, document: unknown) {
+  await page.waitForFunction(() => Boolean(window.runtime));
   await page.evaluate(document => {
     window.runtime.destroy();
     const snapshot = {
