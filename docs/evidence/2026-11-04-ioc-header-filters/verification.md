@@ -56,3 +56,25 @@ Relay发行仍由Schema6.83冻结消费者拒绝本批Schema6.84：`needs_migrat
 交付前再次承接main `0757e83f3` 的并行复杂度治理，未覆盖其72个文件改动。合并后91文件589项受影响回归通过，契约导出仍一致，全项目复杂度门禁通过。上表保留本批原实施基线的历史测量；当前filterState的 createFilterState / blocked / commit 已随main治理降为2 / 7 / 6，不再把原blocked25列为当前剩余项。其他存量以main复杂度台账及门禁实测为准。
 
 最新main基线的embed重新构建及28项接入/导航/重点国代浏览器场景通过；实际归档 `/tmp/ioc-header-embed-merged-release/metriccanvas-embed-1.0.0-rc.4.tgz` 复核16个JS、最大929901字节。
+
+## “全球”补充口径与最终合并验证
+
+用户补充确认：**仅名为“全球”的节点不限；中国/海外等节点仍按选择过滤**。IOC Region 的规范值为 `全球`，装载示例将上游 `WORLD/全球` 及对应父引用归一；旧编码 URL 仍须接入方用真实字典转换。未归一的全球候选编码在业务查询前阻断。屏幕、下游候选约束、初始快照、缓存种子和完整导出共享该规则；月份、客户级别、固定条件和权限继续生效。未增加 Schema 字段；Schema 仍为6.84，local-authoring升为1.22.2。
+
+本轮承接main `d63a6ce93` 后运行：
+
+- 245文件、2126项页面协议/执行/运行时/Sim回归通过；70文件、369项Runtime UI和Playground回归通过。
+- 整仓 `pnpm check` 通过；新增浏览器测试对应的embed与Playground测试TypeScript检查通过。
+- 45项embed接入回归通过，覆盖ES/global、复制目录、Webpack开发/生产及旧交集和重点优先场景。
+- 新增3项embed浏览器场景通过：全球+月份+客户的查询/XLSX及重点覆盖；业务清单原生HTTP无Region谓词且保留月份，首屏5行、完整XLSX10行；中国R99与亚太TBD-APAC仍发送各自geo谓词。业务原页没有导出按钮，导出探针仅在测试装载文档中启用现有table.toolbar.export，未改业务页交互声明。
+- Playground新增1项浏览器场景通过：全球+月份+客户显示上海/广州，重点勾选仅上海、取消恢复；实际下载XLSX。
+- 独立复制local-authoring1.22.2至仓库外，两份完整演示页均用Schema6.84校验通过。
+- 重新构建、分发门禁及实际tar包检查通过：16个JS，最大929901字节，归档 `/tmp/ioc-global-embed-release/metriccanvas-embed-1.0.0-rc.4.tgz`。
+
+本轮AST口径仍为metriccanvas-ts-ast/1、TS5.9.3，新增回调逐一测量。composeEffectiveQuery14→15，overridesSource2→3，preparedQuery6→7，legacyConstraints5→6，cascadeConstraints6→7，candidateTimeContext1→1、新增filterCandidateContext2，iocRegionCandidates5→7；新增isUnrestrictedIocRegion6、validateGlobalRegionNames4、normalizeIocRegionCandidates1（内部canonical2，其余回调≤2）。全部新增函数≤15；同文件未修改的存量超限保持，全项目复杂度门禁通过。完整逐函数前后记录随任务证据归档。
+
+此前CI的MC诊断夹具漂移及Relay6.83冻结消费边界，已由后续main中的独立修复与已评审6.84消费基线承接。本批没有重写其批准记录。最终CI以本轮push后的SHA回执为准；本地一次MC检查因生成的Python字节码缓存被正确阻断，清除本任务缓存后使用PYTHONDONTWRITEBYTECODE=1重跑。
+
+最终又承接main `3cf712bb5` 的Relay消费者断言及MC夹具修复，重新生成当前来源回执。完整embed浏览器检查发现页头候选上下文中的Svelte页面代理误入表格候选复制，已将时间上下文与页头上下文分开；原有表头候选、双实例导航与全球相关9项回归通过，随后执行完整浏览器复测。
+
+修复后的完整embed浏览器273项全部通过，Playground全球场景再次通过，Runtime UI49文件239项回归通过，整仓类型和最终复杂度门禁通过。最终embed归档 `/tmp/ioc-global-embed-final/metriccanvas-embed-1.0.0-rc.4.tgz` 复核16个JS、最大929901字节。

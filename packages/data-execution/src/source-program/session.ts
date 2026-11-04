@@ -14,7 +14,7 @@ import { intersectQueryFilters } from '../intersect-filters';
 import {selectQuerySource,requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {queryFilterIds} from '@metriccanvas/page/internal';
-import {overriddenFilterIds} from '@metriccanvas/page/internal';
+import {overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { createCandidateValidator } from '../candidate-validation';
 import { createColumnCandidatesReader, type ColumnCandidatesRead } from './column-candidates';
 import { initialFilterValues } from '../filter-values';
@@ -88,6 +88,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   let batch = 0, contextScope = 'session';
   function overridesSource(id:string,values:FilterValues):boolean {
     const overridden=overriddenFilterIds(page.filters??[],values);
+    if(isUnrestrictedIocRegion(page,'region',values.get('region')))overridden.add('region');
     return [...conditionSourceIds(page,id)].some(key=>sourceFilterIds(page.dataSources[key]).some(id=>overridden.has(id)));
   }
   function readSignals(controller: AbortController, input: SourceRead): AbortSignal[] {
@@ -120,7 +121,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       for (const id of executionSourceIds(page, request.roots)) {
         const source = compiled.sources.get(id); if (!source) continue;
         const view = request.views?.get(id) ?? defaultSourceView(page, id, compiled.limits.get(id));
-        const contradictory = candidates.trusted(id, request.conditions) && source.source.type === 'query' && !requiresQueryContext(source.source.query, page.filters) && !intersectQueryFilters(composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now: config.now ?? config.clock?.() ?? new Date(), filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
+        const contradictory = candidates.trusted(id, request.conditions) && source.source.type === 'query' && !requiresQueryContext(source.source.query, page.filters) && !intersectQueryFilters(composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now: config.now ?? config.clock?.() ?? new Date(), page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
         const initial = contradictory ? { status: 'empty' as const, totalCount: 0 } : candidates.trusted(id, request.conditions) && defaultConditions(id, request.conditions) ? reusableInitialSnapshot(source, view, compiled.limits.has(id)) : source.source.type === 'inline' ? rawSnapshot(source.source.rows) : undefined;
         reportInitialSnapshotWarnings(source, initial, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] });
         snapshots.set(id, initial ? checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }) : { status: 'loading' });
@@ -133,7 +134,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       for (const [id, source] of compiled.sources) {
         if (source.source.type !== 'query') continue;
         const view = views.get(id) ?? defaultSourceView(page, id);
-        const query = composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now, filters: page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, conditions, cascaded.has(id) ? view.pageIndex : 0, view.sort, tableHeaders(view.predicates), view.search);
+        const query = composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, conditions, cascaded.has(id) ? view.pageIndex : 0, view.sort, tableHeaders(view.predicates), view.search);
         const inputs = resolveQueryResultInputs(source, raw, compiled.sources, limits);
         if (inputs.status === 'ready') bindQueryResultValues(query, inputs.values);
         queries.set(id, structuredClone(query));
@@ -296,7 +297,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           raw.set(id, { status: 'error', error: { ...preservedQueryError(cause), message: '筛选候选校验失败' } });
         }
         function contradictorySource(source: DataSource): boolean {
-          return source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
+          return source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
         }
         function untrustedSeed(id: string): boolean {
           return [...conditionSourceIds(page, id)].some(key => {
@@ -332,11 +333,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const requiresCompleteRead = (preserveWindow: boolean, source: DataSource, query: EffectiveQuery) => (request.purpose === 'complete' && !preserveWindow) || objectCompleteSource(source,query);
         function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery {
           const captured = request.queries?.get(id);
-          if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
-          const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, filters: page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search);
-          const protectedConditions = requiresQueryContext(source.source.query, page.filters);
+          if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
+          const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search);
+          const protectedConditions = requiresQueryContext(source.source.query, page.filters)||overridesSource(id,request.conditions);
           // Captured views may be reused; their old predicates cannot authorize a different range.
-          let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: fresh().fieldMappings } : {}) } : fresh();
+          let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { body:fresh().body,filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: fresh().fieldMappings } : {}) } : fresh();
           bindQueryResultValues(query, values);
           queries.set(id, query);
           return query;

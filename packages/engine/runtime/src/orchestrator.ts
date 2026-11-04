@@ -1,3 +1,4 @@
+import {isUnrestrictedIocRegion,queryFilterIds} from '@metriccanvas/page/internal';
 import {comparisonFilterIds} from '@metriccanvas/page/internal';
 import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext} from '@metriccanvas/page/internal';
@@ -84,7 +85,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
           initial = undefined;
         if (source.source.type === 'inline' && !initial)
           initial = { status: source.source.rows.length ? 'ready' : 'empty', ...(source.source.rows.length ? { rows: source.source.rows } : {}) } as DataSnapshot;
-        const protectedSource = [...conditionSourceIds(page, id)].some(key => { const s = page.dataSources[key]; return s?.source.type === 'query' && (requiresQueryContext(s.source.query, page.filters)); });
+        const protectedSource = [...conditionSourceIds(page, id)].some(key => { const s = page.dataSources[key]; return s?.source.type === 'query' && (requiresQueryContext(s.source.query, page.filters)||isUnrestrictedIocRegion(page,'region',values.get('region'))&&queryFilterIds(s.source.query).includes('region')); });
         acceptExecutionReceipt();
         useEmptyIntersection();
         if (gated(id)) {
@@ -102,7 +103,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
         }
         function useEmptyIntersection(): void {
           try {
-            if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: timeContext.now ?? timeContext.clock?.() ?? new Date(), filters: page.filters, dataSource: source as QueryDataSource }, values, 0, [], {})))
+            if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: timeContext.now ?? timeContext.clock?.() ?? new Date(), page:page,filters:page.filters, dataSource: source as QueryDataSource }, values, 0, [], {})))
               initial = { status: 'empty', totalCount: 0 };
           }
           catch { /* 约束未就绪时沿用SourceProgram的候选与输入门禁。 */ }

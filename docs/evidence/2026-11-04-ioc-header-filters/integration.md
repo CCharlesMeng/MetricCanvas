@@ -48,7 +48,7 @@ const runtime = MetricCanvas.mount(element, {
 
 ## Region 与客户级别
 
-Region 的地区部/代表处候选 value 和 parent.value 采用中文名称，与初始 URL、共享输入及查询值一致。`label` 只改变显示，不自动把编码转换为名字；旧编码 URL 需要集成应用从真实字典转换，不能猜测。候选 dimension ID 为 `region-dept-name` / `rep-office-name`，查询字段分别为 `地区部` / `代表处`。已有全球层级的字段和值沿用原契约，未猜测全球名称字段。
+Region 的地区部/代表处候选 value 和 parent.value 采用中文名称，与初始 URL、共享输入及查询值一致。`label` 只改变显示，不自动把编码转换为名字；旧编码 URL 需要集成应用从真实字典转换，不能猜测。候选 dimension ID 为 `region-dept-name` / `rep-office-name`，查询字段分别为 `地区部` / `代表处`。仅规范节点 `value:"全球"` 不生成 Region 谓词；中国/海外等节点仍按原字段和值过滤。上游全球编码通过同文件的 `normalizeIocRegionCandidates` 归一，并同步父引用；未归一的全球候选编码在业务查询前阻断。月份、客户级别、权限与固定条件保留。该执行规则不增加 Schema 字段。
 
 客户类型/客户分类及机会清单的 NA 类型控件的界面文案保留，实际查询字段统一 `客户级别`。候选 dimension ID 继续沿用各页声明，由 Adapter 路由；不要将它和 DQE 字段名或控件 label 混为一谈。
 

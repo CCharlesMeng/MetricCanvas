@@ -8,7 +8,7 @@ Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query�
 6.82：select 列头筛选支持 `filterable.defaultValues` 固定原始值，首屏查询与选中态同步；清空后保持清空。声明、重置例外和数据源所有权见[列头筛选默认值](docs/page-metadata/components/table.md#列头筛选默认值682)，入口 `/pages/table-header-filter-defaults` 与 `/pages/table-header-filter-defaults-query`。
 
 按需组合分页忽略补充来源的空关联键行并明确告警，主行、分页和单账号条件保留；页面及导出共享告警，原始数量、身份和执行错误边界保持。无需新增页面字段，见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?supplementKey=empty`。
-6.84 增加 boolean 筛选器 `overridesFilters`：勾选后以已绑定的布尔查询条件覆盖指定维度筛选，保留原选择，取消后恢复；查询、候选校验与完整导出使用同一生效范围。IOC 重点国代覆盖 Region 的声明及中文值/客户级别映射见[布尔筛选覆盖](docs/page-metadata/filters.md#boolean-filter-overrides)，合成入口 `/pages/key-office-priority-demo`、`/pages/key-office-priority-target`。真实组织与重点名单仍由集成应用提供。
+6.84 增加 boolean 筛选器 `overridesFilters`：勾选后以已绑定的布尔查询条件覆盖指定维度筛选，保留原选择，取消后恢复；查询、候选校验与完整导出使用同一生效范围。IOC 重点国代覆盖 Region 的声明及中文值/客户级别映射见[布尔筛选覆盖](docs/page-metadata/filters.md#boolean-filter-overrides)，合成入口 `/pages/key-office-priority-demo`、`/pages/key-office-priority-target`。IOC Region 仅规范值 `全球` 不产生地区条件，中国/海外等节点仍过滤；其他筛选照常生效。真实组织与重点名单仍由集成应用提供。
 
 引擎统一兼容组织键计算中的空记录：`unionKeys`、`joinAggregate` 跳过空组织行，保留有效组织、零分、负分及脱值数量告警；页面 Schema 不新增字段或开关。限制及 `/pages/missing-organization-key` 合成验收入口见[空组织键兼容](docs/page-metadata/compute.md#空组织键兼容)。
 

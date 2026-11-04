@@ -50,7 +50,7 @@ function compileMember(page: Page, data: PagedUnionDataSource, id: string, membe
   const sort = view.sort.filter(rule => !Object.hasOwn(literals, rule.field)).map(rule => ({ ...rule, field: mappedField(member, rule.field) }));
   const search = memberSearch(view, member, literals);
   if (search === false) return;
-  const query = composeEffectiveQuery({ now, filters: page.filters, dataSource: input, pagination: { limit: 200 } }, conditions, 0, sort, tableHeaders(predicates), search);
+  const query = composeEffectiveQuery({ now, page:page,filters:page.filters, dataSource: input, pagination: { limit: 200 } }, conditions, 0, sort, tableHeaders(predicates), search);
   return { id, input, member, query };
 }
 function mappedField(member: PagedUnionMember, field: string): string {

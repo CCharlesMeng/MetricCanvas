@@ -1,5 +1,5 @@
 import { filterDependencies } from '@metriccanvas/page/internal';
-import {overriddenFilterIds} from '@metriccanvas/page/internal';
+import {overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { candidateContextKey } from '../../../runtime/src/filter-candidates';
 import {
   dimensionOfLevel,
@@ -15,14 +15,15 @@ import type { FilterValue, FilterValues } from '../../../runtime/src';
 export function cascadeConstraints(
   declaration: DimensionFilterDeclaration,
   declarations: readonly FilterDeclaration[],
-  values: FilterValues
+  values: FilterValues,
+  page?:import('@metriccanvas/page/internal').Page
 ): Readonly<Record<string, readonly string[]>> | undefined {
   if (!declaration.dependsOn) return undefined;
   if(overriddenFilterIds(declarations,values).has(declaration.dependsOn))return undefined;
   const upstream = declarations.find((item) => item.id === declaration.dependsOn);
   if (upstream?.type !== 'dimension') return undefined;
   const current = values.get(upstream.id);
-  if (current?.type !== 'dimension' || current.values.length === 0) return undefined;
+  if (current?.type !== 'dimension' || current.values.length === 0||isUnrestrictedIocRegion(page,upstream.id,current)) return undefined;
   return { [dimensionOfLevel(upstream, current.level)]: current.values };
 }
 
@@ -61,6 +62,6 @@ export function filterValueOf(values: FilterValues, filterId: string): FilterVal
 }
 
 /** Identity includes the full ancestry even though the legacy port accepts direct-parent constraints only. */
-export function cascadeContext(declaration: DimensionFilterDeclaration, declarations: readonly FilterDeclaration[], values: FilterValues,context:{displayInputs?:import('@metriccanvas/page/internal').DisplayInputsSnapshot;filterRevision?:number;now?:Date}={}): string {
+export function cascadeContext(declaration: DimensionFilterDeclaration, declarations: readonly FilterDeclaration[], values: FilterValues,context:{page?:import('@metriccanvas/page/internal').Page;displayInputs?:import('@metriccanvas/page/internal').DisplayInputsSnapshot;filterRevision?:number;now?:Date}={}): string {
   return candidateContextKey(declaration,declarations,values,context);
 }

@@ -257,3 +257,5 @@
 新场景显式声明 `overridesFilters:["region"]`，不把 Region 的候选依赖到重点国代；旧联动场景继续验证无覆盖声明时的交集兼容。所有组织、金额及 `重点国代=true` 字段均是合成输入；浏览器通过不证明生产重点名单、授权或 DQE 字段已接通。
 
 异常入口：`/pages/key-office-priority-demo?state=empty&key-office=true` 返回完整空名单，表格显示暂无数据；取消勾选后恢复四条普通数据。`?state=denied&key-office=true` 显示名单未就绪的加载错误，不进入全量查询。名单桥接与中文组织候选的真实服务接线由集成应用实现；完整说明在仓库 `docs/evidence/2026-11-04-ioc-header-filters/integration.md`。
+
+全球验收：`/pages/key-office-priority-demo?region.level=geo&region=全球&mtime=2026-04&customer-category=战略` 显示上海、广州，完整 XLSX 同范围；勾选重点后仅上海，取消恢复两行。合成 Adapter 将上游 `WORLD/全球` 节点归一为中文 value，查询不携带全球编码、地区部或代表处条件。仅全球节点不限，中国/海外等节点仍过滤；普通组织树规则不变。原生 HTTP 验收 `/pages/ioc-opportunity-list?region.level=geo&region=全球&mtime=2026-04` 首屏5行，保留月份谓词；原页未配置导出按钮，浏览器探针临时启用现有表格导出后验证完整10行。仅为本地合成服务证明。

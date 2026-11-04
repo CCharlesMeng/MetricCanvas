@@ -11,5 +11,6 @@ export function iocRegionCandidates(request,options={}){
   level,value:valueOf(level,item),label:item.label??item.value,
   ...(index>0&&item.of?{parent:{level:levels[index-1][0],value:parentOf(levels[index-1][0],levels[index-1][1],item.of)}}:{})
  })));
+ if(options.names&&levels[0][0]==='geo')candidates.unshift({level:'geo',value:'全球',label:'全球'});
  return {kind:'values',candidates};
 }

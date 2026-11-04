@@ -351,6 +351,7 @@
   let candidateClock=$state.raw(new Date());
   const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision});
   const candidateTimeContext=()=>({displayInputs:displaySnapshot,filterRevision,now:candidateClock});
+  const filterCandidateContext=()=>({...candidateTimeContext(),page:pageState.phase==='ready'?pageState.page:undefined});
   let filterState: FilterState | null = null;
   let candidatesLoader: ReturnType<typeof createDimensionValuesLoader> | null = null;
   let stream: PageSnapshotStream | null = null;
@@ -523,7 +524,7 @@
           const value = filterValues.get(declaration.id);
           const level = value?.type === 'dimension' ? value.level : declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
           const dimension = declaration.hierarchy?.find(item => item.id === level)?.dimension ?? declaration.dimension;
-          const receipt = next.get(candidateScopeKey(declaration.id,dimension,level,cascadeContext(declaration,declarations,filterValues,candidateTimeContext())));
+          const receipt = next.get(candidateScopeKey(declaration.id,dimension,level,cascadeContext(declaration,declarations,filterValues,filterCandidateContext())));
           if(receipt&&receipt.status!=='idle'){
             const allowed=receipt.status==='ready'?receipt.candidates.filter(item=>!item.disabled&&(declaration.treeSelection!=='level'||item.level===level)).map(item=>item.value):undefined;
             state.candidate(declaration.id,receipt.status==='ready'&&!allowed?.length?'empty':receipt.status,allowed);
@@ -803,18 +804,18 @@
     force=false
   ) {
     if(declaration.options)return;
-    const context=cascadeContext(declaration,declarations,values,candidateTimeContext());
+    const context=cascadeContext(declaration,declarations,values,filterCandidateContext());
     const levels=declaration.hierarchy?.map(level=>level.id)??[undefined];
     for(const level of levels){
       if(declaration.candidateContext||declaration.treeSelection==='level'||declaration.candidateWindow){
-        let request:ReturnType<typeof filterCandidatesRequest>;try{request=filterCandidatesRequest(declaration,declarations,values,level,candidateTimeContext());}catch{const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;loader.unavailable(dimension,{filterId:declaration.id,level,context});continue;}
+        let request:ReturnType<typeof filterCandidatesRequest>;try{request=filterCandidatesRequest(declaration,declarations,values,level,filterCandidateContext());}catch{const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;loader.unavailable(dimension,{filterId:declaration.id,level,context});continue;}
         if(force)candidateSession?.invalidate(request);
         loader.loadFilter(request,context,declaration.treeSelection==='level'?declaration.hierarchy?.map(item=>item.id):undefined,force);
       }else{
         const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;
         const scope={filterId:declaration.id,level,context};
-        if(force)loader.reload(dimension,cascadeConstraints(declaration,declarations,values),scope);
-        else loader.load(dimension,cascadeConstraints(declaration,declarations,values),scope);
+        if(force)loader.reload(dimension,cascadeConstraints(declaration,declarations,values,filterCandidateContext().page),scope);
+        else loader.load(dimension,cascadeConstraints(declaration,declarations,values,filterCandidateContext().page),scope);
       }
     }
   }

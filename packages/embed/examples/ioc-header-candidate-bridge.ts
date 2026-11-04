@@ -49,3 +49,10 @@ function bindKeyOfficeQuery(query:Pick<DqeQueryDefinition,'filterBindings'>,filt
   if(!filter.overridesFilters?.some(id=>query.filterBindings?.[id]))return;
   query.filterBindings![filter.id]={target:'boolean',queryField:'代表处',whenTrue:[...names]};
 }
+
+/** Region values are Chinese names. Canonicalize only the node labelled 全球 and its parent references. */
+export function normalizeIocRegionCandidates(candidates:readonly FilterCandidate[]):FilterCandidate[] {
+  const globals=candidates.filter(candidate=>candidate.label==='全球');
+  const canonical=(level:string|undefined,value:string)=>globals.some(candidate=>candidate.level===level&&candidate.value===value)?'全球':value;
+  return candidates.map(candidate=>({...candidate,value:canonical(candidate.level,candidate.value),...(candidate.parent?{parent:{...candidate.parent,value:canonical(candidate.parent.level,candidate.parent.value)}}:{})}));
+}

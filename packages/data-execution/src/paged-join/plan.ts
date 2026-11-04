@@ -25,7 +25,7 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
 function queryPagePlan(plan:PagedJoinPlan):PagedJoinPlan{
   const view=reconcilePagedJoinView(plan.source,plan.view),selection=pagedJoinViewOwner(plan.source,view);
   const definition=plan.members.get(selection)!;
-  const query=composeEffectiveQuery({...plan.context,now:plan.now,filters:plan.page.filters,dataSource:definition},plan.conditions,0,[],{});
+  const query=composeEffectiveQuery({...plan.context,now:plan.now,page:plan.page,filters:plan.page.filters,dataSource:definition},plan.conditions,0,[],{});
   const sort:{queryField?:string}[]=view.sort.length?view.sort.map(rule=>{
     const field=definition.fields[plan.source.source.projection[rule.field].field];
     return {queryField:hasQueryFieldMapping(field)?field.queryField:undefined};
@@ -56,7 +56,7 @@ function selectPageMember(page:Page,source:PagedJoinDataSource,members:Map<strin
       return projection?.member !== selection || !raw || !hasQueryFieldMapping(raw) || (view.sort.some(r => r.field === field) && raw.nullable !== false);
     })) { selection = undefined; reason=planSearchReason(view); }
     else {
-      const query = composeEffectiveQuery({ now,filters:page.filters, dataSource: definition }, conditions, 0, [], {});
+      const query = composeEffectiveQuery({ now,page:page,filters:page.filters, dataSource: definition }, conditions, 0, [], {});
       const item = query.body.dsl_list[0];
       // Existing predicates cannot be replaced by table-local predicates.
       const filter = item.filter as { dims?: Array<{ dim_name?: string }>; metrics?: Array<{ metric_name?: string }> } | undefined;

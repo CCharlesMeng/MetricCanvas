@@ -2,22 +2,22 @@ import {canonicalizeJson,periodFact,type DisplayInputsSnapshot} from '@metriccan
 import { candidateDependencies, filterDependencies, type DimensionFilterDeclaration, type FilterDeclaration } from '@metriccanvas/page/internal';
 import type { FilterCandidatesRequest, FilterCandidate } from './ports';
 import type { FilterValues } from './filter-values';
-import {overriddenFilterIds} from '@metriccanvas/page/internal';
+import {overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 
-function candidateValues(declarations:readonly FilterDeclaration[],values:FilterValues):FilterValues {
+function candidateValues(declarations:readonly FilterDeclaration[],values:FilterValues,page?:import('@metriccanvas/page/internal').Page):FilterValues {
   const overridden=overriddenFilterIds(declarations,values);
-  return new Map([...values].filter(([id])=>!overridden.has(id)));
+  return new Map([...values].filter(([id,value])=>!overridden.has(id)&&!isUnrestrictedIocRegion(page,id,value)));
 }
 
-export function candidateContextKey(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[],values:FilterValues,context:{displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date}={}):string {
-  values=candidateValues(declarations,values);
+export function candidateContextKey(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[],values:FilterValues,context:{page?:import('@metriccanvas/page/internal').Page;displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date}={}):string {
+  values=candidateValues(declarations,values,context.page);
   const now=context.now??new Date();
   const ids=new Set<string>();const queue=filterDependencies(declaration);
   for(const id of queue)if(!ids.has(id)){ids.add(id);const parent=declarations.find(item=>item.id===id);if(parent)queue.push(...filterDependencies(parent));}
   const scope=declaration.candidateWindow?{window:declaration.candidateWindow,context:context.displayInputs?.permissionRevision,fact:declaration.candidateWindow.anchorFact?periodFact(context.displayInputs,declaration.candidateWindow.anchorFact,context.filterRevision):undefined,month:`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`}:null;
   return JSON.stringify([scope,[...ids].sort().map(id=>{const value=values.get(id);return [id,value?.type==='dimension'?{...value,values:[...new Set(value.values)].sort()}:value??null];})]);
 }
-type CandidateContext = {now?:Date;displayInputs?:DisplayInputsSnapshot;filterRevision?:number};
+type CandidateContext = {page?:import('@metriccanvas/page/internal').Page;now?:Date;displayInputs?:DisplayInputsSnapshot;filterRevision?:number};
 function candidateDependencyIds(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[]):Set<string> {
   const ids=new Set<string>(),queue=candidateDependencies(declaration);
   for(const id of queue)if(!ids.has(id)){
@@ -59,7 +59,7 @@ function calendarWindow(declaration:DimensionFilterDeclaration,context:Candidate
 }
 export function filterCandidatesRequest(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[],values:FilterValues,level?:string,context:CandidateContext={}):FilterCandidatesRequest {
   const window=calendarWindow(declaration,context);
-  return {...(window?{calendarWindow:window}:{}),...(declaration.candidateWindow?.anchorFact?{permissions:{},values:{},permissionRevision:context.displayInputs?.permissionRevision,filterRevision:context.filterRevision,factRevision:canonicalizeJson(periodFact(context.displayInputs,declaration.candidateWindow.anchorFact,context.filterRevision))}:{}),filterId:declaration.id,dimension:declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension,...(level?{level}:{}),constraints:candidateConstraints(candidateDependencyIds(declaration,declarations),candidateValues(declarations,values))};
+  return {...(window?{calendarWindow:window}:{}),...(declaration.candidateWindow?.anchorFact?{permissions:{},values:{},permissionRevision:context.displayInputs?.permissionRevision,filterRevision:context.filterRevision,factRevision:canonicalizeJson(periodFact(context.displayInputs,declaration.candidateWindow.anchorFact,context.filterRevision))}:{}),filterId:declaration.id,dimension:declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension,...(level?{level}:{}),constraints:candidateConstraints(candidateDependencyIds(declaration,declarations),candidateValues(declarations,values,context.page))};
 }
 /** Validate a complete structural receipt before it can authorize a selection. */
 export function validFilterCandidates(candidates:readonly FilterCandidate[],levels?:readonly string[]):boolean {

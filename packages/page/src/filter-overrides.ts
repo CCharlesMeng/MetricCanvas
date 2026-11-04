@@ -1,7 +1,14 @@
+import {iocHeaderDeclaration} from './header-binding';
 import type {FilterDeclaration} from './filter';
 import type {Page} from './page';
 import type {TypedError} from './errors';
 import {filterDependencies} from './filter-dependencies';
+
+/** IOC global selection is presentation state; it never narrows an execution scope. */
+export function isUnrestrictedIocRegion(page:Page|undefined,filterId:string,value:{type:string;values?:readonly string[]}|undefined):boolean {
+  if(!page||filterId!=='region'||value?.type!=='dimension'||value.values?.length!==1||value.values[0]!=='全球')return false;
+  return iocHeaderDeclaration(page)?.filterIds?.includes(filterId)===true;
+}
 
 type Values = ReadonlyMap<string, {type:string;value?:unknown}>;
 

@@ -129,6 +129,11 @@ function bindKeyOfficeQuery(query, filter, names) {
   if (!filter.overridesFilters?.some((id) => query.filterBindings?.[id])) return;
   query.filterBindings[filter.id] = { target: "boolean", queryField: "\u4EE3\u8868\u5904", whenTrue: [...names] };
 }
+function normalizeIocRegionCandidates(candidates) {
+  const globals = candidates.filter((candidate) => candidate.label === "\u5168\u7403");
+  const canonical = (level, value) => globals.some((candidate) => candidate.level === level && candidate.value === value) ? "\u5168\u7403" : value;
+  return candidates.map((candidate) => ({ ...candidate, value: canonical(candidate.level, candidate.value), ...candidate.parent ? { parent: { ...candidate.parent, value: canonical(candidate.parent.level, candidate.parent.value) } } : {} }));
+}
 
 // apps/playground/fixtures/key-office-filter/gateway.ts
 var offices = [
@@ -177,10 +182,11 @@ function createKeyOfficePriorityGateway(observe, state = "ready") {
         return { kind: "values", candidates: state === "empty" ? [] : priorityOffices.filter((item) => item.key === "true").map((item) => ({ value: item.office, label: item.office })) };
       }
       if (request.dimension === "customer-level") return { kind: "values", candidates: ["\u6218\u7565", "\u5353\u8D8A"].map((value) => ({ value, label: value })) };
-      return { kind: "values", candidates: [
-        ...["\u534E\u4E1C\u5730\u533A\u90E8", "\u534E\u5357\u5730\u533A\u90E8"].map((value) => ({ value, label: value, level: "region-dept" })),
+      return { kind: "values", candidates: normalizeIocRegionCandidates([
+        { value: "WORLD", label: "\u5168\u7403", level: "geo" },
+        ...["\u534E\u4E1C\u5730\u533A\u90E8", "\u534E\u5357\u5730\u533A\u90E8"].map((value) => ({ value, label: value, level: "region-dept", parent: { level: "geo", value: "WORLD" } })),
         ...priorityOffices.map((item) => ({ value: item.office, label: item.office, level: "office", parent: { level: "region-dept", value: item.region } }))
-      ] };
+      ]) };
     },
     async fetchData(query) {
       observe?.("query", query);
@@ -195,13 +201,14 @@ function createKeyOfficePriorityGateway(observe, state = "ready") {
   };
 }
 function priorityValue(item, field) {
-  const fields = { "\u5730\u533A\u90E8": item.region, "\u4EE3\u8868\u5904": item.office, "\u91CD\u70B9\u56FD\u4EE3": item.key, "\u5BA2\u6237\u7EA7\u522B": item.customer };
+  const fields = { "\u5730\u533A\u90E8": item.region, "\u4EE3\u8868\u5904": item.office, "\u91CD\u70B9\u56FD\u4EE3": item.key, "\u5BA2\u6237\u7EA7\u522B": item.customer, "\u6570\u636E\u6708\u4EFD": "202604" };
   return fields[field];
 }
 export {
   createKeyOfficeGateway,
   createKeyOfficePriorityGateway,
   createSharedFilterBridge,
+  normalizeIocRegionCandidates,
   offices,
   prepareIocHeaderFilters
 };

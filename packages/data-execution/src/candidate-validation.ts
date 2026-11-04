@@ -3,7 +3,7 @@ import { queryFilterIds,numberRangeIssue,rangeContextIssue,filterGroupOptions, c
 import type {RuntimeDataGateway,FilterCandidate} from './ports';
 import type {FilterValues} from './filter-values';
 import {candidateContextKey,filterCandidatesRequest,validFilterCandidates} from './filter-candidates';
-import {overriddenFilterIds} from '@metriccanvas/page/internal';
+import {overriddenFilterIds,isUnrestrictedIocRegion,iocHeaderDeclaration} from '@metriccanvas/page/internal';
 
 /** Execution consumers share this fail-closed boundary, including seeded/initial receipts. */
 export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,context:{displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date}={}) {
@@ -19,7 +19,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
   function dynamic(filter:FilterDeclaration):boolean {return filter.type==='dimension'&&!filter.options&&!localOptions.has(filter.id);}
   function key(filter:Extract<FilterDeclaration,{type:'dimension'}>,values:FilterValues) {
     const selected=values.get(filter.id);const level=selected?.type==='dimension'?selected.level:filter.defaultLevel??filter.hierarchy?.[0]?.id;
-    const frozen={displayInputs:context.displayInputs?.(),filterRevision:context.filterRevision?.(),now:context.now??new Date()};
+    const frozen={page,displayInputs:context.displayInputs?.(),filterRevision:context.filterRevision?.(),now:context.now??new Date()};
     const request=filterCandidatesRequest(filter,declarations,values,level,frozen);
     return {request,key:canonicalizeJson([request,candidateContextKey(filter,declarations,values,frozen)])};
   }
@@ -59,7 +59,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
         return result.kind==='values'?result.candidates:[];
       }
       if(!gateway.fetchDimensionValues)reject();
-      const result=await gateway.fetchDimensionValues!(request.dimension,{signal,constraints:legacyConstraints(dimension,values,overridden)});signal.throwIfAborted();
+      const result=await gateway.fetchDimensionValues!(request.dimension,{signal,constraints:legacyConstraints(page,dimension,values,overridden)});signal.throwIfAborted();
       if(result.kind!=='values')reject();
       const candidates=[...new Map(result.candidates.map(item=>[item.value,item])).values()];
       if(!validFilterCandidates(candidates))reject();
@@ -76,6 +76,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       const identity=key(dimension,values);let candidates=cache.get(identity.key);
       if(!candidates){
         candidates=await requestCandidates(dimension,identity.request);
+        validateGlobalRegionNames(page,dimension,candidates);
         cache.set(identity.key,candidates);
       }
       if(!allowed(dimension,values,candidates))reject();
@@ -85,8 +86,13 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
   const requires=(sourceId:string)=>filterIds(sourceId).some(id=>{const filter=byId.get(id);return localOptions.has(id)||(filter?.type==='dimension'&&!!(filter.selection||filter.options||filter.candidateContext||filter.treeSelection||filter.candidateWindow))||(filter&&requiresTimeValidation(filter))||(filter?.type==='numberRange'&&!!(filter.constraints||filter.units||filter.presets));});
   return {trusted,verify,requires};
 }
-function legacyConstraints(filter:Extract<FilterDeclaration,{type:'dimension'}>,values:FilterValues,overridden:ReadonlySet<string>):Record<string,string[]> {
-  const parent=filter.dependsOn&&!overridden.has(filter.dependsOn)?values.get(filter.dependsOn):undefined;
+function legacyConstraints(page:Page,filter:Extract<FilterDeclaration,{type:'dimension'}>,values:FilterValues,overridden:ReadonlySet<string>):Record<string,string[]> {
+  const parent=filter.dependsOn&&!overridden.has(filter.dependsOn)&&!isUnrestrictedIocRegion(page,filter.dependsOn,values.get(filter.dependsOn))?values.get(filter.dependsOn):undefined;
   return parent?.type==='dimension'&&parent.values.length?{[parent.dimension]:parent.values}:{};
 }
 function reject():never {throw Object.assign(new Error('筛选条件尚未通过当前完整候选或选择规则校验'),{code:'DQE_QUERY_REJECTED'});}
+
+function validateGlobalRegionNames(page:Page,filter:FilterDeclaration,candidates:readonly FilterCandidate[]):void {
+  if(filter.id!=='region'||!iocHeaderDeclaration(page)?.filterIds?.includes('region'))return;
+  if(candidates.some(candidate=>candidate.label==='全球'&&candidate.value!=='全球'))throw Object.assign(new Error('IOC Region 的全球节点必须归一为中文值“全球”'),{code:'DQE_CONFIG_ERROR'});
+}

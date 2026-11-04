@@ -1,7 +1,8 @@
 import type {EffectiveQuery} from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway,FilterCandidatesRequest} from '@metriccanvas/engine';
 export {createSharedFilterBridge} from '../../../../packages/embed/examples/shared-filter-bridge';
-export {prepareIocHeaderFilters} from '../../../../packages/embed/examples/ioc-header-candidate-bridge';
+import {normalizeIocRegionCandidates} from '../../../../packages/embed/examples/ioc-header-candidate-bridge';
+export {normalizeIocRegionCandidates,prepareIocHeaderFilters} from '../../../../packages/embed/examples/ioc-header-candidate-bridge';
 
 /** Entirely synthetic values; no business-derived names, codes or receipts. */
 export const offices=[
@@ -51,10 +52,11 @@ export function createKeyOfficePriorityGateway(observe?:(kind:'query'|'candidate
         return {kind:'values',candidates:state==='empty'?[]:priorityOffices.filter(item=>item.key==='true').map(item=>({value:item.office,label:item.office}))};
       }
       if(request.dimension==='customer-level')return {kind:'values',candidates:['战略','卓越'].map(value=>({value,label:value}))};
-      return {kind:'values',candidates:[
-        ...['华东地区部','华南地区部'].map(value=>({value,label:value,level:'region-dept'})),
+      return {kind:'values',candidates:normalizeIocRegionCandidates([
+        {value:'WORLD',label:'全球',level:'geo'},
+        ...['华东地区部','华南地区部'].map(value=>({value,label:value,level:'region-dept',parent:{level:'geo',value:'WORLD'}})),
         ...priorityOffices.map(item=>({value:item.office,label:item.office,level:'office',parent:{level:'region-dept',value:item.region}}))
-      ]};
+      ])};
     },
     async fetchData(query){
       observe?.('query',query);
@@ -69,6 +71,6 @@ export function createKeyOfficePriorityGateway(observe?:(kind:'query'|'candidate
   };
 }
 function priorityValue(item:typeof priorityOffices[number],field:string):string|undefined {
-  const fields:Record<string,string>={'地区部':item.region,'代表处':item.office,'重点国代':item.key,'客户级别':item.customer};
+  const fields:Record<string,string>={'地区部':item.region,'代表处':item.office,'重点国代':item.key,'客户级别':item.customer,'数据月份':'202604'};
   return fields[field];
 }

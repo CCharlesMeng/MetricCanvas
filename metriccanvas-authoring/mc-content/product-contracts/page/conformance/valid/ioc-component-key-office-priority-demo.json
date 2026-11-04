@@ -9,7 +9,7 @@
     {
       "id": "region",
       "type": "dimension",
-      "dimension": "demo_region",
+      "dimension": "demo_geo",
       "label": "Region",
       "selection": {
         "mode": "single"
@@ -17,6 +17,11 @@
       "display": "tree",
       "treeSelection": "level",
       "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "demo_geo",
+          "label": "全球"
+        },
         {
           "id": "region-dept",
           "dimension": "demo_region",
@@ -51,7 +56,17 @@
       "label": "客户类型",
       "selection": {
         "mode": "multiple"
-      }
+      },
+      "options": [
+        {
+          "value": "战略",
+          "label": "战略"
+        },
+        {
+          "value": "卓越",
+          "label": "卓越"
+        }
+      ]
     }
   ],
   "dataSources": {
@@ -99,6 +114,7 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
+                "geo": "全球编码",
                 "region-dept": "地区部",
                 "office": "代表处"
               }
@@ -113,6 +129,11 @@
             "customer-category": {
               "target": "dimension",
               "queryField": "客户级别"
+            },
+            "mtime": {
+              "target": "timePoint",
+              "queryField": "数据月份",
+              "valueFormat": "compact"
             }
           }
         }

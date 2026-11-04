@@ -7,12 +7,12 @@ import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssu
 import type { FilterValue, FilterValues } from './filter-values';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { preservedQueryError } from './query-error';
-import {overriddenFilterIds} from '@metriccanvas/page/internal';
+import {overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { rawSnapshot } from './snapshots';
 
 export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
 
-export interface QueryBinding { displayInputs?:DisplayInputsSnapshot; filterRevision?:number; now?:Date; filters?: readonly FilterDeclaration[]; dataSource: QueryDataSource; pagination?: { limit: number }; }
+export interface QueryBinding { page?:import('@metriccanvas/page/internal').Page; displayInputs?:DisplayInputsSnapshot; filterRevision?:number; now?:Date; filters?: readonly FilterDeclaration[]; dataSource: QueryDataSource; pagination?: { limit: number }; }
 
 
 function mappedQueryField(
@@ -41,7 +41,7 @@ export function composeEffectiveQuery(
     if(overridden.has(filterId))continue;
     const value = values.get(filterId), declaration = binding.filters?.find(filter => filter.id === filterId);
     validateBindingValue(declaration, value, values, binding.now);
-    if (unrestrictedDimension(value, declaration)) continue;
+    if (unrestrictedDimension(value, declaration)||isUnrestrictedIocRegion(binding.page,filterId,value)) continue;
     const metric = selectedMetric(target, values);
     filterValues.push(...bindingPredicates(target, value, metric, binding));
   }

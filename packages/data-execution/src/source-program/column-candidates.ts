@@ -87,7 +87,7 @@ async function joinedCandidates(page: Page, request: ColumnCandidatesRead, view:
 async function ordinaryCandidates(page:Page,source:QueryDataSource,request:ColumnCandidatesRead,view:TableQueryView,limits:ReadonlyMap<string,number>,runner:QueryRunner,scope:string,signal?:AbortSignal):Promise<ColumnCandidatesPage>{
       const views=new Map(request.views);views.set(request.sourceId,view);
       const offset=request.offset??0,limit=request.pageSize??50;
-      const query: EffectiveQuery = composeEffectiveQuery({ now: request.now, filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], tableHeaders(view.predicates), view.search);
+      const query: EffectiveQuery = composeEffectiveQuery({ now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], tableHeaders(view.predicates), view.search);
       const mappedField=query.fieldMappings[request.field];
       if (!hasQueryFieldMapping(mappedField)) return { kind: 'unavailable' };
       const windows = new Map(limits);
