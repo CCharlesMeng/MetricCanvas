@@ -103,7 +103,7 @@ describe('standalone deterministic authoring program', () => {
     expect(rejected.status).toBe('error');
     expect(rejected.diagnostics).toEqual(rejected.data.issues);
     expect(JSON.stringify(vector)).toBe(before);
-  });
+  }, 20_000); // Four cold standalone processes need a shared budget on constrained CI runners.
 
   it.each(SELF_TESTS)('ships executable fixed self-test $operation', test => {
     expect(invoke(test.operation, test.input).status).toBe(test.expectedStatus);

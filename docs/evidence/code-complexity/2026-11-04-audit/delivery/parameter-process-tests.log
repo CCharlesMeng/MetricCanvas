@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/authoring-page-product.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/complexity-under-five/DataDashboard
+
+
+ Test Files  1 passed (1)
+      Tests  22 passed (22)
+   Start at  16:43:30
+   Duration  9.06s (transform 318ms, setup 0ms, import 532ms, tests 8.48s, environment 0ms)
