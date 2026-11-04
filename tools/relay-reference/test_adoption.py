@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from adoption import aggregate, evaluate, load_policy, pinned, validate_evidence
+from adoption import aggregate, evaluate, load_policy, pinned, validate_evidence, validate_review
 from compatibility import compare_states
 from config import load_config
 from package_release import check_evidence_release, pack, receipt_path, verify_archive
@@ -39,8 +39,8 @@ class AdoptionTests(unittest.TestCase):
         return aggregate(self.policy, self.config, reports, historical)
 
     def test_pins_baselines_and_preserves_behavior_during_public_path_migration(self):
-        self.assertEqual(self.policy["primary"][0]["manifest"]["defaultPageSchema"], "6.83")
-        self.assertEqual(len(self.policy["primary"][0]["vectors"]), 35)
+        self.assertEqual(self.policy["primary"][0]["manifest"]["defaultPageSchema"], "6.84")
+        self.assertEqual(len(self.policy["primary"][0]["vectors"]), 37)
         self.assertEqual(len(self.policy["historical"][0]["vectors"]), 23)
         expected = self.policy["expectedHistory"]
         self.assertEqual(expected["status"], "needs_migration")
@@ -53,13 +53,27 @@ class AdoptionTests(unittest.TestCase):
 
     def test_plural_baseline_keeps_all_35_previous_requests_and_expectations(self):
         previous = read_json(Path(__file__).with_name("fixtures") / "consumer-0.2.0-schema683.json")
-        primary = self.policy["primary"][0]
+        primary = read_json(Path(__file__).with_name("fixtures") / "consumer-0.3.0-tools-plural.json")
         self.assertEqual(primary["vectors"], previous["vectors"])
         self.assertEqual(primary["interface"]["operations"], previous["interface"]["operations"])
         report = compare_states(previous, primary)
         self.assertEqual(report["status"], "needs_migration")
         self.assertEqual(report["details"], ["interfaceVersion: incompatible version",
             "entrypoint: explicit integration upgrade required", "publicPaths: previous public path was removed"])
+
+    def test_schema684_review_preserves_requests_and_stale_report_rejection(self):
+        folder = Path(__file__).with_name("fixtures")
+        previous = read_json(folder / "consumer-0.3.0-tools-plural.json")
+        primary = self.policy["primary"][0]
+        self.assertEqual([v["request"] for v in primary["vectors"][:35]],
+                         [v["request"] for v in previous["vectors"]])
+        review = read_json(folder / "schema684-plural-consumer-review-v1.json")
+        checked = validate_review(review, previous, primary)
+        self.assertEqual(sum(not check["passed"] for check in checked["checks"]), 13)
+        stale = next(v for v in primary["vectors"] if v["request"]["requestId"] == "consumer-0.2.0-new-2")
+        self.assertEqual(stale["expected"]["diagnostics"][0]["code"], "ANALYSIS_BASELINE_STALE")
+        self.assertEqual([(v["expected"]["status"], v["expected"]["exitCode"]) for v in primary["vectors"][-2:]],
+                         [("ok", 0), ("error", 2)])
 
     def test_initial_gate_keeps_historical_migration_visible(self):
         report = self.gate()

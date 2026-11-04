@@ -21,12 +21,12 @@
   ],
   "consumers": [
     {
-      "path": "tools/relay-reference/fixtures/consumer-0.3.0-tools-plural.json",
-      "sha256": "676d39ba1ecdddce10c7bffffc528f6c548ca72edca6dd7ed9f6bf7dbdf31a1f"
+      "path": "tools/relay-reference/fixtures/consumer-0.3.3-schema684.json",
+      "sha256": "205207b7f51218ff6ed891940d0c0146556ee96bcdcca6dc98f107915de05019"
     }
   ],
   "adoption": {
-    "path": "tools/relay-reference/fixtures/tools-plural-first-adoption-v1.json",
-    "sha256": "fd37c31713a694fc1593e8333c22337bc8dc488ea8b6b4d618e9e1c733c39bfa"
+    "path": "tools/relay-reference/fixtures/schema684-tools-first-adoption-v1.json",
+    "sha256": "3f8d6db327db7004ee76701f53a7b12c23beb5f2a6874fb2370d5e958a819488"
   }
 }

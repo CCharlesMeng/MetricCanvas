@@ -1,0 +1,1689 @@
+{
+  "analyzer": "radon",
+  "version": "6.0.1",
+  "scope": "all functions, methods and nested closures in changed Python sources; class averages excluded",
+  "files": {
+    "metriccanvas-authoring/tool/metriccanvas_authoring/runtime_assets.py": [
+      {
+        "name": "bundle_root",
+        "line": 11,
+        "complexity": 8
+      },
+      {
+        "name": "product_resources",
+        "line": 40,
+        "complexity": 3
+      }
+    ],
+    "tools/mc-content/scripts/mc_runtime.py": [
+      {
+        "name": "run_node",
+        "line": 11,
+        "complexity": 12
+      },
+      {
+        "name": "require_compile_dependency",
+        "line": 40,
+        "complexity": 2
+      },
+      {
+        "name": "compile_dependency_check",
+        "line": 48,
+        "complexity": 2
+      },
+      {
+        "name": "node_check",
+        "line": 56,
+        "complexity": 5
+      },
+      {
+        "name": "preflight",
+        "line": 70,
+        "complexity": 7
+      }
+    ],
+    "tools/relay-reference/archive_format.py": [
+      {
+        "name": "portable_part",
+        "line": 19,
+        "complexity": 4
+      },
+      {
+        "name": "member_name",
+        "line": 24,
+        "complexity": 3
+      },
+      {
+        "name": "check_members",
+        "line": 35,
+        "complexity": 4
+      },
+      {
+        "name": "write_zip",
+        "line": 52,
+        "complexity": 2
+      },
+      {
+        "name": "write_tar",
+        "line": 63,
+        "complexity": 2
+      },
+      {
+        "name": "write_archive",
+        "line": 76,
+        "complexity": 3
+      },
+      {
+        "name": "zip_members",
+        "line": 86,
+        "complexity": 10
+      },
+      {
+        "name": "tar_members",
+        "line": 102,
+        "complexity": 6
+      },
+      {
+        "name": "copy_member",
+        "line": 112,
+        "complexity": 1
+      },
+      {
+        "name": "extract_zip",
+        "line": 118,
+        "complexity": 3
+      },
+      {
+        "name": "extract_tar",
+        "line": 131,
+        "complexity": 3
+      },
+      {
+        "name": "extract_archive",
+        "line": 147,
+        "complexity": 3
+      }
+    ],
+    "tools/relay-reference/compatibility.py": [
+      {
+        "name": "version_reasons",
+        "line": 7,
+        "complexity": 7
+      },
+      {
+        "name": "environment_reasons",
+        "line": 20,
+        "complexity": 4
+      },
+      {
+        "name": "interface_reasons",
+        "line": 30,
+        "complexity": 7
+      },
+      {
+        "name": "compare",
+        "line": 45,
+        "complexity": 1
+      },
+      {
+        "name": "compare_states",
+        "line": 49,
+        "complexity": 4
+      }
+    ],
+    "tools/relay-reference/consumer.py": [
+      {
+        "name": "load_consumer",
+        "line": 13,
+        "complexity": 2
+      },
+      {
+        "name": "contract_check",
+        "line": 23,
+        "complexity": 3
+      },
+      {
+        "name": "envelope_errors",
+        "line": 32,
+        "complexity": 5
+      },
+      {
+        "name": "content_errors",
+        "line": 41,
+        "complexity": 7
+      },
+      {
+        "name": "run_vector",
+        "line": 53,
+        "complexity": 5
+      },
+      {
+        "name": "replay",
+        "line": 71,
+        "complexity": 7
+      }
+    ],
+    "tools/relay-reference/export.py": [
+      {
+        "name": "write_json",
+        "line": 24,
+        "complexity": 1
+      },
+      {
+        "name": "copy_tree",
+        "line": 29,
+        "complexity": 5
+      },
+      {
+        "name": "copy_resources",
+        "line": 39,
+        "complexity": 4
+      },
+      {
+        "name": "install_private",
+        "line": 49,
+        "complexity": 3
+      },
+      {
+        "name": "add_operations",
+        "line": 59,
+        "complexity": 2
+      },
+      {
+        "name": "add_python",
+        "line": 67,
+        "complexity": 4
+      },
+      {
+        "name": "postprocess_metadata",
+        "line": 91,
+        "complexity": 8
+      },
+      {
+        "name": "resolved_descriptions",
+        "line": 110,
+        "complexity": 5
+      },
+      {
+        "name": "record_schema_binding",
+        "line": 129,
+        "complexity": 2
+      },
+      {
+        "name": "add_node",
+        "line": 139,
+        "complexity": 1
+      },
+      {
+        "name": "dependency_constraints",
+        "line": 154,
+        "complexity": 9
+      },
+      {
+        "name": "build",
+        "line": 176,
+        "complexity": 3
+      },
+      {
+        "name": "write_examples",
+        "line": 200,
+        "complexity": 2
+      },
+      {
+        "name": "finish",
+        "line": 214,
+        "complexity": 3
+      },
+      {
+        "name": "main",
+        "line": 236,
+        "complexity": 1
+      }
+    ],
+    "tools/relay-reference/interface_resources.py": [
+      {
+        "name": "pointer",
+        "line": 12,
+        "complexity": 1
+      },
+      {
+        "name": "call_codes",
+        "line": 16,
+        "complexity": 7
+      },
+      {
+        "name": "runtime_codes",
+        "line": 27,
+        "complexity": 12
+      },
+      {
+        "name": "declared_errors",
+        "line": 41,
+        "complexity": 3
+      },
+      {
+        "name": "interface_summary",
+        "line": 50,
+        "complexity": 2
+      },
+      {
+        "name": "operation_guide",
+        "line": 62,
+        "complexity": 2
+      },
+      {
+        "name": "add_operation_guides",
+        "line": 79,
+        "complexity": 2
+      },
+      {
+        "name": "write_generated",
+        "line": 89,
+        "complexity": 2
+      },
+      {
+        "name": "add_error_resources",
+        "line": 96,
+        "complexity": 4
+      },
+      {
+        "name": "refresh_manifest",
+        "line": 113,
+        "complexity": 6
+      },
+      {
+        "name": "publish_interface",
+        "line": 125,
+        "complexity": 1
+      }
+    ],
+    "tools/relay-reference/package_release.py": [
+      {
+        "name": "package_files",
+        "line": 15,
+        "complexity": 1
+      },
+      {
+        "name": "archive_kind",
+        "line": 19,
+        "complexity": 2
+      },
+      {
+        "name": "receipt_path",
+        "line": 26,
+        "complexity": 1
+      },
+      {
+        "name": "package_receipt",
+        "line": 30,
+        "complexity": 2
+      },
+      {
+        "name": "validate_receipt",
+        "line": 42,
+        "complexity": 4
+      },
+      {
+        "name": "check_extracted",
+        "line": 58,
+        "complexity": 3
+      },
+      {
+        "name": "check_evidence_release",
+        "line": 69,
+        "complexity": 3
+      },
+      {
+        "name": "unpack_checked",
+        "line": 76,
+        "complexity": 2
+      },
+      {
+        "name": "verify_archive",
+        "line": 86,
+        "complexity": 3
+      },
+      {
+        "name": "pack",
+        "line": 98,
+        "complexity": 6
+      },
+      {
+        "name": "write_receipt",
+        "line": 122,
+        "complexity": 2
+      }
+    ],
+    "tools/relay-reference/product_cli.py": [
+      {
+        "name": "launch",
+        "line": 10,
+        "complexity": 2
+      }
+    ],
+    "tools/relay-reference/product_runtime.py": [
+      {
+        "name": "offline_audit",
+        "line": 17,
+        "complexity": 2
+      },
+      {
+        "name": "initialize",
+        "line": 22,
+        "complexity": 3
+      },
+      {
+        "name": "node_executable",
+        "line": 34,
+        "complexity": 1
+      },
+      {
+        "name": "runtime_check",
+        "line": 40,
+        "complexity": 2
+      },
+      {
+        "name": "parse_request",
+        "line": 51,
+        "complexity": 3
+      },
+      {
+        "name": "node_operation",
+        "line": 63,
+        "complexity": 1
+      },
+      {
+        "name": "dispatch",
+        "line": 75,
+        "complexity": 2
+      },
+      {
+        "name": "postprocess",
+        "line": 84,
+        "complexity": 10
+      },
+      {
+        "name": "resource_arguments",
+        "line": 104,
+        "complexity": 2
+      },
+      {
+        "name": "validate_result",
+        "line": 116,
+        "complexity": 4
+      },
+      {
+        "name": "invoke",
+        "line": 128,
+        "complexity": 3
+      },
+      {
+        "name": "evaluation_issue",
+        "line": 143,
+        "complexity": 8
+      },
+      {
+        "name": "self_test",
+        "line": 160,
+        "complexity": 6
+      },
+      {
+        "name": "receipt",
+        "line": 175,
+        "complexity": 1
+      },
+      {
+        "name": "run",
+        "line": 179,
+        "complexity": 6
+      },
+      {
+        "name": "run_request",
+        "line": 196,
+        "complexity": 4
+      },
+      {
+        "name": "main",
+        "line": 209,
+        "complexity": 2
+      }
+    ],
+    "tools/relay-reference/provenance.py": [
+      {
+        "name": "file_digest",
+        "line": 11,
+        "complexity": 2
+      },
+      {
+        "name": "git",
+        "line": 19,
+        "complexity": 1
+      },
+      {
+        "name": "checked_source",
+        "line": 23,
+        "complexity": 3
+      },
+      {
+        "name": "source_inputs",
+        "line": 31,
+        "complexity": 3
+      },
+      {
+        "name": "private_inputs",
+        "line": 49,
+        "complexity": 4
+      },
+      {
+        "name": "source_receipt",
+        "line": 64,
+        "complexity": 6
+      },
+      {
+        "name": "validate_source",
+        "line": 79,
+        "complexity": 7
+      }
+    ],
+    "tools/relay-reference/relay_content.py": [
+      {
+        "name": "pretty",
+        "line": 16,
+        "complexity": 1
+      },
+      {
+        "name": "content_error_codes",
+        "line": 20,
+        "complexity": 11
+      },
+      {
+        "name": "verify_content",
+        "line": 34,
+        "complexity": 1
+      },
+      {
+        "name": "annotate",
+        "line": 43,
+        "complexity": 8
+      }
+    ],
+    "tools/relay-reference/release.py": [
+      {
+        "name": "require",
+        "line": 27,
+        "complexity": 2
+      },
+      {
+        "name": "canonical",
+        "line": 32,
+        "complexity": 1
+      },
+      {
+        "name": "digest",
+        "line": 37,
+        "complexity": 1
+      },
+      {
+        "name": "unique_object",
+        "line": 41,
+        "complexity": 2
+      },
+      {
+        "name": "reject_constant",
+        "line": 49,
+        "complexity": 1
+      },
+      {
+        "name": "finite_float",
+        "line": 53,
+        "complexity": 1
+      },
+      {
+        "name": "read_json",
+        "line": 59,
+        "complexity": 1
+      },
+      {
+        "name": "shape",
+        "line": 64,
+        "complexity": 2
+      },
+      {
+        "name": "nonempty",
+        "line": 69,
+        "complexity": 2
+      },
+      {
+        "name": "strings",
+        "line": 73,
+        "complexity": 4
+      },
+      {
+        "name": "version",
+        "line": 81,
+        "complexity": 3
+      },
+      {
+        "name": "relative_path",
+        "line": 87,
+        "complexity": 5
+      },
+      {
+        "name": "tools_directory",
+        "line": 97,
+        "complexity": 2
+      },
+      {
+        "name": "artifact_names",
+        "line": 102,
+        "complexity": 1
+      },
+      {
+        "name": "inventory",
+        "line": 107,
+        "complexity": 8
+      },
+      {
+        "name": "file_inventory",
+        "line": 122,
+        "complexity": 6
+      },
+      {
+        "name": "validate_runtime",
+        "line": 145,
+        "complexity": 4
+      },
+      {
+        "name": "validate_metadata",
+        "line": 155,
+        "complexity": 1
+      },
+      {
+        "name": "validate_operation",
+        "line": 165,
+        "complexity": 2
+      },
+      {
+        "name": "read_interface",
+        "line": 174,
+        "complexity": 6
+      },
+      {
+        "name": "read_resources",
+        "line": 194,
+        "complexity": 5
+      },
+      {
+        "name": "manifest_body",
+        "line": 209,
+        "complexity": 1
+      },
+      {
+        "name": "seal",
+        "line": 217,
+        "complexity": 2
+      },
+      {
+        "name": "verify",
+        "line": 230,
+        "complexity": 3
+      },
+      {
+        "name": "ReleaseError.__init__",
+        "line": 22,
+        "complexity": 1
+      },
+      {
+        "name": "__init__",
+        "line": 22,
+        "complexity": 1
+      }
+    ],
+    "tools/relay-reference/runtime_probe.py": [
+      {
+        "name": "copy_dependencies",
+        "line": 19,
+        "complexity": 7
+      },
+      {
+        "name": "prefix",
+        "line": 35,
+        "complexity": 1
+      },
+      {
+        "name": "call",
+        "line": 39,
+        "complexity": 3
+      },
+      {
+        "name": "request",
+        "line": 48,
+        "complexity": 1
+      },
+      {
+        "name": "check_call",
+        "line": 52,
+        "complexity": 1
+      },
+      {
+        "name": "negative_probes",
+        "line": 58,
+        "complexity": 2
+      },
+      {
+        "name": "missing_file_probe",
+        "line": 78,
+        "complexity": 1
+      },
+      {
+        "name": "network_probes",
+        "line": 86,
+        "complexity": 3
+      },
+      {
+        "name": "probe",
+        "line": 102,
+        "complexity": 6
+      }
+    ],
+    "tools/relay-reference/test_adoption.py": [
+      {
+        "name": "AdoptionTests.setUpClass",
+        "line": 24,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.reports",
+        "line": 28,
+        "complexity": 2
+      },
+      {
+        "name": "AdoptionTests.gate",
+        "line": 37,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_pins_baselines_and_preserves_behavior_during_public_path_migration",
+        "line": 41,
+        "complexity": 4
+      },
+      {
+        "name": "AdoptionTests.test_plural_baseline_keeps_all_35_previous_requests_and_expectations",
+        "line": 54,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_schema684_review_preserves_requests_and_stale_report_rejection",
+        "line": 64,
+        "complexity": 7
+      },
+      {
+        "name": "AdoptionTests.test_initial_gate_keeps_historical_migration_visible",
+        "line": 78,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_actual_current_migration_is_checked_before_replay_and_cannot_be_bypassed",
+        "line": 85,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_compatible_actual_current_can_enter_smoke_without_automatic_activation",
+        "line": 96,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_missing_or_changed_history_and_failed_new_consumer_fail_closed",
+        "line": 103,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_cannot_remove_historical_consumer_by_changing_config",
+        "line": 112,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_changed_adoption_or_review_bytes_are_rejected",
+        "line": 122,
+        "complexity": 1
+      },
+      {
+        "name": "AdoptionTests.test_receipt_cannot_drop_history_or_turn_it_green",
+        "line": 130,
+        "complexity": 2
+      },
+      {
+        "name": "AdoptionTests.test_archive_receipt_round_trip_preserves_full_historical_failure",
+        "line": 141,
+        "complexity": 2
+      },
+      {
+        "name": "AdoptionTests.test_archive_evidence_for_other_candidate_is_rejected",
+        "line": 156,
+        "complexity": 1
+      },
+      {
+        "name": "setUpClass",
+        "line": 24,
+        "complexity": 1
+      },
+      {
+        "name": "reports",
+        "line": 28,
+        "complexity": 2
+      },
+      {
+        "name": "gate",
+        "line": 37,
+        "complexity": 1
+      },
+      {
+        "name": "test_pins_baselines_and_preserves_behavior_during_public_path_migration",
+        "line": 41,
+        "complexity": 4
+      },
+      {
+        "name": "test_plural_baseline_keeps_all_35_previous_requests_and_expectations",
+        "line": 54,
+        "complexity": 1
+      },
+      {
+        "name": "test_schema684_review_preserves_requests_and_stale_report_rejection",
+        "line": 64,
+        "complexity": 7
+      },
+      {
+        "name": "test_initial_gate_keeps_historical_migration_visible",
+        "line": 78,
+        "complexity": 1
+      },
+      {
+        "name": "test_actual_current_migration_is_checked_before_replay_and_cannot_be_bypassed",
+        "line": 85,
+        "complexity": 1
+      },
+      {
+        "name": "test_compatible_actual_current_can_enter_smoke_without_automatic_activation",
+        "line": 96,
+        "complexity": 1
+      },
+      {
+        "name": "test_missing_or_changed_history_and_failed_new_consumer_fail_closed",
+        "line": 103,
+        "complexity": 1
+      },
+      {
+        "name": "test_cannot_remove_historical_consumer_by_changing_config",
+        "line": 112,
+        "complexity": 1
+      },
+      {
+        "name": "test_changed_adoption_or_review_bytes_are_rejected",
+        "line": 122,
+        "complexity": 1
+      },
+      {
+        "name": "test_receipt_cannot_drop_history_or_turn_it_green",
+        "line": 130,
+        "complexity": 2
+      },
+      {
+        "name": "test_archive_receipt_round_trip_preserves_full_historical_failure",
+        "line": 141,
+        "complexity": 2
+      },
+      {
+        "name": "test_archive_evidence_for_other_candidate_is_rejected",
+        "line": 156,
+        "complexity": 1
+      },
+      {
+        "name": "ActualCurrentGateTests.test_actual_cli_rejects_verified_current_with_682_default",
+        "line": 163,
+        "complexity": 2
+      },
+      {
+        "name": "test_actual_cli_rejects_verified_current_with_682_default",
+        "line": 163,
+        "complexity": 2
+      }
+    ],
+    "tools/relay-reference/test_archive.py": [
+      {
+        "name": "fixture_source",
+        "line": 25,
+        "complexity": 1
+      },
+      {
+        "name": "write_zip",
+        "line": 31,
+        "complexity": 2
+      },
+      {
+        "name": "write_tar_item",
+        "line": 42,
+        "complexity": 1
+      },
+      {
+        "name": "ArchiveTests.setUp",
+        "line": 50,
+        "complexity": 1
+      },
+      {
+        "name": "ArchiveTests.test_zip_and_tar_are_byte_reproducible_with_fixed_metadata",
+        "line": 58,
+        "complexity": 4
+      },
+      {
+        "name": "ArchiveTests.test_archive_receipt_and_destination_never_overwrite",
+        "line": 71,
+        "complexity": 1
+      },
+      {
+        "name": "ArchiveTests.test_archive_byte_tampering_and_mismatched_source_are_rejected",
+        "line": 90,
+        "complexity": 1
+      },
+      {
+        "name": "ArchiveTests.test_changed_payload_with_forged_archive_digest_fails_release_check",
+        "line": 98,
+        "complexity": 4
+      },
+      {
+        "name": "ArchiveTests.test_traversal_absolute_drive_backslash_alias_and_reserved_paths_are_rejected",
+        "line": 111,
+        "complexity": 2
+      },
+      {
+        "name": "ArchiveTests.test_windows_archive_fixture_keeps_the_raw_backslash_member",
+        "line": 122,
+        "complexity": 1
+      },
+      {
+        "name": "ArchiveTests.test_duplicate_case_and_file_directory_collisions_are_rejected",
+        "line": 134,
+        "complexity": 2
+      },
+      {
+        "name": "ArchiveTests.test_zip_symlinks_and_nonfixed_metadata_are_rejected",
+        "line": 141,
+        "complexity": 1
+      },
+      {
+        "name": "ArchiveTests.test_tar_symlink_hardlink_device_fifo_directory_and_pax_are_rejected",
+        "line": 151,
+        "complexity": 2
+      },
+      {
+        "name": "ArchiveTests.test_receipt_duplicate_json_and_source_digest_change_are_rejected",
+        "line": 167,
+        "complexity": 1
+      },
+      {
+        "name": "ArchiveTests.test_source_drift_is_detected_from_actual_input_bytes",
+        "line": 178,
+        "complexity": 2
+      },
+      {
+        "name": "ArchiveTests.test_standard_library_cli_checks_and_extraction_with_no_site_packages",
+        "line": 195,
+        "complexity": 1
+      },
+      {
+        "name": "setUp",
+        "line": 50,
+        "complexity": 1
+      },
+      {
+        "name": "test_zip_and_tar_are_byte_reproducible_with_fixed_metadata",
+        "line": 58,
+        "complexity": 4
+      },
+      {
+        "name": "test_archive_receipt_and_destination_never_overwrite",
+        "line": 71,
+        "complexity": 1
+      },
+      {
+        "name": "test_archive_byte_tampering_and_mismatched_source_are_rejected",
+        "line": 90,
+        "complexity": 1
+      },
+      {
+        "name": "test_changed_payload_with_forged_archive_digest_fails_release_check",
+        "line": 98,
+        "complexity": 4
+      },
+      {
+        "name": "test_traversal_absolute_drive_backslash_alias_and_reserved_paths_are_rejected",
+        "line": 111,
+        "complexity": 2
+      },
+      {
+        "name": "test_windows_archive_fixture_keeps_the_raw_backslash_member",
+        "line": 122,
+        "complexity": 1
+      },
+      {
+        "name": "test_duplicate_case_and_file_directory_collisions_are_rejected",
+        "line": 134,
+        "complexity": 2
+      },
+      {
+        "name": "test_zip_symlinks_and_nonfixed_metadata_are_rejected",
+        "line": 141,
+        "complexity": 1
+      },
+      {
+        "name": "test_tar_symlink_hardlink_device_fifo_directory_and_pax_are_rejected",
+        "line": 151,
+        "complexity": 2
+      },
+      {
+        "name": "test_receipt_duplicate_json_and_source_digest_change_are_rejected",
+        "line": 167,
+        "complexity": 1
+      },
+      {
+        "name": "test_source_drift_is_detected_from_actual_input_bytes",
+        "line": 178,
+        "complexity": 2
+      },
+      {
+        "name": "test_standard_library_cli_checks_and_extraction_with_no_site_packages",
+        "line": 195,
+        "complexity": 1
+      }
+    ],
+    "tools/relay-reference/test_distribution.py": [
+      {
+        "name": "DistributionTests.setUpClass",
+        "line": 27,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.tearDownClass",
+        "line": 40,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.cli",
+        "line": 43,
+        "complexity": 4
+      },
+      {
+        "name": "DistributionTests.invoke",
+        "line": 53,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_real_facade_self_test_and_closed_inventory",
+        "line": 57,
+        "complexity": 2
+      },
+      {
+        "name": "DistributionTests.test_shared_installation_preserves_host_files_but_staging_remains_strict",
+        "line": 71,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_shared_installation_still_rejects_changes_inside_product_artifacts",
+        "line": 86,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_exported_example_request_executes_through_public_facade",
+        "line": 100,
+        "complexity": 4
+      },
+      {
+        "name": "DistributionTests.test_archived_cli_uses_utf8_with_windows_legacy_locale",
+        "line": 110,
+        "complexity": 2
+      },
+      {
+        "name": "DistributionTests.test_frozen_page_read_validate_upgrade_parameters",
+        "line": 130,
+        "complexity": 2
+      },
+      {
+        "name": "DistributionTests.test_product_rejection_and_request_validation",
+        "line": 144,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_missing_dependencies_and_missing_files_are_environment_errors",
+        "line": 153,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_real_content_resource_and_budget",
+        "line": 165,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_legacy_mcp_resources_are_marked_without_renaming_ids",
+        "line": 175,
+        "complexity": 5
+      },
+      {
+        "name": "DistributionTests.test_frozen_query_result_compose_and_edit_chain",
+        "line": 196,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_two_compatible_updates_jump_and_explicit_rollback",
+        "line": 219,
+        "complexity": 3
+      },
+      {
+        "name": "DistributionTests.test_identical_source_exports_identical_paths_and_bytes",
+        "line": 235,
+        "complexity": 3
+      },
+      {
+        "name": "DistributionTests.test_offline_guards_block_actual_attempts",
+        "line": 247,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_only_declared_initial_dependencies_without_site_packages",
+        "line": 260,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.copy_dependencies",
+        "line": 274,
+        "complexity": 6
+      },
+      {
+        "name": "DistributionTests.test_generated_programs_have_no_developer_absolute_paths",
+        "line": 286,
+        "complexity": 2
+      },
+      {
+        "name": "DistributionTests.test_missing_node_is_an_environment_error",
+        "line": 293,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_evaluation_structure_semantics_and_process_timezone",
+        "line": 296,
+        "complexity": 3
+      },
+      {
+        "name": "DistributionTests.test_shared_evaluation_schema_is_inlined_from_one_build_output",
+        "line": 316,
+        "complexity": 2
+      },
+      {
+        "name": "DistributionTests.test_python_bound_operations_reject_invalid_context_even_without_page_validation",
+        "line": 323,
+        "complexity": 3
+      },
+      {
+        "name": "DistributionTests.test_success_data_is_checked_without_replacing_error_diagnostics",
+        "line": 330,
+        "complexity": 1
+      },
+      {
+        "name": "DistributionTests.test_internal_relocation_keeps_frozen_consumer",
+        "line": 346,
+        "complexity": 3
+      },
+      {
+        "name": "DistributionTests.reseal",
+        "line": 358,
+        "complexity": 2
+      },
+      {
+        "name": "setUpClass",
+        "line": 27,
+        "complexity": 1
+      },
+      {
+        "name": "tearDownClass",
+        "line": 40,
+        "complexity": 1
+      },
+      {
+        "name": "cli",
+        "line": 43,
+        "complexity": 4
+      },
+      {
+        "name": "invoke",
+        "line": 53,
+        "complexity": 1
+      },
+      {
+        "name": "test_real_facade_self_test_and_closed_inventory",
+        "line": 57,
+        "complexity": 2
+      },
+      {
+        "name": "test_shared_installation_preserves_host_files_but_staging_remains_strict",
+        "line": 71,
+        "complexity": 1
+      },
+      {
+        "name": "test_shared_installation_still_rejects_changes_inside_product_artifacts",
+        "line": 86,
+        "complexity": 1
+      },
+      {
+        "name": "test_exported_example_request_executes_through_public_facade",
+        "line": 100,
+        "complexity": 4
+      },
+      {
+        "name": "test_archived_cli_uses_utf8_with_windows_legacy_locale",
+        "line": 110,
+        "complexity": 2
+      },
+      {
+        "name": "test_frozen_page_read_validate_upgrade_parameters",
+        "line": 130,
+        "complexity": 2
+      },
+      {
+        "name": "test_product_rejection_and_request_validation",
+        "line": 144,
+        "complexity": 1
+      },
+      {
+        "name": "test_missing_dependencies_and_missing_files_are_environment_errors",
+        "line": 153,
+        "complexity": 1
+      },
+      {
+        "name": "test_real_content_resource_and_budget",
+        "line": 165,
+        "complexity": 1
+      },
+      {
+        "name": "test_legacy_mcp_resources_are_marked_without_renaming_ids",
+        "line": 175,
+        "complexity": 5
+      },
+      {
+        "name": "test_frozen_query_result_compose_and_edit_chain",
+        "line": 196,
+        "complexity": 1
+      },
+      {
+        "name": "test_two_compatible_updates_jump_and_explicit_rollback",
+        "line": 219,
+        "complexity": 3
+      },
+      {
+        "name": "test_identical_source_exports_identical_paths_and_bytes",
+        "line": 235,
+        "complexity": 3
+      },
+      {
+        "name": "test_offline_guards_block_actual_attempts",
+        "line": 247,
+        "complexity": 1
+      },
+      {
+        "name": "test_only_declared_initial_dependencies_without_site_packages",
+        "line": 260,
+        "complexity": 1
+      },
+      {
+        "name": "copy_dependencies",
+        "line": 274,
+        "complexity": 6
+      },
+      {
+        "name": "test_generated_programs_have_no_developer_absolute_paths",
+        "line": 286,
+        "complexity": 2
+      },
+      {
+        "name": "test_missing_node_is_an_environment_error",
+        "line": 293,
+        "complexity": 1
+      },
+      {
+        "name": "test_evaluation_structure_semantics_and_process_timezone",
+        "line": 296,
+        "complexity": 3
+      },
+      {
+        "name": "test_shared_evaluation_schema_is_inlined_from_one_build_output",
+        "line": 316,
+        "complexity": 2
+      },
+      {
+        "name": "test_python_bound_operations_reject_invalid_context_even_without_page_validation",
+        "line": 323,
+        "complexity": 3
+      },
+      {
+        "name": "test_success_data_is_checked_without_replacing_error_diagnostics",
+        "line": 330,
+        "complexity": 1
+      },
+      {
+        "name": "test_internal_relocation_keeps_frozen_consumer",
+        "line": 346,
+        "complexity": 3
+      },
+      {
+        "name": "reseal",
+        "line": 358,
+        "complexity": 2
+      }
+    ],
+    "tools/relay-reference/test_export.py": [
+      {
+        "name": "ExportGates.setUp",
+        "line": 13,
+        "complexity": 1
+      },
+      {
+        "name": "ExportGates.test_missing_shared_schema_is_rejected",
+        "line": 21,
+        "complexity": 1
+      },
+      {
+        "name": "ExportGates.test_unknown_schema_binding_is_rejected",
+        "line": 25,
+        "complexity": 1
+      },
+      {
+        "name": "ExportGates.test_unresolved_declared_path_and_empty_shared_schema_are_rejected",
+        "line": 31,
+        "complexity": 1
+      },
+      {
+        "name": "ExportGates.test_only_declared_binding_is_resolved_and_its_digest_recorded",
+        "line": 41,
+        "complexity": 1
+      },
+      {
+        "name": "ExportGates.test_online_python_dependency_is_rejected_without_importing_it",
+        "line": 51,
+        "complexity": 1
+      },
+      {
+        "name": "ExportGates.test_public_examples_preserve_frozen_input_and_expected_diagnostic",
+        "line": 59,
+        "complexity": 1
+      },
+      {
+        "name": "setUp",
+        "line": 13,
+        "complexity": 1
+      },
+      {
+        "name": "test_missing_shared_schema_is_rejected",
+        "line": 21,
+        "complexity": 1
+      },
+      {
+        "name": "test_unknown_schema_binding_is_rejected",
+        "line": 25,
+        "complexity": 1
+      },
+      {
+        "name": "test_unresolved_declared_path_and_empty_shared_schema_are_rejected",
+        "line": 31,
+        "complexity": 1
+      },
+      {
+        "name": "test_only_declared_binding_is_resolved_and_its_digest_recorded",
+        "line": 41,
+        "complexity": 1
+      },
+      {
+        "name": "test_online_python_dependency_is_rejected_without_importing_it",
+        "line": 51,
+        "complexity": 1
+      },
+      {
+        "name": "test_public_examples_preserve_frozen_input_and_expected_diagnostic",
+        "line": 59,
+        "complexity": 1
+      }
+    ],
+    "tools/relay-reference/test_interface_resources.py": [
+      {
+        "name": "InterfaceResourceTests.setUp",
+        "line": 20,
+        "complexity": 1
+      },
+      {
+        "name": "InterfaceResourceTests.inventory",
+        "line": 35,
+        "complexity": 3
+      },
+      {
+        "name": "InterfaceResourceTests.test_adds_real_lookup_routes_without_changing_existing_resources",
+        "line": 39,
+        "complexity": 5
+      },
+      {
+        "name": "InterfaceResourceTests.test_generated_metadata_is_byte_stable_and_reader_resolves_new_code",
+        "line": 59,
+        "complexity": 1
+      },
+      {
+        "name": "InterfaceResourceTests.test_operation_guide_is_bounded_and_does_not_embed_validation_schemas",
+        "line": 74,
+        "complexity": 1
+      },
+      {
+        "name": "setUp",
+        "line": 20,
+        "complexity": 1
+      },
+      {
+        "name": "inventory",
+        "line": 35,
+        "complexity": 3
+      },
+      {
+        "name": "test_adds_real_lookup_routes_without_changing_existing_resources",
+        "line": 39,
+        "complexity": 5
+      },
+      {
+        "name": "test_generated_metadata_is_byte_stable_and_reader_resolves_new_code",
+        "line": 59,
+        "complexity": 1
+      },
+      {
+        "name": "test_operation_guide_is_bounded_and_does_not_embed_validation_schemas",
+        "line": 74,
+        "complexity": 1
+      }
+    ],
+    "tools/relay-reference/test_node_runtime.py": [
+      {
+        "name": "NodeRuntimeTests.test_product_version_check_launches_resolved_executable",
+        "line": 20,
+        "complexity": 1
+      },
+      {
+        "name": "NodeRuntimeTests.test_product_dispatch_keeps_guard_and_utf8_bytes_with_space_path",
+        "line": 28,
+        "complexity": 1
+      },
+      {
+        "name": "NodeRuntimeTests.test_missing_node_is_a_structured_product_environment_error",
+        "line": 41,
+        "complexity": 1
+      },
+      {
+        "name": "NodeRuntimeTests.test_content_execution_and_preflight_use_same_resolved_path",
+        "line": 48,
+        "complexity": 1
+      },
+      {
+        "name": "NodeRuntimeTests.test_content_missing_node_does_not_invoke_a_bare_name",
+        "line": 61,
+        "complexity": 1
+      },
+      {
+        "name": "test_product_version_check_launches_resolved_executable",
+        "line": 20,
+        "complexity": 1
+      },
+      {
+        "name": "test_product_dispatch_keeps_guard_and_utf8_bytes_with_space_path",
+        "line": 28,
+        "complexity": 1
+      },
+      {
+        "name": "test_missing_node_is_a_structured_product_environment_error",
+        "line": 41,
+        "complexity": 1
+      },
+      {
+        "name": "test_content_execution_and_preflight_use_same_resolved_path",
+        "line": 48,
+        "complexity": 1
+      },
+      {
+        "name": "test_content_missing_node_does_not_invoke_a_bare_name",
+        "line": 61,
+        "complexity": 1
+      }
+    ],
+    "tools/relay-reference/test_release.py": [
+      {
+        "name": "write_json",
+        "line": 30,
+        "complexity": 1
+      },
+      {
+        "name": "fixture",
+        "line": 34,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.setUp",
+        "line": 49,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.interface",
+        "line": 59,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.outcome",
+        "line": 65,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_manifest_is_reproducible_and_has_no_self_hash",
+        "line": 69,
+        "complexity": 3
+      },
+      {
+        "name": "ReleaseTests.test_sealing_does_not_modify_inputs_or_overwrite_other_release",
+        "line": 80,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_private_restructure_and_resource_relocation_allow_smoke",
+        "line": 88,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_new_operation_requires_minor_version_and_keeps_old_operation",
+        "line": 98,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_removed_operation_and_changed_output_are_not_auto_compatible",
+        "line": 105,
+        "complexity": 3
+      },
+      {
+        "name": "ReleaseTests.test_resource_and_public_alias_removal_require_migration",
+        "line": 121,
+        "complexity": 2
+      },
+      {
+        "name": "ReleaseTests.test_runtime_schema_and_version_migrations",
+        "line": 134,
+        "complexity": 4
+      },
+      {
+        "name": "ReleaseTests.test_major_change_and_removed_page_support_are_migrations",
+        "line": 149,
+        "complexity": 3
+      },
+      {
+        "name": "ReleaseTests.test_integrity_detects_bytes_extra_files_and_manifest_tamper",
+        "line": 156,
+        "complexity": 4
+      },
+      {
+        "name": "ReleaseTests.test_manifest_canonical_bytes_and_utf8_are_checked",
+        "line": 176,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_four_artifact_boundary_and_missing_resources",
+        "line": 188,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_symlinks_and_case_collisions_are_rejected",
+        "line": 197,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_json_duplicate_nonfinite_and_cache_rejection",
+        "line": 212,
+        "complexity": 3
+      },
+      {
+        "name": "ReleaseTests.test_cli_independent_cwd_and_stdlib_only_copy",
+        "line": 227,
+        "complexity": 2
+      },
+      {
+        "name": "ReleaseTests.test_cli_migration_is_not_automatic_promotion",
+        "line": 244,
+        "complexity": 1
+      },
+      {
+        "name": "ReleaseTests.test_unsafe_paths_versions_and_side_effects_are_rejected",
+        "line": 256,
+        "complexity": 3
+      },
+      {
+        "name": "ReleaseTests.test_checks_do_not_mutate_either_release_and_need_no_sockets",
+        "line": 273,
+        "complexity": 5
+      },
+      {
+        "name": "ReleaseTests.test_cli_seal_and_verify_use_machine_receipts",
+        "line": 288,
+        "complexity": 2
+      },
+      {
+        "name": "ReleaseTests.test_cli_rejects_broken_candidate_with_structured_error",
+        "line": 304,
+        "complexity": 1
+      },
+      {
+        "name": "setUp",
+        "line": 49,
+        "complexity": 1
+      },
+      {
+        "name": "interface",
+        "line": 59,
+        "complexity": 1
+      },
+      {
+        "name": "outcome",
+        "line": 65,
+        "complexity": 1
+      },
+      {
+        "name": "test_manifest_is_reproducible_and_has_no_self_hash",
+        "line": 69,
+        "complexity": 3
+      },
+      {
+        "name": "test_sealing_does_not_modify_inputs_or_overwrite_other_release",
+        "line": 80,
+        "complexity": 1
+      },
+      {
+        "name": "test_private_restructure_and_resource_relocation_allow_smoke",
+        "line": 88,
+        "complexity": 1
+      },
+      {
+        "name": "test_new_operation_requires_minor_version_and_keeps_old_operation",
+        "line": 98,
+        "complexity": 1
+      },
+      {
+        "name": "test_removed_operation_and_changed_output_are_not_auto_compatible",
+        "line": 105,
+        "complexity": 3
+      },
+      {
+        "name": "test_resource_and_public_alias_removal_require_migration",
+        "line": 121,
+        "complexity": 2
+      },
+      {
+        "name": "test_runtime_schema_and_version_migrations",
+        "line": 134,
+        "complexity": 4
+      },
+      {
+        "name": "test_major_change_and_removed_page_support_are_migrations",
+        "line": 149,
+        "complexity": 3
+      },
+      {
+        "name": "test_integrity_detects_bytes_extra_files_and_manifest_tamper",
+        "line": 156,
+        "complexity": 4
+      },
+      {
+        "name": "test_manifest_canonical_bytes_and_utf8_are_checked",
+        "line": 176,
+        "complexity": 1
+      },
+      {
+        "name": "test_four_artifact_boundary_and_missing_resources",
+        "line": 188,
+        "complexity": 1
+      },
+      {
+        "name": "test_symlinks_and_case_collisions_are_rejected",
+        "line": 197,
+        "complexity": 1
+      },
+      {
+        "name": "test_json_duplicate_nonfinite_and_cache_rejection",
+        "line": 212,
+        "complexity": 3
+      },
+      {
+        "name": "test_cli_independent_cwd_and_stdlib_only_copy",
+        "line": 227,
+        "complexity": 2
+      },
+      {
+        "name": "test_cli_migration_is_not_automatic_promotion",
+        "line": 244,
+        "complexity": 1
+      },
+      {
+        "name": "test_unsafe_paths_versions_and_side_effects_are_rejected",
+        "line": 256,
+        "complexity": 3
+      },
+      {
+        "name": "test_checks_do_not_mutate_either_release_and_need_no_sockets",
+        "line": 273,
+        "complexity": 5
+      },
+      {
+        "name": "test_cli_seal_and_verify_use_machine_receipts",
+        "line": 288,
+        "complexity": 2
+      },
+      {
+        "name": "test_cli_rejects_broken_candidate_with_structured_error",
+        "line": 304,
+        "complexity": 1
+      }
+    ]
+  }
+}

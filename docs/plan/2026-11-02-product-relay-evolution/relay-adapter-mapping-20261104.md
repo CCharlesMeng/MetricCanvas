@@ -1,6 +1,6 @@
 # Relay 接入交接：公开入口、旧能力映射与回放
 
-日期：2026-11-04。目标：MC release 0.3.3 / Interface 2.0.0 / Schema 6.83。这是已实现的 MC 接入说明；真实 Relay 包装、DQE 和保存仍由 Relay 验收。
+日期：2026-11-04。目标：MC release 0.3.3 / Interface 2.0.0 / Schema 6.84。这是已实现的 MC 接入说明；真实 Relay 包装、DQE 和保存仍由 Relay 验收。
 
 ## 入口和旧能力映射
 
