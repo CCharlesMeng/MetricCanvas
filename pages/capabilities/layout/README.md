@@ -2,6 +2,12 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## Embed 重复挂载
+
+页面入口 `/pages/embed-mount-lifecycle`；[页面 JSON](embed-mount-lifecycle.json) 显式使用 dashboard，仅含内联合成计数，无 URL 参数或 DQE 依赖。运行 `pnpm dev:playground` 可检查初值 1 与指标卡呈现。
+
+宿主生命周期必须在真实 embed 入口验收：运行 `pnpm --filter @metriccanvas/embed build` 和 `pnpm --filter @metriccanvas/embed preview:examples`，访问 `http://127.0.0.1:4175/examples/mount-lifecycle.html`。该入口读取上面同一份 JSON，连续点击“再次 mount”时卡片计数增加，活动实例始终为1且句柄不变；点击“销毁”后为0，再点击“再次 mount”可恢复为1。事件回调替换、不同容器隔离与销毁后旧句柄边界由 `packages/embed/tests/browser/mount-lifecycle.spec.ts` 验证。Playground 的页面呈现不作为宿主重复挂载的证明；本场景不涉及真实 DQE/Relay 或目标 Angular 宿主部署。
+
 ## 主指标与多行次级指标
 
 入口：`/pages/metric-card-primary-detail`；[页面 JSON](metric-card-primary-detail.json)。

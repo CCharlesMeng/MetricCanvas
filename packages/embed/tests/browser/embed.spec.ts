@@ -125,21 +125,22 @@ test('独立 HTML 最终报告页加载真实页面并完成客户端渲染', as
   await expect(page).toHaveTitle('Tokens运营分析简报 · MetricCanvas');
 });
 
-test('挂载接口支持更新、重复挂载保护和幂等销毁', async ({ page }) => {
+test('挂载接口支持更新、重复挂载复用和幂等销毁', async ({ page }) => {
   await page.goto('/examples/inline.html');
   await expect(
     page.locator('[data-metriccanvas-runtime]').getByRole('heading')
   ).toContainText('独立 HTML 经营概览');
 
-  const duplicateError = await page.evaluate(() => {
-    try {
-      MetricCanvas.mount('#dashboard', { document: window.pageDocument });
-      return '';
-    } catch (error) {
-      return error instanceof Error ? `${error.name}:${error.message}` : String(error);
-    }
+  const duplicateMount = await page.evaluate(() => {
+    const host = document.querySelector('[data-metriccanvas-runtime]');
+    const handle = MetricCanvas.mount('#dashboard', { document: window.pageDocument });
+    return {
+      sameHandle: handle === window.runtime,
+      sameHost: host === document.querySelector('[data-metriccanvas-runtime]')
+    };
   });
-  expect(duplicateError).toContain('MetricCanvasMountError');
+  expect(duplicateMount).toEqual({ sameHandle: true, sameHost: true });
+  await expect(page.locator('[data-metriccanvas-runtime]')).toHaveCount(1);
 
   await page.evaluate(() => {
     window.runtime.update({

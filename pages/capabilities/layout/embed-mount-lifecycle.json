@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "6.11",
+  "id": "embed-mount-lifecycle",
+  "layout": "dashboard",
+  "meta": { "title": "Embed 重复挂载" },
+  "dataSources": {
+    "lifecycle": {
+      "fields": {
+        "count": { "type": "number", "role": "measure", "label": "mount 调用次数" }
+      },
+      "source": { "type": "inline", "rows": [{ "count": 1 }] }
+    }
+  },
+  "sections": [{
+    "id": "main",
+    "components": [{
+      "id": "mount-count",
+      "type": "metricCard",
+      "layout": { "span": 12 },
+      "data": { "main": "lifecycle" },
+      "props": {
+        "rows": [{ "label": "mount 调用次数", "valueField": { "data": "main", "field": "count" } }]
+      }
+    }]
+  }]
+}

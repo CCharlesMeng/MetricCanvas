@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas 重复挂载</title>
+    <style>
+      body { margin: 24px auto; padding: 0 16px; max-width: 1200px; background: #f4f4f5; }
+      nav { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <button id="mount" type="button">再次 mount</button>
+      <button id="destroy" type="button">销毁</button>
+      <output id="mount-status" aria-live="polite"></output>
+    </nav>
+    <div id="dashboard"></div>
+    <script src="../dist/metriccanvas-runtime.global.js"></script>
+    <script type="module">
+      await MetricCanvas.ready;
+      const response = await fetch('/pages/embed-mount-lifecycle.json');
+      if (!response.ok) throw new Error('无法加载生命周期示例页面');
+      const pageDocument = await response.json();
+      let count = 0;
+
+      function showStatus() {
+        const roots = document.querySelectorAll('[data-metriccanvas-runtime]').length;
+        document.querySelector('#mount-status').textContent = `${count} 次 mount，${roots} 个实例`;
+      }
+
+      function renderCanvas() {
+        const next = structuredClone(pageDocument);
+        next.dataSources.lifecycle.source.rows[0].count = ++count;
+        window.runtime = MetricCanvas.mount('#dashboard', { document: next });
+        showStatus();
+      }
+
+      function destroyCanvas() {
+        window.runtime.destroy();
+        showStatus();
+      }
+
+      document.querySelector('#mount').addEventListener('click', renderCanvas);
+      document.querySelector('#destroy').addEventListener('click', destroyCanvas);
+      renderCanvas();
+    </script>
+  </body>
+</html>

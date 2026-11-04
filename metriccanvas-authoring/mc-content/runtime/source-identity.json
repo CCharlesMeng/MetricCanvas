@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "d759af82891b8d9137fef55a4f0ff8251d51f6ebeda7bf61377b990a389ea5c1",
+  "sha256": "9fb311663eb0b745d98046affbd024c3421c6d1755f8298a4e68ac7e81a2f229",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -2072,7 +2072,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "7ad00d177879a6645f3ed1d93e1521d8c35d78dd50dcf16fa2d78fcb5ccfbc4e"
+      "sha256": "9e199e0976fe24643b968cbd37323a8e6a2866ef8389d55ed53335584e695839"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2528,7 +2528,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "d79b6c8c1c8c5b5e1a31bb774696f5d4105bf8c7b880863416dcbf3dfd40691a"
+      "sha256": "7d09af5d6ac7223dac991f46cdccff17e16a1eabf944ce0857e1470f38a62903"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -2537,6 +2537,10 @@
     {
       "file": "pages/capabilities/layout/demo.json",
       "sha256": "3b3d05a2661ad23135342a4b6781a33ac3851fe714b26ab50846db950dc43ac2"
+    },
+    {
+      "file": "pages/capabilities/layout/embed-mount-lifecycle.json",
+      "sha256": "c45711098dd868e69bd7c8afeea832b72e027945d5f82c8e2bb1be8b9a61df5d"
     },
     {
       "file": "pages/capabilities/layout/empty-state-showcase.json",

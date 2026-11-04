@@ -7,6 +7,7 @@ import EmbedRoot from './EmbedRoot.svelte';
 import {resolveInitialSearch} from './initial-search';
 import type {
   MountOptions,
+  RuntimeEvent,
   RuntimeHandle,
   RuntimeInput
 } from './types';
@@ -35,17 +36,25 @@ interface EmbedRootExports {
   update(input: RuntimeInput): void;
 }
 
-const instances = new WeakMap<HTMLElement, RuntimeHandle>();
+interface MountedInstance {
+  handle: RuntimeHandle;
+  update(options: MountOptions): void;
+}
+
+const instances = new WeakMap<HTMLElement, MountedInstance>();
 
 export function mount(
   target: string | HTMLElement,
   options: MountOptions
 ): RuntimeHandle {
   const container = resolveTarget(target);
-  if (instances.has(container)) {
-    throw mountError('目标元素已经挂载了一个活动的 MetricCanvas 实例。');
+  const existing = instances.get(container);
+  if (existing) {
+    existing.update(options);
+    return existing.handle;
   }
 
+  let onEvent = options.onEvent;
   const host = document.createElement('div');
   host.dataset.metriccanvasRuntime = '';
   host.style.display = 'block';
@@ -60,7 +69,7 @@ export function mount(
       target: shadow,
       props: {
         initialInput: runtimeInput(options),
-        onEvent: options.onEvent
+        onEvent: (event: RuntimeEvent) => onEvent?.(event)
       }
     }) as EmbedRootExports;
   } catch (cause) {
@@ -84,7 +93,13 @@ export function mount(
       host.remove();
     }
   };
-  instances.set(container, handle);
+  instances.set(container, {
+    handle,
+    update(nextOptions) {
+      onEvent = nextOptions.onEvent;
+      handle.update(nextOptions);
+    }
+  });
   return handle;
 }
 

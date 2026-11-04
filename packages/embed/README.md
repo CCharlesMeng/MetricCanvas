@@ -211,11 +211,15 @@ runtime.destroy();
 生命周期规则：
 
 - 同一目标元素同时只能挂载一个活动实例；
+- 对同一 DOM 元素重复 `mount(target, options)` 会按 `update` 语义替换完整运行输入并返回原句柄，不创建第二个实例或抛出重复挂载错误；CSS 选择器和元素引用只要指向同一元素就共享实例；
+- 重复 `mount` 使用本次 `onEvent` 替换旧回调，省略时移除旧回调；普通 `runtime.update(input)` 保留当前回调。各次 `mount` 返回的句柄相同，任一个句柄的 `destroy` 都会结束该实例，因此同一容器应有一个生命周期所有者；
 - `update` 替换页面文档和运行依赖；
 - 更新后，既有页面会话的异步结果不写入新页面；
 - `destroy` 清理 Shadow DOM 和运行时会话；
 - 重复调用 `destroy` 是安全操作；
 - 已销毁实例不接受 `update`。
+
+重复挂载、最新文档更新与销毁后重挂载的可操作示例：构建后运行 `pnpm --filter @metriccanvas/embed preview:examples`，访问 `/examples/mount-lifecycle.html`。同一页面文档也可在 Playground 的 `/pages/embed-mount-lifecycle` 查看，数据为内联合成计数；宿主 API 行为在 HTML 示例中验收。组件卸载时仍需调用 `destroy()`，清空容器或丢弃句柄不会销毁运行时会话。
 
 ## 配置错误
 

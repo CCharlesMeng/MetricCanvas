@@ -189,6 +189,8 @@ Report顶层页头统一声明`exportButtons`（6.31），每项配置`format`�
 
 ## 版本、初始化与持久化
 
+JS 嵌入的重复挂载属于宿主生命周期：同一 DOM 元素重复 `mount` 更新完整输入并返回原句柄，不新增页面字段或改变页面文档校验。详见 [Embed 生命周期](packages/embed/README.md#生命周期)；页面示例 `/pages/embed-mount-lifecycle` 使用合成计数，宿主交互入口为 embed 的 `/examples/mount-lifecycle.html`。
+
 平台云宝创作入口的页面 ID 与会话 ID 分别定位页面资产与对话。每轮自然语言操作使用前端当前完整工作副本，包括未保存修改；会话、锁和可访问路径不写入页面协议，也不增加 Schema 版本。左上角标题直接更新 `meta.title` 并保留其他本地修改。详见[页面与创作身份边界](docs/page-metadata/page.md)、[接入说明](docs/pangu-agent-authoring.md)与[可观察场景](pages/platform/README.md#云宝创作与最新工作副本)。
 
 新文档写当前作者版本和 `layout`。已支持版本的 `layoutForm` 在输入边界兼容读取，双字段同时出现拒绝；布局兼容规范化不自动升级其他能力。历史修订先核验原文hash，迁移结果另存新修订。详见[布局迁移](docs/page-metadata/layout-migration.md)。

@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-6646ea8d1707d286",
-  "contentSha256": "6646ea8d1707d286eb34ec6801b8bea849580e0c9a3713d05664b28a688a75a8",
+  "contentVersion": "1-f14ee63864f60398",
+  "contentSha256": "f14ee63864f60398b87f02264cd51088489ec3e21f4a8e6734cf3a80f6ab5eb1",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -2733,7 +2733,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "306ca899303be1efdc9bf829627393d704a81f26906cba48b6cd8a73064af3c6"
+      "sha256": "d6c2c559e7857407611c5e3beeb3e8282c074aca8482c204e0e5ec225882325c"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -8529,7 +8529,7 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "ca5d464425029b95a7fee75cc0e23a559e0045e0189e041e99980393991cc79f"
+      "sha256": "acf2fce3ad9c0c46a4d0bf9ee29c01b442fdc5f3403ec07e3266b0124a4de960"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -8569,7 +8569,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "3aa3f53c635b2dd59844fcbb3db76c6f7739f4bf15187001ab1e043478c85ba4"
+      "sha256": "ff926ba38c992e2077e6a226eba7af26ca0dd9bfb780c4fd26fea167a1c54012"
     },
     {
       "file": "runtime/coverage.json",
@@ -8617,7 +8617,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "651d5bf2cc036aa02b4b9ada91d7b2452a2f7bd4ba46af51129266ca1c81094e"
+      "sha256": "d24c72d813534267f702181e6374ad441d7a6a93770edcd65396344fdde4ae87"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -8727,7 +8727,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "306ca899303be1efdc9bf829627393d704a81f26906cba48b6cd8a73064af3c6",
+    "productManifestSha256": "d6c2c559e7857407611c5e3beeb3e8282c074aca8482c204e0e5ec225882325c",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "3d6747aa23b1794288a8c540dcefbccb77cddbd74238a5a7cef6d088dbccb9ae",
