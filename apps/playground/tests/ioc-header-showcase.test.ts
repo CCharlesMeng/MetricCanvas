@@ -15,9 +15,10 @@ describe('IOC 公共页头统一入口', () => {
     const matches = filterPageDirectory(groups, '', 'all', 'all', 'all', 'capabilities/ioc-header/scenarios').flatMap(group => group.pages);
     expect(matches).toHaveLength(15);
     expect(matches.every(entry => pageExternalInputs(entry.id) === 'ioc-header')).toBe(true);
-    expect(entries.filter(entry => entry.filePath.startsWith('business/dashboard/ioc/'))).toHaveLength(7);
+    expect(entries.filter(entry => entry.filePath.startsWith('business/dashboard/ioc/'))).toHaveLength(9);
     expect(entries).toContainEqual(expect.objectContaining({id:'business-decision-all-details',filePath:'business/dashboard/ioc/commercial/business-decision-all-details.json'}));
     expect(pageExternalInputs('business-decision-all-details')).toBe('ioc-region');
+    expect(pageExternalInputs('ioc-opportunity-analysis')).toBe('ioc-region-dept');
     expect(pageExternalInputs('ioc-header-standard')).toBe('ioc-business');
   });
 

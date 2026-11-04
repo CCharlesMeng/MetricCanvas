@@ -126,6 +126,7 @@
     if(input==='global-benchmark')return createGlobalBenchmarkPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
     if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;
+    if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
     if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready').dataGateway;
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
   }
@@ -136,7 +137,6 @@
     switch (pageExternalInputs(pageId)) {
       case 'key-office': return createKeyOfficeGateway();
       case 'key-office-priority': return createKeyOfficePriorityGateway();
-      case 'ioc-region': return withIocRegionCandidates(dataGateway,pageId!=='ioc-opportunity-analysis');
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;
       case 'record-join': return createRejectionPreview({rows:rejectionPreviewRowCount(pageId),delayMs:rejectionPreviewDelay(pageId,page.url.searchParams),failure:page.url.searchParams.get('sourceFailure') === 'true'}).dataGateway;
       case 'paged-union': return createUnionPreview({failMember:page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined,rowFailure:page.url.searchParams.get('rowFailure')}).dataGateway;

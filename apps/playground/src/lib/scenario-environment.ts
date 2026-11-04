@@ -28,7 +28,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
   if(table)return table;
   if (kind === 'organization-union') return createPartnerHealthUnionPreview(state);
   if (kind === 'table-recovery') return createTableRecoveryPreview(state);
-  if (kind === 'ioc-region') return {dataGateway:withIocRegionCandidates(dataGateway,exampleId!=='ioc-opportunity-analysis')};
+  if (kind === 'ioc-region'||kind==='ioc-region-dept') return {dataGateway:withIocRegionCandidates(dataGateway,kind==='ioc-region')};
   if (kind === 'zero-total') return createZeroTotalPreview();
   if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
   if (kind === 'record-join') return createRejectionPreview({rows:rejectionPreviewRowCount(exampleId,'catalog'),delayMs:rejectionPreviewDelay(exampleId)});

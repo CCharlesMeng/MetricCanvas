@@ -31,7 +31,7 @@
 | createFilterState.blocked | 29 | 25 |
 | SourceProgram.defaultConditions | 3 | 5 |
 | SourceProgram.untrustedSeed（外层自身） | 1 | 1 |
-| scenarioEnvironment | 15 | 14 |
+| scenarioEnvironment | 15 | 15 |
 | tablePreview | 8 | 10 |
 | Playground loadPage | 9 | 11 |
 | parsePage | 23 | 23 |
@@ -48,3 +48,11 @@
 ## CI 修复回验
 
 首轮提交 `3db1694c3` 的类型门禁发现新增参数化测试把数组展开成了位置参数；改为对象用例，分别验证缺失、非维度与重复引用，11项通过。整仓 `pnpm check` 通过。仓外消费者缺少本批新增的合成后端模块，已补入完整复制清单并执行真实内容服务闭合回归。两处修复不改变产品执行行为；测试回调 selfCC 1→2，复制函数 selfCC 2→2。最终CI以修复提交回执为准。
+
+第二轮CI确认类型、构建、两平台embed分发及完整仓外消费者验证通过；全量测试4216项通过、5项跳过，另两项Playground断言/页面中立性检查失败。已更新新增审批页数量，并将Region预览的层级差异移至夹具类别，产品源码不再按业务页面ID分支；两文件7项回归及Playground类型检查通过。该修复 `scenarioEnvironment` selfCC 14→15，`queryTableGateway` 9→11，`previewDataGateway` 15→14。
+
+Relay发行仍由Schema6.83冻结消费者拒绝本批Schema6.84：`needs_migration`，正式35条回放中13条差异，`eligibleForSmoke:false`。这是未关闭的消费者升级评审/适配边界，未改写旧冻结样本、批准记录或放宽门禁。真实Relay激活未验收。
+
+交付前再次承接main `0757e83f3` 的并行复杂度治理，未覆盖其72个文件改动。合并后91文件589项受影响回归通过，契约导出仍一致，全项目复杂度门禁通过。上表保留本批原实施基线的历史测量；当前filterState的 createFilterState / blocked / commit 已随main治理降为2 / 7 / 6，不再把原blocked25列为当前剩余项。其他存量以main复杂度台账及门禁实测为准。
+
+最新main基线的embed重新构建及28项接入/导航/重点国代浏览器场景通过；实际归档 `/tmp/ioc-header-embed-merged-release/metriccanvas-embed-1.0.0-rc.4.tgz` 复核16个JS、最大929901字节。
