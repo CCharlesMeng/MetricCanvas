@@ -15,3 +15,9 @@
 81项发行测试带实际0.2.2候选全部通过、零跳过（85.192秒）。MC知识52项通过，摘要变化引起派生diagnostics fixture漂移，使用官方mc-content-fixtures.py重新生成并另做--check，不手写哈希。
 
 本次编码边界存量例外：`text_map_building.add_map_chart` CC21→21，仅将地图JSON资源读取显式为UTF-8，未改组件装配和校验分支；为避免扩展这一跨平台修复的行为面，本次不拆分，后续在该函数承接地图资源/组件装配职责分离时关闭。Node桥 `_checked_program` 4→4、`validate_with_resources` 10→10、`validate_with_node` 11→11、`edit_presentation_with_node` 8→8；新增隔离回归2、bootstrap lambda1。之前buildSkillProjections52→52仍按原记录保留。
+
+## 原生归档安全反例夹具
+
+9d12cc4d4原生Windows/Linux完整归档产品probe均通过。随后Windows test_archive.py拒绝反斜杠案例失败：ZipInfo构造器依据os.sep将mc-tool\outside改成mc-tool/outside，旧测试辅助函数实际写出了合法路径，生产解包器没有接到恶意名字。新增模拟Windows的回归先实证原始名字丢失（0.003秒红），再在测试write_zip中显式保留原成员名；同时检查归档原始成员名与生产extract拒绝。生产解包策略未改、未放宽断言。write_zip CC2→2，新回归CC1；正式四项字节不变，版本0.2.2保持，来源回执绑定新测试提交。
+
+夹具修正后完整发行82项带实际0.2.2候选全部通过、零跳过（78.341秒）；此前81项也全通过，新增第82项锁定Windows原始成员名。无产品源码/契约/归档字节变化。

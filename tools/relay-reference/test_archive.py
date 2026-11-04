@@ -13,6 +13,7 @@ import tarfile
 import tempfile
 import unittest
 import zipfile
+from unittest.mock import patch
 
 from archive_format import check_members, extract_archive
 from package_release import pack, receipt_path, unpack_checked, verify_archive
@@ -31,6 +32,8 @@ def write_zip(path, names, *, mode=stat.S_IFREG | 0o644, timestamp=(1980, 1, 1, 
     with zipfile.ZipFile(path, "w") as archive:
         for name, content in names:
             info = zipfile.ZipInfo(name, timestamp)
+            # ZipInfo normalizes backslashes on Windows; unsafe fixtures need raw names.
+            info.filename = name
             info.create_system = 3
             info.external_attr = mode << 16
             archive.writestr(info, content)
@@ -115,6 +118,18 @@ class ArchiveTests(unittest.TestCase):
                 extract_archive(archive, destination, "zip")
             self.assertFalse(destination.exists())
         self.assertFalse((self.root.parent / "outside").exists())
+
+    def test_windows_archive_fixture_keeps_the_raw_backslash_member(self):
+        name = "mc-tool\\outside"
+        archive = self.root / "windows-backslash.zip"
+        destination = self.root / "windows-backslash-destination"
+        with patch("zipfile.os.sep", "\\"):
+            write_zip(archive, [(name, b"bad")])
+            with zipfile.ZipFile(archive) as source:
+                self.assertEqual(source.infolist()[0].orig_filename, name)
+            with self.assertRaises(ReleaseError):
+                extract_archive(archive, destination, "zip")
+        self.assertFalse(destination.exists())
 
     def test_duplicate_case_and_file_directory_collisions_are_rejected(self):
         for entries in [[("mc-tool/a", 1), ("mc-tool/A", 1)],

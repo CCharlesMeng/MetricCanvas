@@ -54,7 +54,7 @@ Tokens百万与最终字段绑定检查属于创作政策；原始数值保持�
 | 本地Skill | 204项通过；独立完整目录/知识/脚本/页面校验；Skill1.21.1官方打包与仓外回验通过 |
 | 常规repair入口 | 16项通过，未追加真实模型专项验收 |
 | Python产品核心 | 99项通过，含新呈现与多槽回归 |
-| 发行工程 | 带实际0.2.2候选运行81项全部通过、零跳过；首次采用与真实current迁移门禁均实际运行；新增实际四项CP1252隔离回归；CI结构8项前批复验通过 |
+| 发行工程 | 带实际0.2.2候选运行82项全部通过、零跳过；首次采用与真实current迁移门禁均实际运行；新增实际四项CP1252隔离回归；CI结构8项前批复验通过 |
 | Playground新场景 | 3项Chrome通过；宽窄屏、共享消费者、同名跨槽列、百万Canvas/真实Tooltip |
 | Embed浏览器 | 261项通过，含ES/global、完整目录复制及Webpack接入 |
 | Embed构建/实际归档 | 14个JS，最大929901未压缩字节，全部≤1000000；公共入口和分块闭合门禁通过 |
@@ -122,6 +122,7 @@ JSON
 ```sh
 cd /Users/moon/.codex/worktrees/relay-reference-final/DataDashboard
 export METRICCANVAS_PYTHON=/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/.venv/bin/python
+export PATH="/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/.venv/bin:$PATH"
 export PYTHONDONTWRITEBYTECODE=1
 export METRICCANVAS_RELAY_CANDIDATE=/Users/moon/Documents/Code/公司项目/DataDashboard/deliverables/relay-reference-0.2.2/references
 pnpm relay:test
@@ -170,3 +171,5 @@ Relay可以在本地先完成：读取两份指南；登记19项实际Interface�
 0.2.1首轮CI不能作为跨平台通过：Windows消费失败，其余未完成任务已取消。0.2.2保留19项接口和全部冻结预期，仅修正UTF-8传输/资源读取；固定0.2.0消费与真实0.2.1 current仍须通过，历史6.82仍明确needs_migration。仓库中的[UTF-8证据](../2026-11-04-relay-windows-utf8/README.md)记录先红后绿、精确错误与测量。新增隔离回归CC2、bootstrap lambda CC1，既有相关函数CC均不变，Schema字段净增减0。完整源码身份、原生CI与最终归档探测结论以同批交付资料补充。
 
 本次编码边界存量例外：`text_map_building.add_map_chart` CC21→21，仅将地图JSON资源读取显式为UTF-8，未改组件装配和校验分支；为避免扩展这一跨平台修复的行为面，本次不拆分，后续在该函数承接地图资源/组件装配职责分离时关闭。Node桥 `_checked_program` 4→4、`validate_with_resources` 10→10、`validate_with_node` 11→11、`edit_presentation_with_node` 8→8；新增隔离回归2、bootstrap lambda1。之前buildSkillProjections52→52仍按原记录保留。
+
+0.2.2的实际ZIP已通过9d12cc4d4原生Windows/Linux完整产品探测；随后Windows安全单元测试发现测试ZIP写入器先把恶意反斜杠归一成合法斜杠，造成无效反例。修正测试夹具保留原始成员名，新增同时断言原始名字与生产解包拒绝的Windows模拟回归，不修改生产解包器及冻结预期。此测试侧修正不改变四项任何字节，维持release0.2.2；最终来源与CI以新提交回执为准。
