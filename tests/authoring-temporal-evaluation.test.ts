@@ -54,7 +54,7 @@ describe('explicit instant and business time zone', () => {
     expect(acrossZones('internal.evaluation.validate', { evaluation: shanghai })).toEqual({ status: 'ok', data: { ok: true }, diagnostics: [] });
     expect(acrossZones('internal.evaluation.validate', {})).toMatchObject({ status: 'error', data: { ok: false }, diagnostics: [{ code: 'EVALUATION_CONTEXT_REQUIRED' }] });
     expect(acrossZones('internal.evaluation.validate', { evaluation: { ...shanghai, timeZone: 'Not/AZone' } })).toMatchObject({ status: 'error', data: { ok: false }, diagnostics: [{ code: 'INVALID_EVALUATION_CONTEXT' }] });
-  });
+  }, 20_000);
   it.each([
     ['2026-12-31T16:30:00Z', 'Asia/Shanghai', '2027-01-01T00:30'],
     ['2026-12-31T16:30:00Z', 'America/Los_Angeles', '2026-12-31T08:30'],

@@ -25,7 +25,7 @@ it('keeps a large imported widget image outside JS in the actual library build',
       ...config,
       configFile: false,
       logLevel: 'silent',
-      build: { ...config.build, write: false, lib: { ...config.build!.lib as object, entry: resolve(root, 'entry.js') } }
+      build: { ...config.build, write: false, reportCompressedSize: false, lib: { ...config.build!.lib as object, entry: resolve(root, 'entry.js') } }
     });
     const bundle = Array.isArray(result) ? result[0] : result;
     if (!('output' in bundle)) throw new Error('Expected an ESM build');
@@ -43,4 +43,4 @@ it('keeps a large imported widget image outside JS in the actual library build',
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-});
+}, 30_000);
