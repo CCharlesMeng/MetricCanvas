@@ -42,6 +42,13 @@ function acrossZones(operation: string, input: unknown) {
   return results[0];
 }
 
+function boundaryDocument() {
+  const document = structuredClone(source);
+  document.filters[0].default = '2027-01';
+  document.filters[1].default = '2027-01-01';
+  return document;
+}
+
 describe('explicit instant and business time zone', () => {
   it('offers the same semantic checker to program-only non-page routes', () => {
     expect(acrossZones('internal.evaluation.validate', { evaluation: shanghai })).toEqual({ status: 'ok', data: { ok: true }, diagnostics: [] });
@@ -81,22 +88,20 @@ describe('explicit instant and business time zone', () => {
     expect(acrossZones('page.parameters', { action: 'resolve', document: parameter.template, suppliedValues: parameter.originalValues })).toMatchObject({ status: 'error', diagnostics: [{ code: 'EVALUATION_CONTEXT_REQUIRED' }] });
   }, 20_000);
 
-  it('retains full ordered validation, upgrade, inspect, extraction and preparation across process zones', () => {
-    const document = structuredClone(source);
-    document.filters[0].default = '2027-01';
-    document.filters[1].default = '2027-01-01';
-    for (const operation of ['page.validate', 'page.upgrade', 'page.project']) {
-      const accepted = acrossZones(operation, { document, evaluation: shanghai });
-      expect(accepted.status).toBe('ok');
-      const rejected = acrossZones(operation, { document, evaluation: losAngeles });
-      expect(rejected.diagnostics).toHaveLength(2);
-      expect(rejected.diagnostics.map((item: any) => item.path)).toEqual(['/filters/0/default', '/filters/1/default']);
-    }
-    for (const action of ['extract', 'prepare']) {
-      const input = { action, document, context: { baseline: 'frozen-r1' }, selectedIds: [], evaluation: shanghai };
-      expect(acrossZones('page.parameters', input).status).toBe('ok');
-      expect(acrossZones('page.parameters', { ...input, evaluation: losAngeles }).status).toBe('error');
-    }
+  it.each(['page.validate', 'page.upgrade', 'page.project'])('retains full ordered %s results across process zones', operation => {
+    const document = boundaryDocument();
+    const accepted = acrossZones(operation, { document, evaluation: shanghai });
+    expect(accepted.status).toBe('ok');
+    const rejected = acrossZones(operation, { document, evaluation: losAngeles });
+    expect(rejected.diagnostics).toHaveLength(2);
+    expect(rejected.diagnostics.map((item: any) => item.path)).toEqual(['/filters/0/default', '/filters/1/default']);
+  }, 20_000);
+
+  it.each(['extract', 'prepare'])('retains full %s results across process zones', action => {
+    const document = boundaryDocument();
+    const input = { action, document, context: { baseline: 'frozen-r1' }, selectedIds: [], evaluation: shanghai };
+    expect(acrossZones('page.parameters', input).status).toBe('ok');
+    expect(acrossZones('page.parameters', { ...input, evaluation: losAngeles }).status).toBe('error');
   }, 20_000);
 
   it('applies time-range parameters at the business month boundary and preserves originals', () => {

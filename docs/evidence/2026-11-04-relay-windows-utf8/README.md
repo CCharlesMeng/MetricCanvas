@@ -25,3 +25,9 @@
 ## 全仓CI并发对齐
 
 9d12cc4d4的全仓tests job实际为4182通过/2超时/5跳过，并非取消即视为通过。两项均在authoring-temporal-evaluation.test.ts：program-only非页面路由检查超过默认5秒，多时区完整回放超过20秒；没有业务断言不一致。本地最终全仓453文件4184通过使用maxWorkers=2，而CI仍用默认并发。现将CI根套件同步为pnpm test --maxWorkers=2，保留原超时、断言及所有套件；既有workflow契约期望同步，2文件25项定向回归通过（16.14秒）。CI结构回调自身复杂度不变（metriccanvas-ts-ast/1，TypeScript5.9.3），不改任何四项运行字节或发行/消费版本。最终门禁以该配置提交的CI为准。
+
+## 时间回放按语义场景分组
+
+94ac9c691的全仓回归为4183通过/1超时/5跳过，仅剩把30次独立Node进程调用合在一条20秒测试的聚合用例。该提交Windows/Linux四项原生全门禁、authoring与MC独立分发均已通过。现将聚合测试拆成validate/upgrade/project三个页面场景与extract/prepare两个参数场景，每场景仍为原20秒；原有3运行时区×2业务时区/接受拒绝矩阵共30次调用、完整结果相等、错误路径顺序与输入不变断言均保留。共享boundaryDocument只构造相同原始文档，不新增行为。
+
+两个定向文件29项全部通过（16.49秒）；因拆组多4条测试记录，不增加产品功能覆盖的宣称。metriccanvas-ts-ast/1/TS5.9.3：原聚合回调自身CC3，拆后两个矩阵回调各1，新boundaryDocument1，文件函数max3→2。仅修改测试/报告，全部837产品输入和0.2.2实际ZIP字节保持不变。
