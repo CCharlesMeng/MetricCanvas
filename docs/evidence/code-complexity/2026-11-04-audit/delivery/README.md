@@ -21,3 +21,13 @@
 提交和最终SHA的远端CI以Git及GitHub运行回执为准；本地验证不证明生产部署或真实DQE/Relay/Java/模型调用。
 
 格式收口仅统一历史CSV/日志换行并移除filter-state.ts末尾空行。正式导出器复跑后生成物无差异；源码度量与后快照已刷新。业务结构、依赖、构建参数和测试用例未变，复用以上业务回归结果，最终远端CI仍检查提交完整输入。
+
+## 最终收口
+
+整合并行主线 `32d2533eaab183c79d42513b8464831841b7e9cd` 的IOC预览路由修复，原先两项Playground失败已复验为 [7项通过](integration-tests.log)。本批不重写这些并行改动。
+
+CI发现MC布局诊断证据的内容摘要仍指向重构前内容包，已通过现有 `tools/scripts/mc-content-fixtures.py` 正式再生；仅3个证据JSON内13个摘要/版本值变化，页面与诊断行为未变。[再生及一致性检查](mc-fixtures-regeneration.log)、[整合后复查](mc-fixtures-check.log)及[独立打包](mc-pack.log)通过。
+
+整合后 [复杂度摘要](integration-summary.json) 与 [门禁](integration-gate.log)通过，全扫描平均TS/JS=2.561729、Python=4.288987；存量仍为115/63。上面的完整前后快照保留其固定基线，不能据此把并行任务的变化算作本次优化成果。
+
+已确认合入前主线的Relay消费迁移门禁同样失败：正式消费快照锁定Schema6.83，而当前产品是6.84。冻结消费者、迁移审查及放行规则均未在本批修改；最终提交的远端CI须单独报告该存量问题，不能称为绿灯。
