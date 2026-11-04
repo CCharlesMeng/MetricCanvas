@@ -1,4 +1,5 @@
 import { filterDependencies } from '@metriccanvas/page/internal';
+import {overriddenFilterIds} from '@metriccanvas/page/internal';
 import { candidateContextKey } from '../../../runtime/src/filter-candidates';
 import {
   dimensionOfLevel,
@@ -17,6 +18,7 @@ export function cascadeConstraints(
   values: FilterValues
 ): Readonly<Record<string, readonly string[]>> | undefined {
   if (!declaration.dependsOn) return undefined;
+  if(overriddenFilterIds(declarations,values).has(declaration.dependsOn))return undefined;
   const upstream = declarations.find((item) => item.id === declaration.dependsOn);
   if (upstream?.type !== 'dimension') return undefined;
   const current = values.get(upstream.id);

@@ -123,6 +123,7 @@ const booleanFilterZ = z
     id: idZ,
     urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('boolean'),
+    overridesFilters: z.array(idZ).min(1).meta({uniqueItems:true}).optional(),
     label: z.string().optional(),
     visible: z.boolean().optional(),
     ...interactionShape,

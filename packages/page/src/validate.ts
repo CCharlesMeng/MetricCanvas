@@ -27,6 +27,7 @@ import {amountErrors,moneyComputeErrors} from './amount-validation';
 import {fieldSelectionErrors} from './field-selection';
 import { filterExtensionErrors,filterScopeErrors } from './filter-dependencies';
 import { iocHeaderErrors, emptyIocHeaderErrors } from './ioc-header';
+import {filterOverrideErrors} from './filter-overrides';
 import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
@@ -339,7 +340,7 @@ function invariantErrors(page: Page, evaluation?: TemporalEvaluation): TypedErro
     filtersById.set(filter.id, filter);
     errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`, evaluation));
   });
-  errors.push(...filterDependsOnErrors(filters), ...filterExtensionErrors(filters), ...filterScopeErrors(page));
+  errors.push(...filterDependsOnErrors(filters), ...filterExtensionErrors(filters), ...filterScopeErrors(page), ...filterOverrideErrors(page));
   errors.push(...iocHeaderErrors(page));
   errors.push(...aiSummaryErrors(page), ...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));

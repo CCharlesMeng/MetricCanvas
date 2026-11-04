@@ -78,6 +78,58 @@ function createSharedFilterBridge(initial = {}) {
   };
 }
 
+// packages/embed/examples/ioc-header-candidate-bridge.ts
+async function prepareIocHeaderFilters(document, gateway, options) {
+  const page = structuredClone(document);
+  if (!page || typeof page !== "object" || !page.dataSources) throw new Error("IOC \u9875\u9762\u58F0\u660E\u65E0\u6548");
+  for (const filter of keyOfficeFilters(page)) {
+    const names = await keyOfficeNames(filter, gateway, options.signal);
+    bindKeyOfficeQueries(page, filter, names);
+  }
+  return page;
+}
+function keyOfficeFilters(page) {
+  const first = page.sections?.[0]?.components?.[0];
+  const header = page.iocHeader ?? (first?.type === "iocHeader" ? first.props : void 0);
+  return (page.filters ?? []).filter((filter) => filter.type === "boolean" && !!filter.overridesFilters?.includes("region") && !!header?.filterIds?.includes(filter.id));
+}
+async function keyOfficeNames(filter, gateway, signal) {
+  signal.throwIfAborted();
+  if (!gateway.fetchFilterCandidates) throw unavailable();
+  const result = await gateway.fetchFilterCandidates({ filterId: filter.id, dimension: "rep-office-name", constraints: { dimensions: {}, times: {}, booleans: { [filter.id]: true } } }, { signal });
+  signal.throwIfAborted();
+  if (result.kind !== "values") throw unavailable();
+  return memberNames(result.candidates);
+}
+function validMember(candidate) {
+  return !!candidate && typeof candidate.value === "string" && candidate.value.length > 0 && typeof candidate.label === "string" && candidate.parent === void 0 && candidate.level === void 0 && (candidate.disabled === void 0 || typeof candidate.disabled === "boolean");
+}
+function memberNames(candidates) {
+  if (!Array.isArray(candidates) || candidates.length > 1e4) throw unavailable();
+  const seen = /* @__PURE__ */ new Set(), names = [];
+  for (const candidate of candidates) {
+    if (!validMember(candidate) || seen.has(candidate.value)) throw unavailable();
+    seen.add(candidate.value);
+    if (!candidate.disabled) names.push(candidate.value);
+  }
+  return names;
+}
+function unavailable() {
+  return Object.assign(new Error("\u5F53\u524D\u6388\u6743\u91CD\u70B9\u56FD\u4EE3\u5B8C\u6574\u540D\u5355\u5C1A\u672A\u5C31\u7EEA"), { code: "DQE_CONFIG_ERROR" });
+}
+function bindKeyOfficeQueries(page, filter, names) {
+  for (const source of Object.values(page.dataSources)) {
+    if (source.source.type !== "query") continue;
+    const query = source.source.query;
+    const leaves = query.queryModes?.cases ?? query.timeModes?.cases ?? { ordinary: query };
+    for (const leaf of Object.values(leaves)) bindKeyOfficeQuery(leaf, filter, names);
+  }
+}
+function bindKeyOfficeQuery(query, filter, names) {
+  if (!filter.overridesFilters?.some((id) => query.filterBindings?.[id])) return;
+  query.filterBindings[filter.id] = { target: "boolean", queryField: "\u4EE3\u8868\u5904", whenTrue: [...names] };
+}
+
 // apps/playground/fixtures/key-office-filter/gateway.ts
 var offices = [
   { office: "A1", region: "A", key: true, amount: 10 },
@@ -109,8 +161,47 @@ function createKeyOfficeGateway(observe) {
     }
   };
 }
+var priorityOffices = [
+  { office: "\u4E0A\u6D77\u4EE3\u8868\u5904", region: "\u534E\u4E1C\u5730\u533A\u90E8", key: "true", customer: "\u6218\u7565", amount: 10 },
+  { office: "\u5357\u4EAC\u4EE3\u8868\u5904", region: "\u534E\u4E1C\u5730\u533A\u90E8", key: "false", customer: "\u5353\u8D8A", amount: 20 },
+  { office: "\u6DF1\u5733\u4EE3\u8868\u5904", region: "\u534E\u5357\u5730\u533A\u90E8", key: "true", customer: "\u5353\u8D8A", amount: 30 },
+  { office: "\u5E7F\u5DDE\u4EE3\u8868\u5904", region: "\u534E\u5357\u5730\u533A\u90E8", key: "false", customer: "\u6218\u7565", amount: 40 }
+];
+function createKeyOfficePriorityGateway(observe, state = "ready") {
+  return {
+    async fetchFilterCandidates(request, { signal }) {
+      signal.throwIfAborted();
+      observe?.("candidates", request);
+      if (request.dimension === "rep-office-name" && request.filterId !== "region") {
+        if (state === "denied") return { kind: "denied" };
+        return { kind: "values", candidates: state === "empty" ? [] : priorityOffices.filter((item) => item.key === "true").map((item) => ({ value: item.office, label: item.office })) };
+      }
+      if (request.dimension === "customer-level") return { kind: "values", candidates: ["\u6218\u7565", "\u5353\u8D8A"].map((value) => ({ value, label: value })) };
+      return { kind: "values", candidates: [
+        ...["\u534E\u4E1C\u5730\u533A\u90E8", "\u534E\u5357\u5730\u533A\u90E8"].map((value) => ({ value, label: value, level: "region-dept" })),
+        ...priorityOffices.map((item) => ({ value: item.office, label: item.office, level: "office", parent: { level: "region-dept", value: item.region } }))
+      ] };
+    },
+    async fetchData(query) {
+      observe?.("query", query);
+      const rows = priorityOffices.filter((item) => query.filterValues.every((predicate) => {
+        if (predicate.target !== "dimension") return true;
+        const value = priorityValue(item, predicate.queryField);
+        if (value === void 0) throw Object.assign(new Error("\u5408\u6210\u7F51\u5173\u4E0D\u652F\u6301\u8BE5\u7B5B\u9009\u5B57\u6BB5"), { code: "DQE_QUERY_REJECTED" });
+        return predicate.values.includes(value);
+      })).map((item) => ({ office: item.office, amount: item.amount, customer: item.customer }));
+      return { rows, totalCount: rows.length };
+    }
+  };
+}
+function priorityValue(item, field) {
+  const fields = { "\u5730\u533A\u90E8": item.region, "\u4EE3\u8868\u5904": item.office, "\u91CD\u70B9\u56FD\u4EE3": item.key, "\u5BA2\u6237\u7EA7\u522B": item.customer };
+  return fields[field];
+}
 export {
   createKeyOfficeGateway,
+  createKeyOfficePriorityGateway,
   createSharedFilterBridge,
-  offices
+  offices,
+  prepareIocHeaderFilters
 };

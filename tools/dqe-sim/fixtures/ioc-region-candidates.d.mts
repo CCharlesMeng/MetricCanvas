@@ -1,2 +1,2 @@
 import type {FilterCandidatesRequest,FilterCandidatesResult} from '../../../packages/data-execution/src/ports';
-export function iocRegionCandidates(request:FilterCandidatesRequest):FilterCandidatesResult|undefined;
+export function iocRegionCandidates(request:FilterCandidatesRequest,options?:{names?:boolean;includeGeo?:boolean}):FilterCandidatesResult|undefined;

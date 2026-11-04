@@ -54,6 +54,7 @@ function intersectEqualityRanges(merged: Map<string, Predicate>): boolean {
 }
 /** A single encoder input per target: no last-write-wins between public/local conditions. */
 export function intersectQueryFilters(query: EffectiveQuery): EffectiveQuery | undefined {
+  if(query.matchNone)return;
   const merged = new Map<string, Predicate>();
   for (const candidate of query.filterValues) {
     if (candidate.target === 'dimension' && !candidate.values.length) continue; // cleared control

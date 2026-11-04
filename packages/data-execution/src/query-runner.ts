@@ -15,6 +15,7 @@ export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: Dat
   const running = new Set<Request>();
   let disposed = false;
   async function execute(request: Request): Promise<Result> {
+    if(request.query.matchNone)return request.candidates?{kind:'values',candidates:[],totalCount:0}:{status:'empty',totalCount:0};
     if (!request.candidates) return executeQuery(request.query, gateway, request.diagnostics, request.controller.signal);
     const page = await gateway.fetchColumnCandidates?.(request.candidates, request.diagnostics, request.controller.signal) ?? { kind: 'unavailable' as const };
     return validateCandidatePage(page, request.candidates.offset, request.candidates.limit);

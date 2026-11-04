@@ -50,21 +50,22 @@
         },
         {
           "id": "region-dept",
-          "dimension": "region-dept-code",
+          "dimension": "region-dept-name",
           "label": "地区部"
         },
         {
           "id": "office",
-          "dimension": "rep-office-code",
+          "dimension": "rep-office-name",
           "label": "代表处"
         }
       ],
-      "defaultLevel": "geo",
+      "defaultLevel": "office",
       "display": "tree",
       "treeSelection": "level",
       "selection": {
         "mode": "single"
-      }
+      },
+      "initialParam": "rep-office-name"
     }
   ],
   "dataSources": {
@@ -167,8 +168,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "mtime": {
@@ -241,8 +242,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             }
           },

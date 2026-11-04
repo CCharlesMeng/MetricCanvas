@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.41",
+  "schemaVersion": "6.84",
   "id": "ioc-opportunity-analysis",
   "meta": {
     "title": "机会点数",
@@ -10,7 +10,10 @@
     {
       "id": "key-office",
       "type": "boolean",
-      "label": "仅看重点国代"
+      "label": "仅看重点国代",
+      "overridesFilters": [
+        "region"
+      ]
     },
     {
       "id": "as-of-date",
@@ -29,18 +32,18 @@
     {
       "id": "region",
       "type": "dimension",
-      "dimension": "region-code",
+      "dimension": "region-dept-name",
       "label": "区域",
       "emptyLabel": "全球",
       "hierarchy": [
         {
           "id": "region-dept",
-          "dimension": "region-code",
+          "dimension": "region-dept-name",
           "label": "地区部"
         },
         {
           "id": "office",
-          "dimension": "rep-office-code",
+          "dimension": "rep-office-name",
           "label": "代表处"
         }
       ],
@@ -297,13 +300,6 @@
             ]
           },
           "filterBindings": {
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -315,13 +311,13 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
-                "region-dept": "region_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "customer-category": {
               "target": "dimension",
-              "queryField": "customer_category"
+              "queryField": "客户级别"
             },
             "trade": {
               "target": "dimension",
@@ -736,13 +732,6 @@
             ]
           },
           "filterBindings": {
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -754,13 +743,13 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
-                "region-dept": "region_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "customer-category": {
               "target": "dimension",
-              "queryField": "customer_category"
+              "queryField": "客户级别"
             },
             "trade": {
               "target": "dimension",
@@ -1135,13 +1124,6 @@
             ]
           },
           "filterBindings": {
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -1153,13 +1135,13 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
-                "region-dept": "region_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "customer-category": {
               "target": "dimension",
-              "queryField": "customer_category"
+              "queryField": "客户级别"
             },
             "trade": {
               "target": "dimension",
@@ -2212,6 +2194,6 @@
       "collapse": "overflow",
       "density": "compact"
     },
-    "note": "合成演示数据，非生产口径；七个筛选位均已下推到查询"
+    "note": "合成演示数据，非生产口径；重点国代完整名单由集成应用接入"
   }
 }

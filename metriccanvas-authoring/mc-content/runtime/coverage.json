@@ -878,6 +878,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/key-office-priority-demo.json",
+      "target": "product-contracts/page/conformance/valid/key-office-priority-demo.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/key-office-priority-target.json",
+      "target": "product-contracts/page/conformance/valid/key-office-priority-target.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/chart-constant-values-page.json",
       "target": "product-contracts/page/conformance/valid/chart-constant-values-page.json",
       "scope": "exact product contract"
@@ -1143,6 +1153,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-component-key-office-priority-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-priority-demo.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-key-office-priority-target.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-priority-target.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/layout-compatibility.json",
       "target": "product-contracts/page/conformance/layout-compatibility.json",
       "scope": "exact product contract"
@@ -1225,6 +1245,21 @@
     {
       "source": "product:page/conformance/invalid/ioc-component-legacy-version.json",
       "target": "product-contracts/page/conformance/invalid/ioc-component-legacy-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/boolean-override-version.json",
+      "target": "product-contracts/page/conformance/invalid/boolean-override-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/boolean-override-missing-target.json",
+      "target": "product-contracts/page/conformance/invalid/boolean-override-missing-target.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/boolean-override-candidate-conflict.json",
+      "target": "product-contracts/page/conformance/invalid/boolean-override-candidate-conflict.json",
       "scope": "exact product contract"
     },
     {
@@ -3875,6 +3910,21 @@
     {
       "source": "product:page/reference/errors/ioc-component-legacy-version.json",
       "target": "references/page-metadata/errors/ioc-component-legacy-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/boolean-override-version.json",
+      "target": "references/page-metadata/errors/boolean-override-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/boolean-override-missing-target.json",
+      "target": "references/page-metadata/errors/boolean-override-missing-target.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/boolean-override-candidate-conflict.json",
+      "target": "references/page-metadata/errors/boolean-override-candidate-conflict.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -6638,6 +6688,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/key-office-priority-demo.json",
+      "target": "references/page-metadata/examples/key-office-priority-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/key-office-priority-target.json",
+      "target": "references/page-metadata/examples/key-office-priority-target.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/filters.md",
       "target": "references/page-metadata/filters.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7374,11 +7434,11 @@
     }
   ],
   "counts": {
-    "product": 1442,
+    "product": 1454,
     "authoring": 32,
     "modules": 36,
-    "topics": 248,
-    "nodes": 2520,
+    "topics": 249,
+    "nodes": 2522,
     "tools": 9,
     "components": 20
   },

@@ -1,0 +1,235 @@
+{
+  "case": "boolean-override-version",
+  "invariant": "boolean-filter-overrides",
+  "input": {
+    "schemaVersion": "6.83",
+    "id": "key-office-priority-demo",
+    "layout": "dashboard",
+    "meta": {
+      "title": "重点国代优先 合成数据"
+    },
+    "filters": [
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "demo_region",
+        "label": "Region",
+        "selection": {
+          "mode": "single"
+        },
+        "display": "tree",
+        "treeSelection": "level",
+        "hierarchy": [
+          {
+            "id": "region-dept",
+            "dimension": "demo_region",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "demo_office",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "region-dept"
+      },
+      {
+        "id": "key-office",
+        "type": "boolean",
+        "label": "仅看重点国代",
+        "overridesFilters": [
+          "region"
+        ]
+      },
+      {
+        "id": "mtime",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "数据月份"
+      },
+      {
+        "id": "customer-category",
+        "type": "dimension",
+        "dimension": "customer-level",
+        "label": "客户类型",
+        "selection": {
+          "mode": "multiple"
+        }
+      }
+    ],
+    "iocHeader": {
+      "identity": {
+        "title": "重点国代优先"
+      },
+      "filterIds": [
+        "key-office",
+        "mtime",
+        "region",
+        "customer-category"
+      ]
+    },
+    "dataSources": {
+      "offices": {
+        "fields": {
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "金额"
+          },
+          "customer": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "客户级别"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处",
+                    "客户级别"
+                  ],
+                  "output_metrics": [
+                    "金额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "key-office": {
+                "target": "boolean",
+                "queryField": "重点国代",
+                "whenTrue": [
+                  "true"
+                ]
+              },
+              "customer-category": {
+                "target": "dimension",
+                "queryField": "客户级别"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "results",
+        "components": [
+          {
+            "id": "office-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "rowKey": "office",
+              "columns": [
+                {
+                  "title": "代表处",
+                  "field": {
+                    "data": "main",
+                    "field": "office"
+                  }
+                },
+                {
+                  "title": "金额",
+                  "field": {
+                    "data": "main",
+                    "field": "amount"
+                  }
+                },
+                {
+                  "title": "客户级别",
+                  "field": {
+                    "data": "main",
+                    "field": "customer"
+                  }
+                }
+              ],
+              "toolbar": {
+                "export": {
+                  "format": "xlsx"
+                }
+              }
+            }
+          },
+          {
+            "id": "next-page",
+            "type": "button",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "label": "切换页面",
+              "action": {
+                "navigate": {
+                  "href": "/pages/key-office-priority-target",
+                  "query": {
+                    "key-office": {
+                      "source": "filter",
+                      "id": "key-office",
+                      "part": "value"
+                    },
+                    "region": {
+                      "source": "filter",
+                      "id": "region",
+                      "part": "value"
+                    },
+                    "region.level": {
+                      "source": "filter",
+                      "id": "region",
+                      "part": "level"
+                    },
+                    "mtime": {
+                      "source": "filter",
+                      "id": "mtime",
+                      "part": "value"
+                    },
+                    "customer-category": {
+                      "source": "filter",
+                      "id": "customer-category",
+                      "part": "value"
+                    }
+                  }
+                },
+                "on": "click"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1",
+      "message": "布尔勾选覆盖指定维度筛选，保留原选择供取消后恢复 由 6.84 引入，文档声明的是 6.83"
+    }
+  ]
+}

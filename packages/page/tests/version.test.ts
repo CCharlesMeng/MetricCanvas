@@ -5,6 +5,8 @@ const introducedAt: Record<string, number> = {
   'compute-scalar-join':83,
   'table-select-default-values':82,
   'ioc-header-component':81,
+  'boolean-filter-overrides':84,
+  'boolean-empty-membership':84,
   "table-multiple-pinned-sources": 79,
   'paged-join-row-compute':78,
   'paged-period-comparison':78,

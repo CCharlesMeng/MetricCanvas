@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.83",
+  "schemaVersion": "6.84",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.time"
@@ -331,7 +331,9 @@
         "references/page-metadata/examples/key-office-filter-demo.json",
         "references/page-metadata/examples/key-office-filter-target.json",
         "references/page-metadata/examples/ioc-region-url-demo.json",
-        "references/page-metadata/examples/authoring-evaluation-context.json"
+        "references/page-metadata/examples/authoring-evaluation-context.json",
+        "references/page-metadata/examples/key-office-priority-demo.json",
+        "references/page-metadata/examples/key-office-priority-target.json"
       ]
     }
   ],
@@ -352,7 +354,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.83",
+        "$id": "https://metriccanvas/page/v6.84",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

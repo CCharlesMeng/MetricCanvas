@@ -14,6 +14,7 @@ import { intersectQueryFilters } from '../intersect-filters';
 import {selectQuerySource,requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {queryFilterIds} from '@metriccanvas/page/internal';
+import {overriddenFilterIds} from '@metriccanvas/page/internal';
 import { createCandidateValidator } from '../candidate-validation';
 import { createColumnCandidatesReader, type ColumnCandidatesRead } from './column-candidates';
 import { initialFilterValues } from '../filter-values';
@@ -26,7 +27,7 @@ import { createQueryRunner } from '../query-runner';
 import { candidateQueryRunner, candidateUnionReader } from './candidate-priority';
 import type { RuntimeDataGateway, QueryDiagnosticContext } from '../ports';
 import type { FilterValues } from '../filter-values';
-import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
+import { composeEffectiveQuery, bindQueryResultValues, emptyBooleanMembership } from '../effective-query';
 import { resolveQueryResultInputs } from '../query-result-inputs';
 import { rawSnapshot } from '../snapshots';
 import { queryRowsFromPageRows } from '../query-rows';
@@ -75,6 +76,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   const defaultNow = config.now ?? config.clock?.() ?? new Date(), defaultInputs = config.displayInputs?.(), defaultRevision = config.filterRevision?.();
   for (const filter of page.filters ?? []) try { for (const [id, value] of initialFilterValues([filter], defaultNow, defaultInputs, defaultRevision)) defaults.set(id, value); } catch {/* An unavailable dynamic default cannot override an explicit valid selection. */ }
   function defaultConditions(id: string, values: FilterValues, reuse = true): boolean {
+    if(reuse&&overridesSource(id,values))return false;
     if(reuse&&[...conditionSourceIds(page,id)].some(key=>{const source=page.dataSources[key];return source?.source.type==='query'&&requiresQueryContext(source.source.query,page.filters);}))return false;
     const filters = new Set([...conditionSourceIds(page, id)].flatMap(key => { const source = page.dataSources[key]; return sourceFilterIds(source); }));
     return [...filters].every(id => {
@@ -84,6 +86,10 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     });
   }
   let batch = 0, contextScope = 'session';
+  function overridesSource(id:string,values:FilterValues):boolean {
+    const overridden=overriddenFilterIds(page.filters??[],values);
+    return [...conditionSourceIds(page,id)].some(key=>sourceFilterIds(page.dataSources[key]).some(id=>overridden.has(id)));
+  }
   function readSignals(controller: AbortController, input: SourceRead): AbortSignal[] {
     return [controller.signal, ...(input.signal ? [input.signal] : []), ...(input.purpose === 'complete' ? [AbortSignal.timeout(60_000)] : [])];
   }
@@ -295,7 +301,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         function untrustedSeed(id: string): boolean {
           return [...conditionSourceIds(page, id)].some(key => {
             const source = page.dataSources[key];
-            return source?.source.type === 'query' && (requiresQueryContext(source.source.query, page.filters) || queryFilterIds(source.source.query).some(id => {
+            return source?.source.type === 'query' && (requiresQueryContext(source.source.query, page.filters) || overridesSource(key,request.conditions) || emptyBooleanMembership(source.source.query.filterBindings??{},request.conditions) || queryFilterIds(source.source.query).some(id => {
               const filter = page.filters?.find(filter => filter.id === id);
               return filter?.type === 'dimension' && !!filter.candidateWindow;
             }));

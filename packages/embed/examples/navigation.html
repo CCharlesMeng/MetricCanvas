@@ -5,6 +5,7 @@
   <main id="dashboard"></main>
   <script src="/dist/metriccanvas-runtime.global.js"></script>
   <script type="module">
+    try {
     await MetricCanvas.ready;
     // 内容服务在 /pages/<id> 返回此 HTML，在 /pages/<id>.json 返回页面资产。
     // 宿主只负责加载文档；没有 pageId 导航解析器或跳转回调。
@@ -21,17 +22,21 @@
     window.dataGateway = MetricCanvas.createDqeGateway();
     // Only these synthetic acceptance pages use the local V2 fixture Adapter.
     if(window.pageDocument.iocHeader?.filterIds?.includes('region')||id==='ioc-header-calendar-window-demo')window.dataGateway.fetchFilterCandidates=async(request,{signal})=>{
-      const response=await fetch('/__fixtures/filter-candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request),signal});
+      const response=await fetch('/__fixtures/filter-candidates',{method:'POST',headers:{'Content-Type':'application/json','x-ioc-region-values':window.pageDocument.filters?.find(filter=>filter.id==='region')?.hierarchy?.some(level=>level.dimension.endsWith('-name'))?'names':'codes','x-ioc-region-geo':window.pageDocument.filters?.find(filter=>filter.id==='region')?.hierarchy?.some(level=>level.id==='geo')?'yes':'no'},body:JSON.stringify(request),signal});
       if(!response.ok)throw new Error('本地候选服务不可用');return response.json();
     };
     let sharedBridge;
     const sharedBindings={'key-office':'key-office',region:'region',mtime:'mtime'};
-    if(id==='key-office-filter-demo'||id==='key-office-filter-target'){
+    if(['key-office-filter-demo','key-office-filter-target','key-office-priority-demo','key-office-priority-target'].includes(id)){
       const fixture=await import('/__fixtures/key-office-filter.js');
       let saved={};try{saved=JSON.parse(sessionStorage.getItem('mc-key-office-demo')??'{}');}catch{}
       sharedBridge=fixture.createSharedFilterBridge(saved);
       window.keyOfficeRequests=[];
-      window.dataGateway=fixture.createKeyOfficeGateway((kind,request)=>window.keyOfficeRequests.push({kind,request}));
+      window.dataGateway=(id.startsWith('key-office-priority-')?fixture.createKeyOfficePriorityGateway:fixture.createKeyOfficeGateway)((kind,request)=>window.keyOfficeRequests.push({kind,request}),new URLSearchParams(location.search).get('state')??'ready');
+    }
+    if(window.pageDocument.filters?.some(filter=>filter.type==='boolean'&&filter.overridesFilters?.includes('region'))){
+      const fixture=await import('/__fixtures/key-office-filter.js');
+      window.pageDocument=await fixture.prepareIocHeaderFilters(window.pageDocument,window.dataGateway,{signal:new AbortController().signal});
     }
     const publicInputs=sharedBridge?MetricCanvas.projectNavigationInputs(window.pageDocument):{filters:[]};
     const initialSearch=sharedBridge?.initialSearch(publicInputs,location.search,sharedBindings)??location.search;
@@ -62,6 +67,12 @@
       }
     });}
     mountPage();
+    } catch (error) {
+      const heading=document.createElement('h1'),message=document.createElement('p');
+      heading.textContent='页面加载失败';
+      message.textContent=error instanceof Error?error.message:String(error);
+      document.querySelector('#dashboard').replaceChildren(heading,message);
+    }
   </script>
 </body>
 </html>

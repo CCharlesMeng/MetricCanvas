@@ -1,3 +1,4 @@
+import {iocNameFilterItem} from '../fixtures/ioc-name-filters.mjs';
 import { sortDqeRows } from './sort';
 import { executeTableEnhancements } from './table-enhancements';
 import { executeObjectQuery } from './object-query';
@@ -167,6 +168,7 @@ function executeLocalDemo(item:unknown):DqeSimItemResult|undefined {
 }
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  item=iocNameFilterItem(item);
   if (isRecord(item) && isRecord(item.order) && (item.order.by !== undefined || item.order.orderByField !== undefined)) return unsupported('DQE 不支持 order.by/orderByField；请使用 order_by_field/type');
   const demo = executeLocalDemo(item); if (demo) return demo;
   const sdt = executeBusinessSdt(item, process.env.DQE_SDT_SCENARIO);

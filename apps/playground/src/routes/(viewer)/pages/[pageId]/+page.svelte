@@ -20,8 +20,9 @@
   import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
   import {createTableRecoveryPreview} from '../../../../../fixtures/table-recovery';
   import {withIocRegionCandidates} from '$lib/ioc-region-preview';
-  import {createKeyOfficeGateway} from '../../../../../fixtures/key-office-filter/gateway';
+  import {createKeyOfficeGateway,createKeyOfficePriorityGateway} from '../../../../../fixtures/key-office-filter/gateway';
   import {sharedKeyOfficeFilters} from '$lib/key-office-shared';
+  import {prepareKeyOfficePreview} from '$lib/key-office-priority-preview';
   const sharedBindings={'key-office':'key-office',region:'region',mtime:'mtime'};
   import {zeroTotalPreviewGateway} from "../../../../../fixtures/zero-total-gateway";
   import {partnerHealthUnionGateway} from '../../../../../fixtures/organization-union/gateway';
@@ -134,7 +135,8 @@
     if(tableGateway)return tableGateway;
     switch (pageExternalInputs(pageId)) {
       case 'key-office': return createKeyOfficeGateway();
-      case 'ioc-region': return withIocRegionCandidates(dataGateway);
+      case 'key-office-priority': return createKeyOfficePriorityGateway();
+      case 'ioc-region': return withIocRegionCandidates(dataGateway,pageId!=='ioc-opportunity-analysis');
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;
       case 'record-join': return createRejectionPreview({rows:rejectionPreviewRowCount(pageId),delayMs:rejectionPreviewDelay(pageId,page.url.searchParams),failure:page.url.searchParams.get('sourceFailure') === 'true'}).dataGateway;
       case 'paged-union': return createUnionPreview({failMember:page.url.searchParams.get('sourceFailure') === 'commercial' ? 'commercial' : undefined,rowFailure:page.url.searchParams.get('rowFailure')}).dataGateway;
@@ -148,7 +150,7 @@
   }
 
   function recordSharedFilters(event:RuntimeViewEvent) {
-    if(event.type!=='filter-change'||pageState.phase!=='ready'||pageExternalInputs(page.params.pageId)!=='key-office')return;
+    if(event.type!=='filter-change'||pageState.phase!=='ready'||!['key-office','key-office-priority'].includes(pageExternalInputs(page.params.pageId)??''))return;
     sharedKeyOfficeFilters.recordSearch(projectNavigationInputs(pageState.document),event.search,sharedBindings);
   }
 
@@ -156,9 +158,9 @@
     const session = ++loadSession;
     pageState = { phase: 'loading' };
     try {
-      const document = await pageRepository.load(pageId);
+      const document = await prepareKeyOfficePreview(await pageRepository.load(pageId),pageExternalInputs(pageId),page.url.searchParams.get('state')??'ready');
       if (session !== loadSession) return;
-      if(pageExternalInputs(pageId)==='key-office') {
+      if(['key-office','key-office-priority'].includes(pageExternalInputs(pageId)??'')) {
         const inputs=projectNavigationInputs(document);
         initialSearch=sharedKeyOfficeFilters.initialSearch(inputs,initialSearch,sharedBindings);
         sharedKeyOfficeFilters.recordSearch(inputs,initialSearch,sharedBindings);

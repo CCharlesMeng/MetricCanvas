@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 83;
+const CURRENT_MINOR = 84;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -59,6 +59,8 @@ export const pageCapabilities = {
     usedAt:document=>dataSourcePaths(document,data=>Array.isArray(data.compute)&&data.compute.some(op=>record(op)?.op==='joinAggregate'&&Array.isArray(record(op)?.keys)&&(record(op)!.keys as unknown[]).length===0))},
   'table-select-default-values': {minor:82,legacyReadable:false,description:'表格 select 列头筛选固定默认选中值',usedAt:columnDefaultPaths},
   'ioc-header-component': {minor:81,legacyReadable:false,description:'IOC 页头作为首分区首组件',usedAt:document=>componentPaths(document,c=>c.type==='iocHeader')},
+  'boolean-filter-overrides': {minor:84,legacyReadable:false,description:'布尔勾选覆盖指定维度筛选，保留原选择供取消后恢复',usedAt:document=>filterPaths(document,f=>f.type==='boolean'&&has(f,'overridesFilters'))},
+  'boolean-empty-membership': {minor:84,legacyReadable:false,description:'布尔勾选的完整授权名单为空时查询空结果',usedAt:document=>dataSourcePaths(document,data=>hasEmptyBooleanMembership(record(record(data.source)?.query)))},
   'paged-join-row-compute': {minor:78,legacyReadable:false,description:'查询分页组合逐行计算与按投影声明缺记录策略',
     usedAt:document=>dataSourcePaths(document,data=>record(data.source)?.type==='pagedJoin'&&(Array.isArray(data.compute)||Object.values(record(record(data.source)?.projection)??{}).some(value=>record(value)?.onMissing!==undefined)))},
   'paged-period-comparison': {minor:78,legacyReadable:false,description:'期间比较按当前页业务键补查',usedAt:comparisonJoinCapabilityPaths},
@@ -1275,4 +1277,9 @@ function usesMetricFieldTime(source: unknown): boolean {
 function unboundedRecordRows(source:unknown):boolean {
   const config=record(source),limits=record(config?.records);
   return config?.type==='pagedJoin' && !!limits && limits.maxRows===undefined;
+}
+
+function hasEmptyBooleanMembership(query:Json|undefined):boolean {
+  const leaves=[query,...Object.values(record(record(query?.queryModes)?.cases)??{}),...Object.values(record(record(query?.timeModes)?.cases)??{})];
+  return leaves.some(leaf=>Object.values(record(record(leaf)?.filterBindings)??{}).some(value=>{const binding=record(value);return binding?.target==='boolean'&&Array.isArray(binding.whenTrue)&&binding.whenTrue.length===0;}));
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.83",
+  "schemaVersion": "6.84",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-659e5fe6"
@@ -330,7 +330,9 @@
         "references/page-metadata/examples/key-office-filter-demo.json",
         "references/page-metadata/examples/key-office-filter-target.json",
         "references/page-metadata/examples/ioc-region-url-demo.json",
-        "references/page-metadata/examples/authoring-evaluation-context.json"
+        "references/page-metadata/examples/authoring-evaluation-context.json",
+        "references/page-metadata/examples/key-office-priority-demo.json",
+        "references/page-metadata/examples/key-office-priority-target.json"
       ]
     }
   ],

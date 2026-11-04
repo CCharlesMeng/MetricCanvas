@@ -10,6 +10,7 @@ export * from './page-list-entry';
 export * from './data-source';
 export * from './field';
 export * from './filter';
+export { overriddenFilterIds } from './filter-overrides';
 export * from './query';
 export * from './query-error';
 export * from './query-rows';

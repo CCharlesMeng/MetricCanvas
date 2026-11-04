@@ -1,0 +1,1319 @@
+{
+  "schemaVersion": "6.84",
+  "id": "region-authorization-norms",
+  "layout": "dashboard",
+  "meta": {
+    "title": "行权规范情况",
+    "description": "地区部与代表处行权规范情况明细。地区部表与代表处表绑定真实 DQE 查询（指标：有效商务决策意见占比、有效合同决策意见占比、紧急决策商务比例、紧急决策合同比例、商务申请规范率、合同申请规范率，见 docs/contract-business 契约 ZB0006339/6345/6340/6342/6341/6346），由统计期间与区域筛选驱动。代表处列 link 下钻 region-auth-norms-detail 时 navigate.query 传代表处名称（页面参数 rep-office-name 取行 rep-office-name），目标页 rep-office-name 页面参数（dim_name=代表处）经各查询数据源 paramBindings 按代表处名称字段下推过滤（页面参数不经候选值门禁，避免名称与编码候选不匹配导致筛选器被 blocked）。三张趋势图（决策意见有效性、紧急决策比例、申请规范率）均绑定真实 DQE 查询（商务口径），各图标题下方置 filterGroup 站点筛选（中国区/海外，对应契约 data_site_type 字段），各图查询通过 filterBindings 消费对应站点筛选，由统计期间与区域筛选驱动。决策意见有效性趋势图新增商务/合同口径下拉切换（右侧 select），通过 queryModes 按口径切换查询：商务口径沿用原查询（商审审批人决策次数 + 有效商务决策意见占比，契约 ZB0001983/6339）；合同口径查询有效合同决策意见次数（output_dims 现成计数，6.56 数值度量例外映射到决策意见有效数量）+ 有效合同决策意见占比（output_metrics，alias 映射到决策意见有效占比，契约 ZB0006345），两口径输出投影一致。紧急决策比例趋势图新增商务/合同口径下拉切换（右侧 select），通过 queryModes 按口径切换查询：商务口径沿用原查询（紧急决策商务申请数量 + 紧急决策商务比例，契约 ZB0006340）；合同口径查询紧急决策合同单量（output_metrics，alias 映射到紧急决策数量）+ 紧急决策合同比例（alias 映射到紧急决策比例，契约 ZB0006342），两口径输出投影一致。申请规范率趋势图新增商务/合同口径下拉切换（右侧 select），通过 queryModes 按口径切换查询：商务口径沿用原查询（商审审批人决策次数 + 商务申请规范率，契约 ZB0001983/6341）；合同口径查询合同驳回次数（output_metrics，alias 映射到驳回次数，见 docs/contract-business 合同驳回次数）+ 合同申请规范率（alias 映射到申请规范率，契约 ZB0006346），两口径输出投影一致。"
+  },
+  "filters": [
+    {
+      "id": "key-national-only",
+      "type": "boolean",
+      "label": "重点国代",
+      "overridesFilters": [
+        "region"
+      ]
+    },
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "emptyLabel": "区域",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "geo-pc-code",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-name",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-name",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "geo",
+      "display": "tree",
+      "treeSelection": "level",
+      "searchable": true
+    },
+    {
+      "id": "decision-validity-site",
+      "type": "dimension",
+      "dimension": "data-site-type",
+      "label": "决策意见有效性站点",
+      "default": [
+        "国内"
+      ]
+    },
+    {
+      "id": "decision-validity-mode",
+      "type": "dimension",
+      "dimension": "business-mode",
+      "label": "决策意见有效性口径",
+      "default": [
+        "商务"
+      ]
+    },
+    {
+      "id": "urgent-decision-site",
+      "type": "dimension",
+      "dimension": "data-site-type",
+      "label": "紧急决策比例站点",
+      "default": [
+        "国内"
+      ]
+    },
+    {
+      "id": "urgent-decision-mode",
+      "type": "dimension",
+      "dimension": "business-mode",
+      "label": "紧急决策比例口径",
+      "default": [
+        "商务"
+      ]
+    },
+    {
+      "id": "apply-norm-site",
+      "type": "dimension",
+      "dimension": "data-site-type",
+      "label": "申请规范率站点",
+      "default": [
+        "国内"
+      ]
+    },
+    {
+      "id": "apply-norm-mode",
+      "type": "dimension",
+      "dimension": "business-mode",
+      "label": "申请规范率口径",
+      "default": [
+        "商务"
+      ]
+    },
+    {
+      "id": "customer-category",
+      "type": "dimension",
+      "dimension": "customerCategory",
+      "label": "客户分类",
+      "display": "select",
+      "emptyLabel": "客户分类",
+      "selection": {
+        "mode": "multiple",
+        "allBehavior": "values"
+      },
+      "searchable": true,
+      "options": [
+        {
+          "label": "卓越NA",
+          "value": "卓越NA"
+        },
+        {
+          "label": "战略NA",
+          "value": "战略NA"
+        },
+        {
+          "label": "核心NA",
+          "value": "核心NA"
+        }
+      ]
+    }
+  ],
+  "dataSources": {
+    "region-dept-norms": {
+      "fields": {
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "queryField": "地区部"
+        },
+        "biz-decision-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务决策意见有效占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效商务决策意见占比"
+        },
+        "contract-decision-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同决策意见有效占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效合同决策意见占比"
+        },
+        "biz-urgent-decision-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务紧急决策比例",
+          "defaultFormat": "percent-1",
+          "queryField": "紧急决策商务比例"
+        },
+        "contract-urgent-decision-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同紧急决策比例",
+          "defaultFormat": "percent-1",
+          "queryField": "紧急决策合同比例"
+        },
+        "biz-apply-norm-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务申请规范率",
+          "defaultFormat": "percent-1",
+          "queryField": "商务申请规范率"
+        },
+        "contract-apply-norm-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同申请规范率",
+          "defaultFormat": "percent-1",
+          "queryField": "合同申请规范率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "有效商务决策意见占比",
+                  "有效合同决策意见占比",
+                  "紧急决策商务比例",
+                  "紧急决策合同比例",
+                  "商务申请规范率",
+                  "合同申请规范率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          }
+        }
+      }
+    },
+    "rep-office-norms": {
+      "fields": {
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "biz-decision-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务决策意见有效占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效商务决策意见占比"
+        },
+        "contract-decision-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同决策意见有效占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效合同决策意见占比"
+        },
+        "biz-urgent-decision-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务紧急决策比例",
+          "defaultFormat": "percent-1",
+          "queryField": "紧急决策商务比例"
+        },
+        "contract-urgent-decision-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同紧急决策比例",
+          "defaultFormat": "percent-1",
+          "queryField": "紧急决策合同比例"
+        },
+        "biz-apply-norm-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务申请规范率",
+          "defaultFormat": "percent-1",
+          "queryField": "商务申请规范率"
+        },
+        "contract-apply-norm-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同申请规范率",
+          "defaultFormat": "percent-1",
+          "queryField": "合同申请规范率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "有效商务决策意见占比",
+                  "有效合同决策意见占比",
+                  "紧急决策商务比例",
+                  "紧急决策合同比例",
+                  "商务申请规范率",
+                  "合同申请规范率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          }
+        }
+      }
+    },
+    "decision-validity-trend": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "decision-valid-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策意见有效数量",
+          "unit": "个"
+        },
+        "decision-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策意见有效占比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "queryModes": {
+            "filterId": "decision-validity-mode",
+            "cases": {
+              "商务": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "代表处"
+                      ],
+                      "output_metrics": [
+                        "商审审批人决策次数",
+                        "有效商务决策意见占比"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": [],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {
+                        "order_by_field": "有效商务决策意见占比",
+                        "type": "desc"
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region": {
+                    "target": "dimension",
+                    "levelQueryFields": {
+                      "geo": "geo_pc_code",
+                      "region-dept": "地区部",
+                      "office": "代表处"
+                    }
+                  },
+                  "decision-validity-site": {
+                    "target": "dimension",
+                    "queryField": "国内或海外"
+                  },
+                  "mtime": {
+                    "target": "time"
+                  },
+                  "customer-category": {
+                    "target": "dimension",
+                    "queryField": "客户级别"
+                  }
+                },
+                "fieldMappings": {
+                  "rep-office": "代表处",
+                  "decision-valid-count": "商审审批人决策次数",
+                  "decision-valid-rate": "有效商务决策意见占比"
+                }
+              },
+              "合同": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "代表处",
+                        "有效合同决策意见次数"
+                      ],
+                      "output_metrics": [
+                        "有效合同决策意见占比"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": [],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {}
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region": {
+                    "target": "dimension",
+                    "levelQueryFields": {
+                      "geo": "geo_pc_code",
+                      "region-dept": "地区部",
+                      "office": "代表处"
+                    }
+                  },
+                  "decision-validity-site": {
+                    "target": "dimension",
+                    "queryField": "国内或海外"
+                  },
+                  "mtime": {
+                    "target": "time"
+                  },
+                  "customer-category": {
+                    "target": "dimension",
+                    "queryField": "客户级别"
+                  }
+                },
+                "fieldMappings": {
+                  "rep-office": "代表处",
+                  "decision-valid-count": "有效合同决策意见次数",
+                  "decision-valid-rate": "有效合同决策意见占比"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "urgent-decision-trend": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "urgent-decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "紧急决策数量",
+          "unit": "个"
+        },
+        "urgent-decision-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "紧急决策比例",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "queryModes": {
+            "filterId": "urgent-decision-mode",
+            "cases": {
+              "商务": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "代表处"
+                      ],
+                      "output_metrics": [
+                        "紧急决策商务申请数量",
+                        "紧急决策商务比例"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": [],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {
+                        "order_by_field": "紧急决策商务比例",
+                        "type": "desc"
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region": {
+                    "target": "dimension",
+                    "levelQueryFields": {
+                      "geo": "geo_pc_code",
+                      "region-dept": "地区部",
+                      "office": "代表处"
+                    }
+                  },
+                  "urgent-decision-site": {
+                    "target": "dimension",
+                    "queryField": "国内或海外"
+                  },
+                  "mtime": {
+                    "target": "time"
+                  },
+                  "customer-category": {
+                    "target": "dimension",
+                    "queryField": "客户级别"
+                  }
+                },
+                "fieldMappings": {
+                  "rep-office": "代表处",
+                  "urgent-decision-count": "紧急决策商务申请数量",
+                  "urgent-decision-rate": "紧急决策商务比例"
+                }
+              },
+              "合同": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "代表处"
+                      ],
+                      "output_metrics": [
+                        "紧急决策合同单量",
+                        "紧急决策合同比例"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": [],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {
+                        "order_by_field": "紧急决策合同比例",
+                        "type": "desc"
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region": {
+                    "target": "dimension",
+                    "levelQueryFields": {
+                      "geo": "geo_pc_code",
+                      "region-dept": "地区部",
+                      "office": "代表处"
+                    }
+                  },
+                  "urgent-decision-site": {
+                    "target": "dimension",
+                    "queryField": "国内或海外"
+                  },
+                  "mtime": {
+                    "target": "time"
+                  },
+                  "customer-category": {
+                    "target": "dimension",
+                    "queryField": "客户级别"
+                  }
+                },
+                "fieldMappings": {
+                  "rep-office": "代表处",
+                  "urgent-decision-count": "紧急决策合同单量",
+                  "urgent-decision-rate": "紧急决策合同比例"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "apply-norm-trend": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "reject-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "驳回次数",
+          "unit": "次"
+        },
+        "apply-norm-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "申请规范率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "queryModes": {
+            "filterId": "apply-norm-mode",
+            "cases": {
+              "商务": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "代表处"
+                      ],
+                      "output_metrics": [
+                        "商审审批人决策次数",
+                        "商务申请规范率"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": [],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {
+                        "order_by_field": "商务申请规范率",
+                        "type": "desc"
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region": {
+                    "target": "dimension",
+                    "levelQueryFields": {
+                      "geo": "geo_pc_code",
+                      "region-dept": "地区部",
+                      "office": "代表处"
+                    }
+                  },
+                  "apply-norm-site": {
+                    "target": "dimension",
+                    "queryField": "国内或海外"
+                  },
+                  "mtime": {
+                    "target": "time"
+                  },
+                  "customer-category": {
+                    "target": "dimension",
+                    "queryField": "客户级别"
+                  }
+                },
+                "fieldMappings": {
+                  "rep-office": "代表处",
+                  "reject-count": "商审审批人决策次数",
+                  "apply-norm-rate": "商务申请规范率"
+                }
+              },
+              "合同": {
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "代表处"
+                      ],
+                      "output_metrics": [
+                        "合同驳回次数",
+                        "合同申请规范率"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": [],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": false
+                        }
+                      },
+                      "order": {
+                        "order_by_field": "合同申请规范率",
+                        "type": "desc"
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region": {
+                    "target": "dimension",
+                    "levelQueryFields": {
+                      "geo": "geo_pc_code",
+                      "region-dept": "地区部",
+                      "office": "代表处"
+                    }
+                  },
+                  "apply-norm-site": {
+                    "target": "dimension",
+                    "queryField": "国内或海外"
+                  },
+                  "mtime": {
+                    "target": "time"
+                  },
+                  "customer-category": {
+                    "target": "dimension",
+                    "queryField": "客户级别"
+                  }
+                },
+                "fieldMappings": {
+                  "rep-office": "代表处",
+                  "reject-count": "合同驳回次数",
+                  "apply-norm-rate": "合同申请规范率"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "notice",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-scope-notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "注：不含混合云（HCS）的数据",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-dept-norms",
+      "container": "card",
+      "visibleWhen": {
+        "filter": "region",
+        "part": "values",
+        "op": "isEmpty"
+      },
+      "components": [
+        {
+          "id": "region-dept-norms-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-dept-norms"
+          },
+          "props": {
+            "title": "地区部行权规范情况",
+            "fit": "content",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "地区部行权规范情况"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "region-dept-name",
+                "title": "区域",
+                "width": 150,
+                "fixed": "left",
+                "selection": {
+                  "writes": {
+                    "region": {
+                      "field": "region-dept-name"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "biz-decision-valid-rate",
+                "title": "商务决策意见有效占比",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contract-decision-valid-rate",
+                "title": "合同决策意见有效占比",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "biz-urgent-decision-rate",
+                "title": "商务紧急决策比例",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contract-urgent-decision-rate",
+                "title": "合同紧急决策比例",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "biz-apply-norm-rate",
+                "title": "商务申请规范率",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contract-apply-norm-rate",
+                "title": "合同申请规范率",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rep-office-norms",
+      "container": "card",
+      "components": [
+        {
+          "id": "rep-office-norms-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rep-office-norms"
+          },
+          "props": {
+            "title": "代表处行权规范情况",
+            "fit": "content",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "代表处行权规范情况"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 150,
+                "fixed": "left",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/region-auth-norms-detail",
+                  "query": {
+                    "mtime": {
+                      "source": "filter",
+                      "id": "mtime"
+                    },
+                    "rep-office-name": {
+                      "source": "row",
+                      "field": "rep-office-name"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "biz-decision-valid-rate",
+                "title": "商务决策意见有效占比",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contract-decision-valid-rate",
+                "title": "合同决策意见有效占比",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "biz-urgent-decision-rate",
+                "title": "商务紧急决策比例",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contract-urgent-decision-rate",
+                "title": "合同紧急决策比例",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "biz-apply-norm-rate",
+                "title": "商务申请规范率",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "contract-apply-norm-rate",
+                "title": "合同申请规范率",
+                "width": 150,
+                "align": "right",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "decision-validity-chart",
+      "container": "card",
+      "components": [
+        {
+          "id": "decision-validity-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "metricGrid",
+            "title": "决策意见有效性",
+            "components": [
+              {
+                "id": "decision-validity-filter",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "decision-validity-site",
+                  "align": "left",
+                  "options": [
+                    {
+                      "label": "中国区",
+                      "value": "国内"
+                    },
+                    {
+                      "label": "海外",
+                      "value": "海外"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "decision-validity-mode-select",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "decision-validity-mode",
+                  "display": "select",
+                  "align": "right",
+                  "options": [
+                    {
+                      "label": "商务",
+                      "value": "商务"
+                    },
+                    {
+                      "label": "合同",
+                      "value": "合同"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "decision-validity-bar-chart",
+                "type": "barChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "decision-validity-trend"
+                },
+                "props": {
+                  "categoryField": "rep-office",
+                  "dualAxis": true,
+                  "series": [
+                    {
+                      "field": "decision-valid-count",
+                      "label": "决策意见有效数量",
+                      "kind": "bar",
+                      "axis": "primary"
+                    },
+                    {
+                      "field": "decision-valid-rate",
+                      "label": "决策意见有效占比",
+                      "kind": "line",
+                      "axis": "secondary"
+                    }
+                  ],
+                  "categoryLabels": {
+                    "mode": "all",
+                    "rotate": -45
+                  },
+                  "echartsOption": {
+                    "grid": {
+                      "bottom": 44
+                    },
+                    "legend": {
+                      "top": null,
+                      "bottom": 0,
+                      "left": "center"
+                    },
+                    "series": [
+                      {
+                        "barWidth": 16
+                      },
+                      {}
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "urgent-decision-chart",
+      "container": "card",
+      "components": [
+        {
+          "id": "urgent-decision-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "metricGrid",
+            "title": "紧急决策比例",
+            "components": [
+              {
+                "id": "urgent-decision-filter",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "urgent-decision-site",
+                  "align": "left",
+                  "options": [
+                    {
+                      "label": "中国区",
+                      "value": "国内"
+                    },
+                    {
+                      "label": "海外",
+                      "value": "海外"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "urgent-decision-mode-select",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "urgent-decision-mode",
+                  "display": "select",
+                  "align": "right",
+                  "options": [
+                    {
+                      "label": "商务",
+                      "value": "商务"
+                    },
+                    {
+                      "label": "合同",
+                      "value": "合同"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "urgent-decision-bar-chart",
+                "type": "barChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "urgent-decision-trend"
+                },
+                "props": {
+                  "categoryField": "rep-office",
+                  "dualAxis": true,
+                  "series": [
+                    {
+                      "field": "urgent-decision-count",
+                      "label": "紧急决策数量",
+                      "kind": "bar",
+                      "axis": "primary"
+                    },
+                    {
+                      "field": "urgent-decision-rate",
+                      "label": "紧急决策比例",
+                      "kind": "line",
+                      "axis": "secondary"
+                    }
+                  ],
+                  "categoryLabels": {
+                    "mode": "all",
+                    "rotate": -45
+                  },
+                  "echartsOption": {
+                    "grid": {
+                      "bottom": 44
+                    },
+                    "legend": {
+                      "top": null,
+                      "bottom": 0,
+                      "left": "center"
+                    },
+                    "series": [
+                      {
+                        "barWidth": 16
+                      },
+                      {}
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply-norm-chart",
+      "container": "card",
+      "components": [
+        {
+          "id": "apply-norm-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "metricGrid",
+            "title": "申请规范率",
+            "components": [
+              {
+                "id": "apply-norm-filter",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "apply-norm-site",
+                  "align": "left",
+                  "options": [
+                    {
+                      "label": "中国区",
+                      "value": "国内"
+                    },
+                    {
+                      "label": "海外",
+                      "value": "海外"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "apply-norm-mode-select",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "apply-norm-mode",
+                  "display": "select",
+                  "align": "right",
+                  "options": [
+                    {
+                      "label": "商务",
+                      "value": "商务"
+                    },
+                    {
+                      "label": "合同",
+                      "value": "合同"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "apply-norm-bar-chart",
+                "type": "barChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "apply-norm-trend"
+                },
+                "props": {
+                  "categoryField": "rep-office",
+                  "dualAxis": true,
+                  "series": [
+                    {
+                      "field": "reject-count",
+                      "label": "驳回次数",
+                      "kind": "bar",
+                      "axis": "primary"
+                    },
+                    {
+                      "field": "apply-norm-rate",
+                      "label": "申请规范率",
+                      "kind": "line",
+                      "axis": "secondary"
+                    }
+                  ],
+                  "categoryLabels": {
+                    "mode": "all",
+                    "rotate": -45
+                  },
+                  "echartsOption": {
+                    "grid": {
+                      "bottom": 44
+                    },
+                    "legend": {
+                      "top": null,
+                      "bottom": 0,
+                      "left": "center"
+                    },
+                    "series": [
+                      {
+                        "barWidth": 16
+                      },
+                      {}
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "行权规范情况"
+    },
+    "filterIds": [
+      "key-national-only",
+      "mtime",
+      "region",
+      "customer-category"
+    ],
+    "note": "区域与统计期间筛选驱动全页查询",
+    "presentation": {
+      "layout": "inline",
+      "density": "normal",
+      "collapse": "none"
+    }
+  }
+}

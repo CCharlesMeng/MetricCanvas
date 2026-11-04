@@ -95,7 +95,6 @@ describe('ioc-opportunity-list 骨架', () => {
     const bindings = source.source.query.filterBindings ?? {};
     expect(Object.keys(bindings)).toEqual([
       'mtime',
-      'key-office',
       'industry-type',
       'region',
       'na-type',
@@ -105,7 +104,7 @@ describe('ioc-opportunity-list 骨架', () => {
       'opportunity-stage',
       'bidding-amount'
     ]);
-    expect((page.filters ?? []).filter((f) => !(f.id in bindings)).map((f) => f.id)).toEqual([]);
+    expect((page.filters ?? []).filter((f) => !(f.id in bindings)).map((f) => f.id)).toEqual(['key-office']);
     expect(bindings['industry-l2']).toEqual({
       target: 'dimension',
       queryField: 'sub_industry_level2'
@@ -116,12 +115,9 @@ describe('ioc-opportunity-list 骨架', () => {
       queryField: 'mtime',
       valueFormat: 'compact'
     });
-    // 勾选才加条件，没有 whenFalse 就是不勾等于无条件。
-    expect(bindings['key-office']).toEqual({
-      target: 'boolean',
-      queryField: 'is_key_office',
-      whenTrue: ['true']
-    });
+    // 集成应用在装载前从完整授权名单补齐绑定，不把合成标记字段当生产承诺。
+    expect(bindings['key-office']).toBeUndefined();
+    expect(page.filters?.find(filter=>filter.id==='key-office')).toMatchObject({overridesFilters:['region']});
     expect(bindings['bidding-amount']).toEqual({
       target: 'numberRange',
       metric: 'bidding_amount'
@@ -139,8 +135,8 @@ describe('ioc-opportunity-list 骨架', () => {
       target: 'dimension',
       levelQueryFields: {
         geo: 'geo_pc_code',
-        'region-dept': 'region_dept_code',
-        office: 'rep_office_code'
+        'region-dept': '地区部',
+        office: '代表处'
       }
     });
     const region = page.filters?.find((filter) => filter.id === 'region');

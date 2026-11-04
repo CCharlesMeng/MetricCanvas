@@ -7,6 +7,7 @@ import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssu
 import type { FilterValue, FilterValues } from './filter-values';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { preservedQueryError } from './query-error';
+import {overriddenFilterIds} from '@metriccanvas/page/internal';
 import { rawSnapshot } from './snapshots';
 
 export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
@@ -32,8 +33,12 @@ export function composeEffectiveQuery(
 ): EffectiveQuery {
   const dataSource = selectQuerySource(binding.dataSource, values);
   const query = dataSource.source.query;
+  const bindings=query.filterBindings??{};
+  validateOverrideBindings(binding.filters??[],values,bindings);
   const filterValues: EffectiveQuery['filterValues'] = [];
-  for (const [filterId, target] of Object.entries(query.filterBindings ?? {})) {
+  const overridden=overriddenFilterIds(binding.filters??[],values);
+  for (const [filterId, target] of Object.entries(bindings)) {
+    if(overridden.has(filterId))continue;
     const value = values.get(filterId), declaration = binding.filters?.find(filter => filter.id === filterId);
     validateBindingValue(declaration, value, values, binding.now);
     if (unrestrictedDimension(value, declaration)) continue;
@@ -54,6 +59,7 @@ export function composeEffectiveQuery(
   // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。
   return {
     language: query.language,
+    ...(emptyBooleanMembership(bindings,values)?{matchNone:true as const}:{}),
     body: bindingOwnedDqeBody(query),
     fieldMappings: dataSource.fields,
     ...(searchPredicate ? { search: searchPredicate } : {}),
@@ -73,6 +79,21 @@ export function composeEffectiveQuery(
 
 type FilterBinding = NonNullable<QueryDataSource['source']['query']['filterBindings']>[string];
 type Predicates = EffectiveQuery['filterValues'];
+
+export function emptyBooleanMembership(bindings:Record<string,FilterBinding>,values:FilterValues):boolean {
+  return Object.entries(bindings).some(([id,binding])=>{
+    const value=values.get(id);
+    return binding.target==='boolean'&&binding.whenTrue.length===0&&value?.type==='boolean'&&value.value===true;
+  });
+}
+
+function validateOverrideBindings(filters:readonly FilterDeclaration[],values:FilterValues,bindings:Record<string,FilterBinding>):void {
+  for(const filter of filters){
+    if(filter.type!=='boolean'||!filter.overridesFilters?.some(id=>bindings[id]))continue;
+    const value=values.get(filter.id);
+    if(value?.type==='boolean'&&value.value===true&&bindings[filter.id]?.target!=='boolean')throw Object.assign(new Error('覆盖筛选缺少替代查询条件'),{code:'DQE_CONFIG_ERROR'});
+  }
+}
 
 function bindingPredicates(binding: FilterBinding, value: FilterValue | undefined, metric: string | undefined, context: QueryBinding): Predicates {
   switch (binding.target) {

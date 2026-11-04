@@ -11,6 +11,7 @@ import {
 } from '@metriccanvas/page/internal';
 
 import { initialFilterValues } from '@metriccanvas/data-execution/runtime';
+import {overriddenFilterIds} from '@metriccanvas/page/internal';
 import type { FilterValue, FilterValues } from '@metriccanvas/data-execution/runtime';
 export { initialFilterValues };
 export type { FilterValue, FilterValues, DimensionFilterValue, TimeRangeFilterValue, TimePointFilterValue, BooleanFilterValue, NumberRangeFilterValue, SearchFilterValue } from '@metriccanvas/data-execution/runtime';
@@ -101,8 +102,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       const receipt = receipts.get(declaration.id);
       if (!receipt || receipt.status !== 'ready' || selected.values.some(value => !receipt.values?.includes(value))) result.add(declaration.id);
     }
-    const queue = [...result]; for (const parent of queue) for (const declaration of declarations) if (!result.has(declaration.id) && filterDependencies(declaration).includes(parent)) { result.add(declaration.id); queue.push(declaration.id); }
-    return result;
+    return propagateBlockedFilters(result,declarations,overriddenFilterIds(declarations,current));
   }
   const subscribers = new Set<(values: FilterValues) => void>();
 
@@ -222,6 +222,16 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     }
 
   };
+}
+
+function propagateBlockedFilters(blocked:ReadonlySet<string>,declarations:readonly FilterDeclaration[],overridden:ReadonlySet<string>):Set<string> {
+  const result=new Set([...blocked].filter(id=>!overridden.has(id)));
+  const queue=[...result];
+  for(const parent of queue)for(const declaration of declarations){
+    if(overridden.has(declaration.id)||result.has(declaration.id)||!filterDependencies(declaration).includes(parent))continue;
+    result.add(declaration.id);queue.push(declaration.id);
+  }
+  return result;
 }
 
 /** 兑现"subscribe/write 永不 throw":单个订阅方的异常不得中断写入与其余订阅方的通知 */

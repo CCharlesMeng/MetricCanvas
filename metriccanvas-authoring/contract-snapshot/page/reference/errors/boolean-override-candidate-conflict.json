@@ -1,0 +1,24 @@
+{
+  "case": "boolean-override-candidate-conflict",
+  "invariant": "boolean-filter-overrides",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "被覆盖筛选不能依赖覆盖它的布尔筛选，以保留原选择",
+      "paths": [
+        "/filters/1/overridesFilters"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "overridesFilters": [
+          "region"
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/boolean-override-candidate-conflict.json"
+}

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.41",
+  "schemaVersion": "6.84",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
@@ -16,7 +16,10 @@
     {
       "id": "key-office",
       "type": "boolean",
-      "label": "仅看重点国代"
+      "label": "仅看重点国代",
+      "overridesFilters": [
+        "region"
+      ]
     },
     {
       "id": "industry-type",
@@ -37,12 +40,12 @@
         },
         {
           "id": "region-dept",
-          "dimension": "region-dept-code",
+          "dimension": "region-dept-name",
           "label": "地区部"
         },
         {
           "id": "office",
-          "dimension": "rep-office-code",
+          "dimension": "rep-office-name",
           "label": "代表处"
         }
       ],
@@ -735,13 +738,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "industry-type": {
               "target": "dimension",
               "queryField": "cloud_class"
@@ -750,13 +746,13 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "na-type": {
               "target": "dimension",
-              "queryField": "public_cloud_na_level"
+              "queryField": "客户级别"
             },
             "industry-l1": {
               "target": "dimension",

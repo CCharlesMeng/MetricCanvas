@@ -651,6 +651,7 @@ function classifiedFetchError(
 export function effectiveDqeItem(query: EffectiveQuery): JsonObject { return encodedDqeItem(query); }
 
 function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch'], encodeObjectSort?: ObjectSortEncoder): JsonObject {
+  if(query.matchNone)throw new EmptyTableQuery();
   assertNoQueryParamReferences(query.body);
   if (isObjectDqeItem(query.body.dsl_list[0])) return encodedObjectItem(query, encodeSearch, encodeObjectSort);
   return encodedMetricItem(query, encodeSearch);

@@ -37,7 +37,7 @@ describe('ioc-project-overview 骨架', () => {
   it('统一页头按当前能力下限声明，保留唯一指标值入口', () => {
     const page = loadPage();
     expect(page.schemaVersion).toBe(versionPolicy.current);
-    expect(requiredMinorVersion(document)).toBe(41);
+    expect(requiredMinorVersion(document)).toBe(84);
   });
 
   it('五个可见筛选按设计顺序声明，跨页 mtime 仍以 month 隐藏保留', () => {
@@ -76,8 +76,8 @@ describe('ioc-project-overview 骨架', () => {
       'cloud-class',
       'geo-pc-code',
       'project-level',
-      'region-dept-code',
-      'rep-office-code'
+      'region-dept-name',
+      'rep-office-name'
     ]);
   });
 
@@ -410,8 +410,8 @@ describe('ioc-project-overview 骨架', () => {
     const filters = createFilterState(initialFilterValues(instance.filters ?? []));
     filters.write('region', {
       type: 'dimension',
-      dimension: 'rep-office-code',
-      values: ['BJ-01'],
+      dimension: 'rep-office-name',
+      values: ['北京代表处'],
       level: 'office'
     });
     let current = new Map();
@@ -421,7 +421,7 @@ describe('ioc-project-overview 骨架', () => {
     const listSearch = new URL(navigationHref(mapAction.navigate, current, new Map()), 'https://host.example').search;
     const listParams = new URLSearchParams(listSearch);
     expect(listParams.get('mtime')).toBe('2026-04');
-    expect(listParams.get('region')).toBe('BJ-01');
+    expect(listParams.get('region')).toBe('北京代表处');
     expect(listParams.has('as-of-date')).toBe(false);
     expect(listParams.has('project-level')).toBe(false);
     expect(listSearch).not.toContain('p:');

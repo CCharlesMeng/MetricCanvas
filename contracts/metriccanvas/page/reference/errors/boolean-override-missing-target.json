@@ -1,0 +1,24 @@
+{
+  "case": "boolean-override-missing-target",
+  "invariant": "boolean-filter-overrides",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "覆盖筛选必须引用已声明的维度筛选",
+      "paths": [
+        "/filters/1/overridesFilters"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "overridesFilters": [
+          "missing"
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/boolean-override-missing-target.json"
+}

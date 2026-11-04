@@ -199,6 +199,32 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。
 
 
+<a id="boolean-filter-overrides"></a>
+
+## 布尔筛选覆盖（6.84）
+
+IOC 重点国代采用“勾选后忽略 Region，查询当前用户有权限的全部重点国代”的口径。boolean 声明 `overridesFilters:["region"]`，数组必须非空且引用同作用域内已声明的维度筛选，不可重复。未声明时保留原来的条件交集；只在明确 boolean true 时覆盖，false 与缺席均不覆盖。它只影响页面筛选的执行投影，不会移除查询体中的固定限制、页面参数约束、权限、表头筛选或客户/时间等其他条件。
+
+最小声明（完整页见合成示例）：
+
+```json
+{
+  "filters": [
+    {"id":"region","type":"dimension","dimension":"region-dept-name","display":"tree","treeSelection":"level","selection":{"mode":"single"},"hierarchy":[{"id":"region-dept","dimension":"region-dept-name"},{"id":"office","dimension":"rep-office-name"}]},
+    {"id":"key-office","type":"boolean","label":"仅看重点国代","overridesFilters":["region"]}
+  ],
+  "iocHeader":{"identity":{"title":"IOC"},"filterIds":["key-office","region"]}
+}
+```
+
+每条消费被覆盖维度的查询都必须绑定覆盖它的 boolean 及真实 `whenTrue` 条件；集成应用可在装载前补齐名单绑定；勾选时缺少替代条件则拒绝执行，不能只删除 Region 后查询全部数据。覆盖不修改 Region 的存储值或 URL；可继续改选 Region，取消勾选后使用最新选择并重新通过候选校验。被覆盖维度自身的必选、候选失败及其阻断传播不阻断当前替代查询；其他生效筛选的门禁保留。依赖 Region 的候选查询不再携带被覆盖的 Region 约束，缓存按生效候选上下文隔离。被覆盖维度不能同时依赖覆盖它的 boolean，避免勾选触发交集调和而丢失原选择。
+
+中文名称必须由集成应用在候选 `value` 中提供，并保持 `parent.value`、URL 输入与业务查询一致；`label` 仅用于显示，不自动替代编码。`dimension` 是 ASCII 维度标识，业务查询的 `queryField` 则可使用中文。IOC 页面地区部/代表处分别绑定名称字段 `地区部`、`代表处`；客户类型控件的业务查询绑定统一为 `queryField:"客户级别"`，与界面显示文案分开。保留的全球层级仍沿用其原有字段契约，不猜测真实服务的全球名称字段。
+
+重点国代 checkbox 只有 boolean 值，没有内置真实名单。集成应用须提供完整、当前授权范围内的重点名单；上游 payload 结构由 Adapter 转换，不要求新增重点标记字段。集成应用的名单桥接 在装载前通过现有候选端口获取完整平面成员列表，再为各查询绑定 `queryField:"代表处"` 与 `whenTrue:[中文名列表]`，不读取当前 Region。6.84 的 `whenTrue:[]` 表示成功取得的完整名单为空，勾选后查询、列候选和导出为空且不发主查询 HTTP，不能按清空筛选处理。失败、无权限、未配置或取消均不能用空数组代替；固定查询限制和其他筛选继续取交集。桥接是集成应用可复制的示例，不属于 embed 公共对象上的 API。
+
+完整合成页：[优先级来源页](examples/key-office-priority-demo.json)、[目标页](examples/key-office-priority-target.json)。选择南京代表处后勾选，显示上海及深圳两个跨地区重点代表处，取消后回到南京。还覆盖 Region 改选、中文 URL、刷新、跨页及完整 XLSX 导出。合成 `重点国代=true` 字段不是生产字段承诺。旧 `key-office-filter-demo/target` 继续作为未声明覆盖关系的候选交集兼容场景。
+
 <a id="boolean-candidate-context"></a>
 
 ## 布尔候选依赖与条件启用（6.75）

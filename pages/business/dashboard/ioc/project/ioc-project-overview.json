@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.41",
+  "schemaVersion": "6.84",
   "id": "ioc-project-overview",
   "layout": "dashboard",
   "meta": {
@@ -18,7 +18,10 @@
     {
       "id": "key-office",
       "type": "boolean",
-      "label": "仅看重点国代"
+      "label": "仅看重点国代",
+      "overridesFilters": [
+        "region"
+      ]
     },
     {
       "id": "as-of-date",
@@ -41,12 +44,12 @@
         },
         {
           "id": "region-dept",
-          "dimension": "region-dept-code",
+          "dimension": "region-dept-name",
           "label": "地区部"
         },
         {
           "id": "office",
-          "dimension": "rep-office-code",
+          "dimension": "rep-office-name",
           "label": "代表处"
         }
       ],
@@ -337,13 +340,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -352,8 +348,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "project-level": {
@@ -617,13 +613,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -632,8 +621,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "project-level": {
@@ -841,13 +830,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -856,8 +838,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "project-level": {
@@ -1023,13 +1005,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -1038,8 +1013,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "project-level": {
@@ -1193,13 +1168,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -1208,8 +1176,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "project-level": {
@@ -1297,13 +1265,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -1312,8 +1273,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "project-level": {
@@ -1406,13 +1367,6 @@
               "queryField": "mtime",
               "valueFormat": "compact"
             },
-            "key-office": {
-              "target": "boolean",
-              "queryField": "is_key_office",
-              "whenTrue": [
-                "true"
-              ]
-            },
             "as-of-date": {
               "target": "timePoint",
               "queryField": "as_of_date"
@@ -1421,8 +1375,8 @@
               "target": "dimension",
               "levelQueryFields": {
                 "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
+                "region-dept": "地区部",
+                "office": "代表处"
               }
             },
             "project-level": {
@@ -2090,7 +2044,7 @@
                             },
                             "region": {
                               "source": "row",
-                              "field": "rep-office-code"
+                              "field": "rep-office-name"
                             }
                           }
                         }

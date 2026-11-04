@@ -1,0 +1,27 @@
+{
+  "case": "boolean-override-version",
+  "invariant": "boolean-filter-overrides",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "布尔勾选覆盖指定维度筛选，保留原选择供取消后恢复 由 6.84 引入，文档声明的是 6.83",
+      "paths": [
+        "/filters/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "id": "key-office",
+        "type": "boolean",
+        "label": "仅看重点国代",
+        "overridesFilters": [
+          "region"
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

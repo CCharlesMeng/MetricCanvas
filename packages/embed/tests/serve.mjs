@@ -1,3 +1,4 @@
+import {iocKeyOfficeCandidates} from '../../../tools/dqe-sim/fixtures/ioc-name-filters.mjs';
 import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
 import {iocRegionCandidates} from '../../../tools/dqe-sim/fixtures/ioc-region-candidates.mjs';
 import {iocTimeCandidates} from './fixtures/ioc-time-candidates.mjs';
@@ -89,7 +90,7 @@ async function respondCandidates(request, response) {
   const chunks = [];
   for await (const chunk of request) chunks.push(chunk);
   const value = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-  json(response, 200, iocTimeCandidates(value) ?? iocRegionCandidates(value) ?? iocBusinessCandidates(value));
+  json(response, 200, iocKeyOfficeCandidates(value) ?? iocTimeCandidates(value) ?? iocRegionCandidates(value,{names:request.headers['x-ioc-region-values']==='names',includeGeo:request.headers['x-ioc-region-geo']!=='no'}) ?? iocBusinessCandidates(value));
 }
 
 async function respondDqe(request, response) {

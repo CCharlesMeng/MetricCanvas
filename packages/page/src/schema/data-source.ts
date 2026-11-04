@@ -88,7 +88,7 @@ function filterBindingsSchema(includePeriodPolicy:boolean){return z
               .object({
                 target: z.literal('boolean'),
                 queryField: z.string().min(1),
-                whenTrue: z.array(z.string().min(1)).min(1),
+                whenTrue: z.array(z.string().min(1)),
                 whenFalse: z.array(z.string().min(1)).min(1).optional()
               })
               .strict(),

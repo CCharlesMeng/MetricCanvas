@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.83",
-  "schemaSha256": "62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11",
+  "schemaVersion": "6.84",
+  "schemaSha256": "e1b49aa2769d3f1bd7792d37db1b44e7fa3de46cd2934effe5fdd862eefaef09",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -216,7 +216,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "6b3378dc63a601b9ff28a9be79876c8478b22fb80434f716aa519fd9cbb4c0fd"
+      "sha256": "8ac7ed589eef793ccd19cd37e19c053d5412b117259bfd82b40e418af0b0643c"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -312,11 +312,11 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "2acdd635421a2f09e2b7e7bcd12fccf7405dc76de8fcdaac7b7dd9f276b4e3c9"
+      "sha256": "58cc651270895ef1154d40338b0277b91501b33566f991b34e9445bc5d49ac84"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "cf8dbf1a96abfd9d9a7da1db76bf6936f6d767a69d2cc86daf1fe23743ed46aa"
+      "sha256": "1adf67d3c33cad1b637fe0297aca1c1a0617901d24ceabfbd3addc8274e1b6aa"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
@@ -416,7 +416,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "061c90ef947af604269cec9785b1a845561aeb8d0d63627579cc2b0c8cbea085"
+      "sha256": "12c7630beffc134a720ea7bf68fbab39d1abcd45cd41f2b1c5c62748822a3573"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -428,7 +428,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "6ea05dd11044b456616fa8b4c7fc5bf399018367e1075d4cb42e4ca09b4d1aa8"
+      "sha256": "83b283d22f01115a9bbb5680a36b78cf8a0671b2b86392394d7979af5d8dc6e3"
     }
   ],
   "modules": {
@@ -789,7 +789,9 @@
         "key-office-filter-demo",
         "key-office-filter-target",
         "ioc-region-url-demo",
-        "authoring-evaluation-context"
+        "authoring-evaluation-context",
+        "key-office-priority-demo",
+        "key-office-priority-target"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1940,7 +1942,8 @@
         "6.80",
         "6.81",
         "6.82",
-        "6.83"
+        "6.83",
+        "6.84"
       ]
     },
     {
@@ -9688,6 +9691,18 @@
       "required": "本分支必填",
       "module": "filters.md",
       "const": "boolean"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/overridesFilters",
+      "path": "@booleanFilter.overridesFilters",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/overridesFilters/items",
+      "path": "@booleanFilter.overridesFilters[]",
+      "required": "每个数组项",
+      "module": "filters.md"
     },
     {
       "pointer": "#/definitions/booleanFilter/properties/label",

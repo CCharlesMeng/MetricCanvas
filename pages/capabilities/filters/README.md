@@ -243,3 +243,17 @@
 - `?rep-office=未授权代表处`：不在完整候选内，查询和导出受门禁阻断。
 
 在同一棵树中改选欧洲地区部，URL 只保留 `region-dept=欧洲地区部`，表格显示法国代表处；改选上海代表处则只保留 `rep-office=上海代表处`。无关 URL 参数应继续保留。无输入使用声明的中国地区部默认值。本地合成行为不证明真实组织接口、DQE/Relay、权限或部署验收。
+
+### 重点国代优先（6.84，中文筛选值）
+
+入口：`/pages/key-office-priority-demo`、`/pages/key-office-priority-target`。运行 `pnpm dev:playground`，两页自动加载 `createKeyOfficePriorityGateway` 合成候选及查询，无需真实 DQE。完整声明分别为同目录两个 JSON。
+
+1. 打开 `/pages/key-office-priority-demo?rep-office=南京代表处`，只显示南京。
+2. 勾选“仅看重点国代”，显示上海、深圳两个跨地区重点代表处，Region 仍显示南京；XLSX 导出使用相同范围。
+3. 勾选期间选择华东地区部仍显示两个地区的重点代表处；取消后恢复华东的上海、南京。
+4. 客户类型候选值为战略/卓越，对应业务查询字段为 `客户级别`；它与时间等条件不被覆盖。
+5. 切换页面、刷新保留已勾选及原 Region；URL 中中文值与候选 value 一致。不选 Region 也允许勾选。
+
+新场景显式声明 `overridesFilters:["region"]`，不把 Region 的候选依赖到重点国代；旧联动场景继续验证无覆盖声明时的交集兼容。所有组织、金额及 `重点国代=true` 字段均是合成输入；浏览器通过不证明生产重点名单、授权或 DQE 字段已接通。
+
+异常入口：`/pages/key-office-priority-demo?state=empty&key-office=true` 返回完整空名单，表格显示暂无数据；取消勾选后恢复四条普通数据。`?state=denied&key-office=true` 显示名单未就绪的加载错误，不进入全量查询。名单桥接与中文组织候选的真实服务接线由集成应用实现；完整说明在仓库 `docs/evidence/2026-11-04-ioc-header-filters/integration.md`。

@@ -3,6 +3,7 @@ import { queryFilterIds,numberRangeIssue,rangeContextIssue,filterGroupOptions, c
 import type {RuntimeDataGateway,FilterCandidate} from './ports';
 import type {FilterValues} from './filter-values';
 import {candidateContextKey,filterCandidatesRequest,validFilterCandidates} from './filter-candidates';
+import {overriddenFilterIds} from '@metriccanvas/page/internal';
 
 /** Execution consumers share this fail-closed boundary, including seeded/initial receipts. */
 export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,context:{displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date}={}) {
@@ -12,7 +13,8 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
     const ids=new Set<string>();
     for(const source of conditionSourceIds(page,sourceId)){const definition=page.dataSources[source];if(definition?.source.type==='query')for(const id of queryFilterIds(definition.source.query,values))ids.add(id);}
     const queue=[...ids];for(const id of queue){const filter=byId.get(id);if(filter)for(const parent of filterDependencies(filter))if(!ids.has(parent)){ids.add(parent);queue.push(parent);}}
-    return [...ids];
+    const overridden=overriddenFilterIds(declarations,values??new Map());
+    return [...ids].filter(id=>!overridden.has(id));
   }
   function dynamic(filter:FilterDeclaration):boolean {return filter.type==='dimension'&&!filter.options&&!localOptions.has(filter.id);}
   function key(filter:Extract<FilterDeclaration,{type:'dimension'}>,values:FilterValues) {
@@ -45,10 +47,26 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
     });
   }
   async function verify(sourceId:string,values:FilterValues,signal:AbortSignal,extraIds:readonly string[] = []) {
+    const overridden=overriddenFilterIds(declarations,values);
     const done=new Set<string>();
     const cache=new Map<string,readonly FilterCandidate[]>();
+    function alreadyVerified(id:string):boolean {return done.has(id)||overridden.has(id);}
+    async function requestCandidates(dimension:Extract<FilterDeclaration,{type:'dimension'}>,request:import('./ports').FilterCandidatesRequest):Promise<readonly FilterCandidate[]> {
+      if(dimension.candidateContext||dimension.treeSelection==='level'||dimension.candidateWindow){
+        if(!gateway.fetchFilterCandidates)reject();
+        const result=await gateway.fetchFilterCandidates!(request,{signal});signal.throwIfAborted();
+        if(result.kind!=='values'||!Array.isArray(result.candidates)||!validFilterCandidates(result.candidates,dimension.treeSelection==='level'?dimension.hierarchy?.map(item=>item.id):undefined))reject();
+        return result.kind==='values'?result.candidates:[];
+      }
+      if(!gateway.fetchDimensionValues)reject();
+      const result=await gateway.fetchDimensionValues!(request.dimension,{signal,constraints:legacyConstraints(dimension,values,overridden)});signal.throwIfAborted();
+      if(result.kind!=='values')reject();
+      const candidates=[...new Map(result.candidates.map(item=>[item.value,item])).values()];
+      if(!validFilterCandidates(candidates))reject();
+      return candidates;
+    }
     async function verifyFilter(id:string):Promise<void> {
-      if(done.has(id))return;done.add(id);signal.throwIfAborted();
+      if(alreadyVerified(id))return;done.add(id);signal.throwIfAborted();
       const filter=byId.get(id);if(!filter||!selection(filter,values))reject();
       for(const parent of candidateDependencies(filter!))await verifyFilter(parent);
       if(!filter||filter.type!=='dimension'||!dynamic(filter))return;
@@ -57,20 +75,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       const dimension=filter;
       const identity=key(dimension,values);let candidates=cache.get(identity.key);
       if(!candidates){
-        if(dimension.candidateContext||dimension.treeSelection==='level'||dimension.candidateWindow){
-          if(!gateway.fetchFilterCandidates)reject();
-          const result=await gateway.fetchFilterCandidates!(identity.request,{signal});signal.throwIfAborted();
-          if(result.kind!=='values'||!Array.isArray(result.candidates)||!validFilterCandidates(result.candidates,dimension.treeSelection==='level'?dimension.hierarchy?.map(item=>item.id):undefined))reject();
-          candidates=result.kind==='values'?result.candidates:[];
-        }else{
-          if(!gateway.fetchDimensionValues)reject();
-          const parent=dimension.dependsOn?values.get(dimension.dependsOn):undefined;
-          const constraints=parent?.type==='dimension'&&parent.values.length?{[parent.dimension]:parent.values}:{};
-          const result=await gateway.fetchDimensionValues!(identity.request.dimension,{signal,constraints});signal.throwIfAborted();
-          if(result.kind!=='values')reject();
-          candidates=[...new Map(result.candidates.map(item=>[item.value,item])).values()];
-          if(!validFilterCandidates(candidates))reject();
-        }
+        candidates=await requestCandidates(dimension,identity.request);
         cache.set(identity.key,candidates);
       }
       if(!allowed(dimension,values,candidates))reject();
@@ -79,5 +84,9 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
   }
   const requires=(sourceId:string)=>filterIds(sourceId).some(id=>{const filter=byId.get(id);return localOptions.has(id)||(filter?.type==='dimension'&&!!(filter.selection||filter.options||filter.candidateContext||filter.treeSelection||filter.candidateWindow))||(filter&&requiresTimeValidation(filter))||(filter?.type==='numberRange'&&!!(filter.constraints||filter.units||filter.presets));});
   return {trusted,verify,requires};
+}
+function legacyConstraints(filter:Extract<FilterDeclaration,{type:'dimension'}>,values:FilterValues,overridden:ReadonlySet<string>):Record<string,string[]> {
+  const parent=filter.dependsOn&&!overridden.has(filter.dependsOn)?values.get(filter.dependsOn):undefined;
+  return parent?.type==='dimension'&&parent.values.length?{[parent.dimension]:parent.values}:{};
 }
 function reject():never {throw Object.assign(new Error('筛选条件尚未通过当前完整候选或选择规则校验'),{code:'DQE_QUERY_REJECTED'});}

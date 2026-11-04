@@ -29,6 +29,19 @@
       ]
     },
     {
+      "id": "boolean-filter-overrides",
+      "description": "布尔覆盖只引用维度并要求替代查询条件",
+      "valid": [
+        "key-office-priority-demo",
+        "key-office-priority-target"
+      ],
+      "invalid": [
+        "boolean-override-version",
+        "boolean-override-missing-target",
+        "boolean-override-candidate-conflict"
+      ]
+    },
+    {
       "id": "ioc-region-default-url",
       "description": "IOC Header 默认保留地区部与代表处 URL 参数名，页面无需映射",
       "valid": [

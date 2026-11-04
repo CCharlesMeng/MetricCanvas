@@ -357,7 +357,9 @@
         "key-office-filter-demo",
         "key-office-filter-target",
         "ioc-region-url-demo",
-        "authoring-evaluation-context"
+        "authoring-evaluation-context",
+        "key-office-priority-demo",
+        "key-office-priority-target"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1541,7 +1543,7 @@
     "times": "独立时间区间输入数组，每项由唯一参数 ID 引用。",
     "levelQueryFields": "层级维度筛选器逐级声明的谓词字段：键是层级id，值是该层的DQE字段；必须逐级写全。",
     "valueFormat": "时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。",
-    "whenTrue": "布尔筛选器勾选时下推的取值；不勾选默认无条件。",
+    "whenTrue": "布尔筛选器勾选时下推的取值；6.84起完整授权名单为空可传空数组，表示空结果；不勾选默认无条件。",
     "whenFalse": "布尔筛选器显式为假时下推的取值；缺席即不勾选不加条件。",
     "metric": "数值区间谓词作用的DQE指标名，不等于页面字段id。",
     "openDetail": "点击在页内打开详情浮层，读被点那一行，不离开当前页。",
@@ -1691,6 +1693,7 @@
     "#/definitions/timePointFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
     "#/definitions/booleanFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
     "#/definitions/booleanFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/booleanFilter/properties/overridesFilters": "6.84：勾选时以替代条件覆盖这些维度筛选的执行投影，保留原选择供取消后恢复。",
     "#/definitions/numberRangeFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
     "#/definitions/numberRangeFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
     "#/definitions/searchFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
@@ -2153,7 +2156,8 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout=\"inline\"": "标题与筛选行内排布；窄容器换行。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout=\"stacked\"": "身份区与筛选区上下排布；缺省。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。",
-    "6.83": "独立完整单行指标通过无键unique关联用于全部主行。"
+    "6.83": "独立完整单行指标通过无键unique关联用于全部主行。",
+    "6.84": "布尔勾选覆盖维度筛选，完整授权名单为空时产生空结果。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2940,6 +2944,7 @@
       "6.39 复杂时间与候选",
       "下拉搜索与普通树（6.43）",
       "IOC 业务批量场景与必选多选（6.46）",
+      "布尔筛选覆盖（6.84）",
       "布尔候选依赖与条件启用（6.75）",
       "期间筛选驱动同比环比（6.77）"
     ],

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.83",
-  "schemaSha256": "62ea48855e2c3e53e220e579cec6c91c0ca7b200ad026d3aff43660fbff79a11",
+  "schemaVersion": "6.84",
+  "schemaSha256": "e1b49aa2769d3f1bd7792d37db1b44e7fa3de46cd2934effe5fdd862eefaef09",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -301,7 +301,9 @@
         "key-office-filter-demo",
         "key-office-filter-target",
         "ioc-region-url-demo",
-        "authoring-evaluation-context"
+        "authoring-evaluation-context",
+        "key-office-priority-demo",
+        "key-office-priority-target"
       ],
       "rules": [
         "filter-id-unique",
@@ -1264,7 +1266,8 @@
         "6.80",
         "6.81",
         "6.82",
-        "6.83"
+        "6.83",
+        "6.84"
       ]
     },
     {
@@ -9012,6 +9015,18 @@
       "required": "本分支必填",
       "module": "filters.md",
       "const": "boolean"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/overridesFilters",
+      "path": "@booleanFilter.overridesFilters",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/overridesFilters/items",
+      "path": "@booleanFilter.overridesFilters[]",
+      "required": "每个数组项",
+      "module": "filters.md"
     },
     {
       "pointer": "#/definitions/booleanFilter/properties/label",
@@ -21155,5 +21170,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "1a1d8cb3daa032a2e7f3950cfa61a4f8b9ff8e2296acb59d9d221b83fd21a989"
+  "semanticSourceDigest": "3f05a90e4af676430c8a96246a177a71bd753a851203c2f510c0f8f9ad932a29"
 }

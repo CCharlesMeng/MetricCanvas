@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 83,
-  "current": "6.83",
+  "minor": 84,
+  "current": "6.84",
   "capabilities": {
     "compute-scalar-join": {
       "minor": 83,
@@ -16,6 +16,16 @@
     "ioc-header-component": {
       "minor": 81,
       "description": "IOC 页头作为首分区首组件",
+      "legacyReadable": false
+    },
+    "boolean-filter-overrides": {
+      "minor": 84,
+      "description": "布尔勾选覆盖指定维度筛选，保留原选择供取消后恢复",
+      "legacyReadable": false
+    },
+    "boolean-empty-membership": {
+      "minor": 84,
+      "description": "布尔勾选的完整授权名单为空时查询空结果",
       "legacyReadable": false
     },
     "paged-join-row-compute": {
@@ -843,6 +853,7 @@
     "6.80",
     "6.81",
     "6.82",
-    "6.83"
+    "6.83",
+    "6.84"
   ]
 }

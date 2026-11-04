@@ -46,10 +46,10 @@ test('层级区域筛选按当前层级选谓词字段，三层各自命中', as
   // 每页 5 行，geo 的 9 行因此只显示 5；三个数字仍互不相同。
   for (const [level, code, expected] of [
     ['geo', 'R99', 5],
-    ['region-dept', 'CN-EAST', 3],
-    ['office', 'SH-01', 1]
+    ['region-dept', '华东地区部', 3],
+    ['office', '上海代表处', 1]
   ] as const) {
-    await page.goto(`/pages/ioc-opportunity-list?region.level=${level}&region=${code}`);
+    await page.goto(`/pages/ioc-opportunity-list?region.level=${level}&region=${encodeURIComponent(code)}`);
     await expect(rows).toHaveCount(expected);
   }
 });

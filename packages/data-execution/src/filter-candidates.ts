@@ -2,8 +2,15 @@ import {canonicalizeJson,periodFact,type DisplayInputsSnapshot} from '@metriccan
 import { candidateDependencies, filterDependencies, type DimensionFilterDeclaration, type FilterDeclaration } from '@metriccanvas/page/internal';
 import type { FilterCandidatesRequest, FilterCandidate } from './ports';
 import type { FilterValues } from './filter-values';
+import {overriddenFilterIds} from '@metriccanvas/page/internal';
+
+function candidateValues(declarations:readonly FilterDeclaration[],values:FilterValues):FilterValues {
+  const overridden=overriddenFilterIds(declarations,values);
+  return new Map([...values].filter(([id])=>!overridden.has(id)));
+}
 
 export function candidateContextKey(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[],values:FilterValues,context:{displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date}={}):string {
+  values=candidateValues(declarations,values);
   const now=context.now??new Date();
   const ids=new Set<string>();const queue=filterDependencies(declaration);
   for(const id of queue)if(!ids.has(id)){ids.add(id);const parent=declarations.find(item=>item.id===id);if(parent)queue.push(...filterDependencies(parent));}
@@ -52,7 +59,7 @@ function calendarWindow(declaration:DimensionFilterDeclaration,context:Candidate
 }
 export function filterCandidatesRequest(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[],values:FilterValues,level?:string,context:CandidateContext={}):FilterCandidatesRequest {
   const window=calendarWindow(declaration,context);
-  return {...(window?{calendarWindow:window}:{}),...(declaration.candidateWindow?.anchorFact?{permissions:{},values:{},permissionRevision:context.displayInputs?.permissionRevision,filterRevision:context.filterRevision,factRevision:canonicalizeJson(periodFact(context.displayInputs,declaration.candidateWindow.anchorFact,context.filterRevision))}:{}),filterId:declaration.id,dimension:declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension,...(level?{level}:{}),constraints:candidateConstraints(candidateDependencyIds(declaration,declarations),values)};
+  return {...(window?{calendarWindow:window}:{}),...(declaration.candidateWindow?.anchorFact?{permissions:{},values:{},permissionRevision:context.displayInputs?.permissionRevision,filterRevision:context.filterRevision,factRevision:canonicalizeJson(periodFact(context.displayInputs,declaration.candidateWindow.anchorFact,context.filterRevision))}:{}),filterId:declaration.id,dimension:declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension,...(level?{level}:{}),constraints:candidateConstraints(candidateDependencyIds(declaration,declarations),candidateValues(declarations,values))};
 }
 /** Validate a complete structural receipt before it can authorize a selection. */
 export function validFilterCandidates(candidates:readonly FilterCandidate[],levels?:readonly string[]):boolean {

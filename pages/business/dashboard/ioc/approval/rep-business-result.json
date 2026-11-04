@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.84",
   "id": "rep-business-result",
   "meta": {
     "title": "业务结果指标-代表处",
@@ -10,7 +10,10 @@
     {
       "id": "key-national-only",
       "type": "boolean",
-      "label": "仅看重点国代"
+      "label": "仅看重点国代",
+      "overridesFilters": [
+        "region"
+      ]
     },
     {
       "id": "customer-category",
@@ -29,6 +32,31 @@
       "default": {
         "mode": "month"
       }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "region-dept-name",
+      "label": "Region",
+      "display": "tree",
+      "treeSelection": "level",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-name",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-name",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept",
+      "searchable": true
     }
   ],
   "dataSources": {
@@ -90,6 +118,17 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -135,6 +174,17 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -187,6 +237,17 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -239,6 +300,17 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -291,6 +363,17 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -336,6 +419,17 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -381,6 +475,17 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -3036,7 +3141,8 @@
     "filterIds": [
       "key-national-only",
       "customer-category",
-      "period"
+      "period",
+      "region"
     ],
     "presentation": {
       "layout": "inline",

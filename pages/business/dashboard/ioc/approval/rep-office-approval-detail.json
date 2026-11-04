@@ -1,0 +1,296 @@
+{
+  "schemaVersion": "6.84",
+  "id": "rep-office-approval-detail",
+  "meta": {
+    "title": "行权效率-代表处-商务审批明细",
+    "description": "代表处商务审批明细看板，按客户分类和统计期间筛选，展示审批人决策时长、审批起止时间及决策阶段。"
+  },
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "key-national-only",
+      "type": "boolean",
+      "label": "仅看重点国代",
+      "overridesFilters": [
+        "region"
+      ]
+    },
+    {
+      "id": "customer-category",
+      "type": "dimension",
+      "dimension": "customerCategory",
+      "label": "客户分类",
+      "display": "select",
+      "emptyLabel": "客户分类",
+      "selection": {
+        "mode": "multiple"
+      },
+      "searchable": true
+    },
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "date",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "region-dept-name",
+      "label": "Region",
+      "display": "tree",
+      "treeSelection": "level",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-name",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-name",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept",
+      "searchable": true
+    }
+  ],
+  "dataSources": {
+    "approval-detail": {
+      "fields": {
+        "customerName": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "queryField": "客户公司名称"
+        },
+        "commercialNo": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "queryField": "商务编码"
+        },
+        "approver": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人",
+          "queryField": "审批人名称"
+        },
+        "round": {
+          "type": "number",
+          "role": "dimension",
+          "label": "轮次",
+          "queryField": "审批轮次"
+        },
+        "decisionDuration": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人决策时长",
+          "queryField": "审批人决策时长",
+          "defaultFormat": "number-grouped"
+        },
+        "approvalStartTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人审批开始时间",
+          "queryField": "节点激活时间"
+        },
+        "approvalEndTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人审批结束时间",
+          "queryField": "审批时间"
+        },
+        "decisionStage": {
+          "type": "string",
+          "role": "dimension",
+          "label": "决策阶段",
+          "queryField": "阶段名称"
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "queryField": "账期"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Commercial-Decision_Duration_Metric_Detail",
+                "output_fields": [
+                  "客户公司名称",
+                  "商务编码",
+                  "审批人名称",
+                  "审批轮次",
+                  "审批人决策时长",
+                  "节点激活时间",
+                  "审批时间",
+                  "阶段名称",
+                  "账期"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 10
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "compact"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "note-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "注：不含混合云（HCS）的数据"
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail-section",
+      "container": "card",
+      "components": [
+        {
+          "id": "approval-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "approval-detail"
+          },
+          "props": {
+            "title": "审批人审批明细",
+            "columns": [
+              {
+                "field": "customerName",
+                "title": "客户名称"
+              },
+              {
+                "field": "commercialNo",
+                "title": "商务编号"
+              },
+              {
+                "field": "approver",
+                "title": "审批人"
+              },
+              {
+                "field": "round",
+                "title": "轮次",
+                "width": 80,
+                "align": "right"
+              },
+              {
+                "field": "decisionDuration",
+                "title": "审批人决策时长",
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "field": "approvalStartTime",
+                "title": "审批人审批开始时间",
+                "sortable": true
+              },
+              {
+                "field": "approvalEndTime",
+                "title": "审批人审批结束时间",
+                "sortable": true
+              },
+              {
+                "field": "decisionStage",
+                "title": "决策阶段",
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "commercialNo"
+                ],
+                "placeholder": "输入商务编号搜索"
+              },
+              "export": {
+                "format": "xlsx"
+              }
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "commercialNo",
+            "fit": "container",
+            "rowNumber": {
+              "title": "序号",
+              "width": 50
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "行权效率-代表处-商务审批明细"
+    },
+    "filterIds": [
+      "key-national-only",
+      "customer-category",
+      "period",
+      "region"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "density": "normal",
+      "collapse": "overflow"
+    },
+    "back": true
+  }
+}

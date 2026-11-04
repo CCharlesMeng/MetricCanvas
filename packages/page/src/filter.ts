@@ -175,6 +175,8 @@ export interface BooleanFilterDeclaration extends FilterInteractionExtension {
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'boolean';
+  /** While true, omit these dimension filters from execution; keep their stored selections. */
+  overridesFilters?: string[];
   label?: string;
   visible?: boolean;
   enabledWhen?: import('./schema/condition').Condition;
