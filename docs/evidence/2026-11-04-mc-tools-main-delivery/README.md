@@ -21,3 +21,5 @@ Radon6.0.1覆盖全部21个Python变更源文件，包含方法及闭包：298�
 TypeScript导出器仍只有路径替换，AST测量selfCC4→4。产品页面协议新增属于既有main的6.84，本轮未另增字段或改变页面引擎。旧compile/inspect的等价公开能力仍未提供，见[交接映射](../../plan/2026-11-02-product-relay-evolution/relay-adapter-mapping-20261104.md)。真实Relay模型装载、DQE、Java保存、取消/迟到及unknown恢复仍须现场验收。
 
 最终集成基线为`5db4a4212`，发行0.3.4 / Interface2.0.0 / Schema6.84；releaseId `aadbc493a52a130badba25a723fb16fd4615f346eef8ada668d0cf73a7422ea5`。此批承接main的embed材料更新，0.3.3冻结消费基线保持原字节。
+
+首次远端CI在消费者配置测试中发现一处仍写6.83的当前基线断言，已同步为正式审查的6.84；[消费者10项](consumer-tests.log)与[迁移13项](adoption-tests-final.log)通过，相关方法Radon6.0.1 CC1→1。另用官方`mc-content-fixtures.py`重新生成三份随Content摘要变化的诊断回执，检查通过；只更新实际摘要，没有手改哈希或改变诊断语义。失败CI记录保留：[41803481069](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/41803481069)。
