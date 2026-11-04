@@ -28,6 +28,7 @@ Python检查使用仓库锁定依赖的 `METRICCANVAS_PYTHON`，未对接真实�
 | `pnpm validate pages` | 179个页面全部通过 |
 | `pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts` | 5文件、205项通过，含仓外安装、知识摘要、页面校验和升级 |
 | `pnpm authoring:contracts:check` | 1454 product、5 authoring、1 interface文件一致 |
+| MC内容覆盖、52项MC测试、诊断快照检查（锁定Python且禁用字节码缓存） | 通过；使用官方生成器同步3份诊断/报告JSON中的内容摘要，不修改页面声明或运行代码 |
 | `pnpm complexity:check` | 通过，全项目平均值及新增/增长超限门禁通过 |
 | 实际 `pnpm pack` 并回读归档 | 全部dist文件与构建逐字节一致，16个JS均不超过1000000字节 |
 
