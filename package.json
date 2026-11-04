@@ -44,7 +44,9 @@
     "relay:core:test": "python3 -B tools/relay-reference/core_tests.py",
     "relay:pack": "python3 -B tools/relay-reference/package_cli.py pack",
     "relay:verify": "python3 -B tools/relay-reference/package_cli.py verify",
-    "relay:replay": "python3 -B tools/relay-reference/package_cli.py replay"
+    "relay:replay": "python3 -B tools/relay-reference/package_cli.py replay",
+    "complexity:audit": "node tools/scripts/audit-code-complexity.mjs",
+    "complexity:check": "node --test tools/scripts/measure-ts-complexity.test.mjs tools/scripts/audit-code-complexity.test.mjs && node tools/scripts/audit-code-complexity.mjs --check"
   },
   "devDependencies": {
     "@sveltejs/package": "2.5.8",

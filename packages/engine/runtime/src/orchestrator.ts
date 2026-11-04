@@ -74,20 +74,40 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     // Keep it only until the first release; later invalidation must fetch fresh data.
     const pendingInitial = new Map<string,DataSnapshot>();
     const initialSnapshots=execution?new Map<string,DataSnapshot>():program.initialSnapshots({roots:[...ids],conditions:values,views:views()});
-    for (const id of ids) {
-      const source = page.dataSources[id];
-      const receipt = execution?.snapshots.get(id);
-      let initial=initialSnapshots.get(id);
-      if(initial?.status==='loading')initial=undefined;
-      if(source.source.type==='inline'&&!initial)initial={status:source.source.rows.length?'ready':'empty',...(source.source.rows.length?{rows:source.source.rows}:{})} as DataSnapshot;
-      const protectedSource=[...conditionSourceIds(page,id)].some(key=>{const s=page.dataSources[key];return s?.source.type==='query'&&(requiresQueryContext(s.source.query,page.filters));});
-      if (!protectedSource && !unsafeReceipts.has(id) && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) { initial = receipt; matched.add(id); }
-      try {
-        if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: timeContext.now ?? timeContext.clock?.() ?? new Date(), filters: page.filters, dataSource: source as QueryDataSource }, values, 0, [], {}))) initial = { status: 'empty', totalCount: 0 };
-      } catch { /* 约束未就绪时沿用SourceProgram的候选与输入门禁。 */ }
-      if (gated(id)) { if(initial&&!initialization.pending.has(id))pendingInitial.set(id,initial);initial = undefined; }
-      raw.set(id, initial ?? { status: 'loading' });
-      correctInitialTablePageSize(id,source,initial,compiled,tables);
+    initializeSnapshots();
+    function initializeSnapshots(): void {
+      for (const id of ids) {
+        const source = page.dataSources[id];
+        const receipt = execution?.snapshots.get(id);
+        let initial = initialSnapshots.get(id);
+        if (initial?.status === 'loading')
+          initial = undefined;
+        if (source.source.type === 'inline' && !initial)
+          initial = { status: source.source.rows.length ? 'ready' : 'empty', ...(source.source.rows.length ? { rows: source.source.rows } : {}) } as DataSnapshot;
+        const protectedSource = [...conditionSourceIds(page, id)].some(key => { const s = page.dataSources[key]; return s?.source.type === 'query' && (requiresQueryContext(s.source.query, page.filters)); });
+        acceptExecutionReceipt();
+        useEmptyIntersection();
+        if (gated(id)) {
+          if (initial && !initialization.pending.has(id))
+            pendingInitial.set(id, initial);
+          initial = undefined;
+        }
+        raw.set(id, initial ?? { status: 'loading' });
+        correctInitialTablePageSize(id,source,initial,compiled,tables);
+        function acceptExecutionReceipt(): void {
+        if (!protectedSource && !unsafeReceipts.has(id) && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) {
+          initial = receipt;
+          matched.add(id);
+        }
+        }
+        function useEmptyIntersection(): void {
+          try {
+            if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: timeContext.now ?? timeContext.clock?.() ?? new Date(), filters: page.filters, dataSource: source as QueryDataSource }, values, 0, [], {})))
+              initial = { status: 'empty', totalCount: 0 };
+          }
+          catch { /* 约束未就绪时沿用SourceProgram的候选与输入门禁。 */ }
+        }
+      }
     }
     const context = () => ({ currentYear: year,
       modes: new Map([...values].flatMap(([id, v]) => v.type === 'dimension' ? [[id, v.values] as const] : [])),
@@ -111,25 +131,50 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       const seeds = new Map(raw);
       for (const id of targets) { seeds.delete(id); if (!firstRead) raw.set(id, { status: 'loading' }); }
       if (!firstRead) publish();
-      for (const root of targets) {
-        requests.get(root)?.abort();
-        if (gated(root)) { raw.set(root,{status:'loading'}); publish(); continue; }
-        const receipt=pendingInitial.get(root);
-        if(receipt){pendingInitial.delete(root);raw.set(root,receipt);publish();continue;}
-        const controller = new AbortController(); requests.set(root,controller);
-        void (async () => {
-          try {
-            for await (const update of program.read({ roots: [root], conditions: values, views: views(), seeds, currentYear: year, signal: controller.signal })) {
-              if (disposed || tokens.get(root) !== capturedTokens.get(root) || update.sourceId !== root) continue;
-              if (update.viewCorrection) { if (compiled.automatic.has(root)) compiled.limits.set(root, update.viewCorrection.pageSize); tables.get(root)?.correct(update.viewCorrection, generations.get(root)!); }
-              raw = new Map(raw).set(root, update.raw); publish();
+      fetchTargets();
+      function fetchTargets(): void {
+        for (const root of targets) {
+          requests.get(root)?.abort();
+          if (gated(root)) {
+            raw.set(root, { status: 'loading' });
+            publish();
+            continue;
+          }
+          const receipt = pendingInitial.get(root);
+          if (receipt) {
+            pendingInitial.delete(root);
+            raw.set(root, receipt);
+            publish();
+            continue;
+          }
+          const controller = new AbortController();
+          requests.set(root, controller);
+          void (async () => {
+            try {
+              for await (const update of program.read({ roots: [root], conditions: values, views: views(), seeds, currentYear: year, signal: controller.signal })) {
+                if (disposed || tokens.get(root) !== capturedTokens.get(root) || update.sourceId !== root)
+                  continue;
+                if (update.viewCorrection) {
+                  if (compiled.automatic.has(root))
+                    compiled.limits.set(root, update.viewCorrection.pageSize);
+                  tables.get(root)?.correct(update.viewCorrection, generations.get(root)!);
+                }
+                raw = new Map(raw).set(root, update.raw);
+                publish();
+              }
             }
-          } catch {
-            if (!disposed && !controller.signal.aborted && tokens.get(root)===capturedTokens.get(root)) {
-              raw.set(root, { status: 'error', error: { code: 'UNKNOWN', message: '页面取数未完成' } }); publish();
+            catch {
+              if (!disposed && !controller.signal.aborted && tokens.get(root) === capturedTokens.get(root)) {
+                raw.set(root, { status: 'error', error: { code: 'UNKNOWN', message: '页面取数未完成' } });
+                publish();
+              }
             }
-          } finally { if(requests.get(root)===controller)requests.delete(root); }
-        })();
+            finally {
+              if (requests.get(root) === controller)
+                requests.delete(root);
+            }
+          })();
+        }
       }
     }
     let factKey=JSON.stringify(timeContext.displayInputs?.());

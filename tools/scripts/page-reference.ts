@@ -109,12 +109,23 @@ export function referenceNodes(schema: Schema, map: ReferenceMap): ReferenceNode
       if (!owner) throw new Error(`Unowned reference definition: ${name}`);
       walk(atPointer(schema, s.$ref), s.$ref, `@${name}`, '类型/分支', owner);
     }
-    for (const [key, value] of Object.entries(s.properties ?? {})) walk(value, `${pointer}/properties/${escapePointer(key)}`, `${fieldPath}.${key}`, s.required?.includes(key) ? '本分支必填' : '本分支可选', module);
-    for (const [key, value] of Object.entries(s.patternProperties ?? {})) walk(value, `${pointer}/patternProperties/${escapePointer(key)}`, `${fieldPath}{${key}}`, '匹配键的值', module);
-    if (s.additionalProperties && typeof s.additionalProperties === 'object') walk(s.additionalProperties, `${pointer}/additionalProperties`, `${fieldPath}{key}`, '动态键的值', module);
-    if (s.items) walk(s.items, `${pointer}/items`, `${fieldPath}[]`, '每个数组项', module);
-    for (const keyword of ['anyOf', 'oneOf', 'allOf', 'prefixItems']) for (const [index, branch] of (s[keyword] ?? []).entries()) walk(branch, `${pointer}/${keyword}/${index}`, `${fieldPath} · ${keyword}[${index}]`, '独立分支（不合并required）', module);
-    for (const keyword of ['not', 'if', 'then', 'else', 'contains', 'propertyNames']) if (s[keyword]) walk(s[keyword], `${pointer}/${keyword}`, `${fieldPath} · ${keyword}`, '条件结构', module);
+    walkChildren(s, pointer, fieldPath, module);
+  }
+  function walkChildren(s: Schema, pointer: string, fieldPath: string, module: string): void {
+    for (const [key, value] of Object.entries(s.properties ?? {}))
+      walk(value, `${pointer}/properties/${escapePointer(key)}`, `${fieldPath}.${key}`, s.required?.includes(key) ? '本分支必填' : '本分支可选', module);
+    for (const [key, value] of Object.entries(s.patternProperties ?? {}))
+      walk(value, `${pointer}/patternProperties/${escapePointer(key)}`, `${fieldPath}{${key}}`, '匹配键的值', module);
+    if (s.additionalProperties && typeof s.additionalProperties === 'object')
+      walk(s.additionalProperties, `${pointer}/additionalProperties`, `${fieldPath}{key}`, '动态键的值', module);
+    if (s.items)
+      walk(s.items, `${pointer}/items`, `${fieldPath}[]`, '每个数组项', module);
+    for (const keyword of ['anyOf', 'oneOf', 'allOf', 'prefixItems'])
+      for (const [index, branch] of (s[keyword] ?? []).entries())
+        walk(branch, `${pointer}/${keyword}/${index}`, `${fieldPath} · ${keyword}[${index}]`, '独立分支（不合并required）', module);
+    for (const keyword of ['not', 'if', 'then', 'else', 'contains', 'propertyNames'])
+      if (s[keyword])
+        walk(s[keyword], `${pointer}/${keyword}`, `${fieldPath} · ${keyword}`, '条件结构', module);
   }
   walk(schema, '#', '$', '页面根', 'page.md');
   return nodes;
@@ -162,19 +173,7 @@ export function minimalExample(document: any, component: any): any | undefined {
     Object.values(value).forEach(references);
   }
   references(candidate.sections); references(candidate.dataSources); references(candidate.filters);
-  if (Array.isArray(candidate.params)) {
-    candidate.params = candidate.params.filter((p:any)=>params.has(p.id));
-    if (!candidate.params.length) delete candidate.params;
-  } else if (candidate.params) {
-    const keep = (list:any[]) => list.filter((p:any) => params.has(p.id));
-    for (const [owner, group] of [[candidate.params.query, 'dimensions'], [candidate.params.query, 'times'], [candidate.params, 'display']] as const) {
-      if (!owner?.[group]) continue;
-      owner[group] = keep(owner[group]);
-      if (!owner[group].length) delete owner[group];
-    }
-    if (candidate.params.query && !Object.keys(candidate.params.query).length) delete candidate.params.query;
-    if (!Object.keys(candidate.params).length) delete candidate.params;
-  }
+  pruneUnusedParams();
   const clean = JSON.parse(JSON.stringify(candidate));
   if (validate(clean).length) return undefined;
   // 每步都需完整校验，保留语义依赖；不以删除错误字段强行通过。
@@ -190,6 +189,28 @@ export function minimalExample(document: any, component: any): any | undefined {
     if (!clean[key]?.length) delete clean[key];
   }
   return clean;
+  function pruneUnusedParams(): void {
+    if (Array.isArray(candidate.params)) {
+      candidate.params = candidate.params.filter((p: any) => params.has(p.id));
+      if (!candidate.params.length)
+        delete candidate.params;
+    }
+    else if (candidate.params) {
+      const keep = (list: any[]) => list.filter((p: any) => params.has(p.id));
+      for (const [owner, group] of [[candidate.params.query, 'dimensions'], [candidate.params.query, 'times'], [candidate.params, 'display']] as const) {
+        if (!owner?.[group])
+          continue;
+        owner[group] = keep(owner[group]);
+        if (!owner[group].length)
+          delete owner[group];
+      }
+      if (candidate.params.query && !Object.keys(candidate.params.query).length)
+        delete candidate.params.query;
+      if (!Object.keys(candidate.params).length)
+        delete candidate.params;
+    }
+  }
+
 }
 
 function componentPointer(value: any, type: string, pointer = '#'): string | undefined {
@@ -231,11 +252,18 @@ export function branchWitnesses(schema: Schema, examples: Map<string,string>, no
         const child=pointer+'/'+word+'/'+i;
         if(matches(child,value)){if(!evidence.has(child))evidence.set(child,{file,pointer:location});visit(child,value,location);}
       }
-      if(Array.isArray(value)&&node.items)value.forEach((item,i)=>visit(pointer+'/items',item,location+'/'+i));
-      if(value&&typeof value==='object'&&!Array.isArray(value))for(const [name,item] of Object.entries(value)){
-        if(node.properties?.[name])visit(pointer+'/properties/'+escapePointer(name),item,location+'/'+escapePointer(name));
-        else if(typeof node.additionalProperties==='object')visit(pointer+'/additionalProperties',item,location+'/'+escapePointer(name));
-      }
+      visitChildren(node, pointer, value, location);
+    }
+    function visitChildren(node: Schema, pointer: string, value: any, location: string): void {
+      if (Array.isArray(value) && node.items)
+        value.forEach((item, i) => visit(pointer + '/items', item, location + '/' + i));
+      if (value && typeof value === 'object' && !Array.isArray(value))
+        for (const [name, item] of Object.entries(value)) {
+          if (node.properties?.[name])
+            visit(pointer + '/properties/' + escapePointer(name), item, location + '/' + escapePointer(name));
+          else if (typeof node.additionalProperties === 'object')
+            visit(pointer + '/additionalProperties', item, location + '/' + escapePointer(name));
+        }
     }
     visit('#',JSON.parse(content),'#');
   }
@@ -257,35 +285,62 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
   const exampleCoverage: Array<{type:string;variant?:unknown;file?:string;pointer?:string;source?:string;reason?:string}> = [];
   const sourceFiles = [...inputs.keys()].filter(file=>file.startsWith('page/conformance/valid/'));
   const documents = [...inputs].filter(([file])=>file.startsWith('page/conformance/valid/')).map(([,content])=>JSON.parse(content));
-  for (const component of catalog) {
-    const variants = nodes.filter(n=>n.module===`components/${component.type}.md` && n.pointer.endsWith('/properties/variant')).flatMap(n=>n.schema.enum ?? ('const' in n.schema ? [n.schema.const] : []));
-    for (const variant of [undefined, ...new Set(variants)]) {
-      const candidates = documents.flatMap(document => {
-        const direct = components(document).filter(c=>c.type===component.type && !onlyMissingConstants(c));
-        const parents = (document.sections ?? []).flatMap((section:any)=>section.components).filter((c:any)=>c.type!==component.type && components(c).some(n=>n.type===component.type));
-        return [...direct,...parents].map(c => {
-          const clone=structuredClone(c);
-          if(variant!==undefined) for(const nested of components(clone)) if(nested.type===component.type) nested.props.variant=variant;
-          const page=minimalExample(document,clone);return page ? {page,source:sourceFiles[documents.indexOf(document)]} : undefined;
-        }).filter(Boolean);
-      });
-      candidates.sort((a,b)=>JSON.stringify(a!.page).length-JSON.stringify(b!.page).length);
-      const file = `examples/component-${component.type}${variant===undefined ? '' : '-'+variant}.json`;
-      if(candidates[0]) { output.set(file,json(candidates[0].page)); exampleCoverage.push({type:component.type,...(variant===undefined?{}:{variant}),file,pointer:componentPointer(candidates[0].page,component.type),source:candidates[0].source}); }
-      else exampleCoverage.push({type:component.type,...(variant===undefined?{}:{variant}),reason:'现有夹具缺少可完整校验的分支示例'});
-    }
-  }
+  buildComponentExamples();
   const rules: Array<{id:string;description:string;valid:string[];invalid:string[]}> = JSON.parse(inputs.get('page/conformance/coverage.json') ?? '{"invariants":[]}').invariants;
   for(const [file,content] of inputs) if(file.startsWith('page/conformance/invalid/')) output.set(`errors/${path.posix.basename(file)}`,json(errorExcerpt(JSON.parse(content),file)));
   output.set('rules.json',json({invariants:rules}));
   const semanticSources = await Promise.all([...new Set([...Object.values(map.modules).flatMap(m=>m.sources), ...Object.values(map.branchExceptions ?? {}).map(e=>e.source)])].sort().map(async file=>({file,sha256:createHash('sha256').update(await readFile(path.join(root,file))).digest('hex')})));
   const schemaHash = createHash('sha256').update(json(schema)).digest('hex');
   const metadata = `页面协议 ${version}。结构真源为本册[schema.json](SCHEMA_LINK)，SHA256 \`${schemaHash}\`。字段表自动生成；可选不等于有默认值。\n\n`;
-  for (const [file, module] of Object.entries(map.modules)) {
-    let body = await readFile(path.join(authorRoot, file), 'utf8');
-    const prefix = file.startsWith('components/') ? '../' : '';
-    body += '\n\n' + metadata.replace('SCHEMA_LINK', prefix + 'schema.json');
-    body += '## 结构与分支（生成）\n\n';
+  await renderModules();
+  for (const file of ['README.md','components/README.md','examples/README.md']) {
+    const body = await readFile(path.join(authorRoot,file),'utf8');
+    output.set(file,body.replaceAll('../../contracts/metriccanvas/page/reference/', '').replaceAll('../contracts/metriccanvas/page/reference/', ''));
+  }
+  output.set('schema.json', json(schema));
+  const missingEnums = nodes.flatMap(n => (n.schema.enum ?? []).filter((v: unknown) => !map.enumNotes[`${n.pointer}=${JSON.stringify(v)}`] && !map.enumNotes[String(v)]).map((v: unknown) => ({pointer:n.pointer,value:v})));
+  const branchCoverage=branchWitnesses(schema,new Map([...output].filter(([file])=>file.startsWith('examples/')&&file.endsWith('.json'))),nodes);
+  const negativeBranches = new Map<string, {file:string;reason:string;rule:string;source:string}>();
+  validateNegativeWitnesses();
+  const documentedBranches = branchCoverage.map(branch => ({...branch, ...(negativeBranches.has(branch.schemaPointer) ? {negativeWitness:negativeBranches.get(branch.schemaPointer)} : {})}));
+  renderBranchWitnesses();
+  const missingFields = nodes.filter(n => /\/properties\/[^/]+$/.test(n.pointer) && !map.fieldNotes[n.pointer] && !n.schema.description && !map.fieldNotes[n.path.split('.').at(-1)!]).map(n => n.pointer);
+  const semanticGaps = {fields:missingFields,enums:missingEnums,examples:exampleCoverage.filter(e=>!e.file),branches:documentedBranches.filter(b=>!b.file&&!b.negativeWitness)};
+  if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
+  output.set('index.json', json({schemaVersion:version,schemaSha256:schemaHash,semanticSources,modules:map.modules,components:catalog.map(c=>({type:c.type,file:`components/${c.type}.md`})),nodes:nodes.map(({schema:s,...n})=>({...n,enum:s.enum,const:s.const,ref:s.$ref})),exampleCoverage,branchCoverage:documentedBranches,semanticGaps}));
+  for (const component of catalog) if (!output.has(`components/${component.type}.md`)) throw new Error(`Undocumented component: ${component.type}`);
+  validateReferenceLinks(output);
+  return output;
+  function buildComponentExamples(): void {
+    for (const component of catalog) {
+      const variants = nodes.filter(n => n.module === `components/${component.type}.md` && n.pointer.endsWith('/properties/variant')).flatMap(n => n.schema.enum ?? ('const' in n.schema ? [n.schema.const] : []));
+      for (const variant of [undefined, ...new Set(variants)]) {
+        const candidates = documents.flatMap(document => {
+          const direct = components(document).filter(c => c.type === component.type && !onlyMissingConstants(c));
+          const parents = (document.sections ?? []).flatMap((section: any) => section.components).filter((c: any) => c.type !== component.type && components(c).some(n => n.type === component.type));
+          return [...direct, ...parents].map(c => {
+            const clone = structuredClone(c);
+            if (variant !== undefined)
+              for (const nested of components(clone))
+                if (nested.type === component.type)
+                  nested.props.variant = variant;
+            const page = minimalExample(document, clone);
+            return page ? { page, source: sourceFiles[documents.indexOf(document)] } : undefined;
+          }).filter(Boolean);
+        });
+        candidates.sort((a, b) => JSON.stringify(a!.page).length - JSON.stringify(b!.page).length);
+        const file = `examples/component-${component.type}${variant === undefined ? '' : '-' + variant}.json`;
+        if (candidates[0]) {
+          output.set(file, json(candidates[0].page));
+          exampleCoverage.push({ type: component.type, ...(variant === undefined ? {} : { variant }), file, pointer: componentPointer(candidates[0].page, component.type), source: candidates[0].source });
+        }
+        else
+          exampleCoverage.push({ type: component.type, ...(variant === undefined ? {} : { variant }), reason: '现有夹具缺少可完整校验的分支示例' });
+      }
+    }
+  }
+  function renderStructure(file: string, prefix: string): string {
+    let body = '';
     for (const node of nodes.filter(n => n.module === file)) {
       const s = node.schema;
       const field = node.path.split('.').at(-1) ?? node.path;
@@ -295,72 +350,99 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
       body += `Schema位置：\`${node.pointer}\`。${target ? `目标：[${s.$ref}](${prefix}${target.module}#${anchor(target.pointer)})。` : ''}\n\n`;
       body += '| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |\n|---|---|---|---|---|\n';
       body += `| ${cell(typeOf(s))} | ${cell(node.required)} | ${cell(constraints(s))} | ${cell('default' in s ? 'Schema default=' + JSON.stringify(s.default) : 'Schema未设默认；装配/运行时默认见语义说明')} | ${cell(note)} |\n\n`;
-      const values = s.enum ?? ('const' in s ? [s.const] : []);
-      if (values.length) {
-        body += '| 允许值 | 解释与适用条件 |\n|---|---|\n';
-        for (const value of values) body += `| ${cell(JSON.stringify(value))} | ${cell(map.enumNotes[`${node.pointer}=${JSON.stringify(value)}`] ?? map.enumNotes[String(value)] ?? (s.const !== undefined ? `用于选择${node.path}分支；同分支其它约束同时成立。` : '待补语义解释，当前仅证实Schema允许。'))} |\n`;
-        body += '\n';
-      }
+      body += renderEnum(node);
     }
+    return body;
+  }
+
+  function renderEnum(node: ReferenceNode): string {
+    const s = node.schema;
+    let body = '';
+    const values = s.enum ?? ('const' in s ? [s.const] : []);
+    if (values.length) {
+      body += '| 允许值 | 解释与适用条件 |\n|---|---|\n';
+      for (const value of values)
+        body += `| ${cell(JSON.stringify(value))} | ${cell(map.enumNotes[`${node.pointer}=${JSON.stringify(value)}`] ?? map.enumNotes[String(value)] ?? (s.const !== undefined ? `用于选择${node.path}分支；同分支其它约束同时成立。` : '待补语义解释，当前仅证实Schema允许。'))} |\n`;
+      body += '\n';
+    }
+    return body;
+  }
+
+  function renderRules(module: ReferenceMap['modules'][string], prefix: string): string {
+    let body = '';
     body += '## 语义规则与反例（生成）\n\n';
-    for(const id of module.rules ?? []) {
-      const rule=rules.find(r=>r.id===id);if(!rule)throw new Error(`Missing reference rule: ${id}`);
-      body += `- \`${rule.id}\`：${rule.description}。反例：${rule.invalid.map(name=>`[${name}](${prefix}errors/${name}.json)`).join('、')}。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。\n`;
+    for (const id of module.rules ?? []) {
+      const rule = rules.find(r => r.id === id);
+      if (!rule)
+        throw new Error(`Missing reference rule: ${id}`);
+      body += `- \`${rule.id}\`：${rule.description}。反例：${rule.invalid.map(name => `[${name}](${prefix}errors/${name}.json)`).join('、')}。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。\n`;
     }
-    body += '\n## 示例与溯源（生成）\n\n';
-    for (const example of exampleCoverage.filter(e=>`components/${e.type}.md`===file && e.file)) body += `- [${example.variant ?? '最小组件'}](${prefix}${example.file})：独立完整页面，保留必要语义依赖。\n`;
-    for (const example of module.examples) {
-      const source = `page/conformance/valid/${example}.json`;
-      if (!inputs.has(source)) throw new Error(`Missing reference example: ${source}`);
-      output.set(`examples/${example}.json`, inputs.get(source)!);
-      body += `- [${example}](${prefix}examples/${example}.json)：完整合法页面；查询仅为静态契约证据。\n`;
+    return body;
+  }
+
+  async function renderModules(): Promise<void> {
+    for (const [file, module] of Object.entries(map.modules)) {
+      let body = await readFile(path.join(authorRoot, file), 'utf8');
+      const prefix = file.startsWith('components/') ? '../' : '';
+      body += '\n\n' + metadata.replace('SCHEMA_LINK', prefix + 'schema.json');
+      body += '## 结构与分支（生成）\n\n';
+      body += renderStructure(file, prefix);
+      body += renderRules(module, prefix);
+      body += '\n## 示例与溯源（生成）\n\n';
+      for (const example of exampleCoverage.filter(e => `components/${e.type}.md` === file && e.file))
+        body += `- [${example.variant ?? '最小组件'}](${prefix}${example.file})：独立完整页面，保留必要语义依赖。\n`;
+      for (const example of module.examples) {
+        const source = `page/conformance/valid/${example}.json`;
+        if (!inputs.has(source))
+          throw new Error(`Missing reference example: ${source}`);
+        output.set(`examples/${example}.json`, inputs.get(source)!);
+        body += `- [${example}](${prefix}examples/${example}.json)：完整合法页面；查询仅为静态契约证据。\n`;
+      }
+      const snippet = exampleCoverage.find(e => `components/${e.type}.md` === file && e.file && e.pointer);
+      if (snippet?.file && snippet.pointer)
+        body += `\n局部片段提取自[完整页面](${prefix}${snippet.file})的\`${snippet.pointer}\`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。\n\n\`\`\`json\n${json(atPointer(JSON.parse(output.get(snippet.file)!), snippet.pointer))}\`\`\`\n\n`;
+      for (const source of module.sources)
+        body += `- 源码/验证定位：\`${source}\`（仓库路径，非分发依赖）。\n`;
+      output.set(file, body);
     }
-    const snippet=exampleCoverage.find(e=>`components/${e.type}.md`===file && e.file && e.pointer);
-    if(snippet?.file && snippet.pointer) body += `\n局部片段提取自[完整页面](${prefix}${snippet.file})的\`${snippet.pointer}\`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。\n\n\`\`\`json\n${json(atPointer(JSON.parse(output.get(snippet.file)!),snippet.pointer))}\`\`\`\n\n`;
-    for (const source of module.sources) body += `- 源码/验证定位：\`${source}\`（仓库路径，非分发依赖）。\n`;
-    output.set(file, body);
   }
-  for (const file of ['README.md','components/README.md','examples/README.md']) {
-    const body = await readFile(path.join(authorRoot,file),'utf8');
-    output.set(file,body.replaceAll('../../contracts/metriccanvas/page/reference/', '').replaceAll('../contracts/metriccanvas/page/reference/', ''));
-  }
-  output.set('schema.json', json(schema));
-  const missingEnums = nodes.flatMap(n => (n.schema.enum ?? []).filter((v: unknown) => !map.enumNotes[`${n.pointer}=${JSON.stringify(v)}`] && !map.enumNotes[String(v)]).map((v: unknown) => ({pointer:n.pointer,value:v})));
-  const branchCoverage=branchWitnesses(schema,new Map([...output].filter(([file])=>file.startsWith('examples/')&&file.endsWith('.json'))),nodes);
-  const negativeBranches = new Map<string, {file:string;reason:string;rule:string;source:string}>();
-  for (const [pointer, exception] of Object.entries(map.branchExceptions ?? {})) {
-    const branch = branchCoverage.find(b => b.schemaPointer === pointer);
-    if (!branch || branch.file) throw new Error(`Obsolete branch exception: ${pointer}`);
-    const file = `errors/${exception.case}.json`;
-    const vector = JSON.parse(inputs.get(`page/conformance/invalid/${exception.case}.json`) ?? 'null');
-    const rule = rules.find(r => r.id === exception.rule);
-    if (!vector || !output.has(file) || !rule?.invalid.includes(exception.case) || vector.invariant !== exception.rule || !exception.reason.trim()) throw new Error(`Invalid branch exception: ${pointer}`);
-    const actual = validate(vector.input).map(({type,path}) => ({type,path}));
-    const expected = vector.expected.map(({type,path}:any) => ({type,path}));
-    if (!actual.length || json(actual) !== json(expected)) throw new Error(`Stale branch rejection: ${pointer}`);
-    const hit = branchWitnesses(schema,new Map([[file,json(vector.input)]]),nodes).find(b => b.schemaPointer === pointer);
-    if (!hit?.file) throw new Error(`Negative witness does not exercise branch: ${pointer}`);
-    negativeBranches.set(pointer,{file,reason:exception.reason,rule:exception.rule,source:exception.source});
-  }
-  const documentedBranches = branchCoverage.map(branch => ({...branch, ...(negativeBranches.has(branch.schemaPointer) ? {negativeWitness:negativeBranches.get(branch.schemaPointer)} : {})}));
-  for (const [file] of Object.entries(map.modules)) {
-    const prefix = file.startsWith('components/') ? '../' : '';
-    let body = output.get(file)! + '\n## 联合分支见证（生成）\n\n';
-    for (const branch of documentedBranches.filter(b => b.module === file)) {
-      body += `- \`${branch.schemaPointer}\`：`;
-      if (branch.file) body += `[合法完整页面](${prefix}${branch.file})，JSON Pointer \`${branch.pointer}\`。\n`;
-      else if (branch.negativeWitness) body += `[语义拒绝反例](${prefix}${branch.negativeWitness.file})：${branch.negativeWitness.reason}（规则 \`${branch.negativeWitness.rule}\`）。此项不计入合法示例覆盖。\n`;
-      else body += '缺少见证。\n';
+  function validateNegativeWitnesses(): void {
+    for (const [pointer, exception] of Object.entries(map.branchExceptions ?? {})) {
+      const branch = branchCoverage.find(b => b.schemaPointer === pointer);
+      if (!branch || branch.file)
+        throw new Error(`Obsolete branch exception: ${pointer}`);
+      const file = `errors/${exception.case}.json`;
+      const vector = JSON.parse(inputs.get(`page/conformance/invalid/${exception.case}.json`) ?? 'null');
+      const rule = rules.find(r => r.id === exception.rule);
+      if (!vector || !output.has(file) || !rule?.invalid.includes(exception.case) || vector.invariant !== exception.rule || !exception.reason.trim())
+        throw new Error(`Invalid branch exception: ${pointer}`);
+      const actual = validate(vector.input).map(({ type, path }) => ({ type, path }));
+      const expected = vector.expected.map(({ type, path }: any) => ({ type, path }));
+      if (!actual.length || json(actual) !== json(expected))
+        throw new Error(`Stale branch rejection: ${pointer}`);
+      const hit = branchWitnesses(schema, new Map([[file, json(vector.input)]]), nodes).find(b => b.schemaPointer === pointer);
+      if (!hit?.file)
+        throw new Error(`Negative witness does not exercise branch: ${pointer}`);
+      negativeBranches.set(pointer, { file, reason: exception.reason, rule: exception.rule, source: exception.source });
     }
-    output.set(file,body.trimEnd()+'\n');
   }
-  const missingFields = nodes.filter(n => /\/properties\/[^/]+$/.test(n.pointer) && !map.fieldNotes[n.pointer] && !n.schema.description && !map.fieldNotes[n.path.split('.').at(-1)!]).map(n => n.pointer);
-  const semanticGaps = {fields:missingFields,enums:missingEnums,examples:exampleCoverage.filter(e=>!e.file),branches:documentedBranches.filter(b=>!b.file&&!b.negativeWitness)};
-  if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
-  output.set('index.json', json({schemaVersion:version,schemaSha256:schemaHash,semanticSources,modules:map.modules,components:catalog.map(c=>({type:c.type,file:`components/${c.type}.md`})),nodes:nodes.map(({schema:s,...n})=>({...n,enum:s.enum,const:s.const,ref:s.$ref})),exampleCoverage,branchCoverage:documentedBranches,semanticGaps}));
-  for (const component of catalog) if (!output.has(`components/${component.type}.md`)) throw new Error(`Undocumented component: ${component.type}`);
-  validateReferenceLinks(output);
-  return output;
+  function renderBranchWitnesses(): void {
+    for (const [file] of Object.entries(map.modules)) {
+      const prefix = file.startsWith('components/') ? '../' : '';
+      let body = output.get(file)! + '\n## 联合分支见证（生成）\n\n';
+      for (const branch of documentedBranches.filter(b => b.module === file)) {
+        body += `- \`${branch.schemaPointer}\`：`;
+        if (branch.file)
+          body += `[合法完整页面](${prefix}${branch.file})，JSON Pointer \`${branch.pointer}\`。\n`;
+        else if (branch.negativeWitness)
+          body += `[语义拒绝反例](${prefix}${branch.negativeWitness.file})：${branch.negativeWitness.reason}（规则 \`${branch.negativeWitness.rule}\`）。此项不计入合法示例覆盖。\n`;
+        else
+          body += '缺少见证。\n';
+      }
+      output.set(file, body.trimEnd() + '\n');
+    }
+  }
+
 }
 
 /** 产物自身闭合：完整Bundle和只复制Skill目录都使用同一套相对链接。 */

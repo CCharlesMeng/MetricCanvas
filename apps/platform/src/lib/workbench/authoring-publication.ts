@@ -77,11 +77,25 @@ export function createAuthoringPublication(options: {
       if(expectedGeneration!==generation)return;
       pending=null;emit({phase:'review',candidate:structuredClone(result.candidate),preview:null,message:'请核对候选差异、作用范围与取值，再预览和人工确认。'});return;
     }
-    if(result.status==='pending'||result.status==='unknown')emit({phase:'unknown',message:'操作结果待确认，请查询原操作；不会自动换键重发。'});
-    else if(result.status==='not-applied'&&!result.retrySafe)emit({phase:'unknown',message:'原操作去重保证不足，保持待确认，不能重新发布。'});
-    else if(result.status==='not-applied') { pending=null;emit({phase:'error',message:'服务确认原操作未生效；可重新准备评审。',candidate:null,preview:null}); }
-    else { if(state.candidate)void options.port.release(state.candidate.ref).catch(()=>{});pending=null;emit({phase:'error',message:`发布服务拒绝：${'code' in result ? result.code : result.status}`,candidate:null,preview:null}); }
+    consumeUnresolved(result);
   }
+  function consumeUnresolved(result: LookupOutcome): void {
+    if (result.status === 'pending' || result.status === 'unknown')
+      emit({ phase: 'unknown', message: '操作结果待确认，请查询原操作；不会自动换键重发。' });
+    else if (result.status === 'not-applied' && !result.retrySafe)
+      emit({ phase: 'unknown', message: '原操作去重保证不足，保持待确认，不能重新发布。' });
+    else if (result.status === 'not-applied') {
+      pending = null;
+      emit({ phase: 'error', message: '服务确认原操作未生效；可重新准备评审。', candidate: null, preview: null });
+    }
+    else {
+      if (state.candidate)
+        void options.port.release(state.candidate.ref).catch(() => { });
+      pending = null;
+      emit({ phase: 'error', message: `发布服务拒绝：${'code' in result ? result.code : result.status}`, candidate: null, preview: null });
+    }
+  }
+
   async function perform(task:(signal:AbortSignal,expected:number)=>Promise<void>) {
     if(disposed||busy)return;
     busy=true;controller=new AbortController();const active=controller,expected=generation;

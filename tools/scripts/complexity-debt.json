@@ -1,0 +1,1259 @@
+{
+  "sourceCommit": "56e822b4d20aed73c56aa1344dd22dac8840733b",
+  "snapshot": "delivery-on-latest-main",
+  "inventorySha256": "a5ca64989304cc4016d44906f6c38c02624531a2ca3c19179bca8ec0fb14c97e",
+  "analyzers": {
+    "typescript": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "python": "radon/6.0.1"
+  },
+  "limit": 15,
+  "violations": [
+    {
+      "file": "apps/platform/scripts/dev-page-assets.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@78:29>/handle",
+      "line": 97,
+      "selfCC": 41
+    },
+    {
+      "file": "apps/platform/src/lib/page-assets/management.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createAssetManagement/run",
+      "line": 15,
+      "selfCC": 23
+    },
+    {
+      "file": "apps/platform/src/lib/RevisionPreview.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@22:11>/<anonymous@31:11>",
+      "line": 31,
+      "selfCC": 19
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/authoring-history.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "validateHistoryPage",
+      "line": 17,
+      "selfCC": 26
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/component-selection.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "hardGateReasons",
+      "line": 144,
+      "selfCC": 21
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/document-edit.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "authoringSectionsOf",
+      "line": 290,
+      "selfCC": 17
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/parameter-instance.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createParameterInstanceSession/open",
+      "line": 29,
+      "selfCC": 16
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/publication-fixture.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createPublicationFixture/mutate",
+      "line": 20,
+      "selfCC": 22
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "editReportDate",
+      "line": 32,
+      "selfCC": 38
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "load",
+      "line": 34,
+      "selfCC": 22
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/work-session.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createWorkSession/restore",
+      "line": 40,
+      "selfCC": 17
+    },
+    {
+      "file": "apps/platform/tests/workbench/language-relay-fixture.py",
+      "language": "python",
+      "qualifiedName": "dispatch",
+      "line": 84,
+      "selfCC": 40
+    },
+    {
+      "file": "apps/playground/fixtures/ioc-business-preview.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createIocBusinessPreview/fetchFilterCandidates",
+      "line": 45,
+      "selfCC": 18
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/authoring-turn-contract.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "matches",
+      "line": 17,
+      "selfCC": 38
+    },
+    {
+      "file": "metriccanvas-authoring/examples/adapter_template/environment.py",
+      "language": "python",
+      "qualifiedName": "configure_data_context",
+      "line": 83,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/examples/adapter_template/firstparty/dataset_metadata_http.py",
+      "language": "python",
+      "qualifiedName": "JavaDatasetMetadataProvider._fetch",
+      "line": 133,
+      "selfCC": 25
+    },
+    {
+      "file": "metriccanvas-authoring/examples/adapter_template/firstparty/dataset_metadata_http.py",
+      "language": "python",
+      "qualifiedName": "JavaDatasetMetadataProvider.detail",
+      "line": 202,
+      "selfCC": 16
+    },
+    {
+      "file": "metriccanvas-authoring/examples/adapter_template/firstparty/dqe_http.py",
+      "language": "python",
+      "qualifiedName": "_violates_field",
+      "line": 299,
+      "selfCC": 16
+    },
+    {
+      "file": "metriccanvas-authoring/examples/adapter_template/firstparty/dqe_http.py",
+      "language": "python",
+      "qualifiedName": "DqeHttpExecutionPort.execute",
+      "line": 63,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/examples/adapter_template/firstparty/lifecycle_http.py",
+      "language": "python",
+      "qualifiedName": "KnownLifecycleHttp.save",
+      "line": 50,
+      "selfCC": 21
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/check_bundle.py",
+      "language": "python",
+      "qualifiedName": "validate_skills",
+      "line": 52,
+      "selfCC": 59
+    },
+    {
+      "file": "metriccanvas-authoring/scripts/deployment_fingerprint.py",
+      "language": "python",
+      "qualifiedName": "fingerprint",
+      "line": 51,
+      "selfCC": 22
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/eval_evidence.py",
+      "language": "python",
+      "qualifiedName": "score",
+      "line": 140,
+      "selfCC": 90
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/history/run_local.py",
+      "language": "python",
+      "qualifiedName": "run_case",
+      "line": 100,
+      "selfCC": 24
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/history/score_local.py",
+      "language": "python",
+      "qualifiedName": "main",
+      "line": 27,
+      "selfCC": 73
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/preflight.py",
+      "language": "python",
+      "qualifiedName": "surface_evidence",
+      "line": 29,
+      "selfCC": 19
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/preflight.py",
+      "language": "python",
+      "qualifiedName": "inspect",
+      "line": 63,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/protocol_acceptance.py",
+      "language": "python",
+      "qualifiedName": "protocol_assessment",
+      "line": 10,
+      "selfCC": 65
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_discovery_smoke.py",
+      "language": "python",
+      "qualifiedName": "assess",
+      "line": 211,
+      "selfCC": 30
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_discovery_smoke.py",
+      "language": "python",
+      "qualifiedName": "run",
+      "line": 247,
+      "selfCC": 18
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_local.py",
+      "language": "python",
+      "qualifiedName": "run_case",
+      "line": 104,
+      "selfCC": 37
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_local.py",
+      "language": "python",
+      "qualifiedName": "main",
+      "line": 208,
+      "selfCC": 25
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_platform_v2.py",
+      "language": "python",
+      "qualifiedName": "_execute_case",
+      "line": 230,
+      "selfCC": 44
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_platform_v2.py",
+      "language": "python",
+      "qualifiedName": "_assess",
+      "line": 326,
+      "selfCC": 93
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_platform_v2.py",
+      "language": "python",
+      "qualifiedName": "_assess_complex_report",
+      "line": 417,
+      "selfCC": 92
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/run_platform_v2.py",
+      "language": "python",
+      "qualifiedName": "run",
+      "line": 516,
+      "selfCC": 75
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/scenario_flow_server.py",
+      "language": "python",
+      "qualifiedName": "dependencies",
+      "line": 187,
+      "selfCC": 16
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/scenario_flow_server.py",
+      "language": "python",
+      "qualifiedName": "FlowExecution.execute",
+      "line": 151,
+      "selfCC": 28
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/scenario_quality.py",
+      "language": "python",
+      "qualifiedName": "review",
+      "line": 16,
+      "selfCC": 54
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/model-evals/scenario_quality.py",
+      "language": "python",
+      "qualifiedName": "main",
+      "line": 71,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/test-harness/tests/test_platform_main_flow.py",
+      "language": "python",
+      "qualifiedName": "PlatformMainFlowTest.test_create_then_adjust_saved_page_through_stdio_http",
+      "line": 14,
+      "selfCC": 16
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/adapters/environment.py",
+      "language": "python",
+      "qualifiedName": "configure_data_context",
+      "line": 83,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/adapters/firstparty/dataset_metadata_http.py",
+      "language": "python",
+      "qualifiedName": "JavaDatasetMetadataProvider._read",
+      "line": 56,
+      "selfCC": 25
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/adapters/firstparty/dqe_http.py",
+      "language": "python",
+      "qualifiedName": "_violates_field",
+      "line": 299,
+      "selfCC": 16
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/adapters/firstparty/dqe_http.py",
+      "language": "python",
+      "qualifiedName": "DqeHttpExecutionPort.execute",
+      "line": 63,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/adapters/firstparty/lifecycle_http.py",
+      "language": "python",
+      "qualifiedName": "KnownLifecycleHttp.save",
+      "line": 40,
+      "selfCC": 18
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/bootstrap/readiness.py",
+      "language": "python",
+      "qualifiedName": "platform_readiness",
+      "line": 36,
+      "selfCC": 19
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/business_interpretation.py",
+      "language": "python",
+      "qualifiedName": "extend_interpretation",
+      "line": 51,
+      "selfCC": 27
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/business_terms.py",
+      "language": "python",
+      "qualifiedName": "resolve_business_terms",
+      "line": 150,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discover_data_context.py",
+      "language": "python",
+      "qualifiedName": "create_discover_data_context/discover",
+      "line": 72,
+      "selfCC": 24
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/retrieval.py",
+      "language": "python",
+      "qualifiedName": "score",
+      "line": 16,
+      "selfCC": 16
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/retrieval.py",
+      "language": "python",
+      "qualifiedName": "knowledge_evidence",
+      "line": 54,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/retrieval.py",
+      "language": "python",
+      "qualifiedName": "lexical_requirements",
+      "line": 78,
+      "selfCC": 32
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/retrieval.py",
+      "language": "python",
+      "qualifiedName": "classify",
+      "line": 138,
+      "selfCC": 18
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py",
+      "language": "python",
+      "qualifiedName": "derive_executable_units",
+      "line": 52,
+      "selfCC": 32
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/lab_projection.py",
+      "language": "python",
+      "qualifiedName": "inspect_projection_governance",
+      "line": 509,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/metadata_session.py",
+      "language": "python",
+      "qualifiedName": "read_turn_metadata",
+      "line": 52,
+      "selfCC": 22
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/metric_relations.py",
+      "language": "python",
+      "qualifiedName": "load_relations",
+      "line": 10,
+      "selfCC": 30
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/source_mapping.py",
+      "language": "python",
+      "qualifiedName": "_new_field_ids",
+      "line": 42,
+      "selfCC": 16
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/source_mapping.py",
+      "language": "python",
+      "qualifiedName": "map_source_description",
+      "line": 66,
+      "selfCC": 29
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/structure_presentation.py",
+      "language": "python",
+      "qualifiedName": "apply_presentation",
+      "line": 28,
+      "selfCC": 31
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/structure_presentation.py",
+      "language": "python",
+      "qualifiedName": "preserve_unedited",
+      "line": 61,
+      "selfCC": 18
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/text_map_building.py",
+      "language": "python",
+      "qualifiedName": "add_map_chart",
+      "line": 70,
+      "selfCC": 21
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/layout_policy.py",
+      "language": "python",
+      "qualifiedName": "apply_creation_layout",
+      "line": 9,
+      "selfCC": 20
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py",
+      "language": "python",
+      "qualifiedName": "validate_plan",
+      "line": 36,
+      "selfCC": 24
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/table_pagination.py",
+      "language": "python",
+      "qualifiedName": "add_query_table_pagination",
+      "line": 28,
+      "selfCC": 28
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py",
+      "language": "python",
+      "qualifiedName": "_date_bindings",
+      "line": 161,
+      "selfCC": 34
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/section_editing.py",
+      "language": "python",
+      "qualifiedName": "edit_section",
+      "line": 19,
+      "selfCC": 31
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py",
+      "language": "python",
+      "qualifiedName": "PageParameters.extract",
+      "line": 140,
+      "selfCC": 23
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py",
+      "language": "python",
+      "qualifiedName": "PageParameters.apply",
+      "line": 178,
+      "selfCC": 23
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/platform_authoring.py",
+      "language": "python",
+      "qualifiedName": "PlatformAuthoring.mutate",
+      "line": 94,
+      "selfCC": 22
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/scope_annotations.py",
+      "language": "python",
+      "qualifiedName": "refresh",
+      "line": 26,
+      "selfCC": 25
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/query_results.py",
+      "language": "python",
+      "qualifiedName": "check_where",
+      "line": 45,
+      "selfCC": 17
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/query_results.py",
+      "language": "python",
+      "qualifiedName": "check_upstream",
+      "line": 109,
+      "selfCC": 20
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/report_date_filters.py",
+      "language": "python",
+      "qualifiedName": "report_date_issues",
+      "line": 2,
+      "selfCC": 43
+    },
+    {
+      "file": "metriccanvas-authoring/tool/metriccanvas_authoring/work/discovery_tasks.py",
+      "language": "python",
+      "qualifiedName": "DiscoveryTasks.require_query",
+      "line": 130,
+      "selfCC": 24
+    },
+    {
+      "file": "packages/data-execution/src/candidate-validation.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createCandidateValidator/selection",
+      "line": 26,
+      "selfCC": 22
+    },
+    {
+      "file": "packages/data-execution/src/compute/time-fill.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "timeFill",
+      "line": 12,
+      "selfCC": 19
+    },
+    {
+      "file": "packages/data-execution/src/dqe/dqe.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "gatewayNormalizationError",
+      "line": 859,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/data-execution/src/dqe/table-filters.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "accepts",
+      "line": 9,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/data-execution/src/dqe/table-filters.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "applyTableFilters",
+      "line": 25,
+      "selfCC": 21
+    },
+    {
+      "file": "packages/data-execution/src/dqe/table-filters.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "impossibleIntervals",
+      "line": 55,
+      "selfCC": 30
+    },
+    {
+      "file": "packages/data-execution/src/filter-candidates.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "validFilterCandidates",
+      "line": 65,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/data-execution/src/filter-values.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "initialFilterValues",
+      "line": 66,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/data-execution/src/filter-values.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "initialValue",
+      "line": 86,
+      "selfCC": 28
+    },
+    {
+      "file": "packages/data-execution/src/page-params.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "seedPageParamFilters",
+      "line": 15,
+      "selfCC": 30
+    },
+    {
+      "file": "packages/embed/tests/browser/presentation.spec.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "inaccessibleText/<anonymous@128:55>/<anonymous@128:78>",
+      "line": 128,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/embed/tests/dqe-fixture-endpoint.mjs",
+      "language": "typescript-javascript",
+      "qualifiedName": "listResult",
+      "line": 44,
+      "selfCC": 27
+    },
+    {
+      "file": "packages/embed/tests/dqe-fixture-endpoint.mjs",
+      "language": "typescript-javascript",
+      "qualifiedName": "candidatesResult",
+      "line": 126,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/embed/tests/fixtures/ioc-time-restore/collect-restore-facts.js",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@1:2>",
+      "line": 1,
+      "selfCC": 30
+    },
+    {
+      "file": "packages/embed/tests/fixtures/ioc-time-restore/collect-restore-facts.js",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@1:2>/stackingFacts",
+      "line": 306,
+      "selfCC": 25
+    },
+    {
+      "file": "packages/embed/tests/fixtures/ioc-time-restore/collect-restore-facts.js",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@1:2>/collect",
+      "line": 418,
+      "selfCC": 33
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/export-render-state.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "exportComponentData",
+      "line": 40,
+      "selfCC": 23
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/filter-text.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "filterText",
+      "line": 14,
+      "selfCC": 19
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/filters/time-controls.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "timeControlLimits",
+      "line": 4,
+      "selfCC": 19
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/report-capture-view.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "copyPdfView",
+      "line": 6,
+      "selfCC": 18
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/report-capture-view.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "freezeGradientText",
+      "line": 74,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/report-pdf-client.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "encodeReport",
+      "line": 29,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/report-pdf-png.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "opaquePngStream",
+      "line": 10,
+      "selfCC": 25
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/report-pdf-worker-entry.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "port.onmessage",
+      "line": 12,
+      "selfCC": 22
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "run",
+      "line": 386,
+      "selfCC": 48
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "run/<anonymous@536:23>",
+      "line": 536,
+      "selfCC": 20
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "run/refreshPeriodFacts",
+      "line": 591,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "openDetailFor",
+      "line": 927,
+      "selfCC": 18
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "handleChartClick",
+      "line": 973,
+      "selfCC": 24
+    },
+    {
+      "file": "packages/engine/runtime/src/detail-view.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "scopedFilterValues",
+      "line": 22,
+      "selfCC": 36
+    },
+    {
+      "file": "packages/engine/runtime/src/dimension-values.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createDimensionValuesLoader/start",
+      "line": 78,
+      "selfCC": 23
+    },
+    {
+      "file": "packages/engine/runtime/src/navigate.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "navigationHref",
+      "line": 7,
+      "selfCC": 24
+    },
+    {
+      "file": "packages/engine/runtime/src/navigate.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "filterPart",
+      "line": 34,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/engine/runtime/src/page-params.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "resolvePageParams",
+      "line": 12,
+      "selfCC": 40
+    },
+    {
+      "file": "packages/engine/runtime/tests/ioc-project-overview.test.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>",
+      "line": 141,
+      "selfCC": 22
+    },
+    {
+      "file": "packages/engine/runtime/tests/ioc-project-overview.test.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>",
+      "line": 400,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/engine/widgets/src/components/bar-chart/options.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "barOption",
+      "line": 27,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/engine/widgets/src/components/bar-chart/options.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "barOption/<anonymous@90:31>",
+      "line": 90,
+      "selfCC": 26
+    },
+    {
+      "file": "packages/engine/widgets/src/components/map-chart/options.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "mapOption",
+      "line": 66,
+      "selfCC": 27
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/chart-presentation.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "cartesianFrame",
+      "line": 39,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/EChart.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "paint",
+      "line": 86,
+      "selfCC": 21
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/semantic-html.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "parseSemanticHtml",
+      "line": 77,
+      "selfCC": 35
+    },
+    {
+      "file": "packages/metric-canvas/src/authoring-layout.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "resolveAuthoringSections",
+      "line": 35,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/metric-canvas/src/selection-actions.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "observeSelectionActions/update",
+      "line": 9,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/page/src/amount-filter.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "numberRangeIssue",
+      "line": 5,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/page/src/amount-validation.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "amountErrors",
+      "line": 5,
+      "selfCC": 40
+    },
+    {
+      "file": "packages/page/src/amount-validation.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "moneyComputeErrors",
+      "line": 41,
+      "selfCC": 18
+    },
+    {
+      "file": "packages/page/src/chart-option.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "jsonErrors",
+      "line": 22,
+      "selfCC": 21
+    },
+    {
+      "file": "packages/page/src/chart-option.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "chartOptionErrorsFor",
+      "line": 43,
+      "selfCC": 23
+    },
+    {
+      "file": "packages/page/src/chart-option.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "chartOptionErrorsFor/visit",
+      "line": 77,
+      "selfCC": 27
+    },
+    {
+      "file": "packages/page/src/condition.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "conditionTestTypeError",
+      "line": 66,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/page/src/condition.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "testConditionValue",
+      "line": 76,
+      "selfCC": 28
+    },
+    {
+      "file": "packages/page/src/field-selection.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "projectComponentFields/project",
+      "line": 23,
+      "selfCC": 30
+    },
+    {
+      "file": "packages/page/src/filter-dependencies.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "filterExtensionErrors",
+      "line": 21,
+      "selfCC": 28
+    },
+    {
+      "file": "packages/page/src/filter-text-value.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "initialFilterTextValues",
+      "line": 18,
+      "selfCC": 21
+    },
+    {
+      "file": "packages/page/src/filter.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "parseCalendarValue",
+      "line": 420,
+      "selfCC": 22
+    },
+    {
+      "file": "packages/page/src/legacy-compatibility.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "adaptTarget",
+      "line": 54,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/page/src/materialize.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "queryRowIssueError",
+      "line": 112,
+      "selfCC": 18
+    },
+    {
+      "file": "packages/page/src/metric-before.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "metricBeforeErrors/<anonymous@12:36>",
+      "line": 12,
+      "selfCC": 19
+    },
+    {
+      "file": "packages/page/src/migrate-param-bindings.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "migrateParamBindings",
+      "line": 13,
+      "selfCC": 40
+    },
+    {
+      "file": "packages/page/src/navigate.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "navigationErrors/<anonymous@27:28>",
+      "line": 27,
+      "selfCC": 31
+    },
+    {
+      "file": "packages/page/src/page-param.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "matchesParamDeclaration",
+      "line": 305,
+      "selfCC": 19
+    },
+    {
+      "file": "packages/page/src/page.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "derivePageCapabilities",
+      "line": 338,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/page/src/page.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "deriveComponentCapabilities",
+      "line": 376,
+      "selfCC": 24
+    },
+    {
+      "file": "packages/page/src/period-facts.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "periodFact",
+      "line": 6,
+      "selfCC": 34
+    },
+    {
+      "file": "packages/page/src/period-facts.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "timeAvailabilityIssue",
+      "line": 21,
+      "selfCC": 36
+    },
+    {
+      "file": "packages/page/src/period-filter.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "resolvePeriodSelection",
+      "line": 18,
+      "selfCC": 25
+    },
+    {
+      "file": "packages/page/src/query-param-references.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "queryParamReferenceErrors",
+      "line": 16,
+      "selfCC": 25
+    },
+    {
+      "file": "packages/page/src/query-result-where.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "queryResultWhereErrors/visit",
+      "line": 20,
+      "selfCC": 18
+    },
+    {
+      "file": "packages/page/src/query-result-where.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "filterQueryResultRows/match",
+      "line": 67,
+      "selfCC": 18
+    },
+    {
+      "file": "packages/page/src/resolve-page-params.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "resolvePageParams",
+      "line": 26,
+      "selfCC": 35
+    },
+    {
+      "file": "packages/page/src/resolve-page-params.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "changedParamSourceIds",
+      "line": 120,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "resolveTexts/visit",
+      "line": 69,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/page/src/time-extension-validation.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "timeExtensionErrors",
+      "line": 8,
+      "selfCC": 55
+    },
+    {
+      "file": "packages/page/src/time-param.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "resolveTimeWindow",
+      "line": 25,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "parsePage",
+      "line": 125,
+      "selfCC": 23
+    },
+    {
+      "file": "packages/ui/src/components/date-picker/calendar.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "calendarDraft",
+      "line": 61,
+      "selfCC": 19
+    },
+    {
+      "file": "packages/ui/src/components/date-picker/calendar.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "calendarValueError",
+      "line": 73,
+      "selfCC": 22
+    },
+    {
+      "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "submit",
+      "line": 112,
+      "selfCC": 21
+    },
+    {
+      "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "canNavigate",
+      "line": 126,
+      "selfCC": 17
+    },
+    {
+      "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "cellDisabled",
+      "line": 141,
+      "selfCC": 16
+    },
+    {
+      "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "cellClass",
+      "line": 168,
+      "selfCC": 20
+    },
+    {
+      "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "cellKey",
+      "line": 189,
+      "selfCC": 42
+    },
+    {
+      "file": "packages/ui/src/components/select/Selection.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "popupKeys",
+      "line": 92,
+      "selfCC": 23
+    },
+    {
+      "file": "tools/design-facts/src/extract.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "extractDesignFacts",
+      "line": 179,
+      "selfCC": 41
+    },
+    {
+      "file": "tools/design-facts/src/html-scan.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "scanElements",
+      "line": 77,
+      "selfCC": 22
+    },
+    {
+      "file": "tools/dqe-sim/src/business-sdt.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeBusinessSdt",
+      "line": 14,
+      "selfCC": 38
+    },
+    {
+      "file": "tools/dqe-sim/src/chart-local-filter.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeChartLocalFilter",
+      "line": 5,
+      "selfCC": 18
+    },
+    {
+      "file": "tools/dqe-sim/src/execute.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeExactScenarios",
+      "line": 197,
+      "selfCC": 19
+    },
+    {
+      "file": "tools/dqe-sim/src/execute.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeFlowAnalysisReport",
+      "line": 417,
+      "selfCC": 39
+    },
+    {
+      "file": "tools/dqe-sim/src/execute.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeIocOpportunityList",
+      "line": 496,
+      "selfCC": 18
+    },
+    {
+      "file": "tools/dqe-sim/src/execute.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeInspectionDetail",
+      "line": 660,
+      "selfCC": 17
+    },
+    {
+      "file": "tools/dqe-sim/src/execute.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeCustomerActivityRisk",
+      "line": 759,
+      "selfCC": 16
+    },
+    {
+      "file": "tools/dqe-sim/src/execute.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeSalesAnalytics",
+      "line": 981,
+      "selfCC": 22
+    },
+    {
+      "file": "tools/dqe-sim/src/multi-query-table.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeMultiQueryTable",
+      "line": 12,
+      "selfCC": 47
+    },
+    {
+      "file": "tools/dqe-sim/src/query-result-where.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeQueryResultWhere",
+      "line": 10,
+      "selfCC": 39
+    },
+    {
+      "file": "tools/dqe-sim/src/row-expansion.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeRowExpansion",
+      "line": 11,
+      "selfCC": 24
+    },
+    {
+      "file": "tools/dqe-sim/src/semantic-surface-execute.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "runSemanticSurface",
+      "line": 50,
+      "selfCC": 20
+    },
+    {
+      "file": "tools/dqe-sim/src/table-search-options.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeTableSearchOptions",
+      "line": 11,
+      "selfCC": 25
+    },
+    {
+      "file": "tools/package-build/surface.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "exportedNames",
+      "line": 63,
+      "selfCC": 30
+    },
+    {
+      "file": "tools/scripts/export-authoring-contracts.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "buildSkillProjections",
+      "line": 570,
+      "selfCC": 52
+    },
+    {
+      "file": "tools/scripts/verify-paged-join-real.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "main",
+      "line": 8,
+      "selfCC": 46
+    }
+  ]
+}

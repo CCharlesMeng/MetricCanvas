@@ -1,0 +1,56 @@
+{
+  "python": "CPython 3.12.13 with requirements.lock and radon==6.0.1",
+  "checks": [
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "log": "types.log"
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/page check",
+      "exitCode": 0,
+      "log": "page-types.log"
+    },
+    {
+      "command": "pnpm build:packages",
+      "exitCode": 0,
+      "log": "build.log"
+    },
+    {
+      "command": "pnpm authoring:contracts:check",
+      "exitCode": 0,
+      "log": "contracts.log"
+    },
+    {
+      "command": "pnpm complexity:check",
+      "exitCode": 0,
+      "log": "complexity-gate.log"
+    },
+    {
+      "command": "node tools/scripts/audit-code-complexity.mjs --check-functions",
+      "exitCode": 1,
+      "expected": "121 TS/JS and 68 Python existing functions exceed 15",
+      "log": "strict-gate.log"
+    },
+    {
+      "command": "pnpm exec vitest run packages/page/tests/complexity-hotspot-parity.test.ts tests/ci-workflow.test.ts",
+      "exitCode": 0,
+      "testsPassed": 12,
+      "log": "focused.log"
+    },
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "testFilesPassed": 436,
+      "testsPassed": 3926,
+      "testsSkipped": 5,
+      "durationSeconds": 1660.89,
+      "log": "full-tests.log"
+    }
+  ],
+  "measurementTestsPassed": 11,
+  "sourceSnapshotVerification": {
+    "files": 1686,
+    "sha256Mismatches": []
+  }
+}

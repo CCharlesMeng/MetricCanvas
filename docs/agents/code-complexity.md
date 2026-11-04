@@ -2,6 +2,25 @@
 
 适用于新增、修改、修复和重构代码，包括工具脚本、测试回调、工厂内部方法及匿名函数。目标是降低理解与维护成本，同时保持业务含义、公开接口和执行行为。
 
+## 全项目目标与自动门禁
+
+全项目平均圈复杂度严格 `<5`；新增函数及辅助函数自身 `CC≤15`。这两个指标同时检查，不能用平均值掩盖单函数热点。TS/JS 与 Python 分别统计，不能混合两个扫描器的数值。平均值以每个实测函数为权重，即 `Σ selfCC / 函数数`，不取文件平均值的平均，也不以四舍五入后的显示值验收。
+
+```sh
+# Python 使用仓库锁定环境，并安装 radon==6.0.1
+METRICCANVAS_PYTHON=/path/to/python pnpm complexity:check
+METRICCANVAS_PYTHON=/path/to/python pnpm complexity:audit --output /tmp/complexity.json
+METRICCANVAS_PYTHON=/path/to/python pnpm complexity:audit --baseline HEAD --output /tmp/baseline.json
+```
+
+仓内 [全量审计器](../../tools/scripts/audit-code-complexity.mjs) 枚举 Git 跟踪的可执行 TS/JS、Svelte 和 Python 文件，以及维护目录内新增的源文件。声明文件不含运行时实现，排除 `.d.ts` / `.d.mts` / `.d.cts`。Svelte 通过编译器定位真实 script 区块，保留原行号，仅测脚本，不宣称覆盖模板控制流。Python 使用 Radon 6.0.1 的函数、方法与闭包指标，类聚合分不作为函数计数。失败解析会阻断检查。
+
+报告同时保留全扫描范围（inclusive）和维护代码（maintained）；生成副本、内嵌第三方生成代码、历史证据与原型单列，并列出生产代码、工具与测试的平均值、最大值、超限数、决策数和函数数。默认门禁检查两个语言各自全扫描范围及维护代码的平均值均 `<5`；不能仅靠删除报告中的生成物或增加测试函数宣称复杂度改善。原始函数记录和逐文件 SHA256 均可导出核对。
+
+[存量台账](../../tools/scripts/complexity-debt.json) 显式保留本次测量时仍超过 15 的函数及其 CC 上界。默认门禁拒绝新增超限、存量增长、跨文件迁移和改名后的超限；匿名回调以父级路径和带计数的分值集合匹配，行号变化不误判，增加同名回调不能复用一份额度。已关闭条目不再加入台账，更新台账须重新审计和说明，不能把自动重建台账作为日常检查的一部分。台账是待治理事项，不等于全仓函数已达标。可使用 `pnpm complexity:audit --check-functions` 执行全部维护函数 `CC≤15` 的严格检查；只要仍有存量超限，该命令就应失败。
+
+CI authoring job 在安装固定 Radon 后执行 `pnpm complexity:check`，覆盖平均值、测量器回归和新增/增长超限。原 Python 创作公共模块的固定门禁继续独立执行，不放宽其现有限制。当前实施、20 条清单核对及完整剩余项见 [2026-11-04 审计](../evidence/code-complexity/2026-11-04-audit/README.md)。
+
 ## 执行顺序与完成条件
 
 1. **编码前定位职责**：确认本次会改哪些函数、分别维护什么不变量；对含多个流程或多种类型分支的函数先测基线。找现有实现与类型能力，确定可复用的职责，再添加分支。

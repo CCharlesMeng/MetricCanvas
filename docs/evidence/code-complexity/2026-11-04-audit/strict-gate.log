@@ -1,0 +1,141 @@
+{
+  "analyzers": {
+    "typescript": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "python": "radon/6.0.1"
+  },
+  "sourceCommit": "552ef5c1228ce292ad9a2ec66673fa82e1c67ba4",
+  "inventorySha256": "91581168a2b597a8b8a09bec331524594342749332651f253145138b5e4ffc65",
+  "snapshot": "working-tree",
+  "limits": {
+    "averageExclusive": 5,
+    "functionMaximum": 15
+  },
+  "languages": {
+    "typescript-javascript": {
+      "maintained": {
+        "files": 1320,
+        "functions": 17165,
+        "decisions": 21192,
+        "average": 2.234605301485581,
+        "maximum": 61,
+        "overFunctionMaximum": 121
+      },
+      "inclusive": {
+        "files": 1393,
+        "functions": 46260,
+        "decisions": 71815,
+        "average": 2.5524210981409423,
+        "maximum": 107,
+        "overFunctionMaximum": 726
+      },
+      "categories": {
+        "production": {
+          "files": 582,
+          "functions": 5959,
+          "decisions": 14217,
+          "average": 3.385802987078369,
+          "maximum": 61,
+          "overFunctionMaximum": 91
+        },
+        "tooling": {
+          "files": 100,
+          "functions": 1649,
+          "decisions": 2555,
+          "average": 2.5494238932686475,
+          "maximum": 52,
+          "overFunctionMaximum": 21
+        },
+        "tests": {
+          "files": 638,
+          "functions": 9557,
+          "decisions": 4420,
+          "average": 1.4624882285235952,
+          "maximum": 33,
+          "overFunctionMaximum": 9
+        },
+        "generated": {
+          "files": 12,
+          "functions": 28628,
+          "decisions": 50083,
+          "average": 2.7494411066089146,
+          "maximum": 107,
+          "overFunctionMaximum": 602
+        },
+        "historical": {
+          "files": 61,
+          "functions": 467,
+          "decisions": 540,
+          "average": 2.1563169164882225,
+          "maximum": 20,
+          "overFunctionMaximum": 3
+        }
+      }
+    },
+    "python": {
+      "maintained": {
+        "files": 280,
+        "functions": 2239,
+        "decisions": 7784,
+        "average": 4.476552032157214,
+        "maximum": 93,
+        "overFunctionMaximum": 68
+      },
+      "inclusive": {
+        "files": 293,
+        "functions": 2306,
+        "decisions": 8153,
+        "average": 4.535559410234171,
+        "maximum": 93,
+        "overFunctionMaximum": 69
+      },
+      "categories": {
+        "production": {
+          "files": 162,
+          "functions": 1055,
+          "decisions": 4951,
+          "average": 5.6928909952606634,
+          "maximum": 43,
+          "overFunctionMaximum": 46
+        },
+        "tooling": {
+          "files": 23,
+          "functions": 157,
+          "decisions": 779,
+          "average": 5.961783439490445,
+          "maximum": 59,
+          "overFunctionMaximum": 2
+        },
+        "tests": {
+          "files": 95,
+          "functions": 1027,
+          "decisions": 2054,
+          "average": 3,
+          "maximum": 93,
+          "overFunctionMaximum": 20
+        },
+        "generated": {
+          "files": 7,
+          "functions": 61,
+          "decisions": 300,
+          "average": 5.918032786885246,
+          "maximum": 15,
+          "overFunctionMaximum": 0
+        },
+        "historical": {
+          "files": 6,
+          "functions": 6,
+          "decisions": 69,
+          "average": 12.5,
+          "maximum": 62,
+          "overFunctionMaximum": 1
+        }
+      }
+    }
+  },
+  "errors": [],
+  "failures": [
+    "typescript-javascript: 121 functions exceed 15",
+    "python: 68 functions exceed 15"
+  ]
+}

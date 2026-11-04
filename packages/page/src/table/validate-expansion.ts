@@ -5,7 +5,7 @@ import { ordinaryQuery } from '../time-mode';
 import type { Page, TableComponent, Component } from '../page';
 import type { TypedError } from '../errors';
 import { fieldName, hasQueryFieldMapping } from '../field';
-import { resolveDataSourceFields } from '../data-source';
+import { resolveDataSourceFields, type DataSource } from '../data-source';
 import { walkPageComponents, flattenPageComponents } from '../component-walk';
 import { queryResultDependencies } from '../query-dependencies';
 import { definitionSourceIds } from '../data-source-references';
@@ -21,94 +21,117 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
         errors.push(...componentHierarchyExportErrors(component,componentPath));
         if (component.type !== 'table' || !component.props.rowExpansion)
             return;
-        const expansion = component.props.rowExpansion;
+        const table: TableComponent = component;
+        const expansion = table.props.rowExpansion!;
         const path = `${componentPath}/props/rowExpansion`;
         errors.push(...hierarchySelectionErrors(page,component,path,owners,inputs));
-        const fields = page.dataSources[component.data.main] ? resolveDataSourceFields(page.dataSources[component.data.main]!) : {};
-        const key = component.props.rowKey && fields[component.props.rowKey];
-        if (!key || key.role !== 'dimension' || !['string', 'number'].includes(key.type))
-            errors.push(error(`${componentPath}/props/rowKey`, '子表格父表要求稳定的 string/number 维度行键'));
-        if (tableAlignedSlots(component).length !== 1 || component.props.mergeBy)
-            errors.push(error(path, '子表格父表仅支持单一 main 数据槽，不能同时跨行合并'));
-        if (componentPath.startsWith('/detailViews/'))
-            errors.push(error(path, '详情浮层内暂不支持行内子表格'));
-        if (legacyExpandedExport(component))
-            errors.push(error(path, '子表格导出范围待确认，暂不启用该父表导出'));
-        const source = page.dataSources[component.data.main];
-        const rows = source?.source.type === 'inline' ? source.source.rows : source?.source.type === 'query' ? source.source.initial?.rows : undefined;
-        if (rows && component.props.rowKey) {
-            const keys = rows.map(row => expansionRowKey(row[component.props.rowKey!]));
-            if (keys.some(key => key === undefined) || new Set(keys).size !== keys.length)
-                errors.push(error(`${componentPath}/props/rowKey`, '父表行键缺失或重复，不能用行序号展开'));
-        }
-        for (const column of rowExpansionColumns(expansion.table.columns)) {
-            if (column.selection || column.link || column.navigate || column.openDetail || column.filterable)
-                errors.push(error(`${path}/table/columns`, '子表格首期只读，仅支持按需搜索和排序，不支持筛选、选择或动作'));
-        }
-        if (expansion.data.type === 'recordList') {
-            if (fields[expansion.data.field]?.type !== 'recordList')
-                errors.push(error(`${path}/data/field`, '子表格必须绑定父行的 recordList/detail 字段'));
-            if (expansion.table.pagination?.mode === 'query')
-                errors.push(error(`${path}/table/pagination`, '父行嵌套明细仅支持本地分页'));
-        }
-        else {
-            const input = expansion.data;
-            if (owners.has(input.source))
-                errors.push(error(`${path}/data/source`, '子表格查询定义必须专属一个展开模板'));
-            owners.set(input.source, path);
-            const source = page.dataSources[input.source];
-            if (source?.source.type !== 'query' || source.source.resultScope === 'complete' || source.compute?.length || queryResultDependencies(source).length) {
-                errors.push(error(`${path}/data/source`, '子表格要求普通分页 query，不能使用 complete、compute、结果绑定或组合查询源'));
+        const fields = page.dataSources[table.data.main] ? resolveDataSourceFields(page.dataSources[table.data.main]!) : {};
+        checkParent();
+        checkReadOnlyColumns();
+        checkChildData();
+        checkProjectedScope();
+        function checkParent(): void {
+            const key = table.props.rowKey && fields[table.props.rowKey];
+            if (!key || key.role !== 'dimension' || !['string', 'number'].includes(key.type))
+                errors.push(error(`${componentPath}/props/rowKey`, '子表格父表要求稳定的 string/number 维度行键'));
+            if (tableAlignedSlots(table).length !== 1 || table.props.mergeBy)
+                errors.push(error(path, '子表格父表仅支持单一 main 数据槽，不能同时跨行合并'));
+            if (componentPath.startsWith('/detailViews/'))
+                errors.push(error(path, '详情浮层内暂不支持行内子表格'));
+            if (legacyExpandedExport(table))
+                errors.push(error(path, '子表格导出范围待确认，暂不启用该父表导出'));
+            const source = page.dataSources[table.data.main];
+            const rows = source?.source.type === 'inline' ? source.source.rows : source?.source.type === 'query' ? source.source.initial?.rows : undefined;
+            if (rows && table.props.rowKey) {
+                const keys = rows.map(row => expansionRowKey(row[table.props.rowKey!]));
+                if (keys.some(key => key === undefined) || new Set(keys).size !== keys.length)
+                    errors.push(error(`${componentPath}/props/rowKey`, '父表行键缺失或重复，不能用行序号展开'));
             }
-            if (source?.source.type === 'query') {
-                errors.push(...childDefaultSortErrors(ordinaryQuery(source.source.query).body.dsl_list[0], `${path}/data/source`));
+        }
+        function checkReadOnlyColumns(): void {
+            for (const column of rowExpansionColumns(expansion.table.columns)) {
+                if (column.selection || column.link || column.navigate || column.openDetail || column.filterable)
+                    errors.push(error(`${path}/table/columns`, '子表格首期只读，仅支持按需搜索和排序，不支持筛选、选择或动作'));
             }
-            if (expansion.table.pagination?.mode !== 'query')
-                errors.push(error(`${path}/table/pagination`, '查询子表格必须显式声明 mode:query'));
-            if (input.filters.some(id => !input.bindings[id]) || Object.keys(input.bindings).some(id => !input.filters.includes(id)))
-                errors.push(error(`${path}/data/bindings`, '必须且只能绑定子表格声明的全部输入'));
-            if (!Object.values(input.bindings).some(binding => binding.source === 'row'))
-                errors.push(error(`${path}/data/bindings`, '查询子表格至少显式绑定一个父行字段'));
-            for (const id of input.filters) {
-                if (inputs.has(id))
-                    errors.push(error(`${path}/data/filters`, '子表格输入必须专属当前展开模板'));
-                inputs.set(id, input.source);
-                const declaration = page.filters?.find(filter => filter.id === id);
-                if (!declaration || declaration.visible !== false || !['dimension', 'timeRange', 'timePoint'].includes(declaration.type) || (declaration.type === 'dimension' && declaration.hierarchy))
-                    errors.push(error(`${path}/data/filters`, '子表格输入必须引用隐藏的非层级 dimension/timeRange/timePoint 筛选声明'));
-                if (source?.source.type === 'query' && !source.source.query.filterBindings?.[id])
-                    errors.push(error(`${path}/data/filters`, '每个子表格输入必须被查询显式消费'));
+        }
+        function checkChildData(): void {
+            if (expansion.data.type === 'recordList') {
+                if (fields[expansion.data.field]?.type !== 'recordList')
+                    errors.push(error(`${path}/data/field`, '子表格必须绑定父行的 recordList/detail 字段'));
+                if (expansion.table.pagination?.mode === 'query')
+                    errors.push(error(`${path}/table/pagination`, '父行嵌套明细仅支持本地分页'));
             }
-            for (const binding of Object.values(input.bindings)) {
-                if (binding.source === 'row') {
-                    const field = fields[binding.field];
-                    if (!field || field.role !== 'dimension' || !['string', 'number', 'date', 'datetime'].includes(field.type))
-                        errors.push(error(`${path}/data/bindings`, '父行输入必须绑定已声明的标量维度字段'));
+            else {
+                const input = expansion.data;
+                const source = checkQuerySource();
+                if (expansion.table.pagination?.mode !== 'query')
+                    errors.push(error(`${path}/table/pagination`, '查询子表格必须显式声明 mode:query'));
+                if (input.filters.some(id => !input.bindings[id]) || Object.keys(input.bindings).some(id => !input.filters.includes(id)))
+                    errors.push(error(`${path}/data/bindings`, '必须且只能绑定子表格声明的全部输入'));
+                if (!Object.values(input.bindings).some(binding => binding.source === 'row'))
+                    errors.push(error(`${path}/data/bindings`, '查询子表格至少显式绑定一个父行字段'));
+                checkQueryFilters();
+                checkInputBindings();
+                function checkQuerySource(): DataSource | undefined {
+                    if (owners.has(input.source))
+                        errors.push(error(`${path}/data/source`, '子表格查询定义必须专属一个展开模板'));
+                    owners.set(input.source, path);
+                    const source = page.dataSources[input.source];
+                    if (source?.source.type !== 'query' || source.source.resultScope === 'complete' || source.compute?.length || queryResultDependencies(source).length) {
+                        errors.push(error(`${path}/data/source`, '子表格要求普通分页 query，不能使用 complete、compute、结果绑定或组合查询源'));
+                    }
+                    if (source?.source.type === 'query') {
+                        errors.push(...childDefaultSortErrors(ordinaryQuery(source.source.query).body.dsl_list[0], `${path}/data/source`));
+                    }
+                    return source;
                 }
-                else if (binding.source === 'filter') {
-                    if (!page.filters?.some(filter => filter.id === binding.id) || input.filters.includes(binding.id))
-                        errors.push(error(`${path}/data/bindings`, '来源筛选不存在或引用了子表格私有输入'));
+                function checkQueryFilters(): void {
+                    for (const id of input.filters) {
+                        if (inputs.has(id))
+                            errors.push(error(`${path}/data/filters`, '子表格输入必须专属当前展开模板'));
+                        inputs.set(id, input.source);
+                        const declaration = page.filters?.find(filter => filter.id === id);
+                        if (!declaration || declaration.visible !== false || !['dimension', 'timeRange', 'timePoint'].includes(declaration.type) || (declaration.type === 'dimension' && declaration.hierarchy))
+                            errors.push(error(`${path}/data/filters`, '子表格输入必须引用隐藏的非层级 dimension/timeRange/timePoint 筛选声明'));
+                        if (source?.source.type === 'query' && !source.source.query.filterBindings?.[id])
+                            errors.push(error(`${path}/data/filters`, '每个子表格输入必须被查询显式消费'));
+                    }
                 }
-                else if (missingExpansionParam(page,binding))
-                    errors.push(error(`${path}/data/bindings`, '来源页面参数不存在'));
+                function checkInputBindings(): void {
+                    for (const binding of Object.values(input.bindings)) {
+                        if (binding.source === 'row') {
+                            const field = fields[binding.field];
+                            if (!field || field.role !== 'dimension' || !['string', 'number', 'date', 'datetime'].includes(field.type))
+                                errors.push(error(`${path}/data/bindings`, '父行输入必须绑定已声明的标量维度字段'));
+                        }
+                        else if (binding.source === 'filter') {
+                            if (!page.filters?.some(filter => filter.id === binding.id) || input.filters.includes(binding.id))
+                                errors.push(error(`${path}/data/bindings`, '来源筛选不存在或引用了子表格私有输入'));
+                        }
+                        else if (missingExpansionParam(page, binding))
+                            errors.push(error(`${path}/data/bindings`, '来源页面参数不存在'));
+                    }
+                }
             }
         }
-        try {
-            const scope = rowExpansionPage(page, component);
-            const childFields = resolveDataSourceFields(scope.page.dataSources[scope.table.data.main]!);
-            const childKey = childFields[expansion.table.rowKey];
-            if (!childKey || childKey.role !== 'dimension' || !['string', 'number'].includes(childKey.type))
-                errors.push(error(`${path}/table/rowKey`, '子表格要求稳定的 string/number 维度行键'));
-            if (expansion.data.type === 'query') {
-                for (const id of [expansion.table.rowKey, ...rowExpansionColumns(expansion.table.columns).filter(column => column.sortable).map(column => fieldName(column.field))]) {
-                    if (!scope.page.dataSources[scope.table.data.main]?.fields[id] || !hasQueryFieldMapping(scope.page.dataSources[scope.table.data.main]!.fields[id]!))
-                        errors.push(error(`${path}/table/columns`, '查询子表格行键与排序字段必须具有 queryField 映射'));
+        function checkProjectedScope(): void {
+            try {
+                const scope = rowExpansionPage(page, table);
+                const childFields = resolveDataSourceFields(scope.page.dataSources[scope.table.data.main]!);
+                const childKey = childFields[expansion.table.rowKey];
+                if (!childKey || childKey.role !== 'dimension' || !['string', 'number'].includes(childKey.type))
+                    errors.push(error(`${path}/table/rowKey`, '子表格要求稳定的 string/number 维度行键'));
+                if (expansion.data.type === 'query') {
+                    for (const id of [expansion.table.rowKey, ...rowExpansionColumns(expansion.table.columns).filter(column => column.sortable).map(column => fieldName(column.field))]) {
+                        if (!scope.page.dataSources[scope.table.data.main]?.fields[id] || !hasQueryFieldMapping(scope.page.dataSources[scope.table.data.main]!.fields[id]!))
+                            errors.push(error(`${path}/table/columns`, '查询子表格行键与排序字段必须具有 queryField 映射'));
+                    }
                 }
+                for (const issue of validateScope(scope.page))
+                    errors.push({ ...issue, path: issue.path.startsWith('/sections/0/components/0/props') ? issue.path.replace('/sections/0/components/0/props', `${path}/table`) : `${path}${issue.path}` });
             }
-            for (const issue of validateScope(scope.page))
-                errors.push({ ...issue, path: issue.path.startsWith('/sections/0/components/0/props') ? issue.path.replace('/sections/0/components/0/props', `${path}/table`) : `${path}${issue.path}` });
+            catch { /* The precise source/field error is already reported above. */ }
         }
-        catch { /* The precise source/field error is already reported above. */ }
     });
     const components = flattenPageComponents(page);
     errors.push(...privateBindingErrors(components,inputs),...sourceOwnerErrors(page,components,owners),...privateInputErrors(page,components,inputs));

@@ -29,6 +29,9 @@ jobs:
           python -m pip install radon==6.0.1
           python tools/scripts/check-authoring-complexity.py
 
+      - name: 审计全项目平均圈复杂度与函数热点
+        run: pnpm complexity:check
+
       # 校验页面文档(结构 + 语义 + 文件名)。失败时按错误分型汇总到 job summary:
       # 页面文档只做当前协议的结构与绑定契约校验；DQE 查询错误在预览/运行阶段返回。
       - name: 校验页面文档

@@ -61,16 +61,28 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   }
   const byId = new Map(declarations.map(declaration => [declaration.id, declaration]));
   let current: Map<string, FilterValue> = new Map();
-  for (const [id, value] of initial ?? []) {
-    const declaration = byId.get(id);
-    const timed = declaration?.type === 'timeRange' || declaration?.type === 'timePoint';
-    if (declarations.length && (!declaration || !matchesDeclaration(value, declaration))) throw new Error(`筛选器 ${id} 初值不符合声明`);
-    const valid = normalize(value, declaration, editing.now?.());
-    if (valid === undefined || timed && !valid) throw new Error(`筛选器 ${id} 初值不符合时间边界`);
-    if (!accepted(id, valid)) throw new Error(`筛选按钮组器 ${id} 初值不在候选项中`);
-    if (valid) current.set(id, valid);
+  initializeValues();
+  function initializeValues(): void {
+    for (const [id, value] of initial ?? []) {
+      const declaration = byId.get(id);
+      const timed = declaration?.type === 'timeRange' || declaration?.type === 'timePoint';
+      if (declarations.length && (!declaration || !matchesDeclaration(value, declaration)))
+        throw new Error(`筛选器 ${id} 初值不符合声明`);
+      const valid = normalize(value, declaration, editing.now?.());
+      if (valid === undefined || timed && !valid)
+        throw new Error(`筛选器 ${id} 初值不符合时间边界`);
+      if (!accepted(id, valid))
+        throw new Error(`筛选按钮组器 ${id} 初值不在候选项中`);
+      if (valid)
+        current.set(id, valid);
+    }
+    validateInitialRanges();
   }
-  for (const declaration of declarations) if (declaration.type === 'numberRange' && current.has(declaration.id) && rangeContextIssue(declaration, current)) throw new Error('金额币种初值未通过校验');
+  function validateInitialRanges(): void {
+    for (const declaration of declarations)
+      if (declaration.type === 'numberRange' && current.has(declaration.id) && rangeContextIssue(declaration, current))
+        throw new Error('金额币种初值未通过校验');
+  }
   const baseline = new Map(current);
   let revision = 0, operationClock = editing.now?.() ?? new Date();
   const receipts = new Map<string, { status: string; values?: readonly string[] }>();
@@ -90,19 +102,38 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   }
   function blocked(): Set<string> {
     const result = new Set(confirmation);
-    for (const declaration of declarations) if (timeAvailabilityIssue(declaration, current.get(declaration.id), editing.displayInputs?.(), revision) || ((declaration.type === 'timeRange' || declaration.type === 'timePoint') && declaration.required && !current.has(declaration.id))) result.add(declaration.id);
+    for (const declaration of declarations)
+      if (timeAvailabilityIssue(declaration, current.get(declaration.id), editing.displayInputs?.(), revision) || ((declaration.type === 'timeRange' || declaration.type === 'timePoint') && declaration.required && !current.has(declaration.id)))
+        result.add(declaration.id);
+    blockDimensions(result);
+    return propagateBlockedFilters(result,declarations,overriddenFilterIds(declarations,current));
+  }
+  function blockDimensions(result: Set<string>): void {
     for (const declaration of declarations) {
       const selected = current.get(declaration.id);
-      if (declaration.type !== 'dimension') continue;
-      if (declaration.selection?.required && (selected?.type !== 'dimension' || selected.values.length === 0)) result.add(declaration.id);
-      if (intersections.has(declaration.id)) result.add(declaration.id);
-      if (!editing.candidates || dimensionOptions.has(declaration.id) || declaration.options) continue;
-      if (declaration.candidateContext || declaration.treeSelection === 'level' || declaration.candidateWindow) { if (receipts.get(declaration.id)?.status !== 'ready') result.add(declaration.id); }
-      if (selected?.type !== 'dimension' || !selected.values.length) continue;
-      const receipt = receipts.get(declaration.id);
-      if (!receipt || receipt.status !== 'ready' || selected.values.some(value => !receipt.values?.includes(value))) result.add(declaration.id);
+      if (declaration.type !== 'dimension')
+        continue;
+      if (declaration.selection?.required && (selected?.type !== 'dimension' || selected.values.length === 0))
+        result.add(declaration.id);
+      if (intersections.has(declaration.id))
+        result.add(declaration.id);
+      blockCandidate(declaration, selected, result);
     }
-    return propagateBlockedFilters(result,declarations,overriddenFilterIds(declarations,current));
+  }
+  function blockCandidate(declaration: Extract<FilterDeclaration, {
+    type: 'dimension';
+  }>, selected: FilterValue | undefined, result: Set<string>): void {
+    if (!editing.candidates || dimensionOptions.has(declaration.id) || declaration.options)
+      return;
+    if (declaration.candidateContext || declaration.treeSelection === 'level' || declaration.candidateWindow) {
+      if (receipts.get(declaration.id)?.status !== 'ready')
+        result.add(declaration.id);
+    }
+    if (selected?.type !== 'dimension' || !selected.values.length)
+      return;
+    const receipt = receipts.get(declaration.id);
+    if (!receipt || receipt.status !== 'ready' || selected.values.some(value => !receipt.values?.includes(value)))
+      result.add(declaration.id);
   }
   const subscribers = new Set<(values: FilterValues) => void>();
 
@@ -115,35 +146,86 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   function commit(intent: FilterIntent): CommitResult {
     const now = editing.now?.() ?? new Date(), facts = editing.displayInputs?.();
     const trusted = intent.type === 'initialize' || intent.type === 'restore';
-    const changes: ReadonlyArray<readonly [string, FilterValue | null]> =
-      intent.type === 'set' ? [[intent.filterId, intent.value]] : intent.type === 'clear' ? [[intent.filterId, null]] :
-        intent.type === 'applyDraft' ? intent.changes : [...new Set([...(intent.type === 'initialize' ? [] : byId.keys()), ...current.keys(), ...(intent.type === 'reset' ? baseline : intent.values).keys()])]
-          .map(id => [id, (intent.type === 'reset' ? baseline : intent.values).get(id) ?? null] as const);
-    const issues: Array<{ filterId: string; code: string; message: string }> = [];
+    const changes = intentChanges(intent);
+    const issues: Array<{
+      filterId: string;
+      code: string;
+      message: string;
+    }> = [];
     const normalized = new Map<string, FilterValue | null>();
-    for (const [id, value] of changes) {
-      const declaration = byId.get(id);
-      const invalid = declarations.length > 0 && !declaration || value && declaration && !matchesDeclaration(value, declaration);
-      const next = invalid ? undefined : normalize(value, declaration, now);
-      const availability = next && declaration ? timeAvailabilityIssue(declaration, next, facts, revision) : undefined;
-      if (availability || (!trusted && editing.readOnly?.()) || invalid || next === undefined || !accepted(id, next)) {
-        issues.push({ filterId: id, code: 'INVALID_FILTER_INTENT', message: '筛选写入不符合声明、边界或只读约束' });
-      } else normalized.set(id, next);
-    }
-    const preview = new Map(current); for (const [id, value] of normalized) if (value) preview.set(id, value); else preview.delete(id);
-    for (const declaration of declarations) if (declaration.type === 'numberRange' && preview.has(declaration.id) && rangeContextIssue(declaration, preview)) issues.push({ filterId: declaration.id, code: 'INVALID_FILTER_INTENT', message: '金额币种未通过校验' });
-    if (issues.length) return { ok: false, issues };
+    normalizeChanges();
+    validateRangeContext();
+    if (issues.length)
+      return { ok: false, issues };
     const map = new Map(current);
     const changed = [...normalized].filter(([id, value]) => !sameValue(current.get(id), value)).map(([id]) => id);
-    let gatesChanged = false;
-    for (const id of changed) { const before = current.get(id), after = normalized.get(id); if (before?.type === 'dimension' && after?.type === 'dimension' && (before.dimension !== after.dimension || before.level !== after.level)) receipts.delete(id); }
-    for (const [id] of changes) if (intersections.delete(id)) gatesChanged = true;
-    invalidate(changed, normalized, trusted);
-    for (const [id] of changes) if (confirmation.delete(id)) gatesChanged = true;
-    for (const [id, value] of normalized) { if (value) map.set(id, value); else map.delete(id); }
+    const gatesChanged = reconcileGates();
     const changedIds = [...new Set([...current.keys(), ...map.keys()])].filter(id => !sameValue(current.get(id), map.get(id) ?? null));
-    if (changedIds.length || gatesChanged) { revision++; operationClock = now; replace(map); }
+    if (changedIds.length || gatesChanged) {
+      revision++;
+      operationClock = now;
+      replace(map);
+    }
     return { ok: true, filterRevision: revision, changedIds };
+    function reconcileGates(): boolean {
+      let gatesChanged = false;
+      for (const id of changed) {
+        const before = current.get(id), after = normalized.get(id);
+        if (before?.type === 'dimension' && after?.type === 'dimension' && (before.dimension !== after.dimension || before.level !== after.level))
+          receipts.delete(id);
+      }
+      for (const [id] of changes)
+        if (intersections.delete(id))
+          gatesChanged = true;
+      invalidate(changed, normalized, trusted);
+      for (const [id] of changes)
+        if (confirmation.delete(id))
+          gatesChanged = true;
+      for (const [id, value] of normalized) {
+        if (value)
+          map.set(id, value);
+        else
+          map.delete(id);
+      }
+      return gatesChanged;
+    }
+    function validateRangeContext(): void {
+      const preview = new Map(current);
+      for (const [id, value] of normalized)
+        if (value)
+          preview.set(id, value);
+        else
+          preview.delete(id);
+      for (const declaration of declarations)
+        if (declaration.type === 'numberRange' && preview.has(declaration.id) && rangeContextIssue(declaration, preview))
+          issues.push({ filterId: declaration.id, code: 'INVALID_FILTER_INTENT', message: '金额币种未通过校验' });
+    }
+    function normalizeChanges(): void {
+      for (const [id, value] of changes) {
+        const declaration = byId.get(id);
+        const invalid = declarations.length > 0 && !declaration || value && declaration && !matchesDeclaration(value, declaration);
+        const next = invalid ? undefined : normalize(value, declaration, now);
+        const availability = next && declaration ? timeAvailabilityIssue(declaration, next, facts, revision) : undefined;
+        if (!validCommitValue(id, next, availability, trusted, invalid)) {
+          issues.push({ filterId: id, code: 'INVALID_FILTER_INTENT', message: '筛选写入不符合声明、边界或只读约束' });
+        }
+        else
+          normalized.set(id, next);
+      }
+    }
+  }
+
+  function validCommitValue(id: string, next: FilterValue | null | undefined, availability: unknown, trusted: boolean, invalid: unknown): next is FilterValue | null {
+    return !(availability || (!trusted && editing.readOnly?.()) || invalid || next === undefined || !accepted(id, next));
+  }
+
+  function intentChanges(intent: FilterIntent): ReadonlyArray<readonly [
+    string,
+    FilterValue | null
+  ]> {
+    return intent.type === 'set' ? [[intent.filterId, intent.value]] : intent.type === 'clear' ? [[intent.filterId, null]] :
+      intent.type === 'applyDraft' ? intent.changes : [...new Set([...(intent.type === 'initialize' ? [] : byId.keys()), ...current.keys(), ...(intent.type === 'reset' ? baseline : intent.values).keys()])]
+        .map(id => [id, (intent.type === 'reset' ? baseline : intent.values).get(id) ?? null] as const);
   }
 
   /** An unset optional selection does not require confirmation; a lost selection does. */
@@ -222,16 +304,6 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     }
 
   };
-}
-
-function propagateBlockedFilters(blocked:ReadonlySet<string>,declarations:readonly FilterDeclaration[],overridden:ReadonlySet<string>):Set<string> {
-  const result=new Set([...blocked].filter(id=>!overridden.has(id)));
-  const queue=[...result];
-  for(const parent of queue)for(const declaration of declarations){
-    if(overridden.has(declaration.id)||result.has(declaration.id)||!filterDependencies(declaration).includes(parent))continue;
-    result.add(declaration.id);queue.push(declaration.id);
-  }
-  return result;
 }
 
 /** 兑现"subscribe/write 永不 throw":单个订阅方的异常不得中断写入与其余订阅方的通知 */
@@ -454,7 +526,7 @@ function appendDimensionURL(query: URLSearchParams, keys: Record<string, string>
 
 function validShape(value: FilterValue): boolean {
   switch(value.type) {
-    case 'dimension': return typeof value.dimension==='string' && Array.isArray(value.values) && value.values.every(item=>typeof item==='string') && (value.level===undefined || typeof value.level==='string');
+    case 'dimension': return validDimensionShape(value);
     case 'timeRange': return typeof value.from==='string' && typeof value.to==='string' && (value.selection===undefined || isPeriodSelection(value.selection));
     case 'timePoint': return typeof value.value==='string' && ['date','month'].includes(value.granularity);
     case 'boolean': return typeof value.value==='boolean';
@@ -474,12 +546,7 @@ export function filterBlockedIds(state?: FilterState): ReadonlySet<string> {
 function matchesDeclaration(value: FilterValue, declaration: FilterDeclaration): boolean {
   if (value.type !== declaration.type) return false;
   if (value.type === 'dimension' && declaration.type === 'dimension') {
-    if (!Array.isArray(value.values) || !value.values.every(item => typeof item === 'string')) return false;
-    if (declaration.hierarchy) {
-      const level = declaration.hierarchy.find(item => item.id === value.level);
-      return !!level && level.dimension === value.dimension;
-    }
-    return value.dimension === declaration.dimension && value.level === undefined;
+    return dimensionMatchesDeclaration(value, declaration);
   }
   if (value.type === 'timePoint' && declaration.type === 'timePoint') return value.granularity === declaration.granularity;
   if (value.type === 'boolean') return typeof value.value === 'boolean';
@@ -515,3 +582,33 @@ function readModeFilter(declaration: Extract<FilterDeclaration, { type: 'timeRan
 function sameTimeRange(a: Extract<FilterValue, { type: 'timeRange' }>, b: Extract<FilterValue, { type: 'timeRange' }>): boolean {
   return a.from === b.from && a.to === b.to && JSON.stringify(a.selection) === JSON.stringify(b.selection) && a.mode === b.mode;
 }
+
+function validDimensionShape(value: Extract<FilterValue, {
+  type: 'dimension';
+}>): boolean {
+  return typeof value.dimension === 'string' && Array.isArray(value.values) && value.values.every(item => typeof item === 'string') && (value.level === undefined || typeof value.level === 'string');
+}
+function dimensionMatchesDeclaration(value: Extract<FilterValue, {
+  type: 'dimension';
+}>, declaration: Extract<FilterDeclaration, {
+  type: 'dimension';
+}>): boolean {
+  if (!Array.isArray(value.values) || !value.values.every(item => typeof item === 'string'))
+    return false;
+  if (declaration.hierarchy) {
+    const level = declaration.hierarchy.find(item => item.id === value.level);
+    return !!level && level.dimension === value.dimension;
+  }
+  return value.dimension === declaration.dimension && value.level === undefined;
+}
+
+function propagateBlockedFilters(blocked:ReadonlySet<string>,declarations:readonly FilterDeclaration[],overridden:ReadonlySet<string>):Set<string> {
+  const result=new Set([...blocked].filter(id=>!overridden.has(id)));
+  const queue=[...result];
+  for(const parent of queue)for(const declaration of declarations){
+    if(overridden.has(declaration.id)||result.has(declaration.id)||!filterDependencies(declaration).includes(parent))continue;
+    result.add(declaration.id);queue.push(declaration.id);
+  }
+  return result;
+}
+
