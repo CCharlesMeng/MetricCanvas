@@ -4,7 +4,9 @@
 
 当前发行版本以`release-config.json`为准，Interface2.0.0；默认页面版本从当前产品真源导出，正式工具名称为`mc-tools/`和`mc-tools.md`。共享references安装根允许Relay自有文件，产品CLI只遍历四项；seal/verify/compare的候选根仍须严格四项。旧单数发行可由构建检查器只读验证，1→2的入口/公开路径变化明确返回needs_migration。
 
-`consumer-0.3.0-tools-plural.json`保留0.2.0冻结样本的全部35条请求、状态、数据、诊断和退出码，逐字不改；仅从实际候选取得新发行/入口/资源元数据。`tools-plural-adoption-review-v1.json`记录路径迁移及旧6.82的历史差异，旧0.1.0和0.2.0样本/审查文件保持原摘要。6.83路径基线由`tools-plural-first-adoption-v1.json`绑定，当前6.84正式基线见`schema684-tools-first-adoption-v1.json`；实际--current仍独立检查，不自动采用。后文6.83首次基线说明是保留的历史背景。当前main已发布Schema6.84，0.3.3以独立37条消费者承接：原35条请求保持，其中13条结果变化逐项记录，两条新增新鲜分析报告的换源正反例。旧0.3.0及更早快照和审查保持原字节，旧批次作为实际current仍返回迁移要求。
+`consumer-0.3.0-tools-plural.json`保留0.2.0冻结样本的全部35条请求、状态、数据、诊断和退出码，逐字不改；仅从实际候选取得新发行/入口/资源元数据。`tools-plural-adoption-review-v1.json`记录路径迁移及旧6.82的历史差异，旧0.1.0和0.2.0样本/审查文件保持原摘要。6.83路径基线由`tools-plural-first-adoption-v1.json`绑定，历史6.84正式基线见`schema684-tools-first-adoption-v1.json`；实际--current仍独立检查，不自动采用。后文6.83首次基线说明是保留的历史背景。当前main已发布Schema6.84，0.3.3以独立37条消费者承接：原35条请求保持，其中13条结果变化逐项记录，两条新增新鲜分析报告的换源正反例。旧0.3.0及更早快照和审查保持原字节，旧批次作为实际current仍返回迁移要求。
+
+Schema6.85 的当前基线是 `schema685-tools-first-adoption-v1.json`，发行0.3.5、Interface2.0.0。新 `consumer-0.3.5-schema685.json` 保留6.84的37条请求，逐项审查13条结果差异，另加新鲜分析报告换源正反例和表头参数互斥正反例，共41条。6.84及更早冻结文件保持原字节；直接回放旧样本仍为 needs_migration，实际 `--current` 使用6.82或6.84时仍exit2。完整审查见 [Schema6.85消费基线](fixtures/schema685-adoption-review.md)。
 
 0.3.2新增19项`runtime:operation.<操作名>`输入概览和`mc-tools/examples/index.json`的35条同源请求；完整Interface由程序校验，模型按任务读取概览和必要属性知识。Node版本检查与执行统一使用实际解析的可执行路径。操作契约和冻结样本保持，真实Relay接入及模型材料成本另验。
 

@@ -28,7 +28,7 @@ class ConsumerTests(unittest.TestCase):
         self.assertEqual(len(self.frozen["vectors"]), 23)
         self.assertEqual(self.frozen["sourceReleaseId"], "55b2c482617005e95c353523b8e8926b8db538e5872bb06362cde28edd00f9ff")
         self.assertEqual(load_policy(load_config())["historical"][0], self.frozen)
-        self.assertEqual(consumers(load_config())[0]["manifest"]["defaultPageSchema"], "6.84")
+        self.assertEqual(consumers(load_config())[0]["manifest"]["defaultPageSchema"], "6.85")
         self.assertEqual(BASELINE.with_suffix('.sha256').read_text(encoding='utf-8').strip(), BASELINE_SHA)
         source = Path(__file__).with_name("package_cli.py").read_text(encoding="utf-8")
         self.assertNotIn('"record"', source)

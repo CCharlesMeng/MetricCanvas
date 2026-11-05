@@ -95,3 +95,9 @@
 ## main 交付基线
 
 2026-11-05 用户授权提交并推送 main。交付在 origin/main ad81479e639f9029bd44aaad5b4b566b5105a047 上重放本批改动，保留其运行时诊断仅控制台呈现修复；冲突只有生成清单、摘要和 Skill 版本，全部由合并后产品真源重新生成，版本使用1.23.0。上面的“未提交”记录描述本地验收时点；实际提交、同 SHA CI 和清理结果见本次交付回执。
+
+## CI发现的发行基线补齐
+
+82b99ef47首次CI的relay-release在冻结回放返回needs_migration：Schema6.85已生效，但正式消费基线仍为6.84。完整原始失败保留在本地ci-relay-release-failure.log。补齐独立0.3.5/6.85基线，保留6.84原37条请求及所有旧文件原字节，逐项审查13条结果差异，新增4条真实候选CLI请求，共41条。旧0.1.0报告继续needs_migration，实际6.82/6.84 current仍拒绝自动升级。详见[消费基线审查](../../../tools/relay-reference/fixtures/schema685-adoption-review.md)。
+
+补充复杂度使用Radon6.0.1同版测量：原实际current测试2→1，拆出assert_current_requires_migration=2，新增6.84 current测试=1，新增6.85审查测试=5；既有基线测试4→4、6.84历史审查7→7、配置测试1→1。一次性审查采集脚本函数最高6，不进入产品分发。全项目复杂度门禁再次通过，未修改存量超限函数。

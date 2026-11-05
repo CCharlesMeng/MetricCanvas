@@ -14,7 +14,7 @@ from adoption import aggregate, evaluate, load_policy, pinned, validate_evidence
 from compatibility import compare_states
 from config import load_config
 from package_release import check_evidence_release, pack, receipt_path, verify_archive
-from release import METADATA_FIELDS, ReleaseError, canonical, read_json, seal, verify
+from release import METADATA_FIELDS, ReleaseError, canonical, digest, read_json, seal, verify
 from test_archive import fixture_source
 from test_release import BASE_METADATA, fixture
 
@@ -39,8 +39,8 @@ class AdoptionTests(unittest.TestCase):
         return aggregate(self.policy, self.config, reports, historical)
 
     def test_pins_baselines_and_preserves_behavior_during_public_path_migration(self):
-        self.assertEqual(self.policy["primary"][0]["manifest"]["defaultPageSchema"], "6.84")
-        self.assertEqual(len(self.policy["primary"][0]["vectors"]), 37)
+        self.assertEqual(self.policy["primary"][0]["manifest"]["defaultPageSchema"], "6.85")
+        self.assertEqual(len(self.policy["primary"][0]["vectors"]), 41)
         self.assertEqual(len(self.policy["historical"][0]["vectors"]), 23)
         expected = self.policy["expectedHistory"]
         self.assertEqual(expected["status"], "needs_migration")
@@ -64,7 +64,7 @@ class AdoptionTests(unittest.TestCase):
     def test_schema684_review_preserves_requests_and_stale_report_rejection(self):
         folder = Path(__file__).with_name("fixtures")
         previous = read_json(folder / "consumer-0.3.0-tools-plural.json")
-        primary = self.policy["primary"][0]
+        primary = read_json(folder / "consumer-0.3.3-schema684.json")
         self.assertEqual([v["request"] for v in primary["vectors"][:35]],
                          [v["request"] for v in previous["vectors"]])
         review = read_json(folder / "schema684-plural-consumer-review-v1.json")
@@ -74,6 +74,23 @@ class AdoptionTests(unittest.TestCase):
         self.assertEqual(stale["expected"]["diagnostics"][0]["code"], "ANALYSIS_BASELINE_STALE")
         self.assertEqual([(v["expected"]["status"], v["expected"]["exitCode"]) for v in primary["vectors"][-2:]],
                          [("ok", 0), ("error", 2)])
+
+    def test_schema685_review_preserves_684_requests_and_checks_new_header_parameters(self):
+        folder = Path(__file__).with_name("fixtures")
+        previous = read_json(folder / "consumer-0.3.3-schema684.json")
+        self.assertEqual(digest((folder / "consumer-0.3.3-schema684.json").read_bytes()),
+                         "205207b7f51218ff6ed891940d0c0146556ee96bcdcca6dc98f107915de05019")
+        primary = self.policy["primary"][0]
+        self.assertEqual([v["request"] for v in primary["vectors"][:37]],
+                         [v["request"] for v in previous["vectors"]])
+        review = read_json(folder / "schema685-previous-consumer-review-v1.json")
+        checked = validate_review(review, previous, primary)
+        self.assertEqual(sum(not check["passed"] for check in checked["checks"]), 13)
+        stale = primary["vectors"][35]
+        self.assertEqual(stale["expected"]["diagnostics"][0]["code"], "ANALYSIS_BASELINE_STALE")
+        self.assertEqual([(v["expected"]["status"], v["expected"]["exitCode"]) for v in primary["vectors"][-4:]],
+                         [("ok", 0), ("error", 2), ("ok", 0), ("error", 2)])
+        self.assertIn("互斥", primary["vectors"][-1]["expected"]["diagnostics"][0]["message"])
 
     def test_initial_gate_keeps_historical_migration_visible(self):
         report = self.gate()
@@ -161,14 +178,20 @@ class AdoptionTests(unittest.TestCase):
 @unittest.skipUnless(os.environ.get("METRICCANVAS_RELAY_CANDIDATE"), "Actual candidate is provided by CI or a local review run")
 class ActualCurrentGateTests(unittest.TestCase):
     def test_actual_cli_rejects_verified_current_with_682_default(self):
+        self.assert_current_requires_migration("6.82", "0.1.0")
+
+    def test_actual_cli_rejects_verified_current_with_684_default(self):
+        self.assert_current_requires_migration("6.84", "0.3.4")
+
+    def assert_current_requires_migration(self, schema, release):
         candidate = Path(os.environ["METRICCANVAS_RELAY_CANDIDATE"])
-        with tempfile.TemporaryDirectory(prefix="actual-current-682-") as directory:
+        with tempfile.TemporaryDirectory(prefix="actual-current-old-schema-") as directory:
             current = Path(directory) / "current-682"
             shutil.copytree(candidate, current)
             # A verified current-tree compatibility fixture, not a historical product implementation.
             manifest = verify(current)["manifest"]
             metadata = {key: manifest[key] for key in METADATA_FIELDS}
-            metadata.update(defaultPageSchema="6.82", releaseVersion="0.1.0")
+            metadata.update(defaultPageSchema=schema, releaseVersion=release)
             (current / "mc-tools/release.json").unlink()
             seal(current, metadata)
             command = [sys.executable, "-I", "-S", "-B", str(Path(__file__).with_name("package_cli.py")),
