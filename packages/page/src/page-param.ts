@@ -1,3 +1,4 @@
+import { tableHeaderParamReferences, tableHeaderParamDeclarationErrors } from './table/header-params';
 import { chartOptionScopes } from './chart-option';
 import type { TypedError } from './errors';
 import { isValueFormatPreset, type ValueFormatPreset } from './field';
@@ -249,7 +250,8 @@ export function pageParamErrors(
     }
   });
 
-  const consumed = new Set<string>();
+  errors.push(...tableHeaderParamDeclarationErrors(document,byId));
+  const consumed = new Set(tableHeaderParamReferences(document).map(reference => reference.id));
   function queryConsumers(value: unknown): void {
     if (!value || typeof value !== 'object') return;
     if (Array.isArray(value)) { value.forEach(queryConsumers); return; }

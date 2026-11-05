@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "6.85",
+  "id": "table-header-filter-param-source",
+  "layout": "dashboard",
+  "meta": {
+    "title": "表头初值下钻入口"
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "表头初值下钻入口（合成）"
+            }
+          }
+        },
+        {
+          "id": "valid",
+          "type": "button",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "label": "有效意见数",
+            "action": {
+              "on": "click",
+              "navigate": {
+                "href": "/pages/table-header-filter-defaults?is-valid=是"
+              }
+            }
+          }
+        },
+        {
+          "id": "all",
+          "type": "button",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "label": "决策总次数",
+            "action": {
+              "on": "click",
+              "navigate": {
+                "href": "/pages/table-header-filter-defaults?is-valid=是&is-valid=否"
+              }
+            }
+          }
+        },
+        {
+          "id": "direct",
+          "type": "button",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "label": "直接打开",
+            "action": {
+              "on": "click",
+              "navigate": {
+                "href": "/pages/table-header-filter-defaults"
+              }
+            }
+          }
+        },
+        {
+          "id": "remote",
+          "type": "button",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "label": "西区查询分页",
+            "action": {
+              "on": "click",
+              "navigate": {
+                "href": "/pages/table-header-filter-defaults-query?region-input=西区"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "dataSources": {}
+}

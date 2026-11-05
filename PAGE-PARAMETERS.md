@@ -530,3 +530,9 @@ IOC Header 中的 Region 默认识别地区部 `region-dept` 与代表处 `rep-o
 任一标准参数出现时优先于旧 value/level 输入；都未传时沿用页面初值。树内改选后回写标准参数；最后空值和未知候选按既有严格 URL 模式及候选门禁处理。普通页面的同名 region 筛选不自动启用这些组织键。详细说明见[筛选声明](docs/page-metadata/filters.md#region-level-url)，完整合成入口 `/pages/ioc-region-url-demo`。
 
 6.81页头文字引用位于 `/sections/0/components/0/props/identity/...`，复用参数/筛选文字取值；组件显隐不改变页级参数和URL状态。旧根级路径继续兼容。
+
+## 表头参数初值（6.85）
+
+页面参数可由表头一次性消费，不必写入查询固定条件。声明 `params.query.dimensions:[{"id":"is-valid","dim_name":"是否有效意见","required":false}]`，在静态 main 字符串维度列写 `filterable:{"mode":"select","initialParam":"is-valid","allBehavior":"unrestricted"}`，并显式提供 enumValues“是/否”。无输入不限；保存 dim_value_list 可提供缺省；URL 重复键传多值。initialParam 与 defaultValues 互斥。allBehavior 缺省 values；unrestricted 全选省略该列条件，可包含原有 null/未知值。
+
+声明参数不会自动给查询增加条件。参数实例打开时冻结，之后 TableSession 拥有选择，改选、清空、刷新数据、分页、Tab 和导出不重新读取 URL；页面重新打开才形成新实例。不得把同一输入再接隐藏页级筛选、固定参数绑定或 DQE 原位引用以永久控制同一查询目标。非法引用、类型、位置及字典值拒绝；显式非法输入不回退保存值。Node 的 execute(metadata) 使用已填参数，与浏览器共用初始化规则。完整限制见[Table 正文](docs/page-metadata/components/table.md#table-header-params)，合成下钻从 `/pages/table-header-filter-param-source` 开始。

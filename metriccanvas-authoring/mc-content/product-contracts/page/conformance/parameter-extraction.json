@@ -546,7 +546,7 @@
     "report-period"
   ],
   "template": {
-    "schemaVersion": "6.84",
+    "schemaVersion": "6.85",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -1016,7 +1016,7 @@
     }
   },
   "filled": {
-    "schemaVersion": "6.84",
+    "schemaVersion": "6.85",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -1482,7 +1482,7 @@
     ]
   },
   "execution": {
-    "schemaVersion": "6.84",
+    "schemaVersion": "6.85",
     "id": "tokens-report",
     "layout": "report",
     "sections": [
@@ -1642,10 +1642,10 @@
         "multiple": true,
         "label": "区域",
         "dimName": "区域",
+        "path": "/params/query/dimensions/0",
         "value": [
           "中国区"
-        ],
-        "path": "/params/query/dimensions/0"
+        ]
       },
       {
         "id": "report-period",
@@ -1653,11 +1653,11 @@
         "required": true,
         "granularity": "month",
         "label": "报告期间",
+        "path": "/params/query/times/0",
         "value": {
           "start": "2026-01",
           "end": "2026-06"
-        },
-        "path": "/params/query/times/0"
+        }
       }
     ],
     "filters": [

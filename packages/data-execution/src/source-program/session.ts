@@ -1,3 +1,4 @@
+import {flattenPageComponents,hasHeaderDefaults,tableDefaultsRemote,normalizeTableSelectView} from '@metriccanvas/page/internal';
 import {hasPeriodComparison} from '@metriccanvas/page/internal';
 import {clearRecordJoinCache} from '../paged-join/records-reader';
 import {isPagedJoinQuery,reconcilePagedJoinView} from '@metriccanvas/page/internal';
@@ -72,10 +73,13 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   const candidates = createCandidateValidator(page, config.gateway, config);
 
   const cascaded = cascadeSourceIds(page.dataSources);
+  const headerTables = flattenPageComponents(page).filter(node => node.type === 'table');
+  const unsafeInitials = new Set(headerTables.filter(table => hasHeaderDefaults(table.props.columns) && tableDefaultsRemote(page,table) && page.dataSources[table.data.main]?.source.type === 'query').map(table => table.data.main));
   const defaults = new Map<string, import('../filter-values').FilterValue>();
   const defaultNow = config.now ?? config.clock?.() ?? new Date(), defaultInputs = config.displayInputs?.(), defaultRevision = config.filterRevision?.();
   for (const filter of page.filters ?? []) try { for (const [id, value] of initialFilterValues([filter], defaultNow, defaultInputs, defaultRevision)) defaults.set(id, value); } catch {/* An unavailable dynamic default cannot override an explicit valid selection. */ }
   function defaultConditions(id: string, values: FilterValues, reuse = true): boolean {
+    if(reuse&&unsafeInitials.has(id))return false;
     if(reuse&&overridesSource(id,values))return false;
     if(reuse&&[...conditionSourceIds(page,id)].some(key=>{const source=page.dataSources[key];return source?.source.type==='query'&&requiresQueryContext(source.source.query,page.filters);}))return false;
     const filters = new Set([...conditionSourceIds(page, id)].flatMap(key => { const source = page.dataSources[key]; return sourceFilterIds(source); }));
@@ -112,6 +116,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   const program = {
     prepareView(id:string,conditions:FilterValues,view:TableQueryView,field?:string):TableQueryView {
       const source=page.dataSources[id];
+      const table=headerTables.find(table=>table.data.main===id);
+      if(table)view=normalizeTableSelectView(page,id,table.props.columns,view);
       if(source?.source.type!=='pagedJoin'||!isPagedJoinQuery(source.source))return view;
       return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field),config.now??config.clock?.(),{displayInputs:config.displayInputs?.(),filterRevision:config.filterRevision?.()}).view;
     },

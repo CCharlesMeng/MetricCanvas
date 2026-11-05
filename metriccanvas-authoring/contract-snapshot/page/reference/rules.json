@@ -94,6 +94,25 @@
       ]
     },
     {
+      "id": "table-header-param-initialization",
+      "description": "字符串维度参数一次初始化及显式全选语义",
+      "valid": [
+        "table-header-filter-defaults",
+        "table-header-filter-defaults-query",
+        "table-header-filter-param-source"
+      ],
+      "invalid": [
+        "table-header-param-old-version",
+        "table-header-param-unknown",
+        "table-header-param-conflicting-default",
+        "table-header-param-no-enum",
+        "table-header-param-wrong-target",
+        "table-header-param-wrong-type",
+        "table-header-param-unknown-value",
+        "table-header-param-fixed-control"
+      ]
+    },
+    {
       "id": "table-header-filter-defaults",
       "description": "select 原始值默认筛选、字段类型与版本下限",
       "valid": [

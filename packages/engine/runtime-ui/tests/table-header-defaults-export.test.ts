@@ -7,7 +7,7 @@ import {prepareTableExport} from '../src/table/export/prepare';
 
 it('freezes applied defaults for export and respects subsequent explicit clearing',async()=>{
   const parsed=parsePage(document);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
-  const page=parsed.page,table=page.sections[1].components[0];if(table.type!=='table')throw Error('table');
+  const page=parsed.page,table=page.sections[2].components[0];if(table.type!=='table')throw Error('table');
   const filters=initialFilterValues(page.filters??[]);
   const controller=createTableController(page,()=>null,()=>{},()=>filters);
   const state={filters,tables:{[table.id]:controller.render(table)},headerFilters:{[table.id]:controller.headers(table)},currentYear:2026};

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.84",
+  "schemaVersion": "6.85",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "button.overview"
@@ -14,7 +14,8 @@
       "rules": [],
       "examples": [
         "references/page-metadata/examples/page-visibility-region-linkage.json",
-        "references/page-metadata/examples/reference-conditions-page.json"
+        "references/page-metadata/examples/reference-conditions-page.json",
+        "references/page-metadata/examples/table-header-filter-param-source.json"
       ]
     }
   ],

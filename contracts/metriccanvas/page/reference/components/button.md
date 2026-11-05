@@ -5,7 +5,7 @@
 完整规则和限制见[条件显隐](../conditions.md)，演示见page-visibility-region-linkage。
 
 
-页面协议 6.84。结构真源为本册[schema.json](../schema.json)，SHA256 `e1b49aa2769d3f1bd7792d37db1b44e7fa3de46cd2934effe5fdd862eefaef09`。字段表自动生成；可选不等于有默认值。
+页面协议 6.85。结构真源为本册[schema.json](../schema.json)，SHA256 `b0ba03bf1cfbdc0914e6b9ab5dc05d015b3b63dadf9d545217e08eb0f999e751`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -131,6 +131,7 @@ Schema位置：`#/definitions/buttonComponent/properties/props/properties/action
 - [最小组件](../examples/component-button.json)：独立完整页面，保留必要语义依赖。
 - [page-visibility-region-linkage](../examples/page-visibility-region-linkage.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-conditions-page](../examples/reference-conditions-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-header-filter-param-source](../examples/table-header-filter-param-source.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-button.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

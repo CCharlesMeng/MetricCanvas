@@ -1,6 +1,6 @@
 import {isPagedJoinQuery,pagedJoinCandidateView,type PagedJoinDataSource} from '@metriccanvas/page/internal';
 import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
-import {columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
+import {normalizeTableSelectView,columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
 import { tableColumnPresentation } from '../../../runtime/src/table/column-presentation';
 import { fieldSelectionIds, sourceFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
@@ -65,7 +65,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         if (!session) {
             const base=defaultSourceView(page, table.data.main, table.props.pagination?.mode === 'local' ? table.props.pagination.pageSize : 20);
             if(tableDefaultInputsPending(declaration.props.columns,context()))pendingDefaults.add(table.id);
-            session = createTableSession(defaultTableView(page,declaration,context(),base), changed);
+            session = createTableSession(defaultTableView(page,declaration,context(),base), changed, view => normalizeTableSelectView(page,table.data.main,declaration.props.columns,view));
             sessions.set(table.id, session);
         }
         if(pendingDefaults.has(table.id)&&!tableDefaultInputsPending(declaration.props.columns,context())){
@@ -250,8 +250,10 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 applied[field] = normalized;
             if (remote(table))
                 operate(table,()=>stream()?.setQueryHeaderFilters(table.data.main, applied,field));
-            else
+            else {
                 local(table).setHeaders(applied);
+                if (value?.mode === 'select') delete draft[field];
+            }
             changed();
         },
         reset(table: TableComponent, previous: FilterValues, next: FilterValues) {

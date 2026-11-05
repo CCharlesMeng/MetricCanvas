@@ -451,6 +451,8 @@ normalizeDisplayQueryRows
 normalizePageDocument
 normalizeQueryRows
 normalizeQueryTime
+normalizeTableSelectValues
+normalizeTableSelectView
 numberRangeIssue
 objectDateBoundary
 objectOutputFields
@@ -539,6 +541,8 @@ tableAlignedSlots
 tableColumnLeaves
 tableColumnNavigation
 tableDefaultsRemote
+tableHeaderInputErrors
+tableHeaderParamReferences
 tableHeaders
 tableLeafColumns
 tablePinnedErrors

@@ -1,0 +1,38 @@
+{
+  "case": "table-header-param-old-version",
+  "invariant": "table-header-param-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表头参数初值与显式全选不限 由 6.85 引入，文档声明的是 6.84",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/initialParam",
+        "/sections/1/components/0/props/columns/2/filterable/allBehavior"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "initialParam": "region-input",
+                    "allBehavior": "unrestricted"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-param-old-version.json"
+}

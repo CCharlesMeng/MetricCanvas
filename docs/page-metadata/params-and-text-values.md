@@ -77,3 +77,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 时间选择统一使用验收页面 `report-date-filter-example`：单月与范围文字联动分区覆盖月份主标题、独立范围、同起止、清空、多筛选组合和参数文字；范围明细分区保留 DQE 仿真查询联动，禁止未来时间分区覆盖月份／日期边界。文字和受限时间控件不驱动明细查询。日期型、非法输入、可选参数、版本和导出捕获另由行为测试覆盖；仿真不代表真实 DQE 集成。
 
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
+
+## 表头参数消费者（6.85）
+
+表头 select 叶子列的 initialParam 引用 params.query.dimensions 字符串维度参数，作为实例初值，与 defaultValues 互斥；不要求固定 paramBindings，不得重复永久控制目标。参数保存值提供缺省，URL 重复键提供多值；缺席可选参数不限，非法值拒绝。初值只在新实例消费，TableSession 拥有之后的已提交选择，清空、分页、刷新、Tab、恢复空视图与导出不补回 URL。allBehavior 的全选规则、静态 main 范围和查询限制见[Table 正文](components/table.md#table-header-params)。

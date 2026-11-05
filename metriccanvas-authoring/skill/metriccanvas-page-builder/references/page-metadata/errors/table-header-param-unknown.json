@@ -1,0 +1,52 @@
+{
+  "case": "table-header-param-unknown",
+  "invariant": "table-header-param-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表头初值必须引用 params.query.dimensions 参数",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/initialParam"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页面参数 region-input 没有任何消费者;未被消费的参数通常意味着绑错了位置",
+      "paths": [
+        "/params/query/dimensions/0/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "initialParam": "missing"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "params": {
+      "query": {
+        "dimensions": [
+          {
+            "id": "region-input"
+          }
+        ]
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/table-header-param-unknown.json"
+}

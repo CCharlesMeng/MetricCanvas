@@ -1,0 +1,62 @@
+{
+  "case": "table-header-param-wrong-type",
+  "invariant": "table-header-param-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "参数初值首期只支持字符串维度列",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/initialParam"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "维度参数 dim_name 必须与查询目标一致",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/initialParam"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 amount 的 role 为 measure，此处要求 dimension",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格列字段绑定重复:main:amount",
+      "paths": [
+        "/sections/1/components/0/props/columns/3/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "mode": "select",
+                    "initialParam": "region-input",
+                    "allBehavior": "unrestricted"
+                  }
+                },
+                {
+                  "field": "amount"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

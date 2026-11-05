@@ -1,5 +1,8 @@
 # 数据获取与查询模型
 
+**表头参数初始化（[ADR-0130](../0130-table-header-parameters-seed-session-view.md)）：** 6.85 的 initialParam 仅声明实例初值，TableSession 拥有用户当前选择；allBehavior 显式区分全选值集合与不限。共享执行先归一化再检查组合成员，恢复空视图与清空不补初值，导出冻结当前视图。参数、视图和 DQE HTTP 形状不变；缺少视图证明的远程快照继续拒用。此条扩充0128，保持0108/0125约束。
+
+
 **列头筛选默认值（[ADR-0128](../0128-table-header-filter-declared-defaults.md)）：** 6.82 的 select 列以 defaultValues 声明固定原始值；共享执行层在首次有效读取前转为既有表格视图，TableSession 拥有实际已提交状态。远程源须独占，本地完整结果按实例隔离；按需 pagedJoin 的默认排序与默认筛选须同成员。显式恢复的空视图保持清空，候选缺项不撤销条件；无视图证明的远程 initial/执行回执不复用。此条只扩充初始化意图，保持0108/0114/0125的执行与候选约束。
 
 **期间比较查询分页（[ADR-0127](../0127-query-paged-period-comparison-and-row-computation.md)）：** 6.78复用按需pagedJoin，由当期业务行域选页、历史成员按本页键补查；组合数据源同层仅开放逐行delta/ratio，投影可按度量声明缺记录策略。SourceProgram拥有期间事实、预检和执行上下文；主查询决定totalCount，完整导出逐页补查，计算列不冒充全局排序筛选。局部扩展0108/0125的组合结果计算位置，保持0095完整跨源计算及0107普通结果绑定窗口语义。真实DQE另验。

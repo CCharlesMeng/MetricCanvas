@@ -1,0 +1,348 @@
+{
+  "case": "table-header-param-old-version",
+  "invariant": "table-header-param-initialization",
+  "input": {
+    "schemaVersion": "6.84",
+    "id": "table-header-filter-defaults-query",
+    "layout": "dashboard",
+    "meta": {
+      "title": "表头筛选：URL 区域初值与查询分页",
+      "description": "DQE Sim 合成审批记录，经默认标准网关和 HTTP 代理读取。"
+    },
+    "dataSources": {
+      "records": {
+        "fields": {
+          "id": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "审批记录ID"
+          },
+          "business": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "商务编号"
+          },
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "区域"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "审批金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Demo/Approval Details",
+                  "output_fields": [
+                    "审批记录ID",
+                    "商务编号",
+                    "区域",
+                    "审批金额"
+                  ],
+                  "filter": {
+                    "fields": []
+                  },
+                  "order": {
+                    "order_by_field": "审批记录ID",
+                    "type": "ASC",
+                    "offset": 0,
+                    "limit": 2
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "param-records": {
+        "fields": {
+          "id": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "审批记录ID"
+          },
+          "business": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "商务编号"
+          },
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "区域"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "审批金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Demo/Approval Details",
+                  "output_fields": [
+                    "审批记录ID",
+                    "商务编号",
+                    "区域",
+                    "审批金额"
+                  ],
+                  "filter": {
+                    "fields": []
+                  },
+                  "order": {
+                    "order_by_field": "审批记录ID",
+                    "type": "ASC",
+                    "offset": 0,
+                    "limit": 2
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "表头筛选：URL 区域初值与查询分页"
+              }
+            }
+          },
+          {
+            "id": "url-0",
+            "type": "button",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "label": "URL：东区",
+              "action": {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/table-header-filter-defaults-query?region-input=东区"
+                }
+              }
+            }
+          },
+          {
+            "id": "url-1",
+            "type": "button",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "label": "URL：西区",
+              "action": {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/table-header-filter-defaults-query?region-input=西区"
+                }
+              }
+            }
+          },
+          {
+            "id": "url-2",
+            "type": "button",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "label": "URL：不限",
+              "action": {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/table-header-filter-defaults-query"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "parameter-queries",
+        "components": [
+          {
+            "id": "param-query-records",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "param-records"
+            },
+            "props": {
+              "title": "参数初始化区域（合成 DQE）",
+              "rowKey": "id",
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "记录编号",
+                  "width": 120
+                },
+                {
+                  "field": "business",
+                  "title": "商务编号",
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "region",
+                  "title": "区域",
+                  "enumValues": [
+                    {
+                      "value": "东区",
+                      "label": "东区"
+                    },
+                    {
+                      "value": "西区",
+                      "label": "西区"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "initialParam": "region-input",
+                    "allBehavior": "unrestricted"
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "amount",
+                  "title": "金额",
+                  "width": 120
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "默认东区审批记录"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "static-defaults",
+        "components": [
+          {
+            "id": "query-records",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "东区审批记录（合成 DQE）",
+              "rowKey": "id",
+              "columns": [
+                {
+                  "field": "id",
+                  "title": "记录编号",
+                  "width": 120
+                },
+                {
+                  "field": "business",
+                  "title": "商务编号",
+                  "filterable": {
+                    "mode": "select"
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "region",
+                  "title": "区域",
+                  "enumValues": [
+                    {
+                      "value": "东区",
+                      "label": "东区"
+                    },
+                    {
+                      "value": "西区",
+                      "label": "西区"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "defaultValues": [
+                      "东区"
+                    ]
+                  },
+                  "width": 120
+                },
+                {
+                  "field": "amount",
+                  "title": "金额",
+                  "width": 120
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "默认东区审批记录"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "params": {
+      "query": {
+        "dimensions": [
+          {
+            "id": "region-input",
+            "dim_name": "区域",
+            "required": false
+          }
+        ]
+      }
+    }
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/columns/2/filterable/initialParam",
+      "message": "表头参数初值与显式全选不限 由 6.85 引入，文档声明的是 6.84"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/columns/2/filterable/allBehavior",
+      "message": "表头参数初值与显式全选不限 由 6.85 引入，文档声明的是 6.84"
+    }
+  ]
+}

@@ -6,7 +6,7 @@ columns区分普通字段列和kind:group递归列，分组列children保持层�
 
 ## 列头筛选默认值（6.82）
 
-select 叶子列可声明 `filterable: {"mode":"select","defaultValues":["pending"]}`，初次有效读取直接应用原始值，控件勾选、筛选标记、数据和导出保持一致。默认值为字符串或有限数值数组，保持原始类型，重复值非法；字段须是静态 main 维度绑定，普通远程查询还须有 queryField 映射，不能静默跳过条件。不支持 byFilter、其他数据槽、参数引用、日期范围、数值范围或行内子表。省略或空数组初始无该列条件；显式空数组仍要求本能力版本。
+select 叶子列可声明 `filterable: {"mode":"select","defaultValues":["pending"]}`，初次有效读取直接应用原始值，控件勾选、筛选标记、数据和导出保持一致。默认值为字符串或有限数值数组，保持原始类型，重复值非法；字段须是静态 main 维度绑定，普通远程查询还须有 queryField 映射，不能静默跳过条件。静态默认值不接受参数对象；参数初值使用下节 6.85 的 initialParam。不支持 byFilter、其他数据槽、日期范围、数值范围或行内子表。省略或空数组初始无该列条件；显式空数组仍要求本能力版本。
 
 有 enumValues 时默认项须属于字典，显示字典 label；无字典时沿用动态候选，不要求当前候选中存在默认项。候选尚未加载、无匹配或请求失败均保留已选值并允许取消，不自动扩大查询。多个默认值按集合 OR，多个列及页面业务条件继续 AND 收窄；空交集显示正常空态。默认值不改写原查询中的固定条件。
 
@@ -15,6 +15,20 @@ select 叶子列可声明 `filterable: {"mode":"select","defaultValues":["pendin
 inline 与明确完整且无查询窗口的 query 按表格实例本地筛选，可共享源。远程默认筛选要求表格独占页面数据源，包括其他组件、AI 总结和查询依赖引用；不得让默认值影响共享消费者。按需 pagedJoin 的有效默认条件与默认排序须来自同一允许选页的查询成员，冲突拒绝，不逐列覆盖或退回当前页过滤。缺少视图证明的远程初始快照和执行回执不复用；独立取数与运行时遵循同一初始化规则。导出冻结当前已提交条件，用户已清空时不重新消费声明默认值。
 
 可观察入口 `/pages/table-header-filter-defaults` 使用内联合成数据，展示多列默认、数值类型、同源独立状态、候选缺项和列显隐；`/pages/table-header-filter-defaults-query` 使用默认网关通过 HTTP 代理访问 DQE Sim，验证首请求已带东区条件、查询分页、清空和 Excel。真实 DQE、Relay 和部署另验。
+
+<a id="table-header-params"></a>
+
+## 表头参数初值与全选语义（6.85）
+
+select 叶子列声明 `filterable: {"mode":"select","initialParam":"is-valid","allBehavior":"unrestricted"}`。`initialParam` 引用现有 `params.query.dimensions` 字符串维度参数，与 `defaultValues` 互斥。可选参数无输入及保存值时不限；保存的 `dim_value_list` 提供缺省初值；必需参数缺失沿用参数诊断。多值 URL 使用重复键 `?is-valid=是&is-valid=否`。空值、重复、错误类型和字典外输入拒绝，不回退保存值；不得把 JSON 数组字符串当多值编码。
+
+参数只供页面实例首次初始化，TableSession 唯一持有之后的已提交选择。初始请求直接包含条件，用户改选“否”或清空后，刷新数据、翻页、Tab、候选更新及导出都保持当前选择。显式恢复视图整体优先，包括空 predicates；恢复仍校验新声明的类型、字典和全选规则。列隐藏后重显不恢复初值；组织父子表的完整重置按当前有效列恢复本实例基线。普通详情浮层仍按现行只读表格约束禁止表头筛选，本能力不开放该位置；也不会重新读取外层 URL 或借用来源表会话。
+
+`allBehavior` 缺省 `values`，全选仍发送原始值集合；`unrestricted` 必须有显式 `enumValues`，选择完整枚举集时省略该列条件并回显不限。集合比较保持类型、忽略次序；初始化、手动提交和恢复视图使用同一规则。枚举字典本身仅提供展示名称，不自动意味着不限。不限可能返回字典外原始值和 null；需要排除它们时使用 `values`。保留数值静态 defaultValues，首期不接受数值参数初值。
+
+字段必须为静态 main 字符串维度；远程字段沿显式 projection 定位成员及 queryField，并核对参数 dim_name。同一输入不得通过固定 paramBindings、DQE 原位引用或隐藏页级 filterBindings 永久约束同一目标；独立业务、权限和时间条件仍按交集生效。远程所有权、待定门控、单成员分页和 records 限制沿用上节，不逐列覆盖初值。声明了 initialParam 即使当前无值也保留快照保护；无视图证明的普通 initial/执行回执不复用，Node 单次取数不写回无视图信息的已筛选普通 initial。共享层不读取 window.location。
+
+入口 `/pages/table-header-filter-param-source` 提供有效意见数（是）、决策总次数（是、否）、直接打开与西区查询分页。内联页 `/pages/table-header-filter-defaults?is-valid=是` 用四条合成记录比较两种全选行为；HTTP 仿真页 `/pages/table-header-filter-defaults-query?region-input=西区` 观察初始请求与查询分页。完整操作和证据边界见 pages/capabilities/table/README.md。两个真实业务原件缺失，本示例不是业务页迁移或真实 DQE 证明。
 
 ## 前端列枚举（6.80）
 

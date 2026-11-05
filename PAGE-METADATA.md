@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.85：select 表头可用 `initialParam` 引用页面维度参数作为一次性初值；`allBehavior` 显式区分枚举全选的值集合与不限。用户清空后不补回初值，首请求、恢复及导出共用会话视图。见[表头参数初值](docs/page-metadata/components/table.md#table-header-params)。
+
 6.83 支持独立单行指标关联：`joinAggregate.keys: []` 将独立查询的整体均值等度量用于每个主行，仅允许 unique，空值、失败和多行结果沿完整依赖规则处理。无需新增图表专用字段；均值查询不绑定区域即可保持全局范围。语义见[具名算子](docs/page-metadata/compute.md#独立单行指标关联683)，合成入口 `/pages/chart-global-benchmark`。
 
 

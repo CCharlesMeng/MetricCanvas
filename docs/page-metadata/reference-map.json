@@ -1238,7 +1238,8 @@
       ],
       "examples": [
         "page-visibility-region-linkage",
-        "reference-conditions-page"
+        "reference-conditions-page",
+        "table-header-filter-param-source"
       ],
       "sources": [
         "packages/page/src/schema/components/button.ts"
@@ -1826,7 +1827,9 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse": "保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。",
     "#/definitions/iocHeaderComponent/properties/props/properties/readOnly": "6.41：页内筛选只读，所有用户筛选写入共用只读门禁；不是服务权限。",
     "#/definitions/iocHeaderComponent/properties/props/properties/note": "页头说明；可用于只读原因，纯文本。",
-    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout": "6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。"
+    "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout": "6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。",
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/initialParam": "6.85：字符串维度参数初值；与 defaultValues 互斥，只初始化会话。",
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior": "缺省 values 保留集合；unrestricted 要求枚举，全选省略条件。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2157,7 +2160,9 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout=\"stacked\"": "身份区与筛选区上下排布；缺省。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。",
     "6.83": "独立完整单行指标通过无键unique关联用于全部主行。",
-    "6.84": "布尔勾选覆盖维度筛选，完整授权名单为空时产生空结果。"
+    "6.84": "布尔勾选覆盖维度筛选，完整授权名单为空时产生空结果。",
+    "#/properties/schemaVersion=\"6.85\"": "表头字符串维度参数初值与显式全选不限。",
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior=\"unrestricted\"": "选中完整显式枚举集时省略该列条件，回显不限，可包含原有 null 和未知值。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2865,6 +2870,17 @@
         "受控多槽与结果覆盖"
       ],
       "dependencies": []
+    },
+    "table.headerParams": {
+      "module": "table",
+      "title": "表头参数初值与全选语义",
+      "roots": [
+        "#/definitions/tableColumn/properties/filterable"
+      ],
+      "dependencies": [],
+      "headings": [
+        "表头参数初值与全选语义（6.85）"
+      ]
     }
   },
   "authoringSemanticHeadings": {
@@ -2883,7 +2899,8 @@
       "确定性时间参数",
       "分层参数与查询侧时间窗口",
       "筛选文本取值（6.15）",
-      "文本片段组合（6.23）"
+      "文本片段组合（6.23）",
+      "表头参数消费者（6.85）"
     ],
     "data-sources.md": [
       "加载时保留组件结构",
@@ -3012,6 +3029,7 @@
     ],
     "components/table.md": [
       "列头筛选默认值（6.82）",
+      "表头参数初值与全选语义（6.85）",
       "前端列枚举（6.80）",
       "决策意见明细合成预览",
       "列条件显隐（6.62）",

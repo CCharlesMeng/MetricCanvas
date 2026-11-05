@@ -1,3 +1,6 @@
+import { tableHeaderInputErrors, tableHeaderParamReferences } from './table/header-params';
+import { tableDefaultsRemote } from './table/header-defaults';
+import { flattenPageComponents } from './component-walk';
 import type { TemporalEvaluation } from './temporal-evaluation';
 import {queryFilterIds} from './amount-filter';
 import { timeFilterBoundaryError } from './time-filter-boundary';
@@ -51,6 +54,7 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
       } else if (Array.isArray(document.params) && ['6.5', '6.6'].includes(document.schemaVersion)) { delete p.default; p.value=structuredClone(value); }
     }
   }
+  issues.push(...tableHeaderInputErrors(structural.page,values).map(error => issue(error,'INVALID_VALUE')));
   if(issues.length)return {ok:false,issues};
   for (const id of changedParamSourceIds(structural.page, values)) {
     const source = document.dataSources[id]?.source;
@@ -73,7 +77,10 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     const value=values.get(p.id);
     if(value===undefined?p.required!==false:!matchesParamDeclaration(value,p))throw Error(`参数取值缺失或类型错误:${p.id}`);
   }
+  const inputErrors = tableHeaderInputErrors(page,values);
+  if (inputErrors.length) throw Object.assign(new Error(inputErrors[0].message), inputErrors[0]);
   const resolved=structuredClone(page);
+  for (const param of resolved.params ?? []) { delete param.value; const value = values.get(param.id); if (value !== undefined) param.value = structuredClone(value); }
   const changed = changedParamSourceIds(page, values);
   for(const [id, source] of Object.entries(resolved.dataSources))if(source.source.type==='query') {
     source.source.query=initializeQueryParams(source.source.query,values);
@@ -123,6 +130,20 @@ function changedParamSourceIds(page: Page, values: ReadonlyMap<string, PageParam
     const value = param.value ?? param.default;
     if (value !== undefined) saved.set(param.id, value);
   }
+  const changed = changedQueryParamSources(page,saved,values);
+  for (const id of changedHeaderParamSources(page,saved,values)) changed.add(id);
+  return affectedSourceIds(page.dataSources, changed);
+}
+
+function changedHeaderParamSources(page: Page, saved: ReadonlyMap<string,PageParamValue>, values: ReadonlyMap<string,PageParamValue>): string[] {
+  return flattenPageComponents(page).flatMap(table => {
+    if (table.type !== 'table' || !tableDefaultsRemote(page,table)) return [];
+    const references = tableHeaderParamReferences({sections:[{components:[table]}]});
+    return references.some(ref => canonicalizeJson(saved.get(ref.id) ?? null) !== canonicalizeJson(values.get(ref.id) ?? null)) ? [table.data.main] : [];
+  });
+}
+
+function changedQueryParamSources(page: Page, saved: ReadonlyMap<string,PageParamValue>, values: ReadonlyMap<string,PageParamValue>): Set<string> {
   const changed = new Set<string>();
   for (const [id, source] of Object.entries(page.dataSources)) {
     if (source.source.type !== 'query') continue;
@@ -136,5 +157,5 @@ function changedParamSourceIds(page: Page, values: ReadonlyMap<string, PageParam
       if (paramId && canonicalizeJson(saved.get(paramId) ?? null) !== canonicalizeJson(values.get(paramId) ?? null)) changed.add(id);
     }
   }
-  return affectedSourceIds(page.dataSources, changed);
+  return changed;
 }

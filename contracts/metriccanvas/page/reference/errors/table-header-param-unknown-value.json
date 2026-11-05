@@ -1,0 +1,36 @@
+{
+  "case": "table-header-param-unknown-value",
+  "invariant": "table-header-param-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认筛选值必须存在于列枚举中",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/initialParam/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "initialParam": {}
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-param-unknown-value.json"
+}

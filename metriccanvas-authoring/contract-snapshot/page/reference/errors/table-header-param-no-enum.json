@@ -1,0 +1,36 @@
+{
+  "case": "table-header-param-no-enum",
+  "invariant": "table-header-param-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "全选不限必须声明 enumValues",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/allBehavior"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "allBehavior": "unrestricted"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-param-no-enum.json"
+}

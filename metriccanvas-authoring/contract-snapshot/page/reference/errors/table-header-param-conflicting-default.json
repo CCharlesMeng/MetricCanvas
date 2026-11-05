@@ -1,0 +1,36 @@
+{
+  "case": "table-header-param-conflicting-default",
+  "invariant": "table-header-param-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "initialParam 与 defaultValues 互斥",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/initialParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "initialParam": "region-input"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-param-conflicting-default.json"
+}

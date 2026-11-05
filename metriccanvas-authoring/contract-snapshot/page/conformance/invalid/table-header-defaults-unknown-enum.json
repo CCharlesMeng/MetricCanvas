@@ -2,12 +2,12 @@
   "case": "table-header-defaults-unknown-enum",
   "invariant": "table-header-filter-defaults",
   "input": {
-    "schemaVersion": "6.82",
+    "schemaVersion": "6.85",
     "id": "table-header-filter-defaults",
     "layout": "dashboard",
     "meta": {
-      "title": "列头筛选默认选中值",
-      "description": "内联合成数据。默认选中、共享数据源隔离、候选缺项和隐藏恢复。"
+      "title": "表头筛选：URL 参数初值",
+      "description": "内联合成数据。URL 初始化是、否或不限，手动修改后保持当前表头会话；下方保留固定默认值对照。"
     },
     "filters": [
       {
@@ -95,6 +95,40 @@
             }
           ]
         }
+      },
+      "decisions": {
+        "fields": {
+          "record-id": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "is-valid": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "record-id": "有效记录",
+              "is-valid": "是"
+            },
+            {
+              "record-id": "无效记录",
+              "is-valid": "否"
+            },
+            {
+              "record-id": "空值记录",
+              "is-valid": null
+            },
+            {
+              "record-id": "未知记录",
+              "is-valid": "待定"
+            }
+          ]
+        }
       }
     },
     "sections": [
@@ -109,7 +143,7 @@
             },
             "props": {
               "identity": {
-                "title": "列头筛选默认选中值"
+                "title": "表头筛选：URL 参数初值"
               },
               "filterIds": [
                 "show-status"
@@ -123,7 +157,233 @@
               "span": 12
             },
             "props": {
-              "body": "内联合成数据。清空列头条件后保持清空，隐藏审批状态列再显示不会恢复默认选择。"
+              "body": "内联合成数据。点击入口切换 URL，打开表头查看勾选；手动选择或清空后，翻页与导出保持当前条件。下方保留固定默认值对照。"
+            }
+          },
+          {
+            "id": "url-0",
+            "type": "button",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "label": "URL：是",
+              "action": {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/table-header-filter-defaults?is-valid=是"
+                }
+              }
+            }
+          },
+          {
+            "id": "url-1",
+            "type": "button",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "label": "URL：否",
+              "action": {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/table-header-filter-defaults?is-valid=否"
+                }
+              }
+            }
+          },
+          {
+            "id": "url-2",
+            "type": "button",
+            "layout": {
+              "span": 4
+            },
+            "props": {
+              "label": "URL：不限",
+              "action": {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/table-header-filter-defaults"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "parameter-initialization",
+        "components": [
+          {
+            "id": "param-unrestricted",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "decisions"
+            },
+            "props": {
+              "title": "参数初值（全选不限）",
+              "columns": [
+                {
+                  "field": "record-id",
+                  "title": "记录"
+                },
+                {
+                  "field": "is-valid",
+                  "title": "是否有效意见",
+                  "enumValues": [
+                    {
+                      "value": "是",
+                      "label": "是"
+                    },
+                    {
+                      "value": "否",
+                      "label": "否"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "initialParam": "is-valid",
+                    "allBehavior": "unrestricted"
+                  }
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "param-unrestricted"
+                }
+              }
+            }
+          },
+          {
+            "id": "param-values",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "decisions"
+            },
+            "props": {
+              "title": "参数初值（显式值集合）",
+              "columns": [
+                {
+                  "field": "record-id",
+                  "title": "记录"
+                },
+                {
+                  "field": "is-valid",
+                  "title": "是否有效意见",
+                  "enumValues": [
+                    {
+                      "value": "是",
+                      "label": "是"
+                    },
+                    {
+                      "value": "否",
+                      "label": "否"
+                    }
+                  ],
+                  "filterable": {
+                    "mode": "select",
+                    "initialParam": "is-valid",
+                    "allBehavior": "values"
+                  }
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "param-values"
+                }
+              }
+            }
+          },
+          {
+            "id": "param-tabs",
+            "type": "tabContainer",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "tabs": [
+                {
+                  "id": "details",
+                  "label": "参数明细",
+                  "component": {
+                    "id": "param-tab-records",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "decisions"
+                    },
+                    "props": {
+                      "title": "参数 Tab 会话",
+                      "columns": [
+                        {
+                          "field": "record-id",
+                          "title": "记录"
+                        },
+                        {
+                          "field": "is-valid",
+                          "title": "是否有效意见",
+                          "enumValues": [
+                            {
+                              "value": "是",
+                              "label": "是"
+                            },
+                            {
+                              "value": "否",
+                              "label": "否"
+                            }
+                          ],
+                          "filterable": {
+                            "mode": "select",
+                            "initialParam": "is-valid",
+                            "allBehavior": "unrestricted"
+                          }
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 2
+                      },
+                      "toolbar": {
+                        "export": {
+                          "format": "xlsx",
+                          "filename": "param-unrestricted"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "other",
+                  "label": "其他面板",
+                  "component": {
+                    "id": "tab-text",
+                    "type": "text",
+                    "layout": {
+                      "span": 12
+                    },
+                    "props": {
+                      "body": "返回参数明细时保留用户选择。"
+                    }
+                  }
+                }
+              ]
             }
           }
         ]
@@ -311,12 +571,23 @@
           }
         ]
       }
-    ]
+    ],
+    "params": {
+      "query": {
+        "dimensions": [
+          {
+            "id": "is-valid",
+            "dim_name": "是否有效意见",
+            "required": false
+          }
+        ]
+      }
+    }
   },
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/1/components/0/props/columns/1/filterable/defaultValues/0",
+      "path": "/sections/2/components/0/props/columns/1/filterable/defaultValues/0",
       "message": "默认筛选值必须存在于列枚举中"
     }
   ]

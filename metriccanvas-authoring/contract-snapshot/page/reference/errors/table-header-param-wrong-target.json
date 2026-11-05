@@ -1,0 +1,36 @@
+{
+  "case": "table-header-param-wrong-target",
+  "invariant": "table-header-param-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "维度参数 dim_name 必须与查询目标一致",
+      "paths": [
+        "/sections/1/components/0/props/columns/2/filterable/initialParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "initialParam": "region-input"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-header-param-wrong-target.json"
+}

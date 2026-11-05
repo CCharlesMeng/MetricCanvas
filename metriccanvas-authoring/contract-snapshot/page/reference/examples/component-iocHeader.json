@@ -1,25 +1,25 @@
 {
-  "id": "relay-multislot-presentation",
-  "schemaVersion": "6.84",
+  "schemaVersion": "6.85",
+  "id": "table-header-filter-param-source",
   "layout": "dashboard",
-  "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "page-header",
+          "id": "header",
           "type": "iocHeader",
           "layout": {
             "span": 12
           },
           "props": {
             "identity": {
-              "title": "多槽与呈现（合成证据）"
+              "title": "表头初值下钻入口（合成）"
             }
           }
         }
       ]
     }
-  ]
+  ],
+  "dataSources": {}
 }

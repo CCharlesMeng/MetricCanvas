@@ -4,12 +4,24 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "表头参数初值与显式全选不限 由 6.85 引入，文档声明的是 6.80",
+      "paths": [
+        "/sections/1/components/0/props/columns/1/filterable/initialParam",
+        "/sections/1/components/0/props/columns/1/filterable/allBehavior",
+        "/sections/1/components/1/props/columns/1/filterable/initialParam",
+        "/sections/1/components/1/props/columns/1/filterable/allBehavior",
+        "/sections/1/components/2/props/tabs/0/component/props/columns/1/filterable/initialParam",
+        "/sections/1/components/2/props/tabs/0/component/props/columns/1/filterable/allBehavior"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "表格 select 列头筛选固定默认选中值 由 6.82 引入，文档声明的是 6.80",
       "paths": [
-        "/sections/1/components/0/props/columns/1/filterable/defaultValues",
-        "/sections/1/components/0/props/columns/2/filterable/defaultValues",
-        "/sections/1/components/1/props/columns/1/filterable/defaultValues",
-        "/sections/1/components/2/props/columns/1/filterable/defaultValues"
+        "/sections/2/components/0/props/columns/1/filterable/defaultValues",
+        "/sections/2/components/0/props/columns/2/filterable/defaultValues",
+        "/sections/2/components/1/props/columns/1/filterable/defaultValues",
+        "/sections/2/components/2/props/columns/1/filterable/defaultValues"
       ]
     },
     {
@@ -36,6 +48,57 @@
               },
               "filterIds": [
                 "…（共1项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "initialParam": "is-valid",
+                    "allBehavior": "unrestricted"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "initialParam": "is-valid",
+                    "allBehavior": "values"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "tabs": [
+                {
+                  "component": {
+                    "props": {
+                      "columns": [
+                        "…",
+                        {
+                          "filterable": {
+                            "initialParam": "is-valid",
+                            "allBehavior": "unrestricted"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
               ]
             }
           }

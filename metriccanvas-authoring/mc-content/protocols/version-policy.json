@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 84,
-  "current": "6.84",
+  "minor": 85,
+  "current": "6.85",
   "capabilities": {
+    "table-select-param-initialization": {
+      "minor": 85,
+      "description": "表头参数初值与显式全选不限",
+      "legacyReadable": false
+    },
     "compute-scalar-join": {
       "minor": 83,
       "description": "独立单行度量无键关联到全部主行",
@@ -854,6 +859,7 @@
     "6.81",
     "6.82",
     "6.83",
-    "6.84"
+    "6.84",
+    "6.85"
   ]
 }

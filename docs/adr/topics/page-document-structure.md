@@ -1,5 +1,8 @@
 # 页面文档结构与书写原则
 
+**表头参数初始化（[ADR-0130](../0130-table-header-parameters-seed-session-view.md)）：** 6.85 的 initialParam 仅声明实例初值，TableSession 拥有用户当前选择；allBehavior 显式区分全选值集合与不限。共享执行先归一化再检查组合成员，恢复空视图与清空不补初值，导出冻结当前视图。参数、视图和 DQE HTTP 形状不变；缺少视图证明的远程快照继续拒用。此条扩充0128，保持0108/0125约束。
+
+
 **作者默认筛选与用户会话（[ADR-0128](../0128-table-header-filter-declared-defaults.md)）：** 6.82 的 Table select 叶子列可声明 filterable.defaultValues；只持久化作者的初始意图，用户操作后的筛选仍不回写页面文档，局部澄清0086的会话态表述。省略或空数组初始不筛选；清空、重显、完整重置与恢复行为由引擎统一确定，不增加页面策略开关。
 
 **独立置顶汇总行：** [ADR-0122](../0120-table-scalar-fallback-and-independent-pinned-row.md) 新增 6.62 的组件及列级 pinnedTop，最多一行且每页显示，无序号、不计明细总数，汇总失败不阻断明细但阻止完整 Excel 导出；现有 rowKindField 和 grandTotal 不变。

@@ -620,3 +620,5 @@ Tab 多表格滚动验收：[`tab-multiple-tables`](capabilities/layout/tab-mult
 Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/navigation/README.md#embed-自动读取-url-参数)，入口 `/pages/embed-url-params?account-name=合成账号甲`，实际 ES 包示例为 `examples/url-params.html`。
 
 创作关联与普通换源：[/pages/authoring-analysis-rebind](capabilities/authoring/analysis-rebind/README.md)，覆盖共享消费者和原子拒绝。受控多槽与 Tokens 呈现：[/pages/relay-multislot-presentation](capabilities/authoring/relay-multislot-presentation/README.md)，覆盖乱序、缺匹配和百万显示，均为合成数据。
+
+表头参数初值：`/pages/table-header-filter-param-source` 提供下钻入口；场景与启动步骤见[表格示例](capabilities/table/README.md#表头参数初始化schema-685)。

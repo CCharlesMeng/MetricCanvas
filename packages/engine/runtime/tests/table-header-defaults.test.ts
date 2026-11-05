@@ -14,14 +14,14 @@ const flush=()=>new Promise(resolve=>setTimeout(resolve,0));
 function fixture(remote=false):{page:Page;table:TableComponent}{
   const raw=JSON.parse(JSON.stringify(sample));
   if(remote){
-    raw.sections[1].components=raw.sections[1].components.slice(0,1);
+    raw.sections[2].components=raw.sections[2].components.slice(0,1);
     Object.assign(raw.dataSources.records,{fields:{id:{type:'string',role:'dimension',queryField:'编号'},status:{type:'string',role:'dimension',queryField:'状态'},code:{type:'number',role:'dimension',queryField:'编码'},region:{type:'string',role:'dimension',queryField:'区域'}},
       source:{type:'query',query:{language:'dqe',body:{dsl_list:[{output_dims:['编号','状态','编码','区域'],output_metrics:[],filter:{dims:[],metrics:[]},order:{order_by_field:'编号',type:'ASC',offset:0,limit:2}}]}}}});
-    delete raw.sections[1].components[0].props.pagination;
+    delete raw.sections[2].components[0].props.pagination;
   }
   const parsed=parsePage(raw);
   if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
-  const table=parsed.page.sections[1].components[0];
+  const table=parsed.page.sections[2].components[0];
   if(table.type!=='table')throw Error('table fixture');
   return {page:parsed.page,table};
 }
@@ -29,7 +29,7 @@ it('applies every selected default value while intersecting the other column def
   const {page,table}=fixture(),column=table.props.columns[1],source=page.dataSources.records.source;
   if(column.kind==='group'||column.filterable?.mode!=='select'||source.type!=='inline')throw Error('select fixture');
   column.filterable.defaultValues=['pending','approved'];
-  expect(parsePage(page).ok).toBe(true);
+  expect(parsePage({...page,params:sample.params}).ok).toBe(true);
   const controller=createTableController(page,()=>null,()=>{},()=>initialFilterValues(page.filters??[]));
   expect(controller.present(table,source.rows,true).rows.map(row=>row.id)).toEqual(['A001','A002','A003']);
   controller.dispose();
@@ -39,7 +39,7 @@ it('isolates local defaults, preserves numeric values and never resurrects clear
   let show=true;
   const controller=createTableController(page,()=>null,()=>{},()=>new Map([['show-status',{type:'dimension',dimension:'column-visibility',values:[show?'show':'hide']}]]));
   expect(controller.headers(table)).toEqual({status:{mode:'select',values:['pending']},code:{mode:'select',values:[1]}});
-  const other=page.sections[1].components[1];if(other.type!=='table')throw Error('table');
+  const other=page.sections[2].components[1];if(other.type!=='table')throw Error('table');
   expect(controller.headers(other)).toEqual({status:{mode:'select',values:['approved']}});
   controller.header(table,'code',null);
   show=false;controller.syncColumns(table);
@@ -91,21 +91,21 @@ it('gates pending default column facts and releases one correctly filtered first
 });
 it('rejects shared remote consumers and dependency users before they can inherit table defaults',()=>{
   const {page,table}=fixture(true);
-  page.sections[1].components.push({...table,id:'other-table'});
-  expect(parsePage(page)).toMatchObject({ok:false,errors:expect.arrayContaining([expect.objectContaining({message:expect.stringContaining('必须独占')})])});
-  page.sections[1].components.pop();
+  page.sections[2].components.push({...table,id:'other-table'});
+  expect(parsePage({...page,params:sample.params})).toMatchObject({ok:false,errors:expect.arrayContaining([expect.objectContaining({message:expect.stringContaining('必须独占')})])});
+  page.sections[2].components.pop();
   page.dataSources.downstream=structuredClone(page.dataSources.records);
   Object.assign(page.dataSources.downstream.source,{query:{language:'dqe',body:{dsl_list:[{output_dims:['编号'],output_metrics:[]}]},resultBindings:[{source:'records',sourceField:'id',target:{type:'dimension',queryField:'编号'}}]}});
-  expect(parsePage(page).ok).toBe(false);
+  expect(parsePage({...page,params:sample.params}).ok).toBe(false);
 });
 it('rejects an unmapped remote default field instead of silently showing an unfiltered result',()=>{
   const {page}=fixture(true);
   Reflect.deleteProperty(page.dataSources.records.fields.status,'queryField');
-  expect(parsePage(page)).toMatchObject({ok:false,errors:expect.arrayContaining([expect.objectContaining({message:'远程默认筛选字段必须具有 queryField 映射'})])});
+  expect(parsePage({...page,params:sample.params})).toMatchObject({ok:false,errors:expect.arrayContaining([expect.objectContaining({message:'远程默认筛选字段必须具有 queryField 映射'})])});
 });
 it('uses shared defaults in headless execution without serializing a filtered ordinary initial',async()=>{
   const {page}=fixture(true),queries:EffectiveQuery[]=[];
-  const output=await createPageDataExecutor({gateway:{async fetchData(query){queries.push(query);return {rows:[],totalCount:0};}}}).execute(page);
+  const output=await createPageDataExecutor({gateway:{async fetchData(query){queries.push(query);return {rows:[],totalCount:0};}}}).execute({...page,params:sample.params});
   expect(queries).toHaveLength(1);expect(queries[0].tableFilters).toHaveLength(2);
   expect(output.dataSources.records.source).not.toHaveProperty('initial');
 });
@@ -148,11 +148,11 @@ it('keeps complete-query defaults local when the same complete result has multip
   const source=page.dataSources.records.source;if(source.type!=='inline')throw Error('inline');
   Object.assign(page.dataSources.records,{fields:{id:{type:'string',role:'dimension',queryField:'编号'},status:{type:'string',role:'dimension',queryField:'状态'},code:{type:'number',role:'dimension',queryField:'编码'},region:{type:'string',role:'dimension',queryField:'区域'}},
     source:{type:'query',resultScope:'complete',query:{language:'dqe',body:{dsl_list:[{output_dims:['编号','状态','编码','区域'],output_metrics:[],order:{}}]}}}});
-  expect(parsePage(page).ok).toBe(true);
+  expect(parsePage({...page,params:sample.params}).ok).toBe(true);
   const controller=createTableController(page,()=>null,()=>{},()=>new Map([['show-status',{type:'dimension',dimension:'column-visibility',values:['show']}] ]));
   expect(controller.headers(table)).toHaveProperty('status');
   controller.header(table,'status',null);
-  const other=page.sections[1].components[1];if(other.type!=='table')throw Error('table');
+  const other=page.sections[2].components[1];if(other.type!=='table')throw Error('table');
   expect(controller.headers(other)).toEqual({status:{mode:'select',values:['approved']}});
   controller.dispose();
 });

@@ -1,3 +1,5 @@
+import { tableHeaderColumnParamErrors } from './header-params';
+import { normalizeTableSelectValues } from './select-values';
 import type { Page, TableColumn, TableColumnNode, TableComponent } from '../page';
 import type { PagedJoinDataSource } from '../paged-join';
 import { queryLeaves } from '../query-selection';
@@ -11,10 +13,14 @@ import { isPagedJoinQuery, pagedJoinViewOwner } from '../paged-join-view';
 import { mainColumnField, tableColumnLeaves, visitTableColumns } from './columns';
 
 export function hasHeaderDefaults(columns: readonly TableColumnNode[]): boolean {
-  return tableColumnLeaves(columns).some(column => column.filterable?.mode === 'select' && column.filterable.defaultValues !== undefined);
+  return tableColumnLeaves(columns).some(column => column.filterable?.mode === 'select' && (column.filterable.defaultValues !== undefined || column.filterable.initialParam !== undefined));
 }
-export function headerDefaultValues(column: TableColumn): readonly (string | number)[] {
-  return column.filterable?.mode === 'select' ? column.filterable.defaultValues ?? [] : [];
+export function headerDefaultValues(column: TableColumn, page?: Page): readonly (string | number)[] {
+  if (column.filterable?.mode !== 'select') return [];
+  const id = column.filterable.initialParam;
+  if (id === undefined) return column.filterable.defaultValues ?? [];
+  const value = page?.params?.find(param => param.id === id)?.value;
+  return Array.isArray(value) ? value : [];
 }
 /** Explicit complete results stay local; a query window remains remote. */
 export function tableDefaultsRemote(page: Page, table: TableComponent): boolean {
@@ -28,13 +34,13 @@ export function tableDefaultsRemote(page: Page, table: TableComponent): boolean 
 }
 const issue = (path: string, message: string): TypedError => ({ type: 'SCHEMA_ERROR', path, message });
 function columnDefaultErrors(page: Page, table: TableComponent, column: TableColumn, path: string): TypedError[] {
-  if (column.filterable?.mode !== 'select' || column.filterable.defaultValues === undefined) return [];
-  const target = path + '/filterable/defaultValues', values = column.filterable.defaultValues;
+  if (column.filterable?.mode !== 'select' || (column.filterable.defaultValues === undefined && column.filterable.initialParam === undefined)) return [];
+  const target = path + '/filterable/' + (column.filterable.initialParam === undefined ? 'defaultValues' : 'initialParam'), values = headerDefaultValues(column, page);
   const field = mainColumnField(column.field);
   if (field === undefined) return [issue(target, '默认筛选只允许静态 main 字段绑定')];
   const source = page.dataSources[table.data.main];
   const definition = source && resolveDataSourceFields(source)[field];
-  const errors: TypedError[] = [];
+  const errors: TypedError[] = tableHeaderColumnParamErrors(page, table, column, path);
   if (source?.source.type==='query' && tableDefaultsRemote(page,table) && (!source.fields[field] || !hasQueryFieldMapping(source.fields[field])))
     errors.push(issue(target, '远程默认筛选字段必须具有 queryField 映射'));
   if (new Set(values.map(value => JSON.stringify([typeof value, value]))).size !== values.length)
@@ -65,7 +71,7 @@ function sourceUsages(page: Page): Map<string, string[]> {
 function memberDefaultErrors(page: Page, table: TableComponent, path: string): TypedError[] {
   const source = page.dataSources[table.data.main];
   if (source?.source.type !== 'pagedJoin' || !isPagedJoinQuery(source.source)) return [];
-  const fields = unconditionalDefaultFields(table.props.columns);
+  const fields = unconditionalDefaultFields(table.props.columns, page);
   if (!fields.length) return [];
   try {
     pagedJoinViewOwner(source as PagedJoinDataSource, {pageIndex:0,pageSize:source.source.pagination.pageSize,sort:source.source.ordering.default,
@@ -75,22 +81,26 @@ function memberDefaultErrors(page: Page, table: TableComponent, path: string): T
     return [issue(path + '/props/columns', '按需组合查询的默认筛选与默认排序必须来自同一个查询成员')];
   }
 }
-function unconditionalDefaultFields(columns: readonly TableColumnNode[]): string[] {
+function unconditionalDefaultFields(columns: readonly TableColumnNode[], page: Page): string[] {
   return columns.flatMap(column => {
     if(column.visibleWhen)return [];
-    if(column.kind==='group')return unconditionalDefaultFields(column.children);
+    if(column.kind==='group')return unconditionalDefaultFields(column.children, page);
     const field=mainColumnField(column.field);
-    return field!==undefined&&headerDefaultValues(column).length?[field]:[];
+    return field!==undefined&&normalizeTableSelectValues(column, headerDefaultValues(column, page)).length?[field]:[];
   });
 }
 export function tableHeaderDefaultErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [], usages = sourceUsages(page);
   walkPageComponents(page, (component, path) => {
-    if (component.type !== 'table' || !hasHeaderDefaults(component.props.columns)) return;
+    if (component.type !== 'table') return;
     visitTableColumns(component.props.columns, path + '/props/columns', (column, own) => {
-      if (column.kind !== 'group') errors.push(...columnDefaultErrors(page, component, column, own));
+      if (column.kind !== 'group') {
+        errors.push(...columnDefaultErrors(page, component, column, own));
+        if (column.filterable?.mode === 'select' && column.filterable.allBehavior === 'unrestricted' && !column.enumValues)
+          errors.push(issue(own + '/filterable/allBehavior', '全选不限必须声明 enumValues'));
+      }
     });
-    if (tableDefaultsRemote(page, component) && usages.get(component.data.main)?.length !== 1)
+    if (hasHeaderDefaults(component.props.columns) && tableDefaultsRemote(page, component) && usages.get(component.data.main)?.length !== 1)
       errors.push(issue(path + '/data/main', '默认筛选的远程表格必须独占页面数据源，不能共享组件或查询依赖'));
     errors.push(...memberDefaultErrors(page, component, path));
   });

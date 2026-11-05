@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.84",
-  "schemaSha256": "e1b49aa2769d3f1bd7792d37db1b44e7fa3de46cd2934effe5fdd862eefaef09",
+  "schemaVersion": "6.85",
+  "schemaSha256": "b0ba03bf1cfbdc0914e6b9ab5dc05d015b3b63dadf9d545217e08eb0f999e751",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1023,7 +1023,8 @@
       ],
       "examples": [
         "page-visibility-region-linkage",
-        "reference-conditions-page"
+        "reference-conditions-page",
+        "table-header-filter-param-source"
       ]
     },
     "components/filterGroup.md": {
@@ -1267,7 +1268,8 @@
         "6.81",
         "6.82",
         "6.83",
-        "6.84"
+        "6.84",
+        "6.85"
       ]
     },
     {
@@ -13447,6 +13449,22 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/initialParam",
+      "path": "@tableColumn.filterable · anyOf[0].initialParam",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior",
+      "path": "@tableColumn.filterable · anyOf[0].allBehavior",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "values",
+        "unrestricted"
+      ]
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/1",
       "path": "@tableColumn.filterable · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -20426,13 +20444,13 @@
       "schemaPointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/0",
       "module": "components/table.md",
       "file": "examples/table-header-filter-defaults.json",
-      "pointer": "#/sections/1/components/0/props/columns/1/filterable/defaultValues/0"
+      "pointer": "#/sections/2/components/0/props/columns/1/filterable/defaultValues/0"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/1",
       "module": "components/table.md",
       "file": "examples/table-header-filter-defaults.json",
-      "pointer": "#/sections/1/components/0/props/columns/2/filterable/defaultValues/0"
+      "pointer": "#/sections/2/components/0/props/columns/2/filterable/defaultValues/0"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/filterable/anyOf/1",
@@ -21170,5 +21188,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "2fa68320f03352f70f9345178365aaac62a2d5dd7855740e491ebf361dd96ae8"
+  "semanticSourceDigest": "8000703ec61826b937b15fa1c45129f486a5756030d74d612e46ccc2c1bee82f"
 }

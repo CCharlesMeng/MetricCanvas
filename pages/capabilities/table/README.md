@@ -464,8 +464,20 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 
 ## 列头筛选默认选中值
 
-入口 `/pages/table-header-filter-defaults`，页面 JSON 为 `table-header-filter-defaults.json`，显式 Dashboard，使用内联合成数据，无需 DQE。运行 `pnpm dev:playground`。第一表默认待审批且编码为数值1，显示 A001/A003；第二表共享源但独立默认已通过，显示 A002/A005；第三表默认 archived，显示空态，菜单仍保留可取消的已选值。
+入口 `/pages/table-header-filter-defaults`，页面 JSON 为 `table-header-filter-defaults.json`，显式 Dashboard，使用内联合成数据，无需 DQE。运行 `pnpm dev:playground`。下方固定默认值对照中，第一表默认待审批且编码为数值1，显示 A001/A003；第二表共享源但独立默认已通过，显示 A002/A005；第三表默认 archived，显示空态，菜单仍保留可取消的已选值。
 
 清空第一表审批状态条件后编码1仍生效，共4行；切换到隐藏审批状态再显示，该列条件保持清除。清空编码后恢复6行，可翻页；第二表保持两条已通过记录。下载 Excel 使用当前条件，不重新套用默认值。刷新整个页面恢复声明默认。
 
-远程入口 `/pages/table-header-filter-defaults-query`，同名 JSON 使用已有 Demo/Approval Details 的 DQE Sim 合成夹具。分别启动 `DQE_SIM_PORT=18402 DQE_SIM_HOST=127.0.0.1 pnpm --filter @metriccanvas/dqe-sim dev` 和 `DQE_SIM_PORT=18402 pnpm --filter playground dev --host 127.0.0.1 --port 5202 --strictPort`。通过默认网关和同源 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` HTTP 代理读取。首个主请求 fields 条件包含区域=东区，每页2条；首屏 R001/R003，总数14。翻页仍只读东区，清空区域后总数28；清空状态的导出为28条，整页刷新恢复东区14条。候选请求与主请求应按实际字段投影区分。此场景不证明真实 DQE、Relay、权限或部署。
+远程入口 `/pages/table-header-filter-defaults-query`，同名 JSON 使用已有 Demo/Approval Details 的 DQE Sim 合成夹具。分别启动 `DQE_SIM_PORT=18402 DQE_SIM_HOST=127.0.0.1 pnpm --filter @metriccanvas/dqe-sim dev` 和 `DQE_SIM_PORT=18402 pnpm --filter playground dev --host 127.0.0.1 --port 5202 --strictPort`。通过默认网关和同源 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` HTTP 代理读取。下方“东区审批记录”对照表的首个主请求 fields 条件包含区域=东区，每页2条；首屏 R001/R003，总数14。翻页仍只读东区，清空区域后总数28；清空状态的导出为28条，整页刷新恢复东区14条。候选请求与主请求应按实际字段投影区分。此场景不证明真实 DQE、Relay、权限或部署。
+
+## 表头参数初始化（Schema 6.85）
+
+启动 `DQE_SIM_PORT=18405 pnpm sim:dqe`，另执行 `DQE_SIM_PORT=18405 pnpm --filter playground dev --host 127.0.0.1 --port 5206`。
+
+- 来源：`/pages/table-header-filter-param-source`。有效意见数传“是”，决策总次数传重复键“是、否”，直接打开不传参数。
+- 内联合成：`/pages/table-header-filter-defaults?is-valid=是`。首个表为“参数初值（全选不限）”，其“是否有效意见”列通过 initialParam: is-valid 读取 URL；“参数初值（显式值集合）”及“参数 Tab 会话”同列也引用该参数，各持有独立状态。顶部“URL：是／否／不限”按钮直接打开对应 URL。原有静态默认值表移到下方对照。“全选不限”表全选/清空后返回4条（含空值、待定），“显式值集合”表全选返回2条。
+- DQE Sim HTTP：`/pages/table-header-filter-defaults-query?region-input=西区`。首个表为“参数初始化区域（合成 DQE）”，其“区域”列通过 initialParam: region-input 读取 URL，首个请求带西区；顶部“URL：东区／西区／不限”按钮可直接切换入口，改选东区、清空、翻页、刷新数据与 Excel 均使用当前条件；原静态东区表保持自己的默认值。
+- 分别打开不传参数、`?is-valid=否`、`?is-valid=是&is-valid=否`；初态为不限、否、不限（values 表保留两值集合）。`?is-valid=`、重复同值、`?is-valid=unknown`、`?is-valid=%5B%22是%22%5D` 应显示输入或定位到 initialParam 的诊断，不发无条件查询。
+- 清空后切换 Tab/翻页/刷新数据并导出，筛选图标保持不限；重新打开页面实例重新取 URL 初值。恢复空视图、取消和迟到响应由行为测试补足。
+
+这些是合成数据与 DQE Sim 证据，真实 business-decision-details 原件、真实 DQE、Relay 与部署均另验；不能以本示例冒充业务迁移。

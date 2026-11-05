@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.84",
+  "currentWriter": "6.85",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -952,8 +952,13 @@
     },
     {
       "file": "references/page-metadata/examples/table-header-filter-defaults.json",
-      "requiredVersion": "6.82",
+      "requiredVersion": "6.85",
       "capabilities": [
+        {
+          "id": "table-select-param-initialization",
+          "minor": 85,
+          "description": "表头参数初值与显式全选不限"
+        },
         {
           "id": "table-select-default-values",
           "minor": 82,
@@ -975,6 +980,11 @@
           "description": "表格字段列及分组列条件显隐"
         },
         {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
           "id": "business-filter-selection",
           "minor": 37,
           "description": "页级单多选、封闭枚举及显式结构树"
@@ -985,9 +995,19 @@
           "description": "表格独立搜索与完整 Excel 导出工具区"
         },
         {
+          "id": "grouped-params",
+          "minor": 6,
+          "description": "分组参数、多个独立时间区间与查询原位引用"
+        },
+        {
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
         },
         {
           "id": "conditional-presentation",
@@ -999,8 +1019,13 @@
     },
     {
       "file": "references/page-metadata/examples/table-header-filter-defaults-query.json",
-      "requiredVersion": "6.82",
+      "requiredVersion": "6.85",
       "capabilities": [
+        {
+          "id": "table-select-param-initialization",
+          "minor": 85,
+          "description": "表头参数初值与显式全选不限"
+        },
         {
           "id": "table-select-default-values",
           "minor": 82,
@@ -1027,9 +1052,19 @@
           "description": "表格独立搜索与完整 Excel 导出工具区"
         },
         {
+          "id": "grouped-params",
+          "minor": 6,
+          "description": "分组参数、多个独立时间区间与查询原位引用"
+        },
+        {
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
