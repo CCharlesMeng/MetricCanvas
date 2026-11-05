@@ -11,6 +11,7 @@ import { indexPagePaths, relativePagePath } from './page-file-index';
 const modules = import.meta.glob<{ default: unknown }>('$pages/**/*.json');
 
 interface StaticPageRepository extends PageRepository {
+  has(pageId: string): boolean;
   list(): Promise<PlaygroundPageEntry[]>;
 }
 
@@ -18,6 +19,7 @@ export function createStaticPageRepository(): StaticPageRepository {
   const paths = indexPagePaths(Object.keys(modules));
 
   return {
+    has: (pageId) => paths.has(pageId),
     async load(pageId: string): Promise<unknown> {
       const path = paths.get(pageId);
       const loader = path ? modules[path] : undefined;

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "6.40",
+  "id": "playground-route-source",
+  "layout": "dashboard",
+  "meta": { "title": "Playground 业务路由自动预览", "description": "纯内联合成演示：页面保留线上路由，试验场按 URL 末段打开本地页面。" },
+  "params": { "display": [{ "id": "project-id", "type": "string", "value": "P001" }] },
+  "dataSources": {},
+  "sections": [{
+    "id": "main",
+    "components": [{
+      "id": "routes",
+      "type": "text",
+      "layout": { "span": 12 },
+      "props": {
+        "title": "线上地址，本地自动定位",
+        "body": "此页不访问真实 Operation Map 或 DQE。普通点击、新标签页和复制链接共用本地地址；目标文件按名称精确匹配。",
+        "links": [
+          { "label": "打开本地目标页", "href": "/operation-map/playground-route-target?region=north&region=south#summary", "query": { "project-id": { "source": "param", "id": "project-id" } } },
+          { "label": "校验目标输入后打开", "href": "/operation-map/playground-route-target", "validateTargetInputs": true, "query": { "project-id": { "source": "param", "id": "project-id" } } },
+          { "label": "绝对业务地址预览", "href": "https://business.example/operation-map/playground-route-target?project-id=P002#summary" },
+          { "label": "查看未收录目标", "href": "/operation-map/playground-route-unavailable?project-id=P003&region=north&region=south#summary" }
+        ]
+      }
+    }]
+  }]
+}

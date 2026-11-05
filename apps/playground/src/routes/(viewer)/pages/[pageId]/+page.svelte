@@ -44,6 +44,7 @@
   const visibilityDemo=createVisibilityDemoInputs();
   let visibilityInstance=$state(0);
   import { goto, replaceState } from '$app/navigation';
+  import { createPlaygroundNavigation } from '$lib/playground-navigation';
   import { page } from '$app/state';
   import PageDocument from '$lib/PageDocument.svelte';
   import { documentLayoutForm, documentUsesRuntimeBackToolbar } from '@metriccanvas/page/internal';
@@ -52,10 +53,7 @@
     RuntimeView,
     type RuntimeNavigation, type RuntimeViewEvent
   } from '@metriccanvas/engine/ui';
-  import {
-    pageReturnHref,
-    rememberPageReturn
-  } from '$lib/page-return';
+  import { pageReturnHref } from '$lib/page-return';
   import {
     aiSummary,
     dataGateway,
@@ -88,26 +86,16 @@
 
   const navigation = $derived.by<RuntimeNavigation>(() => {
     const base: RuntimeNavigation = {
-      async resolveTargetInputs(href,{signal}) {
-        const target=new URL(href,document.baseURI),match=/^\/pages\/([^/]+)$/.exec(target.pathname);
-        if(target.origin!==location.origin||!match)return undefined;
-        const documentValue=await pageRepository.load(decodeURIComponent(match[1]!));
-        if(signal.aborted)return undefined;
-        return projectNavigationInputs(documentValue);
-      },
+      ...createPlaygroundNavigation(pageRepository, {
+        baseURL: () => location.href,
+        visit: (href) => void goto(href),
+        rememberSource: true
+      }),
       replaceSearch(search) {
         const url = new URL(location.href);
         url.search = search;
         activeURL = url.href;
         replaceState(url, {});
-      },
-      navigate({ href, sourcePageId, sourceSearch }) {
-        const url = new URL(href, document.baseURI);
-        const match = /^\/pages\/([^/]+)$/.exec(url.pathname);
-        if (url.origin !== location.origin || !match) return false;
-        rememberPageReturn(decodeURIComponent(match[1]!), { pageId: sourcePageId, search: sourceSearch });
-        void goto(url.href);
-        return true;
       }
     };
     const href = returnHref;
