@@ -14,7 +14,7 @@
 
 1. 根目录 [AGENTS.md](../../../AGENTS.md) 和 [CONTEXT.md](../../../CONTEXT.md)：术语使用“集成应用”“页面参数”“筛选器”。
 2. 官方[目标页面](https://opentiny.design/tiny-vue/zh-CN/os-theme/components/date-picker)，再打开下面冻结的截图及 computed style 记录。官方[源码仓库](https://github.com/opentiny/tiny-vue)仅作为组件结构、样式、图标与行为的补充来源；不要把当前 dev 分支自动当作截图对应版本。
-3. [报告日期与导出接入说明](../../report-export.md)、[原功能验收](../../evidence/report-date-filters/acceptance.md)、[PDF 端到端补验](../../evidence/report-date-filters/pdf-e2e-acceptance.md)。
+3. [报告日期与导出接入说明](../../report-export.md)、[原功能验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-filters/acceptance.md)、[PDF 端到端补验](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-filters/pdf-e2e-acceptance.md)。
 4. 如涉及领域边界，按 [ADR 索引](../../adr/README.md) → 对应主题 → [ADR-0097](../../adr/0097-report-date-filter-and-instance-export-view.md) 阅读；这次主要是渲染控件调整。
 5. 当前两种时间控件、FilterBar、ReportHeaderView，以及 RuntimeSurface 的变更写入函数。
 
@@ -28,12 +28,12 @@
 
 | 参考 | 证据 |
 | --- | --- |
-| 默认控件外观与实际样式 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-default.png)、[样式及资源 URL](../../evidence/report-date-picker-tiny-os-2026-10-11/default-style-facts.json) |
-| 单日期展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.json) |
-| 单月份展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.json) |
-| 日期范围展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.json) |
-| 月份范围展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.png)、[尺寸与样式](../../evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.json) |
-| 月份范围只选起点 / 完成 2026-01 至 2026-06 | [起点](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-start.png)、[完成后重新展开](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-selected.png)、[选中样式](../../evidence/report-date-picker-tiny-os-2026-10-11/selection-style-facts.json) |
+| 默认控件外观与实际样式 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-default.png)、[样式及资源 URL](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-picker-tiny-os-2026-10-11/default-style-facts.json) |
+| 单日期展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.png)、[尺寸与样式](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-open.json) |
+| 单月份展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.png)、[尺寸与样式](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-open.json) |
+| 日期范围展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.png)、[尺寸与样式](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-date-range-open.json) |
+| 月份范围展开 | [截图](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.png)、[尺寸与样式](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-open.json) |
+| 月份范围只选起点 / 完成 2026-01 至 2026-06 | [起点](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-start.png)、[完成后重新展开](https://github.com/CCharlesMeng/MetricCanvas/blob/ea40f6641e41e974dd3f1801c4613c5a1a7fcd45/docs/evidence/report-date-picker-tiny-os-2026-10-11/reference-month-range-selected.png)、[选中样式](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-picker-tiny-os-2026-10-11/selection-style-facts.json) |
 
 已观察：
 

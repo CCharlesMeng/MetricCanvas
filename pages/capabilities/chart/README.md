@@ -142,7 +142,7 @@
 
 自动对齐可能扩展副轴范围；显式高级范围/间隔配置仍优先，边界和覆盖由真实 ECharts SVG 渲染测试验证。页面不代表真实业务取数。相关测试还覆盖正负值、全零、空数据、数据更新和尺寸变化。
 
-验收记录：[双轴刻度对齐](../../../docs/evidence/dual-axis-alignment-20261027/README.md)。
+验收记录：[双轴刻度对齐](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/dual-axis-alignment-20261027/README.md)。
 
 ## 柱线图数值格式
 

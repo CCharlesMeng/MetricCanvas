@@ -38,4 +38,4 @@
 
 实施已完成。候选来源、静态树、父节点独立单多选、完整去重、来源引用/完整性诊断、URL、只读和冻结导出均已接通。内部候选请求保留已声明依赖的完整状态，避免丢失期间模式、组织层级或布尔覆盖前的存储值；这些元数据不进入页面 Schema。
 
-产品核心 2,314 项回归、依赖状态 52 项定向回归、独立端口的 11 项分发浏览器检查、类型及构建已通过。Schema 文档、Playground 与 local-authoring/MC 产物同源生成；仓外 Skill 校验通过。完整命令、复杂度前后结果、剩余存量及外部服务边界见 [验收记录](../evidence/filter-source-candidates/README.md)。代码保留在独立工作树，未提交或 push。
+产品核心 2,314 项回归、依赖状态 52 项定向回归、独立端口的 11 项分发浏览器检查、类型及构建已通过。Schema 文档、Playground 与 local-authoring/MC 产物同源生成；仓外 Skill 校验通过。完整命令、复杂度前后结果、剩余存量及外部服务边界见 [验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/560dec290d39588f70003ddb3d498891a3db4a6f/docs/evidence/filter-source-candidates/README.md)。代码保留在独立工作树，未提交或 push。

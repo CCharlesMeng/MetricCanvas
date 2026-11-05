@@ -1,6 +1,6 @@
 # Playground 目录与数据联动改进计划
 
-日期：2026-10-24。状态：P0–P5 首轮实施及本地关键链路验收完成；P6 内嵌下载回执等专项保留，Git 交付按用户授权使用 `[skip ci]`，最新基线复验见[交付记录](../evidence/playground-information-architecture/delivery.md)。本文件是本批唯一执行主计划。结果与未关闭项见[实施记录](../evidence/playground-information-architecture/result.md)。
+日期：2026-10-24。状态：P0–P5 首轮实施及本地关键链路验收完成；P6 内嵌下载回执等专项保留，Git 交付按用户授权使用 `[skip ci]`，最新基线复验见[交付记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/playground-information-architecture/delivery.md)。本文件是本批唯一执行主计划。结果与未关闭项见[实施记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/playground-information-architecture/result.md)。
 
 页面试验场按「布局、组件、数据与联动」提供三个并列入口。每个组件都有独立、可直达的目录；数据能力按取数、条件、关联、交互、结果范围和跨页输出组织。同一场景由多个入口引用，把操作、说明、配置与试改集中在一个上下文内。
 
@@ -215,4 +215,4 @@ P0 → P1 → P2 → P3 → P4 → P5 → P6 顺序推进，试点发现的问�
 
 ## 2026-10-24 查找方式修正
 
-用户反馈数据入口仍以场景命名、布局形态混排。数据与联动改为「实际 Dashboard／Report → 数据阶段 → 具体功能 → 相关演示」，沿用组件与布局两个独立维度。功能入口直接可见，场景只提供演示环境与流程引用；只有一个演示不增加选择层级。按键补列、多来源有序合并和当前窗口级联等功能分别维护精确页面引用。搜索在当前布局形态内返回具体功能，关联入口指向对应功能。原场景链接继续解析，运行页面参数仍封装在 `exampleSearch` 中。实施与证据见[功能目录记录](../evidence/playground-information-architecture/function-directory.md)。
+用户反馈数据入口仍以场景命名、布局形态混排。数据与联动改为「实际 Dashboard／Report → 数据阶段 → 具体功能 → 相关演示」，沿用组件与布局两个独立维度。功能入口直接可见，场景只提供演示环境与流程引用；只有一个演示不增加选择层级。按键补列、多来源有序合并和当前窗口级联等功能分别维护精确页面引用。搜索在当前布局形态内返回具体功能，关联入口指向对应功能。原场景链接继续解析，运行页面参数仍封装在 `exampleSearch` 中。实施与证据见[功能目录记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/playground-information-architecture/function-directory.md)。

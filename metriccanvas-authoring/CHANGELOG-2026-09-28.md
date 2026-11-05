@@ -138,7 +138,7 @@ unknown 可能已经落库。保留原 operationId 和工作稿，Java 对账当
 
 本次续批本地 Authoring 回归 **482 项通过**；其后修正未返回 dataset 的 coverage 计数并补断言，最终定向 **82 项通过**。确定性创建/编辑主流程 **6 个用例通过**，另有部分元数据失败与展示偏差组合探针。契约检查、Bundle 摘要与测试清单通过；本文更新后由生成器重新生成 lock，最终摘要以交付提交为准。
 
-真实 DS 小范围验证共三个用例：正常创建、展示偏差、部分元数据失败叠加展示偏差，均通过。续批组合故障使用 deepseek-v4-flash，5 次模型请求/5 次工具调用，元数据 HTTP=2（第二次仅失败 dataset）、DQE=1、保存=1；页面 Schema、业务断言及保存/预览引用一致性通过。DS 后补强的授权复核与覆盖计数由最终本地回归覆盖，没有重复模型调用。完整分层证据见[验证报告](../docs/evidence/2026-09-28-authoring-robustness.md)。
+真实 DS 小范围验证共三个用例：正常创建、展示偏差、部分元数据失败叠加展示偏差，均通过。续批组合故障使用 deepseek-v4-flash，5 次模型请求/5 次工具调用，元数据 HTTP=2（第二次仅失败 dataset）、DQE=1、保存=1；页面 Schema、业务断言及保存/预览引用一致性通过。DS 后补强的授权复核与覆盖计数由最终本地回归覆盖，没有重复模型调用。完整分层证据见[验证报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-28-authoring-robustness.md)。
 
 真实模型调用使用本地 Java/DQE/Relay 替身，不证明内部生产接通；未运行完整 DS 套件或浏览器验收。内部 Adapter 仍需定向采用参考实现，并验证真实权限撤销、稳定轮次、共享存储和原始 RESULT_SCOPE_MISMATCH 轨迹。A2 稳定标识迁移、A3 统一发现就绪协议仍为待裁决提案，没有随本次交付启用。
 

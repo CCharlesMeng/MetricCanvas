@@ -99,7 +99,7 @@ pages/
 
 操作后观察正文数据、期间说明和候选变化；日/月/周同步静态查询，不连续月份不扩成连续范围。切到业务树的 2026-06/05 可观察无权限/未配置门禁；时间事实固定为演示 latest=2026-10、latestComplete=2026-09。B5 仅传值、B6 挂起，真实 DQE/Relay/CloudIOC/门户未因此获得验收。
 
-使用与验证记录见 [IOC 页头 Playground 优化验收](../docs/evidence/ioc-header-playground/acceptance.md)。此处只增加开发工具查看路径，不修改页面协议及 local-authoring 知识规则。
+使用与验证记录见 [IOC 页头 Playground 优化验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-playground/acceptance.md)。此处只增加开发工具查看路径，不修改页面协议及 local-authoring 知识规则。
 
 ## 能力索引
 
@@ -172,7 +172,7 @@ pages/
 
 自动验收直接读取上表页面，核对提炼后的布局、权重轨与完整嵌套组件树，并在仓外复制安装 Skill 检查链接和知识哈希。原页面的 `reportHeader`、Tab、多筛选保留，特别验证“详情页含 reportHeader 仍为 Dashboard”。创作行为复测分别覆盖未确认时只提问、明确指定 Dashboard 后显式写 layout、确认后沿分支范式生成；确认状态属于会话，不写入页面 JSON。
 
-结构摘要及静态检查不能证明识别模型的准确率、视觉还原、筛选真实取数或生产交付；本批证据见[验收记录](../docs/evidence/local-authoring-layout-form/result.md)。
+结构摘要及静态检查不能证明识别模型的准确率、视觉还原、筛选真实取数或生产交付；本批证据见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/local-authoring-layout-form/result.md)。
 
 ### 指标卡与文字混排、内容导航
 
@@ -241,7 +241,7 @@ pages/
 | 上述条件下导出 | 两条匹配数据的预签金额排名仍为1、4 |
 | 清除条件，搜索天津 | 唯一结果的预签金额排名仍为8；场景一序号表在相同搜索下为1 |
 
-协议见[数据源](../docs/page-metadata/data-sources.md#多查询组合源-pagedjoin622)、[表格](../docs/page-metadata/components/table.md#数值范围和组合表622)。自动证据为 `packages/embed/tests/browser/paged-join.spec.ts` 与 `tools/dqe-sim/tests/multi-query-table.test.ts`，直接读取本页面；其他错误、取消与范围边界由共享执行测试覆盖。既有实施证据见[验收报告](../docs/evidence/multi-query-table/result.md)，真实接入仍按报告单独验收。
+协议见[数据源](../docs/page-metadata/data-sources.md#多查询组合源-pagedjoin622)、[表格](../docs/page-metadata/components/table.md#数值范围和组合表622)。自动证据为 `packages/embed/tests/browser/paged-join.spec.ts` 与 `tools/dqe-sim/tests/multi-query-table.test.ts`，直接读取本页面；其他错误、取消与范围边界由共享执行测试覆盖。既有实施证据见[验收报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/multi-query-table/result.md)，真实接入仍按报告单独验收。
 
 ## 筛选与状态联动
 
@@ -492,7 +492,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 - 自动验收：`node apps/playground/tests/table-search-options-browser.mjs`，默认访问5173，可用 `TABLE_SEARCH_BASE_URL` 指向隔离服务。脚本保留页面中的搜索配置，验证静态选项、精确匹配、切换、查询请求体、清空、独立状态、导出与窄屏。
 - 证据边界：协议、本地与 Sim 通过不等于真实 DQE/Relay/生产验收；真实服务大小写规则、重复同字段条件 AND 及匹配总数仍待核验。
 
-本批验收结果见[搜索字段切换验收记录](../docs/evidence/table-search-options/acceptance.json)，包含场景映射、测试命令及真实服务未验收边界。
+本批验收结果见[搜索字段切换验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-search-options/acceptance.json)，包含场景映射、测试命令及真实服务未验收边界。
 
 
 ### IOC页头选择控件

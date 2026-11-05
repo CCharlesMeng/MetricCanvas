@@ -1,6 +1,6 @@
 # 任意列排序驱动查询结果绑定与分页窗口更新
 
-日期：2026-10-14。按用户最新澄清修订方向：任意可排序列的交互都可能改变其他数据源；不预设金额排序或固定 A→B→C 执行链。用户已授权实施；运行时、共享单次执行及5173示例已接入。验收见[分页场景证据](../evidence/query-result-where/paged-scenario.md)。
+日期：2026-10-14。按用户最新澄清修订方向：任意可排序列的交互都可能改变其他数据源；不预设金额排序或固定 A→B→C 执行链。用户已授权实施；运行时、共享单次执行及5173示例已接入。验收见[分页场景证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/query-result-where/paged-scenario.md)。
 
 ## 业务语义
 
@@ -47,4 +47,4 @@
 
 同时覆盖浏览器、共享单次执行、导出、TS/Python语义校验、旧版本拒绝新组合、契约及Skill分发。真实DQE/Relay/Java证据与本地DQE仿真分别报告。
 
-配置逐项说明已并入[查询绑定 metadata](../page-metadata/queries-and-bindings.md#配置解读首轮查询任意列排序与分页级联)，本次对功能及架构的影响见[影响记录](../evidence/query-result-where/architecture-impact.md)。
+配置逐项说明已并入[查询绑定 metadata](../page-metadata/queries-and-bindings.md#配置解读首轮查询任意列排序与分页级联)，本次对功能及架构的影响见[影响记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/query-result-where/architecture-impact.md)。

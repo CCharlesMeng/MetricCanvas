@@ -1,6 +1,6 @@
 # 9235/9236 反馈：MC 侧详细执行计划
 
-日期：2026-09-29。状态：主批次 M0–M7 已实施并完成本地验收；内部采用和生产集成未执行。详见[执行报告](../../evidence/2026-09-29-authoring-mc-execution-report.md)。
+日期：2026-09-29。状态：主批次 M0–M7 已实施并完成本地验收；内部采用和生产集成未执行。详见[执行报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-29-authoring-mc-execution-report.md)。
 
 本计划取代[前期分析](2026-09-29-authoring-execution-improvement.md)中的跨团队执行表；事实依据继续引用该分析及[装配核验附录](2026-09-29-authoring-composition-audit.md)。用户已明确：只计划 MC 侧实施；Relay 所需调整单列说明。
 

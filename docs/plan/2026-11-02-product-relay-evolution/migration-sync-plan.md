@@ -6,11 +6,11 @@
 
 补充材料核对见[存量拆分材料评估](legacy-material-assessment.md)。材料带来真实部署/注册差异和召回入口的新增探查项；其拆分目录和伪代码尚未采用。
 
-最新推进见[接缝规格与 I00–I08 首批任务](implementation-seams-v1.md)。[Relay 报告及复核](../../evidence/2026-11-02-relay-authoring-static-audit/README.md)已落盘；I00 接收和本地离线对账完成，M0 的干净发行冻结、私有采用与运行证据仍待完成。不能以报告的“已支持换源/能力对称/完整 Schema”关闭 M1/M4。
+最新推进见[接缝规格与 I00–I08 首批任务](implementation-seams-v1.md)。[Relay 报告及复核](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-authoring-static-audit/README.md)已落盘；I00 接收和本地离线对账完成，M0 的干净发行冻结、私有采用与运行证据仍待完成。不能以报告的“已支持换源/能力对称/完整 Schema”关闭 M1/M4。
 
 已纳入[「优化 mc-content 创作规范」会话](codex://threads/01a19b3f-9a13-7c42-92c8-c7d13ddc4a6d)：最新首批任务扩为 I00–I08，见接缝规格 D4/I08。共享分析与呈现正确性在产品线推进；Relay 接线与采用分线验收。工具承担检查后再精简方法，不把每项内部检查变成新的模型步骤。
 
-Relay 返回意见已进入[评审稿 v1.1](relay-review-design-v1.1.md)。M0/I01 增加 Guard→data-exploration-report 与显式 platform-authoring 的入口/脚本/工具/产物清单；I02 补 list_urls/submit_body 的可信注入、不豁免 Gate；M1 区分轮次文件桥和 StateStore/CAS。I07 的普通源接数不强依赖全部多槽 I06；多槽接续另验。版本/存储/turnId 的前后报告冲突按[采纳判断](../../evidence/2026-11-02-relay-design-feedback/assessment.md)小范围补证，不机械采纳返回件的全量替换建议。
+Relay 返回意见已进入[评审稿 v1.1](relay-review-design-v1.1.md)。M0/I01 增加 Guard→data-exploration-report 与显式 platform-authoring 的入口/脚本/工具/产物清单；I02 补 list_urls/submit_body 的可信注入、不豁免 Gate；M1 区分轮次文件桥和 StateStore/CAS。I07 的普通源接数不强依赖全部多槽 I06；多槽接续另验。版本/存储/turnId 的前后报告冲突按[采纳判断](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-design-feedback/assessment.md)小范围补证，不机械采纳返回件的全量替换建议。
 
 ## 1. 迁移结论与第一条纵向切片
 

@@ -38,7 +38,7 @@ Relay Skill/references/
 | 当前参数程序 | 测试和 Adapter 仍可依赖仓内 `pnpm exec tsx` | 从同一 TS 真源构建可直接执行的 Node 程序，纳入 mc-tool |
 | Relay 接入 | 当前掌握静态审计/反馈；版本、存储和 turnId 证据仍有矛盾 | 对实际检出、工厂、注册与运行回执核对，不用本仓替身关闭 |
 
-已有实现和历史检查见[首批历史回执](../../evidence/2026-11-02-relay-first-batch/README.md)。该批只完成 I08a/I05a；历史回归中两项原 main 失败仍有记录。本文没有重新执行那些测试，不将旧数量当作新基线通过数。后续集成须将被采用的必要证据纳入本仓证据目录，避免长期依赖工作树绝对路径。
+已有实现和历史检查见[首批历史回执](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-first-batch/README.md)。该批只完成 I08a/I05a；历史回归中两项原 main 失败仍有记录。本文没有重新执行那些测试，不将旧数量当作新基线通过数。后续集成须将被采用的必要证据纳入本仓证据目录，避免长期依赖工作树绝对路径。
 
 ## 3. 职责划分与完整程序过程
 

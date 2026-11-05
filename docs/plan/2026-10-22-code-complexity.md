@@ -1,14 +1,14 @@
 # TypeScript 圈复杂度核对与优化计划
 
-最新：用户于2026-11-04确认按全项目平均CC<5、单函数保留合理上限验收；当前20条清单的审核、六文件重构及全范围存量见[2026-11-04审核与验收](../evidence/code-complexity/2026-11-04-audit/README.md)。下文是旧259条批次的历史范围，不与新全仓计数混用。
+最新：用户于2026-11-04确认按全项目平均CC<5、单函数保留合理上限验收；当前20条清单的审核、六文件重构及全范围存量见[2026-11-04审核与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-11-04-audit/README.md)。下文是旧259条批次的历史范围，不与新全仓计数混用。
 
-日期：2026-10-22。原工作区A–E、续修及高优先级批次已完成；用户要求提交main并完整验证后，已迁移到最新main基线，保留主线新增能力。最新入口为[main交付与完整验收](../evidence/code-complexity/2026-10-22-main-delivery.md)及[全部259条当前对照](../evidence/code-complexity/2026-10-22-original-list-follow-up.md)。
+日期：2026-10-22。原工作区A–E、续修及高优先级批次已完成；用户要求提交main并完整验证后，已迁移到最新main基线，保留主线新增能力。最新入口为[main交付与完整验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-10-22-main-delivery.md)及[全部259条当前对照](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-10-22-original-list-follow-up.md)。
 
 当前main基线的原清单167个现存文件中，超限函数175→125，关闭50个；259条中110条仍超限、145条当前范围达标、4条定位待核。旧工作区的“剩余82、44条缺失”属于较早基线，不能替代main交付结果；旧批次数值保留在各批实施记录中。
 
 ## 实施前核对结论
 
-逐条结果与当前函数位置见 [完整核对表](../evidence/code-complexity/2026-10-22-audit.md)。当前 HEAD 为 `952b3a27`，工作区存在其他批次修改，结果针对工作区而非仅 HEAD。
+逐条结果与当前函数位置见 [完整核对表](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-10-22-audit.md)。当前 HEAD 为 `952b3a27`，工作区存在其他批次修改，结果针对工作区而非仅 HEAD。
 
 - 清单涉及 169 个文件、259 条记录，原报表有 165 条大于 15。当前 217 条能按名称唯一定位；35 条对应的 22 个文件不存在，7 条在原文件中找不到同名函数。缺失条目只能标记待确认，不能称为已修复；需要原扫描 SHA 才能定位原始代码。
 - 在当前能定位的 217 条中，按本地 `metriccanvas-ts-ast/1` 自身决策口径有 90 条超过 15。对全部 147 个现存文件中的函数和闭包测量，还发现原清单未单列的超限函数；完整扫描共 132 个超限函数。该范围不是全仓扫描。
@@ -50,7 +50,7 @@
 - [x] 根 `AGENTS.md` 接入每次编码规则，添加固定口径工具与解析/闭包行为测试。
 - [x] A–E 表中目标职责重构与本地行为验收；全量 2,259 项测试、全仓类型检查、构建、Chrome 工作台及 local-authoring 独立安装检查通过，详见实施记录。
 - [x] 原始清单全部 259 条重新对账，第二轮继续处理 9 个文件中的 20 个超限函数；改动文件内全部函数及新辅助函数自身 CC≤15。
-- [x] 高优先级查询链路 6 个超限函数重构，4 个涉及文件内所有函数自身 CC≤15；[本批实施与验收](../evidence/code-complexity/2026-10-22-priority-query-chain.md)。
+- [x] 高优先级查询链路 6 个超限函数重构，4 个涉及文件内所有函数自身 CC≤15；[本批实施与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-10-22-priority-query-chain.md)。
 - [ ] 最新main剩余110条可定位原条目（167个现存文件中125个超限函数）的后续治理；4条定位待核，未计作完成。
 - [ ] TypeScript 增量 CI 门禁（后续建设项，现状为人工评审规则）。
 - [ ] 原 CodeCheck 源码 SHA、规则与外部复扫；缺少这些材料不阻塞本地分析，但不能声称外部告警关闭。

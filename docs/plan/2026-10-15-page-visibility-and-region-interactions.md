@@ -389,7 +389,7 @@ Python 使用已装锁定依赖的环境；不将依赖缺失记为规则产品�
 
 ### 12.3 浏览器与真实接入
 
-启动 Playground 和需要的 DQE Sim，已新增 `apps/playground/tests/page-visibility-browser.mjs`，入口使用 C01–C17 登记的完整页面，覆盖 npm直接渲染与平台/JS输入链。启动 `pnpm --filter playground dev --port 5185`，执行 `VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/visibility-browser`；Sim 控制只在 `page-visibility-inputs` 页面外部注入。实际命令与分层结论见 [验收记录](../evidence/page-visibility-region-linkage/result.md)。
+启动 Playground 和需要的 DQE Sim，已新增 `apps/playground/tests/page-visibility-browser.mjs`，入口使用 C01–C17 登记的完整页面，覆盖 npm直接渲染与平台/JS输入链。启动 `pnpm --filter playground dev --port 5185`，执行 `VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/visibility-browser`；Sim 控制只在 `page-visibility-inputs` 页面外部注入。实际命令与分层结论见 [验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/page-visibility-region-linkage/result.md)。
 
 运行浏览器期间不并行执行会导致开发服务重载的构建或契约生成。PDF/PNG 必须检查实际导出内容，而不只检查点击成功。
 

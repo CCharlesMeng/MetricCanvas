@@ -1,6 +1,6 @@
 # 重点国代筛选集成实施计划
 
-日期：2026-10-29。状态：本仓实现与本地验收完成；IOC Region 统一为 Header 单个树形下拉，普通维度筛选保留。真实宿主与真实服务接入待验。验收见 [结果](../evidence/key-office-filter-integration-20261029/result.md)。
+日期：2026-10-29。状态：本仓实现与本地验收完成；IOC Region 统一为 Header 单个树形下拉，普通维度筛选保留。真实宿主与真实服务接入待验。验收见 [结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/key-office-filter-integration-20261029/result.md)。
 
 规划基线为本地 HEAD d24a41721 及当前工作区；handoff 所指 bef3644a 在本地不可解析，本计划不声称复现该提交。当前源码已确认 boolean 候选依赖被语义校验拒绝，候选加载器重建约束时只保留维度与时间；最小状态探针确认未选代表处切换上游后仍会进入确认阻塞。
 

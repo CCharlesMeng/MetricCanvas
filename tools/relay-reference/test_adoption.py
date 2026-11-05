@@ -13,6 +13,7 @@ from unittest.mock import patch
 from adoption import aggregate, evaluate, load_policy, pinned, validate_evidence, validate_review
 from compatibility import compare_states
 from config import load_config
+from frozen_consumer import snapshot_bytes, snapshot_json
 from package_release import check_evidence_release, pack, receipt_path, verify_archive
 from release import METADATA_FIELDS, ReleaseError, canonical, digest, read_json, seal, verify
 from test_archive import fixture_source
@@ -52,8 +53,8 @@ class AdoptionTests(unittest.TestCase):
         self.assertTrue(set(self.policy["primary"][0]["interface"]["operations"]) - set(old_ops) <= positives)
 
     def test_plural_baseline_keeps_all_35_previous_requests_and_expectations(self):
-        previous = read_json(Path(__file__).with_name("fixtures") / "consumer-0.2.0-schema683.json")
-        primary = read_json(Path(__file__).with_name("fixtures") / "consumer-0.3.0-tools-plural.json")
+        previous = snapshot_json(Path(__file__).with_name("fixtures") / "consumer-0.2.0-schema683.json")
+        primary = snapshot_json(Path(__file__).with_name("fixtures") / "consumer-0.3.0-tools-plural.json")
         self.assertEqual(primary["vectors"], previous["vectors"])
         self.assertEqual(primary["interface"]["operations"], previous["interface"]["operations"])
         report = compare_states(previous, primary)
@@ -63,8 +64,8 @@ class AdoptionTests(unittest.TestCase):
 
     def test_schema684_review_preserves_requests_and_stale_report_rejection(self):
         folder = Path(__file__).with_name("fixtures")
-        previous = read_json(folder / "consumer-0.3.0-tools-plural.json")
-        primary = read_json(folder / "consumer-0.3.3-schema684.json")
+        previous = snapshot_json(folder / "consumer-0.3.0-tools-plural.json")
+        primary = snapshot_json(folder / "consumer-0.3.3-schema684.json")
         self.assertEqual([v["request"] for v in primary["vectors"][:35]],
                          [v["request"] for v in previous["vectors"]])
         review = read_json(folder / "schema684-plural-consumer-review-v1.json")
@@ -77,10 +78,10 @@ class AdoptionTests(unittest.TestCase):
 
     def test_schema685_review_preserves_684_requests_and_checks_new_header_parameters(self):
         folder = Path(__file__).with_name("fixtures")
-        previous = read_json(folder / "consumer-0.3.3-schema684.json")
-        self.assertEqual(digest((folder / "consumer-0.3.3-schema684.json").read_bytes()),
+        previous = snapshot_json(folder / "consumer-0.3.3-schema684.json")
+        self.assertEqual(digest(snapshot_bytes(folder / "consumer-0.3.3-schema684.json")),
                          "205207b7f51218ff6ed891940d0c0146556ee96bcdcca6dc98f107915de05019")
-        primary = read_json(folder / "consumer-0.3.5-schema685.json")
+        primary = snapshot_json(folder / "consumer-0.3.5-schema685.json")
         self.assertEqual([v["request"] for v in primary["vectors"][:37]],
                          [v["request"] for v in previous["vectors"]])
         review = read_json(folder / "schema685-previous-consumer-review-v1.json")
@@ -95,9 +96,9 @@ class AdoptionTests(unittest.TestCase):
     def test_schema689_review_preserves_685_requests_and_checks_chart_conditions(self):
         folder = Path(__file__).with_name("fixtures")
         previous_path = folder / "consumer-0.3.5-schema685.json"
-        self.assertEqual(digest(previous_path.read_bytes()),
+        self.assertEqual(digest(snapshot_bytes(previous_path)),
                          "a49bd16f44ca8ff322d63c3f2f864e2fc201a0aba49667ed3b7a3980d5aace76")
-        previous, primary = read_json(previous_path), self.policy["primary"][0]
+        previous, primary = snapshot_json(previous_path), self.policy["primary"][0]
         self.assertEqual([v["request"] for v in primary["vectors"][:41]],
                          [v["request"] for v in previous["vectors"]])
         review = read_json(folder / "schema689-previous-consumer-review-v1.json")

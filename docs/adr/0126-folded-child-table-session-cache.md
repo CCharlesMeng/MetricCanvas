@@ -10,4 +10,4 @@ note: 用户确认实现同一页面会话内的子表折叠缓存，条件或�
 
 仅当前页面会话有效，不持久化为initial。成功空结果可复用；加载中折叠仍取消，失败/取消及迟到响应不进入缓存。父表视图变化、父行离开/变化、页面筛选/参数/层级状态/显示输入修订变化、父表重新加载及页面销毁使相关缓存失效；权限修订继续沿既有硬失效边界清理。保留原查询的实时offset语义，缓存窗口不声称服务端事务快照或全量结果。recordList不增加查询缓存，导出仍按既有完整读取执行。
 
-实现由展开控制器拥有有界折叠缓存，复用原SourceProgram和查询视图，不新增页面协议字段。取舍是以短期会话内的数据新鲜度换取重复展开无需取数；主动刷新和相关上下文变化恢复查询。验收入口 `/pages/table-row-expansion-cache`，证据见[验收记录](../evidence/row-expansion-cache-20261030/README.md)。
+实现由展开控制器拥有有界折叠缓存，复用原SourceProgram和查询视图，不新增页面协议字段。取舍是以短期会话内的数据新鲜度换取重复展开无需取数；主动刷新和相关上下文变化恢复查询。验收入口 `/pages/table-row-expansion-cache`，证据见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/row-expansion-cache-20261030/README.md)。

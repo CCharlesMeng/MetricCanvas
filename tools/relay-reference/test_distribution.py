@@ -13,6 +13,7 @@ import unittest
 
 from compatibility import compare
 from export import build
+from frozen_consumer import snapshot_json
 from relay_content import annotate
 from release import canonical, read_json, seal, verify
 
@@ -60,7 +61,7 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual(self.cli(["self-test"])[0], 0)
         code, interface = self.cli(["describe"])
         self.assertEqual(code, 0)
-        old = read_json(HERE / "fixtures/consumer-0.1.0.json")["interface"]["operations"]
+        old = snapshot_json(HERE / "fixtures/consumer-0.1.0.json")["interface"]["operations"]
         self.assertTrue(set(old) <= set(interface["operations"]))
         self.assertEqual(verify(self.candidate)["manifest"]["runtime"]["dependencies"], {
             "attrs": "==26.1.0", "jsonschema": "==4.26.0", "jsonschema-specifications": "==2025.9.1",

@@ -947,7 +947,7 @@ interface RuntimeViewStateHandle {
 
 本批仅交付上述B0/B1确定能力。B1的facts只消费TextValue；HeaderFactReference、Condition/displayInputs、options/selection/结构树、动态月份候选窗口、时间模式/最新期、USD、完整viewstate以及可选actions仍按B2–B6规划。88项编号及其落点继续保留，不能将本批标成88项全部完成。返回只验合法returnContext+back意图，不宣称B5完整来源视图恢复。
 
-实施命令、页面入口、浏览器宽窄/交互、独立安装、静态呈现和真实服务边界统一记录于[本批验收](../evidence/ioc-header-b0-b1/acceptance.md)及[证据账本](../evidence/ioc-header-b0-b1/alpha-tests.md)。本地合成、源码和安装成功不是原系统像素等价或真实DQE/CloudIOC/Relay/DS/门户/CI/部署验收；没有新索取内部材料。
+实施命令、页面入口、浏览器宽窄/交互、独立安装、静态呈现和真实服务边界统一记录于[本批验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b0-b1/acceptance.md)及[证据账本](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b0-b1/alpha-tests.md)。本地合成、源码和安装成功不是原系统像素等价或真实DQE/CloudIOC/Relay/DS/门户/CI/部署验收；没有新索取内部材料。
 
 ## 19. 2026-10-19 B2业务筛选正式实施
 
@@ -958,7 +958,7 @@ interface RuntimeViewStateHandle {
 - B2结构树和期间依赖需要V2候选的最小请求/结果契约，因此提前落地该公共端口及UI/SourceProgram共享校验和实例回执复用；无能力时不丢时间约束降级，不跨不同Adapter合并授权候选。这只闭合B2已声明约束，F20完整能力、可信latest/calendarWindow/ISO周/新timeModes仍留B4，不改88项计数和剩余规划。
 - 页面及分发：新增`ioc-header-business-options-demo`、`ioc-header-business-tree-demo`、`ioc-header-business-detail-demo`，直接消费真实声明与查询绑定；共用说明、静态已应用条件、受控维度/日期编辑、本地Skill、Bundle与安装消费者同批闭合。静态导出中的tooltip说明展开成正文，避免在静态结果留下交互折叠内容。
 
-实施验证和证据入口：[B2验收](../evidence/ioc-header-b2/acceptance.md)、[B2账本](../evidence/ioc-header-b2/alpha-tests.md)。交互预览使用本地合成HTTP契约服务；没有迁移既有IOC业务页，没有新增默认可选操作，没有把本地验证提升为真实DQE、CloudIOC、Relay、DS、门户、CI或部署验收。Condition/displayInputs仍待审；B3–B6其余能力保持规划。
+实施验证和证据入口：[B2验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b2/acceptance.md)、[B2账本](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b2/alpha-tests.md)。交互预览使用本地合成HTTP契约服务；没有迁移既有IOC业务页，没有新增默认可选操作，没有把本地验证提升为真实DQE、CloudIOC、Relay、DS、门户、CI或部署验收。Condition/displayInputs仍待审；B3–B6其余能力保持规划。
 
 ## 20. B3 金额货币本地实施（2026-10-19）
 
@@ -968,7 +968,7 @@ interface RuntimeViewStateHandle {
 
 实际验收页为`pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json`，本地合成HTTP提供独立人民币/美元基本单位字段及两组同币种计算结果。已同步页面协议正文、能力门槛、正反契约、金额受控创建/更新与保存重开、字段选择列编辑、独立Skill、Bundle与六包仓外消费者。没有迁移已有业务页，没有新增默认可选操作，也未启用B6的IOC整页导出按钮；已有静态呈现与表格XLSX路径消费相同case。
 
-证据入口：[B3验收](../evidence/ioc-header-b3/acceptance.md)、[B3结果](../evidence/ioc-header-b3/result.md)、[B3账本](../evidence/ioc-header-b3/alpha-tests.md)。可交互预览为`http://127.0.0.1:4200/pages/ioc-header-currency-demo`。本批本地实施不等于真实USD业务、DQE、CloudIOC、Relay、DS模型、门户、CI或部署验收；这些仍未运行。B4–B6及待审Condition/displayInputs保持原规划，原88项清单和期间语义不变。不提交、不推送。
+证据入口：[B3验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b3/acceptance.md)、[B3结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b3/result.md)、[B3账本](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b3/alpha-tests.md)。可交互预览为`http://127.0.0.1:4200/pages/ioc-header-currency-demo`。本批本地实施不等于真实USD业务、DQE、CloudIOC、Relay、DS模型、门户、CI或部署验收；这些仍未运行。B4–B6及待审Condition/displayInputs保持原规划，原88项清单和期间语义不变。不提交、不推送。
 
 ## 21. B4 复杂时间与候选实施记录（2026-10-19）
 
@@ -976,7 +976,7 @@ interface RuntimeViewStateHandle {
 
 无上下文证明的旧initial/seed/执行快照不复用；读取与导出冻结条件、时钟及事实，捕获查询的谓词按冻结条件重编译。合法URL在动态默认初始化之前解析；同上下文事实更新保留已应用选择并重新检查相关查询/候选，身份修订变化停止旧实例并要求重新挂载。仅落地已批准DataPeriodFact分支，Condition、通用权限规则及任意对象路径保持待审。
 
-实际场景为time-modes/time-presets/availability/calendar-window四个IOC验收页；合成HTTP宿主在`http://127.0.0.1:4204/pages/ioc-header-time-modes-demo`。共用协议、正反例、静态呈现、XLSX、受控时间程序原子编辑、保存重开、Skill/Bundle与安装消费者同批核验，证据写入[本批账本](../evidence/ioc-header-b4/alpha-tests.md)和[本批结果](../evidence/ioc-header-b4/result.md)。验证结论以这些记录的实际状态为准。
+实际场景为time-modes/time-presets/availability/calendar-window四个IOC验收页；合成HTTP宿主在`http://127.0.0.1:4204/pages/ioc-header-time-modes-demo`。共用协议、正反例、静态呈现、XLSX、受控时间程序原子编辑、保存重开、Skill/Bundle与安装消费者同批核验，证据写入[本批账本](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b4/alpha-tests.md)和[本批结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b4/result.md)。验证结论以这些记录的实际状态为准。
 
 其余B5/B6保持规划，88项功能清单不删改；没有批量迁移业务页，没有默认新增可选操作，没有提交或推送。真实DQE/CloudIOC/Relay/DS模型/门户、私有周码及CI/部署仍未运行，本地合成验收不能代替真实服务验收。
 
@@ -986,9 +986,9 @@ interface RuntimeViewStateHandle {
 
 不创建viewstate、capture/restore、TableSession恢复、导航来源条目存储，也不恢复排序、分页、Tab、展开行、页头折叠或滚动。原88项编号保留，N04–N08未选部分不计入本批完成；已有基本返回/URL行为保留。B6整体挂起，不引入或启用任何可选操作。
 
-实施在既有隔离工作树承接未提交6.35；需要新协议字段时登记下一可用minor6.36。页面场景、文档、受控创作、Skill/Bundle与安装闭合仍为完成条件。验收入口：[B5范围](../evidence/ioc-header-b5/scope.md)、[B5结果](../evidence/ioc-header-b5/result.md)。真实服务与模型单独标明，不提交推送。
+实施在既有隔离工作树承接未提交6.35；需要新协议字段时登记下一可用minor6.36。页面场景、文档、受控创作、Skill/Bundle与安装闭合仍为完成条件。验收入口：[B5范围](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b5/scope.md)、[B5结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b5/result.md)。真实服务与模型单独标明，不提交推送。
 
-B5本地实施已完成（Schema6.36），实际source/list/detail页面、Playground、受控创作与分发闭环已验收。具体命令、重试说明与证据边界见[B5验收](../evidence/ioc-header-b5/acceptance.md)和[B5账本](../evidence/ioc-header-b5/alpha-tests.md)。
+B5本地实施已完成（Schema6.36），实际source/list/detail页面、Playground、受控创作与分发闭环已验收。具体命令、重试说明与证据边界见[B5验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b5/acceptance.md)和[B5账本](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b5/alpha-tests.md)。
 
 B5兼容实施说明：新链路显式声明strictURLInputs:true；旧页兼容规范化可能升至当前版本，故不按规范化后的版本号暗中切换URL行为。受控set_url_input_validation独立编辑策略；恢复和B6范围不变。
 
@@ -998,7 +998,7 @@ B5兼容实施说明：新链路显式声明strictURLInputs:true；旧页兼容�
 
 统一接缝沿已发布displayInputs/DisplaySnapshot扩展可选timeZone/periods具名期间事实分支；permissionRevision统一作为身份修订，保持单一订阅与销毁门禁，不创建第二个事实源。FilterState保留已发布数值revision读取，并由共用协调器管理事务、候选与查询门禁。B5继续仅传值，恢复不实施，B6挂起。
 
-合并验证与交付结论见[交付记录](../evidence/ioc-header-delivery/result.md)；真实服务验收边界不因提交或CI通过改变。
+合并验证与交付结论见[交付记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-delivery/result.md)；真实服务验收边界不因提交或CI通过改变。
 
 合并中的非法子筛选写入仍按§17.6已批准规则整组拒绝；父筛选未变化，因此后代保留在原上下文。main的陈旧后代回归用例同步验证整组拒绝、零通知、修订不变，不能恢复为跳过非法子项后部分提交。
 
@@ -1008,7 +1008,7 @@ B5兼容实施说明：新链路显式声明strictURLInputs:true；旧页兼容�
 
 用户决定“DashboardToolbar 的能力并入 iocheader，后面只需要保留一个”。本决定更新早期 IOC 与通用看板分别呈现的实现边界：运行时只保留 IocHeader，原 Dashboard 行内标题、返回、按数量收纳、紧凑吸顶、只读与说明均并入；FilterBar 继续承担共享筛选控件。dashboardToolbar 仅为旧元数据兼容输入，不保留第二套渲染组件。新声明使用 iocHeader，原三个 IOC 业务演示页迁移，已有期间页改为统一页头内只选年份，不新增公开演示页。
 
-本批协议为 6.41；只选年份由共享期间筛选的 periodModes 声明，不引入页头专属时间状态。既有模式对象列表、查询、候选、跨页与导出状态沿用共享能力；B5 仅传值、B6 挂起等决定保持。实际测试、分发和服务边界见[统一页头验收](../evidence/unified-page-header/README.md)，本批仍为未提交本地改动。
+本批协议为 6.41；只选年份由共享期间筛选的 periodModes 声明，不引入页头专属时间状态。既有模式对象列表、查询、候选、跨页与导出状态沿用共享能力；B5 仅传值、B6 挂起等决定保持。实际测试、分发和服务边界见[统一页头验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/unified-page-header/README.md)，本批仍为未提交本地改动。
 
 ## 25. Playground 展示与能力索引优化（2026-10-20）
 
@@ -1016,9 +1016,9 @@ B5兼容实施说明：新链路显式声明strictURLInputs:true；旧页兼容�
 
 能力一览按使用者可理解的 32 项能力归并，给出适用条件、状态、演示及编号映射；全部 88 项编号在已支持/需业务接入/暂缓/暂不支持中完整且唯一追溯，不把接口能力当作真实业务已经接通。恢复保持未选，B6 继续挂起；不新增操作、批量迁移业务页或改变时间/金额/导航语义。
 
-试验场仅为明确注册的 IOC 页头样例提供内置合成查询、候选和期间事实，使本地可直接体验；无未知查询或候选的网络回退。原页面 JSON、产品协议与 local-authoring 契约不变。实际结果及证据边界见 [验收记录](../evidence/ioc-header-playground/acceptance.md)。用户已于本轮授权提交并合入 main；交付保留并行修改，按最新 main 复验。
+试验场仅为明确注册的 IOC 页头样例提供内置合成查询、候选和期间事实，使本地可直接体验；无未知查询或候选的网络回退。原页面 JSON、产品协议与 local-authoring 契约不变。实际结果及证据边界见 [验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-playground/acceptance.md)。用户已于本轮授权提交并合入 main；交付保留并行修改，按最新 main 复验。
 
 
 ## 2026-10-22 归档批次按主线迁移
 
-用户明确以主线契约为准交付已确认行为。七主题整体确认入口 `/ioc-header-review` 与12份正式页面复用唯一页头、FilterCandidatesGateway/DisplayInputs、selection.mode、候选上下文和原子清除。6.46补齐必选多选、无依赖候选和units.cases币种预设；不合入旧6.33并行协议。地区部/代表处在新增及主线相应示例中均显式单选。范围、命令及真实服务边界见[迁移验收](../evidence/ioc-header-main-delivery-2026-10-22/acceptance.md)。生产B组字典/payload/逐源接线与C组未决问题继续保留。
+用户明确以主线契约为准交付已确认行为。七主题整体确认入口 `/ioc-header-review` 与12份正式页面复用唯一页头、FilterCandidatesGateway/DisplayInputs、selection.mode、候选上下文和原子清除。6.46补齐必选多选、无依赖候选和units.cases币种预设；不合入旧6.33并行协议。地区部/代表处在新增及主线相应示例中均显式单选。范围、命令及真实服务边界见[迁移验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-main-delivery-2026-10-22/acceptance.md)。生产B组字典/payload/逐源接线与C组未决问题继续保留。

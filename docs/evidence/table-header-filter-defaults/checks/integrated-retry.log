@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run apps/playground/tests/scenario-directory.test.ts apps/playground/tests/ioc-header-showcase.test.ts packages/page/tests/canonical-writers.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/table-header-filter-defaults/DataDashboard
-
-
- Test Files  3 passed (3)
-      Tests  16 passed (16)
-   Start at  14:42:55
-   Duration  2.79s (transform 2.09s, setup 0ms, import 4.65s, tests 2.79s, environment 0ms)

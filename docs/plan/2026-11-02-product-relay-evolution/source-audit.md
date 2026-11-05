@@ -8,7 +8,7 @@
 
 用户提供三份存量拆分材料后的补充核对见[材料评估](legacy-material-assessment.md)：确认上游 DATA_BLOCK 的多槽表达缺口；修正编辑路径、完整工具契约注册与 firstparty 所有权判断；新增部署差异、Relay Skill 改良和召回探查。补充 15 项本地检查与契约探针单列，不替代下列原始回执。
 
-再后续接收的 [Relay 静态审计及本仓复核](../../evidence/2026-11-02-relay-authoring-static-audit/README.md)已经落盘。本轮重新取得 9 个公共工具完整输入，Bundle 6,464 项摘要核对通过；原报告的生成 stale 是早前时间点结果，不代表当前状态。原始 218 项测试没有重跑，不能合并成一个新的全量通过声明。
+再后续接收的 [Relay 静态审计及本仓复核](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-authoring-static-audit/README.md)已经落盘。本轮重新取得 9 个公共工具完整输入，Bundle 6,464 项摘要核对通过；原报告的生成 stale 是早前时间点结果，不代表当前状态。原始 218 项测试没有重跑，不能合并成一个新的全量通过声明。
 
 ## 1. 基线与证据口径
 

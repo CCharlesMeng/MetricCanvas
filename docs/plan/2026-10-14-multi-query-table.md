@@ -1,6 +1,6 @@
 # 多查询表格分页和共享查询设计
 
-状态：按用户后续授权完成 P0–P5 实施。此前“不要开始实现”只属于设计阶段。P6 已执行环境预检，缺真实 DQE/Relay 端点与已验真业务上下文，未执行真实业务验收。实际结果见[实施证据](../evidence/multi-query-table/result.md)。
+状态：按用户后续授权完成 P0–P5 实施。此前“不要开始实现”只属于设计阶段。P6 已执行环境预检，缺真实 DQE/Relay 端点与已验真业务上下文，未执行真实业务验收。实际结果见[实施证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/multi-query-table/result.md)。
 
 补充范围：本轮进一步核对当前源码，将第 12 节收敛为架构调整、拟新增模块、现有文件改动和实施批次。当前工作区版本真源已为 6.21，固定级联已允许声明过的分页窗口输入；本方案复用这项现有能力，不重复建设。新组合查询源和内部计划已实现为 6.22 增量。
 
@@ -654,8 +654,8 @@ QueryRunner 和 SourceProgram 是两个真实职责：前者处理请求资源�
 | P3 | 完成 | TableSession 唯一写提交状态；table-controller 保存草稿并组装 binding；默认排序恢复、数值范围、候选能力状态、代次及越界纠偏 |
 | P4 | 完成 | 新鲜完整导出共用程序/并发池，冻结视图；10000 行/60 秒、失败无部分文件；搜索和既有 Excel/PDF 入口协作 |
 | P5 | 完成 | TS Node Bridge、Python 传输/装配、MCP Schema 引用投影、协议/向量/Bundle/Skill 真源生成、公开面和实际 sdist/wheel 闭合 |
-| P6 | 环境阻碍，未执行真实业务 | 预检缺可信 DQE/Relay 配置；已交付脱值验收程序与[可执行步骤](../evidence/multi-query-table/real-acceptance.md) |
+| P6 | 环境阻碍，未执行真实业务 | 预检缺可信 DQE/Relay 配置；已交付脱值验收程序与[可执行步骤](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/multi-query-table/real-acceptance.md) |
 
-A01–A14 的本地/静态、行为、浏览器与分发证据集中在[验收报告](../evidence/multi-query-table/result.md)；A15 仍为 NOT_RUN。正式示例与 Sim 请求/响应是仿真，设计结果本身不再作为运行证据。
+A01–A14 的本地/静态、行为、浏览器与分发证据集中在[验收报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/multi-query-table/result.md)；A15 仍为 NOT_RUN。正式示例与 Sim 请求/响应是仿真，设计结果本身不再作为运行证据。
 
 延期范围：TD01 的详情、导航和全局候选编排进一步拆分；TD10 的无关地图/布局/动作校验拆分；TD09/TD12 的旧 Python 语义及未触及源分类迁移。本批新的组合规则只有 TS 实现，未新增 Python 语义副本。没有上游事务快照令牌时仍存在多次读取同总数内容变化的限制。

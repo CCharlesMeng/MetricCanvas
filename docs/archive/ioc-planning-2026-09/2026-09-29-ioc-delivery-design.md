@@ -4,7 +4,7 @@
 
 状态：待评审设计。2026-09-29。本文制定下一阶段计划，不启动新的产品代码修改；“拟新增”均不是当前 Schema，也不是已经通过的架构决定。
 
-承接：[实施记录](2026-09-29-ioc-implementation.md)、[全量追踪](../../plan/2026-09-23-ioc-full-page-capability-gap.md)、[第一批来源复核](../../evidence/2026-09-29-ioc-migration-batch1/README.md)。基线 HEAD 为 `6954c77d035d2c10548e51ba6e8b1e1c6412be12` 加当前 IOC 未提交增量，不能只用 HEAD 复现现状。后续每阶段以明确文件清单、diff及夹具哈希冻结基线，保护平台部署及其他会话修改。
+承接：[实施记录](2026-09-29-ioc-implementation.md)、[全量追踪](../../plan/2026-09-23-ioc-full-page-capability-gap.md)、[第一批来源复核](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-29-ioc-migration-batch1/README.md)。基线 HEAD 为 `6954c77d035d2c10548e51ba6e8b1e1c6412be12` 加当前 IOC 未提交增量，不能只用 HEAD 复现现状。后续每阶段以明确文件清单、diff及夹具哈希冻结基线，保护平台部署及其他会话修改。
 
 ## 1. 最终目标与范围
 

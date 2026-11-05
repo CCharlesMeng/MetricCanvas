@@ -78,7 +78,7 @@
 | 页面/范围 | 继续保留的主要缺口 | 原始追踪位置 |
 |---|---|---|
 | 客户详情 | KPI真实槽位/单位、空间8份额绑定、声音及明细列数组契约、机会点标识、三种趋势时间语义、详情查询分页、固定汇总、重复期及格式 | [消费者基线](ioc-m0-m1-2026-09-30/consumers.md)、[内部补证](ioc-m0-m1-2026-09-30/internal-evidence.md) |
-| 经营概览 | 卡/Tab启用数量、完整逐列配置、地图与三日期、键并集与稳定择取、特定增长率0/null、ANA字符串 | 同上及[首批证据纠错](../evidence/2026-09-29-ioc-migration-batch1/README.md) |
+| 经营概览 | 卡/Tab启用数量、完整逐列配置、地图与三日期、键并集与稳定择取、特定增长率0/null、ANA字符串 | 同上及[首批证据纠错](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-29-ioc-migration-batch1/README.md) |
 | Token专项 | trend_data/h_tag、客户数及分页完整组保证、TOP5+其他、重复日、局部筛选详情、趋势格、完整图表绑定及全量搜索 | 同上；[M1设计候选](ioc-m0-m1-2026-09-30/design-review.md)保留 |
 | 21入口中的其他入口 | 所有已识别内容、能力与内部证据缺口，第二批来源待办、启用动作 | [全量能力追踪](2026-09-23-ioc-full-page-capability-gap.md)；按入口重新映射，不能把“四份资产”简单等同“四个来源路由” |
 

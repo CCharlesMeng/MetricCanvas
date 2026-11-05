@@ -19,4 +19,4 @@ Pivot保留默认valueField，允许列级valueField覆盖。类别冲突以有�
 
 未采用查询结果回写隐藏筛选器：空集合“不筛选”语义与本需求冲突，且派生输入会混入用户筛选/URL状态。未采用独立查询执行体系：会重复取消、缓存与并发。设计和验证矩阵见[实施计划](../archive/2026-10-12-business-sdt-cascade/README.md)。
 
-本地实施证据见[验收结论](../evidence/2026-10-12-business-sdt-cascade/result.md)，本地通过不替代真实数据集成。
+本地实施证据见[验收结论](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-business-sdt-cascade/result.md)，本地通过不替代真实数据集成。

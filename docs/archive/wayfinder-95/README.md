@@ -24,7 +24,7 @@
 | [0076](../../adr/0076-formal-architecture-contract-scope-and-enforcement.md) | 形式化架构的范围与门禁（校验器**尚未实现**） |
 | [0077](../../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) | 盘古只替换左侧对话，每轮 ask 返回本轮结果 |
 
-注入契约写在 [`docs/host-contract.md`](../../host-contract.md)「平台的运行配置注入」段。旧链退出的完整历史索引是 [`docs/evidence/2026-09-08-legacy-baseline.md`](../../evidence/2026-09-08-legacy-baseline.md)，它同时是 git tag `legacy/pre-static-platform-2026-09-08` 的唯一索引。盘古接入的可验收行为清单在 [`docs/evidence/wayfinder-107-pangu-integration-baseline.md`](../../evidence/wayfinder-107-pangu-integration-baseline.md)，ADR-0077 正文直接引用它。
+注入契约写在 [`docs/host-contract.md`](../../host-contract.md)「平台的运行配置注入」段。旧链退出的完整历史索引是 [`docs/evidence/2026-09-08-legacy-baseline.md`](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-08-legacy-baseline.md)，它同时是 git tag `legacy/pre-static-platform-2026-09-08` 的唯一索引。盘古接入的可验收行为清单在 [`docs/evidence/wayfinder-107-pangu-integration-baseline.md`](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/wayfinder-107-pangu-integration-baseline.md)，ADR-0077 正文直接引用它。
 
 ## 被推翻的方向
 

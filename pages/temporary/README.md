@@ -16,9 +16,9 @@
 
 2026-10-29已清空所有13个inline源的数据行，共删除18行静态示例，保留字段声明、组件及引用，概览、对比图和未接数明细显示空态。已有24个query源未变。中国区/海外各查询case当前相同且未下推站点条件，不能据此声称得分查询已区分站点。默认level=地区部在明细查询中绑定组织名称字段，其实际业务语义尚待确认。历史81.3/70.8计算验收对应被替换版本，不能作为当前页面结论。
 
-合成数据夹具已移至 `tests/fixtures/partner-health/`，只供自动化测试，页面入口不再引用。历史替换及故障证据见[修复记录](../../docs/evidence/partner-health-pasted-repair-20261028/README.md)；[历史预览验收](../../docs/evidence/partner-health-preview-20261028/README.md)对应旧页面。
+合成数据夹具已移至 `tests/fixtures/partner-health/`，只供自动化测试，页面入口不再引用。历史替换及故障证据见[修复记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-pasted-repair-20261028/README.md)；[历史预览验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-preview-20261028/README.md)对应旧页面。
 
-同步main后的复验见[HTTP查询与.length异常验收](../../docs/evidence/partner-health-real-dqe-20261029/README.md)：已复现旧模拟器读取对象查询output_metrics.length的异常并移除其生产入口；全部28个查询分支、完整页面执行、空结果和传输失败均有回归。当前本机服务仍为DQE Sim，拒答不代表真实业务DQE验真。
+同步main后的复验见[HTTP查询与.length异常验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-real-dqe-20261029/README.md)：已复现旧模拟器读取对象查询output_metrics.length的异常并移除其生产入口；全部28个查询分支、完整页面执行、空结果和传输失败均有回归。当前本机服务仍为DQE Sim，拒答不代表真实业务DQE验真。
 
 正式伙伴健康度已移植 probe 的顶部11项整体查询与计算声明，5张卡片缺项显示 `--`，总分对缺项按0相加。保留正式 id `partner-health`，不会命中 probe 专属网关。顶部查询使用 `国内或海外` 同时取国内、海外两组记录，每范围应为唯一整体记录；该数据契约尚待内网验真，页面不会把组织明细相加或注入合成行来替代。
 

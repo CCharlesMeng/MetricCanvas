@@ -8,7 +8,7 @@
 
 首次内网交接使用[完整方案评审稿 v1.0](2026-11-02-product-relay-evolution/relay-review-design.md)：自包含目标架构、Skill/脚本/协议、候选接口、采用/回退、验收以及 R01–R18 回填要求。它保留为历史冻结快照，不进入日常 Skill 必读链；回填意见回收到现有计划及实施规格。
 
-**11 月 2 日冻结评审版本为 [v1.1](2026-11-02-product-relay-evolution/relay-review-design-v1.1.md)**，已接收 Relay 返回意见。重点新增默认入口 data-exploration-report 的清点、两工具注入修复和 I07 分项依赖；9/15 工具分别归属不同检出，轮次文件桥不等于 StateStore/CAS，版本/存储/turnId 三组矛盾保留补证。详见[采纳判断](../evidence/2026-11-02-relay-design-feedback/assessment.md)，v1.0 原件不覆盖。
+**11 月 2 日冻结评审版本为 [v1.1](2026-11-02-product-relay-evolution/relay-review-design-v1.1.md)**，已接收 Relay 返回意见。重点新增默认入口 data-exploration-report 的清点、两工具注入修复和 I07 分项依赖；9/15 工具分别归属不同检出，轮次文件桥不等于 StateStore/CAS，版本/存储/turnId 三组矛盾保留补证。详见[采纳判断](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-design-feedback/assessment.md)，v1.0 原件不覆盖。
 
 11 月 2 日的首批实施交接为[实施交接](2026-11-02-product-relay-evolution/implementation-handoff.md)：先核对新主线/并行工作，再优先完成 I08 的确定性呈现修复及 I05 共享分析子批；文档含未提交材料携带、首批文件、依赖和验收说明。
 
@@ -18,7 +18,7 @@
 
 三份用户提供的存量拆分材料已对照当前源码核查，见[材料评估](2026-11-02-product-relay-evolution/legacy-material-assessment.md)。新增多槽表格同步验证支线 T1，并补充真实部署/注册、内部适配和召回接缝的探查；两种创作逻辑共享产品能力的主方向保持。
 
-后续收到的[Relay 合并报告原文](../evidence/2026-11-02-relay-authoring-static-audit/report.original.md)已逐字节落盘。[接收与复核](../evidence/2026-11-02-relay-authoring-static-audit/README.md)区分静态报告与本仓实测，并修正能力对称、保留意图换源、完整 Schema 和通道等过度推论；最新[接缝规格与首批任务](2026-11-02-product-relay-evolution/implementation-seams-v1.md)将版本采用、唯一注册、逐请求工作副本、产物交接和共享核心细化为 I00–I08。
+后续收到的[Relay 合并报告原文](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-authoring-static-audit/report.original.md)已逐字节落盘。[接收与复核](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-authoring-static-audit/README.md)区分静态报告与本仓实测，并修正能力对称、保留意图换源、完整 Schema 和通道等过度推论；最新[接缝规格与首批任务](2026-11-02-product-relay-evolution/implementation-seams-v1.md)将版本采用、唯一注册、逐请求工作副本、产物交接和共享核心细化为 I00–I08。
 
 ## 1. 两种逻辑的起点与完成目标
 

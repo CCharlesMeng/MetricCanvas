@@ -12,7 +12,7 @@
 - [x] 正式协议、ADR、参考示例与生成契约/bundle 最终同步。
 - [x] 完成局部及共享回归、类型检查、浏览器宽窄容器与静态导出证据。
 
-现行结论见 [ADR-0101](../../adr/0101-explicit-value-colors-and-chart-labels.md)，最终验收见[实施结果](../../evidence/2026-10-12-explicit-presentation/result.md)。
+现行结论见 [ADR-0101](../../adr/0101-explicit-value-colors-and-chart-labels.md)，最终验收见[实施结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-explicit-presentation/result.md)。
 
 ## 已确认的需求
 

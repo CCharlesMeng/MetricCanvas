@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "cf7122cad7280ce8aee7792b5c00bf24b3ac3b430aaadabc13f57ef6869d1ae3",
+  "sha256": "a46bed50daac6912d5801b0279b96b97fb33109e542ec2ce4fe20a5134c186c1",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -268,7 +268,7 @@
     },
     {
       "file": "metriccanvas-authoring/contracts/authored/platform-v2-protocol.md",
-      "sha256": "32b9fd6b7bfb7858a88f250f613b583c6c0689146661e96aa612bd07ef6fc84c"
+      "sha256": "589b611735334c279d5a8553c075fd785b40abb7288dcf106c8ec3e2cb619b86"
     },
     {
       "file": "metriccanvas-authoring/contracts/authored/publication-conformance.json",
@@ -2096,7 +2096,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "c865d25667276a15d9ac3aab997aa96952e8de2b9d99359a6237a6697855d367"
+      "sha256": "fc835308dd536c25c2d2b4d4bcfa93dcb0248043dc0098392615c103f47a3865"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2104,7 +2104,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/README.md",
-      "sha256": "7a034f06b04f39705f76f3d914344ac00b15092db3c1693a6a39bc1832d8d463"
+      "sha256": "c9877cf0902aafd80b2fe84ff31444a86f4837e6f54dbbb482716c0548f80b8c"
     },
     {
       "file": "pages/business/dashboard/ioc/approval/region-authorization-norms.json",
@@ -2244,7 +2244,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "69fefc0edfc4c47c423ae1cd3c6f72d48c2079d46ee0ec81466b957598a663e5"
+      "sha256": "3b4d7d2b7c35af2d2bd838bd2d9008099b8c9b4814a15d73b014b3117e33e495"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
@@ -2612,15 +2612,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "0f7deeba9b47b86aef9734a611b28c39981f70dd8dc5076b7941770ad8f03232"
+      "sha256": "a0532fc5e4ddea9e0f1546b5d4d764748cc6d11b343cc1d6eef8613d3993cd4e"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "12d5d47c94e72a2006ec79b715206ee7bc5a3bd4eb5b611a9bbb09a68608a740"
+      "sha256": "f6f38560026f053289ef8770fb10294bd309d1065265dc59f3e585b567e2a660"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "9619fb3872fa6fb36eea26919769b52f62a3fdc82a8da3400326f50af1846948"
+      "sha256": "0bb6cabd11254a9d1a44081c8e3e1f042ce6c9a8ddc8dc41c4cb051b079d5136"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2724,7 +2724,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "9c73d002ff003ee5b42194621bf788e6ba318b5f95fc209677e1d1305753a167"
+      "sha256": "78a39e16548eeabb2844cbaec297af2e399826d72a7e46328c56922216a6b66f"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2896,7 +2896,7 @@
     },
     {
       "file": "pages/platform/README.md",
-      "sha256": "bd7536d4832ffe713614f07f37320e14a867aa88a1bb53f64da998d5dc471e13"
+      "sha256": "8b2ba8c70459dbcb89a4c878a71a7cadaa5d9eddbbab9578642920e7aba38737"
     },
     {
       "file": "pages/platform/flow-page.json",
@@ -2912,11 +2912,11 @@
     },
     {
       "file": "pages/temporary/README.md",
-      "sha256": "217be30fc91a5af5ee055bf366d725c5a75f4715f18b64a1a22a4f1f13ad4c37"
+      "sha256": "cbabb36dbfe7207a105365ad56f31a47d38f0826c5662b7ef1f696ca45a7526d"
     },
     {
       "file": "pages/temporary/business-rejection-pagination-10/README.md",
-      "sha256": "3b8a9cbc8ecac3e4fec6905656fd6f80b024c6efe03ab8b6df7e41ee6c606728"
+      "sha256": "ab81a50347cb970088233af015a774d119fb00cf039aad89a9054031674a8432"
     },
     {
       "file": "pages/temporary/business-rejection-pagination-10/business-rejection-details-pagination-10.json",
@@ -2964,11 +2964,11 @@
     },
     {
       "file": "pages/temporary/partner-health-data-analysis.md",
-      "sha256": "509ea44670cd9547576b0b82e1e11f623c97225bce5e9f89f084f8072e342959"
+      "sha256": "19b29f81ff6ef253726b702d87ecc759ae37aede6197831d9b520ce5c293d6bb"
     },
     {
       "file": "pages/temporary/partner-health-union-null-probe/README.md",
-      "sha256": "1e4c4d2b4493044dc4f12e1a84fae3fc3c55816e82c88df11eedf8957a1229b0"
+      "sha256": "fff55c2909ce0f627e161475050549b975e80924856bc769ca7d218773e52baf"
     },
     {
       "file": "pages/temporary/partner-health-union-null-probe/partner-health-union-null-probe.json",
@@ -3320,7 +3320,7 @@
     },
     {
       "file": "tools/scripts/export-authoring-contracts.ts",
-      "sha256": "482827f964023b2435b69b7aae7391c9ec9a4c1ffc79aa038a1bcfbde7e93721"
+      "sha256": "af982ae1d6cdb3c4ac50b70eecb32ead40308c82d445db23a540e34d945d628d"
     },
     {
       "file": "tools/scripts/export-authoring-presentation-policy.ts",
@@ -3388,7 +3388,7 @@
     },
     {
       "file": "tools/scripts/mc-content-fixtures.py",
-      "sha256": "f6344bef1fd45a2120ec174188ce62f218904be31d35702ac5c3375aa48dcd27"
+      "sha256": "3d63f617b1e84f1bed70e179bde4ecffd3021f968a02c5db491961297e4435f1"
     },
     {
       "file": "tools/scripts/mc-content-knowledge-reader.ts",

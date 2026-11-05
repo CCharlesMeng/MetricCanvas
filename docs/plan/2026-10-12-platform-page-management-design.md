@@ -9,7 +9,7 @@
 
 状态：2026-10-12 用户确认当前交互并要求落盘，包括预览中的进入编辑入口。交互作为后续实施基线；视觉另按 TinyVue OS Theme 演进，见[风格与组件复用方案](2026-10-12-platform-os-theme-component-architecture.md)。服务能力与正式实施仍需按配合清单核验。
 
-可独立打开的[交互原型](../evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)已保存到仓库。它验证导航和状态旅程，使用示例内容；既有外观不作为下一轮 1:1 视觉还原基线，也不证明真实服务能力。原型与确认范围见[保存记录](../evidence/platform-page-management-interaction-2026-10-12/README.md)。
+可独立打开的[交互原型](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)已保存到仓库。它验证导航和状态旅程，使用示例内容；既有外观不作为下一轮 1:1 视觉还原基线，也不证明真实服务能力。原型与确认范围见[保存记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-page-management-interaction-2026-10-12/README.md)。
 
 ## 已确认决策
 

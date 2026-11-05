@@ -1,6 +1,6 @@
 # MetricCanvas Agent 创作链完整迁移方案
 
-> **2026-09-08 盘古交互边界：** [ADR-0077](../../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 保留平台现有布局，只替换左侧对话区。所有对话呈现归盘古，原页面画布、检查器与显式沉淀保留；每次 ask 有本轮答复，确认问题也算结果，用户回应后可继续分析。首版允许整体处理中，失败/取消等保留并标识上轮页面。浏览器不自打旧 WebSocket/`role_name`；真实接线和恢复仍待 #106–#108，详见[接入基线](../../evidence/wayfinder-107-pangu-integration-baseline.md)。
+> **2026-09-08 盘古交互边界：** [ADR-0077](../../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 保留平台现有布局，只替换左侧对话区。所有对话呈现归盘古，原页面画布、检查器与显式沉淀保留；每次 ask 有本轮答复，确认问题也算结果，用户回应后可继续分析。首版允许整体处理中，失败/取消等保留并标识上轮页面。浏览器不自打旧 WebSocket/`role_name`；真实接线和恢复仍待 #106–#108，详见[接入基线](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/wayfinder-107-pangu-integration-baseline.md)。
 
 > **2026-09-08 去留边界更新：** [ADR-0074](../../adr/0074-browser-component-building-and-isolated-legacy-baseline.md) 将旧链路保留方式改为完整提交/tag 的可复现历史基线，按需在仓外运行。主线完成依赖解耦即可移除相应旧实现，不必等待本计划的生产灰度门槛；功能等价和生产验收条件继续有效，不能以隔离完成宣称迁移完成。人工组件切换与沉淀的最小能力长期归浏览器工作台，覆盖 Python 全部可装配组件，故下文“删除 TS 双实现”不包括该能力。旧基线不得再作为主线构建、CI 或当前测试预期生成的前置。
 

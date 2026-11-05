@@ -2,7 +2,7 @@
 
 日期：2026-09-18。状态：总体方向已获用户认可；核心 MCP 的职责和接口继续 grilling，未进入实施。
 
-2026-09-20 最新用户裁决：采用推荐分析计划审核；普通筛选/排序/翻页保持渲染期执行；计划跨会话保存暂挂起。当前不做多方案候选链，目标采用单份工作稿与不可变提交快照；平台 compose/edit 成功后由工具内部保存草稿并返回 draftId，取消 Relay 单独选择候选并提交的目标要求。partial 也自动保存通过校验的有效修改，并明确完成项与失败项；全失败或无变化不新增保存。本文早期涉及候选链的描述保留为讨论沿革，最新目标以 [最小链路计划](../../evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md) 开头决策为准；尚未修改正式协议或实现。
+2026-09-20 最新用户裁决：采用推荐分析计划审核；普通筛选/排序/翻页保持渲染期执行；计划跨会话保存暂挂起。当前不做多方案候选链，目标采用单份工作稿与不可变提交快照；平台 compose/edit 成功后由工具内部保存草稿并返回 draftId，取消 Relay 单独选择候选并提交的目标要求。partial 也自动保存通过校验的有效修改，并明确完成项与失败项；全失败或无变化不新增保存。本文早期涉及候选链的描述保留为讨论沿革，最新目标以 [最小链路计划](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md) 开头决策为准；尚未修改正式协议或实现。
 
 范围更正：此前仅按内部报告的 9 个自有工具讨论，遗漏本仓新版注册能力。完整具名清单、外部依赖和实际 list_tools 证据见 [MCP 完整盘点](2026-09-18-authoring-mcp-inventory.md)。本仓注册 15 个不同名称，与内部自有 9 个合并为 22 个名称；不代表全部已生产接通。后续创作讨论须覆盖统一入口五工具，而不只 discover_data_context / compose_page。
 
@@ -83,7 +83,7 @@
 
 ## 当前设计树：统一创作五工具
 
-**当前近期实施规划入口：** [基于现有语义模型的最小生成链与Skill调整计划](../../evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)。用户已确认先复用现有数据自动生成页面，按选中指标补充必要详情；数据全景是对账参考，不是本轮全量建设前置。该计划记录Skill迁移及其工具/证据通道依赖，尚未实施。
+**当前近期实施规划入口：** [基于现有语义模型的最小生成链与Skill调整计划](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)。用户已确认先复用现有数据自动生成页面，按选中指标补充必要详情；数据全景是对账参考，不是本轮全量建设前置。该计划记录Skill迁移及其工具/证据通道依赖，尚未实施。
 
 ### 2026-09-18 本轮范围收敛与挂起方向
 
@@ -138,9 +138,9 @@
 
 用户认可部分交付原则：不影响核心回答的缺失允许生成部分候选，缺失内容和原因随页面保留；影响核心回答时停止生成看似完整的结论。无数据、查询失败、无权限分别表达，预算耗尽也遵循该原则。上面的部分候选未决项因此收敛，具体反馈契约仍待定。
 
-用户要求先基于现有四份数据材料构造理想可查数据全景，再向数据侧逐项确认可行性，之后确定严谨方案。对账稿见 [数据上下文与查询证据全景](../../evidence/authoring-data-context-2026-09/2026-09-20-data-context-panorama.md)，包含证据状态、字段含义、理想获取阶段、不可得时处理及填写模板；另有 [Tokens执行证据映射示例](../../evidence/authoring-data-context-2026-09/2026-09-20-data-context-tokens-evidence.json)。全景不是一次返回的全量负载，也不是已批准接口；尤其详细定义发现前读取、组合支持和结果规模控制均需对账，不因写入草案就成为现有保证。
+用户要求先基于现有四份数据材料构造理想可查数据全景，再向数据侧逐项确认可行性，之后确定严谨方案。对账稿见 [数据上下文与查询证据全景](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/authoring-data-context-2026-09/2026-09-20-data-context-panorama.md)，包含证据状态、字段含义、理想获取阶段、不可得时处理及填写模板；另有 [Tokens执行证据映射示例](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/authoring-data-context-2026-09/2026-09-20-data-context-tokens-evidence.json)。全景不是一次返回的全量负载，也不是已批准接口；尤其详细定义发现前读取、组合支持和结果规模控制均需对账，不因写入草案就成为现有保证。
 
-用户随后补充 `调查报告/数据/语义层查询结果.json` 与 `metric-detail.md`，明确语义模型与部分业务指标详情实际可查询。前文关于详细定义发现前读取的待确认项收敛为“具体覆盖、定位/映射、读取协议及版本语义待确认”，不再整体视为不存在。全景已更新v2，区分业务指标资产、技术实现、可执行语义指标、基础度量、模型维度和物理来源；新增 [语义对象与关联证据](../../evidence/authoring-data-context-2026-09/2026-09-20-data-context-semantic-evidence.json)。两份新增样例主题不同，不能强行串成同一个指标链。
+用户随后补充 `调查报告/数据/语义层查询结果.json` 与 `metric-detail.md`，明确语义模型与部分业务指标详情实际可查询。前文关于详细定义发现前读取的待确认项收敛为“具体覆盖、定位/映射、读取协议及版本语义待确认”，不再整体视为不存在。全景已更新v2，区分业务指标资产、技术实现、可执行语义指标、基础度量、模型维度和物理来源；新增 [语义对象与关联证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/authoring-data-context-2026-09/2026-09-20-data-context-semantic-evidence.json)。两份新增样例主题不同，不能强行串成同一个指标链。
 
 近期思路据此调整为整合现有定义、建立带证据的映射与冲突处理、按任务生成精简发现投影；仍沿用Lab寻源及DQE执行，不恢复挂起的绕过Lab方案。结构完整不等于字段非空或执行保证，最终契约继续等待数据侧对账。
 

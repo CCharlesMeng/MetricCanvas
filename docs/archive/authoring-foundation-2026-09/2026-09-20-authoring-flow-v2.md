@@ -2,7 +2,7 @@
 
 日期：2026-09-20。状态：用户确认方向后的目标设计；尚未实施。此次修正同一个 Agent 的职责表达、统一请求入口、数据修改回流，以及真实 Relay 占位符交付约束。
 
-依据：原始交互设想（本地材料 `调查报告/Agent交互逻辑.md`，未随仓交付）、[最小链路计划](../../evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)、用户本轮提供的实际 create Step 1–6。实际部署约束与影响见 [架构影响说明](2026-09-20-authoring-relay-impact.md)。
+依据：原始交互设想（本地材料 `调查报告/Agent交互逻辑.md`，未随仓交付）、[最小链路计划](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)、用户本轮提供的实际 create Step 1–6。实际部署约束与影响见 [架构影响说明](2026-09-20-authoring-relay-impact.md)。
 
 ## 1. 架构图
 

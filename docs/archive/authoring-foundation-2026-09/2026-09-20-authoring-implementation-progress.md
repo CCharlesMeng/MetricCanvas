@@ -2,7 +2,7 @@
 
 日期：2026-09-20。基线为交接时已有工作区，保留此前方案、结构计划、页面参数与格式等未提交修改；未 reset、清理、提交或推送。开工时 tracked diff 备份位于 `/private/tmp/metriccanvas-before-implementation.patch`。
 
-依据：[最小流程](../../evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)、[模块架构](2026-09-20-authoring-module-architecture.md)、[Relay 影响](2026-09-20-authoring-relay-impact.md)。
+依据：[最小流程](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)、[模块架构](2026-09-20-authoring-module-architecture.md)、[Relay 影响](2026-09-20-authoring-relay-impact.md)。
 
 ## 第一批：真实复用接口与批次规则
 

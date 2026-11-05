@@ -1,6 +1,6 @@
 # 图表 ECharts 隐含透传：讨论结论与实施主计划
 
-更新：2026-10-19。状态：**P0–P6 本地实施、分发与完整验收完成。** 产品实施、场景、文档与 Skill 已同步；[验收证据](../evidence/chart-echarts-option/result.md)已落盘。用户随后授权提交并推送 main；部署不在本批范围。
+更新：2026-10-19。状态：**P0–P6 本地实施、分发与完整验收完成。** 产品实施、场景、文档与 Skill 已同步；[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/chart-echarts-option/result.md)已落盘。用户随后授权提交并推送 main；部署不在本批范围。
 
 决策真源：[ADR-0110](../adr/0110-hidden-echarts-presentation-options.md)。本文件是唯一执行入口，就地更新任务和证据，避免另起同主题分稿。
 
@@ -176,7 +176,7 @@ pnpm compatibility:check
 
 浏览器专项加入 `packages/embed/tests/browser/`，沿用相邻 chart/report spec 的项目启动方式，补齐安装包 fixture 复制闭包；分别记录实际执行项目和结果，不把单元测试当浏览器结论。Python 作者代码有新分支时按项目既有固定 radon 版本和复杂度门槛验收。依赖/环境/既有失败分类记录，不用扩大无关改动消除。
 
-完成要求遵循[新功能验收](../agents/feature-acceptance.md)与[本地创作 Skill 维护](../agents/local-authoring-skill-maintenance.md)。[验收证据](../evidence/chart-echarts-option/result.md)记录基线、冻结源码树、命令、产物和限制。提交、push 或跨分支交付另按本仓 scoped-main-delivery；本地验收不代表远端 CI 或部署验收。
+完成要求遵循[新功能验收](../agents/feature-acceptance.md)与[本地创作 Skill 维护](../agents/local-authoring-skill-maintenance.md)。[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/chart-echarts-option/result.md)记录基线、冻结源码树、命令、产物和限制。提交、push 或跨分支交付另按本仓 scoped-main-delivery；本地验收不代表远端 CI 或部署验收。
 
 ## 7. 风险与实施约束
 
@@ -192,7 +192,7 @@ pnpm compatibility:check
 - [x] Q1–Q8 与后续修正落盘，ADR 及主题索引同步。
 - [x] P0–P6、文件范围、保护策略、错误渠道、测试矩阵与完成门槛已规划。
 - [x] 隔离检出与产品协议/实现：基线 `8ff56a268a659dc026ec76b90d6bcc4353c48d5d`，Schema 6.32，ECharts 6.1.0。
-- [x] 完整页面、浏览器/导出验收、分发及独立安装验证，见[验收证据](../evidence/chart-echarts-option/result.md)。
+- [x] 完整页面、浏览器/导出验收、分发及独立安装验证，见[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/chart-echarts-option/result.md)。
 
 用户随后授权提交并推送 main。交付前接入最新 main、验证受影响输入，推送后核对远端和 CI；真实部署不在本批范围。
 
@@ -205,4 +205,4 @@ pnpm compatibility:check
 - P3：诊断上下文与 console-only 分流；校验失败不进入可见错误列表；导出错误独立于 ready 检查，图表降级用内部分类终止且不产生页头提示。
 - P4：面板白名单不增加入口；普通修改保留，跨类型清除并 console 记录，同类型保持，既有撤销恢复原文档。Python 原有清除规则已足够，仅补行为回归。
 - P5：完整 inline 页面、Playground 注册、协议高级说明、参数例外、契约反例；三个现行创作 Skill 同步默认使用策略，知识/校验器从产品真源生成。
-- P6：冻结源码树 `80a0fe4cbe2d32055639b3d5162ca753a597ef3d` 完整测试、类型检查、构建、六包打包及安装消费通过；2243 项 TypeScript 测试通过、5 项跳过，540 项 Python 测试通过、1 项跳过，29/29 页面通过。真实 Chrome/Edge 安装消费者矩阵 298 项通过，含本能力 18 项检查；契约生成与 Bundle 摘要检查通过。最终结果见[验收证据](../evidence/chart-echarts-option/result.md)，未推断远端 CI、真实服务或真实模型通过。
+- P6：冻结源码树 `80a0fe4cbe2d32055639b3d5162ca753a597ef3d` 完整测试、类型检查、构建、六包打包及安装消费通过；2243 项 TypeScript 测试通过、5 项跳过，540 项 Python 测试通过、1 项跳过，29/29 页面通过。真实 Chrome/Edge 安装消费者矩阵 298 项通过，含本能力 18 项检查；契约生成与 Bundle 摘要检查通过。最终结果见[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/chart-echarts-option/result.md)，未推断远端 CI、真实服务或真实模型通过。

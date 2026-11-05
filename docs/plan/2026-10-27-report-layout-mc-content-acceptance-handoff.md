@@ -19,7 +19,7 @@
 
 ## 已完成状态与冻结身份
 
-接入结果：[实施及验证记录](../evidence/report-layout-mc-content-20261027/result.md)。此前已完成知识生成、覆盖检查、219 项 authoring 回归、独立包查询和审核原型 PC 检查；**尚未用新规则完成本次独立业务生成验收**。原型通过不能代替本轮页面通过。
+接入结果：[实施及验证记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-layout-mc-content-20261027/result.md)。此前已完成知识生成、覆盖检查、219 项 authoring 回归、独立包查询和审核原型 PC 检查；**尚未用新规则完成本次独立业务生成验收**。原型通过不能代替本轮页面通过。
 
 - 当前 Git 基线：`9ee7e6ac611e5651046dde16f9b5fc44dc0974b1`，有未提交修改。
 - MC 内容版本：`1-82287d016985e73d`。

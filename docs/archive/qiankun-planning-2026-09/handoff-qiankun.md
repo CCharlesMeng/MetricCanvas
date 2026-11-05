@@ -1,7 +1,7 @@
 # Handoff：主应用维护者集成 Platform HTML 微前端
 
-> 2026-09-28 实施进度：源码、静态归档及候选 qiankun 2.10.16 测试主应用验收已落地；目标门户与真实服务仍为 NOT_RUN。现行实现、证据与交付摘要见 [实施验收](../../evidence/qiankun-platform/implementation.md)。下文方案阶段状态描述保留为交接基线。
-> 当前补充：普通 Svelte 与 URL 路由已按 ADR-0093 实现；先复用最新源码，不重做 Kit 迁移。门户专属接线由仓外独立部署 Adapter 维护，GitHub 只保留版本化契约和组合工具，见 [部署维护边界](../../evidence/qiankun-platform/design-baseline/deployment-boundary.md)。本文早期 Kit 验证步骤参考既有实施证据，真实门户验证仍待执行。
+> 2026-09-28 实施进度：源码、静态归档及候选 qiankun 2.10.16 测试主应用验收已落地；目标门户与真实服务仍为 NOT_RUN。现行实现、证据与交付摘要见 [实施验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/qiankun-platform/implementation.md)。下文方案阶段状态描述保留为交接基线。
+> 当前补充：普通 Svelte 与 URL 路由已按 ADR-0093 实现；先复用最新源码，不重做 Kit 迁移。门户专属接线由仓外独立部署 Adapter 维护，GitHub 只保留版本化契约和组合工具，见 [部署维护边界](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/qiankun-platform/design-baseline/deployment-boundary.md)。本文早期 Kit 验证步骤参考既有实施证据，真实门户验证仍待执行。
 
 ## 目标与职责
 

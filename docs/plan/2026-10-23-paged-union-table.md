@@ -1,6 +1,6 @@
 # 表格默认排序与决策意见明细合并分页方案
 
-日期：2026-10-23；更新：2026-10-26。状态：6.61 pagedUnion 通用协议、整体默认排序、检查点、完整表格操作与 local-authoring 引导已实现并完成本地验收；真实 DQE/Relay 接入未验。现行实现与未关闭项见[验收记录](../evidence/paged-union/acceptance.md)。
+日期：2026-10-23；更新：2026-10-26。状态：6.61 pagedUnion 通用协议、整体默认排序、检查点、完整表格操作与 local-authoring 引导已实现并完成本地验收；真实 DQE/Relay 接入未验。现行实现与未关闭项见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/paged-union/acceptance.md)。
 
 本轮确认将整体默认排序放在合并源 `ordering.default`，Table 首屏同步、清除用户排序后恢复。早期独立 `props.defaultSort` 草案未纳入本次；下文保留原方案与专用预览背景，实施状态以本段和验收记录为准。新入口为 `/pages/multi-source-table`；本地开发服务使用 5193 端口，模拟与真实服务分别验收。
 
@@ -142,7 +142,7 @@
 | P4 | Playground 与协议分发 | 注册 dashboard 示例 decision-opinion-details，真实浏览器验证；PAGE-METADATA、模块文档、契约、local-authoring 生成及仓外安装校验 |
 | P5 | 性能与真实接入 | 分别报告 mock、浏览器、CI 和真实 DQE 状态；无真实环境时保留真实接入未验，不影响本地阶段完成 |
 
-每次编码前识别会修改的职责与分支，编码后按[复杂度规则](../agents/code-complexity.md)实测修改函数及全部新增函数，记录同口径前后值。实现与验收按[功能与协议能力要求](../agents/feature-acceptance.md)闭合。P0 已完成，P1 已建立可运行归并预览并补行为验证；P2—P5 的通用协议、检查点、大规模性能及真实接入继续保持未完成。预览证据见[本地验收](../evidence/decision-opinion-preview/result.md)。
+每次编码前识别会修改的职责与分支，编码后按[复杂度规则](../agents/code-complexity.md)实测修改函数及全部新增函数，记录同口径前后值。实现与验收按[功能与协议能力要求](../agents/feature-acceptance.md)闭合。P0 已完成，P1 已建立可运行归并预览并补行为验证；P2—P5 的通用协议、检查点、大规模性能及真实接入继续保持未完成。预览证据见[本地验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/decision-opinion-preview/result.md)。
 
 ## 2026-10-26 实施收口
 

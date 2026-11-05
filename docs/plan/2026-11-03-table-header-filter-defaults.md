@@ -1,6 +1,6 @@
 # 表格列头筛选默认选中值方案
 
-日期：2026-11-03。状态：Schema6.82、引擎实现、浏览器/HTTP和分发验收已完成。实施证据见[验收记录](../evidence/table-header-filter-defaults/acceptance.md)；按用户要求继续集成、推送main并核对对应CI。
+日期：2026-11-03。状态：Schema6.82、引擎实现、浏览器/HTTP和分发验收已完成。实施证据见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-header-filter-defaults/acceptance.md)；按用户要求继续集成、推送main并核对对应CI。
 
 首期仅支持 `select` 多选枚举，默认值由页面 JSON 声明固定值。在叶子列的 `filterable` 下增加 `defaultValues`，由引擎在第一次有效读取前转换为现有表格查询视图。默认条件与用户后续提交的条件走同一执行路径，不能只在控件上勾选。
 

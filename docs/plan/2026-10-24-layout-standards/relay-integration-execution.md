@@ -1,6 +1,6 @@
 # Relay 接入 MC：实施任务书
 
-日期：2026-10-24。用户已同意从只读探查推进实施。本文件交给能够访问 Relay 源码和运行环境的执行者；MC 本机准备记录见[交付复验](../../evidence/mc-content-layout/relay-readiness.md)。真实 Relay 实施尚未在 MC 主机执行。
+日期：2026-10-24。用户已同意从只读探查推进实施。本文件交给能够访问 Relay 源码和运行环境的执行者；MC 本机准备记录见[交付复验](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/relay-readiness.md)。真实 Relay 实施尚未在 MC 主机执行。
 
 ## 1. 锁定本轮输入
 
@@ -12,7 +12,7 @@
 |---|---|
 | MC 独立包 | `contentVersion=1-ebf417635014c58b`；`contentSha256=ebf417635014c58bbfa4d967e2eaf9da543ce72f7ac98593deef949595da43a5` |
 | MC 归档 | `archiveSha256=7ce0f35dc9209a2a2488b47c5bb5fc65ff9a4861b464203360ca63e5e744d869`；[CI 下载](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/40080278690/artifacts/12555266075) |
-| 配套公共源码 | 固定 `edab0baa9521ad3c6f6ab5b21c00e084c05a1f38`，使用完整公有 authoring 归档及其 release.json；具体归档摘要见[交付复验](../../evidence/mc-content-layout/relay-readiness.md) |
+| 配套公共源码 | 固定 `edab0baa9521ad3c6f6ab5b21c00e084c05a1f38`，使用完整公有 authoring 归档及其 release.json；具体归档摘要见[交付复验](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/relay-readiness.md) |
 | 当前包使用说明 | 安装包内 README.md、HANDOFF.md、index.json、runtime/contract-alignment.json、runtime/source-identity.json |
 
 此前 387 文件包的实验只保留为历史证据。此前完整 authoring CI 目录下载漏了清单内的隐藏文件，完整性检查失败；本轮使用从固定 Git 提交重建并校验的公有归档。MC 独立 tar 归档不受该问题影响。

@@ -30,4 +30,4 @@ note: 用户确认固定单选独立组件、一控多、统一显隐、旧声�
 
 ## 验收与证据边界
 
-`filter-group-page` 覆盖一控多、带符号指标卡、卡内独立组、页头驱动控件与内容各自显隐、状态恢复及无关对照。`chart-local-filter-page` 保留四类图表独立查询、URL、加载、失败和迟到响应验收。证据集中在 [本批验收](../evidence/standalone-filter/result.md)。本地合成数据、静态校验和浏览器检查不证明真实 DQE/Relay、真实模型或部署验收。
+`filter-group-page` 覆盖一控多、带符号指标卡、卡内独立组、页头驱动控件与内容各自显隐、状态恢复及无关对照。`chart-local-filter-page` 保留四类图表独立查询、URL、加载、失败和迟到响应验收。证据集中在 [本批验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/standalone-filter/result.md)。本地合成数据、静态校验和浏览器检查不证明真实 DQE/Relay、真实模型或部署验收。

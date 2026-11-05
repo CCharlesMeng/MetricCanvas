@@ -29,7 +29,7 @@
 | 1 | [页面管理交互设计](2026-10-12-platform-page-management-design.md) | 功能规则、导航、预览、编辑、复制、发布、恢复和删除旅程 |
 | 2 | [UI 架构与风格方案](2026-10-12-platform-os-theme-component-architecture.md) | UI 包职责、引擎复用层次、视觉所有权与依赖方向 |
 | 3 | [具体实施计划](2026-10-12-platform-ui-management-implementation.md) | C01–C15 冲突、W0–W7 文件职责/退出条件、AT01–AT12、五轮排期与包变更矩阵 |
-| 按需 | [交互原型](../evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)及[保存记录](../evidence/platform-page-management-interaction-2026-10-12/README.md) | 独立 HTML，示例状态验证旅程；旧外观不作为新视觉基线 |
+| 按需 | [交互原型](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)及[保存记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-page-management-interaction-2026-10-12/README.md) | 独立 HTML，示例状态验证旅程；旧外观不作为新视觉基线 |
 | 架构核对 | [ADR 索引](../adr/README.md) → [包边界主题](../adr/topics/domain-modeling-and-package-boundaries.md)、[生命周期主题](../adr/topics/page-lifecycle-and-publish-governance.md) | 先读现行结论；必要时展开 ADR-0066、0071、0080、0093、0094 |
 
 视觉真源：[TinyVue OS Theme Grid](https://opentiny.design/tiny-vue/zh-CN/os-theme/components/grid)及实际使用控件的同主题页面。原会话观察到官网部署资源为 `tiny-vue-web-doc/3.32.0`；正式冻结时重新确认页面和资产摘要，不能仅凭 URL 推导 npm 主题包，也不混用其他主题。

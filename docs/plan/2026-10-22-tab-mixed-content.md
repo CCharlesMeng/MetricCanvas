@@ -28,7 +28,7 @@
 
 ## 验收记录
 
-本地实施与验收完成，见[逐项验收与截图](../evidence/tab-mixed-content/acceptance.md)。
+本地实施与验收完成，见[逐项验收与截图](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/tab-mixed-content/acceptance.md)。
 
 - Dashboard：`/pages/tab-mixed-content`；Report：`/pages/tab-mixed-content-report`。两页已注册目录。
 - 产品协议与分发已更新至6.49；文档、15类内容正例、4类边界反例及local-authoring闭合。

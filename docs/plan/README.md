@@ -6,36 +6,36 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
-| 页面先行与数据先行创作整合 | 本仓核心与本地全仓验收通过；6.83首次基线已确认，发行与主线收口，真实Relay另验 | [可用性与本地测试报告](../evidence/2026-11-04-relay-readiness/README.md)、[剩余实施表](2026-11-02-product-relay-evolution/relay-reference-completion-plan.md)、[Spec](2026-11-02-product-relay-evolution/relay-reference-spec.md)、[执行台账](2026-11-02-product-relay-evolution/relay-reference-execution.md)：四项独立分发、稳定入口、同源生成、兼容升级与真实接入分层验收；[本轮接入映射](2026-11-02-product-relay-evolution/relay-adapter-mapping-20261104.md)与[上下文/剩余项](2026-11-02-product-relay-evolution/relay-review-followup-20261104.md) |
+| 页面先行与数据先行创作整合 | 本仓核心与本地全仓验收通过；6.83首次基线已确认，发行与主线收口，真实Relay另验 | [可用性与本地测试报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-relay-readiness/README.md)、[剩余实施表](2026-11-02-product-relay-evolution/relay-reference-completion-plan.md)、[Spec](2026-11-02-product-relay-evolution/relay-reference-spec.md)、[执行台账](2026-11-02-product-relay-evolution/relay-reference-execution.md)：四项独立分发、稳定入口、同源生成、兼容升级与真实接入分层验收；[本轮接入映射](2026-11-02-product-relay-evolution/relay-adapter-mapping-20261104.md)与[上下文/剩余项](2026-11-02-product-relay-evolution/relay-review-followup-20261104.md) |
 | 表头筛选由页面参数初始化 | Schema6.85及local-authoring1.23.0实现与本地验收完成，纳入main交付；业务原件与真实实接另验 | [唯一规划与验收台账](2026-11-04-table-header-filter-url-initialization.md)：一次初值、会话状态、全选语义、快照和分发 |
 | 表格列头筛选默认选中值 | Schema6.82、共享初始化及本地验收完成；main集成交付 | [主计划](2026-11-03-table-header-filter-defaults.md)：select 固定值、会话恢复、查询初始化、快照与导出 |
-| IOC Header 迁入 section 组件 | Schema6.81本仓实施，本地验收收口；Git/真实集成另验 | [实施方案](2026-11-02-ioc-header-section-component.md)、[实现与验收](../evidence/ioc-header-section-component/README.md)：首section首组件全宽，旧读新写，统一显隐、吸顶与导出 |
+| IOC Header 迁入 section 组件 | Schema6.81本仓实施，本地验收收口；Git/真实集成另验 | [实施方案](2026-11-02-ioc-header-section-component.md)、[实现与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-section-component/README.md)：首section首组件全宽，旧读新写，统一显隐、吸顶与导出 |
 | MC 内容包跨平台分发与调用防护 | 本仓实施与本地验收完成；远端 CI/Windows/Relay现场待验 | [实施方案](2026-10-31-mc-content-distribution-hardening.md)、[实施与验收](2026-10-31-mc-content-distribution-hardening/implementation.md)：51 项 MC、8 项同步、228 项 Skill 与新增定向回归；归档保真、加载隔离和旁路安装 |
-| pagedJoin 按需分页与单查询源操作 | 本仓实现、协议分发与本地验收完成；Git交付及真实DQE另验 | [实施主计划](2026-10-29-paged-join-on-demand-pagination.md)：Schema6.76、默认10/10、操作源覆盖、按页补列、候选资格及Skill1.13.0；[验收记录](../evidence/paged-join-on-demand-20261029/result.md) |
-| 重点国代与 IOC Region 约束 | 本仓实现与本地验收完成，真实宿主与服务待验 | [实施计划](2026-10-29-key-office-filter-integration.md)、[验收结果](../evidence/key-office-filter-integration-20261029/result.md)：Region 仅允许 Header 单个组织树，普通维度保留 |
-| partner-health 组织并集与缺项求和 | 本仓实施及 Mock/页面试验场验收完成；真实 DQE 返回待验 | [整改方案](2026-10-29-partner-health-union-and-missing-scores.md)、[诊断证据](../evidence/partner-health-union-null-20261029/README.md)；统一组织行集合、空文本呈现及总分数据源接线 |
-| 已开发能力同步与 main 合并 | B1已提交main；B2与配套文档、实例正在收口，真实内部部署另验 | [集成计划](2026-10-27-unmerged-capability-integration.md)、[B1验收](../evidence/local-capability-integration-20261027/b1.md)、[B2验收](../evidence/local-capability-integration-20261027/b2.md)；Schema6.67→6.68，Skill1.1.0→1.2.0 |
-| Platform 画布交互审计整改 | 先行五项本仓实现与本地验收完成；多步撤销/重做与编辑预览连续性待专项 | [审计与唯一执行计划](2026-10-25-platform-interaction-audit.md)、[实施与验收](../evidence/platform-interaction-audit/result.md)：首次实施验收与[当前 main 交付复验](../evidence/platform-interaction-audit/delivery.md)分别记录；保留全部问题与采纳边界 |
+| pagedJoin 按需分页与单查询源操作 | 本仓实现、协议分发与本地验收完成；Git交付及真实DQE另验 | [实施主计划](2026-10-29-paged-join-on-demand-pagination.md)：Schema6.76、默认10/10、操作源覆盖、按页补列、候选资格及Skill1.13.0；[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/paged-join-on-demand-20261029/result.md) |
+| 重点国代与 IOC Region 约束 | 本仓实现与本地验收完成，真实宿主与服务待验 | [实施计划](2026-10-29-key-office-filter-integration.md)、[验收结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/key-office-filter-integration-20261029/result.md)：Region 仅允许 Header 单个组织树，普通维度保留 |
+| partner-health 组织并集与缺项求和 | 本仓实施及 Mock/页面试验场验收完成；真实 DQE 返回待验 | [整改方案](2026-10-29-partner-health-union-and-missing-scores.md)、[诊断证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-union-null-20261029/README.md)；统一组织行集合、空文本呈现及总分数据源接线 |
+| 已开发能力同步与 main 合并 | B1已提交main；B2与配套文档、实例正在收口，真实内部部署另验 | [集成计划](2026-10-27-unmerged-capability-integration.md)、[B1验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/local-capability-integration-20261027/b1.md)、[B2验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/local-capability-integration-20261027/b2.md)；Schema6.67→6.68，Skill1.1.0→1.2.0 |
+| Platform 画布交互审计整改 | 先行五项本仓实现与本地验收完成；多步撤销/重做与编辑预览连续性待专项 | [审计与唯一执行计划](2026-10-25-platform-interaction-audit.md)、[实施与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-interaction-audit/result.md)：首次实施验收与[当前 main 交付复验](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-interaction-audit/delivery.md)分别记录；保留全部问题与采纳边界 |
 | 表格原文容错与独立置顶行 | Schema 6.61 本地验收完成，按范围交付 | [主计划](2026-10-26-table-tolerance-and-pinned-row.md)：标量原文证据、本地尾排、独立汇总及导出 |
-| 表格列条件显隐 | 本仓实现与本地验收完成；Git交付、真实接入另验 | [主计划](2026-10-26-table-column-visibility.md)、[实施与验收](../evidence/table-column-visibility/result.md)：Schema 6.62，统一列投影/会话调和与 table 职责目录，3091 测试、Chrome及冻结导出通过；历史大文件和超限债务单列 |
-| Playground 目录与数据联动改进 | P0–P5 首轮实施及本地关键链路验收完成；下载回执等专项保留；Git 交付按授权跳过 CI | [整体改进计划](2026-10-24-playground-information-architecture.md)、[实施结果](../evidence/playground-information-architecture/result.md)：19 类组件目录、六阶段数据主线、21 个场景、当前文档试改；旧页面地址保留 |
+| 表格列条件显隐 | 本仓实现与本地验收完成；Git交付、真实接入另验 | [主计划](2026-10-26-table-column-visibility.md)、[实施与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-visibility/result.md)：Schema 6.62，统一列投影/会话调和与 table 职责目录，3091 测试、Chrome及冻结导出通过；历史大文件和超限债务单列 |
+| Playground 目录与数据联动改进 | P0–P5 首轮实施及本地关键链路验收完成；下载回执等专项保留；Git 交付按授权跳过 CI | [整体改进计划](2026-10-24-playground-information-architecture.md)、[实施结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/playground-information-architecture/result.md)：19 类组件目录、六阶段数据主线、21 个场景、当前文档试改；旧页面地址保留 |
 | MC 内容包完整性与 Schema 同步构建 | MC 补全已交付；Relay 实施待验 | [接续交接](2026-10-24-layout-standards/relay-delivery-handoff.md) → [接入实施任务书](2026-10-24-layout-standards/relay-integration-execution.md)；[完整性主计划](2026-10-24-layout-standards/mc-content-completeness-plan.md)：当前包与配套公共源码已复验，完整 authoring 分发回读修复随本轮交付，Git/CI 以交付回执为准；Relay 通道、权限及部署另验 |
-| 表格默认排序与决策意见明细合并分页 | 6.61 pagedUnion、整体默认排序与本地验收完成；真实接入待验 | [实施主计划](2026-10-23-paged-union-table.md)、[页面入口](../../pages/capabilities/table/README.md#决策意见明细)、[合成样例](paged-union-table/example-input.json)：现行实现见 [验收](../evidence/paged-union/acceptance.md)；整体默认排序归合并源，导出隔离超时用例复验通过，真实 DQE/Relay 另验 |
-| DQE object 查询 | 本仓实现及本地验收完成，真实接入待验 | [实施计划](2026-10-23-dqe-object-query.md)：对象字段、页面交互、完整结果、关联及 local-authoring 已完成；[本地验收](../evidence/dqe-object-query/result.md)，真实 DQE 分页/排序/候选另验 |
+| 表格默认排序与决策意见明细合并分页 | 6.61 pagedUnion、整体默认排序与本地验收完成；真实接入待验 | [实施主计划](2026-10-23-paged-union-table.md)、[页面入口](../../pages/capabilities/table/README.md#决策意见明细)、[合成样例](paged-union-table/example-input.json)：现行实现见 [验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/paged-union/acceptance.md)；整体默认排序归合并源，导出隔离超时用例复验通过，真实 DQE/Relay 另验 |
+| DQE object 查询 | 本仓实现及本地验收完成，真实接入待验 | [实施计划](2026-10-23-dqe-object-query.md)：对象字段、页面交互、完整结果、关联及 local-authoring 已完成；[本地验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/dqe-object-query/result.md)，真实 DQE 分页/排序/候选另验 |
 | Report AI 总结重启 | 本仓实现与本地验收完成，真实云宝接入待验 | [主计划](2026-10-22-report-ai-summary.md)：双模式、区域范围、应用会话缓存、单文件云宝 mock；真实内网接入另验 |
-| TypeScript / Python 圈复杂度治理 | 平均<5已本地验收，最新main上六文件关闭15个超限；TS/JS115及Python63项存量保留，交付及远端CI以最终SHA回执为准 | [2026-11-04审核与验收](../evidence/code-complexity/2026-11-04-audit/README.md)、[交付回执与剩余函数](../evidence/code-complexity/2026-11-04-audit/delivery/README.md)、[规则与门禁](../agents/code-complexity.md)；历史259条对照保留于旧记录 |
-| local-authoring 上下文与数据识别 | 本仓实现及本地验收收口；真实业务/重复模型统计待验 | [实施主入口](2026-10-21-local-authoring-context-optimization.md)、[验收记录](../evidence/local-authoring-context/result.md)：精确知识读取、页面与指标MD匹配、查询候选及独立分发；与并行filterGroup分开承接 |
-| 表格列候选值与 DQE 对接 | 本仓引擎及本地验收完成；真实 DQE/Relay 编码与权限待核 | [主计划](2026-10-21-table-column-candidates.md)、[实施证据](../evidence/table-column-candidates/result.md)、[DQE 简要说明](table-column-candidates/dqe-handoff.md)：统一候选语义、保留 NO_PERMISSION、共享执行及独立 Skill 验证 |
-| 图表 ECharts 隐含透传 | P0–P6 本地验收完成，已授权交付 main | [唯一主计划](2026-10-19-chart-echarts-option.md)、[ADR-0110](../adr/0110-hidden-echarts-presentation-options.md)、[验收证据](../evidence/chart-echarts-option/result.md)：Schema 6.32，首批柱/线/饼图、保护数据结构、单次回退、console-only、导出终止及安装消费闭合 |
-| IOC公共页头 | B0–B5本地实施；B5仅传值、B6挂起，真实服务另验 | [唯一主计划](2026-10-16-ioc-header-feature-plan.md)：6.40含显式跨页输入、6.39时间模式/可信期间事实/候选窗口；[B5证据](../evidence/ioc-header-b5/result.md)。未迁移现有IOC业务页，真实DQE/CloudIOC/Relay另验 |
-| Report 高清 PNG 导出 | 本仓实现与Chrome安装验收完成，真实门户/Edge待验 | [导出主方案](2026-10-16-report-png-export.md)、[验收记录](../evidence/report-png-export/result.md)、[按钮简化验收](../evidence/report-png-export/export-buttons.md)：6.31统一exportButtons、按配置直接下载PDF/单张PNG、独立文档与流式编码，页面/文档/Skill/属性编辑/分发及PDF回归完成；真实门户/DQE/Relay、Edge与部署另验 |
-| 本地创作页面范式 | Report 11项组合审核通过、C3-B排除；容器原则与预览修复流程已接入MC和Skill1.5.0，独立R3完成一次自助修复并自验通过，真实Relay另验 | [交付范围与复验](../evidence/report-container-principles-20261027/delivery.md)、[容器原则与R3](../evidence/report-container-principles-20261027/result.md)、[MC组合参考](../../tools/mc-content/layouts/report-composition.md)、[审核来由](2026-10-27-report-layout-standards-review.md)、[集中审核页](http://localhost:5173/prototypes/report-layout-review)：新建／重组按需选用，工具支持面另行核对 |
-| 已有权限下的页面显隐与区域联动 | 本仓实现、完整回归与Chrome安装验收完成；Edge及真实内网待验 | [唯一执行方案](2026-10-15-page-visibility-and-region-interactions.md)、[验收记录](../evidence/page-visibility-region-linkage/result.md)：6.34统一展示条件、显式父级规则、筛选事务、事实修订、交互/详情/导出、人工/AI创作与安装分发 |
-| Dashboard 年季月与近一年筛选 | 本地实现及定向验收完成；真实接入未验证 | [验收记录](../evidence/dashboard-period-filter/result.md)；[实施规划](2026-10-15-dashboard-period-filter.md)：Schema 6.27、顶部 filter、模式恢复、创作和独立安装包；保留原查询聚合 |
-| 多查询表格分页和共享查询 | P0–P5 已实施，P6 缺真实 DQE/Relay 上下文 | [实施方案与状态](2026-10-14-multi-query-table.md)、[验收证据](../evidence/multi-query-table/result.md)；6.22 组合查询源、共享执行、视图所有权与校验分发闭合 |
+| TypeScript / Python 圈复杂度治理 | 平均<5已本地验收，最新main上六文件关闭15个超限；TS/JS115及Python63项存量保留，交付及远端CI以最终SHA回执为准 | [2026-11-04审核与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-11-04-audit/README.md)、[交付回执与剩余函数](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-11-04-audit/delivery/README.md)、[规则与门禁](../agents/code-complexity.md)；历史259条对照保留于旧记录 |
+| local-authoring 上下文与数据识别 | 本仓实现及本地验收收口；真实业务/重复模型统计待验 | [实施主入口](2026-10-21-local-authoring-context-optimization.md)、[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/local-authoring-context/result.md)：精确知识读取、页面与指标MD匹配、查询候选及独立分发；与并行filterGroup分开承接 |
+| 表格列候选值与 DQE 对接 | 本仓引擎及本地验收完成；真实 DQE/Relay 编码与权限待核 | [主计划](2026-10-21-table-column-candidates.md)、[实施证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-candidates/result.md)、[DQE 简要说明](table-column-candidates/dqe-handoff.md)：统一候选语义、保留 NO_PERMISSION、共享执行及独立 Skill 验证 |
+| 图表 ECharts 隐含透传 | P0–P6 本地验收完成，已授权交付 main | [唯一主计划](2026-10-19-chart-echarts-option.md)、[ADR-0110](../adr/0110-hidden-echarts-presentation-options.md)、[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/chart-echarts-option/result.md)：Schema 6.32，首批柱/线/饼图、保护数据结构、单次回退、console-only、导出终止及安装消费闭合 |
+| IOC公共页头 | B0–B5本地实施；B5仅传值、B6挂起，真实服务另验 | [唯一主计划](2026-10-16-ioc-header-feature-plan.md)：6.40含显式跨页输入、6.39时间模式/可信期间事实/候选窗口；[B5证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-b5/result.md)。未迁移现有IOC业务页，真实DQE/CloudIOC/Relay另验 |
+| Report 高清 PNG 导出 | 本仓实现与Chrome安装验收完成，真实门户/Edge待验 | [导出主方案](2026-10-16-report-png-export.md)、[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-png-export/result.md)、[按钮简化验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-png-export/export-buttons.md)：6.31统一exportButtons、按配置直接下载PDF/单张PNG、独立文档与流式编码，页面/文档/Skill/属性编辑/分发及PDF回归完成；真实门户/DQE/Relay、Edge与部署另验 |
+| 本地创作页面范式 | Report 11项组合审核通过、C3-B排除；容器原则与预览修复流程已接入MC和Skill1.5.0，独立R3完成一次自助修复并自验通过，真实Relay另验 | [交付范围与复验](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-container-principles-20261027/delivery.md)、[容器原则与R3](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-container-principles-20261027/result.md)、[MC组合参考](../../tools/mc-content/layouts/report-composition.md)、[审核来由](2026-10-27-report-layout-standards-review.md)、[集中审核页](http://localhost:5173/prototypes/report-layout-review)：新建／重组按需选用，工具支持面另行核对 |
+| 已有权限下的页面显隐与区域联动 | 本仓实现、完整回归与Chrome安装验收完成；Edge及真实内网待验 | [唯一执行方案](2026-10-15-page-visibility-and-region-interactions.md)、[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/page-visibility-region-linkage/result.md)：6.34统一展示条件、显式父级规则、筛选事务、事实修订、交互/详情/导出、人工/AI创作与安装分发 |
+| Dashboard 年季月与近一年筛选 | 本地实现及定向验收完成；真实接入未验证 | [验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/dashboard-period-filter/result.md)；[实施规划](2026-10-15-dashboard-period-filter.md)：Schema 6.27、顶部 filter、模式恢复、创作和独立安装包；保留原查询聚合 |
+| 多查询表格分页和共享查询 | P0–P5 已实施，P6 缺真实 DQE/Relay 上下文 | [实施方案与状态](2026-10-14-multi-query-table.md)、[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/multi-query-table/result.md)；6.22 组合查询源、共享执行、视图所有权与校验分发闭合 |
 | 查询结果过滤与分页级联 | 本仓实现与本地验收完成，真实接入待验 | [实施计划](2026-10-14-query-result-page-input.md)：6.19 where、6.20查询窗口输入与任意列排序、共享执行/导出、配置说明及独立Skill；真实DS/DQE/Relay接入单独验收 |
-| 平台打包与源码调试 | 第一期独立调试包本地完成，第二期真正分块未实施 | [两期计划](2026-10-14-platform-microfrontend-build.md)、[打包与调试](../platform-build.md)、[本地验收](../evidence/platform-debug-build.md)：后续测量分块收益，再冻结工具链并实施 |
-| 共享页面取数 | 本仓实现完成，真实Relay/DQE接入待验收 | [实施主计划](2026-10-14-shared-page-data-execution.md)、[验收记录](../evidence/shared-page-data-execution/result.md)；取数包、引擎和Node程序共用查询核心 |
+| 平台打包与源码调试 | 第一期独立调试包本地完成，第二期真正分块未实施 | [两期计划](2026-10-14-platform-microfrontend-build.md)、[打包与调试](../platform-build.md)、[本地验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-debug-build.md)：后续测量分块收益，再冻结工具链并实施 |
+| 共享页面取数 | 本仓实现完成，真实Relay/DQE接入待验收 | [实施主计划](2026-10-14-shared-page-data-execution.md)、[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/shared-page-data-execution/result.md)；取数包、引擎和Node程序共用查询核心 |
 | **本次Report与Dashboard生成** | **方案已认可，生产实现未开始** | **[统一主计划](2026-10-12-report-dashboard-authoring-plan.md)**：六份分稿合并，集中目标、文本流程、computed、架构、C00–C11、协议、R/J/D依赖和验收；接口/部署选型仍待冻结 |
 | 创作基线的内部接入 | 本仓主要批次已完成，真实接入待验证 | [创作基线与接入待办](authoring-current-status.md)：F01–F08承接版本采用、轮次/状态、授权、保存/预览、参数、原故障复验及旧页盘点 |
 | 现有IOC四页优化 | 部分实现，整批未验收 | [四页主计划](2026-09-30-ioc-project-map-optimization.md) → [执行状态](ioc-project-map-execution/README.md)；查询键、区域映射、来源输入、导航/返回及整页验收仍有缺口 |
@@ -54,16 +54,16 @@
 
 | 工作 | 完成范围 | 查看结论或证据 |
 |---|---|---|
-| 同比环比按当前页补查 | Schema 6.78、local-authoring 1.15.0，本仓实现和本地验收完成；main 交付复验见验收记录，真实服务另验 | [设计与Schema/架构影响](../evidence/period-comparison-query-page/design.md)、[验收记录](../evidence/period-comparison-query-page/acceptance.md)、[可运行示例](../../pages/capabilities/data/period-comparison/period-comparison-query-page.json) |
-| 表格同比环比 | Schema 6.77，本仓实现与本地验收完成；真实服务待接入验收 | [使用说明](../../pages/capabilities/data/period-comparison/README.md)、[交付验证](../evidence/period-comparison/delivery.md) |
-| AI Summary 容器组合与顶部位置 | Schema 6.56，本仓实现与本地验收完成；未提交/推送 | [设计](../evidence/ai-summary-regions/design.md)、[验收](../evidence/ai-summary-regions/result.md)：组合卡准入、显式所在区域、顶部约束及独立 local-authoring |
-| 显式数字颜色与图表标签 | 6.16声明、商务SDT迁移及本地验收完成；真实集成/发布未执行 | [批次结论](../archive/2026-10-12-explicit-presentation/README.md)、[验收](../evidence/2026-10-12-explicit-presentation/result.md) |
-| 早期创作架构/模块收敛 | 本仓实现及各批次本地检查；外部待办已转当前接入入口 | [批次结论](../archive/authoring-foundation-2026-09/README.md)、[部署就绪证据](../evidence/2026-09-23-authoring-deployment-readiness-report.md) |
-| 9235/9236执行整改 M0–M7 | 本地回归、真实模型分批复验及本地浏览器；内部采用/生产未执行 | [执行报告](../evidence/2026-09-29-authoring-mc-execution-report.md) |
+| 同比环比按当前页补查 | Schema 6.78、local-authoring 1.15.0，本仓实现和本地验收完成；main 交付复验见验收记录，真实服务另验 | [设计与Schema/架构影响](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/period-comparison-query-page/design.md)、[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/period-comparison-query-page/acceptance.md)、[可运行示例](../../pages/capabilities/data/period-comparison/period-comparison-query-page.json) |
+| 表格同比环比 | Schema 6.77，本仓实现与本地验收完成；真实服务待接入验收 | [使用说明](../../pages/capabilities/data/period-comparison/README.md)、[交付验证](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/period-comparison/delivery.md) |
+| AI Summary 容器组合与顶部位置 | Schema 6.56，本仓实现与本地验收完成；未提交/推送 | [设计](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ai-summary-regions/design.md)、[验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ai-summary-regions/result.md)：组合卡准入、显式所在区域、顶部约束及独立 local-authoring |
+| 显式数字颜色与图表标签 | 6.16声明、商务SDT迁移及本地验收完成；真实集成/发布未执行 | [批次结论](../archive/2026-10-12-explicit-presentation/README.md)、[验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-explicit-presentation/result.md) |
+| 早期创作架构/模块收敛 | 本仓实现及各批次本地检查；外部待办已转当前接入入口 | [批次结论](../archive/authoring-foundation-2026-09/README.md)、[部署就绪证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-23-authoring-deployment-readiness-report.md) |
+| 9235/9236执行整改 M0–M7 | 本地回归、真实模型分批复验及本地浏览器；内部采用/生产未执行 | [执行报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-29-authoring-mc-execution-report.md) |
 | 页面参数本仓实现 | 提取、实例、引用与正交化等历史实现；外部链路和旧页整批迁移单列待办 | [批次结论](../archive/page-parameters-2026-09/README.md)、[现行参数文档](../../PAGE-PARAMETERS.md) |
-| 报告日期筛选及完整实例导出 | Schema 6.13范围、本地测试和浏览器/PDF验收 | [验收](../evidence/report-date-filters/acceptance.md)、[本地交付记录](../evidence/report-date-filters/main-delivery.md)；CI/部署不由本表推断 |
+| 报告日期筛选及完整实例导出 | Schema 6.13范围、本地测试和浏览器/PDF验收 | [验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-filters/acceptance.md)、[本地交付记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-date-filters/main-delivery.md)；CI/部署不由本表推断 |
 | Tiny OS日期选择器及白色工具带 | 指定范围内本地视觉/行为验收已收口 | [批次结论](../archive/report-date-ui-2026-10/README.md) |
-| 通用HTML微前端及候选loader | 本地实施、构建及候选主应用验收 | [实施证据](../evidence/qiankun-platform/implementation.md)；真实门户仍在上表 |
+| 通用HTML微前端及候选loader | 本地实施、构建及候选主应用验收 | [实施证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/qiankun-platform/implementation.md)；真实门户仍在上表 |
 | 本次创作流程设计 | 两页范围、整体文本流程和D1–D7；生产实现尚未开始 | [主计划完成状态](2026-10-12-report-dashboard-authoring-plan.md#1-完成状态)、[ADR-0098](../adr/0098-profiled-page-composition-and-incremental-navigation.md) |
 
 ## 历史分稿与本次整理
@@ -72,11 +72,13 @@
 - [旧IOC阶段计划](../archive/ioc-planning-2026-09/README.md)：旧五页推进顺序被四页主计划替代，未完成缺口仍保留。
 - [整理记录与移动表](../archive/plan-cleanup-2026-10-12/README.md)：可追溯原路径；归档不代表相关产品能力全部完成。
 
-后续一个批次只维护一份执行主计划。已确认原则链接ADR；详细证据链接evidence。主计划就地更新流程、任务和状态，不再为每次补充新增独立方案；移走旧计划前先转移仍未完成的任务。
+后续一个批次只维护一份执行主计划。已确认原则链接 ADR；验证过程保存在本地，结果在答复或 PR 中报告，长期结论更新正式文档。主计划就地更新流程、任务和状态，不再为每次补充新增独立方案；移走旧计划前先转移仍未完成的任务。
 
 ## 四种寿命，四个去处
 
 判据两条：**这份文件还会被改吗？还会被当论据引吗？**
+
+下表解释现存文档分类，不构成提交许可。新产生的验证过程、evidence 与批次附件遵守 [提交内容与文件体积](../../AGENTS.md#提交内容与文件体积必选)，默认只留本地；不为归档另造一套待提交附件。
 
 | 去处 | 什么进去 |
 |---|---|
@@ -95,11 +97,11 @@
 
 1. **抽结论**——仍然生效的裁决写进 ADR 或正式协议文档，过程件里不留唯一副本。做法见 [`docs/adr/README.md`](../adr/README.md)：新 ADR 要并进对应[主题页](../adr/topics/)，不在文末追加附录段。
 2. **写结论页**——`docs/archive/<批次>/README.md`，三段式：这批做了什么、**最终结论落在哪**（ADR 编号 / 协议文档章节 / 代码位置）、过程中被推翻的方向与推翻它的依据。目标是探索时读 1 页而不是 75 份票据。
-3. **整批移走**——连同实证与证据 json 一起移，然后扫一遍全仓改链接。链接不要靠字符串替换猜：按旧位置解析成仓内路径，套用移动表，再按新位置重新相对化。
+3. **收口过程件**——新产生的实证、证据 JSON 和运行附件只保存在本地。调整已有受版本管理的文档位置时，核对消费者并修复引用，不把本地过程件一起加入提交。
 
 ## 机器证据不要放这里
 
-json / txt / py 这类**不给人读**的执行留痕，如果被测试引用就进消费者旁的夹具目录，否则随批次进归档。判断标准不是体积，是「有没有人会读它的正文」。
+json / txt / py 这类执行留痕默认只留本地；测试直接消费的必要输入精简后放消费者旁的夹具目录，并遵守文件体积上限。能否提交按仓库提交规则判断，不因有人阅读或批次归档而放行。
 
 **这条只管新产生的东西，不回溯改已冻结的批次。** `authoring-tickets-126/t04-contract-examples.json` 与 `unified-authoring/2026-09-15-unified-authoring-s0-sources.json` 被三处测试直接读取，却留在归档批次里——2026-09-21 逐个看过后决定不迁：批次内部的 checker 脚本按同级文件名找它、实证正文写着「同目录」，迁走就得改已冻结的记录。两处批次结论页都写明了它们是 CI 的真实输入。判据与例外的完整理由见 [`2026-09-21-docs-consolidation.md`](../archive/docs-consolidation/2026-09-21-docs-consolidation.md) §4.6。
 

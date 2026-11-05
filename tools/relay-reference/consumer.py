@@ -7,12 +7,13 @@ import sys
 import tempfile
 
 from compatibility import compare, compare_states
+from frozen_consumer import snapshot_bytes, snapshot_json
 from release import canonical, digest, finite_float, read_json, reject_constant, require, tools_directory, unique_object, verify
 
 
 def load_consumer(path, checksum):
-    require(digest(path.read_bytes()) == checksum, "CONSUMER_SNAPSHOT_CHANGED", str(path))
-    value = read_json(path)
+    require(digest(snapshot_bytes(path)) == checksum, "CONSUMER_SNAPSHOT_CHANGED", str(path))
+    value = snapshot_json(path)
     require(value["format"] == "metriccanvas-frozen-consumer/1" and bool(value["vectors"]),
             "CONSUMER_SNAPSHOT_INVALID", "Missing frozen consumer vectors")
     require(value["sourceReleaseId"] == value["manifest"]["releaseId"],

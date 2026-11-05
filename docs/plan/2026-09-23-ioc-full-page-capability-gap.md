@@ -16,7 +16,7 @@
 
 1. 用户提供的 `CDIOperationMapWebsite — IOC 页面与 DataV/ANA 存量能力审计报告`，来源仓 `master@a260c10744add7fe013d5e4591fa1ecc407f8083`。本地附件 SHA-256：`d1f0d8188311caeb1eed8ffec5c353c0dc13626c621ade3b4662e944a1c9ecbd`。报告基于源码阅读；没有安装依赖、构建、浏览器运行或后端响应验证。外部源码不在本工作区，以下“来源仓”事实均需按**报告称**理解。
 2. MetricCanvas 当前代码：[页面协议版本](../../packages/page/src/version.ts)、[查询语言闭集](../../packages/page/src/query.ts)、[计算算子](../../packages/page/src/schema/compute.ts)、[组件闭集](../../packages/page/src/schema/component.ts)、[组件动作](../../packages/page/src/schema/actions.ts)、[集成应用契约](../host-contract.md)。这些是本工作区源码事实。
-3. [IOC 四页本地验收说明](../ioc-manual-acceptance.md)覆盖现有样例与 DQE 仿真行为；它不证明 21 页覆盖或生产取数。[既有前端计算对账](../evidence/2026-08-frontend-calculation-reconciliation.md)可作为旧三页计算语义的辅助证据，其自身也标出闭源格式化器的推断部分。
+3. [IOC 四页本地验收说明](../ioc-manual-acceptance.md)覆盖现有样例与 DQE 仿真行为；它不证明 21 页覆盖或生产取数。[既有前端计算对账](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-08-frontend-calculation-reconciliation.md)可作为旧三页计算语义的辅助证据，其自身也标出闭源格式化器的推断部分。
 4. 用户提供的本地报告 `调查报告/ioc-pages-post-query-evidence-audit.md`，2026-09-28，SHA-256：`1eb7549607946cab24e680df5930619a511e72928a4820a9873da87afa9ffe85`。该目录受 `.gitignore` 排除，本次只把核对结论写入本文，**报告原件不随本文推送**。报告自述逐页源码阅读及交叉复核；无依赖、内网、构建、浏览器截图或真实响应验证。报告中的外仓路径和行号仍是待来源仓复核的二手证据。
 
 首轮报告的“全量完成”只适用于**入口清单级**参考：仅 3 页有深入功能描述，另 18 页是简表；声称包含 127 请求的附录只有批次汇总，未附逐行明细。新报告把 P-01 跳转到 `customer-list` 的目标纠正为 P-10，并补齐全部入口的源码级操作链。DataV 内部行为、真实响应和浏览器结果仍未验证，不能据此给逐页验收打勾。

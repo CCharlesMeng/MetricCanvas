@@ -1,6 +1,6 @@
 # 页面创作范围、两套 Skill 与能力归属
 
-日期：2026-11-02。基于当前本地仓库与实际公共 MCP 注册核对；现已收到 Relay 源码/配置静态报告，见[接收与修正](../../evidence/2026-11-02-relay-authoring-static-audit/README.md)。尚未直接取得私有源码、实际安装/注册或服务回执，不阻塞本次规划。本文补全[演进主计划](../2026-11-02-product-relay-evolution.md)的消费路径盘点，不将静态报告或参考 Skill 等同于真实部署。
+日期：2026-11-02。基于当前本地仓库与实际公共 MCP 注册核对；现已收到 Relay 源码/配置静态报告，见[接收与修正](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-authoring-static-audit/README.md)。尚未直接取得私有源码、实际安装/注册或服务回执，不阻塞本次规划。本文补全[演进主计划](../2026-11-02-product-relay-evolution.md)的消费路径盘点，不将静态报告或参考 Skill 等同于真实部署。
 
 ## 0. 先按创作逻辑理解本清单
 

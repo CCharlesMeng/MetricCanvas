@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/period-query.test.ts packages/page/tests/version.test.ts packages/data-execution/tests/period-query.test.ts tests/query-time-contract.test.ts apps/platform/tests/workbench/period-policy-edit.test.ts packages/page/tests/period-filter.test.ts packages/page/tests/period-comparison.test.ts packages/data-execution/tests/period-comparison.test.ts packages/engine/runtime/tests/period-filter.test.ts packages/engine/runtime/tests/period-execution.test.ts packages/engine/runtime/tests/period-comparison.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/quarter-time-filter/DataDashboard
-
-
- Test Files  11 passed (11)
-      Tests  134 passed (134)
-   Start at  16:05:27
-   Duration  2.71s (transform 9.13s, setup 0ms, import 15.68s, tests 3.89s, environment 3ms)

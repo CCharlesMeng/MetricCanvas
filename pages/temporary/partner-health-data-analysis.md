@@ -6,7 +6,7 @@
 
 修复前3项回归失败，浏览器复现同一.length报错；修复后106项相关测试通过，覆盖28个查询分支、完整页面默认条件、空结果和传输失败。完整页面实际HTTP探针发出5次execute，记录11次生效查询，服务返回DQE_QUERY_REJECTED / DQE_SIM_UNSUPPORTED_QUERY，未再发生.length异常。浏览器默认页和代表处切换复核通过。真实业务DQE及凭据尚待对应环境验证。
 
-135个页面全部通过产品校验，页面试验场类型检查和生产构建通过。完整记录、原始失败日志、截图和复杂度报告见[本轮验收](../../docs/evidence/partner-health-real-dqe-20261029/README.md)。原始本地文件、补丁和冲突决策保留于 `/Users/moon/.codex/backups/metriccanvas-main-sync-20261029-4fr90u6x/`，Git恢复快照1620dcaf2a42d07abe95bc46241361151729cbd8保留；此段为提交前记录；本次范围交付与skip ci边界见本轮验收记录。
+135个页面全部通过产品校验，页面试验场类型检查和生产构建通过。完整记录、原始失败日志、截图和复杂度报告见[本轮验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-real-dqe-20261029/README.md)。原始本地文件、补丁和冲突决策保留于 `/Users/moon/.codex/backups/metriccanvas-main-sync-20261029-4fr90u6x/`，Git恢复快照1620dcaf2a42d07abe95bc46241361151729cbd8保留；此段为提交前记录；本次范围交付与skip ci边界见本轮验收记录。
 
 ---
 
@@ -34,7 +34,7 @@
 
 当前页面为用户最新提供的Schema6.58文档，前后两段直接拼接即可解析。两表以声音得分查询为main，其他得分按region对齐；总分仍绑定空pending槽，顶部与图表仍为inline示例，没有补写未经确认的汇总计算或查询映射。以下“两层得分相加”及更早章节均为被替换修订的历史记录。
 
-本地页面试验场专用模拟网关原先只处理指标查询，遇到本次object查询读取output_metrics.length时报TypeError；任一辅助槽失败按现有整表策略清空成功槽，因此出现“主查询成功但整表暂无数据”。本次修复该模拟适配器并补代表处维度别名，浏览器验证地区部4行、代表处8行。没有修改全局错误策略、业务DQE或页面字段映射。columns:null不参与当前网关字段映射，新增回归证明其正常消费；data缺失声明的queryField仍明确失败。真实客户评价响应尚待提供，不能把本地模拟故障当成真实环境根因。完整记录见[附件替换与预览修复](../../docs/evidence/partner-health-pasted-repair-20261028/README.md)。
+本地页面试验场专用模拟网关原先只处理指标查询，遇到本次object查询读取output_metrics.length时报TypeError；任一辅助槽失败按现有整表策略清空成功槽，因此出现“主查询成功但整表暂无数据”。本次修复该模拟适配器并补代表处维度别名，浏览器验证地区部4行、代表处8行。没有修改全局错误策略、业务DQE或页面字段映射。columns:null不参与当前网关字段映射，新增回归证明其正常消费；data缺失声明的queryField仍明确失败。真实客户评价响应尚待提供，不能把本地模拟故障当成真实环境根因。完整记录见[附件替换与预览修复](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-pasted-repair-20261028/README.md)。
 
 ---
 
@@ -42,7 +42,7 @@
 
 已按本轮附件覆盖页面并接入两层横向加法。后端提供整体/地区部/代表处粒度的已加权子项；前端先生成四类得分，再生成总分。风险按负数，缺项按0，顶部不再读取旧inline示例分数。中国区/海外只作用顶部，日期/区域共享，上下页签独立。页面Schema6.70，所需sumFields归零策略已同步运行时与local-authoring。
 
-当前查询将11项合为同粒度多指标请求，业务服务可执行性、整体口径和组织/站点筛选映射尚未取得真实DQE证据。其他明细的inline示例未变。验收与复杂度见[本轮记录](../../docs/evidence/partner-health-scores-20261028/acceptance.md)。下面内容为历史版本记录，其中“顶部仍为inline”“无前端总分计算”等已被本轮替换，不作为当前状态。
+当前查询将11项合为同粒度多指标请求，业务服务可执行性、整体口径和组织/站点筛选映射尚未取得真实DQE证据。其他明细的inline示例未变。验收与复杂度见[本轮记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-scores-20261028/acceptance.md)。下面内容为历史版本记录，其中“顶部仍为inline”“无前端总分计算”等已被本轮替换，不作为当前状态。
 
 ---
 

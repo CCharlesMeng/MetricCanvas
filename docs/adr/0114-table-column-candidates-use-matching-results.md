@@ -27,4 +27,4 @@ note: 用户选择现有表格统一升级，并确认失配值保留、稳定�
 
 ## 实施边界
 
-本 ADR 记录四项已确认产品裁决。本仓引擎已按此实现并完成本地验证，见[实施证据](../evidence/table-column-candidates/result.md)；这不确认真实 DQE 已支持按原查询结果去重，也不表示真实集成完成。架构草案、执行范围、验收与 DQE 对接见[唯一主计划](../plan/2026-10-21-table-column-candidates.md)。能力无法证明时明确不可用，不用当前页或全局字典冒充本表完整候选。
+本 ADR 记录四项已确认产品裁决。本仓引擎已按此实现并完成本地验证，见[实施证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-candidates/result.md)；这不确认真实 DQE 已支持按原查询结果去重，也不表示真实集成完成。架构草案、执行范围、验收与 DQE 对接见[唯一主计划](../plan/2026-10-21-table-column-candidates.md)。能力无法证明时明确不可用，不用当前页或全局字典冒充本表完整候选。

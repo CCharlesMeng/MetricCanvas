@@ -299,7 +299,7 @@ pnpm dev:dqe
 
 页面试验场预览地址为http://localhost:5173/pages/business-sdt-cascade-example。已有服务运行时无需重复启动。DQE Sim只识别普通请求，阶段pivot/join由引擎完成；9月和10月夹具仅用于本地验证。empty/main-error/detail-error可通过DQE_SDT_SCENARIO注入仿真状态，正常启动不设置该变量。
 
-本地正常、空集、失败、竞态、两个月份、窄屏及导出数据证据见[验收结论](evidence/2026-10-12-business-sdt-cascade/result.md)。部分阶段时长为合成夹具，真实DQE的阶段粒度、单位、唯一性、缺失含义、权限及隐式上限仍需单独验真；前端本地通过不证明Relay/Java或生产接线。
+本地正常、空集、失败、竞态、两个月份、窄屏及导出数据证据见[验收结论](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-business-sdt-cascade/result.md)。部分阶段时长为合成夹具，真实DQE的阶段粒度、单位、唯一性、缺失含义、权限及隐式上限仍需单独验真；前端本地通过不证明Relay/Java或生产接线。
 
 ## 10. 复用主结果并过滤下游输入（6.19）
 

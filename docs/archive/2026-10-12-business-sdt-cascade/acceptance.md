@@ -1,6 +1,6 @@
 # 商务 SDT 级联查询验证方案
 
-本表冻结实施完成判据。本地实施已完成。下表保留验收规格，实际执行范围、命令、数量与限制见[验收结论](../../evidence/2026-10-12-business-sdt-cascade/result.md)；原页面截图只说明实施前现状。验收对象是两张项目Top5表的数据链路，不扩展到报告所有查询的真实业务验真。
+本表冻结实施完成判据。本地实施已完成。下表保留验收规格，实际执行范围、命令、数量与限制见[验收结论](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-business-sdt-cascade/result.md)；原页面截图只说明实施前现状。验收对象是两张项目Top5表的数据链路，不扩展到报告所有查询的真实业务验真。
 
 ## 证据分层
 

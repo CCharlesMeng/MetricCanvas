@@ -5,8 +5,8 @@
 ## 阅读与核对顺序
 
 1. 读取执行仓 AGENTS.md，核实 Git HEAD、origin/main、dirty 清单及实际服务路径，保留并行修改。本机主检出和其他工作树不属于本轮交付范围。
-2. 读取本文，再读 [Relay 实施任务书](relay-integration-execution.md) 和 [交付复验](../../evidence/mc-content-layout/relay-readiness.md)。在 Windows Relay 环境按任务书顺序实施，以每节完成条件收口。
-3. 仅在需要追溯 MC 内容范围时读 [完整性主计划](mc-content-completeness-plan.md) 第 11 节、[实施验收](../../evidence/mc-content-layout/implementation-results.md) 和 [复杂度记录](../../evidence/mc-content-layout/implementation-complexity.md)。原 implementation-handoff 前 6 节是实施起点，不能用其中的历史缺口覆盖当前结论。
+2. 读取本文，再读 [Relay 实施任务书](relay-integration-execution.md) 和 [交付复验](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/relay-readiness.md)。在 Windows Relay 环境按任务书顺序实施，以每节完成条件收口。
+3. 仅在需要追溯 MC 内容范围时读 [完整性主计划](mc-content-completeness-plan.md) 第 11 节、[实施验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/implementation-results.md) 和 [复杂度记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/implementation-complexity.md)。原 implementation-handoff 前 6 节是实施起点，不能用其中的历史缺口覆盖当前结论。
 
 ## 当前交付状态
 
@@ -15,7 +15,7 @@
 | MC 内容补全 | W1–W6、本仓 G01–G16 按实施验收逐项收口；旧页、迁移、产品引擎回放及 local-authoring 独立安装已验 | 不重复补发旧 387 文件包中缺失、当前已存在的内容 |
 | main 基线 | `edab0baa9521ad3c6f6ab5b21c00e084c05a1f38`；[完整 CI 通过](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/40080278690) | 这是本轮 CI 修复之前的基线，不能证明新下载检查已通过 |
 | 本轮修复 | authoring 上传保留隐藏文件，上传后下载到新目录并运行随包 check_bundle | 本文随修复提交；用包含本文的 Git 提交 SHA 查远端和完整 CI，不用旧绿色结果替代 |
-| MC 复验与交付准备 | 最小依赖独立运行、9 个公共工具契约逐项对账、完整公有归档两次摘要检查通过 | [交付复验](../../evidence/mc-content-layout/relay-readiness.md)列明环境、归档身份和原始记录 |
+| MC 复验与交付准备 | 最小依赖独立运行、9 个公共工具契约逐项对账、完整公有归档两次摘要检查通过 | [交付复验](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/relay-readiness.md)列明环境、归档身份和原始记录 |
 | 真实 Relay | 未执行；本机没有 Windows 源码或远程连接 | 需要可访问执行环境的 Relay 执行者继续，不声称程序接缝、权限或部署已完成 |
 
 ## 分发修复为何必要

@@ -100,4 +100,4 @@ B 可在 assets/lifecycle.py 做纯 receipt_rules 委托的最小接线，保持
 
 ## 8. 统一集成回执
 
-主控在 `/Users/moon/.codex/worktrees/relay-reference-integration/DataDashboard` 以 `8b1e09ad62da10e86cc07f9494efd5c4a56a5d7e` 集成 A28/B17/C23，来源摘要与基线 blob 均核对；新主线的五个 pagedJoin 文件不与本批来源重叠。主控额外的 UTF-8/LF、文档/场景/生成和浏览器调整单独记录，未改写三线冻结 manifest。正式结果见[执行台账](relay-reference-execution.md)和[集成证据](../../evidence/2026-11-03-relay-reference-integration/README.md)。三个会话均已收到集成通知；本轮不因并行交付而关闭真实 Relay 接入、CI 或部署。
+主控在 `/Users/moon/.codex/worktrees/relay-reference-integration/DataDashboard` 以 `8b1e09ad62da10e86cc07f9494efd5c4a56a5d7e` 集成 A28/B17/C23，来源摘要与基线 blob 均核对；新主线的五个 pagedJoin 文件不与本批来源重叠。主控额外的 UTF-8/LF、文档/场景/生成和浏览器调整单独记录，未改写三线冻结 manifest。正式结果见[执行台账](relay-reference-execution.md)和[集成证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-03-relay-reference-integration/README.md)。三个会话均已收到集成通知；本轮不因并行交付而关闭真实 Relay 接入、CI 或部署。

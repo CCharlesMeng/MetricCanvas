@@ -43,6 +43,6 @@
 
 ## 验收与状态
 
-本批五项本仓实现与本地验收完成：P1-2、P1-3、P2-1、P2-2、P2-4。82 个定向回归及 73 个 local-authoring 检查通过，类型检查、构建、契约生成一致性与实际浏览器通过。浏览器观察使用本地页面资产和合成数据，真实 Chat/Java/DQE/Relay/门户接入另验。2026-10-26 用户授权提交并 push，迁入当前 main 后的复验与范围见[交付记录](../evidence/platform-interaction-audit/delivery.md)。
+本批五项本仓实现与本地验收完成：P1-2、P1-3、P2-1、P2-2、P2-4。82 个定向回归及 73 个 local-authoring 检查通过，类型检查、构建、契约生成一致性与实际浏览器通过。浏览器观察使用本地页面资产和合成数据，真实 Chat/Java/DQE/Relay/门户接入另验。2026-10-26 用户授权提交并 push，迁入当前 main 后的复验与范围见[交付记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-interaction-audit/delivery.md)。
 
-实施结果见[验收记录](../evidence/platform-interaction-audit/result.md)，函数前后结果与全部新增函数见[复杂度实测](../evidence/platform-interaction-audit/complexity.md)。此计划保留尚未完成的 P1-4、P1-5 两个专项及其后续入口，不将本批五项完成视为全部审计问题关闭。
+实施结果见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-interaction-audit/result.md)，函数前后结果与全部新增函数见[复杂度实测](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-interaction-audit/complexity.md)。此计划保留尚未完成的 P1-4、P1-5 两个专项及其后续入口，不将本批五项完成视为全部审计问题关闭。

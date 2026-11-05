@@ -2,7 +2,7 @@
 
 日期：2026-10-27。状态：P0–P5正式实现与必选本地/Sim验收完成（Schema6.70，独立工作树基线219b5db9233d735c2234f83d4ce7c8062ac57605）。业务行为与可交互原型均经用户确认；用户已授权完成正式实现与验收。实施入口见[交接说明](2026-10-27-hierarchical-row-expansion-handoff.md)。
 
-已确认原型保存在本地试验分支 `codex/prototype-hierarchy-selection`（提交 `65fb7ed3cdf3b5056836f1503dfe91bb59f18baa`，路径 `packages/engine/widgets/prototypes/hierarchical-row-expansion/`）。用户确认行为符合需求；正式实现与产品证据见[验收报告](../evidence/hierarchical-row-expansion/result.md)，2026-10-28 批量交付将[原型文件](../../packages/engine/widgets/prototypes/hierarchical-row-expansion/README.md)纳入 main 的独立 prototypes 目录，不接入产品构建。
+已确认原型保存在本地试验分支 `codex/prototype-hierarchy-selection`（提交 `65fb7ed3cdf3b5056836f1503dfe91bb59f18baa`，路径 `packages/engine/widgets/prototypes/hierarchical-row-expansion/`）。用户确认行为符合需求；正式实现与产品证据见[验收报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/hierarchical-row-expansion/result.md)，2026-10-28 批量交付将[原型文件](../../packages/engine/widgets/prototypes/hierarchical-row-expansion/README.md)纳入 main 的独立 prototypes 目录，不接入产品构建。
 
 地区部父表首屏取得完整结果，代表处子表展开时取数。选择代表处时，父行继续展示所属地区部的整体指标，子表只展示所选代表处。本批还包含当前筛选范围内全部父子数据的 Excel 导出。
 
@@ -331,4 +331,4 @@ ADR 速查表与主题页存在已有编号/版本转述差异，历史行内子
 
 ### 正式完成结论
 
-P0–P5已完成本地产品及Sim验收，[完整证据与命令](../evidence/hierarchical-row-expansion/result.md)、[复杂度结果](../evidence/hierarchical-row-expansion/complexity.md)。最终Schema6.70、Skill1.4.0；独立工作树正式入口为5210，Sim18229。真实DQE/Relay/生产权限NOT_RUN，不能以Sim替代。旧页面不迁移，原型独立分支保留；实现未推送或合入main。
+P0–P5已完成本地产品及Sim验收，[完整证据与命令](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/hierarchical-row-expansion/result.md)、[复杂度结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/hierarchical-row-expansion/complexity.md)。最终Schema6.70、Skill1.4.0；独立工作树正式入口为5210，Sim18229。真实DQE/Relay/生产权限NOT_RUN，不能以Sim替代。旧页面不迁移，原型独立分支保留；实现未推送或合入main。

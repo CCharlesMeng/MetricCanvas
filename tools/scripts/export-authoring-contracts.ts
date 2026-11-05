@@ -688,11 +688,11 @@ async function buildBundleLock(): Promise<string> {
       return { file, sha256: sha256(content) };
     })
   );
-  return json({
+  return `${JSON.stringify({
     bundleVersion: bundle.bundleVersion,
     pageSchemaVersion: versionPolicy.current,
     artifacts: artifacts.sort((left, right) => left.file.localeCompare(right.file))
-  });
+  })}\n`;
 }
 
 async function assertCurrent(

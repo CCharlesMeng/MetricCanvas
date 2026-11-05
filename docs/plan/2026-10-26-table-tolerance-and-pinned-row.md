@@ -2,7 +2,7 @@
 
 状态：Schema 6.60 已实施，本地验收完成；代码按范围向 main 交付，真实服务待联调。日期：2026-10-26。
 
-实施结果、检查命令、复杂度与浏览器证据见[验收记录](../evidence/table-enhancements/2026-10-26-acceptance.md)。
+实施结果、检查命令、复杂度与浏览器证据见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-enhancements/2026-10-26-acceptance.md)。
 
 本批增强表格的三个行为：类型或格式失配的标量保留原文展示并告警；本地排序将空白和横杠排在末尾；表格独立查询一行汇总并在每页首行展示。汇总使用指标表已有的区域取数逻辑，前端不根据地区明细求和。
 

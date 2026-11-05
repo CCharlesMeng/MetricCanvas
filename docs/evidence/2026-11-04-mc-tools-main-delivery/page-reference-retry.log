@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run tests/page-reference.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/relay-tools-plural/DataDashboard
-
-
- Test Files  1 passed (1)
-      Tests  8 passed (8)
-   Start at  16:52:11
-   Duration  19.14s (transform 663ms, setup 0ms, import 11.23s, tests 7.80s, environment 0ms)

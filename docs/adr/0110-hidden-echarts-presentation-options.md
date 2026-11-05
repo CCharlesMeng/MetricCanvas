@@ -6,7 +6,7 @@ note: Schema 6.32 已在隔离检出完成首批柱/线/饼图实施、分发及
 
 # 图表以隐含协议入口支持 ECharts 呈现透传，失败单次降级且只向 console 输出诊断
 
-现有图表把组件字段绑定、数据快照和封闭属性翻译为 ECharts option，特殊呈现需求必须反复扩展协议。用户决定增加 `props.echartsOption`，作为正式协议认可的高级呈现入口。首批仅包含 `barChart`、`lineChart`、`pieChart`；地图涉及 DOM 图例、固定摘要与安全区，单独设计，不在本批开放。Schema 6.32 已在隔离检出完成实施、分发及本地完整验收；实施状态由[唯一主计划](../plan/2026-10-19-chart-echarts-option.md)维护，见[验收证据](../evidence/chart-echarts-option/result.md)。
+现有图表把组件字段绑定、数据快照和封闭属性翻译为 ECharts option，特殊呈现需求必须反复扩展协议。用户决定增加 `props.echartsOption`，作为正式协议认可的高级呈现入口。首批仅包含 `barChart`、`lineChart`、`pieChart`；地图涉及 DOM 图例、固定摘要与安全区，单独设计，不在本批开放。Schema 6.32 已在隔离检出完成实施、分发及本地完整验收；实施状态由[唯一主计划](../plan/2026-10-19-chart-echarts-option.md)维护，见[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/chart-echarts-option/result.md)。
 
 ## 协议与呈现职责
 

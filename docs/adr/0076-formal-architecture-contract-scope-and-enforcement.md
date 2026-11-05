@@ -14,4 +14,4 @@ note: #95 主干范围及 CI 约束方向已确认；模型草案待收口，校
 
 概念、表示与实现不混为一个对象：页面是领域概念，页面元数据文档是表示，代码模块实现相关能力，物理包组织交付。人工页面搭建成功保存也会产生页面修订，因此“只有显式沉淀才允许保存任何修订”不成立；显式沉淀约束的是临时页面态进入资产的路径。模型规则须明确作用对象和执行范围。
 
-具体模型草案见 [`architecture-formal-model.md`](../evidence/architecture-formal-model.md)。尚未决定由模型统一生成词汇表；`CONTEXT.md` 继续作为当前领域术语真源。机器格式/工具、形式约束的编辑来源及行为验证深度继续 grill，本 ADR 不提前选定 OWL、SHACL 或自有表达语言，也不把接口测试称为形式证明。架构校验器与 CI 接线尚未实现。
+具体模型草案见 [`architecture-formal-model.md`](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/architecture-formal-model.md)。尚未决定由模型统一生成词汇表；`CONTEXT.md` 继续作为当前领域术语真源。机器格式/工具、形式约束的编辑来源及行为验证深度继续 grill，本 ADR 不提前选定 OWL、SHACL 或自有表达语言，也不把接口测试称为形式证明。架构校验器与 CI 接线尚未实现。

@@ -1,6 +1,6 @@
 # 临时布局审核页检查
 
-2026-10-27。最终复核：**11项通过、1项不采用**。C1-B颜色修正后用户确认纳入创作流程，单一正文及分发验收见[MC接入记录](../../../../../../docs/evidence/report-layout-mc-content-20261027/result.md)；下方早期检查保留作历史记录。
+2026-10-27。最终复核：**11项通过、1项不采用**。C1-B颜色修正后用户确认纳入创作流程，单一正文及分发验收见[MC接入记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-layout-mc-content-20261027/result.md)；下方早期检查保留作历史记录。
 
 ## C1-B第二轮颜色修正
 

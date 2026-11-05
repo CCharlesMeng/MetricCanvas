@@ -40,7 +40,7 @@
 
 本轮探针为只读诊断执行，没有新增持久测试文件；实施时须将必要对照固化在现有测试层，不能把本文表格代替回归测试。
 
-架构依据：[数据与查询现行结论](../../adr/topics/data-fetching-and-query-model.md)、[包边界与部署形态](../../adr/topics/domain-modeling-and-package-boundaries.md)、[现有 IOC 差距说明](../../plan/2026-09-23-ioc-full-page-capability-gap.md)、[结果字段来源核查](../../evidence/2026-09-23-authoring-result-field-sources.md)。历史 ADR 的后续修订状态以 [ADR 索引](../../adr/README.md) 为准。
+架构依据：[数据与查询现行结论](../../adr/topics/data-fetching-and-query-model.md)、[包边界与部署形态](../../adr/topics/domain-modeling-and-package-boundaries.md)、[现有 IOC 差距说明](../../plan/2026-09-23-ioc-full-page-capability-gap.md)、[结果字段来源核查](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-23-authoring-result-field-sources.md)。历史 ADR 的后续修订状态以 [ADR 索引](../../adr/README.md) 为准。
 
 ## 3. 问题、根因与修改方案
 
@@ -117,7 +117,7 @@
 
 **方案。** 数据治理方确认可加性、时间聚合、敏感性、金额/百分比尺度等真实事实；适配器传递，不能创造。公共代码负责 DQE 构造、稳定页面字段 ID、通常的结果字段映射、时间列/公式别名处理和行值校验。一般查询不强制额外源描述服务；只有真实重命名或尺度等无法内部确定时，使用已有可选扩展或限制该能力。
 
-**验收。** 没有语义依据时保持未知或拒绝，不用默认值伪造治理。已明确的普通查询不要求适配方重写字段派生。具体依据见[结果字段来源核查](../../evidence/2026-09-23-authoring-result-field-sources.md)。
+**验收。** 没有语义依据时保持未知或拒绝，不用默认值伪造治理。已明确的普通查询不要求适配方重写字段派生。具体依据见[结果字段来源核查](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-23-authoring-result-field-sources.md)。
 
 ### R08 · 现有测试没有覆盖真实发现到查询的断点（P1，代码确认）
 
@@ -280,4 +280,4 @@
 | R11 | 补 21 入口候选覆盖底表和报告矛盾定位 | 127 请求完整条目、全部活跃行为仍缺来源证据 |
 | R12 | 默认 relaxed、可信文件下一批热切换、批内固定、可选治理深层降级、同链执行与跨模式引用隔离 | 旧 current-only Adapter 自身的拒绝无法被开关消除；没有可信字段声明的任意名称仍拒绝 |
 
-Adapter 协议、规范化授权与内部采用步骤单列于 [QUERY-VALIDATION-MIGRATION.md](../../../metriccanvas-authoring/QUERY-VALIDATION-MIGRATION.md)。当前决定见 [ADR-0091](../../adr/0091-query-validation-policy-and-public-semantic-projection.md)。[本地验证证据](../../evidence/2026-09-24-authoring-remediation-validation.md)单独记录 442 项测试、分发一致性与未执行的内部验收，不能将本表视为生产验收。
+Adapter 协议、规范化授权与内部采用步骤单列于 [QUERY-VALIDATION-MIGRATION.md](../../../metriccanvas-authoring/QUERY-VALIDATION-MIGRATION.md)。当前决定见 [ADR-0091](../../adr/0091-query-validation-policy-and-public-semantic-projection.md)。[本地验证证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-24-authoring-remediation-validation.md)单独记录 442 项测试、分发一致性与未执行的内部验收，不能将本表视为生产验收。

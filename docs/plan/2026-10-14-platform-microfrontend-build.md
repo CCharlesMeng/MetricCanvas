@@ -1,6 +1,6 @@
 # Platform 微前端调试包与后续分块
 
-日期：2026-10-14。用户已选择第一期方案二：保留 UMD 单文件，先解决浏览器源码调试；方案一记录为第二期，后续实施。第一期实施与验收结果见 [证据](../evidence/platform-debug-build.md)，命令与使用方式见 [平台打包与调试](../platform-build.md)。
+日期：2026-10-14。用户已选择第一期方案二：保留 UMD 单文件，先解决浏览器源码调试；方案一记录为第二期，后续实施。第一期实施与验收结果见 [证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-debug-build.md)，命令与使用方式见 [平台打包与调试](../platform-build.md)。
 
 ## 第一期：独立调试包
 

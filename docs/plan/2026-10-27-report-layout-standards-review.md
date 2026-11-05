@@ -4,7 +4,7 @@
 
 同日补充复核：用户确认“其余没问题”，C4-A转为保留；C1-B去掉蓝色、补齐红绿后，用户确认“可以，纳入创作流程中，重点更新mc-content”。最终11项通过，C3-B不采用；首轮及补充意见保留。
 
-当前单一创作正文已纳入[MC PC章节组合](../../tools/mc-content/layouts/report-composition.md)，通过MC查询索引、Platform创建流程、本地Report范式入口分发；本文件保留审核来由，不作为另一份持续维护的布局规则。能力与分发验证见[接入记录](../evidence/report-layout-mc-content-20261027/result.md)。
+当前单一创作正文已纳入[MC PC章节组合](../../tools/mc-content/layouts/report-composition.md)，通过MC查询索引、Platform创建流程、本地Report范式入口分发；本文件保留审核来由，不作为另一份持续维护的布局规则。能力与分发验证见[接入记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-layout-mc-content-20261027/result.md)。
 
 这是章节组合的视觉与组织参考，不是整页模板，不新增业务事实，也不表示提案已经进入产品协议、正式主题或 local-authoring 分发。
 
