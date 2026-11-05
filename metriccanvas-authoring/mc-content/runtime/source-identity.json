@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "58aaf70f564c51bce5b0e74db69c40680060efe45cbd4b2b0011063bb465890d",
+  "sha256": "60e7fcdafc1c7a5fd2ca103fec2770dc159783a4a290fae46ab3c469050a1433",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -156,11 +156,11 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "67d56799013f69bcda725d44cc569b7c906f19e51b5e652f68d1044e941903d3"
+      "sha256": "28816673172c56373ce88b983eea5e59692cfc606294216ae3d3e8c658351f50"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "03fd0f1334685d6bdd8de3b2e3da43dc2945a688dc0eee1e86981fa784ef9959"
+      "sha256": "436f9ddf53ff7e329d4aac3c98609318da3641abd5e8f909a0d9c1f9feb1da6d"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1688,7 +1688,7 @@
     },
     {
       "file": "packages/page/src/period-capability.ts",
-      "sha256": "a2572f88244fd4e7bf0bcc23757ccc6d7b3eedcfc3e42a618a07b7589512e5c8"
+      "sha256": "2780afd4e456e02cbeb2a66b1d71b2fc494f2d042ef2da5fd34173a1236ef4fc"
     },
     {
       "file": "packages/page/src/period-comparison-validation.ts",
@@ -1708,7 +1708,7 @@
     },
     {
       "file": "packages/page/src/period-query.ts",
-      "sha256": "b080291946a8f80057aec766df7459931270bf4b2490925fb355acd38c5b467a"
+      "sha256": "dafad7020cea91edb44ac1645ef43bb29ba65d5f392a0ab6395c537483a4ff89"
     },
     {
       "file": "packages/page/src/presentation-edit.ts",
@@ -1760,7 +1760,7 @@
     },
     {
       "file": "packages/page/src/query-time.ts",
-      "sha256": "caa50f7dd70cf89373fb4ac25bb8240f3079a3730911f433add9425a29252343"
+      "sha256": "0f9e4bfedd43eeeeb5822a98b0e31cf90f313112ae12277c7575b5775e9ea5fc"
     },
     {
       "file": "packages/page/src/query.ts",
@@ -1880,7 +1880,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "58cc651270895ef1154d40338b0277b91501b33566f991b34e9445bc5d49ac84"
+      "sha256": "1357397ca45133a89b53ed735323d2cac9dd8af318587fa09d278542eb2d31f7"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -2076,7 +2076,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "13ee889937ad54140724f99e45deece784a6cc42ad3113514ebe102ccc9da0fb"
+      "sha256": "aea223b1f56e94316ec497bdb425b959f289e303a848222909f775e22ebf06b8"
     },
     {
       "file": "pages/README.md",
@@ -2328,7 +2328,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "a3315599179fd17b0c6838106eb91fd4802d66dc0128db113aace9c2cc1fc280"
+      "sha256": "91668e796aec3928be905749081d02fcd1521b2b140fbbbee0087734bad297a9"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",
@@ -2381,6 +2381,10 @@
     {
       "file": "pages/capabilities/filters/period-query-columns-demo.json",
       "sha256": "ea12c4db5e1481ca24c55cd912c453f3f0616ec0ee60ba3bc2ce8bd5b2846bbe"
+    },
+    {
+      "file": "pages/capabilities/filters/quarter-query-period.json",
+      "sha256": "836749f54f729b3467debd30195ed4abe2b47a5b16237ed67eeba4fcbb9152ea"
     },
     {
       "file": "pages/capabilities/filters/query-mode-chart-demo.json",
@@ -2572,15 +2576,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "18bd57d11d2dff17d5d6cf95cf1515e9787195b33aa8262c9c8f72e6b9d5a5b8"
+      "sha256": "f1a05a7cf23ad3074432a6e5603251ef74d48ded3861fd09c7e1869edc2bbe79"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "7dd4ec5bfab0c67227f04d055bdf701242261cf4720fc98f98f54a12f351b5c3"
+      "sha256": "5e28d63264fa5c3217b61a612831a406e15525430155004d1a5a2b9886753af8"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "8bb410564b39a81794819c232916bdedf7383bdcbaa4edf2c3b12066c3ce99a7"
+      "sha256": "cc03d0114a9636409adf4801118da74cb2c3009add372b034ec751a97bca4c28"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2596,7 +2600,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "57551f6646e9f13aec73ff575fc28e99189bc684dd69e5aa8b1267e1ba912f24"
+      "sha256": "0cffeb66400b3dd069e5b8f9708730a993471c30e9ef51b6e63aac983215ce87"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",

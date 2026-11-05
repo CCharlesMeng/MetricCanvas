@@ -1,0 +1,131 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "packages/page/src/period-query.ts",
+      "functions": [
+        {
+          "name": "rejected",
+          "qualifiedName": "rejected",
+          "line": 16,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "selectedPeriod",
+          "qualifiedName": "selectedPeriod",
+          "line": 19,
+          "endLine": 26,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "calendarBounds",
+          "qualifiedName": "calendarBounds",
+          "line": 27,
+          "endLine": 31,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "resolvePeriodQuery",
+          "qualifiedName": "resolvePeriodQuery",
+          "line": 34,
+          "endLine": 41,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/page/src/query-time.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "qualifiedName": "constructor",
+          "line": 6,
+          "endLine": 6,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "endpoint",
+          "qualifiedName": "endpoint",
+          "line": 11,
+          "endLine": 18,
+          "selfCC": 9,
+          "optionalChains": 0,
+          "subtreeCC": 9,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "normalizeQueryTime",
+          "qualifiedName": "normalizeQueryTime",
+          "line": 19,
+          "endLine": 26,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/period-policy-edit.ts",
+      "functions": [
+        {
+          "name": "periodPolicyChoice",
+          "qualifiedName": "periodPolicyChoice",
+          "line": 9,
+          "endLine": 13,
+          "selfCC": 5,
+          "optionalChains": 1,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "policyFromChoice",
+          "qualifiedName": "policyFromChoice",
+          "line": 14,
+          "endLine": 17,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "preservePeriodBinding",
+          "qualifiedName": "preservePeriodBinding",
+          "line": 18,
+          "endLine": 20,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "periodPolicyPreview",
+          "qualifiedName": "periodPolicyPreview",
+          "line": 21,
+          "endLine": 28,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

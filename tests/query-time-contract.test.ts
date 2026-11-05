@@ -55,3 +55,24 @@ it.each([['20261005','20261011'],['2026-10-05','2026-10-11']])('preserves the ex
 it.each(['2026-W41','2026-10','2026-10-05T12:00'])('rejects unsupported week endpoint precision: %s',start=>{
   expect(()=>effectiveDqeItem(query({period:'week',start,end:start}))).toThrow('TIME_VALUE_PRECISION_INVALID');
 });
+
+
+it.each([
+  ['2026-Q3','2026-Q3'], ['2025-Q4','2026-Q1'], ['0001-Q1','9999-Q4']
+])('preserves quarter endpoints in the final request: %s to %s',(start,end)=>{
+  expect(effectiveDqeItem(query({period:'quarter',start,end,is_aggregate:true})).filter)
+    .toEqual({time:{period:'quarter',start,end,is_aggregate:true}});
+});
+it.each([
+  ['2026-Q0','2026-Q3','TIME_VALUE_PRECISION_INVALID'],
+  ['2026-Q5','2026-Q5','TIME_VALUE_PRECISION_INVALID'],
+  ['2026-07','2026-09','TIME_VALUE_PRECISION_INVALID'],
+  ['2026-07-01','2026-09-30','TIME_VALUE_PRECISION_INVALID'],
+  ['0000-Q1','2026-Q1','TIME_VALUE_CALENDAR_INVALID'],
+  ['2026-Q4','2026-Q3','TIME_RANGE_REVERSED']
+])('rejects invalid quarterly requests before transport: %s to %s',async(start,end,code)=>{
+  const fetchImpl=vi.fn();
+  await expect(createDqeGateway({fetchImpl}).fetchData(query({period:'quarter',start,end})))
+    .rejects.toMatchObject({code:'DQE_QUERY_REJECTED',message:expect.stringContaining(code)});
+  expect(fetchImpl).not.toHaveBeenCalled();
+});

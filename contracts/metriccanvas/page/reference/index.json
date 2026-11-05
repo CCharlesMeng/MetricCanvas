@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.85",
-  "schemaSha256": "b0ba03bf1cfbdc0914e6b9ab5dc05d015b3b63dadf9d545217e08eb0f999e751",
+  "schemaVersion": "6.86",
+  "schemaSha256": "abb1115770b21cb8b8bb8588743507a4047af4cbc85544f0e622bbf51328579a",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -312,7 +312,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "58cc651270895ef1154d40338b0277b91501b33566f991b34e9445bc5d49ac84"
+      "sha256": "1357397ca45133a89b53ed735323d2cac9dd8af318587fa09d278542eb2d31f7"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -1945,7 +1945,8 @@
         "6.82",
         "6.83",
         "6.84",
-        "6.85"
+        "6.85",
+        "6.86"
       ]
     },
     {
@@ -5614,6 +5615,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },
@@ -5644,6 +5646,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },
@@ -6298,6 +6301,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },
@@ -6328,6 +6332,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },

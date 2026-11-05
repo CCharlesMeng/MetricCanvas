@@ -1,0 +1,9 @@
+$ tsc --noEmit -p tools/tsconfig.skills.json && vitest run tests/repair-page-metadata.test.ts tests/skill-release.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/quarter-time-filter/DataDashboard
+
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  16:06:27
+   Duration  31.88s (transform 4.62s, setup 0ms, import 5.38s, tests 53.42s, environment 4ms)

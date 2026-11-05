@@ -47,7 +47,7 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.85。结构真源为本册[schema.json](schema.json)，SHA256 `b0ba03bf1cfbdc0914e6b9ab5dc05d015b3b63dadf9d545217e08eb0f999e751`。字段表自动生成；可选不等于有默认值。
+页面协议 6.86。结构真源为本册[schema.json](schema.json)，SHA256 `abb1115770b21cb8b8bb8588743507a4047af4cbc85544f0e622bbf51328579a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

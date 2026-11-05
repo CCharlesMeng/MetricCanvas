@@ -84,7 +84,7 @@
       <Select label={`${choice.dataSourceId} 查询期间策略`} value={current} options={periodPolicyOptions.filter(option=>option.value==='legacy'?periodPolicyChoice(loadedBindings[choice.id],!!loadedBindings[choice.id])==='legacy':option.value!=='preserve'||!!loadedBindings[choice.id])} onchange={value=>{policies[choice.id]=value as PeriodPolicyChoice;policyChanged[choice.id]=true;supported[choice.id]??=[];}}/>
       {#if current==='selection'}
         <span>此查询已确认支持的粒度</span>
-        {#each ['month','year'] as period}<label class="binding"><input type="checkbox" value={period} bind:group={supported[choice.id]} onchange={()=>policyChanged[choice.id]=true}/>{period==='month'?'月':'年'}</label>{/each}
+        {#each ['month','quarter','year'] as period}<label class="binding"><input type="checkbox" value={period} bind:group={supported[choice.id]} onchange={()=>policyChanged[choice.id]=true}/>{period==='month'?'月':period==='quarter'?'季':'年'}</label>{/each}
       {/if}
       <p class="hint">{current==='preserve'?'各分支保留各自配置；选择新策略后统一转换。':periodPolicyPreview(periodMode,from,policyFromChoice(current,supported[choice.id]??[]),previewNow)}</p>
       {#if current==='legacy'}<p class="hint">选择新策略才转换此查询的全部分支；其他查询继续保留。</p>{/if}

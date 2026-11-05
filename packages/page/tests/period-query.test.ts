@@ -18,6 +18,9 @@ export function policyDocument(){
 it.each([
   ['year','2026','month','2026-01','2026-12',false],
   ['quarter','2026-Q2','month','2026-04','2026-06',false],
+  ['quarter','2026-Q3','quarter','2026-Q3','2026-Q3',false],
+  ['month','2026-10','quarter','2026-Q4','2026-Q4',true],
+  ['year','2026','quarter','2026-Q1','2026-Q4',false],
   ['month','2024-02','day','2024-02-01','2024-02-29',false],
   ['month','2026-10','year','2026','2026',true],
   ['last12Months',undefined,'year','2025','2026',true]
@@ -30,7 +33,7 @@ it('uses applied last twelve months and rejects unsupported selection without fa
   const range=resolvePeriodSelection({mode:'last12Months'},now);
   expect(resolvePeriodQuery(range,{kind:'selection',supportedPeriods:['month']})).toMatchObject({period:'month',from:'2025-10',to:'2026-09'});
   expect(()=>resolvePeriodQuery(range,{kind:'selection',supportedPeriods:['year']})).toThrow('不支持');
-  expect(()=>resolvePeriodQuery(resolvePeriodSelection({mode:'quarter',value:'2026-Q1'},now),{kind:'selection',supportedPeriods:['month','year']})).toThrow('季度查询编码');
+  expect(()=>resolvePeriodQuery(resolvePeriodSelection({mode:'quarter',value:'2026-Q1'},now),{kind:'selection',supportedPeriods:['month','year']})).toThrow('不支持');
 });
 it('keeps legacy documents readable and new policy versioned',()=>{
   expect(parsePage(document()).ok).toBe(true);
@@ -45,7 +48,7 @@ it.each(['period','start','end','param','window','bodyWindow','object','ordinary
   if(kind==='object')q.body.dsl_list[0].query_type='object';
   if(kind==='ordinary')delete page.filters[0].display;
   if(kind==='duplicate')b.periodPolicy={kind:'selection',supportedPeriods:['month','month']};
-  if(kind==='unknown')b.periodPolicy={kind:'fixed',period:'quarter'};
+  if(kind==='unknown')b.periodPolicy={kind:'fixed',period:'week'};
   expect(parsePage(page).ok).toBe(false);
 });
 it('reads applied selection mode, preserves not/pending and rejects non-period references',()=>{
@@ -68,4 +71,17 @@ it('validates period conditions on columns, components and sections with a versi
 it('does not discover capabilities inside raw query bodies or inline rows',()=>{
   const fake={filter:'period-filter',part:'mode',op:'eq',value:'year'};
   expect(periodCapabilityPaths({dataSources:{a:{source:{type:'query',query:{body:{fake}}}},b:{source:{type:'inline',rows:[fake]}}}})).toEqual([]);
+});
+
+it('encodes the selected quarter directly',()=>{
+  const range=resolvePeriodSelection({mode:'quarter',value:'2026-Q3'},now);
+  expect(resolvePeriodQuery(range,{kind:'selection',supportedPeriods:['quarter']})).toEqual({period:'quarter',from:'2026-Q3',to:'2026-Q3',expanded:false});
+  const page=policyDocument();page.dataSources.sales.source.query.filterBindings['period-filter'].periodPolicy={kind:'selection',supportedPeriods:['quarter']};
+  expect(parsePage(page).ok).toBe(true);
+});
+
+it.each([{kind:'fixed',period:'quarter'},{kind:'selection',supportedPeriods:['quarter']}])('requires 6.86 for quarter policy %j',policy=>{
+  const page=policyDocument();page.dataSources.sales.source.query.filterBindings['period-filter'].periodPolicy=policy;
+  page.schemaVersion='6.85';expect(parsePage(page).ok).toBe(false);
+  page.schemaVersion=versionPolicy.current;expect(parsePage(page).ok).toBe(true);
 });

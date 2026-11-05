@@ -6,10 +6,14 @@ export class QueryTimeRangeError extends Error {
   constructor(readonly code: QueryTimeError, readonly field: string) { super(code); }
 }
 const patterns: Record<string, RegExp> = {
-  year: /^[0-9]{4}$/, month: /^[0-9]{4}-?[0-9]{2}$/, day: /^(?:[0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2})$/
+  quarter: /^[0-9]{4}-Q[1-4]$/, year: /^[0-9]{4}$/, month: /^[0-9]{4}-?[0-9]{2}$/, day: /^(?:[0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2})$/
 };
 function endpoint(value: unknown, period: string, field: string): string {
   if (typeof value !== 'string' || !patterns[period].test(value)) throw new QueryTimeRangeError('TIME_VALUE_PRECISION_INVALID', field);
+  if (period === 'quarter') {
+    if (Number(value.slice(0, 4)) === 0) throw new QueryTimeRangeError('TIME_VALUE_CALENDAR_INVALID', field);
+    return value;
+  }
   const digits = value.replaceAll('-', '');
   const normalized = period === 'year' ? digits : period === 'month' ? `${digits.slice(0, 4)}-${digits.slice(4, 6)}` : `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`;
   const date = period === 'year' ? normalized + '-01-01' : normalized;

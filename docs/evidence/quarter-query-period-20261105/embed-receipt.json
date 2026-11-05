@@ -1,0 +1,91 @@
+{
+  "archive": "/tmp/quarter-delivery-artifacts/metriccanvas-embed-quarter.tar.gz",
+  "archiveSha256": "2107ae3d070dca04caa7d566015b87ed2d997122e08ac962e824f804ff8e6a98",
+  "jsFiles": 16,
+  "largest": {
+    "file": "chunks/excel~exceljs.min-CSE3Njtv.js",
+    "bytes": 929901
+  },
+  "files": [
+    {
+      "file": "chunks/charts~index-Bixv8hP8.js",
+      "bytes": 924262,
+      "sha256": "5fb5d34cc8329e44d8a60665cb687ca8fa4b90cc4e9f908671a49c7e48dbd48e"
+    },
+    {
+      "file": "chunks/excel~exceljs.min-CSE3Njtv.js",
+      "bytes": 929901,
+      "sha256": "1ea3c6dd8e9dfa11303cb05eedb4c76d13f4c18612f8b0d8f79b82bee0176aa4"
+    },
+    {
+      "file": "chunks/export-codecs~index-vmJ6NB1O.js",
+      "bytes": 635612,
+      "sha256": "24d5f8c72fb9aeb540b55154b313797e4b16c76ce737ede98b0acdb67d801cb7"
+    },
+    {
+      "file": "chunks/global-bridge-eb4fb24e.js",
+      "bytes": 95,
+      "sha256": "eb4fb24e55dc65c873cb7d5e844d93b037e02af9083e27b0ed0467f351ddf991"
+    },
+    {
+      "file": "chunks/graphics~index-zyh11kB3.js",
+      "bytes": 222983,
+      "sha256": "925a887106710c5260d47ff99273af3eb1fb060a463eafb50f6199d19e1d1ace"
+    },
+    {
+      "file": "chunks/rolldown-runtime-DAXXjFlN.js",
+      "bytes": 1269,
+      "sha256": "152d561ebfda45259b1bd8a6ea69fdfd98bb2ea4f7a1bf1e0eba68b2d08cca41"
+    },
+    {
+      "file": "chunks/runtime-ui~index-Bwc7bgwT.js",
+      "bytes": 230531,
+      "sha256": "bfe1823b51cee58032469f97d6730316f22ee4ec46032883167b67c0d3f14978"
+    },
+    {
+      "file": "chunks/runtime~index-BlcEflXW.js",
+      "bytes": 523247,
+      "sha256": "69853e1c019d5df58da16878b912b515c713df7d6975e6499ee054ea184f3042"
+    },
+    {
+      "file": "chunks/vendor~index-hlfA0-y6.js",
+      "bytes": 244922,
+      "sha256": "4986f4e24954b5a0d725fb73f6f8636aa078ad9e170707fd31ec887bb8dbb59d"
+    },
+    {
+      "file": "chunks/widgets-charts~china-DVbF7jLG.js",
+      "bytes": 117868,
+      "sha256": "1ff21c234d96dc01a234c30161f60b18d73a04207359facf0d090e712d9b559b"
+    },
+    {
+      "file": "chunks/widgets-charts~index-Y0jdx4en.js",
+      "bytes": 49831,
+      "sha256": "a9f7971fd6530b75973f185b29593ffa82956512b7bb868b22ef5aa28f13b865"
+    },
+    {
+      "file": "chunks/widgets-charts~world-BQrqtuGC.js",
+      "bytes": 171217,
+      "sha256": "dc988f9a68040b672ea645f54d91c3f60c5445a5c1a1918a4d9d63e1599f36e7"
+    },
+    {
+      "file": "chunks/widgets-table~index-BOtx-zXF.js",
+      "bytes": 311351,
+      "sha256": "df5e3a966dbdcf2dfb85f868ec4a07c698660ea41769581c9f0e3f88fa7db2b4"
+    },
+    {
+      "file": "chunks/widgets~index-O5Yo9Tun.js",
+      "bytes": 98725,
+      "sha256": "c334c866baee607dc5769dc9cee4f1a0018548375c01ad2a0264de06bc4b2ca5"
+    },
+    {
+      "file": "metriccanvas-runtime.es.js",
+      "bytes": 3092,
+      "sha256": "e123d8c1018643d203ccbd0f9391d203a73f583727c65687371005f33dfbc5ea"
+    },
+    {
+      "file": "metriccanvas-runtime.global.js",
+      "bytes": 1059,
+      "sha256": "15d96f5e3c90c53e03dde066815a254350d7ccd62d241eb48d955894229b1637"
+    }
+  ]
+}
