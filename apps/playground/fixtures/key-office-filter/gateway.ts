@@ -15,6 +15,7 @@ export function createKeyOfficeGateway(observe?:(kind:'query'|'candidates',reque
   return {
     async fetchFilterCandidates(request,{signal}){
       signal.throwIfAborted();observe?.('candidates',request);
+      if(request.dimension==='rep-office-name'&&request.filterId==='key-office')return {kind:'values',candidates:offices.filter(item=>item.key).map(item=>({value:item.office,label:item.office}))};
       const visible=offices.filter(item=>!request.constraints.booleans?.['key-office']||item.key);
       return {kind:'values',candidates:[
         ...['A','B'].map(value=>({value,label:`地区 ${value}`,level:'region-dept'})),
@@ -26,7 +27,7 @@ export function createKeyOfficeGateway(observe?:(kind:'query'|'candidates',reque
       const rows=offices.filter(item=>query.filterValues.every(predicate=>{
         if(predicate.target!=='dimension')return true;
         if(predicate.queryField==='demo_region')return predicate.values.includes(item.region);
-        if(predicate.queryField==='demo_office')return predicate.values.includes(item.office);
+        if(predicate.queryField==='demo_office'||predicate.queryField==='代表处')return predicate.values.includes(item.office);
         if(predicate.queryField==='demo_key_office')return predicate.values.includes(String(item.key));
         return true;
       })).map(item=>({office:item.office,amount:item.amount}));

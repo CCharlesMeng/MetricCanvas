@@ -6,7 +6,7 @@ MC 提供执行覆盖、逐页绑定和可复制的初始化桥接。集成应�
 
 ## 装载顺序
 
-复制 `packages/embed/examples/ioc-header-candidate-bridge.ts` 到集成应用。它是示例文件，不是 `MetricCanvas.prepareIocHeaderFilters` 公共方法。TypeScript 示例的类型依赖为 `@metriccanvas/page/internal` 和 `@metriccanvas/engine`，编译后没有运行时依赖。输入使用已合法的页面文档，桥接不替代 `mount` 的完整页面校验。
+复制 `packages/embed/examples/ioc-header-candidate-bridge.ts` 到集成应用。它是示例文件，不是 `MetricCanvas.prepareIocHeaderFilters` 公共方法。TypeScript 示例的类型依赖为 `@metriccanvas/page/internal` 和 `@metriccanvas/engine`；运行时从 `@metriccanvas/page/internal` 复用默认覆盖判定，集成应用构建时一起打包。输入使用已合法的页面文档，桥接不替代 `mount` 的完整页面校验。
 
 ```ts
 const controller = new AbortController();
@@ -20,7 +20,7 @@ const runtime = MetricCanvas.mount(element, {
 });
 ```
 
-桥接只为 IOC Header 中显式 `overridesFilters:["region"]` 的 boolean 拉取完整授权重点名单，克隆原文档，再为所有消费 Region 的查询叶子补：
+桥接为 IOC Header 中默认覆盖 Region 的标准 boolean（`key-office` / `key-national-only`），以及显式覆盖 Region 的其他 boolean 拉取完整授权重点名单，克隆原文档，再为所有消费 Region 的查询叶子补：
 
 ```json
 {"key-national-only":{"target":"boolean","queryField":"代表处","whenTrue":["上海代表处","深圳代表处"]}}
@@ -56,6 +56,6 @@ Region 的地区部/代表处候选 value 和 parent.value 采用中文名称，
 
 ## 本地验收入口
 
-`pnpm dev:playground` → `/pages/key-office-priority-demo?rep-office=南京代表处`。演示实际调用桥接和合成候选接口；勾选后显示跨地区的上海、深圳；取消后回到南京。目标页 `/pages/key-office-priority-target` 覆盖切页和刷新。页面 README 列出操作。旧 `key-office-filter-demo` 保留无覆盖关系的交集兼容验收。
+`pnpm dev:playground` → `/pages/key-office-priority-demo?rep-office=南京代表处`。演示实际调用桥接和合成候选接口；勾选后显示跨地区的上海、深圳；取消后回到南京。目标页 `/pages/key-office-priority-target` 覆盖切页和刷新。页面 README 列出操作。`key-office-filter-demo` 同步使用默认覆盖；无覆盖声明不再表示重点国代与 Region 取交集。
 
 这些证明本仓运行时、桥接、页面配置及合成数据行为；不证明 Operation Map 部署、真实 HeaderOptionService、DQE 字段支持或真实权限名单已验收。交付阶段基于最新 main 重跑验收；embed 分发与提交状态见同目录 verification.md。

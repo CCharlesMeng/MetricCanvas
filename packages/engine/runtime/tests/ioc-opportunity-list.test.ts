@@ -117,7 +117,7 @@ describe('ioc-opportunity-list 骨架', () => {
     });
     // 集成应用在装载前从完整授权名单补齐绑定，不把合成标记字段当生产承诺。
     expect(bindings['key-office']).toBeUndefined();
-    expect(page.filters?.find(filter=>filter.id==='key-office')).toMatchObject({overridesFilters:['region']});
+    expect(page.filters?.find(filter=>filter.id==='key-office')).not.toHaveProperty('overridesFilters');
     expect(bindings['bidding-amount']).toEqual({
       target: 'numberRange',
       metric: 'bidding_amount'

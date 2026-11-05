@@ -47,10 +47,7 @@
       {
         "id": "key-office",
         "type": "boolean",
-        "label": "仅看重点国代",
-        "overridesFilters": [
-          "region"
-        ]
+        "label": "仅看重点国代"
       },
       {
         "id": "mtime",
@@ -255,7 +252,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/filters/1/overridesFilters",
+      "path": "/filters/1",
       "message": "被覆盖筛选不能依赖覆盖它的布尔筛选，以保留原选择"
     }
   ]

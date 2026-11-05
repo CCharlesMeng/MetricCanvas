@@ -19861,8 +19861,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/7",
       "module": "conditions.md",
-      "file": "examples/key-office-filter-demo.json",
-      "pointer": "#/filters/1/enabledWhen"
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/8",
@@ -21188,5 +21188,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "8f34855a13d599032b2f34b0ffb2a067fae6635a81a4d8b2c10054b0db3f6859"
+  "semanticSourceDigest": "ec450ace73fabc53fd6df8e40a9e9d4cee62addb414369f4b700c664b9f4cbcc"
 }

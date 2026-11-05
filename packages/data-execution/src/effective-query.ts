@@ -7,7 +7,7 @@ import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssu
 import type { FilterValue, FilterValues } from './filter-values';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { preservedQueryError } from './query-error';
-import {overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
+import {filterOverrideTargets,overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { rawSnapshot } from './snapshots';
 
 export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
@@ -89,7 +89,7 @@ export function emptyBooleanMembership(bindings:Record<string,FilterBinding>,val
 
 function validateOverrideBindings(filters:readonly FilterDeclaration[],values:FilterValues,bindings:Record<string,FilterBinding>):void {
   for(const filter of filters){
-    if(filter.type!=='boolean'||!filter.overridesFilters?.some(id=>bindings[id]))continue;
+    if(filter.type!=='boolean'||!filterOverrideTargets(filter,filters).some(id=>bindings[id]))continue;
     const value=values.get(filter.id);
     if(value?.type==='boolean'&&value.value===true&&bindings[filter.id]?.target!=='boolean')throw Object.assign(new Error('覆盖筛选缺少替代查询条件'),{code:'DQE_CONFIG_ERROR'});
   }

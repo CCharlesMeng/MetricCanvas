@@ -7,7 +7,7 @@
   },
   "filters": [
     {
-      "id": "key",
+      "id": "key-office",
       "type": "boolean",
       "label": "仅看重点国代",
       "default": false
@@ -156,7 +156,7 @@
               "target": "dimension",
               "queryField": "demo_customer"
             },
-            "key": {
+            "key-office": {
               "target": "boolean",
               "queryField": "demo_key",
               "whenTrue": [
@@ -244,7 +244,7 @@
               "target": "dimension",
               "queryField": "demo_customer"
             },
-            "key": {
+            "key-office": {
               "target": "boolean",
               "queryField": "demo_key",
               "whenTrue": [
@@ -338,7 +338,7 @@
               "target": "dimension",
               "queryField": "demo_customer"
             },
-            "key": {
+            "key-office": {
               "target": "boolean",
               "queryField": "demo_key",
               "whenTrue": [
@@ -409,7 +409,7 @@
               "target": "dimension",
               "queryField": "demo_customer"
             },
-            "key": {
+            "key-office": {
               "target": "boolean",
               "queryField": "demo_key",
               "whenTrue": [
@@ -463,7 +463,7 @@
             },
             "back": true,
             "filterIds": [
-              "key",
+              "key-office",
               "period",
               "region",
               "customer-type"

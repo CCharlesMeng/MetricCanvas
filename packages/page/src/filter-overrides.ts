@@ -12,13 +12,22 @@ export function isUnrestrictedIocRegion(page:Page|undefined,filterId:string,valu
 
 type Values = ReadonlyMap<string, {type:string;value?:unknown}>;
 
+/** Standard key-office identifiers always override Region; explicit targets remain additive. */
+export function filterOverrideTargets(filter:FilterDeclaration,filters:readonly FilterDeclaration[]):readonly string[] {
+  if(filter.type!=='boolean')return [];
+  const explicit=filter.overridesFilters??[];
+  if(!['key-office','key-national-only'].includes(filter.id))return explicit;
+  if(!filters.some(item=>item.id==='region'&&item.type==='dimension'))return explicit;
+  return explicit.includes('region')?explicit:[...explicit,'region'];
+}
+
 /** Execution projection only: neither URL state nor stored selections are mutated. */
 export function overriddenFilterIds(filters:readonly FilterDeclaration[], values:Values):Set<string> {
   const ids=new Set<string>();
   for(const filter of filters){
     if(filter.type!=='boolean')continue;
     const value=values.get(filter.id);
-    if(value?.type==='boolean'&&value.value===true)for(const id of filter.overridesFilters??[])ids.add(id);
+    if(value?.type==='boolean'&&value.value===true)for(const id of filterOverrideTargets(filter,filters))ids.add(id);
   }
   return ids;
 }
@@ -37,8 +46,8 @@ function relatedFilterIds(filter:FilterDeclaration, filters:readonly FilterDecla
 function overrideReferenceErrors(page:Page,filter:Extract<FilterDeclaration,{type:'boolean'}>,index:number):TypedError[] {
   const errors:TypedError[]=[],filters=page.filters??[];
   const owner=(id:string)=>page.detailViews?.find(view=>view.filters?.includes(id))?.id;
-  const error=(message:string)=>errors.push({type:'SCHEMA_ERROR',path:`/filters/${index}/overridesFilters`,message});
-  const ids=filter.overridesFilters!;
+  const error=(message:string)=>errors.push({type:'SCHEMA_ERROR',path:`/filters/${index}${filter.overridesFilters?'/overridesFilters':''}`,message});
+  const ids=filterOverrideTargets(filter,filters);
   if(new Set(ids).size!==ids.length)error('覆盖筛选引用不能重复');
   for(const id of ids){
     const target=filters.find(item=>item.id===id);
@@ -53,7 +62,7 @@ function overrideReferenceErrors(page:Page,filter:Extract<FilterDeclaration,{typ
 export function filterOverrideErrors(page:Page):TypedError[] {
   const errors:TypedError[]=[];
   for(const [index,filter]of (page.filters??[]).entries()){
-    if(filter.type!=='boolean'||!filter.overridesFilters)continue;
+    if(filter.type!=='boolean'||!filterOverrideTargets(filter,page.filters??[]).length)continue;
     errors.push(...overrideReferenceErrors(page,filter,index));
   }
   return errors;

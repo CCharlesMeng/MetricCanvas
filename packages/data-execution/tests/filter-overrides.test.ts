@@ -27,10 +27,45 @@ function query(page:Page,input:FilterValues):EffectiveQuery {
   return composeEffectiveQuery({dataSource:page.dataSources.offices as QueryDataSource,filters:page.filters},input,0,[],{});
 }
 
-describe('explicit boolean override contract',()=>{
-  it('accepts the full page and rejects the capability before 6.84',()=>{
+describe('default key-office override and explicit boolean override contract',()=>{
+  it('uses no override declaration for the default, while explicit declarations retain their version floor',()=>{
+    expect(raw.filters[1]).not.toHaveProperty('overridesFilters');
     expect(parsePage(raw).ok).toBe(true);
-    expect(parsePage({...raw,schemaVersion:'6.80'}).ok).toBe(false);
+    expect(parsePage({...raw,schemaVersion:'6.80'}).ok).toBe(true);
+    const explicit=structuredClone(raw);explicit.filters[1].overridesFilters=['region'];
+    expect(parsePage(explicit).ok).toBe(true);
+    expect(parsePage({...explicit,schemaVersion:'6.80'}).ok).toBe(false);
+  });
+  it.each(['key-office','key-national-only'])('defaults %s to Region override regardless of its display label',id=>{
+    const document=JSON.parse(JSON.stringify(raw).replaceAll('key-office',id));document.filters[1].label='显示名称';
+    const page=load(document),input=values();input.delete('key-office');input.set(id,{type:'boolean',value:true});
+    expect(query(page,input).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
+    input.delete(id);expect(query(page,input).filterValues).toEqual([{target:'dimension',queryField:'代表处',values:['南京代表处']}]);
+  });
+  it('keeps ordinary booleans intersecting and explicit custom overrides readable',()=>{
+    const document=JSON.parse(JSON.stringify(raw).replaceAll('key-office','focus-only'));
+    const input=values();input.delete('key-office');input.set('focus-only',{type:'boolean',value:true});
+    expect(query(load(document),input).filterValues).toHaveLength(2);
+    document.filters[1].overridesFilters=['region'];
+    expect(query(load(document),input).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
+  });
+  it('does not require a Region declaration on a key-office-only page',()=>{
+    const document=structuredClone(raw);document.filters.shift();document.iocHeader.filterIds=document.iocHeader.filterIds.filter((id:string)=>id!=='region');
+    delete document.dataSources.offices.source.query.filterBindings.region;
+    document.sections[0].components.pop();
+    expect(query(load(document),values()).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
+  });
+  it('keeps the default Region override when explicit targets add another dimension',()=>{
+    const document=structuredClone(raw);document.filters[1].overridesFilters=['customer-category'];
+    const input=values();input.set('customer-category',{type:'dimension',dimension:'customer-level',values:['战略']});
+    expect(query(load(document),input).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
+  });
+  it('uses the same default in the IOC header business showcase',()=>{
+    const page=load(JSON.parse(readFileSync('pages/capabilities/ioc-header/business/ioc-header-demo.json','utf8')));
+    const source=Object.values(page.dataSources).find(source=>source.source.type==='query') as QueryDataSource;
+    const input=new Map<string,FilterValue>([['key-office',{type:'boolean',value:true}],['region',{type:'dimension',dimension:'demo_office',level:'office',values:['CN-SH']}]]);
+    const q=composeEffectiveQuery({dataSource:source,filters:page.filters},input,0,[],{});
+    expect(q.filterValues).toEqual([{target:'dimension',queryField:'demo_key',values:['1']}]);
   });
   it.each([
     {ids:['missing'],message:'覆盖筛选必须引用'},

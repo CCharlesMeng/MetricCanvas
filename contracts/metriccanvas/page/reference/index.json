@@ -428,7 +428,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "83b283d22f01115a9bbb5680a36b78cf8a0671b2b86392394d7979af5d8dc6e3"
+      "sha256": "b260fc4ca410f43db158b430d0db74eefa0e74a40291e2bf005d7e72cdaf5235"
     }
   ],
   "modules": {
@@ -20606,8 +20606,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/7",
       "module": "conditions.md",
-      "file": "examples/key-office-filter-demo.json",
-      "pointer": "#/filters/1/enabledWhen"
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/8",
