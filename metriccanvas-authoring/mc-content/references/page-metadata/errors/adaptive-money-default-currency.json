@@ -1,0 +1,30 @@
+{
+  "case": "adaptive-money-default-currency",
+  "invariant": "adaptive-money-trimmed",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "金额格式必须匹配静态货币",
+      "paths": [
+        "/dataSources/cases/fields/cny-a",
+        "/dataSources/cases/fields/cny-a"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "cases": {
+        "fields": {
+          "cny-a": {
+            "type": "money",
+            "role": "measure",
+            "currency": "USD",
+            "defaultFormat": "cny-adaptive-trimmed-no-yuan",
+            "nullable": true
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

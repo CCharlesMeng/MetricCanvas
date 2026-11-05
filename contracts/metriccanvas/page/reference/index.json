@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.87",
-  "schemaSha256": "56e8aa8ef6652c1e11cada0e88238dc0e24173bf09295543d90645cea15ec151",
+  "schemaVersion": "6.88",
+  "schemaSha256": "dff3b04041482094064d854102d31d6ab0c66a41b486dce3b82b546df2c71388",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -124,7 +124,7 @@
     },
     {
       "file": "packages/page/src/amount-validation.ts",
-      "sha256": "e7a49a6f3e3f9ff5dd4addc3adadd41f7c32e21ed320b6b67ccd02607c73876f"
+      "sha256": "b1f63e4bab9950e66d6ddb0132d09b29ccb873a3d46a9fbcdb267cd207245323"
     },
     {
       "file": "packages/page/src/chart-option.ts",
@@ -148,7 +148,7 @@
     },
     {
       "file": "packages/page/src/field-selection.ts",
-      "sha256": "5f7d954ec04dd0836512ba66e5b1529a0525458096c970aaa453dc9989b480e0"
+      "sha256": "5175b9628f0919f92d3fa1d9c88248ac15658e082dc59a83f682dfe8f74ee6f2"
     },
     {
       "file": "packages/page/src/filter-dependencies.ts",
@@ -416,7 +416,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "5feacd85b4fe4f76bd76b7d793bf8886731ff8d6ecba74e22d52220939f03475"
+      "sha256": "a827298549ed19f569c46071d90f2d71320e6faf8ec5ad1866efad40561303c7"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -428,7 +428,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "b260fc4ca410f43db158b430d0db74eefa0e74a40291e2bf005d7e72cdaf5235"
+      "sha256": "ffc3f2b7a9c3f6a8a711b797172ac81e5bf3d61108adcf4b4d1fcebb662a7b64"
     }
   ],
   "modules": {
@@ -900,7 +900,8 @@
         "chart-constant-values-page",
         "chart-constant-branches",
         "period-comparison-demo",
-        "authoring-percent-coverage"
+        "authoring-percent-coverage",
+        "operation-money-formats"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -921,7 +922,8 @@
         "presentation-capability",
         "signed-number-format-capability",
         "signed-number-family-capability",
-        "currency-selection"
+        "currency-selection",
+        "adaptive-money-trimmed"
       ]
     },
     "actions-and-navigation.md": {
@@ -1948,7 +1950,8 @@
         "6.84",
         "6.85",
         "6.86",
-        "6.87"
+        "6.87",
+        "6.88"
       ]
     },
     {
@@ -2030,6 +2033,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -2083,6 +2089,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -3136,6 +3145,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -3224,6 +3236,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -4302,6 +4317,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -4396,6 +4414,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -4645,6 +4666,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -4759,6 +4783,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -4846,6 +4873,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -10881,6 +10911,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -12247,6 +12280,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -12645,6 +12681,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -13029,6 +13068,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -13198,6 +13240,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -15776,6 +15821,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -15959,6 +16007,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -16424,6 +16475,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -18004,6 +18058,9 @@
         "compact-yi-1",
         "cny-adaptive",
         "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
         "percent-0",
         "percent-1",
         "percent-2",

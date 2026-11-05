@@ -83,7 +83,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 表头 select 叶子列的 initialParam 引用 params.query.dimensions 字符串维度参数，作为实例初值，与 defaultValues 互斥；不要求固定 paramBindings，不得重复永久控制目标。参数保存值提供缺省，URL 重复键提供多值；缺席可选参数不限，非法值拒绝。初值只在新实例消费，TableSession 拥有之后的已提交选择，清空、分页、刷新、Tab、恢复空视图与导出不补回 URL。allBehavior 的全选规则、静态 main 范围和查询限制见[Table 正文](components/table.md#table-header-params)。
 
 
-页面协议 6.87。结构真源为本册[schema.json](schema.json)，SHA256 `56e8aa8ef6652c1e11cada0e88238dc0e24173bf09295543d90645cea15ec151`。字段表自动生成；可选不等于有默认值。
+页面协议 6.88。结构真源为本册[schema.json](schema.json)，SHA256 `dff3b04041482094064d854102d31d6ab0c66a41b486dce3b82b546df2c71388`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -145,7 +145,7 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -166,6 +166,9 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
 | "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
+| "cny-adaptive-trimmed" | 6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。 |
+| "cny-adaptive-trimmed-no-yuan" | 6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。 |
+| "usd-adaptive-km" | 6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -214,7 +217,7 @@ Schema位置：`#/definitions/filterTextValueReference/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -235,6 +238,9 @@ Schema位置：`#/definitions/filterTextValueReference/properties/format`。
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
 | "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
+| "cny-adaptive-trimmed" | 6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。 |
+| "cny-adaptive-trimmed-no-yuan" | 6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。 |
+| "usd-adaptive-km" | 6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |

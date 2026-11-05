@@ -42,6 +42,9 @@ export const valueFormatPresets = [
   'compact-yi-1',
   'cny-adaptive',
   'usd-adaptive',
+  'cny-adaptive-trimmed',
+  'cny-adaptive-trimmed-no-yuan',
+  'usd-adaptive-km',
   'percent-0',
   'percent-1',
   'percent-2',
@@ -54,6 +57,23 @@ export const valueFormatPresets = [
 ] as const;
 
 export type ValueFormatPreset = (typeof valueFormatPresets)[number];
+
+/** 金额格式的静态货币语义；展示、选择投影与校验共用。 */
+export function moneyFormatCurrency(format: ValueFormatPreset | undefined): 'CNY' | 'USD' | undefined {
+  switch (format) {
+    case 'cny-adaptive':
+    case 'cny-adaptive-trimmed':
+    case 'cny-adaptive-trimmed-no-yuan': return 'CNY';
+    case 'usd-adaptive':
+    case 'usd-adaptive-km': return 'USD';
+    default: return undefined;
+  }
+}
+
+export function moneyFormatMatchesCurrency(format: ValueFormatPreset | undefined, currency: 'CNY' | 'USD'): boolean {
+  const expected = moneyFormatCurrency(format);
+  return expected === undefined || expected === currency;
+}
 
 export function isValueFormatPreset(value: unknown): value is ValueFormatPreset {
   return (

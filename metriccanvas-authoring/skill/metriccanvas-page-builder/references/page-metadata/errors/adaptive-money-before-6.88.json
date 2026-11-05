@@ -1,0 +1,107 @@
+{
+  "case": "adaptive-money-before-6.88",
+  "invariant": "adaptive-money-trimmed",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "金额去尾零、人民币双呈现与美元K/M自适应 由 6.88 引入，文档声明的是 6.87",
+      "paths": [
+        "/dataSources/cases/fields/cny-a/defaultFormat",
+        "/dataSources/cases/fields/cny-b/defaultFormat",
+        "/dataSources/cases/fields/usd/defaultFormat",
+        "/sections/0/components/1/props/rows/0/valueField/byFilter/cases/RMB/format",
+        "/sections/0/components/1/props/rows/0/valueField/byFilter/cases/USD/format",
+        "/sections/0/components/2/props/series/0/field/byFilter/cases/RMB/format",
+        "/sections/0/components/2/props/series/0/field/byFilter/cases/USD/format",
+        "/sections/0/components/3/props/columns/1/field/byFilter/cases/RMB/format",
+        "/sections/0/components/3/props/columns/1/field/byFilter/cases/USD/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "cases": {
+        "fields": {
+          "cny-a": {
+            "defaultFormat": "cny-adaptive-trimmed-no-yuan"
+          },
+          "cny-b": {
+            "defaultFormat": "cny-adaptive-trimmed"
+          },
+          "usd": {
+            "defaultFormat": "usd-adaptive-km"
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "rows": [
+                {
+                  "valueField": {
+                    "byFilter": {
+                      "cases": {
+                        "RMB": {
+                          "format": "cny-adaptive-trimmed"
+                        },
+                        "USD": {
+                          "format": "usd-adaptive-km"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "series": [
+                {
+                  "field": {
+                    "byFilter": {
+                      "cases": {
+                        "RMB": {
+                          "format": "cny-adaptive-trimmed"
+                        },
+                        "USD": {
+                          "format": "usd-adaptive-km"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "field": {
+                    "byFilter": {
+                      "cases": {
+                        "RMB": {
+                          "format": "cny-adaptive-trimmed"
+                        },
+                        "USD": {
+                          "format": "usd-adaptive-km"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/adaptive-money-before-6.88.json"
+}

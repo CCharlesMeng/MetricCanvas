@@ -808,6 +808,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/operation-money-formats.json",
+      "target": "product-contracts/page/conformance/valid/operation-money-formats.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/yoy-p-format-demo.json",
       "target": "product-contracts/page/conformance/valid/yoy-p-format-demo.json",
       "scope": "exact product contract"
@@ -1885,6 +1890,26 @@
     {
       "source": "product:page/conformance/invalid/time-window-static-options.json",
       "target": "product-contracts/page/conformance/invalid/time-window-static-options.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/adaptive-money-before-6.88.json",
+      "target": "product-contracts/page/conformance/invalid/adaptive-money-before-6.88.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/adaptive-money-default-currency.json",
+      "target": "product-contracts/page/conformance/invalid/adaptive-money-default-currency.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/adaptive-money-binding-currency.json",
+      "target": "product-contracts/page/conformance/invalid/adaptive-money-binding-currency.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/adaptive-money-nondefault-currency.json",
+      "target": "product-contracts/page/conformance/invalid/adaptive-money-nondefault-currency.json",
       "scope": "exact product contract"
     },
     {
@@ -4593,6 +4618,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/adaptive-money-before-6.88.json",
+      "target": "references/page-metadata/errors/adaptive-money-before-6.88.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/adaptive-money-default-currency.json",
+      "target": "references/page-metadata/errors/adaptive-money-default-currency.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/adaptive-money-binding-currency.json",
+      "target": "references/page-metadata/errors/adaptive-money-binding-currency.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/adaptive-money-nondefault-currency.json",
+      "target": "references/page-metadata/errors/adaptive-money-nondefault-currency.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/currency-before-6.38.json",
       "target": "references/page-metadata/errors/currency-before-6.38.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6853,6 +6898,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/operation-money-formats.json",
+      "target": "references/page-metadata/examples/operation-money-formats.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/field-bindings-and-formats.md",
       "target": "references/page-metadata/field-bindings-and-formats.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7534,10 +7584,10 @@
     }
   ],
   "counts": {
-    "product": 1474,
+    "product": 1484,
     "authoring": 32,
     "modules": 36,
-    "topics": 253,
+    "topics": 254,
     "nodes": 2524,
     "tools": 9,
     "components": 20

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.88：新增 `cny-adaptive-trimmed`、`cny-adaptive-trimmed-no-yuan`、`usd-adaptive-km`，按原始绝对值选档、对称四舍五入、去尾零并加千分位。旧金额格式语义保持。声明与规则见[金额自适应](docs/page-metadata/field-bindings-and-formats.md#金额去尾零与美元km688)，合成验收入口 `/pages/operation-money-formats`。
+
 6.87 新增同比格式 `yoy-p-signed`：先四舍五入保留两位小数，再乘100显示整数并追加P；符号与按正负着色遵循舍入结果。声明与合成示例见[同比格式](docs/page-metadata/field-bindings-and-formats.md#同比格式687)。
 
 6.85：select 表头可用 `initialParam` 引用页面维度参数作为一次性初值；`allBehavior` 显式区分枚举全选的值集合与不限。用户清空后不补回初值，首请求、恢复及导出共用会话视图。见[表头参数初值](docs/page-metadata/components/table.md#table-header-params)。
@@ -48,7 +50,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.75**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.88**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 

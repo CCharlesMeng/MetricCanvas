@@ -1,0 +1,489 @@
+{
+  "case": "adaptive-money-nondefault-currency",
+  "invariant": "adaptive-money-trimmed",
+  "input": {
+    "schemaVersion": "6.88",
+    "id": "operation-money-formats",
+    "layout": "dashboard",
+    "meta": {
+      "title": "金额单位与舍入",
+      "description": "全部为内联合成数据；人民币和美元字段独立，不执行换汇。"
+    },
+    "filters": [
+      {
+        "id": "currency",
+        "type": "dimension",
+        "dimension": "currency_code",
+        "label": "币种",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "options": [
+          {
+            "value": "RMB",
+            "label": "人民币"
+          },
+          {
+            "value": "USD",
+            "label": "美元"
+          }
+        ],
+        "default": [
+          "RMB"
+        ]
+      }
+    ],
+    "dataSources": {
+      "cases": {
+        "fields": {
+          "case": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "raw": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "cny-a": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "defaultFormat": "cny-adaptive-trimmed-no-yuan",
+            "nullable": true
+          },
+          "cny-b": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "defaultFormat": "cny-adaptive-trimmed",
+            "nullable": true
+          },
+          "usd": {
+            "type": "money",
+            "role": "measure",
+            "currency": "USD",
+            "defaultFormat": "usd-adaptive-km",
+            "nullable": true
+          },
+          "legacy-cny": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "defaultFormat": "cny-adaptive",
+            "nullable": true
+          },
+          "legacy-usd": {
+            "type": "money",
+            "role": "measure",
+            "currency": "USD",
+            "defaultFormat": "usd-adaptive",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "case": "999",
+              "raw": 999,
+              "cny-a": 999,
+              "cny-b": 999,
+              "usd": 999,
+              "legacy-cny": 999,
+              "legacy-usd": 999
+            },
+            {
+              "case": "9999.6",
+              "raw": 9999.6,
+              "cny-a": 9999.6,
+              "cny-b": 9999.6,
+              "usd": 9999.6,
+              "legacy-cny": 9999.6,
+              "legacy-usd": 9999.6
+            },
+            {
+              "case": "10000",
+              "raw": 10000,
+              "cny-a": 10000,
+              "cny-b": 10000,
+              "usd": 10000,
+              "legacy-cny": 10000,
+              "legacy-usd": 10000
+            },
+            {
+              "case": "12345",
+              "raw": 12345,
+              "cny-a": 12345,
+              "cny-b": 12345,
+              "usd": 12345,
+              "legacy-cny": 12345,
+              "legacy-usd": 12345
+            },
+            {
+              "case": "50000",
+              "raw": 50000,
+              "cny-a": 50000,
+              "cny-b": 50000,
+              "usd": 50000,
+              "legacy-cny": 50000,
+              "legacy-usd": 50000
+            },
+            {
+              "case": "99999",
+              "raw": 99999,
+              "cny-a": 99999,
+              "cny-b": 99999,
+              "usd": 99999,
+              "legacy-cny": 99999,
+              "legacy-usd": 99999
+            },
+            {
+              "case": "100000",
+              "raw": 100000,
+              "cny-a": 100000,
+              "cny-b": 100000,
+              "usd": 100000,
+              "legacy-cny": 100000,
+              "legacy-usd": 100000
+            },
+            {
+              "case": "105000",
+              "raw": 105000,
+              "cny-a": 105000,
+              "cny-b": 105000,
+              "usd": 105000,
+              "legacy-cny": 105000,
+              "legacy-usd": 105000
+            },
+            {
+              "case": "1500000",
+              "raw": 1500000,
+              "cny-a": 1500000,
+              "cny-b": 1500000,
+              "usd": 1500000,
+              "legacy-cny": 1500000,
+              "legacy-usd": 1500000
+            },
+            {
+              "case": "99999999",
+              "raw": 99999999,
+              "cny-a": 99999999,
+              "cny-b": 99999999,
+              "usd": 99999999,
+              "legacy-cny": 99999999,
+              "legacy-usd": 99999999
+            },
+            {
+              "case": "100000000",
+              "raw": 100000000,
+              "cny-a": 100000000,
+              "cny-b": 100000000,
+              "usd": 100000000,
+              "legacy-cny": 100000000,
+              "legacy-usd": 100000000
+            },
+            {
+              "case": "250000000",
+              "raw": 250000000,
+              "cny-a": 250000000,
+              "cny-b": 250000000,
+              "usd": 250000000,
+              "legacy-cny": 250000000,
+              "legacy-usd": 250000000
+            },
+            {
+              "case": "1000000000",
+              "raw": 1000000000,
+              "cny-a": 1000000000,
+              "cny-b": 1000000000,
+              "usd": 1000000000,
+              "legacy-cny": 1000000000,
+              "legacy-usd": 1000000000
+            },
+            {
+              "case": "-105000",
+              "raw": -105000,
+              "cny-a": -105000,
+              "cny-b": -105000,
+              "usd": -105000,
+              "legacy-cny": -105000,
+              "legacy-usd": -105000
+            },
+            {
+              "case": "-1005500",
+              "raw": -1005500,
+              "cny-a": -1005500,
+              "cny-b": -1005500,
+              "usd": -1005500,
+              "legacy-cny": -1005500,
+              "legacy-usd": -1005500
+            },
+            {
+              "case": "-15000000",
+              "raw": -15000000,
+              "cny-a": -15000000,
+              "cny-b": -15000000,
+              "usd": -15000000,
+              "legacy-cny": -15000000,
+              "legacy-usd": -15000000
+            },
+            {
+              "case": "-0.4",
+              "raw": -0.4,
+              "cny-a": -0.4,
+              "cny-b": -0.4,
+              "usd": -0.4,
+              "legacy-cny": -0.4,
+              "legacy-usd": -0.4
+            },
+            {
+              "case": "0",
+              "raw": 0,
+              "cny-a": 0,
+              "cny-b": 0,
+              "usd": 0,
+              "legacy-cny": 0,
+              "legacy-usd": 0
+            },
+            {
+              "case": "缺失",
+              "raw": null,
+              "cny-a": null,
+              "cny-b": null,
+              "usd": null,
+              "legacy-cny": null,
+              "legacy-usd": null
+            }
+          ]
+        }
+      },
+      "summary": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "cny": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "label": "金额",
+            "unit": "元"
+          },
+          "usd": {
+            "type": "money",
+            "role": "measure",
+            "currency": "USD",
+            "label": "金额",
+            "unit": "美元"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "category": "示例金额",
+              "cny": 250000000,
+              "usd": 250000000
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "body",
+        "components": [
+          {
+            "id": "header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "金额单位与舍入",
+                "description": {
+                  "text": "合成数据 · 人民币 A/B、美元 K/M 与旧格式对照；不换汇"
+                }
+              },
+              "filterIds": [
+                "currency"
+              ]
+            }
+          },
+          {
+            "id": "selected-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "summary"
+            },
+            "props": {
+              "title": "所选币种金额",
+              "rows": [
+                {
+                  "label": "示例金额",
+                  "valueField": {
+                    "byFilter": {
+                      "filterId": "currency",
+                      "cases": {
+                        "RMB": {
+                          "data": "main",
+                          "field": "cny",
+                          "format": "cny-adaptive-trimmed"
+                        },
+                        "USD": {
+                          "data": "main",
+                          "field": "usd",
+                          "format": "cny-adaptive-trimmed"
+                        }
+                      }
+                    }
+                  },
+                  "unit": "元"
+                }
+              ]
+            }
+          },
+          {
+            "id": "selected-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "summary"
+            },
+            "props": {
+              "title": "所选币种图表",
+              "categoryField": "category",
+              "series": [
+                {
+                  "field": {
+                    "byFilter": {
+                      "filterId": "currency",
+                      "cases": {
+                        "RMB": {
+                          "data": "main",
+                          "field": "cny",
+                          "format": "cny-adaptive-trimmed"
+                        },
+                        "USD": {
+                          "data": "main",
+                          "field": "usd",
+                          "format": "usd-adaptive-km"
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "selected-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "summary"
+            },
+            "props": {
+              "title": "币种选择与原始金额导出",
+              "rowKey": "category",
+              "columns": [
+                {
+                  "field": "category",
+                  "title": "场景"
+                },
+                {
+                  "field": {
+                    "byFilter": {
+                      "filterId": "currency",
+                      "cases": {
+                        "RMB": {
+                          "data": "main",
+                          "field": "cny",
+                          "format": "cny-adaptive-trimmed"
+                        },
+                        "USD": {
+                          "data": "main",
+                          "field": "usd",
+                          "format": "usd-adaptive-km"
+                        }
+                      }
+                    }
+                  },
+                  "title": "金额"
+                }
+              ],
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "金额格式验收"
+                }
+              }
+            }
+          },
+          {
+            "id": "format-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "cases"
+            },
+            "props": {
+              "title": "分档边界与兼容对照",
+              "rowKey": "case",
+              "columns": [
+                {
+                  "field": "case",
+                  "title": "输入"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "cny-a"
+                  },
+                  "title": "人民币 A"
+                },
+                {
+                  "field": "cny-b",
+                  "title": "人民币 B"
+                },
+                {
+                  "field": "usd",
+                  "title": "美元 K/M"
+                },
+                {
+                  "field": "legacy-cny",
+                  "title": "旧人民币"
+                },
+                {
+                  "field": "legacy-usd",
+                  "title": "旧美元"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props",
+      "message": "金额格式与静态货币不匹配"
+    }
+  ]
+}

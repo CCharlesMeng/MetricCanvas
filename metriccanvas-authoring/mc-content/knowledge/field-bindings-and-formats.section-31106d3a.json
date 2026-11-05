@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.87",
+  "schemaVersion": "6.88",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-31106d3a"
@@ -13,6 +13,19 @@
         "## 带符号普通数值（6.17起）\n\n全部 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则：\n\n| 原格式 | 带符号格式 | 版本下限 | 正数示例 | 零值示例 |\n|---|---|---|---|---|\n| `number` | `number-signed` | 6.17 | `+1.234` | `0` |\n| `number-1` | `number-1-signed` | 6.17 | `+1.2` | `0.0` |\n| `number-2` | `number-2-signed` | 6.18 | `+1.23` | `0.00` |\n| `number-grouped` | `number-grouped-signed` | 6.18 | `+1,234.568` | `0` |\n\n`number-2-signed` 的 `±0.004` 均显示 `0.00`，`±0.005` 分别显示 `+0.01`、`-0.01`。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略，`±0.0004` 均显示 `0`，`±0.0005` 分别显示 `+0.001`、`-0.001`。所有带符号普通数值格式共用零值的符号、正负颜色及变化箭头规则。\n\n`number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0.0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。\n\n```json\n{ \"data\": \"main\", \"field\": \"avg-decision-time-change\", \"format\": \"number-1-signed\" }\n```\n\n表格数字列与指标卡变化项采用以上格式时，`colorRule.mode: \"sign\"` 的颜色及变化箭头与展示精度一致：舍入后零为普通文字且无箭头；显示非零才按正负映射颜色和方向。字段 `defaultFormat` 继承后遵循相同规则，显式绑定 `format` 仍优先。`fixed` 颜色继续按声明包含有效零。既有格式（包括 `percent-2-signed`）继续按原始值判断方向。仅影响展示，不修改查询、原始数据、计算或排序；6.16 可读但不能声明这些新格式。"
       ],
       "rules": [
+        {
+          "id": "adaptive-money-trimmed",
+          "description": "6.88 新金额格式与静态货币匹配，旧格式保持",
+          "valid": [
+            "operation-money-formats"
+          ],
+          "invalid": [
+            "adaptive-money-before-6.88",
+            "adaptive-money-default-currency",
+            "adaptive-money-binding-currency",
+            "adaptive-money-nondefault-currency"
+          ]
+        },
         {
           "id": "currency-selection",
           "description": "6.38金额范围和静态货币字段选择",
@@ -171,7 +184,8 @@
         "references/page-metadata/examples/chart-constant-values-page.json",
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
-        "references/page-metadata/examples/authoring-percent-coverage.json"
+        "references/page-metadata/examples/authoring-percent-coverage.json",
+        "references/page-metadata/examples/operation-money-formats.json"
       ]
     }
   ],

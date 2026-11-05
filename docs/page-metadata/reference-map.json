@@ -468,7 +468,8 @@
         "chart-constant-values-page",
         "chart-constant-branches",
         "period-comparison-demo",
-        "authoring-percent-coverage"
+        "authoring-percent-coverage",
+        "operation-money-formats"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -489,7 +490,8 @@
         "presentation-capability",
         "signed-number-format-capability",
         "signed-number-family-capability",
-        "currency-selection"
+        "currency-selection",
+        "adaptive-money-trimmed"
       ]
     },
     "actions-and-navigation.md": {
@@ -2166,7 +2168,11 @@
     "6.87": "新增同比yoy-p-signed：先保留两位再乘100，按展示值统一符号、颜色与箭头。",
     "#/properties/schemaVersion=\"6.85\"": "表头字符串维度参数初值与显式全选不限。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior=\"unrestricted\"": "选中完整显式枚举集时省略该列条件，回显不限，可包含原有 null 和未知值。",
-    "#/properties/schemaVersion=\"6.86\"": "季度查询使用 quarter 与 YYYY-Qn 起止编码。"
+    "#/properties/schemaVersion=\"6.86\"": "季度查询使用 quarter 与 YYYY-Qn 起止编码。",
+    "cny-adaptive-trimmed": "6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。",
+    "cny-adaptive-trimmed-no-yuan": "6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。",
+    "usd-adaptive-km": "6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。",
+    "#/properties/schemaVersion=\"6.88\"": "新增人民币双呈现与美元 K/M 金额格式，旧格式语义不变。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2406,7 +2412,8 @@
       "headings": [
         "柱线图数值格式一致性",
         "百分比创作与覆盖边界",
-        "同比格式（6.87）"
+        "同比格式（6.87）",
+        "金额去尾零与美元KM（6.88）"
       ],
       "dependencies": []
     },
@@ -2987,7 +2994,8 @@
       "图表配置项常量取值（6.59）",
       "百分点差值（6.77）",
       "柱线图数值格式一致性",
-      "同比格式（6.87）"
+      "同比格式（6.87）",
+      "金额去尾零与美元KM（6.88）"
     ],
     "actions-and-navigation.md": [
       "查阅方式",
