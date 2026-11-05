@@ -97,8 +97,12 @@ test('query detail cancellation, late responses, local sorting and focus restora
   await page.keyboard.press('Escape');
   await expect(b).toBeFocused();
   await a.click();
-  // A global filter transition closes the overlay, including a pending request.
-  await host.locator('input[type="search"]').fill('客户02', { force: true });
+  // Background controls are inert during a modal; an application-driven filter
+  // transition must still close it and cancel the pending request.
+  await host.locator('input[type="search"]').evaluate(element => {
+    (element as HTMLInputElement).value = '客户02';
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+  });
   await expect(dialog).toHaveCount(0);
   expect(await page.evaluate(() => window.detailRequests[2].signal?.aborted)).toBe(true);
   await page.evaluate(() => window.detailRequests[2].resolve({ rows: [{ period: 'late', value: 123 }] }));

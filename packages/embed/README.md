@@ -305,3 +305,9 @@ Tab混合内容的活动项使用 `tab.<组件id>` 查询参数。`navigation.re
 ## IOC Header RegionFilter
 
 Schema 6.91 支持页头 `props.components` 组合控件。显式 `regionFilter` 自带标准组织层级，集成应用在原 dataGateway 上调用一次 `withOperationMapRegion(base, adapter)`，所有页面复用；业务查询仍使用原 `filterBindings.region`。接线示例、候选值约定与取消/失败边界见[Operation Map Region 接入](../../docs/host-contract.md#operation-map-region-接入)。
+
+## 详情弹层与集成应用侧栏
+
+详情弹窗和抽屉通过原生 `dialog.showModal()` 进入浏览器顶层，遮罩覆盖同一文档的整个窗口及集成应用侧栏，打开期间背景不可交互。页面仍可 mount 到小 div，弹层保留在原 ShadowRoot 内；无需新增挂载参数。关闭按钮、Esc、点击遮罩及首尾焦点循环可用，页面更新与 destroy 会清理弹层。iframe 内只能覆盖当前 iframe 文档。
+
+运行 `pnpm build`、`MC_EMBED_EXAMPLE_PORT=4186 pnpm preview:examples`，打开 [带侧栏的小 div 挂载示例](http://127.0.0.1:4186/examples/detail-overlay.html)。它使用 `pages/capabilities/table/table-detail-overlay.json` 的内联合成数据，覆盖高层级侧栏、transform 和 overflow 裁剪，不依赖 DQE。

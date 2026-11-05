@@ -511,7 +511,7 @@ DQE 数据网关单次 HTTP 请求默认超时为120秒，可信接入配置可�
 ### 6.12 查询结果与页内交互增量
 
 - `sectionGroups` / `defaultSectionGroup` / `sectionGroupParam` / `sectionAnchors`：既有内容分区的有限切换和页内定位。
-- `detailViews`：snapshot 复用快照，query 以必需显式绑定隔离取数；`openDetail.view` 与旧 `fields` 互斥。表格列可声明互斥的独立 `openDetail` / `navigate`。 含表格的详情视图自动使用宽版弹窗／抽屉：容器宽度的90%，最大1440px，窄屏保留32px宽度余量；加载、空结果和错误时保持一致。规则见[详情表格浮层宽度](docs/page-metadata/components/table.md#详情表格的浮层宽度)，无需新增元数据字段。
+- `detailViews`：snapshot 复用快照，query 以必需显式绑定隔离取数；`openDetail.view` 与旧 `fields` 互斥。表格列可声明互斥的独立 `openDetail` / `navigate`。 含表格的详情视图自动使用宽版弹窗／抽屉：当前文档窗口宽度的90%，最大1440px，窄屏保留32px宽度余量；加载、空结果和错误时保持一致。详情使用浏览器顶层模态弹层，遮罩覆盖同一文档内的集成应用侧栏，背景不可交互；保持 Shadow DOM 样式隔离，无需调整 mount 参数。规则见[详情表格浮层宽度](docs/page-metadata/components/table.md#详情表格的浮层宽度)，无需新增元数据字段。
 - `timeFill` / `selectField`：明确日/月范围补齐和有限模式字段选择。
 - 柱图 series 的 `kind` / `axis`：柱线混合、轴单位校验。
 - 字段绑定 `missingText`：消费者缺失文案，数值类型与刻度不变。

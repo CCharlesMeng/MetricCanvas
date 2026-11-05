@@ -16,7 +16,7 @@ try {
   for(const [name,surface] of [['8','modal'],['3','drawer'],['0','empty'],['861,000','fields'],['订单详情 8','metric']]) {
    await runtime.getByRole('button',{name,exact:true}).click();
    const dialog=runtime.getByRole('dialog');await expect(dialog).toBeVisible();
-   const box=await dialog.boundingBox();const host=await runtime.locator('.detail-backdrop').boundingBox();
+   const box=await dialog.boundingBox();const host={width:viewport,height:1000};
    const target=surface==='fields'?Math.min(560,host.width-48):Math.min(1440,host.width*.9,host.width-32);
    expect(box.width).toBeCloseTo(target,0);
    const overflow=await dialog.evaluate(el=>el.scrollWidth-el.clientWidth);expect(overflow).toBeLessThanOrEqual(1);

@@ -311,7 +311,8 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 
 - 页面：`table-detail-overlay.json`，入口 `http://localhost:5173/pages/table-detail-overlay`。显式 Dashboard，内联合成数据，无需 DQE；使用 `pnpm dev:playground` 启动。
 - 点击订单数8打开宽版弹窗，待交付3打开同宽右侧抽屉，异常订单0打开同宽空结果；订单总额打开普通字段详情。点击下方“订单详情”指标卡也打开同一个宽版订单表格。
-- 容器1440px时宽1296px，1920px时宽1440px；390px时宽351px，极窄容器始终保留32px宽度余量。弹窗居中、抽屉贴右；表格在内部横向滚动，页面不溢出。普通字段弹窗沿用560px上限。
+- 窗口1440px时宽1296px，1920px时宽1440px；390px时宽351px，极窄窗口始终保留32px宽度余量。弹窗居中、抽屉贴右；表格在内部横向滚动，页面不溢出。普通字段弹窗沿用560px上限。
+- 公开 mount 集成：先执行 `pnpm --filter @metriccanvas/embed build`，再执行 `MC_EMBED_EXAMPLE_PORT=4186 pnpm --filter @metriccanvas/embed preview:examples`，访问 `http://127.0.0.1:4186/examples/detail-overlay.html`。该示例复用本页 JSON，在有高层级侧栏、transform 与 overflow 裁剪的集成应用中挂载到小 div；遮罩应覆盖整个窗口和侧栏，点击侧栏位置只关闭弹层且不触发侧栏按钮，关闭后按钮可操作。无 iframe；ShadowRoot 样式仍隔离。
 - 搜索、排序、翻页、导出、Esc关闭及焦点恢复沿用原有能力。查询详情的加载、错误、取消及迟到响应由浏览器行为测试覆盖；合成页面不证明真实DQE/Relay。
 
 ## 表格缺省值不响应点击

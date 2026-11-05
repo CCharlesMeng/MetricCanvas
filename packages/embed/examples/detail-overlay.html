@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>表格详情 · mount 集成验证</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 15px/1.6 system-ui, sans-serif; color: #172033; background: #edf1f7; }
+      aside { position: fixed; inset: 0 auto 0 0; width: 220px; padding: 28px 20px; background: #16243e; color: #fff; z-index: 99999; }
+      aside h1 { font-size: 20px; margin: 0 0 28px; }
+      button { font: inherit; cursor: pointer; }
+      aside button { width: 100%; padding: 10px; color: #fff; background: #304b76; border: 0; border-radius: 8px; }
+      main { margin-left: 220px; padding: 32px; }
+      main h2 { margin-top: 0; }
+      .mount-frame { max-width: 860px; height: 600px; overflow: hidden; transform: translateZ(0); border: 2px solid #99aac2; border-radius: 12px; background: #fff; }
+      #dashboard { height: 100%; overflow: auto; }
+      .note { color: #53627a; max-width: 860px; }
+      #status { margin-top: 24px; color: #b9c9e3; }
+      @media (max-width: 640px) { aside { width: 120px; padding: 20px 10px; } main { margin-left: 120px; padding: 16px; } }
+    </style>
+  </head>
+  <body>
+    <aside>
+      <h1>集成应用侧边栏</h1>
+      <button id="sidebar-action" type="button">侧栏操作</button>
+      <p id="status" aria-live="polite">侧栏点击：0</p>
+    </aside>
+    <main>
+      <h2>小 div 中挂载表格页面</h2>
+      <p class="note">点击表格中的 8 打开弹窗、3 打开抽屉、0 打开空结果。遮罩应覆盖左侧栏；点击左侧遮罩应关闭详情，不触发侧栏操作。</p>
+      <div class="mount-frame"><div id="dashboard"></div></div>
+      <p class="note">本地合成数据，无需 DQE。页面通过公开 MetricCanvas.mount() 接入，内部使用 ShadowRoot；外层带 overflow 裁剪、transform 和高层级侧栏。</p>
+    </main>
+    <script src="../dist/metriccanvas-runtime.global.js"></script>
+    <script type="module">
+      let sidebarClicks = 0;
+      document.querySelector('#sidebar-action').addEventListener('click', () => {
+        document.querySelector('#status').textContent = `侧栏点击：${++sidebarClicks}`;
+      });
+      await MetricCanvas.ready;
+      window.pageDocument = await fetch('/pages/table-detail-overlay.json').then(response => response.json());
+      window.runtime = MetricCanvas.mount('#dashboard', { document: window.pageDocument, initialSearch: '' });
+    </script>
+  </body>
+</html>

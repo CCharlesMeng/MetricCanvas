@@ -238,7 +238,7 @@
 
   let tableController: ReturnType<typeof createTableController> | undefined;
   let tableRevision = $state(0);
-  onDestroy(() => { reportExportGeneration++; exportController.reset(); tableController?.dispose(); });
+  onDestroy(() => { reportExportGeneration++; exportController.reset(); tableController?.dispose(); closeDetail(false); });
   async function prepareReport<T>(consume:(view:{target:HTMLElement;signal:AbortSignal})=>Promise<T>,scale=2):Promise<T> {
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
     // Capture every runtime value before the first await; later interactions stay independent.
@@ -920,8 +920,54 @@
   let detailGeneration = $state(0);
   let detailDispose: (() => void) | undefined;
   let detailTrigger: HTMLElement | undefined;
+  let detailDialog: HTMLDialogElement | undefined;
+
+  function mountDetailDialog(dialog: HTMLDialogElement) {
+    detailDialog = dialog;
+    dialog.showModal();
+    dialog.querySelector<HTMLElement>('[data-detail-close]')?.focus();
+    return { destroy() {
+      dialog.close();
+      if (detailDialog === dialog) detailDialog = undefined;
+    } };
+  }
+
+  function cancelDetail(event: Event) {
+    event.preventDefault();
+    closeDetail();
+  }
+
+  function dismissDetailBackdrop(event: MouseEvent) {
+    if (event.target !== event.currentTarget) return;
+    const panel = (event.currentTarget as HTMLDialogElement).getBoundingClientRect();
+    if (event.clientX < panel.left || event.clientX > panel.right ||
+        event.clientY < panel.top || event.clientY > panel.bottom) closeDetail();
+  }
+
+  function trapDetailFocus(event: KeyboardEvent) {
+    if (event.key !== 'Tab') return;
+    const panel = event.currentTarget as HTMLDialogElement;
+    const controls = Array.from(panel.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], [tabindex="0"], input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+    )).filter(element => element.getClientRects().length > 0);
+    const first = controls[0], last = controls.at(-1);
+    const active = (panel.getRootNode() as Document | ShadowRoot).activeElement;
+    if (first && ((!event.shiftKey && active === last) || (event.shiftKey && active === first) || !panel.contains(active))) {
+      event.preventDefault();
+      (event.shiftKey ? last : first)?.focus();
+    }
+  }
+
+  function resolveDetailTrigger(component: Component, trigger?: HTMLElement): HTMLElement | undefined {
+    const root = surfaceRoot.getRootNode() as Document | ShadowRoot;
+    const sourceCell = Array.from(surfaceRoot.querySelectorAll<HTMLElement>('[data-component]'))
+      .find(element => element.dataset.component?.split('/').at(-1) === component.id);
+    if (sourceCell && !sourceCell.hasAttribute('tabindex')) sourceCell.tabIndex = -1;
+    return trigger ?? sourceCell ?? (root.activeElement instanceof HTMLElement ? root.activeElement : undefined);
+  }
 
   function closeDetail(restoreFocus = true) {
+    detailDialog?.close();
     detailGeneration += 1;
     detailDispose?.();
     detailDispose = undefined;
@@ -940,11 +986,7 @@
     if(!actionAllowed(component,action,row)||!actionAllowed(component,action.openDetail,row))return;
     untrack(() => closeDetail(false));
     detailOrigin={component,row,action};
-    const root = surfaceRoot.getRootNode() as Document | ShadowRoot;
-    const sourceCell = Array.from(surfaceRoot.querySelectorAll<HTMLElement>('[data-component]'))
-      .find(element => element.dataset.component?.split('/').at(-1) === component.id);
-    if (sourceCell && !sourceCell.hasAttribute('tabindex')) sourceCell.tabIndex = -1;
-    detailTrigger = trigger ?? sourceCell ?? (root.activeElement instanceof HTMLElement ? root.activeElement : undefined);
+    detailTrigger = resolveDetailTrigger(component, trigger);
     const detail = action.openDetail;
     openDetail = {
       surface: detail.surface,
@@ -974,7 +1016,6 @@
         openDetail = { ...openDetail, error: '详情参数不完整或无效，请重新选择。' };
       }
     }
-    void tick().then(() => surfaceRoot.querySelector<HTMLElement>('[data-detail-close]')?.focus());
   }
 
   function componentTitle(component: Component): string | undefined {
@@ -1439,22 +1480,17 @@
   {/if}
   {#if openDetail}
     <!-- 页内详情浮层（ADR-0087）：不离开当前页，Esc 与背板关闭。 -->
-    <div
-      class="detail-backdrop"
+    <dialog
+      class="detail-panel {openDetail.surface}"
       class:has-table={detailHasTable}
       data-detail-surface={openDetail.surface}
-      role="presentation"
-      onclick={(event) => {
-        if (event.target === event.currentTarget) closeDetail();
-      }}
+      aria-label={openDetail.title}
+      data-detail-panel
+      use:mountDetailDialog
+      oncancel={cancelDetail}
+      onclick={dismissDetailBackdrop}
+      onkeydown={trapDetailFocus}
     >
-      <div
-        class="detail-panel {openDetail.surface}"
-        role="dialog"
-        aria-modal="true"
-        aria-label={openDetail.title}
-        data-detail-panel
-      >
         <header>
           <h2 data-detail-title>{openDetail.title}</h2>
           <button type="button" data-detail-close aria-label="关闭" onclick={() => closeDetail()}>
@@ -1477,25 +1513,11 @@
           {/each}
         </dl>
         {/if}
-      </div>
-    </div>
+    </dialog>
   {/if}
 </div>
 
-<svelte:window
-  onkeydown={(event) => {
-    if (event.key === 'Escape' && openDetail) closeDetail();
-    if (event.key === 'Tab' && openDetail) {
-      const panel = surfaceRoot.querySelector<HTMLElement>('[data-detail-panel]');
-      const controls = Array.from(panel?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex="0"], input:not([disabled]), select:not([disabled])') ?? []).filter(element => element.getClientRects().length > 0);
-      const first = controls[0], last = controls.at(-1);
-      const active = (surfaceRoot.getRootNode() as Document | ShadowRoot).activeElement;
-      if (first && ((!event.shiftKey && active === last) || (event.shiftKey && active === first) || !panel?.contains(active))) {
-        event.preventDefault(); (event.shiftKey ? last : first)?.focus();
-      }
-    }
-  }}
-/>
+
 
 <style>
   .section-navigation {
@@ -1801,49 +1823,44 @@
     color: var(--mc-color-muted);
     font-size: 13px;
   }
-  .detail-backdrop {
-    position: absolute;
-    inset: 0;
-    z-index: 30;
-    display: flex;
-    background: rgb(15 23 42 / 45%);
-  }
-  .detail-backdrop[data-detail-surface='modal'] {
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-  .detail-backdrop[data-detail-surface='drawer'] {
-    justify-content: flex-end;
-  }
   .detail-panel {
+    position: fixed;
+    inset: 0;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 12px;
     overflow: auto;
+    border: 0;
+    color: var(--mc-color-text);
     background: #fff;
     box-shadow: 0 12px 32px rgb(15 23 42 / 18%);
+    overscroll-behavior: contain;
+  }
+  .detail-panel::backdrop {
+    background: rgb(15 23 42 / 45%);
   }
   .detail-panel.modal {
-    width: min(560px, 100%);
-    max-height: 100%;
+    width: min(560px, calc(100vw - 48px));
+    max-width: none;
+    max-height: calc(100dvh - 48px);
+    margin: auto;
     padding: 20px 24px;
     border-radius: 12px;
   }
   .detail-panel.drawer {
-    width: min(420px, 100%);
-    height: 100%;
+    width: min(420px, 100vw);
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0 0 0 auto;
     padding: 20px 24px;
   }
-  .detail-backdrop.has-table {
-    padding: 0;
+  .detail-panel.has-table {
+    width: min(90vw, 1440px, calc(100vw - 32px));
   }
-  .detail-backdrop.has-table .detail-panel {
-    box-sizing: border-box;
-    width: min(90%, 1440px, calc(100% - 32px));
-  }
-  .detail-backdrop.has-table .detail-panel.modal {
-    max-height: calc(100% - 32px);
+  .detail-panel.has-table.modal {
+    max-height: calc(100dvh - 32px);
   }
   .detail-panel header {
     display: flex;

@@ -19,10 +19,9 @@ async function mountDemo(page: Page, width: number) {
 }
 
 async function expectWidePanel(page: Page, drawer = false) {
-  const backdrop = page.locator('.detail-backdrop');
   const panel = page.getByRole('dialog');
   await expect(panel).toBeVisible();
-  const container = await backdrop.boundingBox();
+  const container = { x: 0, y: 0, ...page.viewportSize()! };
   const box = await panel.boundingBox();
   expect(container).not.toBeNull();
   expect(box).not.toBeNull();
@@ -54,16 +53,19 @@ test('same wide rule for modal, drawer, empty results and metric entry across co
 
 test('narrow embed scrolls inside the table; fields and non-table views retain their width', async ({ page }) => {
   await mountDemo(page, 1920);
-  // Host width, rather than the outer browser viewport, controls the rule.
+  // A narrow mount target must not constrain the document-wide modal.
   await page.evaluate(() => { window.document.querySelector<HTMLElement>('#dashboard')!.style.width = '390px'; });
   await page.getByRole('button', { name: '8', exact: true }).click();
-  expect(await expectWidePanel(page)).toBeCloseTo(351, 0);
+  expect(await expectWidePanel(page)).toBeCloseTo(1440, 0);
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await expectWidePanel(page);
   const scroll = await page.getByRole('dialog').locator('.scroll').evaluate(element => ({ width: element.clientWidth, content: element.scrollWidth }));
   expect(scroll.content).toBeGreaterThan(scroll.width);
   await page.getByRole('dialog').locator('.scroll').evaluate(element => { element.scrollLeft = 150; });
   expect(await page.getByRole('dialog').locator('.scroll').evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
   expect(await page.getByRole('dialog').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
   await page.keyboard.press('Escape');
+  await page.setViewportSize({ width: 1920, height: 1000 });
   await page.evaluate(() => { window.document.querySelector<HTMLElement>('#dashboard')!.style.width = '1440px'; });
   await page.getByRole('button', { name: '861,000', exact: true }).click();
   expect((await page.getByRole('dialog').boundingBox())!.width).toBeCloseTo(560, 0);
