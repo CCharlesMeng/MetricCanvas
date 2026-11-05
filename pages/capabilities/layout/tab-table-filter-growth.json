@@ -1,0 +1,716 @@
+{
+  "schemaVersion": "6.69",
+  "id": "tab-table-filter-growth",
+  "layout": "dashboard",
+  "meta": {
+    "title": "Tab 表格筛选后动态高度"
+  },
+  "dataSources": {
+    "upper": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "第一组记录1",
+            "amount": 1
+          },
+          {
+            "name": "第一组记录2",
+            "amount": 2
+          },
+          {
+            "name": "第一组记录3",
+            "amount": 3
+          },
+          {
+            "name": "第一组记录4",
+            "amount": 4
+          },
+          {
+            "name": "第一组记录5",
+            "amount": 5
+          },
+          {
+            "name": "第一组记录6",
+            "amount": 6
+          },
+          {
+            "name": "第一组记录7",
+            "amount": 7
+          },
+          {
+            "name": "第一组记录8",
+            "amount": 8
+          },
+          {
+            "name": "第一组记录9",
+            "amount": 9
+          },
+          {
+            "name": "第一组记录10",
+            "amount": 10
+          },
+          {
+            "name": "第二组记录11",
+            "amount": 11
+          },
+          {
+            "name": "第二组记录12",
+            "amount": 12
+          },
+          {
+            "name": "第二组记录13",
+            "amount": 13
+          },
+          {
+            "name": "第二组记录14",
+            "amount": 14
+          },
+          {
+            "name": "第二组记录15",
+            "amount": 15
+          },
+          {
+            "name": "第二组记录16",
+            "amount": 16
+          },
+          {
+            "name": "第二组记录17",
+            "amount": 17
+          },
+          {
+            "name": "第二组记录18",
+            "amount": 18
+          },
+          {
+            "name": "第二组记录19",
+            "amount": 19
+          },
+          {
+            "name": "第二组记录20",
+            "amount": 20
+          }
+        ]
+      }
+    },
+    "lower": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "第一组记录1",
+            "amount": 1
+          },
+          {
+            "name": "第一组记录2",
+            "amount": 2
+          },
+          {
+            "name": "第一组记录3",
+            "amount": 3
+          },
+          {
+            "name": "第一组记录4",
+            "amount": 4
+          },
+          {
+            "name": "第一组记录5",
+            "amount": 5
+          },
+          {
+            "name": "第一组记录6",
+            "amount": 6
+          },
+          {
+            "name": "第一组记录7",
+            "amount": 7
+          },
+          {
+            "name": "第一组记录8",
+            "amount": 8
+          },
+          {
+            "name": "第一组记录9",
+            "amount": 9
+          },
+          {
+            "name": "第一组记录10",
+            "amount": 10
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "default",
+      "components": [
+        {
+          "id": "default-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "default-upper",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "upper"
+                    },
+                    "props": {
+                      "title": "default-upper",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "default-lower",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "lower"
+                    },
+                    "props": {
+                      "title": "default-lower",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "default-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "lower"
+                  },
+                  "props": {
+                    "title": "default-single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "compact",
+      "components": [
+        {
+          "id": "compact-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "compact",
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "compact-upper",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "upper"
+                    },
+                    "props": {
+                      "title": "compact-upper",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "compact-lower",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "lower"
+                    },
+                    "props": {
+                      "title": "compact-lower",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "compact-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "lower"
+                  },
+                  "props": {
+                    "title": "compact-single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "analysis-stack",
+      "components": [
+        {
+          "id": "analysis-stack-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "analysisStack",
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "analysis-stack-upper",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "upper"
+                    },
+                    "props": {
+                      "title": "analysisStack-upper",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "analysis-stack-lower",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "lower"
+                    },
+                    "props": {
+                      "title": "analysisStack-lower",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "analysis-stack-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "lower"
+                  },
+                  "props": {
+                    "title": "analysisStack-single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "grid",
+      "components": [
+        {
+          "id": "grid-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "contentLayout": "grid",
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "grid-upper",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "upper"
+                    },
+                    "props": {
+                      "title": "grid-upper",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "grid-lower",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "lower"
+                    },
+                    "props": {
+                      "title": "grid-lower",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "grid-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "lower"
+                  },
+                  "props": {
+                    "title": "grid-single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "report-compact",
+      "components": [
+        {
+          "id": "report-compact-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "tabs": [
+              {
+                "id": "multiple",
+                "label": "多个表格",
+                "components": [
+                  {
+                    "id": "report-compact-upper",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "upper"
+                    },
+                    "props": {
+                      "title": "reportCompact-upper",
+                      "variant": "reportCompact",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "report-compact-lower",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "lower"
+                    },
+                    "props": {
+                      "title": "reportCompact-lower",
+                      "variant": "reportCompact",
+                      "columns": [
+                        {
+                          "field": "name",
+                          "width": 900
+                        },
+                        {
+                          "field": "amount",
+                          "width": 300
+                        }
+                      ],
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "single",
+                "label": "单个表格",
+                "component": {
+                  "id": "report-compact-single",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "lower"
+                  },
+                  "props": {
+                    "title": "reportCompact-single",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "width": 900
+                      },
+                      {
+                        "field": "amount",
+                        "width": 300
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

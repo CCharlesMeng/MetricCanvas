@@ -181,6 +181,11 @@
     height: auto;
     overflow: visible;
   }
+  /* Runtime table hosts use flex:1 for single-content cards. In a vertical
+     multi-content panel each table must reserve its own intrinsic height. */
+  .tab-panel.multiple-content > :global(.widget-content:has(> .table-widget)) {
+    flex: none;
+  }
   .multiple-content :global(.table-widget) {
     flex: none;
   }

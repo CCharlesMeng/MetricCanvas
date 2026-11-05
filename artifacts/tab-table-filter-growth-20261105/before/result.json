@@ -1,0 +1,6 @@
+{
+  "status": "fail",
+  "results": [],
+  "errors": [],
+  "failure": "1440px variant 0: 10 rows: tables and their layout owners must not overlap\n\n1440px variant 0: 10 rows: tables and their layout owners must not overlap\n\nexpect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1\nReceived:    32\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate"
+}

@@ -270,3 +270,15 @@ Tab不允许页头或嵌套Tab；Report导出不补生成未访问的AI总结。
 4. 下方 Tab 保留订单／收入切换、查询分页与展开明细；子表在回执前已有表头，筛选重查不混用上次条件的数据。390px 下按栅格堆叠，无页面横向溢出。
 
 自动验收：`pnpm --filter playground exec playwright test loading-structure.browser.ts`。以可控的合成 HTTP 回执暂停查询，覆盖全部数据组件圆圈、AI、重播、首次加载、筛选、分页、展开子表、Tab 激活、原节点持续挂载及宽窄屏。组件目录与页面类型集合由 `tools/dqe-sim/tests/loading-structure.test.ts` 对账。合成回执不代表真实 DQE／Relay 或已部署环境验收。
+
+
+## Tab 表格筛选后动态高度
+
+入口：`/pages/tab-table-filter-growth`；[页面 JSON](tab-table-filter-growth.json)。运行 `pnpm dev:playground`，无 URL 参数，无服务依赖；上表 20 条、下表 10 条内联合成记录。
+
+1. 默认、compact、analysisStack、grid 和 reportCompact 五组布局中，在上表搜索“第一组”，上下表均显示 10 行。
+2. 清空上表搜索，上表恢复 20 行，下表仍为 10 行。上表按内容增高，下表及后续分区下移，各组件外层完整包含内容，没有覆盖。analysisStack 保持既有表体最大高度和内部滚动。
+3. 切到“单个表格”再切回“多个表格”，保留 20 行与正确布局；重新搜索“第一组”恢复 10 行和原高度。搜索“不存在的记录”呈现空态，清空后恢复。
+4. 在 1440px 与 390px 宽度重复上述操作。回归命令：`PLAYGROUND_BASE_URL=http://127.0.0.1:5173 node apps/playground/tests/tab-table-filter-growth-browser.mjs`。
+
+验证正式运行时的搜索筛选、自然高度、空态和页签保活。数据来自 inline，未验证真实 DQE、Relay 或部署环境。本修复不新增 Schema 字段或高度配置，由引擎统一维护占位。

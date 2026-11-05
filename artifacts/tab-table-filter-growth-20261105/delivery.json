@@ -1,0 +1,155 @@
+{
+  "baseCommit": "872ac718649b3c4ea4a5684284780eca6298a589",
+  "scope": "Fix natural table host height in multiple-content Tabs; no Schema additions",
+  "runtimeFile": "packages/engine/widgets/src/components/tab-container/TabContainer.svelte",
+  "runtimeSha256": "1eb20eb08ba871cb373f036b90e17472d3ee055f7f5c8e57ed52fe9b262c4bb6",
+  "browser": {
+    "dynamic": 60,
+    "existing": 16,
+    "data": "inline synthetic",
+    "reports": [
+      "delivery-browser/result.json",
+      "delivery-existing/result.json"
+    ]
+  },
+  "runtimeTests": 43,
+  "localAuthoringTests": 43,
+  "engineCheck": "passed; 0 errors and 0 warnings",
+  "testTypecheck": "passed",
+  "authoringGenerationAndDrift": "passed",
+  "complexity": {
+    "gate": "passed",
+    "analyzers": {
+      "typescript": "metriccanvas-ts-ast/1",
+      "typescriptVersion": "5.9.3",
+      "python": "radon/6.0.1"
+    },
+    "languages": {
+      "typescript-javascript": {
+        "maintained": {
+          "files": 1425,
+          "functions": 18359,
+          "decisions": 22450,
+          "average": 2.2228334876627267,
+          "maximum": 55,
+          "overFunctionMaximum": 114
+        },
+        "inclusive": {
+          "files": 1500,
+          "functions": 53069,
+          "decisions": 82866,
+          "average": 2.5614765682413463,
+          "maximum": 107,
+          "overFunctionMaximum": 804
+        },
+        "categories": {
+          "production": {
+            "files": 625,
+            "functions": 6426,
+            "decisions": 15165,
+            "average": 3.3599439775910365,
+            "maximum": 55,
+            "overFunctionMaximum": 86
+          },
+          "tooling": {
+            "files": 110,
+            "functions": 1614,
+            "decisions": 2407,
+            "average": 2.4913258983890954,
+            "maximum": 52,
+            "overFunctionMaximum": 19
+          },
+          "tests": {
+            "files": 690,
+            "functions": 10319,
+            "decisions": 4878,
+            "average": 1.4727202248279871,
+            "maximum": 33,
+            "overFunctionMaximum": 9
+          },
+          "generated": {
+            "files": 13,
+            "functions": 34238,
+            "decisions": 59870,
+            "average": 2.748641859921724,
+            "maximum": 107,
+            "overFunctionMaximum": 687
+          },
+          "historical": {
+            "files": 62,
+            "functions": 472,
+            "decisions": 546,
+            "average": 2.156779661016949,
+            "maximum": 20,
+            "overFunctionMaximum": 3
+          }
+        }
+      },
+      "python": {
+        "maintained": {
+          "files": 326,
+          "functions": 2660,
+          "decisions": 8556,
+          "average": 4.216541353383459,
+          "maximum": 93,
+          "overFunctionMaximum": 63
+        },
+        "inclusive": {
+          "files": 339,
+          "functions": 2727,
+          "decisions": 8927,
+          "average": 4.273560689402274,
+          "maximum": 93,
+          "overFunctionMaximum": 64
+        },
+        "categories": {
+          "production": {
+            "files": 175,
+            "functions": 1139,
+            "decisions": 5187,
+            "average": 5.553994732221247,
+            "maximum": 43,
+            "overFunctionMaximum": 41
+          },
+          "tooling": {
+            "files": 52,
+            "functions": 430,
+            "decisions": 1273,
+            "average": 3.9604651162790696,
+            "maximum": 59,
+            "overFunctionMaximum": 2
+          },
+          "tests": {
+            "files": 99,
+            "functions": 1091,
+            "decisions": 2096,
+            "average": 2.9211732355637032,
+            "maximum": 93,
+            "overFunctionMaximum": 20
+          },
+          "generated": {
+            "files": 7,
+            "functions": 61,
+            "decisions": 302,
+            "average": 5.950819672131147,
+            "maximum": 15,
+            "overFunctionMaximum": 0
+          },
+          "historical": {
+            "files": 6,
+            "functions": 6,
+            "decisions": 69,
+            "average": 12.5,
+            "maximum": 62,
+            "overFunctionMaximum": 1
+          }
+        }
+      }
+    },
+    "changedRuntimeFunctions": "CSS only, no executable branch change",
+    "newTestFunctionsCC": 1
+  },
+  "ci": "skip ci requested; not a green CI claim",
+  "realDqeRelayDeployment": "not exercised",
+  "retainedWorktreeReason": "Active local Playground preview on port 5195"
+}

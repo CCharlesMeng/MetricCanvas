@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "9b11cb689ef0d3bffa13020eddac8d4cbb66e1ca5eab43d9a38ccd273e5614aa",
+  "sha256": "f61c9a1e37276868300605ebf62ecd49e4ccb5c6ecc1900fc62701fc78b76176",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -100,7 +100,7 @@
     },
     {
       "file": "docs/page-metadata/components/tabContainer.md",
-      "sha256": "da80a8664a381e6980a11390b9a96ecfe57ca16fa276155a867fa022fc5c0147"
+      "sha256": "39fdcc8e21f728d07dc3172ec1a6b225e307aee3163c136a3348f03b141ac2b8"
     },
     {
       "file": "docs/page-metadata/components/table.md",
@@ -2536,7 +2536,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "7d09af5d6ac7223dac991f46cdccff17e16a1eabf944ce0857e1470f38a62903"
+      "sha256": "e1e99b898f7ca9e4d3e464223c9ed0df7f896f2257ef51be6b6fb1ce322f31b3"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -2609,6 +2609,10 @@
     {
       "file": "pages/capabilities/layout/tab-multiple-tables.json",
       "sha256": "55daf0a7685dd1980391fd03b56345e22c3525485ec912abcf95789704c821ed"
+    },
+    {
+      "file": "pages/capabilities/layout/tab-table-filter-growth.json",
+      "sha256": "2fcbf3dd05e95e5e024bd8f6dc4909cbbe9d2e34c2b709638bf90cdd04c1d244"
     },
     {
       "file": "pages/capabilities/navigation/README.md",
