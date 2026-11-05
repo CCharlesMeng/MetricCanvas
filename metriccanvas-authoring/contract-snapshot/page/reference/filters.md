@@ -203,7 +203,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 ## 布尔筛选覆盖（6.84）
 
-IOC 重点国代采用“勾选后忽略 Region，查询当前用户有权限的全部重点国代”的口径。boolean 声明 `overridesFilters:["region"]`，数组必须非空且引用同作用域内已声明的维度筛选，不可重复。未声明时保留原来的条件交集；只在明确 boolean true 时覆盖，false 与缺席均不覆盖。它只影响页面筛选的执行投影，不会移除查询体中的固定限制、页面参数约束、权限、表头筛选或客户/时间等其他条件。
+IOC 重点国代默认采用“勾选后忽略 Region，查询当前用户有权限的全部重点国代”的口径。标准 boolean 筛选标识 `key-office` / `key-national-only` 在页面声明了维度筛选 `region` 时自动覆盖它，无需填写 `overridesFilters`，也不通过显示文案推断业务含义。只在明确 boolean true 时覆盖，false 与缺席均不覆盖。没有 Region 的页面不产生额外覆盖目标。普通 boolean 仍可用 `overridesFilters` 显式指定覆盖目标；数组必须非空且引用同作用域内已声明的维度筛选，不可重复。既有显式声明保持可读，重点国代的显式目标与默认 Region 取并集，不能通过省略或改写声明恢复交集行为。它只影响页面筛选的执行投影，不会移除查询体中的固定限制、页面参数约束、权限、表头筛选或客户/时间等其他条件。
 
 最小声明（完整页见合成示例）：
 
@@ -211,7 +211,7 @@ IOC 重点国代采用“勾选后忽略 Region，查询当前用户有权限的
 {
   "filters": [
     {"id":"region","type":"dimension","dimension":"region-dept-name","display":"tree","treeSelection":"level","selection":{"mode":"single"},"hierarchy":[{"id":"region-dept","dimension":"region-dept-name"},{"id":"office","dimension":"rep-office-name"}]},
-    {"id":"key-office","type":"boolean","label":"仅看重点国代","overridesFilters":["region"]}
+    {"id":"key-office","type":"boolean","label":"仅看重点国代"}
   ],
   "iocHeader":{"identity":{"title":"IOC"},"filterIds":["key-office","region"]}
 }
@@ -223,7 +223,7 @@ IOC 重点国代采用“勾选后忽略 Region，查询当前用户有权限的
 
 重点国代 checkbox 只有 boolean 值，没有内置真实名单。集成应用须提供完整、当前授权范围内的重点名单；上游 payload 结构由 Adapter 转换，不要求新增重点标记字段。集成应用的名单桥接 在装载前通过现有候选端口获取完整平面成员列表，再为各查询绑定 `queryField:"代表处"` 与 `whenTrue:[中文名列表]`，不读取当前 Region。6.84 的 `whenTrue:[]` 表示成功取得的完整名单为空，勾选后查询、列候选和导出为空且不发主查询 HTTP，不能按清空筛选处理。失败、无权限、未配置或取消均不能用空数组代替；固定查询限制和其他筛选继续取交集。桥接是集成应用可复制的示例，不属于 embed 公共对象上的 API。
 
-完整合成页：[优先级来源页](examples/key-office-priority-demo.json)、[目标页](examples/key-office-priority-target.json)。选择南京代表处后勾选，显示上海及深圳两个跨地区重点代表处，取消后回到南京。还覆盖 Region 改选、中文 URL、刷新、跨页及完整 XLSX 导出。合成 `重点国代=true` 字段不是生产字段承诺。旧 `key-office-filter-demo/target` 继续作为未声明覆盖关系的候选交集兼容场景。
+完整合成页：[优先级来源页](examples/key-office-priority-demo.json)、[目标页](examples/key-office-priority-target.json)。选择南京代表处后勾选，显示上海及深圳两个跨地区重点代表处，取消后回到南京。还覆盖 Region 改选、中文 URL、刷新、跨页及完整 XLSX 导出。合成 `重点国代=true` 字段不是生产字段承诺。`key-office-filter-demo/target` 同样不填写覆盖声明，演示 A1/B1 跨地区重点范围、保留普通代表处 A2 及取消后的恢复。所有重点国代示例遵循相同默认行为。
 
 <a id="boolean-candidate-context"></a>
 
@@ -231,13 +231,13 @@ IOC 重点国代采用“勾选后忽略 Region，查询当前用户有权限的
 
 boolean 筛选器可声明 enabledWhen，使用既有 Condition，例如 `{filter:"region",part:"values",op:"isNotEmpty"}`。条件在统一运行时集中求值；允许时可用，拒绝、未知或错误时禁止鼠标和键盘操作，全页只读仍优先。省略时保持原行为。禁用不清除已有值，不撤销查询谓词；需要清值时另行声明业务状态规则，不能从启用条件推导。visibleWhen 继续只控制显隐。
 
-维度筛选器的 candidateContext.filterIds 从 6.75 起可引用 boolean。候选网关请求 constraints.booleans 使用筛选器 id 为键，传递明确 true/false，只收集声明及传递依赖，不包含其他页面筛选。default:false 保持既有不生成初始化筛选值的兼容行为；缺席和 false 不在引擎中混同。本示例的宿主 Adapter 对二者都返回当前地区下的全部合法代表处，true 时再收窄重点名单。候选上下文及缓存区分 true、false 与缺席，旧回执不得覆盖新条件。
+维度筛选器的 candidateContext.filterIds 从 6.75 起可引用 boolean。候选网关请求 constraints.booleans 使用筛选器 id 为键，传递明确 true/false，只收集声明及传递依赖，不包含其他页面筛选。default:false 保持既有不生成初始化筛选值的兼容行为；缺席和 false 不在引擎中混同。普通布尔候选依赖可由集成应用的 Adapter 按 true/false 提供不同候选；重点国代默认覆盖 Region，不用这种依赖收窄 Region 树。候选上下文及缓存区分 true、false 与缺席，旧回执不得覆盖新条件。
 
 reconcile:intersection 等完整候选就绪后保留交集。原本没有选择的可选维度，在候选有效且非空后保持不限，不额外要求确认；已有选择全部失效时进入确认状态，只有显式选择或清空才能解除，继续变化上游不能绕过确认。空候选、加载失败、不可用、拒绝或无配置均不能当作“不限”。已有 required 选择限制继续适用。
 
 宿主跨页共享值通过 initialSearch 和 filter-change 示例 Adapter 接入，不共享整份 FilterState。只向目标公共筛选器投影，显式 URL 输入优先于共享值，再由页面默认值补足；字段映射、维度和时间精度不匹配时不自动继承。清空表示取消该共享值的继承，目标页仍遵守自身默认值；示例地区部和月份不设默认值。执行快照模式不合并这层输入。示例按一个活动页面设计，不提供多实例实时互控或外部持续推送。
 
-IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区部或代表处，不另设 rep-office 下拉；其他 IOC Region 形态在校验阶段拒绝。重点国代作为该树的候选依赖，勾选时保留地区部结构、收窄代表处节点；已选普通代表处失效后，须在同一棵树重新选择节点或显式确认不限。普通维度的平面、多选及显式切层能力保留。
+IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区部或代表处，不另设 rep-office 下拉；其他 IOC Region 形态在校验阶段拒绝。重点国代不能作为 Region 树的候选依赖，勾选期间 Region 的完整组织候选和原选择保留。重点国代默认不依赖 Region 是否已选，作者无需增加 enabledWhen。其他普通维度失效后的确认规则继续适用。普通维度的平面、多选及显式切层能力保留。
 
 完整声明：[来源页](examples/key-office-filter-demo.json)、[目标页](examples/key-office-filter-target.json)。两页使用合成地区与代表处；浏览器操作、宿主示例和数据环境见仓库 pages/capabilities/filters/README.md 的重点国代场景。真实字段名、取值编码、权限和重点名单须由集成应用确认。
 

@@ -224,9 +224,9 @@
 
 入口：[重点国代联动](./key-office-filter-demo.json) `/pages/key-office-filter-demo`；[目标页](./key-office-filter-target.json) `/pages/key-office-filter-target`。Region 必须为单个可搜索的单选组织树，不存在第二个地区部或代表处下拉。两页均为 Dashboard，查询和候选完全使用 `apps/playground/fixtures/key-office-filter/gateway.ts` 的合成数据：A1 重点 10、A2 普通 20、B1 重点 30、B2 普通 40。
 
-启动 `pnpm dev:playground -- --host 127.0.0.1 --port 5183 --strictPort`，按实际启动日志确认端口。无地区时勾选框禁用；在 IOC Header 唯一 Region 树中选择地区 A 后启用，全部代表处查询显示 A1/A2。勾选后候选和结果收窄为 A1，取消后恢复 A1/A2。在同一个 Region 树中选择普通代表处 A2 再勾选，选择失效后等待确认，在树中重新选择地区 A 恢复其重点范围查询；候选错误或为空时不扩大查询。导出 XLSX 使用当前合法条件。
+启动 `pnpm dev:playground -- --host 127.0.0.1 --port 5183 --strictPort`，按实际启动日志确认端口。无需选择 Region 即可勾选。选择地区 A 时显示 A1/A2，勾选后跨地区显示 A1/B1，取消后恢复 A1/A2。选择普通代表处 A2 再勾选，Region 仍保留 A2，完整组织候选不收窄；取消后恢复 A2。勾选期间改选地区 B，仍显示 A1/B1，取消后显示 B1/B2。导出 XLSX 使用相同范围。两页均省略 overridesFilters，验证引擎默认覆盖。
 
-选择地区 A、月份 2026-09、勾选重点国代，点击“切换页面”：目标页回填三项共享值，重新验证候选后显示 A1；返回时继续继承。显式 URL `?key-office=false` 优先于宿主保存的 true；取消勾选、清空地区也写回共享值。禁用本身保留已有 true。Playground 的两页共用局部宿主示例实例；刷新视为新会话。嵌入浏览器夹具则以 sessionStorage 模拟跨整页导航的宿主会话。
+选择地区 A、月份 2026-09、勾选重点国代，点击“切换页面”：目标页回填三项共享值，重新验证候选后显示 A1/B1；返回时继续继承。显式 URL `?key-office=false` 优先于宿主保存的 true；取消勾选、清空地区也写回共享值。清空 Region 后重点国代仍可操作，已勾选时继续显示 A1/B1。Playground 的两页共用局部宿主示例实例；刷新视为新会话。嵌入浏览器夹具则以 sessionStorage 模拟跨整页导航的宿主会话。
 
 可复用宿主示例是 `packages/embed/examples/shared-filter-bridge.ts`，两个挂载入口使用相同实例。只将 projectNavigationInputs 投影出的公共筛选声明传给它。MC 每页持有独立候选与查询状态；本示例不接入真实 HeaderOptionService，不证明真实 DQE 或门户部署。
 
@@ -254,7 +254,7 @@
 4. 客户类型候选值为战略/卓越，对应业务查询字段为 `客户级别`；它与时间等条件不被覆盖。
 5. 切换页面、刷新保留已勾选及原 Region；URL 中中文值与候选 value 一致。不选 Region 也允许勾选。
 
-新场景显式声明 `overridesFilters:["region"]`，不把 Region 的候选依赖到重点国代；旧联动场景继续验证无覆盖声明时的交集兼容。所有组织、金额及 `重点国代=true` 字段均是合成输入；浏览器通过不证明生产重点名单、授权或 DQE 字段已接通。
+两组重点国代场景均省略 `overridesFilters`，由引擎默认覆盖 Region，不把 Region 的候选依赖到重点国代。普通布尔筛选的候选依赖和显式覆盖仍由独立行为测试验证。所有组织、金额及 `重点国代=true` 字段均是合成输入；浏览器通过不证明生产重点名单、授权或 DQE 字段已接通。
 
 异常入口：`/pages/key-office-priority-demo?state=empty&key-office=true` 返回完整空名单，表格显示暂无数据；取消勾选后恢复四条普通数据。`?state=denied&key-office=true` 显示名单未就绪的加载错误，不进入全量查询。名单桥接与中文组织候选的真实服务接线由集成应用实现；完整说明在仓库 `docs/evidence/2026-11-04-ioc-header-filters/integration.md`。
 

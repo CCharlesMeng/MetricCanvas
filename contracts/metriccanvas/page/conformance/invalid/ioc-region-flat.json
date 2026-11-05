@@ -19,23 +19,12 @@
         },
         "display": "tree",
         "treeSelection": "level",
-        "defaultLevel": "region-dept",
-        "candidateContext": {
-          "filterIds": [
-            "key-office"
-          ],
-          "reconcile": "intersection"
-        }
+        "defaultLevel": "region-dept"
       },
       {
         "id": "key-office",
         "type": "boolean",
-        "label": "仅看重点国代",
-        "enabledWhen": {
-          "filter": "region",
-          "part": "values",
-          "op": "isNotEmpty"
-        }
+        "label": "仅看重点国代"
       },
       {
         "id": "mtime",

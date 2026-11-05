@@ -31,6 +31,15 @@ function readLevelURLSelection(keys2, query) {
   return selected;
 }
 
+// packages/page/src/filter-overrides.ts
+function filterOverrideTargets(filter, filters) {
+  if (filter.type !== "boolean") return [];
+  const explicit = filter.overridesFilters ?? [];
+  if (!["key-office", "key-national-only"].includes(filter.id)) return explicit;
+  if (!filters.some((item) => item.id === "region" && item.type === "dimension")) return explicit;
+  return explicit.includes("region") ? explicit : [...explicit, "region"];
+}
+
 // packages/embed/examples/shared-filter-bridge.ts
 function signature(filter) {
   if (filter.type === "dimension") return JSON.stringify([filter.type, filter.dimension, filter.hierarchy]);
@@ -91,7 +100,7 @@ async function prepareIocHeaderFilters(document, gateway, options) {
 function keyOfficeFilters(page) {
   const first = page.sections?.[0]?.components?.[0];
   const header = page.iocHeader ?? (first?.type === "iocHeader" ? first.props : void 0);
-  return (page.filters ?? []).filter((filter) => filter.type === "boolean" && !!filter.overridesFilters?.includes("region") && !!header?.filterIds?.includes(filter.id));
+  return (page.filters ?? []).filter((filter) => filter.type === "boolean" && filterOverrideTargets(filter, page.filters ?? []).includes("region") && !!header?.filterIds?.includes(filter.id));
 }
 async function keyOfficeNames(filter, gateway, signal) {
   signal.throwIfAborted();
@@ -122,11 +131,11 @@ function bindKeyOfficeQueries(page, filter, names) {
     if (source.source.type !== "query") continue;
     const query = source.source.query;
     const leaves = query.queryModes?.cases ?? query.timeModes?.cases ?? { ordinary: query };
-    for (const leaf of Object.values(leaves)) bindKeyOfficeQuery(leaf, filter, names);
+    for (const leaf of Object.values(leaves)) bindKeyOfficeQuery(leaf, filter, names, filterOverrideTargets(filter, page.filters ?? []));
   }
 }
-function bindKeyOfficeQuery(query, filter, names) {
-  if (!filter.overridesFilters?.some((id) => query.filterBindings?.[id])) return;
+function bindKeyOfficeQuery(query, filter, names, targets) {
+  if (!targets.some((id) => query.filterBindings?.[id])) return;
   query.filterBindings[filter.id] = { target: "boolean", queryField: "\u4EE3\u8868\u5904", whenTrue: [...names] };
 }
 function normalizeIocRegionCandidates(candidates) {
@@ -147,6 +156,7 @@ function createKeyOfficeGateway(observe) {
     async fetchFilterCandidates(request, { signal }) {
       signal.throwIfAborted();
       observe?.("candidates", request);
+      if (request.dimension === "rep-office-name" && request.filterId === "key-office") return { kind: "values", candidates: offices.filter((item) => item.key).map((item) => ({ value: item.office, label: item.office })) };
       const visible = offices.filter((item) => !request.constraints.booleans?.["key-office"] || item.key);
       return { kind: "values", candidates: [
         ...["A", "B"].map((value) => ({ value, label: `\u5730\u533A ${value}`, level: "region-dept" })),
@@ -158,7 +168,7 @@ function createKeyOfficeGateway(observe) {
       const rows = offices.filter((item) => query.filterValues.every((predicate) => {
         if (predicate.target !== "dimension") return true;
         if (predicate.queryField === "demo_region") return predicate.values.includes(item.region);
-        if (predicate.queryField === "demo_office") return predicate.values.includes(item.office);
+        if (predicate.queryField === "demo_office" || predicate.queryField === "\u4EE3\u8868\u5904") return predicate.values.includes(item.office);
         if (predicate.queryField === "demo_key_office") return predicate.values.includes(String(item.key));
         return true;
       })).map((item) => ({ office: item.office, amount: item.amount }));

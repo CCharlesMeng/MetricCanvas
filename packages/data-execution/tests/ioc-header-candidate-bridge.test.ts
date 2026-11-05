@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
-import {queryLeaves,type QueryDataSource,type DataSnapshot} from '@metriccanvas/page/internal';
+import {filterOverrideTargets,queryLeaves,type QueryDataSource,type DataSnapshot} from '@metriccanvas/page/internal';
 import {pageFilesById} from '../../../tools/scripts/page-files.mjs';
 import {prepareIocHeaderFilters} from '../../embed/examples/ioc-header-candidate-bridge';
 import {createKeyOfficePriorityGateway} from '../../../apps/playground/fixtures/key-office-filter/gateway';
@@ -85,7 +85,7 @@ describe('IOC upstream-format-independent candidate bridge',()=>{
         for(const leaf of queryLeaves(source.source.query)){
           expect(leaf.filterBindings?.region).toMatchObject({target:'dimension',levelQueryFields:{'region-dept':'地区部',office:'代表处'}});
           for(const id of ['customer-category','na-type'])if(leaf.filterBindings?.[id]){expect(leaf.filterBindings[id]).toEqual({target:'dimension',queryField:'客户级别'});customerQueries++;}
-          const filter=page.filters?.find(f=>f.type==='boolean'&&f.overridesFilters?.includes('region'));
+          const filter=page.filters?.find(f=>filterOverrideTargets(f,page.filters??[]).includes('region'));
           if(filter)expect(leaf.filterBindings?.[filter.id]).toEqual({target:'boolean',queryField:'代表处',whenTrue:['上海代表处','深圳代表处']});
         }
       }

@@ -143,7 +143,7 @@
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
       <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword}/>
     </div>{/if}
-    {#if clearable && !required && !value.length && !statusText && !statusError}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" aria-label="清除筛选" onclick={()=>onchange?.([])}>{placeholder}</button>{/if}
+    {#if !tree && clearable && !required && !value.length && !statusText && !statusError}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" aria-label="清除筛选" onclick={()=>onchange?.([])}>{placeholder}</button>{/if}
     {#if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
     {:else if !visible.length}<p class="selection-status" role="status">{searchActive ? '无匹配候选项' : '无候选项'}</p>
     {:else if tree}

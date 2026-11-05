@@ -1,4 +1,5 @@
 import type {Page,PageDocument,DqeQueryDefinition,BooleanFilterDeclaration} from '@metriccanvas/page/internal';
+import {filterOverrideTargets} from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway,FilterCandidate} from '@metriccanvas/engine';
 
 /** Copyable integration example, not an embed public API. Upstream response formats belong to the Adapter. */
@@ -14,7 +15,7 @@ export async function prepareIocHeaderFilters(document:unknown,gateway:RuntimeDa
 function keyOfficeFilters(page:Pick<Page,'filters'|'iocHeader'|'sections'>):BooleanFilterDeclaration[] {
   const first=page.sections?.[0]?.components?.[0];
   const header=page.iocHeader??(first?.type==='iocHeader'?first.props:undefined);
-  return (page.filters??[]).filter((filter):filter is BooleanFilterDeclaration=>filter.type==='boolean'&&!!filter.overridesFilters?.includes('region')&&!!header?.filterIds?.includes(filter.id));
+  return (page.filters??[]).filter((filter):filter is BooleanFilterDeclaration=>filter.type==='boolean'&&filterOverrideTargets(filter,page.filters??[]).includes('region')&&!!header?.filterIds?.includes(filter.id));
 }
 async function keyOfficeNames(filter:BooleanFilterDeclaration,gateway:RuntimeDataGateway,signal:AbortSignal):Promise<string[]> {
   signal.throwIfAborted();
@@ -42,11 +43,11 @@ function bindKeyOfficeQueries(page:PageDocument,filter:BooleanFilterDeclaration,
     if(source.source.type!=='query')continue;
     const query=source.source.query;
     const leaves=query.queryModes?.cases??query.timeModes?.cases??{ordinary:query};
-    for(const leaf of Object.values(leaves))bindKeyOfficeQuery(leaf,filter,names);
+    for(const leaf of Object.values(leaves))bindKeyOfficeQuery(leaf,filter,names,filterOverrideTargets(filter,page.filters??[]));
   }
 }
-function bindKeyOfficeQuery(query:Pick<DqeQueryDefinition,'filterBindings'>,filter:BooleanFilterDeclaration,names:string[]):void {
-  if(!filter.overridesFilters?.some(id=>query.filterBindings?.[id]))return;
+function bindKeyOfficeQuery(query:Pick<DqeQueryDefinition,'filterBindings'>,filter:BooleanFilterDeclaration,names:string[],targets:readonly string[]):void {
+  if(!targets.some(id=>query.filterBindings?.[id]))return;
   query.filterBindings![filter.id]={target:'boolean',queryField:'代表处',whenTrue:[...names]};
 }
 

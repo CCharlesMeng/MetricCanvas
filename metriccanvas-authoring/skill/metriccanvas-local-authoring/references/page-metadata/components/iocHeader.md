@@ -4,6 +4,8 @@
 
 完整合成场景：`ioc-header-section-placement`（混排与显隐）、`ioc-header-section-groups`（分组）、`ioc-header-section-sticky`（吸顶）。均可在Playground按页面id访问。
 
+重点国代标准 boolean 筛选 `key-office` / `key-national-only` 勾选后默认覆盖 Region，页头和筛选声明无需添加 `overridesFilters`。Region 保留完整候选和最新选择；取消勾选后恢复 Region，时间、客户级别及权限继续生效。默认覆盖不提供名单，集成应用仍须完成授权名单桥接。详见[布尔筛选覆盖](../filters.md#boolean-filter-overrides)。
+
 
 页面协议 6.86。结构真源为本册[schema.json](../schema.json)，SHA256 `524030ad19b8f0b31f29694b1d60445d5172d363d72d8799e2634f0f0800bcfb`。字段表自动生成；可选不等于有默认值。
 

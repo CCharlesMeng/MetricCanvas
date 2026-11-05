@@ -75,7 +75,7 @@ export const invariants: InvariantDefinition[] = [
     {case:'ioc-component-legacy-version',base:'ioc-header-section-placement',expect:/由 6.81 引入/,mutate:d=>{d.schemaVersion='5.4';}}
   ]},
   {id:'boolean-filter-overrides',description:'布尔覆盖只引用维度并要求替代查询条件',valid:['key-office-priority-demo','key-office-priority-target'],cases:[
-    {case:'boolean-override-version',base:'key-office-priority-demo',expect:/由 6.84 引入/,mutate:d=>{d.schemaVersion='6.83';}},
+    {case:'boolean-override-version',base:'key-office-priority-demo',expect:/由 6.84 引入/,mutate:d=>{d.schemaVersion='6.83';d.filters[1].overridesFilters=['region'];}},
     {case:'boolean-override-missing-target',base:'key-office-priority-demo',expect:/覆盖筛选必须引用/,mutate:d=>{d.filters[1].overridesFilters=['missing'];}},
     {case:'boolean-override-candidate-conflict',base:'key-office-priority-demo',expect:/被覆盖筛选不能依赖/,mutate:d=>{d.filters[0].candidateContext={filterIds:['key-office'],reconcile:'intersection'};}}
   ]},

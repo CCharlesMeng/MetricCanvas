@@ -1,3 +1,4 @@
+// 冻结的2026-11-02计分/仿真契约回归；不作为已迁移业务页当前口径的验收。
 import {readFileSync} from 'node:fs';
 import {afterEach, beforeEach, expect, it, vi} from 'vitest';
 import {parsePage} from '../packages/page/src/index';
@@ -5,7 +6,7 @@ import {isQueryDataSource, type DataSnapshot, type DataSource} from '../packages
 import {computedSnapshots, createSourceProgram, initialFilterValues, resolveQueryResultInputs, type SourceRead, type SourceUpdate} from '../packages/data-execution/src/runtime';
 import {createPartnerHealthUnionPreview} from '../apps/playground/fixtures/organization-union/gateway';
 
-const parsed = parsePage(JSON.parse(readFileSync('pages/temporary/partner-health.json', 'utf8')));
+const parsed = parsePage(JSON.parse(readFileSync('tests/fixtures/partner-health/page-20261102.json', 'utf8')));
 if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
 const page = parsed.page;
 
