@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.87",
-  "schemaSha256": "4b54a9241be2802fede679f8abd2eff42e52c23de8f6447432819e2ede4c1f5d",
+  "schemaVersion": "6.88",
+  "schemaSha256": "595dbafce93cdab6dab8f6e7fcb87793efd78ceecf40b135b1a656806db3aea7",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -428,7 +428,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "78ee2cf8abc54a2427ad85684d93c5193a32093a05f3403cc5192e2c6aaa17b6"
+      "sha256": "ba10bf2134bbfeaaeb3225959688789d0b29031206a803842b3f65ef5d2615ed"
     }
   ],
   "modules": {
@@ -889,6 +889,7 @@
         "数据槽、字段绑定与格式"
       ],
       "examples": [
+        "yoy-p-format-demo",
         "million-formats-page",
         "compute-page",
         "reference-branches-page",
@@ -1950,7 +1951,8 @@
         "6.84",
         "6.85",
         "6.86",
-        "6.87"
+        "6.87",
+        "6.88"
       ]
     },
     {
@@ -2036,6 +2038,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -2088,6 +2091,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -3140,6 +3144,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -3227,6 +3232,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4304,6 +4310,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4397,6 +4404,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4645,6 +4653,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4758,6 +4767,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -4844,6 +4854,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -10878,6 +10889,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -12256,6 +12268,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -12679,6 +12692,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -13075,6 +13089,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -13243,6 +13258,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -15820,6 +15836,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -16002,6 +16019,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -16466,6 +16484,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -18045,6 +18064,7 @@
         "percent-1",
         "percent-2",
         "points-1-signed",
+        "yoy-p-signed",
         "percent-2-signed",
         "date",
         "date-month-day",
@@ -20951,8 +20971,8 @@
     {
       "schemaPointer": "#/definitions/colorRule/oneOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/explicit-presentation-page.json",
-      "pointer": "#/sections/0/components/0/props/columns/1/colorRule"
+      "file": "examples/yoy-p-format-demo.json",
+      "pointer": "#/sections/0/components/1/props/columns/2/colorRule"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/0",

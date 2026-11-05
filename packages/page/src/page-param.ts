@@ -152,6 +152,7 @@ const NUMERIC_FORMATS = new Set<ValueFormatPreset>([
   'percent-1',
   'percent-2',
   'points-1-signed',
+  'yoy-p-signed',
   'percent-2-signed'
 ]);
 

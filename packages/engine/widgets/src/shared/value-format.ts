@@ -36,6 +36,7 @@ export function formatValue(
 }
 
 function formatNumericValue(numeric: number, format: ValueFormatPreset): string {
+  if (format === 'yoy-p-signed') return yoyPresentation(numeric).text;
   if (format === 'points-1-signed') return `${signedNumberPresentation(numeric, 'number-1-signed').text}P`;
   const percent = /^percent-([012])(-signed)?$/.exec(format);
   if (percent) return `${percent[2] && numeric > 0 ? '+' : ''}${formatNumber(numeric, Number(percent[1]))}%`;
@@ -72,9 +73,17 @@ export function valuePolarity(
 ): ValuePolarity {
   const numeric = finiteNumber(value);
   if (numeric === undefined || numeric === 0) return 'neutral';
+  if (format === 'yoy-p-signed') return yoyPresentation(numeric).polarity;
   if (format === 'points-1-signed') return signedNumberPresentation(numeric, 'number-1-signed').polarity;
   if (isSignedNumberFormat(format)) return signedNumberPresentation(numeric, format).polarity;
   return numeric > 0 ? 'positive' : 'negative';
+}
+
+/** 同比先按两位小数舍入，再乘100；最后的整数格式消除二进制乘法尾数。 */
+function yoyPresentation(value: number) {
+  const rounded = signedNumberPresentation(value, 'number-2-signed');
+  const magnitude = formatNumber(Number(rounded.text) * 100, 0);
+  return { text: `${rounded.polarity === 'positive' ? '+' : ''}${magnitude}P`, polarity: rounded.polarity };
 }
 
 export function isSignedNumberFormat(

@@ -1,11 +1,16 @@
 {
   "major": 6,
-  "minor": 87,
-  "current": "6.87",
+  "minor": 88,
+  "current": "6.88",
   "capabilities": {
     "chart-series-visibility": {
-      "minor": 87,
+      "minor": 88,
       "description": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴",
+      "legacyReadable": false
+    },
+    "yoy-p-format": {
+      "minor": 87,
+      "description": "同比先保留两位再乘100并追加P的带符号格式",
       "legacyReadable": false
     },
     "quarter-query-period": {
@@ -872,6 +877,7 @@
     "6.84",
     "6.85",
     "6.86",
-    "6.87"
+    "6.87",
+    "6.88"
   ]
 }

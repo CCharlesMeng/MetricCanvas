@@ -6,7 +6,7 @@ describe('chart series presentation contract', () => {
   it('accepts the complete inline page and recognizes filters consumed only by series', () => {
     expect(validate(sample)).toEqual([]);
   });
-  it.each(['6.86', '6.85', '5.4'])('rejects series conditions on %s at the declaration path', schemaVersion => {
+  it.each(['6.87', '6.86', '6.85', '5.4'])('rejects series conditions on %s at the declaration path', schemaVersion => {
     expect(validate({ ...sample, schemaVersion })).toContainEqual(expect.objectContaining({
       type: 'SCHEMA_ERROR', path: '/sections/1/components/0/props/series/2/visibleWhen'
     }));

@@ -1,6 +1,6 @@
 # 条件显隐与动作资格
 
-6.87 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留，隐藏不停止查询。声明与边界见[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`。
+6.88 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留，隐藏不停止查询。声明与边界见[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`。
 
 6.75 将既有 enabledWhen 扩展到 boolean 筛选器，禁用只约束编辑，保留已应用值与查询条件；完整行为见[布尔候选依赖](filters.md#boolean-candidate-context)。
 

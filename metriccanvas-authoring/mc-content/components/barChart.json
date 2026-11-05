@@ -35,7 +35,7 @@
   "knowledge": "barChart.overview",
   "reference": "references/page-metadata/components/barChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.87",
+  "currentWriter": "6.88",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/forecast-page.json",
@@ -179,11 +179,11 @@
     },
     {
       "file": "references/page-metadata/examples/chart-series-visibility.json",
-      "requiredVersion": "6.87",
+      "requiredVersion": "6.88",
       "capabilities": [
         {
           "id": "chart-series-visibility",
-          "minor": 87,
+          "minor": 88,
           "description": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴"
         },
         {

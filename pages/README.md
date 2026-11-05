@@ -1,5 +1,7 @@
 # 页面示例与验收场景
 
+- [同比 P 格式](capabilities/table/yoy-p-format/README.md)：`/pages/yoy-p-format-demo`，先保留2位再乘100，正负号及颜色一致；内联合成数据。
+
 - [Embed 重复挂载](capabilities/layout/README.md#embed-重复挂载)：`/pages/embed-mount-lifecycle` 的合成计数页面，与 embed `/examples/mount-lifecycle.html` 共用 JSON；后者可操作验证重复挂载只保留一个实例及销毁后重挂载。
 
 - [独立全局均值与柱线混合图](capabilities/chart/README.md#独立全局均值683)：`/pages/chart-global-benchmark`，代表处柱旁显示相同全局均值，区域不影响均值，月份与站点同步刷新；合成数据。

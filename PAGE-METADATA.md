@@ -1,6 +1,8 @@
 # MetricCanvas 页面元数据规范
 
-6.87：柱状图（含柱线组合）和折线图的 `props.series[].visibleWhen` 复用展示条件。条件不允许时移除系列、图例及悬浮提示中的该项，隐藏无可见系列使用的数值轴；恢复时沿用原系列颜色和高级样式对应关系。全部系列隐藏仍保留标题和容器，不改变查询定义。见[系列条件显隐](docs/page-metadata/components/barChart.md#chart-series-visibility)，合成入口 `/pages/chart-series-visibility`。
+6.88：柱状图（含柱线组合）和折线图的 `props.series[].visibleWhen` 复用展示条件。条件不允许时移除系列、图例及悬浮提示中的该项，隐藏无可见系列使用的数值轴；恢复时沿用原系列颜色和高级样式对应关系。全部系列隐藏仍保留标题和容器，不改变查询定义。见[系列条件显隐](docs/page-metadata/components/barChart.md#chart-series-visibility)，合成入口 `/pages/chart-series-visibility`。
+
+6.87 新增同比格式 `yoy-p-signed`：先四舍五入保留两位小数，再乘100显示整数并追加P；符号与按正负着色遵循舍入结果。声明与合成示例见[同比格式](docs/page-metadata/field-bindings-and-formats.md#同比格式687)。
 
 6.85：select 表头可用 `initialParam` 引用页面维度参数作为一次性初值；`allBehavior` 显式区分枚举全选的值集合与不限。用户清空后不补回初值，首请求、恢复及导出共用会话视图。见[表头参数初值](docs/page-metadata/components/table.md#table-header-params)。
 

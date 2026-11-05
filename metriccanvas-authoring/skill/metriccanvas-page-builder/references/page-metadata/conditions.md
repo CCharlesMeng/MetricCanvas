@@ -1,6 +1,6 @@
 # 条件显隐与动作资格
 
-6.87 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留，隐藏不停止查询。声明与边界见[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`。
+6.88 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留，隐藏不停止查询。声明与边界见[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`。
 
 6.75 将既有 enabledWhen 扩展到 boolean 筛选器，禁用只约束编辑，保留已应用值与查询条件；完整行为见[布尔候选依赖](filters.md#boolean-candidate-context)。
 
@@ -39,7 +39,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。
 
 
-页面协议 6.87。结构真源为本册[schema.json](schema.json)，SHA256 `4b54a9241be2802fede679f8abd2eff42e52c23de8f6447432819e2ede4c1f5d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.88。结构真源为本册[schema.json](schema.json)，SHA256 `595dbafce93cdab6dab8f6e7fcb87793efd78ceecf40b135b1a656806db3aea7`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
