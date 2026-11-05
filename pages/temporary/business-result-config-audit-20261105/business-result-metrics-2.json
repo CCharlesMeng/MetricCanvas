@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "6.80",
+  "schemaVersion": "6.86",
   "id": "business-result-metrics-2",
   "layout": "dashboard",
   "meta": {
     "title": "业务结果指标情况",
-    "description": "地区部与代表处业务结果指标情况明细表。展示净商务折扣、净商务折扣同比变化、框架执行率、商务决策意见闭环率、合同决策意见闭环率、重大/高风险合同签署率与禁止类条款签署率。商务/合同决策意见闭环率来自契约 ZB0001419 决策闭环任务总体闭环率（dws_t_decision_closedloop_rate_compound_metric_global），按决策业务类型（商务/合同）透视后按地区部/代表处关联到主指标表。地区部表与代表处表分别消费两个粒度的决策闭环查询：代表处表消费 decision-closure-rate（output_dims 决策业务类型/地区部/代表处，pivot keyFields 地区部+代表处，按代表处关联）；地区部表消费 decision-closure-rate-region-dept（output_dims 决策业务类型/地区部，pivot keyFields 仅地区部，按地区部关联），避免 joinAggregate unique 在每个地区部匹配到多个代表处行时因取值歧义而失败。净商务折扣同比变化由两期 periodComparison 对比源（current/previousYear，fact net-discount-through）经 unionKeys→joinAggregate→delta 计算后 joinAggregate 补列进主表，仅绑 region+mtime，不绑站点筛选。内嵌初始行为合成演示数据（占位值），不来自真实系统，不得用于业务判断。"
+    "description": "地区部与代表处业务结果指标情况明细表。展示净商务折扣、净商务折扣同比变化、框架执行率、商务决策意见闭环率、合同决策意见闭环率、重大/高风险合同签署率与禁止类条款签署率。商务/合同决策意见闭环率来自契约 ZB0001419 决策闭环任务总体闭环率（dws_t_decision_closedloop_rate_compound_metric_global），按决策业务类型（商务/合同）透视后按地区部/代表处关联到主指标表。地区部表与代表处表分别消费两个粒度的决策闭环查询：代表处表消费 decision-closure-rate（output_dims 决策业务类型/地区部/代表处，pivot keyFields 地区部+代表处，按代表处关联）；地区部表消费 decision-closure-rate-region-dept（output_dims 决策业务类型/地区部，pivot keyFields 仅地区部，按地区部关联），避免 joinAggregate unique 在每个地区部匹配到多个代表处行时因取值歧义而失败。净商务折扣同比变化由两期 periodComparison 对比源（current/previousYear，fact net-discount-through）经 unionKeys→joinAggregate→delta 计算后 joinAggregate 补列进主表，仅绑 region+mtime，不绑站点筛选。本地 DQE Sim 返回合成数据，不来自真实系统，不得用于业务判断。"
   },
   "filters": [
     {
@@ -129,7 +129,7 @@
           "role": "measure",
           "label": "净商务折扣同比变化",
           "unit": "P",
-          "defaultFormat": "number-1-signed",
+          "defaultFormat": "points-1-signed",
           "nullable": true
         },
         "framework-execution-rate": {
@@ -292,7 +292,7 @@
           "role": "measure",
           "label": "同比",
           "unit": "P",
-          "defaultFormat": "number-1-signed",
+          "defaultFormat": "points-1-signed",
           "nullable": true
         },
         "previous-rate": {
@@ -676,7 +676,7 @@
           "role": "measure",
           "label": "净商务折扣同比变化",
           "unit": "P",
-          "defaultFormat": "number-1-signed",
+          "defaultFormat": "points-1-signed",
           "nullable": true
         },
         "framework-execution-rate": {
@@ -1167,7 +1167,8 @@
           "type": "number",
           "role": "measure",
           "unit": "P",
-          "nullable": true
+          "nullable": true,
+          "defaultFormat": "points-1-signed"
         }
       },
       "source": {
@@ -1373,7 +1374,8 @@
           "type": "number",
           "role": "measure",
           "unit": "P",
-          "nullable": true
+          "nullable": true,
+          "defaultFormat": "points-1-signed"
         }
       },
       "source": {
@@ -1672,14 +1674,6 @@
           "filterBindings": {
             "mtime": {
               "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
-              }
             }
           }
         }
@@ -1730,14 +1724,6 @@
           "filterBindings": {
             "mtime": {
               "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
-              }
             },
             "decision-closure-site": {
               "target": "dimension",
@@ -1792,14 +1778,6 @@
           "filterBindings": {
             "mtime": {
               "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "geo": "geo_pc_code",
-                "region-dept": "region_dept_code",
-                "office": "rep_office_code"
-              }
             },
             "decision-closure-site": {
               "target": "dimension",
@@ -2018,9 +1996,677 @@
           }
         }
       }
+    },
+    "region-dept-summary-comparison": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
+        },
+        "year-ago-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "去年同期净商务折扣",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
+        "net-discount-yoy": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣同比变化",
+          "nullable": true,
+          "unit": "P",
+          "defaultFormat": "points-1-signed"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "current",
+                "fact": "net-discount-through"
+              }
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "region-dept-summary-year-ago",
+          "keys": [],
+          "values": [
+            {
+              "field": "net-discount-rate",
+              "output": "year-ago-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "net-discount-rate",
+          "subtrahend": "year-ago-rate",
+          "output": "net-discount-yoy"
+        }
+      ]
+    },
+    "region-dept-summary-year-ago": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "previousYear",
+                "fact": "net-discount-through"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rep-office-summary-comparison": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
+        },
+        "year-ago-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "去年同期净商务折扣",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
+        "net-discount-yoy": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣同比变化",
+          "nullable": true,
+          "unit": "P",
+          "defaultFormat": "points-1-signed"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "current",
+                "fact": "net-discount-through"
+              }
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "rep-office-summary-year-ago",
+          "keys": [],
+          "values": [
+            {
+              "field": "net-discount-rate",
+              "output": "year-ago-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "net-discount-rate",
+          "subtrahend": "year-ago-rate",
+          "output": "net-discount-yoy"
+        }
+      ]
+    },
+    "rep-office-summary-year-ago": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "previousYear",
+                "fact": "net-discount-through"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rep-office-parent-summary": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
+        },
+        "framework-execution-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
+          "defaultFormat": "percent-1",
+          "queryField": "框架执行率"
+        },
+        "major-contract-sign-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "重大/高风险合同签署率",
+          "defaultFormat": "percent-1",
+          "queryField": "重大高风险合同率"
+        },
+        "forbidden-clause-sign-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "禁止类条款签署率",
+          "defaultFormat": "percent-1",
+          "queryField": "云计算BU禁止条款风险合同率"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "净商务折扣（原价）",
+                  "框架执行率",
+                  "重大高风险合同率",
+                  "云计算BU禁止条款风险合同率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rep-office-parent-commercial-summary": {
+      "fields": {
+        "commercial-closure-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策意见闭环率",
+          "defaultFormat": "percent-1",
+          "queryField": "决策闭环任务总体闭环率(投标-商务-合同)"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "决策闭环任务总体闭环率(投标-商务-合同)"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "决策业务类型",
+                      "dim_value_list": [
+                        "商务"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "decision-closure-site": {
+              "target": "dimension",
+              "queryField": "国内或海外"
+            }
+          }
+        }
+      }
+    },
+    "rep-office-parent-contract-summary": {
+      "fields": {
+        "contract-closure-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策意见闭环率",
+          "defaultFormat": "percent-1",
+          "queryField": "决策闭环任务总体闭环率(投标-商务-合同)"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "决策闭环任务总体闭环率(投标-商务-合同)"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "决策业务类型",
+                      "dim_value_list": [
+                        "合同"
+                      ],
+                      "operator": "="
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "decision-closure-site": {
+              "target": "dimension",
+              "queryField": "国内或海外"
+            }
+          }
+        }
+      }
+    },
+    "rep-office-parent-summary-comparison": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
+        },
+        "year-ago-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "去年同期净商务折扣",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
+        "net-discount-yoy": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣同比变化",
+          "nullable": true,
+          "unit": "P",
+          "defaultFormat": "points-1-signed"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "mtime": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "current",
+                "fact": "net-discount-through"
+              }
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "rep-office-parent-summary-year-ago",
+          "keys": [],
+          "values": [
+            {
+              "field": "net-discount-rate",
+              "output": "year-ago-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "net-discount-rate",
+          "subtrahend": "year-ago-rate",
+          "output": "net-discount-yoy"
+        }
+      ]
+    },
+    "rep-office-parent-summary-year-ago": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
+            },
+            "mtime": {
+              "target": "time",
+              "periodComparison": {
+                "kind": "previousYear",
+                "fact": "net-discount-through"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "业务结果指标情况"
+            },
+            "filterIds": [
+              "mtime",
+              "region",
+              "customer-class",
+              "key-account-only"
+            ],
+            "note": "DQE Sim 合成演示数据；同比为本期减去年同期，单位为百分点（P）；数据截至 2026-11-04。",
+            "presentation": {
+              "layout": "inline",
+              "density": "compact",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
     {
       "id": "notice",
       "container": "plain",
@@ -2032,7 +2678,7 @@
             "span": 12
           },
           "props": {
-            "body": "注：不含混合云（HCS）的数据",
+            "body": "DQE Sim 合成演示数据；同比变化单位为百分点（P）。注：不含混合云（HCS）的数据。",
             "variant": "plain"
           }
         }
@@ -2057,7 +2703,8 @@
             "main": "region-dept-metrics",
             "summary": "region-dept-summary",
             "commercial": "region-dept-commercial-summary",
-            "contract": "region-dept-contract-summary"
+            "contract": "region-dept-contract-summary",
+            "yoy": "region-dept-summary-comparison"
           },
           "props": {
             "title": "地区部业务结果指标情况",
@@ -2103,7 +2750,13 @@
                 "width": 180,
                 "align": "right",
                 "sortable": true,
-                "visual": "signed"
+                "visual": "signed",
+                "pinnedTop": {
+                  "field": {
+                    "data": "yoy",
+                    "field": "net-discount-yoy"
+                  }
+                }
               },
               {
                 "field": "framework-execution-rate",
@@ -2175,7 +2828,8 @@
               "data": "summary",
               "additionalData": [
                 "commercial",
-                "contract"
+                "contract",
+                "yoy"
               ]
             }
           }
@@ -2196,7 +2850,8 @@
             "main": "rep-office-metrics",
             "summary": "rep-office-summary",
             "commercial": "rep-office-commercial-summary",
-            "contract": "rep-office-contract-summary"
+            "contract": "rep-office-contract-summary",
+            "yoy": "rep-office-summary-comparison"
           },
           "props": {
             "title": "代表处业务结果指标情况",
@@ -2249,7 +2904,13 @@
                 "width": 180,
                 "align": "right",
                 "sortable": true,
-                "visual": "signed"
+                "visual": "signed",
+                "pinnedTop": {
+                  "field": {
+                    "data": "yoy",
+                    "field": "net-discount-yoy"
+                  }
+                }
               },
               {
                 "field": "framework-execution-rate",
@@ -2321,31 +2982,176 @@
               "data": "summary",
               "additionalData": [
                 "commercial",
-                "contract"
+                "contract",
+                "yoy"
               ]
             }
           },
           "visibleWhen": {
-            "any": [
+            "filter": "region",
+            "part": "values",
+            "op": "isEmpty"
+          }
+        },
+        {
+          "id": "rep-office-metrics-table-department",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rep-office-metrics",
+            "summary": "rep-office-parent-summary",
+            "commercial": "rep-office-parent-commercial-summary",
+            "contract": "rep-office-parent-contract-summary",
+            "yoy": "rep-office-parent-summary-comparison"
+          },
+          "props": {
+            "title": "代表处业务结果指标情况",
+            "fit": "content",
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 150,
+                "fixed": "left",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/business-result-metrics-detail?region.level=office",
+                  "query": {
+                    "mtime": {
+                      "source": "filter",
+                      "id": "mtime"
+                    },
+                    "region": {
+                      "source": "row",
+                      "field": "rep-office-name"
+                    }
+                  }
+                },
+                "pinnedTop": {
+                  "text": "合计"
+                }
+              },
+              {
+                "field": "net-discount-rate",
+                "title": "净商务折扣",
+                "width": 150,
+                "align": "right",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "summary",
+                    "field": "net-discount-rate"
+                  }
+                }
+              },
+              {
+                "field": "net-discount-yoy",
+                "title": "净商务折扣同比变化",
+                "width": 180,
+                "align": "right",
+                "sortable": true,
+                "visual": "signed",
+                "pinnedTop": {
+                  "field": {
+                    "data": "yoy",
+                    "field": "net-discount-yoy"
+                  }
+                }
+              },
+              {
+                "field": "framework-execution-rate",
+                "title": "框架执行率",
+                "width": 150,
+                "align": "right",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "summary",
+                    "field": "framework-execution-rate"
+                  }
+                }
+              },
+              {
+                "field": "commercial-closure-rate",
+                "title": "商务决策意见闭环率",
+                "width": 180,
+                "align": "right",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "commercial",
+                    "field": "commercial-closure-rate"
+                  }
+                }
+              },
+              {
+                "field": "contract-closure-rate",
+                "title": "合同决策意见闭环率",
+                "width": 180,
+                "align": "right",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "contract",
+                    "field": "contract-closure-rate"
+                  }
+                }
+              },
+              {
+                "field": "major-contract-sign-rate",
+                "title": "重大/高风险合同签署率",
+                "width": 200,
+                "align": "right",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "summary",
+                    "field": "major-contract-sign-rate"
+                  }
+                }
+              },
+              {
+                "field": "forbidden-clause-sign-rate",
+                "title": "禁止类条款签署率",
+                "width": 180,
+                "align": "right",
+                "sortable": true,
+                "pinnedTop": {
+                  "field": {
+                    "data": "summary",
+                    "field": "forbidden-clause-sign-rate"
+                  }
+                }
+              }
+            ],
+            "pinnedTop": {
+              "data": "summary",
+              "additionalData": [
+                "commercial",
+                "contract",
+                "yoy"
+              ]
+            }
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "region-dept"
+              },
               {
                 "filter": "region",
                 "part": "values",
-                "op": "isEmpty"
-              },
-              {
-                "all": [
-                  {
-                    "filter": "region",
-                    "part": "level",
-                    "op": "eq",
-                    "value": "region-dept"
-                  },
-                  {
-                    "filter": "region",
-                    "part": "values",
-                    "op": "isNotEmpty"
-                  }
-                ]
+                "op": "isNotEmpty"
               }
             ]
           }
@@ -2886,22 +3692,5 @@
         }
       ]
     }
-  ],
-  "iocHeader": {
-    "identity": {
-      "title": "业务结果指标情况"
-    },
-    "filterIds": [
-      "mtime",
-      "region",
-      "customer-class",
-      "key-account-only"
-    ],
-    "note": "地区部与代表处业务结果指标情况，内嵌合成演示数据（占位值），不来自真实系统，不得用于业务判断",
-    "presentation": {
-      "layout": "inline",
-      "density": "compact",
-      "collapse": "none"
-    }
-  }
+  ]
 }

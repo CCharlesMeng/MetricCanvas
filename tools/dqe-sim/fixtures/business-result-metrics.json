@@ -1,0 +1,10 @@
+{
+  "note": "全部业务事实为合成数据；组织编码复用本地候选字典。weight 仅是模拟聚合权重，不代表真实指标口径。支持 2024—2026 年，2026-11 为本期，2026-10 为上期，2025-11 为去年同期。",
+  "organizations": [
+    {"geo_pc_code":"R99","region_dept_code":"CN-NORTH","rep_office_code":"BJ-01","地区部":"华北地区部","代表处":"北京代表处","国内或海外":"国内","weight":1,"current":25,"previous":22,"yearAgo":23,"framework":80,"commercial":91,"contract":83,"major":3,"forbidden":2},
+    {"geo_pc_code":"R99","region_dept_code":"CN-NORTH","rep_office_code":"TJ-01","地区部":"华北地区部","代表处":"天津代表处","国内或海外":"国内","weight":3,"current":35,"previous":34,"yearAgo":38,"framework":70,"commercial":85,"contract":79,"major":5,"forbidden":1},
+    {"geo_pc_code":"R99","region_dept_code":"CN-EAST","rep_office_code":"SH-01","地区部":"华东地区部","代表处":"上海代表处","国内或海外":"国内","weight":2,"current":40,"previous":42,"yearAgo":40,"framework":90,"commercial":95,"contract":90,"major":2,"forbidden":0},
+    {"geo_pc_code":"R99","region_dept_code":"CN-EAST","rep_office_code":"HZ-01","地区部":"华东地区部","代表处":"杭州代表处","国内或海外":"国内","weight":4,"current":20,"previous":18,"yearAgo":15,"framework":85,"commercial":88,"contract":86,"major":4,"forbidden":2},
+    {"geo_pc_code":"TBD-APAC","region_dept_code":"APAC","rep_office_code":"SG-01","地区部":"亚太地区部","代表处":"新加坡代表处","国内或海外":"海外","weight":2,"current":35,"previous":33,"yearAgo":36,"framework":75,"commercial":82,"contract":80,"major":6,"forbidden":3}
+  ]
+}

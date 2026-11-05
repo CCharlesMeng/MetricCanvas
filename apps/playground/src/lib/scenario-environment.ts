@@ -1,6 +1,7 @@
 import {createIocHeaderControlsPreview} from '../../fixtures/ioc-header-controls';
 import {createSourceCandidatesPreview} from '../../fixtures/source-candidates';
 import {createRegionURLGateway} from '../../fixtures/region-url';
+import {businessResultSimDisplayInputs,businessResultSimGateway} from '../../fixtures/business-result-sim';
 import {createGlobalBenchmarkPreview} from '../../fixtures/global-benchmark';
 import {createRowCachePreview} from '../../fixtures/row-expansion-cache';
 import {createPeriodComparisonPreview} from '../../fixtures/period-comparison';
@@ -47,6 +48,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if(kind==='business-result-sim')return {dataGateway:businessResultSimGateway(dataGateway),displayInputs:businessResultSimDisplayInputs};
   if(kind==='header-controls')return createIocHeaderControlsPreview();
   if(kind==='source-candidates')return createSourceCandidatesPreview(state);
   if(kind==='global-benchmark')return createGlobalBenchmarkPreview(state);

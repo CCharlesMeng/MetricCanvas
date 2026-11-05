@@ -4,6 +4,7 @@ import { executeTableEnhancements } from './table-enhancements';
 import { executeObjectQuery } from './object-query';
 import { executeBusinessDecisionDetails } from './business-decision-details';
 import { executeRecordQueryParams } from './record-query-params';
+import { executeBusinessResultMetrics } from './business-result-metrics';
 import { executeRejectionDetails } from './rejection-details';
 import { executeQueryModes } from './query-modes';
 import { executeStoredCountMeasures } from './stored-count-measures';
@@ -162,7 +163,7 @@ const customerActivityDetailDimensions = [
 
 /** Exact demo handlers retain their previous precedence. */
 function executeLocalDemo(item:unknown):DqeSimItemResult|undefined {
-  for(const execute of [executeLoadingStructure,executeHierarchySelection,executeTableEnhancements,executeRejectionDetails,executeBusinessDecisionDetails,executeRecordQueryParams,executeObjectQuery,iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeStoredCountMeasures,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
+  for(const execute of [executeBusinessResultMetrics,executeLoadingStructure,executeHierarchySelection,executeTableEnhancements,executeRejectionDetails,executeBusinessDecisionDetails,executeRecordQueryParams,executeObjectQuery,iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeStoredCountMeasures,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
     const result=execute(item);if(result)return result;
   }
 }

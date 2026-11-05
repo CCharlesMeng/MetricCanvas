@@ -960,10 +960,10 @@
   }
   .selectable-cell {
     width: 100%;
-    padding: 2px 6px;
+    padding: 2px 0;
     color: inherit;
     background: transparent;
-    border: 1px solid transparent;
+    border: 0;
     border-radius: 6px;
     cursor: pointer;
     font: inherit;
