@@ -246,7 +246,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。
 
 
-页面协议 6.88。结构真源为本册[schema.json](schema.json)，SHA256 `595dbafce93cdab6dab8f6e7fcb87793efd78ceecf40b135b1a656806db3aea7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.89。结构真源为本册[schema.json](schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

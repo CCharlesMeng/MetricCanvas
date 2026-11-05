@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.88",
+  "schemaVersion": "6.89",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-8044e7e5"
@@ -13,6 +13,19 @@
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。\n\n6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:\"period\"}` 读取已应用状态；`{param, format:\"period\"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。\n\n<a id=\"field-selection\"></a>"
       ],
       "rules": [
+        {
+          "id": "adaptive-money-trimmed",
+          "description": "6.88 新金额格式与静态货币匹配，旧格式保持",
+          "valid": [
+            "operation-money-formats"
+          ],
+          "invalid": [
+            "adaptive-money-before-6.88",
+            "adaptive-money-default-currency",
+            "adaptive-money-binding-currency",
+            "adaptive-money-nondefault-currency"
+          ]
+        },
         {
           "id": "currency-selection",
           "description": "6.38金额范围和静态货币字段选择",
@@ -171,7 +184,8 @@
         "references/page-metadata/examples/chart-constant-values-page.json",
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
-        "references/page-metadata/examples/authoring-percent-coverage.json"
+        "references/page-metadata/examples/authoring-percent-coverage.json",
+        "references/page-metadata/examples/operation-money-formats.json"
       ]
     }
   ],

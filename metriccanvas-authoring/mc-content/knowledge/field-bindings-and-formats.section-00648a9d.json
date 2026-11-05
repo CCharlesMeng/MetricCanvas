@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.88",
+  "schemaVersion": "6.89",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-00648a9d"
@@ -13,6 +13,19 @@
         "## 同比格式（6.87）\n\n`yoy-p-signed` 是固定的同比展示预设，先将原始数值四舍五入保留两位小数，再乘100，以无千分位的整数追加大写 `P`。例如 `0.123456 → 0.12 → +12P`、`-0.05678 → -0.06 → -6P`、`0.29 → +29P`。它不执行同比计算，也不猜测输入刻度；只改变展示，计算、排序和筛选仍使用原值。需要已经采用0–100刻度、不乘100的百分点差值时，沿用 `points-1-signed`。\n\n表格列示例：\n\n```json\n{\n  \"field\": { \"data\": \"main\", \"field\": \"yoy\", \"format\": \"yoy-p-signed\" },\n  \"colorRule\": { \"mode\": \"sign\", \"positive\": \"red\", \"negative\": \"green\" }\n}\n```\n\n也可声明数值结果字段的 `defaultFormat: \"yoy-p-signed\"`，显式绑定格式优先。正负号、按正负着色和变化箭头共用舍入后的方向；`±0.004`、`0` 和负零均显示 `0P`，无符号、普通颜色、无箭头；`±0.005` 分别显示 `+1P`、`-1P`。固定颜色规则仍按已有约定为有效零着色。缺失值显示 `—` 或绑定的 `missingText`。仅6.87及以后可声明，旧版本使用时报能力版本错误，原有格式保持原行为。\n\n合成验收入口 `/pages/yoy-p-format-demo`，无需查询服务或URL参数。运行 `pnpm dev:playground` 后打开该路由，核对原值列、显式格式列和字段默认列；正值红色、负值绿色，零与缺失值普通颜色。"
       ],
       "rules": [
+        {
+          "id": "adaptive-money-trimmed",
+          "description": "6.88 新金额格式与静态货币匹配，旧格式保持",
+          "valid": [
+            "operation-money-formats"
+          ],
+          "invalid": [
+            "adaptive-money-before-6.88",
+            "adaptive-money-default-currency",
+            "adaptive-money-binding-currency",
+            "adaptive-money-nondefault-currency"
+          ]
+        },
         {
           "id": "currency-selection",
           "description": "6.38金额范围和静态货币字段选择",
@@ -171,7 +184,8 @@
         "references/page-metadata/examples/chart-constant-values-page.json",
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
-        "references/page-metadata/examples/authoring-percent-coverage.json"
+        "references/page-metadata/examples/authoring-percent-coverage.json",
+        "references/page-metadata/examples/operation-money-formats.json"
       ]
     }
   ],

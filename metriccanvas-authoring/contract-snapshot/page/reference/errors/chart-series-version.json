@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴 由 6.88 引入，文档声明的是 6.87",
+      "message": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴 由 6.89 引入，文档声明的是 6.88",
       "paths": [
         "/sections/1/components/0/props/series/2/visibleWhen",
         "/sections/1/components/1/props/series/0/visibleWhen"

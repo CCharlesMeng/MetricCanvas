@@ -1,5 +1,6 @@
 import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
 import { formatPeriod } from '@metriccanvas/page/internal';
+import { formatAdaptiveMoney } from './adaptive-money-format';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 type SignedNumberFormat = Extract<ValueFormatPreset, `number${string}-signed`>;
@@ -62,6 +63,10 @@ function formatStandardNumber(numeric: number, format: ValueFormatPreset): strin
       return `${formatNumber(numeric,2,true)}美元`;
     case 'cny-adaptive':
       return formatCnyAdaptive(numeric);
+    case 'cny-adaptive-trimmed':
+    case 'cny-adaptive-trimmed-no-yuan':
+    case 'usd-adaptive-km':
+      return formatAdaptiveMoney(numeric, format);
     default: return formatCompactNumber(numeric, format);
   }
 }

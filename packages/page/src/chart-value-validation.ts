@@ -2,6 +2,7 @@ import type { Component } from './page';
 import type { ComponentValueSource } from './component-value';
 import type { TypedError } from './errors';
 import { walkDocumentComponents } from './component-walk';
+import { moneyFormatCurrency } from './field';
 
 interface Position { source: ComponentValueSource; path: string }
 function positions(component: Component): Position[] {
@@ -22,17 +23,11 @@ export function chartConstantErrors(component: Component, path: string): TypedEr
   return positions(component).flatMap(position => {
     const {source} = position;
     if (!Object.hasOwn(source, 'value')) return [];
-    const expected = constantFormatCurrency(source.format);
+    const expected = moneyFormatCurrency(source.format);
     if (!expected || source.currency === expected) return [];
     return [{type: 'SCHEMA_ERROR' as const, path: `${path}/props${position.path}/currency`,
       message: `常量金额格式要求显式 currency: ${expected}`}];
   });
-}
-
-function constantFormatCurrency(format: ComponentValueSource['format']): 'CNY' | 'USD' | undefined {
-  if (format === 'cny-adaptive') return 'CNY';
-  if (format === 'usd-adaptive') return 'USD';
-  return undefined;
 }
 
 /** Before legacy JSON copying can turn NaN/Infinity into null or erase undefined. */

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.88",
+  "schemaVersion": "6.89",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "fields.format"
@@ -12,9 +12,23 @@
         "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\nformat优先于字段defaultFormat；未设置时走组件/类型的既有格式行为。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。",
         "## 柱线图数值格式一致性\n\n柱状图、折线图及柱线混合图的数值标签和悬浮提示统一调用通用格式化：组件字段绑定 `format` 优先，其次字段 `defaultFormat`；常量使用自身 `format`。字段或常量均未声明格式时，默认采用 `number-2`，保留两位小数；不自动分组或缩放为万。显式 `number` 可保留原值。真实零保留；缺失节点不补零，悬浮提示使用绑定的 `missingText` 或“—”。系列图例显示名称，名称中的数字不作为度量格式化。\n\n同一数值轴上的系列格式一致时，刻度使用该格式；格式不一致时，刻度使用不带单位的 `number-2`，各系列标签和悬浮提示仍保留各自格式。隐藏轴及显式高级呈现配置继续遵循原声明。\n\n旧 `showSegmentLabels`、`showStackTotalLabels`、`showPointLabels` 也遵循上述优先级；`reportForecast` 不再隐式将无格式的轴和标签缩放为万。依赖旧隐式万单位的页面需在字段或绑定中显式声明 `compact-wan-0`；已声明格式的页面行为不变。本次修正呈现默认行为，不新增字段或 Schema 版本，也不改变原始数值、查询和排序。\n\n验收入口：`/pages/chart-number-format`，内联合成数据，覆盖默认两位小数、零、负值、缺失、格式继承和显式保留原值。",
         "## 百分比创作与覆盖边界\n\n创作工具使用可信 `scale: \"percent\"`，或无冲突的 `%` / `％` 原始单位，确认原值已是百分数刻度。完整、部分和未知覆盖均可默认采用 `percent-2`；覆盖率只限制依赖全量分布的紧凑尺度推断。来源 `defaultFormat: \"number*\"` 是显示建议，不能覆盖已确认的百分数刻度；工具改用 `percent-2` 并返回 `PRESENTATION_FORMAT_ADJUSTED`，关联数据源和字段身份。来源原始描述保留。`fraction`、`unknown` 和已缩放刻度不能据名称猜为百分数，也不自动乘100。\n\n组件显式 `format` 仍优先，已有页面或没有来源描述的显式默认格式保持；本批不重写已有页面或保存规则。`percent-*` 最多保留两位小数，微小非零值如 `0.0001` 用 `percent-2` 显示 `0.00%`。工具保留百分号及原值，并返回 `PRESENTATION_PRECISION_LIMIT`，不改成无单位的 number 来掩盖限制；需要核对时可在明细列显式用 `number` 查看原值。零与缺失分别显示 `0.00%` 与缺失文案。\n\n场景 `/pages/authoring-percent-coverage` 使用程序格式决策对应的 inline 合成数据：12.5 显示 12.50%，微小正负值在相邻原值列可核对，显式 `percent-1` 显示 12.5%。它验证渲染与覆盖优先级；真实查询覆盖、格式调整和精度告警由查询回归验证，不代表真实 DQE 或 Relay 已接入。local 直接编辑页面沿此相同格式语义，静态校验不宣称已验证来源业务刻度。",
-        "## 同比格式（6.87）\n\n`yoy-p-signed` 是固定的同比展示预设，先将原始数值四舍五入保留两位小数，再乘100，以无千分位的整数追加大写 `P`。例如 `0.123456 → 0.12 → +12P`、`-0.05678 → -0.06 → -6P`、`0.29 → +29P`。它不执行同比计算，也不猜测输入刻度；只改变展示，计算、排序和筛选仍使用原值。需要已经采用0–100刻度、不乘100的百分点差值时，沿用 `points-1-signed`。\n\n表格列示例：\n\n```json\n{\n  \"field\": { \"data\": \"main\", \"field\": \"yoy\", \"format\": \"yoy-p-signed\" },\n  \"colorRule\": { \"mode\": \"sign\", \"positive\": \"red\", \"negative\": \"green\" }\n}\n```\n\n也可声明数值结果字段的 `defaultFormat: \"yoy-p-signed\"`，显式绑定格式优先。正负号、按正负着色和变化箭头共用舍入后的方向；`±0.004`、`0` 和负零均显示 `0P`，无符号、普通颜色、无箭头；`±0.005` 分别显示 `+1P`、`-1P`。固定颜色规则仍按已有约定为有效零着色。缺失值显示 `—` 或绑定的 `missingText`。仅6.87及以后可声明，旧版本使用时报能力版本错误，原有格式保持原行为。\n\n合成验收入口 `/pages/yoy-p-format-demo`，无需查询服务或URL参数。运行 `pnpm dev:playground` 后打开该路由，核对原值列、显式格式列和字段默认列；正值红色、负值绿色，零与缺失值普通颜色。"
+        "## 同比格式（6.87）\n\n`yoy-p-signed` 是固定的同比展示预设，先将原始数值四舍五入保留两位小数，再乘100，以无千分位的整数追加大写 `P`。例如 `0.123456 → 0.12 → +12P`、`-0.05678 → -0.06 → -6P`、`0.29 → +29P`。它不执行同比计算，也不猜测输入刻度；只改变展示，计算、排序和筛选仍使用原值。需要已经采用0–100刻度、不乘100的百分点差值时，沿用 `points-1-signed`。\n\n表格列示例：\n\n```json\n{\n  \"field\": { \"data\": \"main\", \"field\": \"yoy\", \"format\": \"yoy-p-signed\" },\n  \"colorRule\": { \"mode\": \"sign\", \"positive\": \"red\", \"negative\": \"green\" }\n}\n```\n\n也可声明数值结果字段的 `defaultFormat: \"yoy-p-signed\"`，显式绑定格式优先。正负号、按正负着色和变化箭头共用舍入后的方向；`±0.004`、`0` 和负零均显示 `0P`，无符号、普通颜色、无箭头；`±0.005` 分别显示 `+1P`、`-1P`。固定颜色规则仍按已有约定为有效零着色。缺失值显示 `—` 或绑定的 `missingText`。仅6.87及以后可声明，旧版本使用时报能力版本错误，原有格式保持原行为。\n\n合成验收入口 `/pages/yoy-p-format-demo`，无需查询服务或URL参数。运行 `pnpm dev:playground` 后打开该路由，核对原值列、显式格式列和字段默认列；正值红色、负值绿色，零与缺失值普通颜色。",
+        "## 金额去尾零与美元KM（6.88）\n\n新增三种显式格式；旧 `cny-adaptive` 和 `usd-adaptive` 保持既有精度、补零和单位。基础金额仍为元或美元，不执行汇率换算。按币种选择两个静态 money 字段，不能仅给同一个数值换符号。万元/K 预缩放数据须在进入货币金额字段前还原基本单位，不能重复缩放。\n\n| 格式 | 币种 | 规则 |\n|---|---|---|\n| `cny-adaptive-trimmed-no-yuan` | CNY | 人民币 A：小额无“元”，万/亿带单位 |\n| `cny-adaptive-trimmed` | CNY | 人民币 B：小额带“元”，万/亿带单位 |\n| `usd-adaptive-km` | USD | 美元 $/K/M，符号均在数字后 |\n\n人民币两种格式都按原始绝对值选档：＜1万取整；1万～＜10万除1万，最多1位小数；10万～＜1亿除1万取整；1亿～＜10亿除1亿，最多2位小数；≥10亿除1亿，最多1位小数。两种格式只在万元以下的“元”后缀上不同。\n\n美元按原始绝对值选档：＜1万取整加 `$`；1万～＜100万除1000，最多1位小数加 `K`；100万～＜1亿除1000取整加 `K`；≥1亿除100万取整加 `M`。\n\n数字部分一律去尾零、加千分位。对绝对值四舍五入后恢复负号，正数不加 `+`；原始负零和舍入后的零不带负号。舍入不重新选档：9,999.6美元显示 `10,000$`，99,999,999元显示 `10,000万`，不是重新提升单位。±105,000元分别显示 `11万`、`-11万`；±1,005,500美元分别显示 `1,006K`、`-1,006K`。这些为明确规范化的业务规则，不复刻旧系统字符串位数和负数 Math.round 的偶然行为。\n\n```json\n{\n  \"valueField\": {\n    \"byFilter\": {\n      \"filterId\": \"currency\",\n      \"cases\": {\n        \"RMB\": { \"data\": \"main\", \"field\": \"amount-cny\", \"format\": \"cny-adaptive-trimmed\" },\n        \"USD\": { \"data\": \"main\", \"field\": \"amount-usd\", \"format\": \"usd-adaptive-km\" }\n      }\n    }\n  }\n}\n```\n\n`amount-cny` 声明 `type:\"money\", role:\"measure\", currency:\"CNY\"`；`amount-usd` 声明相应 USD；currency 筛选为 required 单选封闭枚举。默认格式、直接组件绑定、非默认 byFilter case 和图表常量都检查币种一致性。数值参数也可显式使用这些格式；组件绑定优先于字段 defaultFormat。选择投影抑制重复的独立单位文案；小额无“元”的 A 格式也不额外补“元”。\n\n合成页面 `/pages/operation-money-formats` 同时展示人民币 A/B、美元和旧格式，并以币种筛选驱动指标卡、图表和表格。屏幕及静态呈现消费同一格式函数；XLSX 保留基本单位原数值与币种标题，不把 `2.5亿`、`250M` 当作金额数据写回。此场景只证明本地合成数据、展示及导出，不代表真实 Operation Map、DQE、Relay 或部署验收。完整声明见[合成验收页](examples/operation-money-formats.json)，启动与操作见仓库 pages/capabilities/data/README.md。"
       ],
       "rules": [
+        {
+          "id": "adaptive-money-trimmed",
+          "description": "6.88 新金额格式与静态货币匹配，旧格式保持",
+          "valid": [
+            "operation-money-formats"
+          ],
+          "invalid": [
+            "adaptive-money-before-6.88",
+            "adaptive-money-default-currency",
+            "adaptive-money-binding-currency",
+            "adaptive-money-nondefault-currency"
+          ]
+        },
         {
           "id": "currency-selection",
           "description": "6.38金额范围和静态货币字段选择",
@@ -173,7 +187,8 @@
         "references/page-metadata/examples/chart-constant-values-page.json",
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
-        "references/page-metadata/examples/authoring-percent-coverage.json"
+        "references/page-metadata/examples/authoring-percent-coverage.json",
+        "references/page-metadata/examples/operation-money-formats.json"
       ]
     }
   ],
@@ -194,7 +209,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.88",
+        "$id": "https://metriccanvas/page/v6.89",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.88",
+  "schemaVersion": "6.89",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-4e53c1de"
@@ -13,6 +13,19 @@
         "## 柱线图数值格式一致性\n\n柱状图、折线图及柱线混合图的数值标签和悬浮提示统一调用通用格式化：组件字段绑定 `format` 优先，其次字段 `defaultFormat`；常量使用自身 `format`。字段或常量均未声明格式时，默认采用 `number-2`，保留两位小数；不自动分组或缩放为万。显式 `number` 可保留原值。真实零保留；缺失节点不补零，悬浮提示使用绑定的 `missingText` 或“—”。系列图例显示名称，名称中的数字不作为度量格式化。\n\n同一数值轴上的系列格式一致时，刻度使用该格式；格式不一致时，刻度使用不带单位的 `number-2`，各系列标签和悬浮提示仍保留各自格式。隐藏轴及显式高级呈现配置继续遵循原声明。\n\n旧 `showSegmentLabels`、`showStackTotalLabels`、`showPointLabels` 也遵循上述优先级；`reportForecast` 不再隐式将无格式的轴和标签缩放为万。依赖旧隐式万单位的页面需在字段或绑定中显式声明 `compact-wan-0`；已声明格式的页面行为不变。本次修正呈现默认行为，不新增字段或 Schema 版本，也不改变原始数值、查询和排序。\n\n验收入口：`/pages/chart-number-format`，内联合成数据，覆盖默认两位小数、零、负值、缺失、格式继承和显式保留原值。"
       ],
       "rules": [
+        {
+          "id": "adaptive-money-trimmed",
+          "description": "6.88 新金额格式与静态货币匹配，旧格式保持",
+          "valid": [
+            "operation-money-formats"
+          ],
+          "invalid": [
+            "adaptive-money-before-6.88",
+            "adaptive-money-default-currency",
+            "adaptive-money-binding-currency",
+            "adaptive-money-nondefault-currency"
+          ]
+        },
         {
           "id": "currency-selection",
           "description": "6.38金额范围和静态货币字段选择",
@@ -171,7 +184,8 @@
         "references/page-metadata/examples/chart-constant-values-page.json",
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
-        "references/page-metadata/examples/authoring-percent-coverage.json"
+        "references/page-metadata/examples/authoring-percent-coverage.json",
+        "references/page-metadata/examples/operation-money-formats.json"
       ]
     }
   ],

@@ -1,0 +1,33 @@
+{
+  "case": "adaptive-money-nondefault-currency",
+  "invariant": "adaptive-money-trimmed",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "金额格式与静态货币不匹配",
+      "paths": [
+        "/sections/0/components/1/props"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "title": "所选币种金额",
+              "rows": [
+                {
+                  "…": "共3个键"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

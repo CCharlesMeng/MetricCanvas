@@ -56,7 +56,7 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {id:'chart-series-visibility',description:'系列展示条件与类型引用校验、版本下限共用现有展示规则',valid:['chart-series-visibility'],cases:[
-    {case:'chart-series-version',base:'chart-series-visibility',expect:/6.88/,mutate:d=>{d.schemaVersion='6.87';}},
+    {case:'chart-series-version',base:'chart-series-visibility',expect:/6.89/,mutate:d=>{d.schemaVersion='6.88';}},
     {case:'chart-series-unknown-filter',base:'chart-series-visibility',expect:/条件引用了不存在/,mutate:d=>{d.sections[1].components[0].props.series[2].visibleWhen={filter:'unknown',part:'value',op:'eq',value:true};}},
     {case:'chart-series-row-context',base:'chart-series-visibility',expect:/缺少行上下文/,mutate:d=>{d.sections[1].components[0].props.series[2].visibleWhen={row:'sales',op:'gt',value:1};}}
   ]},
@@ -266,6 +266,12 @@ export const invariants: InvariantDefinition[] = [
     {case:'time-window-static-options',base:'calendar-window-page',expect:/动态平面/,mutate:d=>{d.filters[1].options=[{value:'2026-01',label:'一月'}];}}
   ]},
 
+  {id:'adaptive-money-trimmed',description:'6.88 新金额格式与静态货币匹配，旧格式保持',valid:['operation-money-formats'],cases:[
+    {case:'adaptive-money-before-6.88',base:'operation-money-formats',expect:/由 6.88 引入/,mutate:d=>{d.schemaVersion='6.87';}},
+    {case:'adaptive-money-default-currency',base:'operation-money-formats',expect:/金额格式必须匹配静态货币/,mutate:d=>{d.dataSources.cases.fields['cny-a'].currency='USD';}},
+    {case:'adaptive-money-binding-currency',base:'operation-money-formats',expect:/金额格式与静态货币不匹配/,mutate:d=>{d.sections[0].components[4].props.columns[1].field.format='usd-adaptive-km';}},
+    {case:'adaptive-money-nondefault-currency',base:'operation-money-formats',expect:/金额格式与静态货币不匹配/,mutate:d=>{d.sections[0].components[1].props.rows[0].valueField.byFilter.cases.USD.format='cny-adaptive-trimmed';}}
+  ]},
   {id:'currency-selection',description:'6.38金额范围和静态货币字段选择',valid:['currency-selection-page'],cases:[
     {case:'currency-before-6.38',base:'currency-selection-page',expect:/由 6.38 引入/,mutate:d=>{d.schemaVersion='6.37';}},
     {case:'currency-case-missing',base:'currency-selection-page',expect:/穷尽/,mutate:d=>{delete d.sections[0].components[2].props.columns[1].field.byFilter.cases.USD;}},

@@ -47,7 +47,7 @@ Report整页导出按声明顺序展开全部Tab，补齐普通数据，只捕�
 6.49起声明混合内容或显式grid的容器使用 `tab.<组件id>` 保存活动项，优先于 `initialTabUrlParam` 的合法初值；旧表格容器仍按显式参数只初始化、不回写。两个入口均拒绝重复键并回退默认页签。独立筛选使用当前 `filterGroup` 组件，Tab内容包括已存在的筛选按钮组和受控按钮，仍遵守各自布局形态与动作约束。
 
 
-页面协议 6.88。结构真源为本册[schema.json](../schema.json)，SHA256 `595dbafce93cdab6dab8f6e7fcb87793efd78ceecf40b135b1a656806db3aea7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.89。结构真源为本册[schema.json](../schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

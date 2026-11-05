@@ -468,7 +468,8 @@
         "chart-constant-values-page",
         "chart-constant-branches",
         "period-comparison-demo",
-        "authoring-percent-coverage"
+        "authoring-percent-coverage",
+        "operation-money-formats"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -489,7 +490,8 @@
         "presentation-capability",
         "signed-number-format-capability",
         "signed-number-family-capability",
-        "currency-selection"
+        "currency-selection",
+        "adaptive-money-trimmed"
       ]
     },
     "actions-and-navigation.md": {
@@ -2170,7 +2172,11 @@
     "#/properties/schemaVersion=\"6.85\"": "表头字符串维度参数初值与显式全选不限。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior=\"unrestricted\"": "选中完整显式枚举集时省略该列条件，回显不限，可包含原有 null 和未知值。",
     "#/properties/schemaVersion=\"6.86\"": "季度查询使用 quarter 与 YYYY-Qn 起止编码。",
-    "#/properties/schemaVersion=\"6.88\"": "图表系列展示条件与系列、图例、提示项、空闲轴的同步显隐。"
+    "#/properties/schemaVersion=\"6.89\"": "图表系列展示条件与系列、图例、提示项、空闲轴的同步显隐。",
+    "cny-adaptive-trimmed": "6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。",
+    "cny-adaptive-trimmed-no-yuan": "6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。",
+    "usd-adaptive-km": "6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。",
+    "#/properties/schemaVersion=\"6.88\"": "新增人民币双呈现与美元 K/M 金额格式，旧格式语义不变。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2410,7 +2416,8 @@
       "headings": [
         "柱线图数值格式一致性",
         "百分比创作与覆盖边界",
-        "同比格式（6.87）"
+        "同比格式（6.87）",
+        "金额去尾零与美元KM（6.88）"
       ],
       "dependencies": []
     },
@@ -2899,7 +2906,7 @@
         "#/definitions/chartSeries"
       ],
       "headings": [
-        "系列条件显隐（6.88）"
+        "系列条件显隐（6.89）"
       ],
       "dependencies": [
         "conditions.overview"
@@ -3005,7 +3012,8 @@
       "图表配置项常量取值（6.59）",
       "百分点差值（6.77）",
       "柱线图数值格式一致性",
-      "同比格式（6.87）"
+      "同比格式（6.87）",
+      "金额去尾零与美元KM（6.88）"
     ],
     "actions-and-navigation.md": [
       "查阅方式",
@@ -3038,14 +3046,14 @@
       "查阅方式",
       "常量取值（6.59）",
       "数值格式",
-      "系列条件显隐（6.88）"
+      "系列条件显隐（6.89）"
     ],
     "components/lineChart.md": [
       "双轴刻度与网格线",
       "查阅方式",
       "常量取值（6.59）",
       "数值格式",
-      "系列条件显隐（6.88）"
+      "系列条件显隐（6.89）"
     ],
     "components/pieChart.md": [
       "表格式图例与顺序（6.64）",

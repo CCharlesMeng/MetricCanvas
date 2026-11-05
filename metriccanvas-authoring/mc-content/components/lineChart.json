@@ -32,7 +32,7 @@
   "knowledge": "lineChart.overview",
   "reference": "references/page-metadata/components/lineChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.88",
+  "currentWriter": "6.89",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/mixed-page.json",
@@ -139,11 +139,11 @@
     },
     {
       "file": "references/page-metadata/examples/chart-series-visibility.json",
-      "requiredVersion": "6.88",
+      "requiredVersion": "6.89",
       "capabilities": [
         {
           "id": "chart-series-visibility",
-          "minor": 88,
+          "minor": 89,
           "description": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴"
         },
         {

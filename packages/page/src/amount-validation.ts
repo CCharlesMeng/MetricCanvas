@@ -1,7 +1,7 @@
 import type {Page} from './page';
 import type {TypedError} from './errors';
 import {exhaustiveCases,numberRangeIssue,rangeInBaseUnits} from './amount-filter';
-import {hasQueryFieldMapping} from './field';
+import {hasQueryFieldMapping,moneyFormatMatchesCurrency} from './field';
 export function amountErrors(page:Page):TypedError[]{
  const errors:TypedError[]=[],filters=page.filters??[];
  const fail=(path:string,message:string)=>errors.push({type:'SCHEMA_ERROR',path,message});
@@ -41,7 +41,7 @@ export function amountErrors(page:Page):TypedError[]{
 export function moneyComputeErrors(page:Page):TypedError[]{
  const errors:TypedError[]=[];
  for(const [id,source]of Object.entries(page.dataSources)){
-  for(const [fieldId,field]of Object.entries(source.fields))if(field.type==='money'&&((field.currency==='USD'&&field.defaultFormat==='cny-adaptive')||(field.currency==='CNY'&&field.defaultFormat==='usd-adaptive')))errors.push({type:'SCHEMA_ERROR',path:`/dataSources/${id}/fields/${fieldId}`,message:'金额格式必须匹配静态货币'});
+  for(const [fieldId,field]of Object.entries(source.fields))if(field.type==='money'&&!moneyFormatMatchesCurrency(field.defaultFormat,field.currency))errors.push({type:'SCHEMA_ERROR',path:`/dataSources/${id}/fields/${fieldId}`,message:'金额格式必须匹配静态货币'});
   for(const [i,op]of (source.compute??[]).entries()){
    const ids=op.op==='sumFields'?op.fields:op.op==='selectField'?Object.values(op.cases):op.op==='delta'?[op.minuend,op.subtrahend]:op.op==='ratio'?[op.numerator,op.denominator]:op.op==='cagr'?[op.beginning,op.ending]:[];
    const money=ids.map(id=>source.fields[id]).filter(field=>field?.type==='money');

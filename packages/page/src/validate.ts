@@ -59,6 +59,7 @@ import {
 import type { TypedError } from './errors';
 import {
   staticFieldBinding,
+  moneyFormatMatchesCurrency,
   fieldName as fieldNameOf,
   hasQueryFieldMapping,
   type FieldBinding,
@@ -2480,7 +2481,7 @@ function resolveBinding(
   if (field === undefined) {
     return { error: `字段 ${fieldName} 不在数据槽 ${slot} 的数据源 ${sourceId} 中` };
   }
-  if(field.type==='money'&&typeof binding!=='string'&&((binding.format==='cny-adaptive'&&field.currency!=='CNY')||(binding.format==='usd-adaptive'&&field.currency!=='USD')))return {error:'金额格式与静态货币不匹配'};
+  if(field.type==='money'&&typeof binding!=='string'&&!moneyFormatMatchesCurrency(binding.format,field.currency))return {error:'金额格式与静态货币不匹配'};
   return { field, fieldName };
 }
 

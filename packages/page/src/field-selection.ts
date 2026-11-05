@@ -1,7 +1,7 @@
 import {chartOptionScopes,isExtensibleChart} from './chart-option';
 import type {Page,Component,ComponentData} from './page';
 import type {FieldBinding,StaticFieldBinding,FieldDefinition} from './field';
-import {fieldName} from './field';
+import {fieldName,moneyFormatCurrency,moneyFormatMatchesCurrency} from './field';
 import {walkPageComponents} from './component-walk';
 import {exhaustiveCases,selectedCase} from './amount-filter';
 import type {TypedError} from './errors';
@@ -28,16 +28,22 @@ export function projectComponentFields(page:Page,component:Component,values:Sele
   if('props' in value&&'type' in value&&'id' in value)return value;
   const object=Object.fromEntries(Object.entries(value).map(([key,item])=>[key,project(item)]));
   for(const [key,item]of Object.entries(value))if(isSelection(item)){
-    const field=definition(page,component,object[key] as StaticFieldBinding);
-    if(field){const unit=('unit' in field?field.unit:undefined)??(field.type==='money'?(field.currency==='USD'?'美元':'元'):undefined);const label=field.label??fieldName(object[key] as StaticFieldBinding);
-      const leaf=object[key] as StaticFieldBinding;const format=(typeof leaf==='string'?undefined:leaf.format)??('defaultFormat' in field?field.defaultFormat:undefined);
-      if('unit'in object || key==='valueField')object.unit=format==='cny-adaptive'||format==='usd-adaptive'?'':unit;
-      if(component.type==='table'&&key==='field'&&'title' in object)object.title=unit?`${label}（${unit}）`:label;
-    }
+    projectSelectedMetadata(page,component,object,key);
   }
   return object;
  }
  return {...component,props:project(component.props)} as Component;
+}
+function fieldUnit(field:FieldDefinition):string|undefined {
+ return ('unit' in field?field.unit:undefined)??(field.type==='money'?(field.currency==='USD'?'美元':'元'):undefined);
+}
+function projectSelectedMetadata(page:Page,component:Component,object:Record<string,unknown>,key:string):void {
+ const leaf=object[key] as StaticFieldBinding,field=definition(page,component,leaf);
+ if(!field)return;
+ const unit=fieldUnit(field),label=field.label??fieldName(leaf);
+ const format=(typeof leaf==='string'?undefined:leaf.format)??('defaultFormat' in field?field.defaultFormat:undefined);
+ if('unit' in object||key==='valueField')object.unit=moneyFormatCurrency(format)?'':unit;
+ if(component.type==='table'&&key==='field'&&'title' in object)object.title=unit?`${label}（${unit}）`:label;
 }
 /** Pure applied-state projection; no first-case or currency fallback. */
 export function projectFieldSelections(page:Page,values:SelectionValues,pending=false):Page {
@@ -59,7 +65,7 @@ export function fieldSelectionErrors(page:Page):TypedError[]{
    if(field&&field.type!=='money')errors.push({type:'SCHEMA_ERROR',path:path+'/props',message:`货币字段选择case ${value}需要静态money字段`});
    const range=page.filters?.find(f=>f.type==='numberRange'&&f.units?.filterId===selection.filterId);
    if(field?.type==='money'&&range?.type==='numberRange'&&range.units?.cases[value]?.currency!==field.currency)errors.push({type:'SCHEMA_ERROR',path:path+'/props',message:'字段选择币种与units case不匹配'});
-   if(field?.type==='money'&&typeof leaf!=='string'&&((leaf.format==='cny-adaptive'&&field.currency!=='CNY')||(leaf.format==='usd-adaptive'&&field.currency!=='USD')))errors.push({type:'SCHEMA_ERROR',path:path+'/props',message:'金额格式与静态货币不匹配'});
+   if(field?.type==='money'&&typeof leaf!=='string'&&!moneyFormatMatchesCurrency(leaf.format,field.currency))errors.push({type:'SCHEMA_ERROR',path:path+'/props',message:'金额格式与静态货币不匹配'});
   }
  },opaque));return errors;
 }

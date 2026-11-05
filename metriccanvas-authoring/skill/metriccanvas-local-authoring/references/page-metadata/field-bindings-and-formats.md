@@ -139,8 +139,42 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 
 合成验收入口 `/pages/yoy-p-format-demo`，无需查询服务或URL参数。运行 `pnpm dev:playground` 后打开该路由，核对原值列、显式格式列和字段默认列；正值红色、负值绿色，零与缺失值普通颜色。
 
+## 金额去尾零与美元KM（6.88）
 
-页面协议 6.88。结构真源为本册[schema.json](schema.json)，SHA256 `595dbafce93cdab6dab8f6e7fcb87793efd78ceecf40b135b1a656806db3aea7`。字段表自动生成；可选不等于有默认值。
+新增三种显式格式；旧 `cny-adaptive` 和 `usd-adaptive` 保持既有精度、补零和单位。基础金额仍为元或美元，不执行汇率换算。按币种选择两个静态 money 字段，不能仅给同一个数值换符号。万元/K 预缩放数据须在进入货币金额字段前还原基本单位，不能重复缩放。
+
+| 格式 | 币种 | 规则 |
+|---|---|---|
+| `cny-adaptive-trimmed-no-yuan` | CNY | 人民币 A：小额无“元”，万/亿带单位 |
+| `cny-adaptive-trimmed` | CNY | 人民币 B：小额带“元”，万/亿带单位 |
+| `usd-adaptive-km` | USD | 美元 $/K/M，符号均在数字后 |
+
+人民币两种格式都按原始绝对值选档：＜1万取整；1万～＜10万除1万，最多1位小数；10万～＜1亿除1万取整；1亿～＜10亿除1亿，最多2位小数；≥10亿除1亿，最多1位小数。两种格式只在万元以下的“元”后缀上不同。
+
+美元按原始绝对值选档：＜1万取整加 `$`；1万～＜100万除1000，最多1位小数加 `K`；100万～＜1亿除1000取整加 `K`；≥1亿除100万取整加 `M`。
+
+数字部分一律去尾零、加千分位。对绝对值四舍五入后恢复负号，正数不加 `+`；原始负零和舍入后的零不带负号。舍入不重新选档：9,999.6美元显示 `10,000$`，99,999,999元显示 `10,000万`，不是重新提升单位。±105,000元分别显示 `11万`、`-11万`；±1,005,500美元分别显示 `1,006K`、`-1,006K`。这些为明确规范化的业务规则，不复刻旧系统字符串位数和负数 Math.round 的偶然行为。
+
+```json
+{
+  "valueField": {
+    "byFilter": {
+      "filterId": "currency",
+      "cases": {
+        "RMB": { "data": "main", "field": "amount-cny", "format": "cny-adaptive-trimmed" },
+        "USD": { "data": "main", "field": "amount-usd", "format": "usd-adaptive-km" }
+      }
+    }
+  }
+}
+```
+
+`amount-cny` 声明 `type:"money", role:"measure", currency:"CNY"`；`amount-usd` 声明相应 USD；currency 筛选为 required 单选封闭枚举。默认格式、直接组件绑定、非默认 byFilter case 和图表常量都检查币种一致性。数值参数也可显式使用这些格式；组件绑定优先于字段 defaultFormat。选择投影抑制重复的独立单位文案；小额无“元”的 A 格式也不额外补“元”。
+
+合成页面 `/pages/operation-money-formats` 同时展示人民币 A/B、美元和旧格式，并以币种筛选驱动指标卡、图表和表格。屏幕及静态呈现消费同一格式函数；XLSX 保留基本单位原数值与币种标题，不把 `2.5亿`、`250M` 当作金额数据写回。此场景只证明本地合成数据、展示及导出，不代表真实 Operation Map、DQE、Relay 或部署验收。完整声明见[合成验收页](examples/operation-money-formats.json)，启动与操作见仓库 pages/capabilities/data/README.md。
+
+
+页面协议 6.89。结构真源为本册[schema.json](schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -272,7 +306,7 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -293,6 +327,9 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format`。
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
 | "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
+| "cny-adaptive-trimmed" | 6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。 |
+| "cny-adaptive-trimmed-no-yuan" | 6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。 |
+| "usd-adaptive-km" | 6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -643,6 +680,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-family-capability`：两位小数与千分位带符号数值格式由6.18引入。反例：[signed-number-two-decimal-before-6.18](errors/signed-number-two-decimal-before-6.18.json)、[signed-number-grouped-before-6.18](errors/signed-number-grouped-before-6.18.json)、[signed-number-family-param-before-6.18](errors/signed-number-family-param-before-6.18.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `adaptive-money-trimmed`：6.88 新金额格式与静态货币匹配，旧格式保持。反例：[adaptive-money-before-6.88](errors/adaptive-money-before-6.88.json)、[adaptive-money-default-currency](errors/adaptive-money-default-currency.json)、[adaptive-money-binding-currency](errors/adaptive-money-binding-currency.json)、[adaptive-money-nondefault-currency](errors/adaptive-money-nondefault-currency.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -658,6 +696,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - [chart-constant-branches](examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [authoring-percent-coverage](examples/authoring-percent-coverage.json)：完整合法页面；查询仅为静态契约证据。
+- [operation-money-formats](examples/operation-money-formats.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
