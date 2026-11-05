@@ -1678,6 +1678,11 @@
   }
   .table-widget.os-theme tbody td.positive { color: var(--mc-color-positive, #52c41a); }
   .table-widget.os-theme tbody td.negative { color: var(--mc-color-negative, #f5222d); }
+  .table-widget.os-theme .selectable-cell {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+  }
   .table-widget.os-theme .link-cell { color: #191919; }
   .table-widget.os-theme tbody td:is(.explicit-color, .positive, .negative, .danger) .link-cell { color: inherit; }
   .table-widget.os-theme th.fixed, .table-widget.os-theme td.fixed {
