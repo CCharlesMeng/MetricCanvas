@@ -267,6 +267,16 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 ## 自动同比环比查询（6.77）
 
+### 按页头完整期间比较（6.92）
+
+不需要统计进度对齐时，声明 `periodComparison:{"kind":"previousYear"}`，省略 `fact`。直接将已应用的页头时间前移一年；`current` 使用原期间，`previousPeriod` 按月前移一月、季度前移三月、年和近一年前移十二月。无需 `displayInputs`、本地日期或预览适配器。年、季、月及近一年均查询完整已选自然期间，近一年不在请求时重新定位。
+
+这条路径的指标查询明确使用 `filter.time:{"period":"month","is_aggregate":true}`，保留范围内的服务端聚合；例如2026年10月请求2026-10与2025-10，季度请求对应三个月，年度请求十二个月。显式 `fact` 的旧声明仍按下文可信截止进度查询日范围，缺失或过期时继续拒绝，不能悄悄回退完整期间。两种口径不可混用到同一比较组。
+
+业务完整场景 `/pages/business-result-metrics-2` 使用普通 DQE 网关，无专属宿主事实或候选字典。全局、地区部、代表处、时间切换和独立合计说明见 `pages/temporary/business-result-config-audit-20261105/README.md`。普通维度候选可以复用网关的真实维度查询，并附上请求已声明的层级；不编造跨层级父子归属，时间/布尔上下文不受支持时明确不可用。
+
+### 按可信统计截止日期比较（6.77）
+
 顶部 `display: "period"` 时间筛选可驱动三个普通查询源，分别查询本期、上期及去年同期。每个源须声明 `resultScope: "complete"`，共用相同业务条件、稳定业务键和可信截止事实；不能带 limit/offset 或查询分页。绑定示例：
 
 ```json
@@ -274,6 +284,8 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 ```
 
 `kind` 为 `current`、`previousPeriod` 或 `previousYear`；`fact` 引用宿主 `DisplayInputsSnapshot.periods`，必须为当前权限上下文和筛选版本下的 ready 事实。`latest` 是实际统计截止时间，日精度使用该日、月精度使用该月末；不能用浏览器当前日期、URL 或页面自报日期替代。事实缺失、过期或所选期间尚未开始统计时明确失败。事实更新重新查询，不复用未记录事实上下文的 initial。
+
+查询准备阶段（包括可信截止事实校验）失败时，屏幕读取为该数据源发布结构化错误，依赖它的计算结果失败；其他独立数据源继续完成，不能因单个失败让整页停在 loading。缺失事实的请求不发送到 DQE，补齐事实后可重新查询；取消仍取消整轮读取，严格完整导出仍失败，允许部分结果的读取保留错误快照。
 
 先将本期截至 `min(所选期间末日, latest)`，再派生基期：月环比前移一月，季度环比前移三月，年度和近一年环比前移一年；同比统一前移一年。因此年度、近一年同环比基期相同。近一年仍指已应用的前十二个完整月，不在请求或导出时重新按时钟定位。未完成期间保持相同日历进度，闰日/月末截到目标月最后一天；已完成期间比较完整自然期间。
 
@@ -302,7 +314,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
 
 
-页面协议 6.91。结构真源为本册[schema.json](schema.json)，SHA256 `9e9217ecfb77717814f363d2ba03898e8fcc61f7cd3d3e816cd91d6fcde50815`。字段表自动生成；可选不等于有默认值。
+页面协议 6.92。结构真源为本册[schema.json](schema.json)，SHA256 `4b6d8c6d814f7b0e53f41aae381c0792a513cb44712262af2cf026e7252dd780`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1070,7 +1082,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | required=["kind","fact"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
+| "object" | 本分支可选 | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f6b696e64"></a>
 
@@ -1096,7 +1108,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
 
@@ -1693,7 +1705,7 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | required=["kind","fact"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
+| "object" | 本分支可选 | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f6b696e64"></a>
 
@@ -1719,7 +1731,7 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
 
@@ -2224,7 +2236,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | required=["kind","fact"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
+| "object" | 本分支可选 | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按已应用期间和可信截止事实派生本期、上期或去年同期；与periodPolicy/window互斥。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64436f6d70617269736f6e2f70726f706572746965732f6b696e64"></a>
 
@@ -2250,7 +2262,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
 

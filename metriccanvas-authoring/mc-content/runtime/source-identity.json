@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f982d6d9a56725b05ee140e18eb22ed92c24102186c66499169e622cc3feab98",
+  "sha256": "a1a6ce43b6055591a1b5838bbf51f4bb59b0b7212dd66511332c0afbc627050f",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -156,11 +156,11 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "28816673172c56373ce88b983eea5e59692cfc606294216ae3d3e8c658351f50"
+      "sha256": "fd3cef51b4c9d50a8dc6babaa6ea5acfaed1c14ad81c725edb77fc47ae408148"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "15d3152452951cef25f7df73b79f96b1939ccbaf5f49909b822a6e44ca6bb99e"
+      "sha256": "57a4e721c80a351cbc3bfff9f1b8fe9ce04915b768daf5e79515a0fdaaac96ec"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1704,11 +1704,11 @@
     },
     {
       "file": "packages/page/src/period-comparison-validation.ts",
-      "sha256": "aab351bf0ea83ecb7d43d58f5e4da2e1433c7373b50eafaacf564c835ae5bee6"
+      "sha256": "739c090ef8e380b4128f96f774e059f417946522b73b6f7f173e9479544cbd67"
     },
     {
       "file": "packages/page/src/period-comparison.ts",
-      "sha256": "7e82cffe718a9f69a7de1d3e347f3031d9259731202969998f9d212593faead7"
+      "sha256": "db0f18d1a8ab6bb416037eb5d246199e7c41131bf9c10f559eb0602114f7e458"
     },
     {
       "file": "packages/page/src/period-facts.ts",
@@ -1892,7 +1892,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "1357397ca45133a89b53ed735323d2cac9dd8af318587fa09d278542eb2d31f7"
+      "sha256": "c7248d4953d617ebd1467b30d2345ebd6ffcbb1e16fa4f8b01137ca89b747d9e"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -2092,7 +2092,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "8582bb67572657dc6f4c9bee5d6decdebb3ac107d3e64bcef2d599e763f73d3b"
+      "sha256": "b75a36508fea322981c01b2bad1a1a24ce187d16625fe1e25acb6536e865770c"
     },
     {
       "file": "pages/README.md",
@@ -2312,7 +2312,7 @@
     },
     {
       "file": "pages/capabilities/data/period-comparison/README.md",
-      "sha256": "77d44e6261b1ce4ae6405a063ccefbf54bd4eb91a8281961a94426d6b324167d"
+      "sha256": "573c33d2d8c9b2309747489a6b20d1399f77663d4109e5a94fd266b1a8157f10"
     },
     {
       "file": "pages/capabilities/data/period-comparison/period-comparison-demo.json",
@@ -2616,15 +2616,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "a0532fc5e4ddea9e0f1546b5d4d764748cc6d11b343cc1d6eef8613d3993cd4e"
+      "sha256": "1ced54fa1da98d65577632beab47f043d9532fcb1c7a6d882b86678c355fd384"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "f6f38560026f053289ef8770fb10294bd309d1065265dc59f3e585b567e2a660"
+      "sha256": "8581fb5517092e085d4128de941bc73286389e66bbb0766f77669153abb0c72c"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "0bb6cabd11254a9d1a44081c8e3e1f042ce6c9a8ddc8dc41c4cb051b079d5136"
+      "sha256": "762cf3a9dbb7b98bd0b61e004ad807a1afcd365bd6795b2400490488352a7620"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2940,11 +2940,11 @@
     },
     {
       "file": "pages/temporary/business-result-config-audit-20261105/README.md",
-      "sha256": "64983be34222c067fa9598cf68f4bac89339d616ac8f2b8f8a4853d1c7a210dd"
+      "sha256": "9fd613122b7b8e198aef222e1a7ac34200596c8741b7c5e24453dda8fc49243b"
     },
     {
       "file": "pages/temporary/business-result-config-audit-20261105/business-result-metrics-2.json",
-      "sha256": "f05c548ea1b85f6b8a33f105aa99d663d9b2fac1e46dc9152bb58fdfe41f47a5"
+      "sha256": "2e6b9193ef6ffcafee67bf09b3c97690c1a6a2237baed95b91a61e3304d039d4"
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/README.md",
@@ -3132,7 +3132,7 @@
     },
     {
       "file": "pnpm-lock.yaml",
-      "sha256": "262e1c587c5ca0634a8565d303dc0bc6745b463c9f6c30c96299b7f35ac655e1"
+      "sha256": "a1078d4494fc1c5f425ced586c45960011e676cabc9eab75e20e24a66c74bf5b"
     },
     {
       "file": "tools/fixtures/legacy-contracts/README.md",

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.92：期间比较可省略 `fact`，直接按页头已应用的完整期间查询本期、去年同期和上期，无需预览或宿主截止事实；旧显式 fact 仍保持进度对齐与缺失拒绝。见[完整期间比较](docs/page-metadata/queries-and-bindings.md#按页头完整期间比较692)，入口 `/pages/business-result-metrics-2`。
+
 可选 IOC Region 空选时首屏立即查询，不等待组织候选；有选值及显式候选上下文仍执行原校验。候选弹层固定搜索框，仅列表滚动。声明边界与业务页验收见[筛选器](docs/page-metadata/filters.md)，入口 `/pages/region-authorization-norms`；不新增 Schema 字段。
 
 6.91：IOC 页头通过 `props.components` 组合 `filterControl` 和内置标准 Region 的 `regionFilter`，复用现有筛选、查询与集成应用接线。旧 `filterIds` 继续读取。见[页头子控件](docs/page-metadata/components/iocHeader.md#页头子控件691)，合成验收 `/pages/ioc-header-controls`。
@@ -38,7 +40,7 @@ IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或
 
 6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。
 
-6.77 增加期间比较查询 `periodComparison`、逐度量缺记录策略和百分点格式 `points-1-signed`。年/季/月/近一年按可信统计进度派生基期，完整结果关联后支持排序、筛选、分页及导出。见[自动同比环比查询](docs/page-metadata/queries-and-bindings.md)，合成验收 `/pages/period-comparison-demo`。
+6.77 增加期间比较查询 `periodComparison`、逐度量缺记录策略和百分点格式 `points-1-signed`。年/季/月/近一年按可信统计进度派生基期，完整结果关联后支持排序、筛选、分页及导出。见[自动同比环比查询](docs/page-metadata/queries-and-bindings.md)，合成验收 `/pages/period-comparison-demo`。 查询准备失败会发布数据源错误，其他独立查询继续完成；缺失宿主截止事实的可观察入口为 `/pages/period-comparison-demo?state=missing-fact`。
 
 6.75 增加 boolean 筛选器的 enabledWhen 和 boolean 候选依赖；候选约束传递显式 true/false，原本未选代表处时不因交集更新要求额外确认。跨页共享值由宿主显式接入，各页面独立管理候选与查询状态。见[重点国代筛选集成](docs/page-metadata/filters.md#boolean-candidate-context)，合成验收入口 `/pages/key-office-filter-demo` 和 `/pages/key-office-filter-target`。
 

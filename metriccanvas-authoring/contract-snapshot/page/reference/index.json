@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.91",
-  "schemaSha256": "9e9217ecfb77717814f363d2ba03898e8fcc61f7cd3d3e816cd91d6fcde50815",
+  "schemaVersion": "6.92",
+  "schemaSha256": "4b6d8c6d814f7b0e53f41aae381c0792a513cb44712262af2cf026e7252dd780",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -324,7 +324,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "1357397ca45133a89b53ed735323d2cac9dd8af318587fa09d278542eb2d31f7"
+      "sha256": "c7248d4953d617ebd1467b30d2345ebd6ffcbb1e16fa4f8b01137ca89b747d9e"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -1982,7 +1982,8 @@
         "6.88",
         "6.89",
         "6.90",
-        "6.91"
+        "6.91",
+        "6.92"
       ]
     },
     {
@@ -5689,7 +5690,7 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact",
       "path": "@dqeQuery.filterBindings{key} · anyOf[2].periodComparison.fact",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "queries-and-bindings.md"
     },
     {
@@ -6060,7 +6061,7 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact",
       "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.fact",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "queries-and-bindings.md"
     },
     {
@@ -6375,7 +6376,7 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/periodComparison/properties/fact",
       "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].periodComparison.fact",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "queries-and-bindings.md"
     },
     {

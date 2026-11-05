@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "6.86",
+  "schemaVersion": "6.92",
   "id": "business-result-metrics-2",
   "layout": "dashboard",
   "meta": {
     "title": "业务结果指标情况",
-    "description": "地区部与代表处业务结果指标情况明细表。展示净商务折扣、净商务折扣同比变化、框架执行率、商务决策意见闭环率、合同决策意见闭环率、重大/高风险合同签署率与禁止类条款签署率。商务/合同决策意见闭环率来自契约 ZB0001419 决策闭环任务总体闭环率（dws_t_decision_closedloop_rate_compound_metric_global），按决策业务类型（商务/合同）透视后按地区部/代表处关联到主指标表。地区部表与代表处表分别消费两个粒度的决策闭环查询：代表处表消费 decision-closure-rate（output_dims 决策业务类型/地区部/代表处，pivot keyFields 地区部+代表处，按代表处关联）；地区部表消费 decision-closure-rate-region-dept（output_dims 决策业务类型/地区部，pivot keyFields 仅地区部，按地区部关联），避免 joinAggregate unique 在每个地区部匹配到多个代表处行时因取值歧义而失败。净商务折扣同比变化由两期 periodComparison 对比源（current/previousYear，fact net-discount-through）经 unionKeys→joinAggregate→delta 计算后 joinAggregate 补列进主表，仅绑 region+mtime，不绑站点筛选。本地 DQE Sim 返回合成数据，不来自真实系统，不得用于业务判断。"
+    "description": "地区部与代表处业务结果指标情况明细表。展示净商务折扣、净商务折扣同比变化、框架执行率、商务决策意见闭环率、合同决策意见闭环率、重大/高风险合同签署率与禁止类条款签署率。商务/合同决策意见闭环率来自契约 ZB0001419 决策闭环任务总体闭环率（dws_t_decision_closedloop_rate_compound_metric_global），按决策业务类型（商务/合同）透视后按地区部/代表处关联到主指标表。地区部表与代表处表分别消费两个粒度的决策闭环查询：代表处表消费 decision-closure-rate（output_dims 决策业务类型/地区部/代表处，pivot keyFields 地区部+代表处，按代表处关联）；地区部表消费 decision-closure-rate-region-dept（output_dims 决策业务类型/地区部，pivot keyFields 仅地区部，按地区部关联），避免 joinAggregate unique 在每个地区部匹配到多个代表处行时因取值歧义而失败。净商务折扣同比变化由两期 periodComparison 对比源（current/previousYear，按页头完整期间）经 unionKeys→joinAggregate→delta 计算后 joinAggregate 补列进主表，仅绑 region+mtime，不绑站点筛选。查询通过宿主真实 DQE 网关执行，无预览截止事实依赖。"
   },
   "filters": [
     {
@@ -122,7 +122,7 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "net-discount-yoy": {
           "type": "number",
@@ -137,7 +137,7 @@
           "role": "measure",
           "label": "框架执行率",
           "defaultFormat": "percent-1",
-          "queryField": "框架执行率"
+          "nullable": true
         },
         "commercial-closure-rate": {
           "type": "number",
@@ -158,13 +158,42 @@
           "role": "measure",
           "label": "重大/高风险合同签署率",
           "defaultFormat": "percent-1",
-          "queryField": "重大高风险合同率"
+          "nullable": true
         },
         "forbidden-clause-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "禁止类条款签署率",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
+        },
+        "framework-execution-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
+          "queryField": "框架执行率"
+        },
+        "major-contract-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "重大/高风险合同签署率",
+          "queryField": "重大高风险合同率"
+        },
+        "forbidden-clause-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "禁止类条款签署率",
           "queryField": "云计算BU禁止条款风险合同率"
         }
       },
@@ -213,6 +242,51 @@
         }
       },
       "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "framework-execution-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "framework-execution-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "major-contract-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "major-contract-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "forbidden-clause-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "forbidden-clause-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
         {
           "op": "joinAggregate",
           "source": "decision-closure-rate-region-dept",
@@ -430,6 +504,17 @@
           "label": "框架执行率",
           "unit": "%",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "framework-execution-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
           "queryField": "框架执行率"
         }
       },
@@ -482,7 +567,30 @@
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "framework-execution-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "framework-execution-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "decision-closure-trend": {
       "fields": {
@@ -669,7 +777,7 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "net-discount-yoy": {
           "type": "number",
@@ -684,7 +792,7 @@
           "role": "measure",
           "label": "框架执行率",
           "defaultFormat": "percent-1",
-          "queryField": "框架执行率"
+          "nullable": true
         },
         "commercial-closure-rate": {
           "type": "number",
@@ -705,13 +813,42 @@
           "role": "measure",
           "label": "重大/高风险合同签署率",
           "defaultFormat": "percent-1",
-          "queryField": "重大高风险合同率"
+          "nullable": true
         },
         "forbidden-clause-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "禁止类条款签署率",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
+        },
+        "framework-execution-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
+          "queryField": "框架执行率"
+        },
+        "major-contract-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "重大/高风险合同签署率",
+          "queryField": "重大高风险合同率"
+        },
+        "forbidden-clause-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "禁止类条款签署率",
           "queryField": "云计算BU禁止条款风险合同率"
         }
       },
@@ -760,6 +897,51 @@
         }
       },
       "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "framework-execution-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "framework-execution-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "major-contract-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "major-contract-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "forbidden-clause-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "forbidden-clause-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
         {
           "op": "joinAggregate",
           "source": "decision-closure-rate",
@@ -1038,6 +1220,17 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
           "queryField": "净商务折扣（原价）"
         }
       },
@@ -1059,7 +1252,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -1079,13 +1272,35 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "current",
-                "fact": "net-discount-through"
+                "kind": "current"
               }
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "net-discount-region-dept-year-ago": {
       "fields": {
@@ -1100,6 +1315,17 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
           "queryField": "净商务折扣（原价）"
         }
       },
@@ -1121,7 +1347,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -1141,13 +1367,35 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "previousYear",
-                "fact": "net-discount-through"
+                "kind": "previousYear"
               }
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "net-discount-region-dept-comparison": {
       "fields": {
@@ -1245,6 +1493,17 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
           "queryField": "净商务折扣（原价）"
         }
       },
@@ -1266,7 +1525,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -1286,13 +1545,35 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "current",
-                "fact": "net-discount-through"
+                "kind": "current"
               }
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "net-discount-rep-office-year-ago": {
       "fields": {
@@ -1307,6 +1588,17 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
           "queryField": "净商务折扣（原价）"
         }
       },
@@ -1328,7 +1620,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -1348,13 +1640,35 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "previousYear",
-                "fact": "net-discount-through"
+                "kind": "previousYear"
               }
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "net-discount-rep-office-comparison": {
       "fields": {
@@ -1446,27 +1760,56 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "framework-execution-rate": {
           "type": "number",
           "role": "measure",
           "label": "框架执行率",
           "defaultFormat": "percent-1",
-          "queryField": "框架执行率"
+          "nullable": true
         },
         "major-contract-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "重大/高风险合同签署率",
           "defaultFormat": "percent-1",
-          "queryField": "重大高风险合同率"
+          "nullable": true
         },
         "forbidden-clause-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "禁止类条款签署率",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
+        },
+        "framework-execution-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
+          "queryField": "框架执行率"
+        },
+        "major-contract-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "重大/高风险合同签署率",
+          "queryField": "重大高风险合同率"
+        },
+        "forbidden-clause-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "禁止类条款签署率",
           "queryField": "云计算BU禁止条款风险合同率"
         }
       },
@@ -1503,7 +1846,54 @@
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "framework-execution-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "framework-execution-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "major-contract-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "major-contract-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "forbidden-clause-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "forbidden-clause-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "region-dept-commercial-summary": {
       "fields": {
@@ -1620,27 +2010,56 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "framework-execution-rate": {
           "type": "number",
           "role": "measure",
           "label": "框架执行率",
           "defaultFormat": "percent-1",
-          "queryField": "框架执行率"
+          "nullable": true
         },
         "major-contract-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "重大/高风险合同签署率",
           "defaultFormat": "percent-1",
-          "queryField": "重大高风险合同率"
+          "nullable": true
         },
         "forbidden-clause-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "禁止类条款签署率",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
+        },
+        "framework-execution-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
+          "queryField": "框架执行率"
+        },
+        "major-contract-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "重大/高风险合同签署率",
+          "queryField": "重大高风险合同率"
+        },
+        "forbidden-clause-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "禁止类条款签署率",
           "queryField": "云计算BU禁止条款风险合同率"
         }
       },
@@ -1677,7 +2096,54 @@
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "framework-execution-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "framework-execution-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "major-contract-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "major-contract-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "forbidden-clause-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "forbidden-clause-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "rep-office-commercial-summary": {
       "fields": {
@@ -1831,7 +2297,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -1855,8 +2321,7 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "current",
-                "fact": "net-discount-through"
+                "kind": "current"
               }
             }
           }
@@ -1898,7 +2363,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -1922,8 +2387,7 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "previousPeriod",
-                "fact": "net-discount-through"
+                "kind": "previousPeriod"
               }
             }
           }
@@ -1965,7 +2429,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -1989,8 +2453,7 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "previousYear",
-                "fact": "net-discount-through"
+                "kind": "previousYear"
               }
             }
           }
@@ -2004,7 +2467,7 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "year-ago-rate": {
           "type": "number",
@@ -2020,6 +2483,17 @@
           "nullable": true,
           "unit": "P",
           "defaultFormat": "points-1-signed"
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
         }
       },
       "source": {
@@ -2038,7 +2512,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -2050,14 +2524,34 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "current",
-                "fact": "net-discount-through"
+                "kind": "current"
               }
             }
           }
         }
       },
       "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
         {
           "op": "joinAggregate",
           "source": "region-dept-summary-year-ago",
@@ -2086,6 +2580,17 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
           "queryField": "净商务折扣（原价）"
         }
       },
@@ -2105,7 +2610,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -2117,13 +2622,35 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "previousYear",
-                "fact": "net-discount-through"
+                "kind": "previousYear"
               }
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "rep-office-summary-comparison": {
       "fields": {
@@ -2132,7 +2659,7 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "year-ago-rate": {
           "type": "number",
@@ -2148,6 +2675,17 @@
           "nullable": true,
           "unit": "P",
           "defaultFormat": "points-1-signed"
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
         }
       },
       "source": {
@@ -2166,7 +2704,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -2178,14 +2716,34 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "current",
-                "fact": "net-discount-through"
+                "kind": "current"
               }
             }
           }
         }
       },
       "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
         {
           "op": "joinAggregate",
           "source": "rep-office-summary-year-ago",
@@ -2214,6 +2772,17 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
+          "nullable": true
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
           "queryField": "净商务折扣（原价）"
         }
       },
@@ -2233,7 +2802,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -2245,13 +2814,35 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "previousYear",
-                "fact": "net-discount-through"
+                "kind": "previousYear"
               }
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "rep-office-parent-summary": {
       "fields": {
@@ -2260,34 +2851,63 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "framework-execution-rate": {
           "type": "number",
           "role": "measure",
           "label": "框架执行率",
           "defaultFormat": "percent-1",
-          "queryField": "框架执行率"
+          "nullable": true
         },
         "major-contract-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "重大/高风险合同签署率",
           "defaultFormat": "percent-1",
-          "queryField": "重大高风险合同率"
+          "nullable": true
         },
         "forbidden-clause-sign-rate": {
           "type": "number",
           "role": "measure",
           "label": "禁止类条款签署率",
           "defaultFormat": "percent-1",
-          "queryField": "云计算BU禁止条款风险合同率"
+          "nullable": true
         },
         "region-dept-name": {
           "type": "string",
           "role": "dimension",
           "label": "地区部",
           "queryField": "地区部"
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
+        },
+        "framework-execution-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "框架执行率",
+          "queryField": "框架执行率"
+        },
+        "major-contract-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "重大/高风险合同签署率",
+          "queryField": "重大高风险合同率"
+        },
+        "forbidden-clause-sign-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "禁止类条款签署率",
+          "queryField": "云计算BU禁止条款风险合同率"
         }
       },
       "source": {
@@ -2333,7 +2953,54 @@
             }
           }
         }
-      }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "framework-execution-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "framework-execution-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "major-contract-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "major-contract-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "forbidden-clause-sign-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "forbidden-clause-sign-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
     },
     "rep-office-parent-commercial-summary": {
       "fields": {
@@ -2482,7 +3149,7 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "year-ago-rate": {
           "type": "number",
@@ -2504,6 +3171,17 @@
           "role": "dimension",
           "label": "地区部",
           "queryField": "地区部"
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
         }
       },
       "source": {
@@ -2524,7 +3202,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -2544,14 +3222,34 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "current",
-                "fact": "net-discount-through"
+                "kind": "current"
               }
             }
           }
         }
       },
       "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        },
         {
           "op": "joinAggregate",
           "source": "rep-office-parent-summary-year-ago",
@@ -2580,13 +3278,24 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "region-dept-name": {
           "type": "string",
           "role": "dimension",
           "label": "地区部",
           "queryField": "地区部"
+        },
+        "percent-unit": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "net-discount-rate-fraction": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "queryField": "净商务折扣（原价）"
         }
       },
       "source": {
@@ -2607,7 +3316,7 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "day",
+                    "period": "month",
                     "is_aggregate": true
                   }
                 },
@@ -2627,12 +3336,51 @@
             "mtime": {
               "target": "time",
               "periodComparison": {
-                "kind": "previousYear",
-                "fact": "net-discount-through"
+                "kind": "previousYear"
               }
             }
           }
         }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "percent-scale-unit",
+          "keys": [],
+          "values": [
+            {
+              "field": "one",
+              "output": "percent-unit",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "ratio",
+          "numerator": "net-discount-rate-fraction",
+          "denominator": "percent-unit",
+          "output": "net-discount-rate",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
+    },
+    "percent-scale-unit": {
+      "fields": {
+        "one": {
+          "type": "number",
+          "role": "measure",
+          "label": "百分刻度换算分母"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "one": 1
+          }
+        ]
       }
     }
   },
@@ -2657,7 +3405,7 @@
               "customer-class",
               "key-account-only"
             ],
-            "note": "DQE Sim 合成演示数据；同比为本期减去年同期，单位为百分点（P）；数据截至 2026-11-04。",
+            "note": "同比为页头所选期间减去年同期，单位为百分点（P）。",
             "presentation": {
               "layout": "inline",
               "density": "compact",
@@ -2678,7 +3426,7 @@
             "span": 12
           },
           "props": {
-            "body": "DQE Sim 合成演示数据；同比变化单位为百分点（P）。注：不含混合云（HCS）的数据。",
+            "body": "同比变化单位为百分点（P）。注：不含混合云（HCS）的数据。",
             "variant": "plain"
           }
         }

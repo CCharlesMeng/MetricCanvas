@@ -204,7 +204,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           source = appliedSource(id,source);
           if (raw.has(id)) return;
           const view = views.get(id) ?? defaultSourceView(page, id, limits.get(id));
-          if (contradictorySource(source)) { raw.set(id, { status: 'empty', totalCount: 0 }); return; }
+          const preflight = sourcePreflightSnapshot(source);
+          if (preflight) { raw.set(id, preflight); return; }
           const initial = availableInitial(id, source, view);
           if (initial) { reportInitialWarnings(source, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }); raw.set(id, initial); return; }
           const dependencies = queryResultDependencies(source);
@@ -253,7 +254,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
               captureJoinedResult(id, source as PagedJoinDataSource, view, plan, result);
             }
           } catch (cause) {
-            if (joinFailureMustPropagate(cause)) throw cause;
+            if (readFailureMustPropagate(cause)) throw cause;
             raw.set(id, { status: 'error', error: preservedQueryError(cause) });
           }
         }
@@ -305,6 +306,14 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           candidateRejected.add(id);
           raw.set(id, { status: 'error', error: { ...preservedQueryError(cause), message: '筛选候选校验失败' } });
         }
+        function sourcePreflightSnapshot(source: DataSource): DataSnapshot | undefined {
+          try {
+            if (contradictorySource(source)) return { status: 'empty', totalCount: 0 };
+          } catch (cause) {
+            if (readFailureMustPropagate(cause)) throw cause;
+            return { status: 'error', error: preservedQueryError(cause) };
+          }
+        }
         function contradictorySource(source: DataSource): boolean {
           return source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
         }
@@ -322,7 +331,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           if (initial) return checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] });
           if (source.source.type === 'inline') return rawSnapshot(source.source.rows);
         }
-        function joinFailureMustPropagate(cause: unknown): boolean {
+        function readFailureMustPropagate(cause: unknown): boolean {
           return request.signal.aborted || (request.purpose === 'complete' && (!request.allowPartial || cause instanceof SourceRangeError));
         }
         function captureJoinedResult(id: string, source: PagedJoinDataSource, view: TableQueryView, plan: ReturnType<typeof compilePagedJoin>, result: Awaited<ReturnType<typeof executePagedJoin>>): void {

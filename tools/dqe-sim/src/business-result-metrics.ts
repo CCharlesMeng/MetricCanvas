@@ -94,7 +94,10 @@ function weighted(group: Organization[], field: keyof Organization): number {
 
 function metricValue(group: Organization[], metric: string, time: ObjectValue, category: string): number {
   const fields: Record<string,keyof Organization> = {'净商务折扣（原价）':ratePeriod(time),'净商务折扣':ratePeriod(time),'净商务折扣均值':ratePeriod(time),'框架执行率':'framework','重大高风险合同率':'major','云计算BU禁止条款风险合同率':'forbidden','风险合同率':'major',[closure]:category === '合同' ? 'contract' : 'commercial'};
-  if (fields[metric]) return weighted(group,fields[metric]);
+  if (fields[metric]) {
+    const value = weighted(group,fields[metric]);
+    return mainMetrics.includes(metric) ? value / 100 : value;
+  }
   const weight = group.reduce((total,row) => total + row.weight,0);
   const amounts: Record<string,number> = {'框架目标消费金额':100000,'框架已达成金额':1000 * weighted(group,'framework'),'决策闭环任务总数(投标-商务-合同)':100,'已闭环任务数(投标-商务-合同)':weighted(group,fields[closure]),'合同总数':100,'风险合同数':weighted(group,'major')};
   return weight * amounts[metric];

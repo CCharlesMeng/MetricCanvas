@@ -75,7 +75,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 新条件仅可在 Schema 6.89 及以后声明，旧系列省略该字段时沿用原行为。本能力没有新增显示模式、轴显隐开关或脚本入口。
 
 
-页面协议 6.91。结构真源为本册[schema.json](../schema.json)，SHA256 `9e9217ecfb77717814f363d2ba03898e8fcc61f7cd3d3e816cd91d6fcde50815`。字段表自动生成；可选不等于有默认值。
+页面协议 6.92。结构真源为本册[schema.json](../schema.json)，SHA256 `4b6d8c6d814f7b0e53f41aae381c0792a513cb44712262af2cf026e7252dd780`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

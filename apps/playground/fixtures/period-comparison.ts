@@ -26,7 +26,8 @@ export function comparisonRows(query: EffectiveQuery): Row[] {
 export function createPeriodComparisonPreview(state='ready') {
   const requests:EffectiveQuery[]=[];
   let failed=false;
-  const displayInputs:DisplayInputs={getSnapshot:()=>comparisonInputs,subscribe(run){run(comparisonInputs);return ()=>{};}};
+  const inputs=state==='missing-fact'?{...comparisonInputs,periods:{}}:comparisonInputs;
+  const displayInputs:DisplayInputs={getSnapshot:()=>inputs,subscribe(run){run(inputs);return ()=>{};}};
   const dataGateway:RuntimeDataGateway={async fetchData(query,context,signal){
     signal?.throwIfAborted();requests.push(structuredClone(query));
     if((state==='error'||state==='retry'&&!failed)&&context?.dataSourceIds?.includes('year-ago')) {failed=true;throw new Error('合成比较期查询失败');}

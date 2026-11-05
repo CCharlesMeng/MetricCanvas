@@ -215,6 +215,7 @@ function selectedMetric(binding: FilterBinding, values: FilterValues): string | 
 function comparisonPredicates(binding: Extract<FilterBinding, {target:'time'}>, value: FilterValue | undefined, context: QueryBinding): Predicates {
   if (value?.type !== 'timeRange' || !value.selection) throw Object.assign(new Error('期间比较需要已应用的期间选择'), {code:'DQE_QUERY_REJECTED'});
   const range = resolvePeriodComparison({...value, selection:value.selection}, binding.periodComparison!, context.displayInputs, context.filterRevision);
-  const target = binding.queryField ? {queryField:binding.queryField,valueFormat:binding.valueFormat} : {period:'day' as const};
-  return [{target:'time',...target,value:range}];
+  const target = binding.queryField ? {queryField:binding.queryField,valueFormat:binding.valueFormat} : binding.periodComparison!.fact ? {period:'day' as const} : {};
+  const time = !binding.queryField && !binding.periodComparison!.fact ? {from:range.from.slice(0,7),to:range.to.slice(0,7)} : range;
+  return [{target:'time',...target,value:time}];
 }

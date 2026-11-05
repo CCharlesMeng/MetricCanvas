@@ -7,8 +7,8 @@ import type { Page } from './page';
 
 export interface PeriodComparison {
   kind: 'current' | 'previousPeriod' | 'previousYear';
-  /** Trusted host period fact; never an editable date or the client clock. */
-  fact: string;
+  /** Optional trusted cutoff. Omit to compare the full applied selection without host inputs. */
+  fact?: string;
 }
 function rejected(message: string): never {
   throw Object.assign(new Error(message), {code:'DQE_QUERY_REJECTED'});
@@ -24,16 +24,20 @@ function shiftMonth(value: string, offset: number, endOfMonth = false): string {
 }
 /** Freeze and clip the current window first, then shift its calendar progress. */
 export function resolvePeriodComparison(range: PeriodRange, comparison: PeriodComparison, inputs?: DisplayInputsSnapshot, revision?: number): TimeRangeValue {
-  const fact = periodFact(inputs, comparison.fact, revision);
-  if (fact.status !== 'ready') return rejected('统计截止时间不可用，无法计算同比环比；请刷新数据后重试');
   const from = calendarEndpoint(range.from), end = calendarEndpoint(range.to, true);
   if (validateCalendarTimeRange({from,to:end},'date').length) return rejected('比较期时间范围不合法');
   assertAppliedRange(range, from, end);
-  const cutoff = calendarEndpoint(fact.latest, true);
-  if (cutoff < from) return rejected('所选期间尚无已统计数据，请选择更早的期间');
-  const to = cutoff < end ? cutoff : end;
+  const to = comparisonEnd(from, end, comparison.fact, inputs, revision);
   const offset = comparison.kind === 'current' ? 0 : comparison.kind === 'previousYear' ? -12 : previousOffset(range);
   return {from:shiftMonth(from,offset),to:shiftMonth(to,offset,to === end)};
+}
+function comparisonEnd(from: string, end: string, factId: string | undefined, inputs?: DisplayInputsSnapshot, revision?: number): string {
+  if (factId === undefined) return end;
+  const fact = periodFact(inputs, factId, revision);
+  if (fact.status !== 'ready') return rejected('统计截止时间不可用，无法计算同比环比；请刷新数据后重试');
+  const cutoff = calendarEndpoint(fact.latest, true);
+  if (cutoff < from) return rejected('所选期间尚无已统计数据，请选择更早的期间');
+  return cutoff < end ? cutoff : end;
 }
 function previousOffset(range: PeriodRange): number {
   switch (range.selection.mode) {

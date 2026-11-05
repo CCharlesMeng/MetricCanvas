@@ -33,7 +33,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 `props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。完整内联合成入口 `/pages/chart-series-visibility`。
 
 
-页面协议 6.91。结构真源为本册[schema.json](../schema.json)，SHA256 `9e9217ecfb77717814f363d2ba03898e8fcc61f7cd3d3e816cd91d6fcde50815`。字段表自动生成；可选不等于有默认值。
+页面协议 6.92。结构真源为本册[schema.json](../schema.json)，SHA256 `4b6d8c6d814f7b0e53f41aae381c0792a513cb44712262af2cf026e7252dd780`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

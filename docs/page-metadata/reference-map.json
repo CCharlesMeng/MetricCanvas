@@ -2192,7 +2192,8 @@
     "usd-adaptive-km": "6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。",
     "#/properties/schemaVersion=\"6.88\"": "新增人民币双呈现与美元 K/M 金额格式，旧格式语义不变。",
     "#/properties/schemaVersion=\"6.90\"": "页面数据源完整候选、稳定值去重与父子节点独立单多选。",
-    "#/properties/schemaVersion=\"6.91\"": "IOC 页头显式组合 filterControl 与内置标准 Region 的 regionFilter，旧 filterIds 继续读取。"
+    "#/properties/schemaVersion=\"6.91\"": "IOC 页头显式组合 filterControl 与内置标准 Region 的 regionFilter，旧 filterIds 继续读取。",
+    "#/properties/schemaVersion=\"6.92\"": "期间比较可省略 fact，直接按已应用完整期间查询本期、上期和去年同期，无需宿主截止事实；显式 fact 保持原截止进度语义。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

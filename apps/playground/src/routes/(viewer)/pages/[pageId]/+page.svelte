@@ -1,5 +1,4 @@
 <script lang="ts">
-  import {businessResultSimDisplayInputs,businessResultSimGateway} from '../../../../../fixtures/business-result-sim';
   import {createIocHeaderControlsPreview} from "../../../../../fixtures/ioc-header-controls";
   import {createSourceCandidatesPreview} from '../../../../../fixtures/source-candidates';
   import {createRegionURLGateway} from '../../../../../fixtures/region-url';
@@ -11,7 +10,6 @@
   const queryComparisonPreview = $derived(createQueryComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
   const activeDisplayInputs = $derived.by(()=>{
     switch(pageExternalInputs(page.params.pageId)){
-      case 'business-result-sim': return businessResultSimDisplayInputs;
       case 'query-comparison': return queryComparisonPreview.displayInputs;
       case 'period-comparison': return comparisonPreview.displayInputs;
       case 'ioc-business': return businessPreview.displayInputs;
@@ -127,7 +125,6 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
-    if(input==='business-result-sim')return businessResultSimGateway(dataGateway);
     if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
     if(input==='source-candidates')return createSourceCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
     if(input==='global-benchmark')return createGlobalBenchmarkPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;

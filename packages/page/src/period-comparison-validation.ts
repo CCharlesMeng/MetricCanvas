@@ -34,17 +34,18 @@ function validateBinding(page:Page,id:string,binding:TimeBinding,query:DqeQueryD
   if (binding.window||binding.periodPolicy) error(path,'期间比较不能与 window 或 periodPolicy 同时声明');
   const item=query.body!.dsl_list[0];
   const config=item.filter as {time?:Record<string,unknown>}|undefined;
-  if (!binding.queryField && !isObjectDqeItem(item) && config?.time?.period!=='day') error(path,'相同统计进度比较需要显式日粒度 filter.time.period=day');
+  if (!binding.queryField && !isObjectDqeItem(item) && config?.time?.period!==comparisonPeriod(binding)) error(path,`期间比较需要显式 ${comparisonPeriod(binding)} 粒度 filter.time.period`);
   if (config?.time && ['start','end','param','window'].some(key=>key in config.time!)) error(path,'期间比较不能同时声明固定时间或时间参数');
   if (item.order && typeof item.order==='object' && ('limit' in item.order || 'offset' in item.order)) error(path,'期间比较源不能携带查询窗口');
 }
+function comparisonPeriod(binding:TimeBinding):'day'|'month' {return binding.periodComparison?.fact?'day':'month';}
 /** Inspect only declaration positions, never opaque request bodies or business rows. */
-export function comparisonCapabilityPaths(document: unknown): string[] {
+export function comparisonCapabilityPaths(document: unknown, selectionOnly = false): string[] {
   const found:string[]=[];
   for(const [id,value] of Object.entries(record(record(document)?.dataSources)??{})) {
     const source=record(value);
-    if(declaresComparison(record(source?.source)?.query))found.push(`/dataSources/${id}/source/query`);
-    if(Array.isArray(source?.compute))source.compute.forEach((value,index)=>{
+    if(declaresComparison(record(source?.source)?.query, selectionOnly))found.push(`/dataSources/${id}/source/query`);
+    if(!selectionOnly && Array.isArray(source?.compute))source.compute.forEach((value,index)=>{
       const op=record(value);
       if(op?.op==='joinAggregate'&&Array.isArray(op.values)&&op.values.some(value=>record(value)?.onMissing!==undefined))found.push(`/dataSources/${id}/compute/${index}/values`);
     });
@@ -54,13 +55,13 @@ export function comparisonCapabilityPaths(document: unknown): string[] {
 function record(value:unknown):Record<string,unknown>|undefined {
   return value&&typeof value==='object'&&!Array.isArray(value)?value as Record<string,unknown>:undefined;
 }
-function declaresComparison(value:unknown):boolean {
+function declaresComparison(value:unknown, selectionOnly = false):boolean {
   const query=record(value);
   if(!query)return false;
   if(Object.values(record(query.filterBindings)??{}).some(value=>{
-    const binding=record(value);return binding?.target==='time'&&binding.periodComparison!==undefined;
+    const binding=record(value);return binding?.target==='time'&&binding.periodComparison!==undefined&&(!selectionOnly || record(binding.periodComparison)?.fact===undefined);
   }))return true;
-  return ['queryModes','timeModes'].some(key=>Object.values(record(record(query[key])?.cases)??{}).some(declaresComparison));
+  return ['queryModes','timeModes'].some(key=>Object.values(record(record(query[key])?.cases)??{}).some(value=>declaresComparison(value,selectionOnly)));
 }
 
 function comparisonMemberContexts(page:Page):Map<string,boolean> {

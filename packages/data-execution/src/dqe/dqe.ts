@@ -1,3 +1,4 @@
+import {dimensionFilterCandidates} from './filter-candidates';
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
 import { fullQueryColumnCandidates } from './full-query-candidates';
 import { objectColumnCandidates } from './object-column-candidates';
@@ -19,6 +20,7 @@ import {
 } from '@metriccanvas/page/internal';
 import type {
   DataGateway,
+  FilterCandidatesGateway,
   DataGatewayResult,
   DimensionValueCandidate,
   DimensionValuesGateway,
@@ -166,7 +168,7 @@ export class DqeGatewayError extends Error {
  */
 export function createDqeGateway(
   config: DqeGatewayConfig = {}
-): DataGateway & DimensionValuesGateway {
+): DataGateway & DimensionValuesGateway & FilterCandidatesGateway {
   const {
     endpoint = DEFAULT_DQE_ENDPOINT,
     headers = {},
@@ -423,7 +425,7 @@ export function createDqeGateway(
     if (calls.length > 0) void executeBatch(calls);
   }
 
-  const gateway: DataGateway & DimensionValuesGateway = {
+  const gateway: DataGateway & DimensionValuesGateway & FilterCandidatesGateway = {
     fetchData(query, diagnosticContext, signal) {
       const execution = {
         executionId: `dqe-exec-${++sequence}`,
@@ -517,6 +519,7 @@ export function createDqeGateway(
       });
       return validateCandidatePage({ kind: 'values', candidates, totalCount: result.totalCount }, request.offset, request.limit);
     },
+    fetchFilterCandidates: dimensionFilterCandidates((dimension,options)=>fetchDimensionValuesOnce(dimension,options?.signal,options?.constraints)),
     fetchDimensionValues(dimension, options) {
       return fetchDimensionValuesOnce(dimension, options?.signal, options?.constraints);
     }

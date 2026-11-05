@@ -5,7 +5,6 @@ import type {DataSnapshot,JsonObject} from '../../../packages/page/src/internal'
 import {resolvePeriodSelection} from '../../../packages/page/src/internal';
 import {createDqeGateway} from '../../../packages/data-execution/src/dqe/dqe';
 import {createSourceProgram,initialFilterValues} from '../../../packages/data-execution/src/runtime';
-import {businessResultSimDisplayInputs,businessResultSimGateway} from '../../../apps/playground/fixtures/business-result-sim';
 import {executeDqeItem} from '../src/execute';
 import {createDqeSimServer,DQE_EXECUTE_PATH} from '../src/server';
 
@@ -25,15 +24,15 @@ afterAll(async () => {await new Promise<void>(resolve => server.close(() => reso
 
 function setup() {
   const requests: JsonObject[] = [];
-  const gateway = businessResultSimGateway(createDqeGateway({endpoint,fetchImpl:async (url,init) => {
+  const gateway = createDqeGateway({endpoint,fetchImpl:async (url,init) => {
     requests.push(...JSON.parse(String(init?.body)).dsl_list);
     const response = await fetch(url,init);
     expect(response.headers.get('x-request-id')).toMatch(/^dqe-sim-/);
     return response;
-  }}));
+  }});
   const now = new Date('2026-11-05T04:00:00Z');
   const conditions = initialFilterValues(page.filters ?? [],now);
-  const program = createSourceProgram(page,{gateway,now,displayInputs:businessResultSimDisplayInputs.getSnapshot});
+  const program = createSourceProgram(page,{gateway,now});
   const snapshots = new Map<string,DataSnapshot>();
   async function read(roots: string[]) {
     for await (const update of program.read({roots,conditions,useInitial:false})) snapshots.set(update.sourceId,update.snapshot);
@@ -70,7 +69,7 @@ it('uses actual HTTP and page computations for positive, negative and zero YoY, 
       expect(query.order).toEqual({});
       expect((query.filter as JsonObject).time).toMatchObject({is_aggregate:true});
     }
-    const historical = test.requests.filter(item => JSON.stringify(item).includes('2025-11-04'));
+    const historical = test.requests.filter(item => JSON.stringify(item).includes('2025-11'));
     expect(historical).toHaveLength(4);
   } finally {test.program.dispose();}
 });
@@ -116,8 +115,10 @@ it('queries the selected parent department grain independently for all office pi
     test.conditions.set('region',{type:'dimension',dimension:'region-dept-code',level:'region-dept',values:['CN-NORTH']});
     const roots = ['rep-office-parent-summary','rep-office-parent-commercial-summary','rep-office-parent-contract-summary','rep-office-parent-summary-comparison'];
     await test.read(roots);
-    expect(test.requests).toHaveLength(5);
-    for (const item of test.requests) {
+    const businessRequests = test.requests.filter(item => (item.output_metrics as string[]).length > 0);
+    expect(businessRequests).toHaveLength(5);
+    expect(test.requests.some(item => JSON.stringify(item.output_dims)==='["region-dept-code"]')).toBe(true);
+    for (const item of businessRequests) {
       expect(item.output_dims).toEqual(['地区部']);
       expect((item.filter as JsonObject).dims).toContainEqual(expect.objectContaining({dim_name:'region_dept_code',dim_value_list:['CN-NORTH']}));
     }
@@ -126,10 +127,48 @@ it('queries the selected parent department grain independently for all office pi
     const count = test.requests.length;
     test.conditions.set('mtime',{type:'timeRange',...resolvePeriodSelection({mode:'month',value:'2026-10'},new Date('2026-11-05T04:00:00Z'),'month')});
     await test.read(roots);
-    expect(test.requests.slice(count)).toHaveLength(5);
+    expect(test.requests.slice(count).filter(item => (item.output_metrics as string[]).length > 0)).toHaveLength(5);
     expect(test.requests.slice(count).map(item => (item.filter as JsonObject).time)).toEqual(expect.arrayContaining([
-      expect.objectContaining({start:'2026-10-01',end:'2026-10-31'}),
-      expect.objectContaining({start:'2025-10-01',end:'2025-10-31'})
+      expect.objectContaining({start:'2026-10',end:'2026-10'}),
+      expect.objectContaining({start:'2025-10',end:'2025-10'})
     ]));
   } finally {test.program.dispose();}
+});
+
+it('normalizes the supplied intranet ratio scales once while keeping already scaled closure percentages',async()=>{
+  // Only the metric values and response envelope from the supplied receipts are retained.
+  const actual={'框架执行率':0.9445598678212055,'净商务折扣（原价）':0.2445943839588495,'重大高风险合同率':0.0012738853503184713,'云计算BU禁止条款风险合同率':0};
+  const gateway=createDqeGateway({endpoint:'https://intranet.invalid/execute',fetchImpl:async(_url,init)=>{
+    const items=JSON.parse(String(init?.body)).dsl_list as JsonObject[];
+    const results=items.map(item=>{
+      const filter=item.filter as JsonObject,time=filter.time as JsonObject;
+      const dims=filter.dims as JsonObject[];
+      const contract=dims.some(dim=>JSON.stringify(dim.dim_value_list)==='["合同"]');
+      const metrics=item.output_metrics as string[];
+      const data=metrics.includes('决策闭环任务总体闭环率(投标-商务-合同)')
+        ? {'决策闭环任务总体闭环率(投标-商务-合同)':contract?105.88235294117648:148.38709677419354}
+        : Object.fromEntries(metrics.map(metric=>[metric,String(time.start).startsWith('2025')?0.2:actual[metric as keyof typeof actual]]));
+      return {code:'SUCCESS',data:[data],total_count:1,update_date:null};
+    });
+    return Response.json({retCode:'CBC.0000',retDesc:null,results});
+  }});
+  const now=new Date('2026-11-05T04:00:00Z'),conditions=initialFilterValues(page.filters??[],now);
+  conditions.set('mtime',{type:'timeRange',...resolvePeriodSelection({mode:'month',value:'2026-10'},now,'month')});
+  const program=createSourceProgram(page,{gateway,now});
+  const snapshots=new Map<string,DataSnapshot>();
+  try {
+    for await(const update of program.read({roots:['region-dept-summary','region-dept-summary-comparison','region-dept-commercial-summary','region-dept-contract-summary'],conditions,useInitial:false}))snapshots.set(update.sourceId,update.snapshot);
+    function value(id:string,field:string) {
+      const snapshot=snapshots.get(id);if(snapshot?.status!=='ready')throw Error(JSON.stringify(snapshot));
+      return snapshot.rows[0][field];
+    }
+    expect(value('region-dept-summary','net-discount-rate')).toBeCloseTo(24.45943839588495);
+    expect(value('region-dept-summary','framework-execution-rate')).toBeCloseTo(94.45598678212055);
+    expect(value('region-dept-summary','major-contract-sign-rate')).toBeCloseTo(0.12738853503184713);
+    expect(value('region-dept-summary','forbidden-clause-sign-rate')).toBe(0);
+    expect(value('region-dept-commercial-summary','commercial-closure-rate')).toBeCloseTo(148.38709677419354);
+    expect(value('region-dept-contract-summary','contract-closure-rate')).toBeCloseTo(105.88235294117648);
+    // The 0.2 prior-year ratio is synthetic; current values above are from the receipt.
+    expect(value('region-dept-summary-comparison','net-discount-yoy')).toBeCloseTo(4.45943839588495);
+  } finally {program.dispose();}
 });

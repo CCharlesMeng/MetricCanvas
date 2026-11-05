@@ -346,7 +346,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败不注入未配置的按钮或失败说明，失败状态也不显示“暂无数据”；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
 
 
-页面协议 6.91。结构真源为本册[schema.json](../schema.json)，SHA256 `9e9217ecfb77717814f363d2ba03898e8fcc61f7cd3d3e816cd91d6fcde50815`。字段表自动生成；可选不等于有默认值。
+页面协议 6.92。结构真源为本册[schema.json](../schema.json)，SHA256 `4b6d8c6d814f7b0e53f41aae381c0792a513cb44712262af2cf026e7252dd780`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

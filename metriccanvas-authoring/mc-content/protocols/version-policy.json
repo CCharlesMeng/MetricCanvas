@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 91,
-  "current": "6.91",
+  "minor": 92,
+  "current": "6.92",
   "capabilities": {
+    "selection-period-comparison": {
+      "minor": 92,
+      "description": "直接按已应用完整期间查询同比环比，无需宿主截止事实",
+      "legacyReadable": false
+    },
     "ioc-header-controls": {
       "minor": 91,
       "description": "IOC 页头组合筛选控件及内置 RegionFilter",
@@ -896,6 +901,7 @@
     "6.88",
     "6.89",
     "6.90",
-    "6.91"
+    "6.91",
+    "6.92"
   ]
 }

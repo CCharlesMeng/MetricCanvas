@@ -71,3 +71,25 @@ it('rejects tampered applied ranges instead of shifting a different calendar per
   const rolling=resolvePeriodSelection({mode:'last12Months'},now);
   expect(()=>resolvePeriodComparison({...rolling,to:'2026-09-29'},{kind:'previousYear',fact:'sales'},inputs())).toThrow('完整自然月');
 });
+
+it.each([
+ [{mode:'month',value:'2026-10'},'current','2026-10-01','2026-10-31'],
+ [{mode:'month',value:'2026-10'},'previousYear','2025-10-01','2025-10-31'],
+ [{mode:'month',value:'2024-02'},'previousYear','2023-02-01','2023-02-28'],
+ [{mode:'quarter',value:'2026-Q4'},'previousYear','2025-10-01','2025-12-31'],
+ [{mode:'quarter',value:'2026-Q4'},'previousPeriod','2026-07-01','2026-09-30'],
+ [{mode:'year',value:'2026'},'previousYear','2025-01-01','2025-12-31'],
+ [{mode:'last12Months'},'previousYear','2024-10-01','2025-09-30']
+] as const)('compares the full applied selection without host facts: %j %s',(selection,kind,from,to)=>{
+ const range=resolvePeriodSelection(selection,now);
+ expect(resolvePeriodComparison(range,{kind})).toEqual({from,to});
+ expect(resolvePeriodComparison(range,{kind},inputs('2026-01-01'))).toEqual({from,to});
+});
+it('gates fact-free month comparison at 6.92 and rejects invalid supplied fact ids',()=>{
+ const raw=document();raw.schemaVersion='6.92';
+ for(const id of ['current','previous','year-ago']){delete raw.dataSources[id].source.query.filterBindings.period.periodComparison.fact;raw.dataSources[id].source.query.body.dsl_list[0].filter.time.period='month';}
+ expect(parsePage(raw).ok).toBe(true);
+ raw.schemaVersion='6.91';expect(parsePage(raw).ok).toBe(false);
+ raw.schemaVersion='6.92';raw.dataSources.current.source.query.filterBindings.period.periodComparison.fact='';
+ expect(parsePage(raw).ok).toBe(false);
+});
