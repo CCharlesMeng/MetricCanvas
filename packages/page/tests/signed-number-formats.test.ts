@@ -9,7 +9,7 @@ const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-
 
 it.each([
   ['number-signed', 17], ['number-1-signed', 17],
-  ['number-2-signed', 18], ['number-grouped-signed', 18]
+  ['number-2-signed', 18], ['number-grouped-signed', 18], ['yoy-p-signed', 87]
 ] as const)('%s requires 6.%s at bindings, defaults and text references', (format, minor) => {
   for (const location of ['binding', 'default', 'param', 'filter', 'detail']) {
     const raw = document();

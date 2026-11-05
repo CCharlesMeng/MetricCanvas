@@ -122,8 +122,25 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 
 验收入口：`/pages/chart-number-format`，内联合成数据，覆盖默认两位小数、零、负值、缺失、格式继承和显式保留原值。
 
+## 同比格式（6.87）
 
-页面协议 6.86。结构真源为本册[schema.json](schema.json)，SHA256 `abb1115770b21cb8b8bb8588743507a4047af4cbc85544f0e622bbf51328579a`。字段表自动生成；可选不等于有默认值。
+`yoy-p-signed` 是固定的同比展示预设，先将原始数值四舍五入保留两位小数，再乘100，以无千分位的整数追加大写 `P`。例如 `0.123456 → 0.12 → +12P`、`-0.05678 → -0.06 → -6P`、`0.29 → +29P`。它不执行同比计算，也不猜测输入刻度；只改变展示，计算、排序和筛选仍使用原值。需要已经采用0–100刻度、不乘100的百分点差值时，沿用 `points-1-signed`。
+
+表格列示例：
+
+```json
+{
+  "field": { "data": "main", "field": "yoy", "format": "yoy-p-signed" },
+  "colorRule": { "mode": "sign", "positive": "red", "negative": "green" }
+}
+```
+
+也可声明数值结果字段的 `defaultFormat: "yoy-p-signed"`，显式绑定格式优先。正负号、按正负着色和变化箭头共用舍入后的方向；`±0.004`、`0` 和负零均显示 `0P`，无符号、普通颜色、无箭头；`±0.005` 分别显示 `+1P`、`-1P`。固定颜色规则仍按已有约定为有效零着色。缺失值显示 `—` 或绑定的 `missingText`。仅6.87及以后可声明，旧版本使用时报能力版本错误，原有格式保持原行为。
+
+合成验收入口 `/pages/yoy-p-format-demo`，无需查询服务或URL参数。运行 `pnpm dev:playground` 后打开该路由，核对原值列、显式格式列和字段默认列；正值红色、负值绿色，零与缺失值普通颜色。
+
+
+页面协议 6.87。结构真源为本册[schema.json](schema.json)，SHA256 `56e8aa8ef6652c1e11cada0e88238dc0e24173bf09295543d90645cea15ec151`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -255,7 +272,7 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -280,6 +297,7 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format`。
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
 | "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
+| "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -628,6 +646,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 
 ## 示例与溯源（生成）
 
+- [yoy-p-format-demo](examples/yoy-p-format-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [million-formats-page](examples/million-formats-page.json)：完整合法页面；查询仅为静态契约证据。
 - [compute-page](examples/compute-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
@@ -654,6 +673,6 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
-- `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/colorRule`。
+- `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/yoy-p-format-demo.json)，JSON Pointer `#/sections/0/components/1/props/columns/2/colorRule`。
 - `#/definitions/fieldReference/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/2/props/actions/0/field`。
 - `#/definitions/fieldReference/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/actions/0/field`。

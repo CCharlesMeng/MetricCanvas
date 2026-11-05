@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.86",
+  "schemaVersion": "6.87",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-1715fde9"
@@ -160,6 +160,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/yoy-p-format-demo.json",
         "references/page-metadata/examples/million-formats-page.json",
         "references/page-metadata/examples/compute-page.json",
         "references/page-metadata/examples/reference-branches-page.json",

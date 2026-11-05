@@ -1,0 +1,164 @@
+{
+  "schemaVersion": "6.87",
+  "id": "yoy-p-format-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "同比 P 格式（合成数据）"
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "场景"
+        },
+        "yoy": {
+          "type": "number",
+          "role": "measure",
+          "label": "同比",
+          "nullable": true,
+          "defaultFormat": "yoy-p-signed"
+        },
+        "rawYoy": {
+          "type": "number",
+          "role": "measure",
+          "label": "同比",
+          "nullable": true,
+          "defaultFormat": "number"
+        },
+        "defaultYoy": {
+          "type": "number",
+          "role": "measure",
+          "label": "同比",
+          "nullable": true,
+          "defaultFormat": "yoy-p-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "正数",
+            "yoy": 0.123456,
+            "rawYoy": 0.123456,
+            "defaultYoy": 0.123456
+          },
+          {
+            "name": "负数",
+            "yoy": -0.05678,
+            "rawYoy": -0.05678,
+            "defaultYoy": -0.05678
+          },
+          {
+            "name": "浮点乘法",
+            "yoy": 0.29,
+            "rawYoy": 0.29,
+            "defaultYoy": 0.29
+          },
+          {
+            "name": "正向舍入零",
+            "yoy": 0.004,
+            "rawYoy": 0.004,
+            "defaultYoy": 0.004
+          },
+          {
+            "name": "负向舍入零",
+            "yoy": -0.004,
+            "rawYoy": -0.004,
+            "defaultYoy": -0.004
+          },
+          {
+            "name": "正向边界",
+            "yoy": 0.005,
+            "rawYoy": 0.005,
+            "defaultYoy": 0.005
+          },
+          {
+            "name": "负向边界",
+            "yoy": -0.005,
+            "rawYoy": -0.005,
+            "defaultYoy": -0.005
+          },
+          {
+            "name": "零",
+            "yoy": 0,
+            "rawYoy": 0,
+            "defaultYoy": 0
+          },
+          {
+            "name": "缺失",
+            "yoy": null,
+            "rawYoy": null,
+            "defaultYoy": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "comparison",
+      "components": [
+        {
+          "id": "header",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "heading",
+            "title": "同比 P 格式（合成数据）"
+          }
+        },
+        {
+          "id": "yoy-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "name"
+              },
+              {
+                "title": "原始值",
+                "field": {
+                  "data": "main",
+                  "field": "rawYoy",
+                  "format": "number"
+                }
+              },
+              {
+                "title": "同比（显式格式）",
+                "field": {
+                  "data": "main",
+                  "field": "yoy",
+                  "format": "yoy-p-signed"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              },
+              {
+                "title": "同比（字段默认）",
+                "field": "defaultYoy",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

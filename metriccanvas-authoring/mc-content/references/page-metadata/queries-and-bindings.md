@@ -302,7 +302,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
 
 
-页面协议 6.86。结构真源为本册[schema.json](schema.json)，SHA256 `abb1115770b21cb8b8bb8588743507a4047af4cbc85544f0e622bbf51328579a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.87。结构真源为本册[schema.json](schema.json)，SHA256 `56e8aa8ef6652c1e11cada0e88238dc0e24173bf09295543d90645cea15ec151`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

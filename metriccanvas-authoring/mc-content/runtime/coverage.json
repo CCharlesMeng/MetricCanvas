@@ -808,6 +808,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/yoy-p-format-demo.json",
+      "target": "product-contracts/page/conformance/valid/yoy-p-format-demo.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-header-filter-param-source.json",
       "target": "product-contracts/page/conformance/valid/table-header-filter-param-source.json",
       "scope": "exact product contract"
@@ -6808,6 +6813,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/yoy-p-format-demo.json",
+      "target": "references/page-metadata/examples/yoy-p-format-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/million-formats-page.json",
       "target": "references/page-metadata/examples/million-formats-page.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7524,10 +7534,10 @@
     }
   ],
   "counts": {
-    "product": 1472,
+    "product": 1474,
     "authoring": 32,
     "modules": 36,
-    "topics": 252,
+    "topics": 253,
     "nodes": 2524,
     "tools": 9,
     "components": 20

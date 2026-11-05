@@ -457,6 +457,7 @@
         "数据槽、字段绑定与格式"
       ],
       "examples": [
+        "yoy-p-format-demo",
         "million-formats-page",
         "compute-page",
         "reference-branches-page",
@@ -1994,6 +1995,7 @@
     "number-signed": "保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。",
     "number-1-signed": "保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。",
     "6.17": "新增带符号普通数值格式，按展示精度统一符号、正负颜色与变化箭头。",
+    "yoy-p-signed": "同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。",
     "number-2-signed": "保留两位小数，正数加正号，舍入后零无符号；方向与展示精度一致；6.18新增。",
     "number-grouped-signed": "沿用number-grouped千分位与默认小数精度，正数加正号，舍入后零无符号；6.18新增。",
     "6.18": "补齐普通数值格式族的两位小数及千分位带符号版本；保留6.17读取。",
@@ -2161,6 +2163,7 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。",
     "6.83": "独立完整单行指标通过无键unique关联用于全部主行。",
     "6.84": "布尔勾选覆盖维度筛选，完整授权名单为空时产生空结果。",
+    "6.87": "新增同比yoy-p-signed：先保留两位再乘100，按展示值统一符号、颜色与箭头。",
     "#/properties/schemaVersion=\"6.85\"": "表头字符串维度参数初值与显式全选不限。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior=\"unrestricted\"": "选中完整显式枚举集时省略该列条件，回显不限，可包含原有 null 和未知值。",
     "#/properties/schemaVersion=\"6.86\"": "季度查询使用 quarter 与 YYYY-Qn 起止编码。"
@@ -2402,7 +2405,8 @@
       ],
       "headings": [
         "柱线图数值格式一致性",
-        "百分比创作与覆盖边界"
+        "百分比创作与覆盖边界",
+        "同比格式（6.87）"
       ],
       "dependencies": []
     },
@@ -2982,7 +2986,8 @@
       "静态货币字段选择（6.38）",
       "图表配置项常量取值（6.59）",
       "百分点差值（6.77）",
-      "柱线图数值格式一致性"
+      "柱线图数值格式一致性",
+      "同比格式（6.87）"
     ],
     "actions-and-navigation.md": [
       "查阅方式",

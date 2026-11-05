@@ -25,7 +25,7 @@ export function tableValueColor(value: FieldValue | undefined, column: TableColu
 
 export function changeValueColor(value: FieldValue | undefined, change: MetricCardChange, format?: ValueFormatPreset): ValueColor {
   if (change.colorRule) return valueColor(value, change.colorRule, format);
-  if (isSignedNumberFormat(format) && valuePolarity(value, format) === 'neutral') return undefined;
+  if ((isSignedNumberFormat(format) || format === 'yoy-p-signed') && valuePolarity(value, format) === 'neutral') return undefined;
   if (change.tone === 'neutral') return undefined;
   if (change.tone === 'positive') return 'green';
   if (change.tone === 'danger') return 'red';
