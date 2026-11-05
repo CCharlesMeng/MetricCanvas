@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f61c9a1e37276868300605ebf62ecd49e4ccb5c6ecc1900fc62701fc78b76176",
+  "sha256": "7656d26bbc171ba4bb57eebff0f02f5258079c50c0b5d7d260f49b79e40fdbfa",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -2869,6 +2869,14 @@
     {
       "file": "pages/temporary/business-rejection-pagination-10/business-rejection-details-pagination-10.json",
       "sha256": "e835c77c6594e6b1bd54825679cc79084533a0a1dc62d172e023f24a6a2a9bd2"
+    },
+    {
+      "file": "pages/temporary/business-result-config-audit-20261105/README.md",
+      "sha256": "64983be34222c067fa9598cf68f4bac89339d616ac8f2b8f8a4853d1c7a210dd"
+    },
+    {
+      "file": "pages/temporary/business-result-config-audit-20261105/business-result-metrics-2.json",
+      "sha256": "f05c548ea1b85f6b8a33f105aa99d663d9b2fac1e46dc9152bb58fdfe41f47a5"
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/README.md",
