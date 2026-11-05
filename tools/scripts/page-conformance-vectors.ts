@@ -55,6 +55,16 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'ioc-header-controls',description:'页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读',valid:['ioc-header-controls'],cases:[
+    {case:'ioc-controls-root-filter',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[0]]};d.sections[0].components.shift();}},
+    {case:'ioc-controls-root-region',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[1]]};d.sections[0].components.shift();}},
+    {case:'ioc-controls-version',base:'ioc-header-controls',expect:/由 6.91 引入/,mutate:d=>{d.schemaVersion='6.90';}},
+    {case:'ioc-controls-mixed',base:'ioc-header-controls',expect:/不能同时声明/,mutate:d=>{firstComponent(d).props.filterIds=['stat-year'];}},
+    {case:'ioc-controls-duplicate-region',base:'ioc-header-controls',expect:/不能再声明/,mutate:d=>{d.filters.push({id:'region',type:'dimension',dimension:'geo-pc-code'});}},
+    {case:'ioc-controls-unknown-filter',base:'ioc-header-controls',expect:/只能认领静态可见/,mutate:d=>{firstComponent(d).props.components[0].props.filterId='missing';}},
+    {case:'ioc-controls-duplicate-id',base:'ioc-header-controls',expect:/id 不能/,mutate:d=>{firstComponent(d).props.components[1].id='results';}},
+    {case:'ioc-controls-duplicate-claim',base:'ioc-header-controls',expect:/重复认领/,mutate:d=>{firstComponent(d).props.components.push({id:'extra',type:'regionFilter'});}}
+  ]},
   {id:'chart-series-visibility',description:'系列展示条件与类型引用校验、版本下限共用现有展示规则',valid:['chart-series-visibility'],cases:[
     {case:'chart-series-version',base:'chart-series-visibility',expect:/6.89/,mutate:d=>{d.schemaVersion='6.88';}},
     {case:'chart-series-unknown-filter',base:'chart-series-visibility',expect:/条件引用了不存在/,mutate:d=>{d.sections[1].components[0].props.series[2].visibleWhen={filter:'unknown',part:'value',op:'eq',value:true};}},

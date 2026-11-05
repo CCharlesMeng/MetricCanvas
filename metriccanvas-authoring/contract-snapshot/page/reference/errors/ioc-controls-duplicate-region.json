@@ -1,0 +1,36 @@
+{
+  "case": "ioc-controls-duplicate-region",
+  "invariant": "ioc-header-controls",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "RegionFilter 已拥有 region 筛选，不能再声明 filters.region",
+      "paths": [
+        "/filters"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "stat-year",
+        "type": "timeRange",
+        "display": "period",
+        "periodModes": [
+          "…（共1项）"
+        ],
+        "precision": "month",
+        "default": {
+          "…": "共2个键"
+        },
+        "label": "统计年份"
+      },
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "geo-pc-code"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-controls-duplicate-region.json"
+}

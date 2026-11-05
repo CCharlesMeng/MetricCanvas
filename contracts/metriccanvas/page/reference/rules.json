@@ -1,6 +1,23 @@
 {
   "invariants": [
     {
+      "id": "ioc-header-controls",
+      "description": "页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读",
+      "valid": [
+        "ioc-header-controls"
+      ],
+      "invalid": [
+        "ioc-controls-root-filter",
+        "ioc-controls-root-region",
+        "ioc-controls-version",
+        "ioc-controls-mixed",
+        "ioc-controls-duplicate-region",
+        "ioc-controls-unknown-filter",
+        "ioc-controls-duplicate-id",
+        "ioc-controls-duplicate-claim"
+      ]
+    },
+    {
       "id": "chart-series-visibility",
       "description": "系列展示条件与类型引用校验、版本下限共用现有展示规则",
       "valid": [

@@ -1296,16 +1296,22 @@
       "examples": [
         "ioc-header-section-placement",
         "ioc-component-availability-page",
-        "ioc-component-ioc-header-page"
+        "ioc-component-ioc-header-page",
+        "ioc-header-controls"
       ],
       "sources": [
         "packages/page/src/schema/components/ioc-header.ts",
         "packages/page/src/header-binding.ts",
         "packages/page/src/ioc-header.ts",
-        "packages/page/src/upgrade-ioc-header.ts"
+        "packages/page/src/upgrade-ioc-header.ts",
+        "packages/page/src/schema/ioc-header.ts",
+        "packages/page/src/ioc-header-controls.ts",
+        "packages/page/src/ioc-header-normalization.ts",
+        "packages/data-execution/src/operation-map-region.ts"
       ],
       "rules": [
-        "ioc-header-component"
+        "ioc-header-component",
+        "ioc-header-controls"
       ]
     },
     "authoring-analysis-rebind.md": {
@@ -2185,7 +2191,8 @@
     "cny-adaptive-trimmed-no-yuan": "6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。",
     "usd-adaptive-km": "6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。",
     "#/properties/schemaVersion=\"6.88\"": "新增人民币双呈现与美元 K/M 金额格式，旧格式语义不变。",
-    "#/properties/schemaVersion=\"6.90\"": "页面数据源完整候选、稳定值去重与父子节点独立单多选。"
+    "#/properties/schemaVersion=\"6.90\"": "页面数据源完整候选、稳定值去重与父子节点独立单多选。",
+    "#/properties/schemaVersion=\"6.91\"": "IOC 页头显式组合 filterControl 与内置标准 Region 的 regionFilter，旧 filterIds 继续读取。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2349,6 +2356,18 @@
       "rule": "ioc-header-component",
       "reason": "IOC页头仅首分区首组件，详情中不允许。",
       "source": "packages/page/src/ioc-header.ts"
+    },
+    "#/properties/iocHeader/properties/components/items/oneOf/0": {
+      "case": "ioc-controls-root-filter",
+      "rule": "ioc-header-controls",
+      "reason": "旧根级 iocHeader 仅兼容历史属性；新增子控件必须位于首 section 的页头组件中。",
+      "source": "packages/page/src/ioc-header-normalization.ts"
+    },
+    "#/properties/iocHeader/properties/components/items/oneOf/1": {
+      "case": "ioc-controls-root-region",
+      "rule": "ioc-header-controls",
+      "reason": "旧根级 iocHeader 仅兼容历史属性；新增子控件必须位于首 section 的页头组件中。",
+      "source": "packages/page/src/ioc-header-normalization.ts"
     }
   },
   "authoringTopics": {
@@ -3166,7 +3185,9 @@
       "固定单选下拉与对齐（6.47）",
       "数据源候选下拉（6.90）"
     ],
-    "components/iocHeader.md": [],
+    "components/iocHeader.md": [
+      "页头子控件（6.91）"
+    ],
     "authoring-analysis-rebind.md": [
       "完整基线和关联报告",
       "受控换源",

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.90",
-  "schemaSha256": "34107cf105578479ad49be8e6d05f39aa18f7023d1e599fd45bf4f23a6c5b39d",
+  "schemaVersion": "6.91",
+  "schemaSha256": "9e9217ecfb77717814f363d2ba03898e8fcc61f7cd3d3e816cd91d6fcde50815",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -33,6 +33,10 @@
     {
       "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py",
       "sha256": "d200f5d0dbe6768020db555e687217b9ffa01d296fceffec0b7496e8db37073d"
+    },
+    {
+      "file": "packages/data-execution/src/operation-map-region.ts",
+      "sha256": "df01bdfd99f56f28390b306049168a924513e7005d64bdc90e1670acb305b63d"
     },
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -168,11 +172,19 @@
     },
     {
       "file": "packages/page/src/header-binding.ts",
-      "sha256": "9e0653fbed166f1defd3818cee2b18185e76a863353f6077720aaffbdabf0d44"
+      "sha256": "da69646009086c2e9c1cdf42905a81b736dfc4a6a59a75b15612f019fa7a08ea"
+    },
+    {
+      "file": "packages/page/src/ioc-header-controls.ts",
+      "sha256": "dfab36d8ba1494e65348f89114eed4ac7dc2c6a12635b84894a26ed86dd3b8d9"
+    },
+    {
+      "file": "packages/page/src/ioc-header-normalization.ts",
+      "sha256": "ae210bb47220b7995d7ac46a1f8f6c2e0278e3e59eec3bec0a4a63ce704d4619"
     },
     {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "33b59eba1322336295a3ee61cf50d566330ce81efda2f07585d8f54075db5b73"
+      "sha256": "51fe0f7fe27ff61c203773af66b397859464a25463927c2c52192aabf7d4d250"
     },
     {
       "file": "packages/page/src/metric-before.ts",
@@ -320,7 +332,7 @@
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
-      "sha256": "ef9d20c558423c60151f31453ea35e02acb379c5992651c81c2ae632be66e8a2"
+      "sha256": "f03a96b0a61d5a8ddbbfe72cbfa4a3661dbcae4f16673158d97b55e57a526989"
     },
     {
       "file": "packages/page/src/schema/navigation.ts",
@@ -420,7 +432,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "e7098b123e9294a5aff99b60534ab7cfa93048b8fd35b181d015111a77c226dc"
+      "sha256": "8f1b7b57c7d2aad71edf9894cede3ee87b6cf3797fca9cd3f02d6b196f9ce524"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -432,7 +444,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "31f54c13163b91fc8b41a22b5cf29c75cb0481207153e2ee8985c1dd9793decf"
+      "sha256": "55f9c01dcdbe4a968d1436e0a5add5b6203305dda6dcb893f8961292826230f9"
     }
   ],
   "modules": {
@@ -1732,16 +1744,22 @@
       "examples": [
         "ioc-header-section-placement",
         "ioc-component-availability-page",
-        "ioc-component-ioc-header-page"
+        "ioc-component-ioc-header-page",
+        "ioc-header-controls"
       ],
       "sources": [
         "packages/page/src/schema/components/ioc-header.ts",
         "packages/page/src/header-binding.ts",
         "packages/page/src/ioc-header.ts",
-        "packages/page/src/upgrade-ioc-header.ts"
+        "packages/page/src/upgrade-ioc-header.ts",
+        "packages/page/src/schema/ioc-header.ts",
+        "packages/page/src/ioc-header-controls.ts",
+        "packages/page/src/ioc-header-normalization.ts",
+        "packages/data-execution/src/operation-map-region.ts"
       ],
       "rules": [
-        "ioc-header-component"
+        "ioc-header-component",
+        "ioc-header-controls"
       ]
     },
     "authoring-analysis-rebind.md": {
@@ -1963,7 +1981,8 @@
         "6.87",
         "6.88",
         "6.89",
-        "6.90"
+        "6.90",
+        "6.91"
       ]
     },
     {
@@ -2466,6 +2485,68 @@
       "path": "$.iocHeader.filterIds[]",
       "required": "每个数组项",
       "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components",
+      "path": "$.iocHeader.components",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items",
+      "path": "$.iocHeader.components[]",
+      "required": "每个数组项",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/0",
+      "path": "$.iocHeader.components[] · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/0/properties/id",
+      "path": "$.iocHeader.components[] · oneOf[0].id",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/0/properties/type",
+      "path": "$.iocHeader.components[] · oneOf[0].type",
+      "required": "本分支必填",
+      "module": "page.md",
+      "const": "filterControl"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/0/properties/props",
+      "path": "$.iocHeader.components[] · oneOf[0].props",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/0/properties/props/properties/filterId",
+      "path": "$.iocHeader.components[] · oneOf[0].props.filterId",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1",
+      "path": "$.iocHeader.components[] · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/id",
+      "path": "$.iocHeader.components[] · oneOf[1].id",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/type",
+      "path": "$.iocHeader.components[] · oneOf[1].type",
+      "required": "本分支必填",
+      "module": "page.md",
+      "const": "regionFilter"
     },
     {
       "pointer": "#/properties/iocHeader/properties/presentation",
@@ -18949,6 +19030,68 @@
       "module": "components/iocHeader.md"
     },
     {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components",
+      "path": "@iocHeaderComponent.props.components",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items",
+      "path": "@iocHeaderComponent.props.components[]",
+      "required": "每个数组项",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/id",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[0].id",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/type",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[0].type",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "const": "filterControl"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/props",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[0].props",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/props/properties/filterId",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[0].props.filterId",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/id",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].id",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/type",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].type",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "const": "regionFilter"
+    },
+    {
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/presentation",
       "path": "@iocHeaderComponent.props.presentation",
       "required": "本分支可选",
@@ -19770,6 +19913,26 @@
       "module": "page.md",
       "file": "examples/availability-page.json",
       "pointer": "#/iocHeader/identity/facts/1/value"
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/components/items/oneOf/0",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/ioc-controls-root-filter.json",
+        "reason": "旧根级 iocHeader 仅兼容历史属性；新增子控件必须位于首 section 的页头组件中。",
+        "rule": "ioc-header-controls",
+        "source": "packages/page/src/ioc-header-normalization.ts"
+      }
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/components/items/oneOf/1",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/ioc-controls-root-region.json",
+        "reason": "旧根级 iocHeader 仅兼容历史属性；新增子控件必须位于首 section 的页头组件中。",
+        "rule": "ioc-header-controls",
+        "source": "packages/page/src/ioc-header-normalization.ts"
+      }
     },
     {
       "schemaPointer": "#/properties/params/anyOf/0",
@@ -21996,6 +22159,18 @@
       "module": "components/iocHeader.md",
       "file": "examples/ioc-component-availability-page.json",
       "pointer": "#/sections/0/components/0/props/identity/facts/1/value"
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-header-controls.json",
+      "pointer": "#/sections/0/components/0/props/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-header-controls.json",
+      "pointer": "#/sections/0/components/0/props/components/1"
     },
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",

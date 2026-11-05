@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IOC Header 子控件 · 合成 Embed</title>
+<body><output id="status">正在加载…</output><main id="dashboard"></main>
+<script type="module">
+  const entry = new URL(location.href).searchParams.get('entry') ?? 'es';
+  async function publicApi() {
+    if (entry !== 'global') return import('../dist/metriccanvas-runtime.es.js');
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = '../dist/metriccanvas-runtime.global.js';
+      script.onload = resolve; script.onerror = reject;
+      document.head.append(script);
+    });
+    return window.MetricCanvas.ready;
+  }
+  try {
+    const api = await publicApi();
+    const page = await fetch('/pages/ioc-header-controls.json').then(response => response.json());
+    const dataGateway = api.withOperationMapRegion({async fetchData(query) {
+      const selected = query.filterValues.find(value => value.target === 'dimension');
+      return {rows:[{region:selected?.values.join('、') ?? '全球（当前范围不限）',amount:100}],totalCount:1};
+    }}, {async fetchRegionCandidates(_request, {signal}) {
+      signal.throwIfAborted();
+      return {kind:'values',candidates:[
+        {level:'geo',value:'WORLD',label:'全球'},
+        {level:'region-dept',value:'华东地区部',label:'华东地区部',parent:{level:'geo',value:'WORLD'}},
+        {level:'office',value:'上海代表处',label:'上海代表处',parent:{level:'region-dept',value:'华东地区部'}}
+      ]};
+    }});
+    window.runtime = api.mount('#dashboard', {document:page, dataGateway});
+    document.querySelector('#status').textContent = entry + ': withOperationMapRegion 已接入';
+  } catch (error) {
+    document.querySelector('#status').textContent = '失败：' + String(error);
+  }
+</script>
+</body></html>

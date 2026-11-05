@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 90,
-  "current": "6.90",
+  "minor": 91,
+  "current": "6.91",
   "capabilities": {
+    "ioc-header-controls": {
+      "minor": 91,
+      "description": "IOC 页头组合筛选控件及内置 RegionFilter",
+      "legacyReadable": false
+    },
     "chart-series-visibility": {
       "minor": 89,
       "description": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴",
@@ -890,6 +895,7 @@
     "6.87",
     "6.88",
     "6.89",
-    "6.90"
+    "6.90",
+    "6.91"
   ]
 }

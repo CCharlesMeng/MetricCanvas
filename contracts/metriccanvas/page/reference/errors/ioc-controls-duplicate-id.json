@@ -1,0 +1,32 @@
+{
+  "case": "ioc-controls-duplicate-id",
+  "invariant": "ioc-header-controls",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页头子组件 id 不能与其他组件重复",
+      "paths": [
+        "/sections/0/components/0/props/components/1/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "id": "results"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-controls-duplicate-id.json"
+}

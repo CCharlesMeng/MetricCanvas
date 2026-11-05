@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { idZ, nonEmptyTextValueZ } from './primitives';
 
+export const iocHeaderControlZ = z.discriminatedUnion('type', [
+  z.object({id:idZ,type:z.literal('filterControl'),props:z.object({filterId:idZ}).strict()}).strict(),
+  z.object({id:idZ,type:z.literal('regionFilter')}).strict()
+]);
+export type IocHeaderControl = z.infer<typeof iocHeaderControlZ>;
+
 /** B1: identity and placement only. Actions and trusted fact inputs ship separately. */
 export const iocHeaderZ = z.object({
   identity: z.object({
@@ -14,6 +20,7 @@ export const iocHeaderZ = z.object({
   readOnly: z.boolean().optional(),
   note: z.string().min(1).optional(),
   filterIds: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),
+  components: z.array(iocHeaderControlZ).min(1).optional(),
   presentation: z.object({ density: z.enum(['normal', 'compact']).optional(), collapse: z.enum(['none', 'firstRow', 'overflow']).optional(), layout: z.enum(['stacked', 'inline']).optional() }).strict().optional()
 }).strict();
 export type IocHeaderDeclaration = z.infer<typeof iocHeaderZ>;

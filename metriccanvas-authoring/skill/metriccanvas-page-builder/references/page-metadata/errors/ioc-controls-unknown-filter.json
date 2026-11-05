@@ -1,0 +1,35 @@
+{
+  "case": "ioc-controls-unknown-filter",
+  "invariant": "ioc-header-controls",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头只能认领静态可见的页级筛选",
+      "paths": [
+        "/sections/0/components/0/props/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                {
+                  "id": "year-control",
+                  "type": "filterControl",
+                  "props": {
+                    "filterId": "missing"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-controls-unknown-filter.json"
+}

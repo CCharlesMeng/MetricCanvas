@@ -1,23 +1,9 @@
 {
-    "schemaVersion": "6.80",
+    "schemaVersion": "6.91",
     "id": "partner-health",
     "layout": "dashboard",
     "meta": {
       "title": "伙伴健康度"
-    },
-    "iocHeader": {
-      "identity": {
-        "title": "伙伴健康度"
-      },
-      "filterIds": [
-        "stat-year",
-        "region"
-      ],
-      "presentation": {
-        "layout": "inline",
-        "density": "normal",
-        "collapse": "overflow"
-      }
     },
     "filters": [
       {
@@ -31,36 +17,6 @@
         },
         "label": "统计日期",
         "precision": "month"
-      },
-      {
-        "id": "region",
-        "type": "dimension",
-        "dimension": "geo-pc-code",
-        "label": "区域",
-        "emptyLabel": "区域",
-        "selection": {
-          "mode": "single"
-        },
-        "display": "tree",
-        "hierarchy": [
-          {
-            "id": "geo",
-            "dimension": "geo-pc-code",
-            "label": "全球"
-          },
-          {
-            "id": "region-dept",
-            "dimension": "region-dept-code",
-            "label": "地区部"
-          },
-          {
-            "id": "office",
-            "dimension": "rep-office-code",
-            "label": "代表处"
-          }
-        ],
-        "defaultLevel": "geo",
-        "treeSelection": "level"
       },
       {
         "id": "china-overseas",
@@ -4464,6 +4420,42 @@
     }
   },
   "sections": [
+      {
+        "id": "page-header",
+        "container": "plain",
+        "components": [
+          {
+            "id": "partner-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "伙伴健康度"
+              },
+              "presentation": {
+                "layout": "inline",
+                "density": "normal",
+                "collapse": "overflow"
+              },
+              "components": [
+                {
+                  "id": "year-control",
+                  "type": "filterControl",
+                  "props": {
+                    "filterId": "stat-year"
+                  }
+                },
+                {
+                  "id": "region-control",
+                  "type": "regionFilter"
+                }
+              ]
+            }
+          }
+        ]
+      },
     {
       "id": "health-overview",
       "title": "健康度总览",

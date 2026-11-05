@@ -1,3 +1,4 @@
+import {iocHeaderFilterIds} from './ioc-header-controls';
 import { iocHeaderDeclaration, resolveHeaderBinding, headerDeclarations } from './header-binding';
 import type { Page } from './page';
 import type { DimensionFilterDeclaration } from './filter';
@@ -24,7 +25,7 @@ export function iocHeaderErrors(page: Page): TypedError[] {
   const placed = new Set(header.filterIds ?? []);
   header.filterIds?.forEach((id, index) => {
     const filter = page.filters?.find(f => f.id === id);
-    if (!filter || filter.visible === false) issue(`${base}/filterIds/${index}`, 'IOC 页头只能认领静态可见的页级筛选');
+    if (!filter || filter.visible === false) issue(header.components?`${base}/components/${index}`:`${base}/filterIds/${index}`, 'IOC 页头只能认领静态可见的页级筛选');
   });
   walkPageComponents(page, (component, path) => {
     if (component.type === 'filterGroup' && placed.has(component.props.filterId)) issue(`${base}/filterIds`, '筛选按钮组不能被 IOC 页头重复认领');
@@ -79,7 +80,7 @@ export function emptyIocHeaderErrors(document:unknown):TypedError[] {
   return headerDeclarations(document).flatMap(({props,path})=>{
     const header=props as import('./schema/ioc-header').IocHeaderDeclaration;
     const identity=header.identity;
-    const populated=identity?.title || identity?.code || identity?.description || identity?.tags?.length || identity?.facts?.length || header.filterIds?.length || header.back;
+    const populated=identity?.title || identity?.code || identity?.description || identity?.tags?.length || identity?.facts?.length || iocHeaderFilterIds(header).length || header.back;
     return populated?[]:[{type:'SCHEMA_ERROR' as const,path,message:'IOC 页头需要身份、筛选或返回意图'}];
   });
 }

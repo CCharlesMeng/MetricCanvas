@@ -1,0 +1,24 @@
+{
+  "case": "ioc-controls-root-region",
+  "invariant": "ioc-header-controls",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页头子组件必须声明在首 section 的 iocHeader 组件中",
+      "paths": [
+        "/iocHeader/components"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {
+      "components": [
+        {
+          "id": "region-control",
+          "type": "regionFilter"
+        }
+      ]
+    }
+  },
+  "fullInput": "page/conformance/invalid/ioc-controls-root-region.json"
+}

@@ -6,8 +6,35 @@
 
 重点国代标准 boolean 筛选 `key-office` / `key-national-only` 勾选后默认覆盖 Region，页头和筛选声明无需添加 `overridesFilters`。Region 保留完整候选和最新选择；取消勾选后恢复 Region，时间、客户级别及权限继续生效。默认覆盖不提供名单，集成应用仍须完成授权名单桥接。详见[布尔筛选覆盖](../filters.md#boolean-filter-overrides)。
 
+<a id="页头子控件691"></a>
 
-页面协议 6.90。结构真源为本册[schema.json](../schema.json)，SHA256 `34107cf105578479ad49be8e6d05f39aa18f7023d1e599fd45bf4f23a6c5b39d`。字段表自动生成；可选不等于有默认值。
+## 页头子控件（6.91）
+
+新页头通过 `props.components` 显式排列子控件；没有 `regionFilter` 就不添加 Region。子控件只允许放在 IOC 页头内，不声明 layout 或 data，不能独立放进 section。页头本身仍为首 section 首组件、全宽。
+
+```json
+{
+  "id": "header", "type": "iocHeader", "layout": { "span": 12 },
+  "props": {
+    "identity": { "title": "伙伴健康度" },
+    "components": [
+      { "id": "year-control", "type": "filterControl", "props": { "filterId": "stat-year" } },
+      { "id": "region-control", "type": "regionFilter" }
+    ]
+  }
+}
+```
+
+`filterControl.props.filterId` 引用现有静态可见的页级 `filters` 声明，时间及其他业务筛选行为不变。`regionFilter` 内置公共筛选 `region`，页面不再声明 `filters.region`；不得通过另一控件重复认领。子控件 id 在全页面组件间唯一。`components` 至少一项，与旧 `filterIds` 互斥；旧 `filterIds` 及完整 Region 声明仍兼容读取，旧页面无需改写。
+
+RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `geo` / `region-dept` / `office`，对应候选路由 `geo-pc-code` / `region-dept-code` / `rep-office-code`。默认只确定 geo 层级，不默认选中“全球”。应用级 `withOperationMapRegion(dataGateway, adapter)` 安装一次候选接线，页面不配置接口地址、凭据、候选请求映射或额外同步开关。其他组织值沿用当前中文业务值约定；Adapter 将“全球”节点及其父引用规范为 `value:"全球"`，label 仅用于显示。缺失、拒绝及非法候选沿用原门禁，不能回退到越权候选。
+
+解析时只在运行投影展开标准筛选，源文档保留简写。统一筛选状态、URL、候选加载、查询 `filterBindings.region`、初始化和现有选择回写继续复用。未绑定 region 的查询不会新增组织谓词；绑定的查询仍显式声明自己的 `levelQueryFields`。此能力不引入实时跨应用同步机制。应用级代码示例见集成应用契约的 Operation Map Region 接入章节。
+
+完整合成验收入口 `/pages/ioc-header-controls`，声明与操作见场景目录 `pages/capabilities/ioc-header/controls/README.md`。真实 Operation Map 接口与 DQE 数据由集成环境另验。
+
+
+页面协议 6.91。结构真源为本册[schema.json](../schema.json)，SHA256 `9e9217ecfb77717814f363d2ba03898e8fcc61f7cd3d3e816cd91d6fcde50815`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -406,6 +433,114 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/fil
 |---|---|---|---|---|
 | "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e7473"></a>
+
+### `@iocHeaderComponent.props.components`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 受控子组件集合；容器白名单与顶层集合不同。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d73"></a>
+
+### `@iocHeaderComponent.props.components[]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f30"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[0]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["id","type","props"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f302f70726f706572746965732f6964"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[0].id`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f302f70726f706572746965732f74797065"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[0].type`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/type`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="filterControl" | Schema未设默认；装配/运行时默认见语义说明 | 选择所属结构的类型分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "filterControl" | 用于选择@iocHeaderComponent.props.components[] · oneOf[0].type分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f302f70726f706572746965732f70726f7073"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[0].props`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/props`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | required=["filterId"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 组件的受控呈现配置。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f302f70726f706572746965732f70726f70732f70726f706572746965732f66696c7465724964"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[0].props.filterId`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0/properties/props/properties/filterId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，queryModes要求固定必选单选，metricByFilter要求required单选枚举。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f31"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f6964"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].id`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f74797065"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].type`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/type`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="regionFilter" | Schema未设默认；装配/运行时默认见语义说明 | 选择所属结构的类型分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "regionFilter" | 用于选择@iocHeaderComponent.props.components[] · oneOf[1].type分支；同分支其它约束同时成立。 |
+
 <a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70726573656e746174696f6e"></a>
 
 ### `@iocHeaderComponent.props.presentation`
@@ -465,6 +600,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 ## 语义规则与反例（生成）
 
 - `ioc-header-component`：首section首组件全宽、唯一且不混写旧根字段。反例：[ioc-component-detail](../errors/ioc-component-detail.json)、[ioc-component-position](../errors/ioc-component-position.json)、[ioc-component-span](../errors/ioc-component-span.json)、[ioc-component-mixed](../errors/ioc-component-mixed.json)、[ioc-component-count](../errors/ioc-component-count.json)、[ioc-component-old-version](../errors/ioc-component-old-version.json)、[ioc-component-legacy-version](../errors/ioc-component-legacy-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `ioc-header-controls`：页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读。反例：[ioc-controls-root-filter](../errors/ioc-controls-root-filter.json)、[ioc-controls-root-region](../errors/ioc-controls-root-region.json)、[ioc-controls-version](../errors/ioc-controls-version.json)、[ioc-controls-mixed](../errors/ioc-controls-mixed.json)、[ioc-controls-duplicate-region](../errors/ioc-controls-duplicate-region.json)、[ioc-controls-unknown-filter](../errors/ioc-controls-unknown-filter.json)、[ioc-controls-duplicate-id](../errors/ioc-controls-duplicate-id.json)、[ioc-controls-duplicate-claim](../errors/ioc-controls-duplicate-claim.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -472,6 +608,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - [ioc-header-section-placement](../examples/ioc-header-section-placement.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-component-availability-page](../examples/ioc-component-availability-page.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-component-ioc-header-page](../examples/ioc-component-ioc-header-page.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-controls](../examples/ioc-header-controls.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-iocHeader.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -494,8 +631,14 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - 源码/验证定位：`packages/page/src/header-binding.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/ioc-header.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/upgrade-ioc-header.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/schema/ioc-header.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/ioc-header-controls.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/ioc-header-normalization.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/data-execution/src/operation-map-region.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
 - `#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/0`：[合法完整页面](../examples/ioc-component-availability-page.json)，JSON Pointer `#/sections/0/components/0/props/identity/facts/0/value`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1`：[合法完整页面](../examples/ioc-component-availability-page.json)，JSON Pointer `#/sections/0/components/0/props/identity/facts/1/value`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。

@@ -107,3 +107,5 @@ export * from './source-candidates';
 
 export { normalizeTableSelectView, normalizeTableSelectValues } from './table/select-values';
 export { tableHeaderParamReferences, tableHeaderInputErrors } from './table/header-params';
+
+export {iocHeaderFilterIds,standardIocRegionFilter} from './ioc-header-controls';

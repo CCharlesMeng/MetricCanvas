@@ -1,0 +1,34 @@
+{
+  "case": "ioc-controls-duplicate-claim",
+  "invariant": "ioc-header-controls",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页头筛选不能重复认领",
+      "paths": [
+        "/sections/0/components/0/props/components/2"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                "…",
+                {
+                  "id": "extra",
+                  "type": "regionFilter"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-controls-duplicate-claim.json"
+}

@@ -6,3 +6,5 @@ export type {
 } from './ports';
 
 export type { ColumnCandidate, ColumnCandidatesPage, ColumnCandidatesQuery } from './ports';
+
+export {withOperationMapRegion,type OperationMapRegionAdapter} from './operation-map-region';

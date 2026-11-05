@@ -1,0 +1,39 @@
+{
+  "case": "ioc-controls-mixed",
+  "invariant": "ioc-header-controls",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "components 与 filterIds 不能同时声明",
+      "paths": [
+        "/sections/0/components/0/props/components"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                {
+                  "id": "year-control",
+                  "type": "filterControl",
+                  "props": {
+                    "…": "共1个键"
+                  }
+                },
+                {
+                  "id": "region-control",
+                  "type": "regionFilter"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-controls-mixed.json"
+}

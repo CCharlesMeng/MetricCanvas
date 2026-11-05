@@ -1,3 +1,4 @@
+import {expandIocHeaderRegion,canonicalIocHeaderControls,iocHeaderControlErrors} from './ioc-header-normalization';
 import type { TemporalEvaluation } from './temporal-evaluation';
 import {sourceFilterIds} from './data-source-references';
 import { attachInitialFallbacks } from './cell-fallback';
@@ -129,14 +130,14 @@ export function parsePage(
   document: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
-  const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document)];
+  const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document), ...iocHeaderControlErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
   if (optionErrors.length) {
     const other = parsePage(withoutChartOptions(document), options);
     return { ok: false, errors: [...optionErrors, ...(other.ok ? [] : other.errors)] };
   }
-  const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
+  const compatibleDocument = expandIocHeaderRegion(normalizeReportExportScales(adaptLegacyPageDocument(document)));
   const validateStructure=pageStructureValidator(compatibleDocument);
   if (!validateStructure(compatibleDocument)) {
     const structural = dataSourceStructureErrors(compatibleDocument, validateStructure.errors ?? []).map(toTypedError);
@@ -193,7 +194,7 @@ export function parsePage(
   catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   attachInitialFallbacks(page, materialized.initialFallbacks, materialized.initialWarnings);
   return errors.length === 0
-    ? { ok: true, page, errors: [] }
+    ? { ok: true, page: canonicalIocHeaderControls(page), errors: [] }
     : { ok: false, errors };
 }
 
@@ -205,7 +206,7 @@ export function parsePage(
 export function normalizePageDocument(document: unknown, options: PageParseOptions = {}):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
-  const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document)];
+  const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document), ...iocHeaderControlErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
   if (optionErrors.length) return { ok: false, errors: parsePage(document, options).errors };

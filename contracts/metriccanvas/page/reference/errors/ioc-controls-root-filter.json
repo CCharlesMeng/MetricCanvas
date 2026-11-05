@@ -1,0 +1,27 @@
+{
+  "case": "ioc-controls-root-filter",
+  "invariant": "ioc-header-controls",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页头子组件必须声明在首 section 的 iocHeader 组件中",
+      "paths": [
+        "/iocHeader/components"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {
+      "components": [
+        {
+          "id": "year-control",
+          "type": "filterControl",
+          "props": {
+            "…": "共1个键"
+          }
+        }
+      ]
+    }
+  },
+  "fullInput": "page/conformance/invalid/ioc-controls-root-filter.json"
+}

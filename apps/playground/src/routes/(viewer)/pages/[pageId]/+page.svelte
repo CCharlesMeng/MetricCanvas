@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createIocHeaderControlsPreview} from "../../../../../fixtures/ioc-header-controls";
   import {createSourceCandidatesPreview} from '../../../../../fixtures/source-candidates';
   import {createRegionURLGateway} from '../../../../../fixtures/region-url';
   import {createGlobalBenchmarkPreview} from '../../../../../fixtures/global-benchmark';
@@ -124,6 +125,7 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
     if(input==='source-candidates')return createSourceCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
     if(input==='global-benchmark')return createGlobalBenchmarkPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
     if(input==='region-url')return createRegionURLGateway();

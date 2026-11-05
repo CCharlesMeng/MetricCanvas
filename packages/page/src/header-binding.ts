@@ -1,6 +1,7 @@
 import type { IocHeaderComponent, Page } from './page';
 import type { IocHeaderDeclaration } from './schema/ioc-header';
 import { walkDocumentComponents } from './component-walk';
+import {iocHeaderFilterIds} from './ioc-header-controls';
 
 type ObjectValue = Record<string, unknown>;
 function object(value:unknown):ObjectValue|undefined {
@@ -63,7 +64,8 @@ export function usesIocRegion(page:Page):boolean {
 }
 
 export function iocHeaderDeclaration(page:Page):IocHeaderDeclaration|undefined {
-  return documentIocHeader(page) as IocHeaderDeclaration|undefined;
+  const header=documentIocHeader(page) as IocHeaderDeclaration|undefined;
+  return header?{...header,filterIds:iocHeaderFilterIds(header)}:undefined;
 }
 
 /** Immutable property update; original documents and other component identities are retained. */

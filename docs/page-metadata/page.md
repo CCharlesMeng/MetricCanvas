@@ -97,3 +97,7 @@ inline+compact 保持整页吸顶。位置切换使用同一个控件实例；�
 显式升级将合法旧根级 IOC 物化为常显首分区的新组件，并删除旧根字段，id确定且避冲突，重复升级不插入第二份。旧隐藏工具栏可移除。普通旧工具栏的 Region、legacyBack、导出语义不能自动等价转为正式 IOC；工具返回迁移错误且不写目标文件，原件仍可读，按迁移手册人工处理。不猜组织树、候选、返回上下文或查询映射。
 
 可观察页面：`ioc-header-section-placement`（混排/显隐/动态文字）、`ioc-header-section-groups`（分组）、`ioc-header-section-sticky`（紧凑吸顶）。均为静态合成示例，不证明真实DQE或集成应用接线。
+
+### 页头组合控件（6.91）
+
+新声明采用 `iocHeader.props.components`，支持引用普通筛选的 `filterControl` 和拥有标准 Region 的 `regionFilter`；旧 `filterIds` 保留读取，两者互斥。Region 由子控件显式引入，查询范围和筛选状态不变。完整声明及边界见[页头子控件](components/iocHeader.md#页头子控件691)，合成场景 `/pages/ioc-header-controls`。

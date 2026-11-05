@@ -256,3 +256,23 @@ Report页头通过`pdfExport: {label?, filename?}`启用引擎内置PDF下载，
 预加载由运行时按可见性、完成绘制和空闲时机触发，执行优先级不写入页面JSON或DQE业务条件。后台读取串行，主查询及显式菜单请求优先；主查询可取消在途候选并释放执行位置，取消信号传给同一网关。候选快照与主数据快照分开，候选等待/失败不参与整表loading门禁。只复用同一生效作用域的候选页或在途请求；身份与权限约束仍沿用原集成会话。
 
 有专用去重能力的部署仍可提供 encodeColumnCandidates（优先于 fullQuery），输入上述受控请求，返回 query、valueField 及可选 labelField。query 必须按真实 DQE 契约编码，保留原业务查询粒度、权限链路及固定窗口，并映射候选字段；不得仅改输出维度就宣称已实现聚合后去重。独立网关未配置任一方式时不发候选 HTTP 请求，显示能力不可用；配置函数不放入页面 JSON。两条路径沿用既有 NO_PERMISSION 非空数据消费规则，完整性另验。参数示例与真实服务验证边界见[DQE 说明](plan/table-column-candidates/dqe-handoff.md)。
+
+## Operation Map Region 接入
+
+Schema 6.91 的 IOC Header 可显式声明 `regionFilter`。标准层级与候选路由由引擎拥有，集成应用只在创建数据网关时安装一次 Adapter，随后所有此类页面复用接线：
+
+```ts
+import { mount, withOperationMapRegion } from '@metriccanvas/embed';
+
+const dataGateway = withOperationMapRegion(existingGateway, {
+  async fetchRegionCandidates(request, { signal }) {
+    // 现有组织桥接负责身份、权限及完整组织树；返回 FilterCandidatesResult。
+    return operationMap.fetchFilterCandidates(request, { signal });
+  }
+});
+const handle = mount('#dashboard', { document: pageDocument, dataGateway });
+```
+
+`operationMap` 为集成应用已存在的桥接对象，不是引擎新增的全局变量。Adapter 接收标准 `FilterCandidatesRequest`，只路由 `filterId:"region"` 及 `geo-pc-code` / `region-dept-code` / `rep-office-code`；返回带 `level`、中文业务 `value`、显示 `label` 和 `parent` 的完整候选树，或现有 denied/unconfigured/unavailable 状态。请求取消须传到上游；成功回执在提交前再次核对取消。“全球”节点及父引用由封装统一规范，其他值不从 label 猜测。其他筛选及业务查询继续使用原数据网关。
+
+页面只写 `{ "id":"region-control", "type":"regionFilter" }`，不再复制 Region 定义；业务 `filterBindings.region` 仍保留原字段映射。现有 `initialSearch`、URL 和选择事件接线不变，不新增实时同步或默认全球选择。尚未安装 Adapter 的页面沿用既有候选能力缺失诊断；封装不会制造候选或跨权限回退。合成验收 `/pages/ioc-header-controls`，真实接口须在集成应用验证。

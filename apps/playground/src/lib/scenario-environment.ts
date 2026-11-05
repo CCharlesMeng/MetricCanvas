@@ -1,3 +1,4 @@
+import {createIocHeaderControlsPreview} from '../../fixtures/ioc-header-controls';
 import {createSourceCandidatesPreview} from '../../fixtures/source-candidates';
 import {createRegionURLGateway} from '../../fixtures/region-url';
 import {createGlobalBenchmarkPreview} from '../../fixtures/global-benchmark';
@@ -46,6 +47,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if(kind==='header-controls')return createIocHeaderControlsPreview();
   if(kind==='source-candidates')return createSourceCandidatesPreview(state);
   if(kind==='global-benchmark')return createGlobalBenchmarkPreview(state);
   if (kind === 'key-office') return {dataGateway:createKeyOfficeGateway()};

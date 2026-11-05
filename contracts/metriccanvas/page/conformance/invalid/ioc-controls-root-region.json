@@ -1,0 +1,129 @@
+{
+  "case": "ioc-controls-root-region",
+  "invariant": "ioc-header-controls",
+  "input": {
+    "schemaVersion": "6.91",
+    "id": "ioc-header-controls",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC Header 子控件 · 合成演示"
+    },
+    "filters": [
+      {
+        "id": "stat-year",
+        "type": "timeRange",
+        "display": "period",
+        "periodModes": [
+          "year"
+        ],
+        "precision": "month",
+        "default": {
+          "mode": "year",
+          "value": "2026"
+        },
+        "label": "统计年份"
+      }
+    ],
+    "dataSources": {
+      "scope": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "生效组织",
+            "queryField": "地区部"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "label": "合成金额",
+            "queryField": "金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "地区部"
+                  ],
+                  "output_metrics": [
+                    "金额"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "地理区",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "results",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "scope"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "region",
+                  "title": "生效组织"
+                },
+                {
+                  "field": "amount",
+                  "title": "合成金额"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "iocHeader": {
+      "components": [
+        {
+          "id": "region-control",
+          "type": "regionFilter"
+        }
+      ]
+    }
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/iocHeader/components",
+      "message": "页头子组件必须声明在首 section 的 iocHeader 组件中"
+    }
+  ]
+}

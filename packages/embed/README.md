@@ -298,3 +298,7 @@ Tab混合内容的活动项使用 `tab.<组件id>` 查询参数。`navigation.re
 示例不通过 update 回灌每次页内变化，不创建跨页 FilterState 单例。未声明映射的筛选值留在各页，候选回执、表格与导出状态也不共享。应用负责 bridge 的用户会话生命周期；一个活动页面以外的实时同步需要额外宿主契约。execution 快照模式不叠加这层初始化。
 
 运行 `MC_EMBED_EXAMPLE_PORT=4177 pnpm --filter @metriccanvas/embed preview:examples`，访问 `/pages/key-office-filter-demo`，其“切换页面”跳到目标页。两页只用合成 Adapter，sessionStorage 模拟宿主跨整页会话。接入真实 HeaderOptionService 时由宿主替换存储与候选逻辑，并验证真实字段、权限与编码。
+
+## IOC Header RegionFilter
+
+Schema 6.91 支持页头 `props.components` 组合控件。显式 `regionFilter` 自带标准组织层级，集成应用在原 dataGateway 上调用一次 `withOperationMapRegion(base, adapter)`，所有页面复用；业务查询仍使用原 `filterBindings.region`。接线示例、候选值约定与取消/失败边界见[Operation Map Region 接入](../../docs/host-contract.md#operation-map-region-接入)。

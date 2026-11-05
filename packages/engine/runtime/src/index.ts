@@ -55,3 +55,5 @@ export { ExportViewError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from 
 
 export type { DisplayInputs, DisplaySnapshot } from './display-inputs';
 export {isDisplayInputs} from './display-inputs';
+
+export {withOperationMapRegion,type OperationMapRegionAdapter} from '@metriccanvas/data-execution';
