@@ -46,7 +46,7 @@ export function shouldApplyTableHeaderFilter(
   );
 }
 
-/** 单页数据不需要页大小、页码或上下页控件。 */
+/** 单页数据隐藏页码、跳页和上下页；页大小选择器独立保留。 */
 export function shouldShowTablePaginationControls(
   totalCount: number,
   pageSize: number

@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "6.48",
+  "id": "table-pagination-popovers",
+  "layout": "dashboard",
+  "dataSources": {
+    "records": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "客户1",
+            "value": 1
+          },
+          {
+            "name": "客户2",
+            "value": 2
+          },
+          {
+            "name": "客户3",
+            "value": 3
+          },
+          {
+            "name": "客户4",
+            "value": 4
+          },
+          {
+            "name": "客户5",
+            "value": 5
+          },
+          {
+            "name": "客户6",
+            "value": 6
+          },
+          {
+            "name": "客户7",
+            "value": 7
+          },
+          {
+            "name": "客户8",
+            "value": 8
+          },
+          {
+            "name": "客户9",
+            "value": 9
+          },
+          {
+            "name": "客户10",
+            "value": 10
+          },
+          {
+            "name": "客户11",
+            "value": 11
+          },
+          {
+            "name": "客户12",
+            "value": 12
+          },
+          {
+            "name": "客户13",
+            "value": 13
+          },
+          {
+            "name": "客户14",
+            "value": 14
+          },
+          {
+            "name": "客户15",
+            "value": 15
+          },
+          {
+            "name": "客户16",
+            "value": 16
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "records-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "分页与弹层边缘定位（16条合成记录）",
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "客户明细"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 1,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "name",
+                "title": "客户",
+                "sortable": true,
+                "width": 160,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "metrics",
+                "title": "业务指标",
+                "children": [
+                  {
+                    "field": "value",
+                    "title": "金额",
+                    "sortable": true,
+                    "width": 160,
+                    "filterable": {
+                      "mode": "numberRange"
+                    }
+                  }
+                ]
+              }
+            ],
+            "rowNumber": {
+              "fixed": "left"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "title": "分页与弹层边缘定位",
+    "description": "内联合成数据；16页切换20条后仍可恢复10条，弹层根据视口空间翻转。"
+  }
+}

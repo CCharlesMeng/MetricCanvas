@@ -1,6 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import { tick, untrack } from 'svelte';
+  import { popoverPosition } from '../../shared/popover';
   import type { DateRangeValue } from '../../types';
   import DatePickerIcon from './DatePickerIcon.svelte';
   import { calendarBound,calendarSpan,calendarExclusion, calendarDays, calendarMonths, calendarQuarters, calendarDisplayValue, calendarInputValue, calendarView, calendarValue, shiftCalendar, moveCalendarValue, calendarDraft, type CalendarPrecision, type CalendarCell } from './calendar';
@@ -49,19 +50,9 @@
 
   function position() {
     if (!anchor || !panel) return;
-    const win = anchor.ownerDocument.defaultView;
-    if (!win) return;
-    const rect = anchor.getBoundingClientRect();
-    const viewport = win.visualViewport;
-    const x = viewport?.offsetLeft ?? 0;
-    const y = viewport?.offsetTop ?? 0;
-    const width = viewport?.width ?? win.innerWidth;
-    const height = viewport?.height ?? win.innerHeight;
-    const panelWidth = Math.min(range ? 558 : 360, width - 16);
-    const panelHeight = Math.min(panel.scrollHeight, height - 16);
-    left = Math.max(x + 8, Math.min(rect.left, x + width - panelWidth - 8));
-    top = rect.bottom + 4 + panelHeight <= y + height - 8 ? rect.bottom + 4 : Math.max(y + 8, rect.top - panelHeight - 4);
-    if (rect.bottom < y || rect.top > y + height || rect.right < x || rect.left > x + width) open = false;
+    const rect = popoverPosition(anchor, panel);
+    left = rect.left; top = rect.top;
+    if (!rect.visible) open = false;
   }
   // The top-layer popover stays in its original root: Svelte styles and ShadowRoot
   // inheritance remain intact. Listeners/observer exist only while it is open.
@@ -84,7 +75,7 @@
     const inertObserver=new MutationObserver(()=>{if(anchor.closest('[inert]'))open=false;});
     for(let node:HTMLElement|null=anchor;node;node=node.parentElement) inertObserver.observe(node,{attributes:true,attributeFilter:['inert']});
     const observer = new ResizeObserver(position);
-    observer.observe(anchor);
+    observer.observe(anchor); observer.observe(openedPanel);
     return () => {
       if (openedPanel.matches(':popover-open')) openedPanel.hidePopover();
       doc.removeEventListener('pointerdown', outside, true);

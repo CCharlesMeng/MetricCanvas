@@ -1,4 +1,5 @@
 export type { DateRangeValue } from './types';
+export { detailsPopover } from './shared/details-popover';
 export { default as DatePicker } from './components/date-picker/DatePicker.svelte';
 export type { CalendarPrecision } from './components/date-picker/calendar';
 export { default as Button } from './components/button/Button.svelte';

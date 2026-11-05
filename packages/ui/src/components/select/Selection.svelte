@@ -33,7 +33,7 @@
   const searchActive = $derived(searchable && keyword.trim().length > 0);
   $effect(() => { if (!searchable) keyword = ''; });
   $effect(() => { if (disabled && open) close(false); });
-  $effect(() => { if (open) return observePopover(trigger, place); });
+  $effect(() => { if (open) return observePopover(trigger, place, popup); });
   $effect(()=>{if(!open||!trigger)return;const observer=new MutationObserver(()=>{if(trigger.closest('[inert]'))close(false);});for(let node:HTMLElement|null=trigger;node;node=node.parentElement)observer.observe(node,{attributes:true,attributeFilter:['inert']});return()=>observer.disconnect();});
   // Reposition after filtering/expanding, without persisting any business selection.
   $effect(() => { visible; expanded; if (open) tick().then(place); });

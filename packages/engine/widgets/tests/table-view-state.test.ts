@@ -42,7 +42,7 @@ describe('table header date range draft', () => {
 });
 
 describe('table pagination controls', () => {
-  it('仅在数据超过一页时显示分页控件', () => {
+  it('仅在数据超过一页时显示页码和前后页控件', () => {
     expect(shouldShowTablePaginationControls(0, 10)).toBe(false);
     expect(shouldShowTablePaginationControls(10, 10)).toBe(false);
     expect(shouldShowTablePaginationControls(11, 10)).toBe(true);

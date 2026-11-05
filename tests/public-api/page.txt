@@ -410,6 +410,7 @@ initialModeRange
 initialTabSelections
 initializeQueryParams
 iocHeaderDeclaration
+iocHeaderFilterIds
 isBoundedResultSource
 isChartComponent
 isChartOptionError
@@ -534,8 +535,10 @@ setObjectFieldValues
 setObjectTimeRange
 setRowCellFallbacks
 snapshotCellFallbacks
+sourceCandidateErrors
 sourceFilterIds
 stableRowQuery
+standardIocRegionFilter
 staticFieldBinding
 supportedVersions
 tabChildren

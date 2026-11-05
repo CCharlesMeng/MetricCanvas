@@ -482,3 +482,11 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 - 清空后切换 Tab/翻页/刷新数据并导出，筛选图标保持不限；重新打开页面实例重新取 URL 初值。恢复空视图、取消和迟到响应由行为测试补足。
 
 这些是合成数据与 DQE Sim 证据，真实 business-decision-details 原件、真实 DQE、Relay 与部署均另验；不能以本示例冒充业务迁移。
+
+## 分页与弹层边缘定位
+
+入口：`/pages/table-pagination-popovers`；[页面 JSON](table-pagination-popovers.json)。运行 `pnpm dev:playground`，不需要 URL 参数或 DQE 服务。页面仅使用16条内联合成记录。
+
+1. 初始每页1条，共16页；选择每页20条后显示全部16条，每页条数选择器继续保留，再选择10条可恢复两页。单页隐藏页码、前后页与跳页控件。
+2. 将分页条数菜单的触发控件滚动到视口底部，菜单向上展开；控件靠近顶部时向下展开。表头数值筛选、搜索字段下拉同样根据空间定位，空间不足时可在菜单内滚动。
+3. `pnpm --filter playground exec playwright test tests/table-pagination-popovers.browser.ts --workers=1` 自动验证16页切单页再切回及上下边缘定位、Escape关闭。UI组件的多选、树、范围、单选、菜单及日期在普通DOM和ShadowRoot中由 `packages/ui/tests/browser/popover-edges.spec.ts` 回归。这里只验证浏览器交互，不作为真实DQE、Relay或部署证明。

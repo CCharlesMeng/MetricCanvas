@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "0d43e0532e89482b764210fa205d130ac1a6c927f3c74bbebcc90cbde56c986a",
+  "sha256": "516760e9fbb84206bd834e80f75a71922406cc3b75ec0229f5c4bf7b3613de6e",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "09101ce9bee5af637043a4d10d260389526cc736e809ea2329bd6bb670ac6068"
+      "sha256": "ffa0f00ef39dd8968399201131496af668bf8330f6ebf0d07c383f53a9db26a4"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -2736,7 +2736,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "2ced6bf67a97b502c9d6a237bf731f50fc79b4855411e7074fe75e07b3ba9bc5"
+      "sha256": "a123b28a86976f6d1d149c4f2cc2f3e3921da17b28a0f4c68fcde4968e7dd0f2"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2857,6 +2857,10 @@
     {
       "file": "pages/capabilities/table/table-missing-sort.json",
       "sha256": "317640354fa13773a4696dd02be10dca002e9ee334ee5171785bbb32514f772b"
+    },
+    {
+      "file": "pages/capabilities/table/table-pagination-popovers.json",
+      "sha256": "7a470e003f081b72c1f1fe0f0a40d1a88f04ae31835329510688ca450b0d5403"
     },
     {
       "file": "pages/capabilities/table/table-pinned-summary.json",

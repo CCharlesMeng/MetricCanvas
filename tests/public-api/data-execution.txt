@@ -14,10 +14,12 @@ FilterCandidate
 FilterCandidatesGateway
 FilterCandidatesRequest
 FilterCandidatesResult
+OperationMapRegionAdapter
 PageDataExecutor
 QueryDiagnosticContext
 RuntimeDataGateway
 createPageDataExecutor
+withOperationMapRegion
 
 ## ./runtime
 BooleanFilterValue
@@ -67,12 +69,14 @@ intersectQueryFilters
 joinAggregate
 localColumnCandidates
 preservedQueryError
+projectSourceCandidates
 rawSnapshot
 remoteHeaderDefaultSources
 resolveQueryResultInputs
 reusableInitialSnapshot
 searchTableRows
 sortTableRows
+sourceCandidatesGateway
 tableColumnPresentation
 tableDefaultInputsPending
 timeFill

@@ -605,3 +605,5 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 创作报告关联需求、取数单元、结果与稳定用数身份；普通换源原子保留组件和字段意图。见[分析与换源](docs/page-metadata/authoring-analysis-rebind.md)，合成入口 `/pages/authoring-analysis-rebind`。新增创作接口不扩展 PageDocument。
 
 Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创作呈现](docs/page-metadata/authoring-presentation.md)，合成入口 `/pages/relay-multislot-presentation`；旧合法引擎格式保留。页面 Schema 字段净增减为零。
+
+表格分页交互修复：启用分页后每页条数选择器在单页和空结果下仍保留；菜单按可视视口空间自动翻转并限制高度。无新增字段，查询分页语义不变。见[表格分页选择与弹层定位](docs/page-metadata/components/table.md)，内联合成验收 `/pages/table-pagination-popovers`。

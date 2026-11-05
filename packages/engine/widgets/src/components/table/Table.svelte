@@ -700,14 +700,13 @@
   {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
     <div class="pager" inert={loading}>
       <span class="total">总条数： <span>{loading ? '—' : pagination.totalCount}</span></span>
-      {#if showPaginationControls}
         <div class="pager-actions">
-          <details class="page-size-select">
+          <details class="page-size-select" use:tableFilterPopover>
             <summary aria-label={`每页 ${pagination.pageSize} 条`}>
               <span>{pagination.pageSize}</span>
               <span aria-hidden="true" class="page-size-arrow"><TableControlIcon name="down" /></span>
             </summary>
-            <div aria-label="每页显示数量" class="page-size-menu" role="listbox">
+            <div aria-label="每页显示数量" class="page-size-menu" role="listbox" popover="auto">
               {#each pageSizeOptions as pageSize}
                 <button
                   aria-selected={pageSize === pagination.pageSize}
@@ -719,6 +718,7 @@
               {/each}
             </div>
           </details>
+          {#if showPaginationControls}
           <button
             type="button"
             class="pager-nav pager-prev"
@@ -762,8 +762,8 @@
               onchange={event => jumpToPage(event.currentTarget)} />
             <span class="jump-suffix">页</span>
           </label>
+          {/if}
         </div>
-      {/if}
     </div>
   {/if}
   {/if}
@@ -1268,19 +1268,22 @@
     transform: rotate(180deg);
   }
   .page-size-menu {
-    position: absolute;
-    top: calc(100% + 4px);
-    right: 0;
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    border: 0;
     z-index: 20;
     box-sizing: border-box;
-    width: 100%;
+    width: 70px;
     min-width: 70px;
     padding: 8px 0;
-    overflow: hidden;
+    max-width: calc(100vw - 16px);
+    overflow: auto;
     border-radius: 6px;
     background: #fff;
     box-shadow: 0 2px 12px rgb(0 0 0 / 0.16);
   }
+  .page-size-menu[popover]:not(:popover-open) { display: none; }
   .page-size-menu button {
     display: block;
     width: 100%;

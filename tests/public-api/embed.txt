@@ -23,6 +23,7 @@ LastFilterRequest
 LastFilterStatus
 MountOptions
 NavigationInputContract
+OperationMapRegionAdapter
 RuntimeDataGateway
 RuntimeEvent
 RuntimeHandle
@@ -36,3 +37,4 @@ loadExecution
 mount
 prepareExecution
 projectNavigationInputs
+withOperationMapRegion
