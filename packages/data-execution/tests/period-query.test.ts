@@ -46,3 +46,12 @@ it('selects each declared query branch before resolving its own period policy',(
   const following=composeEffectiveQuery({dataSource:source},values,0,[],{});
   expect(effectiveDqeItem(following)).toMatchObject({filter:{time:{period:'year',start:'2026',end:'2026'}}});
 });
+
+it('sends quarter endpoints from the applied selection without changing aggregation',()=>{
+  const page=fixture({kind:'selection',supportedPeriods:['quarter']}),values=initialFilterValues(page.filters!);
+  values.set('period-filter',{type:'timeRange',...resolvePeriodSelection({mode:'quarter',value:'2026-Q3'},new Date(2026,9,15))});
+  const source=page.dataSources.sales as QueryDataSource,before=structuredClone(source);
+  const query=composeEffectiveQuery({dataSource:source,filters:page.filters},values,0,[],{});
+  expect(effectiveDqeItem(query)).toMatchObject({filter:{time:{period:'quarter',start:'2026-Q3',end:'2026-Q3',is_aggregate:false}}});
+  expect(source).toEqual(before);
+});

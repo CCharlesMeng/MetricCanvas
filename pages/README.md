@@ -623,4 +623,4 @@ Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/
 
 表头参数初值：`/pages/table-header-filter-param-source` 提供下钻入口；场景与启动步骤见[表格示例](capabilities/table/README.md#表头参数初始化schema-685)。
 
-- [柱线组合的系列条件显隐](capabilities/chart/README.md#系列条件显隐686)：`/pages/chart-series-visibility`，内联合成数据。
+- [柱线组合的系列条件显隐](capabilities/chart/README.md#系列条件显隐687)：`/pages/chart-series-visibility`，内联合成数据。

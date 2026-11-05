@@ -112,7 +112,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "b29b2b88c7811641503672106575b72791ef53b40d56a27cd10f43e02522c599",
+      "contentSha256": "5cdbb36e0893813c6be50fdd3aa40544c09af7d33e315919b2b766701802f9bc",
       "templateRef": {
         "scene": "usage-report",
         "variant": "standard",
@@ -159,7 +159,7 @@
         "planSha256": "7065bba010e4b9900b289085bd614e29d0805e9bbf0147aa764f0c122054d70a"
       }
     },
-    "contentSha256": "b29b2b88c7811641503672106575b72791ef53b40d56a27cd10f43e02522c599",
+    "contentSha256": "5cdbb36e0893813c6be50fdd3aa40544c09af7d33e315919b2b766701802f9bc",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -204,8 +204,8 @@
     "status": "ok",
     "gaps": [],
     "schema": {
-      "declaredVersion": "6.86",
-      "targetVersion": "6.86",
+      "declaredVersion": "6.87",
+      "targetVersion": "6.87",
       "readableVersions": [
         "5.0",
         "5.1",
@@ -288,7 +288,8 @@
         "6.83",
         "6.84",
         "6.85",
-        "6.86"
+        "6.86",
+        "6.87"
       ],
       "readable": true,
       "requiredVersion": "6.1",

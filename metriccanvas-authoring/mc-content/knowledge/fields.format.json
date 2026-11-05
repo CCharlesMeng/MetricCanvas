@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.86",
+  "schemaVersion": "6.87",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "fields.format"
@@ -192,7 +192,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.86",
+        "$id": "https://metriccanvas/page/v6.87",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

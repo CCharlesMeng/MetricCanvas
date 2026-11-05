@@ -27,3 +27,12 @@ export function periodCapabilityPaths(document:unknown):string[]{
   });
   return found;
 }
+
+/** Quarter policies require runtimes that support the YYYY-Qn transport encoding. */
+export function quarterQueryCapabilityPaths(document:unknown):string[]{
+  return periodCapabilityPaths(document).filter(path=>{
+    if(!path.endsWith('/periodPolicy'))return false;
+    const policy=record(path.split('/').slice(1).reduce<unknown>((value,key)=>record(value)?.[key],document));
+    return policy?.period==='quarter'||Array.isArray(policy?.supportedPeriods)&&policy.supportedPeriods.includes('quarter');
+  });
+}

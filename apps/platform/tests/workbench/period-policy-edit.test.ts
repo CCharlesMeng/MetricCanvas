@@ -50,3 +50,9 @@ it('edits period-mode column conditions through the existing basic editor',()=>{
   expect(condition).toEqual({filter:'period',part:'mode',op:'eq',value:'quarter'});
   expect(basicConditionSelection(condition,choices)).toEqual({choice:quarter.value,selected:true});
 });
+
+it('previews quarter query encoding and explicit expansion',()=>{
+  const now=new Date(2026,9,15);
+  expect(periodPolicyPreview('quarter','2026-Q3',{kind:'selection',supportedPeriods:['quarter']},now)).toBe('quarter · 2026-Q3 ～ 2026-Q3');
+  expect(periodPolicyPreview('month','2026-10',{kind:'fixed',period:'quarter'},now)).toBe('quarter · 2026-Q4 ～ 2026-Q4（已扩大到完整自然季）');
+});

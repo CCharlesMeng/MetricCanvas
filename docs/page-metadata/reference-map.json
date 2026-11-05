@@ -2166,7 +2166,8 @@
     "6.84": "布尔勾选覆盖维度筛选，完整授权名单为空时产生空结果。",
     "#/properties/schemaVersion=\"6.85\"": "表头字符串维度参数初值与显式全选不限。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior=\"unrestricted\"": "选中完整显式枚举集时省略该列条件，回显不限，可包含原有 null 和未知值。",
-    "6.86": "图表系列展示条件与系列、图例、提示项、空闲轴的同步显隐"
+    "#/properties/schemaVersion=\"6.86\"": "季度查询使用 quarter 与 YYYY-Qn 起止编码。",
+    "#/properties/schemaVersion=\"6.87\"": "图表系列展示条件与系列、图例、提示项、空闲轴的同步显隐。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2894,7 +2895,7 @@
         "#/definitions/chartSeries"
       ],
       "headings": [
-        "系列条件显隐（6.86）"
+        "系列条件显隐（6.87）"
       ],
       "dependencies": [
         "conditions.overview"
@@ -3032,14 +3033,14 @@
       "查阅方式",
       "常量取值（6.59）",
       "数值格式",
-      "系列条件显隐（6.86）"
+      "系列条件显隐（6.87）"
     ],
     "components/lineChart.md": [
       "双轴刻度与网格线",
       "查阅方式",
       "常量取值（6.59）",
       "数值格式",
-      "系列条件显隐（6.86）"
+      "系列条件显隐（6.87）"
     ],
     "components/pieChart.md": [
       "表格式图例与顺序（6.64）",

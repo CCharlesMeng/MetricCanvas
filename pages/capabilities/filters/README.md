@@ -217,7 +217,7 @@
 3. 在月度列排序后切年，再切回月，原用户排序不复活；导出 XLSX 只含当前模式可见列。
 4. 查询体保留 is_aggregate，不写 period/start/end；协议测试覆盖固定年扩大范围、按选择的能力拒绝、未应用选择、非法混写与旧声明兼容。工作台验收入口 `apps/platform/tests/browser/report-date-editor.html?dashboard`，逐查询主动迁移、选择固定策略或按选择策略，预览实际请求期间。
 
-自动浏览器入口：`node apps/playground/tests/period-query-policy-browser.mjs <证据目录>`，默认页面试验场端口 5198、编辑器端口 5199，支持 PERIOD_POLICY_BASE_URL / PERIOD_EDITOR_BASE_URL。真实 DQE/Relay 未验收；直接季度编码尚未确认，季度可显式固定日/月覆盖整季。
+自动浏览器入口：`node apps/playground/tests/period-query-policy-browser.mjs <证据目录>`，默认页面试验场端口 5198、编辑器端口 5199，支持 PERIOD_POLICY_BASE_URL / PERIOD_EDITOR_BASE_URL。真实 DQE/Relay 未验收；季度支持 quarter 与 YYYY-Qn 编码，原示例仍显式固定日/月覆盖整季。
 
 
 ## 重点国代筛选集成
@@ -259,3 +259,12 @@
 异常入口：`/pages/key-office-priority-demo?state=empty&key-office=true` 返回完整空名单，表格显示暂无数据；取消勾选后恢复四条普通数据。`?state=denied&key-office=true` 显示名单未就绪的加载错误，不进入全量查询。名单桥接与中文组织候选的真实服务接线由集成应用实现；完整说明在仓库 `docs/evidence/2026-11-04-ioc-header-filters/integration.md`。
 
 全球验收：`/pages/key-office-priority-demo?region.level=geo&region=全球&mtime=2026-04&customer-category=战略` 显示上海、广州，完整 XLSX 同范围；勾选重点后仅上海，取消恢复两行。合成 Adapter 将上游 `WORLD/全球` 节点归一为中文 value，查询不携带全球编码、地区部或代表处条件。仅全球节点不限，中国/海外等节点仍过滤；普通组织树规则不变。原生 HTTP 验收 `/pages/ioc-opportunity-list?region.level=geo&region=全球&mtime=2026-04` 首屏5行，保留月份谓词；原页未配置导出按钮，浏览器探针临时启用现有表格导出后验证完整10行。仅为本地合成服务证明。
+
+
+## 季度查询编码
+
+入口：`/pages/quarter-query-period`；[页面 JSON](quarter-query-period.json)。启动 `pnpm dev:playground`。
+
+默认选择 2026-Q3，按所选周期查询发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，其他筛选和聚合开关保留。按选择策略未声明 quarter 时拒绝查询；Q0/Q5、日/月格式混入季度和倒置范围的发送前拒绝由自动测试覆盖。
+
+自动验收：`node apps/playground/tests/quarter-query-browser.mjs <证据目录>`，环境变量 `QUARTER_QUERY_BASE_URL` 指向页面试验场（默认端口 5208）。浏览器测试按页面 JSON 驱动控件，以合成 HTTP 回执验证实际请求编码和表格渲染；未调用真实 DQE/Relay，页面脱离测试运行时需要可用的数据网关。

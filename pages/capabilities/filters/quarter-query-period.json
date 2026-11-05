@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "6.86",
+  "id": "quarter-query-period",
+  "layout": "dashboard",
+  "meta": {
+    "title": "季度时间过滤编码",
+    "description": "quarter 与 YYYY-Qn 传输验收；浏览器自动验收使用合成回执，真实 DQE 另验。"
+  },
+  "filters": [
+    {
+      "id": "statistics-period",
+      "type": "timeRange",
+      "display": "period",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "quarter",
+        "value": "2026-Q3"
+      },
+      "periodModes": [
+        "year",
+        "quarter",
+        "month"
+      ]
+    }
+  ],
+  "dataSources": {
+    "quarter-query": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量",
+          "label": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "statistics-period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "selection",
+                "supportedPeriods": [
+                  "month",
+                  "quarter",
+                  "year"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "quarter-query-section",
+      "components": [
+        {
+          "id": "quarter-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "季度时间过滤编码"
+            },
+            "filterIds": [
+              "statistics-period"
+            ]
+          }
+        },
+        {
+          "id": "quarter-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "quarter-query"
+          },
+          "props": {
+            "title": "季度查询结果（传输验收使用合成回执）",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "amount",
+                "title": "Tokens消耗量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

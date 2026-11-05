@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.86",
-  "schemaSha256": "524030ad19b8f0b31f29694b1d60445d5172d363d72d8799e2634f0f0800bcfb",
+  "schemaVersion": "6.87",
+  "schemaSha256": "4b54a9241be2802fede679f8abd2eff42e52c23de8f6447432819e2ede4c1f5d",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1273,7 +1273,8 @@
         "6.83",
         "6.84",
         "6.85",
-        "6.86"
+        "6.86",
+        "6.87"
       ]
     },
     {
@@ -4942,6 +4943,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },
@@ -4972,6 +4974,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },
@@ -5626,6 +5629,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },
@@ -5656,6 +5660,7 @@
       "enum": [
         "day",
         "month",
+        "quarter",
         "year"
       ]
     },
@@ -21244,5 +21249,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "abc735cdd2c19769495dee5832773eef091e9468140067d3dc78a3719e1883e1"
+  "semanticSourceDigest": "2470195d0c43e8eaa9d08a4a120dda25aa78dc63482e252486bb020720cf22ac"
 }

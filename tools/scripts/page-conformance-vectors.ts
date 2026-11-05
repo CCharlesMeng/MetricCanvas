@@ -56,7 +56,7 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {id:'chart-series-visibility',description:'系列展示条件与类型引用校验、版本下限共用现有展示规则',valid:['chart-series-visibility'],cases:[
-    {case:'chart-series-version',base:'chart-series-visibility',expect:/6.86/,mutate:d=>{d.schemaVersion='6.85';}},
+    {case:'chart-series-version',base:'chart-series-visibility',expect:/6.87/,mutate:d=>{d.schemaVersion='6.86';}},
     {case:'chart-series-unknown-filter',base:'chart-series-visibility',expect:/条件引用了不存在/,mutate:d=>{d.sections[1].components[0].props.series[2].visibleWhen={filter:'unknown',part:'value',op:'eq',value:true};}},
     {case:'chart-series-row-context',base:'chart-series-visibility',expect:/缺少行上下文/,mutate:d=>{d.sections[1].components[0].props.series[2].visibleWhen={row:'sales',op:'gt',value:1};}}
   ]},

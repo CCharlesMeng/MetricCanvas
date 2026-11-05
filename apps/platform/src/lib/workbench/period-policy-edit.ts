@@ -4,7 +4,7 @@ export const periodPolicyOptions = [
   {value:'',label:'请选择查询策略'}, {value:'legacy',label:'保留旧协议'},
   {value:'preserve',label:'保留各分支原配置'},
   {value:'day',label:'固定按日'}, {value:'month',label:'固定按月'},
-  {value:'year',label:'固定按年（必要时扩大范围）'}, {value:'selection',label:'按所选周期（近一年按月）'}
+  {value:'quarter',label:'固定按季（必要时扩大范围）'}, {value:'year',label:'固定按年（必要时扩大范围）'}, {value:'selection',label:'按所选周期（近一年按月）'}
 ];
 export function periodPolicyChoice(binding:DqeFilterBinding|undefined, existing:boolean):PeriodPolicyChoice {
   const policy=binding?.target==='time'?binding.periodPolicy:undefined;
@@ -23,6 +23,6 @@ export function periodPolicyPreview(mode:PeriodMode,value:string,policy:PeriodQu
   try {
     const input=mode==='last12Months'?{mode} as const:{mode,...(value?{value}:{})};
     const resolved=resolvePeriodQuery(resolvePeriodSelection(input,now),policy);
-    return `${resolved.period} · ${resolved.from} ～ ${resolved.to}${resolved.expanded?'（已扩大到完整自然年）':''}`;
+    return `${resolved.period} · ${resolved.from} ～ ${resolved.to}${resolved.expanded?`（已扩大到完整自然${resolved.period==='quarter'?'季':'年'}）`:''}`;
   }catch(cause){return cause instanceof Error?cause.message:'期间配置无效';}
 }

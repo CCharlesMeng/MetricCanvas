@@ -1,6 +1,6 @@
 import { headerDeclarations } from './header-binding';
 import { comparisonCapabilityPaths,comparisonJoinCapabilityPaths } from './period-comparison-validation';
-import { periodCapabilityPaths } from './period-capability';
+import { periodCapabilityPaths, quarterQueryCapabilityPaths } from './period-capability';
 import { columnConditionPaths, columnEnumPaths, columnDefaultPaths } from './table/columns';
 import { isObjectDqeItem } from './dqe-object';
 import {chartOptionScopes} from './chart-option';
@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 86;
+const CURRENT_MINOR = 87;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -55,7 +55,8 @@ function hasPinnedText(columns: unknown): boolean {
 }
 
 export const pageCapabilities = {
-  'chart-series-visibility': {minor:86,legacyReadable:false,description:'图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴',usedAt:chartSeriesConditionPaths},
+  'chart-series-visibility': {minor:87,legacyReadable:false,description:'图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴',usedAt:chartSeriesConditionPaths},
+  'quarter-query-period': {minor:86,legacyReadable:false,description:'季度查询使用 quarter 与 YYYY-Qn 编码',usedAt:quarterQueryCapabilityPaths},
   'table-select-param-initialization': {minor:85,legacyReadable:false,description:'表头参数初值与显式全选不限',usedAt:document=>columnDefaultPaths(document,['initialParam','allBehavior'])},
   'compute-scalar-join': {minor:83,legacyReadable:false,description:'独立单行度量无键关联到全部主行',
     usedAt:document=>dataSourcePaths(document,data=>Array.isArray(data.compute)&&data.compute.some(op=>record(op)?.op==='joinAggregate'&&Array.isArray(record(op)?.keys)&&(record(op)!.keys as unknown[]).length===0))},

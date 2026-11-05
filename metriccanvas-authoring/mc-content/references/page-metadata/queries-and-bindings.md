@@ -2,15 +2,15 @@
 
 ## 查询独立期间策略
 
-6.67 起，指标查询的时间绑定可声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","year"]}}`。支持粒度由作者按已确认的数据能力声明，不由控件推断；不支持时拒绝查询，不回退。
+6.67 起，指标查询的时间绑定可声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","quarter","year"]}}`。支持粒度由作者按已确认的数据能力声明，不由控件推断；不支持时拒绝查询，不回退。
 
 新策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。缺少策略的旧绑定保持原有精度配对和编码。
 
-固定按日、月、年分别生成 YYYY-MM-DD、YYYY-MM、YYYY。选年固定月覆盖十二个月；选月固定日覆盖完整自然月。固定年可扩大到所选窗口涉及的完整自然年，工作台预览明确标记扩大；它不计算年度得分。按选择时，年使用 year、月使用 month，近一年默认 month；近一年使用已应用的前十二个完整月窗口，不在请求或导出时重新取当前时间。直接季度 DQE 编码尚未确认，按选择遇到季度明确拒绝；季度选择仍可由固定日/月策略覆盖整季，不隐式改写策略。
+固定按日、月、季、年分别生成 YYYY-MM-DD、YYYY-MM、YYYY-Qn、YYYY。固定季会扩大到所选窗口涉及的完整自然季，预览明确标记扩大。选年固定月覆盖十二个月；选月固定日覆盖完整自然月。固定年可扩大到所选窗口涉及的完整自然年，工作台预览明确标记扩大；它不计算年度得分。按选择时，年使用 year、月使用 month，近一年默认 month；近一年使用已应用的前十二个完整月窗口，不在请求或导出时重新取当前时间。6.86 起按选择时，季度使用 quarter，例如选择 2026-Q3 发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3"}`，季度编号只允许 Q1—Q4；跨年范围按相同编码传递。未在 supportedPeriods 中声明 quarter 时仍拒绝查询。季度选择也可由显式固定日/月策略覆盖整季，不隐式改写策略。
 
 工作台逐查询配置并预览实际粒度与期间。新绑定从原查询可确认的一致 period 预选固定策略，缺少或分支不一致时要求选择。旧绑定显示“保留旧协议”，主动选择新策略才转换该查询全部静态分支，保留指标、维度、fieldMappings 和 is_aggregate；同一筛选器允许新旧查询并存。整个编辑先校验再应用，失败保留原稿。此能力不自动求和、平均、切换指标或查询路线。
 
-验收入口：`period-query-columns-demo`，同时展示固定日/月查询与按期间模式切换表格列；数据性质及操作见页面目录 README。
+季度编码验收入口：`quarter-query-period`（合成传输验收），默认 2026-Q3；原期间策略与列显隐验收入口：`period-query-columns-demo`，同时展示固定日/月查询与按期间模式切换表格列；数据性质及操作见页面目录 README。
 
 6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。
 
@@ -277,7 +277,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 先将本期截至 `min(所选期间末日, latest)`，再派生基期：月环比前移一月，季度环比前移三月，年度和近一年环比前移一年；同比统一前移一年。因此年度、近一年同环比基期相同。近一年仍指已应用的前十二个完整月，不在请求或导出时重新按时钟定位。未完成期间保持相同日历进度，闰日/月末截到目标月最后一天；已完成期间比较完整自然期间。
 
-`periodComparison` 与 `periodPolicy`、`window` 互斥。指标查询必须显式保留 `filter.time: {"period":"day","is_aggregate":true}`（聚合开关按实际指标契约声明），不能另有固定 start/end/param/window；对象查询可沿用 `queryField` 和 `valueFormat`。所有派生请求使用日边界，季度不依赖未确认的 DQE quarter 编码。服务端须按范围返回正确的指标值，季度/年比率不能由客户端简单累加月度比率。
+`periodComparison` 与 `periodPolicy`、`window` 互斥。指标查询必须显式保留 `filter.time: {"period":"day","is_aggregate":true}`（聚合开关按实际指标契约声明），不能另有固定 start/end/param/window；对象查询可沿用 `queryField` 和 `valueFormat`。所有派生请求使用日边界，期间比较仍沿用日范围契约。服务端须按范围返回正确的指标值，季度/年比率不能由客户端简单累加月度比率。
 
 完整比较表复用 `unionKeys → joinAggregate → delta → ratio`，以各期稳定业务键并集保留本期和历史对象；完整计算后才做本地排序、表头筛选、分页与导出。每个查询复用最多10000行/60秒的完整读取预算，超过预算明确失败，不以当前页冒充全量。比较期失败不补零；依赖表格显示失败，导出不得产生不完整文件。大于该预算的业务需要上游提供完整比较结果，不能把该方案当作无限规模浏览器关联。
 
@@ -302,7 +302,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
 
 
-页面协议 6.86。结构真源为本册[schema.json](schema.json)，SHA256 `524030ad19b8f0b31f29694b1d60445d5172d363d72d8799e2634f0f0800bcfb`。字段表自动生成；可选不等于有默认值。
+页面协议 6.87。结构真源为本册[schema.json](schema.json)，SHA256 `4b54a9241be2802fede679f8abd2eff42e52c23de8f6447432819e2ede4c1f5d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1186,12 +1186,13 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 固定消费期间的查询粒度；年允许扩大到完整自然年 |
+| "string" | 本分支必填 | enum=["day","month","quarter","year"] | Schema未设默认；装配/运行时默认见语义说明 | 固定消费期间的查询粒度；季/年允许扩大到完整自然季/年 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "quarter" | 季度粒度。 |
 | "year" | 年粒度。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f31"></a>
@@ -1236,12 +1237,13 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 每个数组项 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "string" | 每个数组项 | enum=["day","month","quarter","year"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "quarter" | 季度粒度。 |
 | "year" | 年粒度。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
@@ -2338,12 +2340,13 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 固定消费期间的查询粒度；年允许扩大到完整自然年 |
+| "string" | 本分支必填 | enum=["day","month","quarter","year"] | Schema未设默认；装配/运行时默认见语义说明 | 固定消费期间的查询粒度；季/年允许扩大到完整自然季/年 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "quarter" | 季度粒度。 |
 | "year" | 年粒度。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f31"></a>
@@ -2388,12 +2391,13 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 每个数组项 | enum=["day","month","year"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "string" | 每个数组项 | enum=["day","month","quarter","year"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "quarter" | 季度粒度。 |
 | "year" | 年粒度。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>

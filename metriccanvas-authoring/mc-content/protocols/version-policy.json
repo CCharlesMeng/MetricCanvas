@@ -1,11 +1,16 @@
 {
   "major": 6,
-  "minor": 86,
-  "current": "6.86",
+  "minor": 87,
+  "current": "6.87",
   "capabilities": {
     "chart-series-visibility": {
-      "minor": 86,
+      "minor": 87,
       "description": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴",
+      "legacyReadable": false
+    },
+    "quarter-query-period": {
+      "minor": 86,
+      "description": "季度查询使用 quarter 与 YYYY-Qn 编码",
       "legacyReadable": false
     },
     "table-select-param-initialization": {
@@ -866,6 +871,7 @@
     "6.83",
     "6.84",
     "6.85",
-    "6.86"
+    "6.86",
+    "6.87"
   ]
 }

@@ -1,0 +1,29 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-row-expansion.test.ts tests/local-authoring-skill.test.ts tests/local-authoring-upgrade.test.ts tests/page-reference.test.ts --maxWorkers=2
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/quarter-time-filter/DataDashboard
+
+ ❯ tests/page-reference.test.ts (8 tests | 1 failed) 26677ms
+     × 产品与Bundle参考逐字一致，Skill示例只发布当前作者版本 5047ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/page-reference.test.ts > 页面参考手册生成与分发 > 产品与Bundle参考逐字一致，Skill示例只发布当前作者版本
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/page-reference.test.ts:122:3
+    120|     } finally { await rm(temp,{recursive:true,force:true}); }
+    121|   }, 30000);
+    122|   it('产品与Bundle参考逐字一致，Skill示例只发布当前作者版本', async () => {
+       |   ^
+    123|     for (const [file, content] of reference) {
+    124|       for (const prefix of ['contracts/metriccanvas/page/reference','m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 206 passed (207)
+   Start at  16:06:22
+   Duration  72.02s (transform 11.21s, setup 0ms, import 47.25s, tests 90.23s, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

@@ -167,7 +167,7 @@
 
 外围派生占比固定使用 `percent-1`；图例列的显式格式仍只作用于该列，原数值格式不用于派生占比。高级显式标签覆盖和紧凑环图隐藏规则保持。
 
-## 系列条件显隐（6.86）
+## 系列条件显隐（6.87）
 
 入口 `/pages/chart-series-visibility`；[完整 JSON](chart-series-visibility.json)。无需 URL 参数，运行 `pnpm dev:playground` 即可。Dashboard 使用内联合成数据，IOC 页头位于首分区首组件，不依赖 DQE 或外部事实服务。
 
