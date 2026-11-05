@@ -15,4 +15,26 @@
 2. 390px 下逐卡堆叠，各卡按内容自然定高，不跨视觉行统一高度。
 3. 行权效率页保留四张单面板 `compactStack`，同排复用相同拉伸规则。
 
+行权效率的指标卡分区与下方 Tab 分区沿用引擎统一的16px分区间距；即使含IOC页头的首分区被独立渲染，也不应与后续内容贴合。隐藏或空的分区容器不额外占据这段间距。
+
 完整数值合成演示位于 `/pages/metric-card-primary-detail` 的 `mixed-variants` 分区。前后几何/样式比对和数据边界见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-03-metric-card-height/acceptance.md)。本批未验收真实 DQE、Relay 或线上部署。
+
+## 行权效率首个 Tab 的三份查询
+
+当前 `rep-office-execution-efficiency` 使用 Schema 6.86、首分区首位 `iocHeader`，页头沿用最新原稿的统计期间与客户分类。首个 Tab 将两个指标拆开，人数按最新确认仅按商务编号分组：
+
+- `approval-duration`：只查询商审决策时长，保留原分组维度、期间及代表处参数，以 `limit:10 / offset:0` 开始后端分页。
+- `approval-basic`：按本页商务编号补查对象资料，保留原字段及查询；不扫描所有商务。
+- `approval-headcount`：`output_dims` 只保留“商务编号”，`output_metrics` 只保留“商审决策人数”；字段契约同步仅保留这两项。期间及代表处参数仍约束查询，通过 `resultBindings` 仅查询本页商务编号。`resultScope:complete` 表示该编号集合内完整返回，不是全表读取；不再独立取人数查询的第一页。
+
+主查询为空时跳过两份补查。表格以原 `biz-code` 对齐三个数据槽；真实服务仍须兑现原有每个商务编号唯一的行键约定。人数列保留下钻及原项目名称、代表处传参；`source:row` 仍从 `main` 读取。人数变为当前页补查列后，不提供全局排序入口；时长及账期排序仍由主查询执行。
+
+本次仅修改页面查询配置，未新增 Schema 或运行时能力。合成执行核对首屏、下一页、空结果及真实零值；真实 DQE 的字段、粒度、计数与返回内容仍待验。
+
+## 人数列按项目下钻
+
+点击首个 Tab 的商审决策人数，进入 `/pages/rep-office-approval-detail?project-name=<当前 main 行的项目名称>`。详情页已声明可选查询参数 `project-name`，通过 `approval-detail.source.query.paramBindings` 将其用于对象查询的“项目名称”等值条件；继续保留原期间条件及每页10条后端分页。直接打开详情页且不传该参数时不新增项目条件。
+
+详情页已由6.84根级IOC页头升级为6.86首分区组件，保留原筛选与返回意图。原链接中的 `rep-office-name` 仍作为URL携带，不额外绑定详情查询；详情页代表处条件仍由已有Region筛选控制。项目名称传值来自主指标查询，与对象槽中显示的同商务项目名称是否一致，需要真实数据核对。
+
+合成验证覆盖URL特殊字符编码、目标参数解析、最终对象查询的项目名称谓词，以及无参数直接打开；真实服务对 `Commercial-Decision_Duration_Metric_Detail` 的“项目名称”筛选支持仍待验，不将合成请求构造当作真实查询成功。

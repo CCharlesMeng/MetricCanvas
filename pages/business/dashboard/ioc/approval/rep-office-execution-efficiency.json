@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.84",
+  "schemaVersion": "6.86",
   "id": "rep-office-execution-efficiency",
   "meta": {
     "title": "行权效率-代表处",
@@ -8,22 +8,10 @@
   "layout": "dashboard",
   "filters": [
     {
-      "id": "key-national-only",
-      "type": "boolean",
-      "label": "仅看重点国代"
-    },
-    {
-      "id": "customer-category",
-      "type": "dimension",
-      "dimension": "customerCategory",
-      "label": "客户分类",
-      "display": "select"
-    },
-    {
       "id": "period",
       "type": "timeRange",
       "display": "period",
-      "precision": "date",
+      "precision": "month",
       "label": "统计期间",
       "required": true,
       "default": {
@@ -31,31 +19,25 @@
       }
     },
     {
-      "id": "region",
+      "id": "customer-category",
       "type": "dimension",
-      "dimension": "region-dept-name",
-      "label": "Region",
-      "display": "tree",
-      "treeSelection": "level",
-      "selection": {
-        "mode": "single"
-      },
-      "hierarchy": [
-        {
-          "id": "region-dept",
-          "dimension": "region-dept-name",
-          "label": "地区部"
-        },
-        {
-          "id": "office",
-          "dimension": "rep-office-name",
-          "label": "代表处"
-        }
-      ],
-      "defaultLevel": "region-dept",
-      "searchable": true
+      "dimension": "customerCategory",
+      "label": "客户分类",
+      "display": "select"
     }
   ],
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "rep-office-name",
+          "dim_name": "代表处",
+          "required": false,
+          "label": "代表处"
+        }
+      ]
+    }
+  },
   "dataSources": {
     "kpi-summary": {
       "fields": {
@@ -113,17 +95,11 @@
               }
             ]
           },
-          "filterBindings": {
-            "region": {
+          "filterBindings": {},
+          "paramBindings": {
+            "rep-office-name": {
               "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
+              "queryField": "代表处"
             }
           }
         }
@@ -138,6 +114,13 @@
           "queryField": "商务编号",
           "nullable": true
         },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": true
+        },
         "stage-name": {
           "type": "string",
           "role": "dimension",
@@ -149,7 +132,7 @@
           "type": "string",
           "role": "dimension",
           "label": "账期",
-          "queryField": "账期",
+          "queryField": "账期(month)",
           "nullable": true
         },
         "sdt-decision-duration": {
@@ -157,6 +140,14 @@
           "role": "measure",
           "label": "代表处SDT决策时长",
           "queryField": "商审决策时长",
+          "defaultFormat": "number-2",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
           "nullable": true
         }
       },
@@ -168,9 +159,11 @@
             "dsl_list": [
               {
                 "output_dims": [
+                  "代表处",
                   "商务编号",
-                  "阶段名称",
-                  "账期"
+                  "项目名称",
+                  "账期(month)",
+                  "阶段名称"
                 ],
                 "output_metrics": [
                   "商审决策时长"
@@ -180,8 +173,7 @@
                   "metrics": [],
                   "time": {
                     "period": "month",
-                    "start": "202610",
-                    "end": "202610"
+                    "is_aggregate": false
                   }
                 },
                 "order": {
@@ -193,20 +185,13 @@
           },
           "filterBindings": {
             "period": {
-              "target": "time",
-              "queryField": "账期",
-              "valueFormat": "compact"
-            },
-            "region": {
+              "target": "time"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
               "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
+              "queryField": "代表处"
             }
           }
         }
@@ -300,98 +285,10 @@
               }
             ]
           },
-          "filterBindings": {
-            "period": {
-              "target": "time",
-              "queryField": "生效时间",
-              "valueFormat": "compact"
-            },
-            "region": {
+          "paramBindings": {
+            "rep-office-name": {
               "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
-            }
-          },
-          "resultBindings": [
-            {
-              "source": "approval-duration",
-              "field": "biz-code",
-              "target": "dimension",
-              "queryField": "商务编号",
-              "maxValues": 1000
-            }
-          ]
-        }
-      }
-    },
-    "approval-headcount": {
-      "fields": {
-        "biz-code": {
-          "type": "string",
-          "role": "dimension",
-          "label": "商务编号",
-          "queryField": "商务编号",
-          "nullable": true
-        },
-        "approval-headcount": {
-          "type": "number",
-          "role": "measure",
-          "label": "商审决策人数",
-          "queryField": "商审决策人数",
-          "nullable": true
-        }
-      },
-      "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "商务编号"
-                ],
-                "output_metrics": [
-                  "商审决策人数"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": [],
-                  "time": {
-                    "period": "month",
-                    "start": "202610",
-                    "end": "202610"
-                  }
-                },
-                "order": {
-                  "offset": 0,
-                  "limit": 1000
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "period": {
-              "target": "time",
-              "queryField": "账期",
-              "valueFormat": "compact"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
+              "queryField": "代表处"
             }
           },
           "resultBindings": [
@@ -408,13 +305,6 @@
     },
     "zb1111": {
       "fields": {
-        "biz-id": {
-          "type": "string",
-          "role": "dimension",
-          "label": "商务ID",
-          "queryField": "商务ID",
-          "nullable": false
-        },
         "region-dept-name": {
           "type": "string",
           "role": "dimension",
@@ -475,7 +365,6 @@
                 "query_type": "object",
                 "object_type": "Region-Biz_Apply_Approved_Metric_Detail_Global",
                 "output_fields": [
-                  "商务ID",
                   "地区部",
                   "代表处",
                   "商务编号",
@@ -499,17 +388,12 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
-            },
-            "region": {
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
               "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
+              "queryField": "代表处"
             }
           }
         }
@@ -517,11 +401,11 @@
     },
     "biz-basic": {
       "fields": {
-        "biz-id": {
+        "biz-code": {
           "type": "string",
           "role": "dimension",
-          "label": "商务ID",
-          "queryField": "商务ID",
+          "label": "商务编号",
+          "queryField": "商务编号",
           "nullable": false
         },
         "owner-name": {
@@ -552,13 +436,6 @@
           "queryField": "生效时间",
           "nullable": true
         },
-        "cust-company-name": {
-          "type": "string",
-          "role": "dimension",
-          "label": "客户名称",
-          "queryField": "客户名称",
-          "nullable": true
-        },
         "customer-name": {
           "type": "string",
           "role": "dimension",
@@ -577,12 +454,11 @@
                 "query_type": "object",
                 "object_type": "Business/Basic Business Information",
                 "output_fields": [
-                  "商务ID",
+                  "商务编号",
                   "责任人名称",
                   "商务类型",
                   "商务状态",
                   "生效时间",
-                  "客户名称",
                   "华为云账号"
                 ],
                 "filter": {
@@ -595,30 +471,18 @@
               }
             ]
           },
-          "filterBindings": {
-            "period": {
-              "target": "time",
-              "queryField": "生效时间",
-              "valueFormat": "compact"
-            },
-            "region": {
+          "paramBindings": {
+            "rep-office-name": {
               "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
+              "queryField": "代表处"
             }
           },
           "resultBindings": [
             {
               "source": "zb1111",
-              "field": "biz-id",
+              "field": "biz-code",
               "target": "dimension",
-              "queryField": "商务ID",
+              "queryField": "商务编号",
               "maxValues": 1000
             }
           ]
@@ -675,6 +539,13 @@
           "label": "公有云NA级别中文名称",
           "queryField": "公有云NA级别中文名称",
           "nullable": true
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "queryField": "账期",
+          "nullable": true
         }
       },
       "source": {
@@ -693,7 +564,8 @@
                   "代表处",
                   "版本号",
                   "合同类型",
-                  "公有云NA级别中文名称"
+                  "公有云NA级别中文名称",
+                  "账期"
                 ],
                 "filter": {
                   "fields": []
@@ -710,17 +582,12 @@
               "target": "time",
               "queryField": "账期",
               "valueFormat": "compact"
-            },
-            "region": {
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
               "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
+              "queryField": "代表处"
             }
           }
         }
@@ -811,6 +678,13 @@
           "label": "华为云账号",
           "queryField": "华为云账号",
           "nullable": true
+        },
+        "contract-level": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同级别",
+          "queryField": "合同级别",
+          "nullable": true
         }
       },
       "source": {
@@ -834,7 +708,8 @@
                   "合同生效日期",
                   "合同失效日期",
                   "客户名称",
-                  "华为云账号"
+                  "华为云账号",
+                  "合同级别"
                 ],
                 "filter": {
                   "fields": []
@@ -846,22 +721,10 @@
               }
             ]
           },
-          "filterBindings": {
-            "period": {
-              "target": "time",
-              "queryField": "合同电子流创建时间",
-              "valueFormat": "compact"
-            },
-            "region": {
+          "paramBindings": {
+            "rep-office-name": {
               "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            },
-            "customer-category": {
-              "target": "dimension",
-              "queryField": "客户级别"
+              "queryField": "代表处"
             }
           },
           "resultBindings": [
@@ -875,6 +738,72 @@
           ]
         }
       }
+    },
+    "approval-headcount": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "queryField": "商务编号",
+          "nullable": true
+        },
+        "approval-headcount": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审决策人数",
+          "queryField": "商审决策人数",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "商务编号"
+                ],
+                "output_metrics": [
+                  "商审决策人数"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          },
+          "resultBindings": [
+            {
+              "source": "approval-duration",
+              "field": "biz-code",
+              "target": "dimension",
+              "queryField": "商务编号",
+              "maxValues": 1000
+            }
+          ]
+        },
+        "resultScope": "complete"
+      }
     }
   },
   "sections": [
@@ -882,6 +811,27 @@
       "id": "kpi-section",
       "container": "plain",
       "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "行权效率-代表处"
+            },
+            "filterIds": [
+              "period",
+              "customer-category"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "overflow"
+            }
+          }
+        },
         {
           "id": "sdt-duration-metric",
           "type": "metricCard",
@@ -900,7 +850,7 @@
                 "valueField": {
                   "data": "main",
                   "field": "sdtAvgDecisionDuration",
-                  "format": "number-1"
+                  "format": "number-2"
                 }
               }
             ]
@@ -1101,7 +1051,20 @@
                         },
                         "title": "商审决策人数",
                         "width": 120,
-                        "sortable": true
+                        "link": true,
+                        "navigate": {
+                          "href": "/pages/rep-office-approval-detail",
+                          "query": {
+                            "project-name": {
+                              "source": "row",
+                              "field": "project-name"
+                            },
+                            "rep-office-name": {
+                              "source": "row",
+                              "field": "rep-office-name"
+                            }
+                          }
+                        }
                       }
                     ],
                     "toolbar": {
@@ -1236,7 +1199,7 @@
                     "pagination": {
                       "mode": "query"
                     },
-                    "rowKey": "biz-id",
+                    "rowKey": "biz-code",
                     "fit": "container",
                     "rowNumber": {
                       "title": "序号",
@@ -1263,38 +1226,17 @@
                       {
                         "field": "region-dept-name",
                         "title": "区域",
-                        "width": 80
+                        "width": 100
                       },
                       {
                         "field": "rep-office-name",
                         "title": "代表处",
-                        "width": 100
+                        "width": 120
                       },
                       {
                         "field": "contract-code",
                         "title": "合同编号",
-                        "width": 140
-                      },
-                      {
-                        "field": "version-no",
-                        "title": "版本号",
-                        "width": 80
-                      },
-                      {
-                        "field": "contract-type",
-                        "title": "合同类型",
-                        "width": 100,
-                        "filterable": {
-                          "mode": "select"
-                        }
-                      },
-                      {
-                        "field": "customer-category",
-                        "title": "客户分类",
-                        "width": 100,
-                        "filterable": {
-                          "mode": "select"
-                        }
+                        "width": 180
                       },
                       {
                         "field": {
@@ -1302,7 +1244,15 @@
                           "field": "project-name"
                         },
                         "title": "项目名称",
-                        "width": 160
+                        "width": 220
+                      },
+                      {
+                        "field": "contract-type",
+                        "title": "合同类型",
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select"
+                        }
                       },
                       {
                         "field": {
@@ -1310,7 +1260,10 @@
                           "field": "contract-status-name"
                         },
                         "title": "生命状态",
-                        "width": 100
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select"
+                        }
                       },
                       {
                         "field": {
@@ -1318,7 +1271,7 @@
                           "field": "owner-name"
                         },
                         "title": "合同责任人",
-                        "width": 100
+                        "width": 120
                       },
                       {
                         "field": {
@@ -1326,7 +1279,7 @@
                           "field": "eflow-create-time"
                         },
                         "title": "合同电子流创建时间",
-                        "width": 200,
+                        "width": 220,
                         "sortable": true
                       },
                       {
@@ -1335,7 +1288,7 @@
                           "field": "active-time"
                         },
                         "title": "合同激活时间",
-                        "width": 160,
+                        "width": 180,
                         "sortable": true
                       },
                       {
@@ -1344,7 +1297,7 @@
                           "field": "actual-effect-time"
                         },
                         "title": "实际生效时间",
-                        "width": 140,
+                        "width": 170,
                         "sortable": true
                       },
                       {
@@ -1353,7 +1306,7 @@
                           "field": "actual-expire-time"
                         },
                         "title": "实际失效时间",
-                        "width": 140,
+                        "width": 170,
                         "sortable": true
                       },
                       {
@@ -1362,7 +1315,7 @@
                           "field": "effect-time"
                         },
                         "title": "合同生效日期",
-                        "width": 140,
+                        "width": 170,
                         "sortable": true
                       },
                       {
@@ -1371,8 +1324,19 @@
                           "field": "expire-time"
                         },
                         "title": "合同失效日期",
-                        "width": 140,
+                        "width": 170,
                         "sortable": true
+                      },
+                      {
+                        "field": {
+                          "data": "basic",
+                          "field": "contract-level"
+                        },
+                        "title": "合同层级",
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select"
+                        }
                       },
                       {
                         "field": {
@@ -1380,7 +1344,7 @@
                           "field": "customer-name"
                         },
                         "title": "客户名称",
-                        "width": 160
+                        "width": 200
                       },
                       {
                         "field": {
@@ -1388,7 +1352,15 @@
                           "field": "customer-account"
                         },
                         "title": "客户账号",
-                        "width": 120
+                        "width": 150
+                      },
+                      {
+                        "field": "customer-category",
+                        "title": "客户分类",
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select"
+                        }
                       }
                     ],
                     "toolbar": {
@@ -1419,21 +1391,5 @@
         }
       ]
     }
-  ],
-  "iocHeader": {
-    "identity": {
-      "title": "行权效率-代表处"
-    },
-    "filterIds": [
-      "key-national-only",
-      "customer-category",
-      "period",
-      "region"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "density": "normal",
-      "collapse": "overflow"
-    }
-  }
+  ]
 }

@@ -1778,6 +1778,11 @@
     gap: 16px;
     margin-top: var(--mc-page-sections-margin-top, 0);
   }
+  /* 首页头分区独立呈现，跨容器延续分区间距；隐藏或空内容不占间距。 */
+  .page-sections[data-leading-header-section]:has(> :global(.page-section:not([hidden])))
+    + .page-sections:has(> :global(.page-section:not([hidden]))) {
+    margin-top: 16px;
+  }
   .page-content.layout-dashboard > .page-sections {
     /* 看板内容轨只保留 23/24px 非对称页面内距；实际宽度始终由宿主容器决定。 */
     padding-right: 24px;

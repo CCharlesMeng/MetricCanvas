@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.84",
+  "schemaVersion": "6.86",
   "id": "rep-office-approval-detail",
   "meta": {
     "title": "行权效率-代表处-商务审批明细",
@@ -167,12 +167,48 @@
               "target": "dimension",
               "queryField": "客户级别"
             }
+          },
+          "paramBindings": {
+            "project-name": {
+              "target": "dimension",
+              "queryField": "项目名称"
+            }
           }
         }
       }
     }
   },
   "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "行权效率-代表处-商务审批明细"
+            },
+            "filterIds": [
+              "key-national-only",
+              "customer-category",
+              "period",
+              "region"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "overflow"
+            },
+            "back": true
+          }
+        }
+      ]
+    },
     {
       "id": "note-section",
       "container": "plain",
@@ -273,21 +309,16 @@
       ]
     }
   ],
-  "iocHeader": {
-    "identity": {
-      "title": "行权效率-代表处-商务审批明细"
-    },
-    "filterIds": [
-      "key-national-only",
-      "customer-category",
-      "period",
-      "region"
-    ],
-    "presentation": {
-      "layout": "inline",
-      "density": "normal",
-      "collapse": "overflow"
-    },
-    "back": true
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "project-name",
+          "dim_name": "项目名称",
+          "required": false,
+          "label": "项目名称"
+        }
+      ]
+    }
   }
 }
