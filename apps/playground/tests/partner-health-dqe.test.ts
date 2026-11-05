@@ -1,3 +1,4 @@
+// 冻结的2026-11-02计分/仿真契约回归；不作为已迁移业务页当前口径的验收。
 import {readFileSync} from 'node:fs';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {parsePage, type PageDocument} from '@metriccanvas/page';
@@ -14,7 +15,7 @@ vi.mock('../src/lib/services', async () => {
   return {dataGateway: createPlaygroundDqeGateway(transport)};
 });
 
-const document: PageDocument = JSON.parse(readFileSync('pages/temporary/partner-health.json', 'utf8'));
+const document: PageDocument = JSON.parse(readFileSync('tests/fixtures/partner-health/page-20261102.json', 'utf8'));
 const parsed = parsePage(document);
 if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
 const endpoint = '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';

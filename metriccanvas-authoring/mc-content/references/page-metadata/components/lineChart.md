@@ -28,8 +28,12 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。
 
+## 系列条件显隐（6.89）
 
-页面协议 6.88。结构真源为本册[schema.json](../schema.json)，SHA256 `dff3b04041482094064d854102d31d6ab0c66a41b486dce3b82b546df2c71388`。字段表自动生成；可选不等于有默认值。
+`props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。完整内联合成入口 `/pages/chart-series-visibility`。
+
+
+页面协议 6.89。结构真源为本册[schema.json](../schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -272,6 +276,26 @@ Schema位置：`#/definitions/chartSeries/anyOf/0/properties/label/allOf/0`。�
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f302f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@chartSeries · anyOf[0].visibleWhen`
+
+Schema位置：`#/definitions/chartSeries/anyOf/0/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f302f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@chartSeries · anyOf[0].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/chartSeries/anyOf/0/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f31"></a>
 
 ### `@chartSeries · anyOf[1]`
@@ -439,6 +463,26 @@ Schema位置：`#/definitions/chartSeries/anyOf/1/properties/label/allOf/0`。�
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f312f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@chartSeries · anyOf[1].visibleWhen`
+
+Schema位置：`#/definitions/chartSeries/anyOf/1/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f312f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@chartSeries · anyOf[1].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/chartSeries/anyOf/1/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f736d6f6f7468"></a>
 
 ### `@lineChartComponent.props.smooth`
@@ -564,6 +608,7 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/act
 - [chart-constant-values-page](../examples/chart-constant-values-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-branches](../examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [dual-axis-alignment](../examples/dual-axis-alignment.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-series-visibility](../examples/chart-series-visibility.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-lineChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

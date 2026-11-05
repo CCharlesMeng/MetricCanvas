@@ -1,10 +1,11 @@
+// 冻结的2026-11-02计分/仿真契约回归；不作为已迁移业务页当前口径的验收。
 import type {AddressInfo} from 'node:net';
 import {afterAll, beforeAll, expect, it, vi} from 'vitest';
 import {parsePage} from '../packages/page/src';
 import {createDqeGateway} from '../packages/data-execution/src/dqe/dqe';
 import {createSourceProgram, initialFilterValues, type SourceUpdate} from '../packages/data-execution/src/runtime';
 import {createDqeSimServer, DQE_EXECUTE_PATH} from '../tools/dqe-sim/src/server';
-import document from '../pages/temporary/partner-health.json';
+import document from './fixtures/partner-health/page-20261102.json';
 import type {JsonObject} from '../packages/page/src/query';
 import {flattenPageComponents, resolveDataSourceFields} from '../packages/page/src/internal';
 import {orchestrate, type PageDataSnapshots} from '../packages/engine/runtime/src/orchestrator';

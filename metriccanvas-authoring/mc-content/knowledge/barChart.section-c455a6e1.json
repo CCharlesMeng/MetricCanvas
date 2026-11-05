@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "6.89",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "barChart.section-c455a6e1"
+  ],
+  "semantics": [
+    {
+      "module": "barChart",
+      "reference": "references/page-metadata/components/barChart.md",
+      "blocks": [
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。\n\n6.56 起，DQE 通过 `output_dims` 返回的现成计数或金额也可显式声明为数值度量，再绑定 `series[].field`；图表直接使用每行数值，不重新聚合。声明见[结果字段角色](../fields.md#dqe-output-measures)，柱图、明细与零值/缺失对照见 `stored-count-measures` 示例。",
+        "## 系列条件显隐（6.89）\n\n`props.series[].visibleWhen` 使用[展示条件](../conditions.md)，支持字段系列和常量系列；柱线组合中的柱和折线均适用。省略时始终具有展示资格。系列没有行上下文，不能引用 `row`；筛选器必须已声明且类型与操作匹配。单系列条件本身可作为筛选消费方，内联页面也能观察显隐效果。\n\n```json\n{\n  \"id\": \"trend\",\n  \"type\": \"barChart\",\n  \"layout\": { \"span\": 12 },\n  \"data\": { \"main\": \"trend\" },\n  \"props\": {\n    \"categoryField\": \"month\",\n    \"dualAxis\": true,\n    \"series\": [\n      { \"field\": \"sales\", \"label\": \"销售额\", \"kind\": \"bar\", \"axis\": \"primary\" },\n      {\n        \"field\": \"rate\", \"label\": \"达成率\", \"kind\": \"line\", \"axis\": \"secondary\",\n        \"visibleWhen\": { \"filter\": \"scope\", \"part\": \"values\", \"op\": \"containsAny\", \"values\": [\"office\"] }\n      }\n    ]\n  }\n}\n```\n\n示例需声明 `scope` 维度筛选器和 `trend` 数据源（`month` 为维度，`sales/rate` 为度量）；完整合法页面见 `/pages/chart-series-visibility`。\n\n条件读取当前已应用的筛选状态和已有外部事实，错误、缺失和等待均不展示。条件不满足时系列、图例、悬浮提示和常驻标签同步消失，用户点击图例不能恢复被条件排除的系列；再次满足时自动恢复。原声明序、配色槽位、堆叠次序和高级 `echartsOption.series[]` 补丁对应关系保留。堆叠合计按当前可见系列重新计算。\n\n没有可见系列使用的数值轴隐藏轴名、刻度和网格线；仍保留内部轴索引，避免其他系列绑定错轴。仅副轴仍在使用时独立绘制刻度和网格线。全部系列被隐藏时保留图表标题、容器及类别轴，不把展示投影当作源数据为空。查询定义、筛选状态及共享源行集不改变，也不因系列隐藏停止查询。PDF/PNG 使用导出捕获的条件状态；显示资格不能替代服务端授权。\n\n新条件仅可在 Schema 6.89 及以后声明，旧系列省略该字段时沿用原行为。本能力没有新增显示模式、轴显隐开关或脚本入口。"
+      ],
+      "rules": [
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "bar-forecast-boundary",
+          "description": "实际 / 预测系列不得跨越采集时间所在月",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "forecast-before-captured-month",
+            "actual-after-captured-month"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/forecast-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/dual-axis-alignment.json",
+        "references/page-metadata/examples/chart-series-visibility.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

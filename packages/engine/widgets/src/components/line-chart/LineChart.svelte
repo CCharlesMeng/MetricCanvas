@@ -3,7 +3,8 @@
   import type { LineChartProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import EChart from '../../shared/EChart.svelte';
-  import { chartSource, type ChartDiagnostic } from '../../shared/chart-option-extension';
+  import { type ChartDiagnostic } from '../../shared/chart-option-extension';
+  import { cartesianChartSource } from '../../shared/chart-series-presentation';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
   import { lineOption } from './options';
 
@@ -21,7 +22,7 @@
   /* 形态色板从绘图容器的计算样式读(见 shared/chart-palette.ts)。 */
   let chartContainer = $state<HTMLDivElement>();
   const palette = $derived(readColorList(chartContainer, CATEGORICAL_PALETTE_PROPERTY));
-  const source = $derived(chartSource(() => lineOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-line-chart', componentType: 'lineChart', path: '/props/echartsOption' }));
+  const source = $derived(cartesianChartSource(() => lineOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-line-chart', componentType: 'lineChart', path: '/props/echartsOption' }, props.series.map((_, index) => index)));
 </script>
 
 {#if props.title}<h3>{props.title}</h3>{/if}

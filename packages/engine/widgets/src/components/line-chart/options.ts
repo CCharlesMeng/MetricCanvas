@@ -1,3 +1,5 @@
+import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartAxisFormats } from '../../../../runtime/src/chart-series-state';
+import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveComponentValue } from '../../shared/component-value';
 import type { LineChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
@@ -28,15 +30,15 @@ export function lineOption(
     grid: { ...GRID, ...(props.showPointLabels ? { top: 36, right: 30 } : {}),
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? { bottom: 36 } : {}) },
     tooltip: { trigger: 'axis', confine: true, hideDelay: 200 },
-    ...(props.series.length > 1 ? { legend: { top: 0, left: 0 } } : {}),
+    ...(chartDeclaration(props).series.length > 1 ? { legend: { top: 0, left: 0 } } : {}),
     xAxis: {
       type: 'category',
       name: fieldLabel(props.xField, data),
       data: rows.map((row) => formatValue(row[x.field], x.format, x.missingText)),
       ...categoryLabelOption(props.categoryLabels, props.showValueLabels)
     },
-    yAxis: dualOrSingleAxis(props.dualAxis, props.series.length, props.hideYAxis,
-      props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format)),
+    yAxis: dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, props.hideYAxis,
+      chartAxisFormats(props, props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format))),
     series: props.series.map((series, i) => {
       const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
@@ -46,8 +48,9 @@ export function lineOption(
         ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText),
           labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), true), showAllSymbol: true } : {}),
         ...(props.stacked ? { stack: 'total' } : {}),
-        ...(props.dualAxis && i > 0 ? { yAxisIndex: 1 } : {}),
-        ...(props.areaGradient ? { areaStyle: gradientArea(i, palette) } : {}),
+        yAxisIndex: chartSeriesAxis(props, i),
+        itemStyle: { color: chartSeriesColor(props, i, palette) },
+        ...(props.areaGradient ? { areaStyle: gradientArea(chartSeriesIndex(props, i), palette) } : {}),
         ...(props.showPointLabels
           ? {
               label: {

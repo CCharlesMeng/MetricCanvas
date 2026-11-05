@@ -19,7 +19,7 @@ import { categoryLabelsZ } from '../presentation';
 const chartOptionValueZ: z.ZodType<JsonValue> = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(chartOptionValueZ), z.record(z.string(), chartOptionValueZ)])).meta({ id: 'chartOptionValue' });
 export const chartOptionZ = z.record(z.string(), chartOptionValueZ).meta({ id: 'chartOption', description: '高级 ECharts 呈现 JSON；数据、结构和交互由引擎管理，不执行代码' });
 
-const seriesShape = { label: textValueZ.optional() };
+const seriesShape = { label: textValueZ.optional(), ...visibilityShape };
 export const chartSeriesZ = z.union([
   fieldSeriesSourceZ.extend(seriesShape).strict(),
   constantSeriesSourceZ.extend(seriesShape).strict()

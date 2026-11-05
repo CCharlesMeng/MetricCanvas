@@ -1,5 +1,7 @@
 # 条件显隐与动作资格
 
+6.89 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留，隐藏不停止查询。声明与边界见[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`。
+
 6.75 将既有 enabledWhen 扩展到 boolean 筛选器，禁用只约束编辑，保留已应用值与查询条件；完整行为见[布尔候选依赖](filters.md#boolean-candidate-context)。
 
 6.67 增加期间模式读取：`{filter:"statistics-period",part:"mode",op:"eq",value:"year"}` 只引用 display=period 的时间范围筛选器，读取已应用 selection.mode（year/quarter/month/last12Months），可用 eq/ne/in/notIn 等既有标量条件组合。条件编辑基础表单可直接选择“统计期间 · 选择年/季度/月/近一年”。字段列、分组列、组件等共享同一条件解析，不为时间列新增专用规则。未应用期间时等待，错误与等待不会被 not 反转成允许。示例：`period-query-columns-demo`。
@@ -37,7 +39,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。
 
 
-页面协议 6.88。结构真源为本册[schema.json](schema.json)，SHA256 `dff3b04041482094064d854102d31d6ab0c66a41b486dce3b82b546df2c71388`。字段表自动生成；可选不等于有默认值。
+页面协议 6.89。结构真源为本册[schema.json](schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -975,10 +977,11 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 - [reference-conditions-page](examples/reference-conditions-page.json)：完整合法页面；查询仅为静态契约证据。
 - [page-visibility-report](examples/page-visibility-report.json)：完整合法页面；查询仅为静态契约证据。
 - [period-query-columns-demo](examples/period-query-columns-demo.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-series-visibility](examples/chart-series-visibility.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
-- `#/definitions/condition/anyOf/0`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sectionGroups/0/visibleWhen`。
+- `#/definitions/condition/anyOf/0`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/series/2/visibleWhen`。
 - `#/definitions/condition/anyOf/1`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/3/components/0/props/rowVisibleWhen`。
 - `#/definitions/condition/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/filters/0/visibleWhen`。
 - `#/definitions/condition/anyOf/3`：[合法完整页面](examples/page-visibility-inputs.json)，JSON Pointer `#/sections/1/visibleWhen`。
@@ -986,8 +989,8 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/visibleWhen/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/4/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/2`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/visibleWhen/value`。
-- `#/definitions/condition/anyOf/5`：[合法完整页面](examples/table-column-visibility.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/visibleWhen`。
-- `#/definitions/condition/anyOf/5/properties/values/items/anyOf/0`：[合法完整页面](examples/table-column-visibility.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/visibleWhen/values/0`。
+- `#/definitions/condition/anyOf/5`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/series/2/visibleWhen/all/0`。
+- `#/definitions/condition/anyOf/5/properties/values/items/anyOf/0`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/series/2/visibleWhen/all/0/values/0`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/7/values/0`。
 - `#/definitions/condition/anyOf/6`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/8`。

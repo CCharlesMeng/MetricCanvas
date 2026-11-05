@@ -1,6 +1,18 @@
 {
   "invariants": [
     {
+      "id": "chart-series-visibility",
+      "description": "系列展示条件与类型引用校验、版本下限共用现有展示规则",
+      "valid": [
+        "chart-series-visibility"
+      ],
+      "invalid": [
+        "chart-series-version",
+        "chart-series-unknown-filter",
+        "chart-series-row-context"
+      ]
+    },
+    {
       "id": "compute-scalar-join",
       "description": "独立单行指标只允许6.83无键unique关联，依赖保持完整结果",
       "valid": [

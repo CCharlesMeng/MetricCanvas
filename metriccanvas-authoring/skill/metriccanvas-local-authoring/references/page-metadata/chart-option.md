@@ -33,7 +33,7 @@
 货币字段选择同样只消费页面协议拥有的字段绑定；不透明`echartsOption`内部的`byFilter`等同名键不声明IOC能力、不参与选择器依赖，也不被运行时货币投影改写。
 
 
-页面协议 6.88。结构真源为本册[schema.json](schema.json)，SHA256 `dff3b04041482094064d854102d31d6ab0c66a41b486dce3b82b546df2c71388`。字段表自动生成；可选不等于有默认值。
+页面协议 6.89。结构真源为本册[schema.json](schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -178,8 +178,8 @@ Schema位置：`#/definitions/chartOption/propertyNames`。
 ## 联合分支见证（生成）
 
 - `#/definitions/chartOptionValue/anyOf/0`：[合法完整页面](examples/dual-axis-alignment.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/xAxis/name`。
-- `#/definitions/chartOptionValue/anyOf/1`：[合法完整页面](examples/chart-echarts-option-page.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/grid/right`。
-- `#/definitions/chartOptionValue/anyOf/2`：[合法完整页面](examples/chart-echarts-option-page.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/animation`。
+- `#/definitions/chartOptionValue/anyOf/1`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/series/2/lineStyle/width`。
+- `#/definitions/chartOptionValue/anyOf/2`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/animation`。
 - `#/definitions/chartOptionValue/anyOf/3`：[合法完整页面](examples/chart-echarts-option-page.json)，JSON Pointer `#/sections/0/components/3/props/echartsOption/backgroundColor`。
-- `#/definitions/chartOptionValue/anyOf/4`：[合法完整页面](examples/chart-echarts-option-page.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/series`。
+- `#/definitions/chartOptionValue/anyOf/4`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/series`。
 - `#/definitions/chartOptionValue/anyOf/5`：[合法完整页面](examples/dual-axis-alignment.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/xAxis`。

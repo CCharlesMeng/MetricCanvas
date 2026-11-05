@@ -385,6 +385,7 @@ filterDependencies
 filterGroupOptions
 filterHasObservableConsumer
 filterHasPresentationConsumer
+filterOverrideTargets
 filterQueryResultRows
 filterTextValueErrors
 filterURLKeys
@@ -446,6 +447,8 @@ matchesParamDeclaration
 matchesTimeValue
 materializePageParams
 modeRangeIssue
+moneyFormatCurrency
+moneyFormatMatchesCurrency
 navigationErrors
 normalizeDisplayQueryRows
 normalizePageDocument

@@ -1,3 +1,5 @@
+import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartRoleIndex, chartAxisFormats, explicitChartAxes } from '../../../../runtime/src/chart-series-state';
+import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveComponentValue } from '../../shared/component-value';
 import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page/internal';
 import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
@@ -29,7 +31,7 @@ export function barOption(
   props: BarChartProps,
   palette?: ColorList
 ): EChartsOption {
-  if (props.series.some(series => series.kind !== undefined || series.axis !== undefined)) return mixedOption(data, props, palette);
+  if (explicitChartAxes(props)) return mixedOption(data, props, palette);
   const rows = data.main.snapshot.rows;
   const category = resolveField(props.categoryField, data);
   const categories = rows.map((row) =>
@@ -38,15 +40,14 @@ export function barOption(
   const categoryAxis = { type: 'category' as const, data: categories,
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
-  const valueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
-    props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format));
+  const valueAxis = dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, false,
+    chartAxisFormats(props, props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format)));
   const horizontalAxis = Array.isArray(valueAxis)
     ? valueAxis.map(horizontalValueLabels)
     : horizontalValueLabels(valueAxis);
   const reportForecast = props.variant === 'reportForecast';
-  const roleIndexes = { actual: 0, forecast: 0 };
   const declaredEntries = props.series.map((series, originalIndex) => ({
-    series, originalIndex, roleIndex: series.role === undefined ? undefined : roleIndexes[series.role]++
+    series, originalIndex, roleIndex: chartRoleIndex(props, originalIndex)
   }));
   const seriesEntries = barSeriesOrder(props).map(index => declaredEntries[index]!);
   const topEntryByGroup = new Map<string, (typeof seriesEntries)[number]>();
@@ -71,7 +72,7 @@ export function barOption(
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
     },
     tooltip: { trigger: 'axis', confine: true },
-    ...(props.series.length > 1
+    ...(chartDeclaration(props).series.length > 1
       ? {
           legend: reportForecast
             ? {
@@ -104,6 +105,7 @@ export function barOption(
       const isTopSeries =
         !props.stacked || topEntryByGroup.get(series.role ?? 'default') === entry;
       const itemStyle = {
+        color: chartSeriesColor(props, originalIndex, palette),
         ...(props.rounded
           ? {
               borderRadius: isTopSeries
@@ -147,7 +149,7 @@ export function barOption(
         type: 'bar' as const,
         ...(props.stacked ? { stack: 'total' } : {}),
         barWidth: DEFAULT_BAR_WIDTH,
-        ...(props.dualAxis && originalIndex > 0 ? { yAxisIndex: 1 } : {}),
+        ...barAxisIndex(props, originalIndex),
         ...(Object.keys(itemStyle).length > 0 ? { itemStyle } : {}),
         ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(values, false, props.horizontal) } : {}),
         ...(props.showSegmentLabels
@@ -243,8 +245,8 @@ function roundedCorners(props: BarChartProps): number[] {
 /** Indices refer to the original declaration, even when stackOrder changes drawing order. */
 export function barSeriesOrder(props: BarChartProps): number[] {
   const indices = props.series.map((_, index) => index);
-  if (props.series.some(series => series.kind !== undefined || series.axis !== undefined)) return indices;
-  return indices.sort((left, right) => (props.series[left]!.stackOrder ?? left) - (props.series[right]!.stackOrder ?? right) || left - right);
+  if (explicitChartAxes(props)) return indices;
+  return indices.sort((left, right) => (props.series[left]!.stackOrder ?? chartSeriesIndex(props, left)) - (props.series[right]!.stackOrder ?? chartSeriesIndex(props, right)) || left - right);
 }
 
 /** 显式系列只翻译封闭角色和轴声明；不接受外部 ECharts option。 */
@@ -263,11 +265,12 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
     legend: { top: 0, left: 0 }, tooltip: { trigger: 'axis', confine: true },
     xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)), ...categoryLabelOption(props.categoryLabels, props.showValueLabels) },
     yAxis: props.dualAxis ? [axis('primary'), alignedSecondaryAxis(axis('secondary'))] : axis('primary'),
-    series: props.series.map(series => {
+    series: props.series.map((series, index) => {
       const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
         type: series.kind ?? 'bar', name: series.label ?? field.label,
-        yAxisIndex: series.axis === 'secondary' ? 1 : 0,
+        yAxisIndex: chartSeriesAxis(props, index),
+        itemStyle: { color: chartSeriesColor(props, index, palette) },
         ...(series.kind === 'line' ? { connectNulls: false } : { barWidth: DEFAULT_BAR_WIDTH }),
         ...(props.showValueLabels ? {
           label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
@@ -283,4 +286,10 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
       };
     })
   };
+}
+
+function barAxisIndex(props: BarChartProps, index: number) {
+  const axis = chartSeriesAxis(props, index);
+  if (!axis) return {};
+  return props.horizontal ? { xAxisIndex: axis } : { yAxisIndex: axis };
 }

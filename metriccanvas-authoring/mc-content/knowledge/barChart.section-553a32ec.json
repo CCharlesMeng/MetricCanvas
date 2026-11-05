@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.88",
+  "schemaVersion": "6.89",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "barChart.section-553a32ec"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/barChart.md",
       "blocks": [
         "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。\n\n6.56 起，DQE 通过 `output_dims` 返回的现成计数或金额也可显式声明为数值度量，再绑定 `series[].field`；图表直接使用每行数值，不重新聚合。声明见[结果字段角色](../fields.md#dqe-output-measures)，柱图、明细与零值/缺失对照见 `stored-count-measures` 示例。",
-        "## 数值格式\n\n标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。"
+        "## 数值格式\n\n标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。\n\n<a id=\"chart-series-visibility\"></a>"
       ],
       "rules": [
         {
@@ -45,7 +45,8 @@
         "references/page-metadata/examples/stored-count-measures.json",
         "references/page-metadata/examples/chart-constant-values-page.json",
         "references/page-metadata/examples/chart-constant-branches.json",
-        "references/page-metadata/examples/dual-axis-alignment.json"
+        "references/page-metadata/examples/dual-axis-alignment.json",
+        "references/page-metadata/examples/chart-series-visibility.json"
       ]
     }
   ],
