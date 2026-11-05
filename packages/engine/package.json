@@ -30,16 +30,17 @@
     "@metriccanvas/page": "workspace:*",
     "@metriccanvas/ui": "workspace:0.1.0",
     "echarts": "^6.1.0",
-    "exceljs": "4.4.0",
     "fflate": "0.8.3",
     "html2canvas": "1.4.1",
-    "jspdf": "4.2.1"
+    "jspdf": "4.2.1",
+    "write-excel-file": "4.1.1"
   },
   "peerDependencies": {
     "svelte": ">=5.29.0 <6"
   },
   "devDependencies": {
     "@metriccanvas/dqe-sim": "workspace:*",
+    "exceljs": "4.4.0",
     "svelte": "^5.56.6",
     "svelte-check": "^4.7.3",
     "typescript": "^5.9.3"

@@ -17,6 +17,25 @@ test('packaged images cannot reintroduce external asset URLs', () => {
   assert.deepEqual(images, [], 'Imported images must be embedded as data URLs');
 });
 
+test('chart and workbook dependencies retain their reduced bundle budgets', () => {
+  for (const { prefix, limit } of [
+    { prefix: 'chunks/charts~', limit: 600_000 },
+    { prefix: 'chunks/excel~', limit: 100_000 }
+  ]) {
+    const chunks = files.filter(file => file.startsWith(prefix));
+    assert(chunks.length > 0, `Missing dependency chunks: ${prefix}`);
+    const bytes = chunks.reduce((total, file) => total + statSync(resolve(dist, file)).size, 0);
+    assert(bytes <= limit, `${prefix}: ${bytes} bytes exceeds the ${limit}-byte dependency budget`);
+  }
+});
+
+test('ExcelJS remains a development reader rather than a runtime dependency', () => {
+  const engine = JSON.parse(readFileSync(new URL('../../engine/package.json', import.meta.url), 'utf8'));
+  assert.equal(engine.dependencies.exceljs, undefined);
+  assert.equal(engine.dependencies['write-excel-file'], '4.1.1');
+  assert(files.every(file => !file.includes('exceljs')), 'ExcelJS must not be present in runtime chunks');
+});
+
 test('distribution contains about ten bounded JS files and the two stable entries', () => {
   assert(files.length >= 10 && files.length <= 16, `Expected 10–16 JS files, got ${files.length}`);
   for (const entry of ['metriccanvas-runtime.es.js', 'metriccanvas-runtime.global.js']) {

@@ -9,7 +9,7 @@ import { staticImages } from './build-tools/static-images';
 const chunkGroups = [
   { name: 'graphics', test: /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?zrender\// },
   { name: 'charts', test: /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?echarts\// },
-  { name: 'excel', test: /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?exceljs\// },
+  { name: 'excel', test: /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?(?:write-excel-file|fflate)\// },
   { name: 'vendor', test: /node_modules\// },
   { name: 'export-codecs', test: /\/report-(?:pdf-worker-source|png-worker-source|pdf-capture)\.ts$/ },
   { name: 'runtime', test: /\/packages\/(?:page|data-execution|engine\/(?:runtime|data-gateway))\// },

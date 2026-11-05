@@ -2,7 +2,7 @@
 <script lang="ts">
   import { getContext, onMount, untrack } from 'svelte';
   import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from './export-context';
-  import * as echarts from 'echarts';
+  import * as echarts from './echarts-runtime';
   import type { EChartsOption, XAXisComponentOption } from 'echarts';
   import { cartesianFrame } from './chart-presentation';
   import { copyChartOption, logChartFailure, type ChartSource, type ChartStage } from './chart-option-extension';

@@ -1,4 +1,4 @@
-import * as echarts from 'echarts';
+import * as echarts from '../../shared/echarts-runtime';
 
 /**
  * 底图注册(组件目录私有):geojson 静态资产随包入库(同目录 maps/,由

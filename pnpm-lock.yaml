@@ -198,9 +198,6 @@ importers:
       echarts:
         specifier: ^6.1.0
         version: 6.1.0
-      exceljs:
-        specifier: 4.4.0
-        version: 4.4.0
       fflate:
         specifier: 0.8.3
         version: 0.8.3
@@ -210,10 +207,16 @@ importers:
       jspdf:
         specifier: 4.2.1
         version: 4.2.1
+      write-excel-file:
+        specifier: 4.1.1
+        version: 4.1.1
     devDependencies:
       '@metriccanvas/dqe-sim':
         specifier: workspace:*
         version: link:../../tools/dqe-sim
+      exceljs:
+        specifier: 4.4.0
+        version: 4.4.0
       svelte:
         specifier: ^5.56.6
         version: 5.56.6
@@ -2161,6 +2164,10 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  write-excel-file@4.1.1:
+    resolution: {integrity: sha512-MUnCnNtQrcZek832ZcU24uU0rSphFmKPD1DvIjXOlygVb93CV7Tme6H3jUTkxsMmjB2W7HIzERzjqTi5kui71A==}
+    engines: {node: '>=18'}
 
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
@@ -4156,6 +4163,10 @@ snapshots:
       stackback: 0.0.2
 
   wrappy@1.0.2: {}
+
+  write-excel-file@4.1.1:
+    dependencies:
+      fflate: 0.8.3
 
   xmlchars@2.2.0: {}
 

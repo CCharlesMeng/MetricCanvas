@@ -18,7 +18,8 @@ function chunkFor(id: string) {
 const modules = [
   ['graphics', 'node_modules/.pnpm/zrender@6.1.0/node_modules/zrender/lib/core/env.js'],
   ['charts', 'node_modules/.pnpm/echarts@6.1.0/node_modules/echarts/lib/core/echarts.js'],
-  ['excel', 'node_modules/.pnpm/exceljs@4.4.0/node_modules/exceljs/dist/exceljs.min.js'],
+  ['excel', 'node_modules/.pnpm/write-excel-file@4.1.1/node_modules/write-excel-file/universal/index.js'],
+  ['excel', 'node_modules/.pnpm/fflate@0.8.3/node_modules/fflate/esm/browser.js'],
   ['vendor', 'node_modules/.pnpm/svelte@5.56.6/node_modules/svelte/src/internal/client/index.js'],
   ['runtime', 'packages/page/src/index.ts'],
   ['runtime', 'packages/data-execution/src/index.ts'],

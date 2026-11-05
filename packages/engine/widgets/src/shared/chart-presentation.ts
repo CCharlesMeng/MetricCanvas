@@ -1,5 +1,6 @@
 import type { CategoryLabels, ValueFormatPreset } from '@metriccanvas/page/internal';
-import { format, type EChartsOption, type GridComponentOption, type LegendComponentOption, type LabelLayoutOptionCallbackParams } from 'echarts';
+import type { EChartsOption, GridComponentOption, LegendComponentOption, LabelLayoutOptionCallbackParams } from 'echarts';
+import { format } from './echarts-runtime';
 import { finiteNumber } from './value-format';
 import { formatterValue, formatChartNumber } from './chart-option';
 
