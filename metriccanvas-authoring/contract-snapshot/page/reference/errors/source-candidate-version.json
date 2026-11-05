@@ -1,0 +1,50 @@
+{
+  "case": "source-candidate-version",
+  "invariant": "filter-source-candidates",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选候选读取页面数据源完整输出，支持树节点独立单多选 由 6.90 引入，文档声明的是 6.89",
+      "paths": [
+        "/filters/0",
+        "/filters/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "organization",
+        "type": "dimension",
+        "dimension": "org",
+        "label": "组织",
+        "display": "tree",
+        "treeSelection": "independent",
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidates": {
+          "dataSource": "organization-options",
+          "valueField": "code",
+          "labelField": "name",
+          "parentField": "parent"
+        }
+      },
+      {
+        "id": "channel",
+        "type": "dimension",
+        "dimension": "channel",
+        "label": "渠道",
+        "selection": {
+          "mode": "single"
+        },
+        "candidates": {
+          "dataSource": "channel-options",
+          "valueField": "code",
+          "labelField": "name"
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/source-candidate-version.json"
+}

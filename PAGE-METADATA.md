@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.90：普通维度筛选可从 inline/query 页面数据源指定输出读取完整候选，按稳定值去重；图表卡下拉复用该声明，树的父子节点按自身值独立单多选。见[数据源候选](docs/page-metadata/filters.md#source-candidates)，合成入口 `/pages/filter-source-candidates`。
+
 6.89：柱状图（含柱线组合）和折线图的 `props.series[].visibleWhen` 复用展示条件。条件不允许时移除系列、图例及悬浮提示中的该项，隐藏无可见系列使用的数值轴；恢复时沿用原系列颜色和高级样式对应关系。全部系列隐藏仍保留标题和容器，不改变查询定义。见[系列条件显隐](docs/page-metadata/components/barChart.md#chart-series-visibility)，合成入口 `/pages/chart-series-visibility`。
 
 6.88：新增 `cny-adaptive-trimmed`、`cny-adaptive-trimmed-no-yuan`、`usd-adaptive-km`，按原始绝对值选档、对称四舍五入、去尾零并加千分位。旧金额格式语义保持。声明与规则见[金额自适应](docs/page-metadata/field-bindings-and-formats.md#金额去尾零与美元km688)，合成验收入口 `/pages/operation-money-formats`。

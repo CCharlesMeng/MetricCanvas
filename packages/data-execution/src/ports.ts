@@ -102,6 +102,8 @@ export interface FilterCandidate extends DimensionValueCandidate {
   parent?: {level:string;value:string};
 }
 export interface FilterCandidatesRequest {
+  /** Page-source candidates retain declared dependency selections, including period mode and hierarchy level. */
+  sourceValues?:Readonly<Record<string,import('./filter-values').FilterValue>>;
   filterId:string;
   dimension:string;
   level?:string;

@@ -8,6 +8,7 @@ export interface TimeAvailability {fact:string;initial?:'latest'|'latestComplete
 export interface FilterInteractionExtension { hint?: TextValue; clearOnChangeOf?: string[]; }
 export interface DimensionSelectionExtension {
   selection?: {mode:'single'|'multiple';required?:boolean;allBehavior?:'values'|'unrestricted'};
+  candidates?: {dataSource:string;valueField:string;labelField?:string;parentField?:string};
   options?: Array<{value:string;label:string;disabled?:boolean}>;
   treeSelection?: 'level'|'descendants'|'independent'|'leaf';
   /** Local candidate search, enabled by default. Introduced in6.43. */

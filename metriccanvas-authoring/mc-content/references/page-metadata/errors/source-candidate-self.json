@@ -1,0 +1,24 @@
+{
+  "case": "source-candidate-self",
+  "invariant": "filter-source-candidates",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "候选来源不能直接或间接消费自身筛选",
+      "paths": [
+        "/filters/1/candidates/dataSource"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "candidates": {
+          "dataSource": "channel-options"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

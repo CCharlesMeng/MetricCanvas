@@ -105,3 +105,7 @@ it('retains disabled metadata on explicit and legacy candidate nodes',()=>{
  expect(buildFilterTree([{value:'CN',label:'中国',disabled:true},{value:'SZ',label:'深圳',parentValue:'CN'}])[0]).toMatchObject({disabled:true,children:[{value:'SZ'}]});
  expect(buildFilterTree([{value:'CN',label:'中国',disabled:true}])[0]?.disabled).toBe(true);
 });
+
+it('source-backed explicit root values containing slash stay individual nodes',()=>{
+ expect(buildFilterTree([{value:'a/b',label:'业务节点'}],true)).toMatchObject([{value:'a/b',label:'业务节点',children:[]}]);
+});

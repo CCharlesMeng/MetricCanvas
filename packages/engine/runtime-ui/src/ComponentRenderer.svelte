@@ -51,6 +51,8 @@
   import { AiSummary, AiSummaryView, exportSummarySnapshot, type AiSummaryConfig } from './ai-summary';
   import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
+  import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from './dashboard/source-filter-context';
+  const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
   import FilterGroup from './dashboard/FilterGroup.svelte';
   import { compositeFilterToolbar } from './dashboard/filter-toolbar';
   import { componentDataNotices } from './component-render';
@@ -173,7 +175,7 @@
       <IocHeader {...binding} staticView={exportMode}/>
     </IocHeaderFrame>
   {:else if component.type === 'filterGroup'}
-    <FilterGroup control={component.props} value={filterGroupValue?.(component)}
+    <FilterGroup source={sourceFilters?.(component.props.filterId)} control={component.props} value={filterGroupValue?.(component)}
       label={presentation?.()?.context.declarations.find(filter=>filter.id===component.props.filterId)?.label ?? '筛选'} {exportMode}
       disabled={filterGroupReadOnly || gate?.enabled===false}
       onchange={value => onfiltergroup?.(component, value)} />

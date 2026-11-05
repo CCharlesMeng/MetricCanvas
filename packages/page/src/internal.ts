@@ -103,6 +103,7 @@ export { hasHeaderDefaults, headerDefaultValues, tableDefaultsRemote } from './t
 export { normalizeQueryTime, QueryTimeRangeError } from './query-time';
 
 export * from './field-resolution';
+export * from './source-candidates';
 
 export { normalizeTableSelectView, normalizeTableSelectValues } from './table/select-values';
 export { tableHeaderParamReferences, tableHeaderInputErrors } from './table/header-params';

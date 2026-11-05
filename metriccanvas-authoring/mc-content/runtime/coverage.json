@@ -158,6 +158,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/filter-source-candidates.json",
+      "target": "product-contracts/page/conformance/valid/filter-source-candidates.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/filters-page.json",
       "target": "product-contracts/page/conformance/valid/filters-page.json",
       "scope": "exact product contract"
@@ -2155,6 +2160,16 @@
     {
       "source": "product:page/conformance/invalid/period-filter-static-time.json",
       "target": "product-contracts/page/conformance/invalid/period-filter-static-time.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/source-candidate-version.json",
+      "target": "product-contracts/page/conformance/invalid/source-candidate-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/source-candidate-self.json",
+      "target": "product-contracts/page/conformance/invalid/source-candidate-self.json",
       "scope": "exact product contract"
     },
     {
@@ -4898,6 +4913,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/source-candidate-version.json",
+      "target": "references/page-metadata/errors/source-candidate-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/source-candidate-self.json",
+      "target": "references/page-metadata/errors/source-candidate-self.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/filter-select-version.json",
       "target": "references/page-metadata/errors/filter-select-version.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6868,6 +6893,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/filter-source-candidates.json",
+      "target": "references/page-metadata/examples/filter-source-candidates.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/filters.md",
       "target": "references/page-metadata/filters.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7624,11 +7654,11 @@
     }
   ],
   "counts": {
-    "product": 1492,
+    "product": 1498,
     "authoring": 32,
     "modules": 36,
-    "topics": 257,
-    "nodes": 2532,
+    "topics": 260,
+    "nodes": 2537,
     "tools": 9,
     "components": 20
   },

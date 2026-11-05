@@ -47,3 +47,18 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 
 
 6.50 的 `queryModes` 可直接消费固定单选值，选择不同数据对象的完整查询；不要求上游存在同名业务维度。现有示例的普通维度谓词语义保持，跨表分支示例见 `/pages/query-mode-chart-demo` 和[查询定义](../queries-and-bindings.md#query-modes)。
+
+## 数据源候选下拉（6.90）
+
+使用页面数据源候选时，组件省略 `options`，通过 `filterId` 引用声明 `candidates` 的普通维度筛选器，且 `display` 必须为 `select`：
+
+```json
+{
+  "id": "organization-picker", "type": "filterGroup", "layout": {"span": 6},
+  "props": {"filterId": "organization", "display": "select", "align": "right"}
+}
+```
+
+平面/树形、单多选、必选、初值、搜索与候选字段映射由筛选声明拥有，组件不复制配置。父节点按自身值独立选择。候选加载、失败重试、空结果、只读与 URL 继续沿用统一筛选机制；导出呈现冻结的选中显示名。候选来源、完整读取、去重与异常边界见[页面数据源候选](../filters.md#source-candidates)。既有固定 `options` 保持原行为，不能与筛选声明的 `candidates` 混用。
+
+完整页面 `/pages/filter-source-candidates` 将内联组织树和查询渠道下拉放入右侧工具栏；二者只通过 `filterBindings` 影响图表。页面使用本地合成 Adapter，无需 DQE Sim；不代表生产查询或权限服务已接通。

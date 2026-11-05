@@ -359,7 +359,8 @@
         "ioc-region-url-demo",
         "authoring-evaluation-context",
         "key-office-priority-demo",
-        "key-office-priority-target"
+        "key-office-priority-target",
+        "filter-source-candidates"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -377,7 +378,8 @@
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
         "packages/page/src/time-extension-validation.ts",
-        "packages/page/src/filter-url.ts"
+        "packages/page/src/filter-url.ts",
+        "packages/page/src/source-candidates.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -1266,7 +1268,8 @@
       "examples": [
         "filter-group-page",
         "filter-group-state-page",
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "filter-source-candidates"
       ],
       "sources": [
         "packages/page/src/schema/components/filter-group.ts",
@@ -1647,7 +1650,7 @@
     "#/definitions/pieChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
     "#/definitions/mapChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
     "#/definitions/filterGroupComponent/properties/props/properties/filterId": "引用页面独立普通维度筛选器；初值由该筛选器 default 声明，查询范围仅由 filterBindings 声明。",
-    "#/definitions/filterGroupComponent/properties/props/properties/options": "固定单选候选列表，label 用于展示，value 进入查询与 URL，各 value 唯一。",
+    "#/definitions/filterGroupComponent/properties/props/properties/options": "固定单选候选列表，各 value 唯一；6.90 数据源候选下拉省略此字段，并引用声明 candidates 的筛选器。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport": "6.30兼容读取；新页面使用exportButtons，旧配置转换为直接下载PNG按钮。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/filename": "可选非空文本取值；生成时捕获，默认页头标题，清理非法字符并规范为.png。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/scale": "有效数值PDF为2/3/4，PNG为3/4；其他值按未配置处理，读取时移除scale，分别使用默认2/3倍。字符串不转换为数值。",
@@ -1835,7 +1838,12 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/note": "页头说明；可用于只读原因，纯文本。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout": "6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/initialParam": "6.85：字符串维度参数初值；与 defaultValues 互斥，只初始化会话。",
-    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior": "缺省 values 保留集合；unrestricted 要求枚举，全选省略条件。"
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior": "缺省 values 保留集合；unrestricted 要求枚举，全选省略条件。",
+    "#/definitions/dimensionFilter/properties/candidates": "6.90：从页面数据源完整结果读取候选，与固定 options 互斥。",
+    "#/definitions/dimensionFilter/properties/candidates/properties/dataSource": "候选来源的页面数据源 ID，支持 inline/query，不能消费自身筛选。",
+    "#/definitions/dimensionFilter/properties/candidates/properties/valueField": "稳定值引用的已声明标量输出字段 ID；完整读取后去重。",
+    "#/definitions/dimensionFilter/properties/candidates/properties/labelField": "可选显示名输出字段 ID，省略时显示稳定值。",
+    "#/definitions/dimensionFilter/properties/candidates/properties/parentField": "tree 必填的父节点值输出字段 ID；根节点为空，父子节点独立选择。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2176,7 +2184,8 @@
     "cny-adaptive-trimmed": "6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。",
     "cny-adaptive-trimmed-no-yuan": "6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。",
     "usd-adaptive-km": "6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。",
-    "#/properties/schemaVersion=\"6.88\"": "新增人民币双呈现与美元 K/M 金额格式，旧格式语义不变。"
+    "#/properties/schemaVersion=\"6.88\"": "新增人民币双呈现与美元 K/M 金额格式，旧格式语义不变。",
+    "#/properties/schemaVersion=\"6.90\"": "页面数据源完整候选、稳定值去重与父子节点独立单多选。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2600,7 +2609,8 @@
         "#/definitions/filterGroupComponent"
       ],
       "headings": [
-        "固定单选下拉与对齐（6.47）"
+        "固定单选下拉与对齐（6.47）",
+        "数据源候选下拉（6.90）"
       ],
       "dependencies": []
     },
@@ -2911,6 +2921,17 @@
       "dependencies": [
         "conditions.overview"
       ]
+    },
+    "filters.sourceCandidates": {
+      "module": "filters",
+      "title": "页面数据源候选",
+      "roots": [
+        "#/definitions/dimensionFilter"
+      ],
+      "headings": [
+        "页面数据源候选（6.90）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2993,7 +3014,8 @@
       "IOC 业务批量场景与必选多选（6.46）",
       "布尔筛选覆盖（6.84）",
       "布尔候选依赖与条件启用（6.75）",
-      "期间筛选驱动同比环比（6.77）"
+      "期间筛选驱动同比环比（6.77）",
+      "页面数据源候选（6.90）"
     ],
     "sections-and-layout.md": [
       "Report 与 Dashboard 标题",
@@ -3141,7 +3163,8 @@
     ],
     "components/button.md": [],
     "components/filterGroup.md": [
-      "固定单选下拉与对齐（6.47）"
+      "固定单选下拉与对齐（6.47）",
+      "数据源候选下拉（6.90）"
     ],
     "components/iocHeader.md": [],
     "authoring-analysis-rebind.md": [

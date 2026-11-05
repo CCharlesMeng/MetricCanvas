@@ -4,6 +4,8 @@
 </script>
 <script lang="ts">
   import {getContext} from 'svelte';
+  import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
+  const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
   import {usesHierarchyTree} from './hierarchy-tree';
   import {PRESENTATION_CONTEXT,type PresentationReader} from '../presentation-context';
   const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
@@ -130,7 +132,8 @@
 
   function dimensionDisplay(declaration: DimensionDeclaration): string {
     const selected=dimensionValueOf(values,declaration.id).values;
-    return (selected.length?selected.map(value=>declaration.options?.find(option=>option.value===value)?.label??value).join('、'):undefined) ?? declaration.emptyLabel ?? declaration.label ?? '全部';
+    const source=sourceFilters?.(declaration.id),options=source?.candidates.status==='ready'?source.candidates.candidates:declaration.options;
+    return (selected.length?selected.map(value=>options?.find(option=>option.value===value)?.label??value).join('、'):undefined) ?? declaration.emptyLabel ?? declaration.label ?? '全部';
   }
 </script>
 
@@ -164,7 +167,7 @@
       </button>
     {:else if declaration.type === 'dimension' && declaration.hierarchy}
       {@const current = dimensionValueOf(values, declaration.id)}
-      <HierarchyFilter selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)} structural={declaration.treeSelection==='level'} searchable={declaration.searchable??true} treeSelection={declaration.treeSelection==='level'?undefined:declaration.treeSelection} onretry={onretry?()=>onretry(declaration.id):undefined}
+      <HierarchyFilter selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)} structural={declaration.treeSelection==='level'} searchable={declaration.searchable??true} treeSelection={declaration.candidates?'independent':declaration.treeSelection==='level'?undefined:declaration.treeSelection} onretry={onretry?()=>onretry(declaration.id):undefined}
         label={declaration.label}
         emptyLabel={declaration.emptyLabel}
         candidateLevels={Object.fromEntries(declaration.hierarchy.map(item=>[item.id,dimensionValuesSnapshot(candidates,candidateScopeKey(declaration.id,item.dimension,item.id))]))}
@@ -177,7 +180,7 @@
         onchange={(next) => ondimension(declaration, next.values, next.level)}
       />
     {:else if declaration.type === 'dimension'}
-      <DimensionFilter searchable={declaration.searchable??true} treeSelection={declaration.treeSelection==='level'?undefined:declaration.treeSelection} selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)}
+      <DimensionFilter explicitParents={!!declaration.candidates} searchable={declaration.searchable??true} treeSelection={declaration.candidates?'independent':declaration.treeSelection==='level'?undefined:declaration.treeSelection} selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)}
         onretry={onretry?()=>onretry(declaration.id):undefined}
         label={declaration.label}
         emptyLabel={declaration.emptyLabel}

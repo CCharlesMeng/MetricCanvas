@@ -16,6 +16,7 @@ import { valueSourceBinding, type ComponentValueSource } from './component-value
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './table/validate-expansion';
+import { sourceCandidateErrors } from './source-candidates';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
 import { metricBeforeErrors } from './metric-before';
 import { metricCardShapeErrors } from './metric-card';
@@ -187,7 +188,7 @@ export function parsePage(
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
-  const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...tableHeaderInputErrors(page,options.textValues?.values),...filterGroupErrors(page)];
+  const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...tableHeaderInputErrors(page,options.textValues?.values),...filterGroupErrors(page),...sourceCandidateErrors(page)];
   try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant, options.evaluation),...navigationErrors(variant),...urlInputErrors(variant));}
   catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   attachInitialFallbacks(page, materialized.initialFallbacks, materialized.initialWarnings);

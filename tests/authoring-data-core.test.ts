@@ -64,3 +64,15 @@ describe('product authoring scan/scope preserve the frozen CLI behavior', () => 
     expect(JSON.stringify(sources)).toBe(before);
   });
 });
+
+it('includes source-candidate outputs in complete scans and component reading closures',()=>{
+ const page=JSON.parse(readFileSync('pages/capabilities/filters/filter-source-candidates.json','utf8'));
+ const scan=scanPageData(page,schema);
+ expect(scan.uses.filter(use=>use.path.includes('/candidates/')).map(use=>[use.source,use.field])).toEqual([
+  ['organization-options','code'],['organization-options','name'],['organization-options','parent'],['channel-options','code'],['channel-options','name']
+ ]);
+ const scope=scopePageData(page,scan,['organization-picker']);
+ expect(Object.keys(scope.sources)).toContain('organization-options');
+ expect(Object.keys(scope.sources)).toContain('channel-options');
+ expect(scope.diagnostics).toEqual([]);
+});

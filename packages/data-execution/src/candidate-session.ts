@@ -5,7 +5,7 @@ import type {RuntimeDataGateway,FilterCandidatesRequest,FilterCandidatesResult} 
 export function createCandidateGatewaySession(base:RuntimeDataGateway) {
   const receipts=new Map<string,FilterCandidatesResult>(),generations=new Map<string,number>();let disposed=false;
   const key=(request:FilterCandidatesRequest)=>canonicalizeJson(request);
-  const gateway:RuntimeDataGateway={fetchData:base.fetchData.bind(base),
+  const gateway:RuntimeDataGateway={...base,fetchData:base.fetchData.bind(base),
     ...(base.fetchColumnCandidates?{fetchColumnCandidates:base.fetchColumnCandidates.bind(base)}:{}),
     ...(base.fetchDimensionValues?{fetchDimensionValues:base.fetchDimensionValues.bind(base)}:{}),
     ...(base.fetchFilterCandidates?{fetchFilterCandidates:async(request:FilterCandidatesRequest,options:{signal:AbortSignal})=>{

@@ -244,3 +244,31 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 ## 期间筛选驱动同比环比（6.77）
 
 已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。
+
+<a id="source-candidates"></a>
+
+## 页面数据源候选（6.90）
+
+普通维度筛选可通过 `candidates` 引用页面数据源的结果字段；静态候选使用 `inline`，动态候选使用 `query`。它与固定 `options`、`hierarchy`、`dependsOn`、`candidateWindow` 互斥。候选来源不等于被筛选的图表数据源；筛选生效范围继续由查询 `filterBindings` 决定。
+
+```json
+{
+  "id": "organization", "type": "dimension", "dimension": "organization",
+  "label": "组织", "display": "tree", "treeSelection": "independent",
+  "selection": { "mode": "multiple" },
+  "candidates": {
+    "dataSource": "organization-options", "valueField": "code",
+    "labelField": "name", "parentField": "parent"
+  }
+}
+```
+
+`dataSource` 引用 `page.dataSources` 的键；`valueField`、`labelField`、`parentField` 引用已声明的标量输出字段 ID，不引用原始 DQE 字段。`valueField` 必填，`labelField` 省略时显示稳定值。`parentField` 仅用于 `display:"tree"` 且树展示必须提供；根节点父值为 null、缺失或空字符串。树节点都拥有自身稳定值，父节点和子节点独立选择；省略 `treeSelection` 或显式 `independent` 均按独立值选择，不自动展开后代，不从业务值中的 `/` 推导层级。单多选、必选、默认值与搜索继续使用既有 `selection`、`default`、`searchable`；IOC Region 的专属组织树规则保持。
+
+引擎先读取完整结果，再按稳定值去重，顺序取第一次出现的顺序。字符串、有限数字和 boolean 归一为筛选使用的字符串；null、缺失及空字符串值不进入候选。同值的显示名或父关系冲突、找不到父节点、循环父关系均报候选错误，不任取一条。完整取数复用已有查询、结果映射与受控计算；查询分页会读齐所有页，业务 TopN 仍属于查询本身的范围。不能把当前屏幕页、query.initial 的初始行或失败前取得的部分行当作完整候选。完整读取沿用 10,000 行及 60 秒预算；总数缺失且未声明完整结果、总数变化、超限、失败和取消均不发布部分候选。
+
+候选查询不能直接或通过结果依赖消费自身筛选，防止选择后候选越筛越少。若候选来源受其他筛选影响，必须在 `candidateContext.filterIds` 显式声明这些筛选，依赖循环继续拒绝；条件变化使用现有候选失效、clear/intersection、取消和迟到回执规则。无依赖来源不因自身选择变化重取。候选错误、加载中、空结果、重试、只读及查询门禁保持可观察状态。
+
+图表卡内用省略 `props.options` 的 `filterGroup` 引用此筛选器，并显式声明 `props.display:"select"`。页面通用筛选栏也消费同一声明。静态导出冻结已选稳定值及其显示名，不查询或建立交互控件。既有固定 options 按钮及下拉保持原必选单选语义。
+
+完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。

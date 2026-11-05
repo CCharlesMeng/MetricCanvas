@@ -55,9 +55,9 @@ export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot
   if (total === undefined || (total > 0 && query.pagination.offset < total) || (total === 0 && query.pagination.offset === 0)) return undefined;
   return Math.max(0, Math.ceil(total / query.pagination.limit) - 1);
 }
-export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails, allowPartial = false, allowZeroTotal?: boolean): Promise<DataSnapshot> {
+export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails, allowPartial = false, allowZeroTotal?: boolean, strictComplete = false): Promise<DataSnapshot> {
   const { frozen, declared, limit } = exportReadWindow(query);
-  const strict = isObjectDqeItem(query.body.dsl_list[0]);
+  const strict = strictComplete || isObjectDqeItem(query.body.dsl_list[0]);
   let paged = declared !== undefined, offset = 0, expected: number | undefined;
   const rows: Row[] = [];
   while (true) {

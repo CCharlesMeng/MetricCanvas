@@ -1,26 +1,34 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import type { FilterGroupComponent } from '@metriccanvas/page/internal';
+  import type { SourceFilterBinding } from './source-filter-context';
   import DimensionFilter from '../filters/DimensionFilter.svelte';
 
-  let { control, value, label, exportMode = false, disabled = false, onchange }: {
+  let { control, source, value, label, exportMode = false, disabled = false, onchange }: {
     control: FilterGroupComponent['props'];
+    source?:SourceFilterBinding;
     value?: string;
     label: string;
     exportMode?: boolean;
     disabled?: boolean;
     onchange: (value: string) => void;
   } = $props();
+  const selectedLabels=$derived(source ? source.values.map(value=>source.candidates.status==='ready'?source.candidates.candidates.find(option=>option.value===value)?.label??value:value).join('、') || source.declaration.emptyLabel || '全部' : control.options?.find(option=>option.value===value)?.label);
 </script>
 
 <div class="filter-group" class:right={control.align === 'right'} data-filter-group={control.filterId} role={exportMode ? undefined : 'group'} aria-label={exportMode ? undefined : label}>
   {#if exportMode}
-    <span data-filter-group-selection>{control.options.find(option => option.value === value)?.label}</span>
+    <span data-filter-group-selection>{selectedLabels}</span>
+  {:else if source}
+    <DimensionFilter {label} {disabled} candidates={source.candidates} value={source.values}
+      display={source.declaration.display==='tree'?'tree':'select'} selection={source.declaration.selection}
+      explicitParents treeSelection="independent" searchable={source.declaration.searchable ?? true}
+      emptyLabel={source.declaration.emptyLabel} onchange={source.onchange} onretry={source.onretry}/>
   {:else if control.display === 'select'}
-    <DimensionFilter {label} {disabled} candidates={{status:'ready',candidates:control.options}} value={value ? [value] : []}
+    <DimensionFilter {label} {disabled} candidates={{status:'ready',candidates:control.options ?? []}} value={value ? [value] : []}
       selection={{mode:'single',required:true}} searchable={false} onchange={values=>{if(values[0] && values[0]!==value)onchange(values[0]);}}/>
   {:else}
-    {#each control.options as option (option.value)}
+    {#each control.options ?? [] as option (option.value)}
       <button {disabled} type="button" data-value={option.value} aria-pressed={value === option.value}
         onclick={() => { if (value !== option.value) onchange(option.value); }}>
         {option.label}

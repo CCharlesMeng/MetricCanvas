@@ -19,6 +19,7 @@ export interface ExportRenderState {
   page: Page;
   currentYear:number;now?:Date;
   filters: FilterValues;
+  sourceCandidates?:ReadonlyMap<string,import('../../runtime/src').DimensionValuesSnapshot>;
   filterRevision?:number;
   displaySnapshot?:DisplaySnapshot;
   snapshots: PageDataSnapshots;

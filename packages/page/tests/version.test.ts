@@ -8,6 +8,7 @@ const introducedAt: Record<string, number> = {
 
   'quarter-query-period':86,
   'yoy-p-format':87,
+  'filter-source-candidates':90,
   'table-select-param-initialization':85,
   'compute-scalar-join':83,
   'table-select-default-values':82,

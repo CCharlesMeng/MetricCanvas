@@ -1,3 +1,4 @@
+import {createSourceCandidatesPreview} from '../../fixtures/source-candidates';
 import {createRegionURLGateway} from '../../fixtures/region-url';
 import {createGlobalBenchmarkPreview} from '../../fixtures/global-benchmark';
 import {createRowCachePreview} from '../../fixtures/row-expansion-cache';
@@ -45,6 +46,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if(kind==='source-candidates')return createSourceCandidatesPreview(state);
   if(kind==='global-benchmark')return createGlobalBenchmarkPreview(state);
   if (kind === 'key-office') return {dataGateway:createKeyOfficeGateway()};
   if (kind === 'key-office-priority') return {dataGateway:createKeyOfficePriorityGateway()};

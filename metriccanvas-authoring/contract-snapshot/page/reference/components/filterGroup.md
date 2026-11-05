@@ -48,8 +48,23 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 
 6.50 的 `queryModes` 可直接消费固定单选值，选择不同数据对象的完整查询；不要求上游存在同名业务维度。现有示例的普通维度谓词语义保持，跨表分支示例见 `/pages/query-mode-chart-demo` 和[查询定义](../queries-and-bindings.md#query-modes)。
 
+## 数据源候选下拉（6.90）
 
-页面协议 6.89。结构真源为本册[schema.json](../schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
+使用页面数据源候选时，组件省略 `options`，通过 `filterId` 引用声明 `candidates` 的普通维度筛选器，且 `display` 必须为 `select`：
+
+```json
+{
+  "id": "organization-picker", "type": "filterGroup", "layout": {"span": 6},
+  "props": {"filterId": "organization", "display": "select", "align": "right"}
+}
+```
+
+平面/树形、单多选、必选、初值、搜索与候选字段映射由筛选声明拥有，组件不复制配置。父节点按自身值独立选择。候选加载、失败重试、空结果、只读与 URL 继续沿用统一筛选机制；导出呈现冻结的选中显示名。候选来源、完整读取、去重与异常边界见[页面数据源候选](../filters.md#source-candidates)。既有固定 `options` 保持原行为，不能与筛选声明的 `candidates` 混用。
+
+完整页面 `/pages/filter-source-candidates` 将内联组织树和查询渠道下拉放入右侧工具栏；二者只通过 `filterBindings` 影响图表。页面使用本地合成 Adapter，无需 DQE Sim；不代表生产查询或权限服务已接通。
+
+
+页面协议 6.90。结构真源为本册[schema.json](../schema.json)，SHA256 `34107cf105578479ad49be8e6d05f39aa18f7023d1e599fd45bf4f23a6c5b39d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -125,7 +140,7 @@ Schema位置：`#/definitions/filterGroupComponent/properties/props`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支必填 | required=["filterId","options"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 组件的受控呈现配置。 |
+| "object" | 本分支必填 | required=["filterId"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 组件的受控呈现配置。 |
 
 <a id="schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c7465724964"></a>
 
@@ -175,7 +190,7 @@ Schema位置：`#/definitions/filterGroupComponent/properties/props/properties/o
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 固定单选候选列表，label 用于展示，value 进入查询与 URL，各 value 唯一。 |
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 固定单选候选列表，各 value 唯一；6.90 数据源候选下拉省略此字段，并引用声明 candidates 的筛选器。 |
 
 <a id="schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6f7074696f6e732f6974656d73"></a>
 
@@ -218,6 +233,7 @@ Schema位置：`#/definitions/filterGroupComponent/properties/props/properties/o
 - [filter-group-page](../examples/filter-group-page.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-group-state-page](../examples/filter-group-state-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-local-filter-page](../examples/chart-local-filter-page.json)：完整合法页面；查询仅为静态契约证据。
+- [filter-source-candidates](../examples/filter-source-candidates.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-filterGroup.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

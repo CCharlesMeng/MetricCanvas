@@ -2,18 +2,16 @@
   "type": "filterGroup",
   "label": "独立筛选",
   "aliases": [],
-  "purpose": "用固定单选按钮或下拉控制一个或多个查询消费者",
+  "purpose": "用固定单选按钮或数据源候选下拉控制一个或多个查询消费者",
   "chooseWhen": [
     "Dashboard 正文独立筛选，或组合卡内多个指标共用筛选"
   ],
-  "dataShape": "不绑定数据源；通过 filterId 写入筛选状态，查询通过 filterBindings 消费",
+  "dataShape": "通过 filterId 引用筛选声明及其候选来源，写入筛选状态；查询通过 filterBindings 消费",
   "authoringShape": {
     "bindsData": false
   },
   "requiredProps": [
-    "filterId",
-    "options[].label",
-    "options[].value"
+    "filterId"
   ],
   "title": "unsupported",
   "defaultSpan": 12,
@@ -23,7 +21,7 @@
   "knowledge": "filterGroup.overview",
   "reference": "references/page-metadata/components/filterGroup.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.89",
+  "currentWriter": "6.90",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/filter-group-page.json",
@@ -112,6 +110,58 @@
           "id": "filter-group",
           "minor": 45,
           "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/filter-source-candidates.json",
+      "requiredVersion": "6.90",
+      "capabilities": [
+        {
+          "id": "filter-source-candidates",
+          "minor": 90,
+          "description": "筛选候选读取页面数据源完整输出，支持树节点独立单多选"
+        },
+        {
+          "id": "composite-filter-toolbar",
+          "minor": 63,
+          "description": "组合卡内左侧按钮与右侧多个下拉的筛选工具栏"
+        },
+        {
+          "id": "filter-group-presentation",
+          "minor": 47,
+          "description": "独立固定单选筛选的下拉呈现与左右对齐"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "dimension-search-tree-policy",
+          "minor": 43,
+          "description": "维度下拉可选搜索与普通树父子策略"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
         },
         {
           "id": "page-layout",

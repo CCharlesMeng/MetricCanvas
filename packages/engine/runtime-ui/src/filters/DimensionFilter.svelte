@@ -5,10 +5,10 @@
   import type {DimensionSelectionExtension} from '@metriccanvas/page/internal';
   import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import { buildFilterTree, type FilterTreeNode } from './tree';
-  let {label, emptyLabel = '全部', candidates, value, display = 'select', selection, searchable = true, treeSelection = 'descendants', structural = false, treeLevel = '', disabled = false, onretry, onchange}:
+  let {label, emptyLabel = '全部', candidates, value, display = 'select', selection, searchable = true, treeSelection = 'descendants', explicitParents = false, structural = false, treeLevel = '', disabled = false, onretry, onchange}:
     {label?: string; emptyLabel?: string; candidates: DimensionValuesSnapshot; value: string[];
      display?: 'select'|'tabs'|'tree'|'search'; selection?: DimensionSelectionExtension['selection']; searchable?: boolean;
-     treeSelection?: TreeSelection; structural?:boolean; treeLevel?:string; onretry?:()=>void; disabled?: boolean; onchange: (values:string[]) => void} = $props();
+     treeSelection?: TreeSelection; explicitParents?:boolean; structural?:boolean; treeLevel?:string; onretry?:()=>void; disabled?: boolean; onchange: (values:string[]) => void} = $props();
   const options = $derived(candidates.status === 'ready' ? candidates.candidates : []);
   function toUi(node: FilterTreeNode): UiTreeOption {
     return {value: node.value ?? `structure:${node.path}`, label: node.label, disabled:node.disabled, selectable: node.value !== null, children: node.children.length ? node.children.map(toUi) : undefined};
@@ -17,7 +17,7 @@
   function commit(next:string[]) {if(selection?.required&&next.length===0)return;onchange(next);}
   const treeResult = $derived.by(() => {
     if (display !== 'tree') return {options, error:false};
-    try {return {options:structural ? structuralTree(options,treeLevel).map(toStructuralUi) : buildFilterTree(options).map(toUi), error:false};}
+    try {return {options:structural ? structuralTree(options,treeLevel).map(toStructuralUi) : buildFilterTree(options,explicitParents).map(toUi), error:false};}
     catch {return {options:[], error:true};}
   });
   const statusText = $derived(treeResult.error ? '候选层级无效' :

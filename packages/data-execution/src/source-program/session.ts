@@ -1,3 +1,4 @@
+import { sourceCandidatesGateway } from '../source-candidates';
 import {flattenPageComponents,hasHeaderDefaults,tableDefaultsRemote,normalizeTableSelectView} from '@metriccanvas/page/internal';
 import {hasPeriodComparison} from '@metriccanvas/page/internal';
 import {clearRecordJoinCache} from '../paged-join/records-reader';
@@ -41,6 +42,7 @@ import { describeExportSource } from './export-diagnostics';
 export interface SourceRead {
   /** Speculative reads share caches but yield execution priority to interactive reads. */
   background?: boolean;
+  strictComplete?: boolean;
   displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date;
   roots: readonly string[]; conditions: FilterValues;
   views?: ReadonlyMap<string, TableQueryView>;
@@ -66,6 +68,7 @@ export function defaultSourceView(page: Page, id: string, pageSize?: number): Ta
 }
 /** All execution policies are owned here; adapters own publication and lifecycle. */
 export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGateway; diagnostics?: QueryDiagnosticContext; displayInputs?: () => DisplayInputsSnapshot | undefined; filterRevision?: () => number; now?: Date; clock?: () => Date }) {
+  config = {...config,gateway:sourceCandidatesGateway(page,config.gateway,config)};
   const compiled = compileSources(page);
   for (const id of compiled.automatic) { const source = compiled.sources.get(id)!; if (source.source.type === 'query') { const size = automaticQueryPageSize(source as QueryDataSource, reusableInitialSnapshot(source)); if (size) compiled.limits.set(id, size); } }
   const runner = createQueryRunner(config);
@@ -237,7 +240,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         function completeQuerySnapshot(id: string, source: QueryDataSource, query: EffectiveQuery, diagnostics: QueryDiagnosticContext): Promise<DataSnapshot> {
           const comparison = hasPeriodComparison(source.source.query);
           const signal = comparison ? AbortSignal.any([request.signal, AbortSignal.timeout(60_000)]) : request.signal;
-          return fetchComplete(query, execution, scope, signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), comparison ? false : request.allowPartial, comparison ? false : request.purpose !== 'complete');
+          return fetchComplete(query, execution, scope, signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), comparison ? false : request.allowPartial, comparison ? false : request.purpose !== 'complete',request.strictComplete);
         }
         async function executeCombined(id: string, source: PagedJoinDataSource | PagedUnionDataSource, view: TableQueryView): Promise<void> {
           try {

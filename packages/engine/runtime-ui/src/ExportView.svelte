@@ -4,6 +4,7 @@
   import {PRESENTATION_CONTEXT} from './presentation-context';
   import { chartOptionPaths } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
+  import {SOURCE_FILTER_CONTEXT,sourceFilterValues,type SourceFilterReader} from './dashboard/source-filter-context';
   import FilterBar from './filters/FilterBar.svelte';
   import { compatibilityHeaderSection } from './ioc-header/render-plan';
   import { iocHeaderDeclaration } from '@metriccanvas/page/internal';
@@ -20,6 +21,11 @@
   const state=$derived({...inputState,page:projectFieldSelections({...inputState.page,detailViews:undefined},inputState.filters)});
   const presentation=$derived(compilePresentation(state.page).evaluate({filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}));
   setContext(PRESENTATION_CONTEXT,()=>presentation);
+  setContext<SourceFilterReader>(SOURCE_FILTER_CONTEXT,id=>{
+    const declaration=state.page.filters?.find(filter=>filter.id===id);
+    if(declaration?.type!=='dimension'||!declaration.candidates)return;
+    return {declaration,values:sourceFilterValues(state.filters,id),candidates:state.sourceCandidates?.get(id)??{status:'unavailable'},onchange:()=>{},onretry:()=>{}};
+  });
   setContext(CHART_OPTION_PATHS, () => chartOptionPaths(state.page));
   setContext(STATIC_EXPORT_CONTEXT,true);
   setContext(EXPORT_SCALE_CONTEXT,untrack(() => scale));

@@ -174,7 +174,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 合成页面 `/pages/operation-money-formats` 同时展示人民币 A/B、美元和旧格式，并以币种筛选驱动指标卡、图表和表格。屏幕及静态呈现消费同一格式函数；XLSX 保留基本单位原数值与币种标题，不把 `2.5亿`、`250M` 当作金额数据写回。此场景只证明本地合成数据、展示及导出，不代表真实 Operation Map、DQE、Relay 或部署验收。完整声明见[合成验收页](examples/operation-money-formats.json)，启动与操作见仓库 pages/capabilities/data/README.md。
 
 
-页面协议 6.89。结构真源为本册[schema.json](schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.90。结构真源为本册[schema.json](schema.json)，SHA256 `34107cf105578479ad49be8e6d05f39aa18f7023d1e599fd45bf4f23a6c5b39d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

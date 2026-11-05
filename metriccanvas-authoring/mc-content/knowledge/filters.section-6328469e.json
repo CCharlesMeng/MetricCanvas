@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.89",
+  "schemaVersion": "6.90",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-6328469e"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/filters.md",
       "blocks": [
         "# 筛选声明与运行状态",
-        "## 期间筛选驱动同比环比（6.77）\n\n已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。"
+        "## 期间筛选驱动同比环比（6.77）\n\n已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。\n\n<a id=\"source-candidates\"></a>"
       ],
       "rules": [
         {
@@ -332,7 +332,8 @@
         "references/page-metadata/examples/ioc-region-url-demo.json",
         "references/page-metadata/examples/authoring-evaluation-context.json",
         "references/page-metadata/examples/key-office-priority-demo.json",
-        "references/page-metadata/examples/key-office-priority-target.json"
+        "references/page-metadata/examples/key-office-priority-target.json",
+        "references/page-metadata/examples/filter-source-candidates.json"
       ]
     }
   ],

@@ -18,7 +18,7 @@ function chartControl(component: JsonObject, ids: Set<string>): JsonObject {
 function convertChart(component: JsonObject, path: string, ids: Set<string>, changes: MigrationChange[]): TypedError[] {
   const props = object(component.props)!;
   const control = chartControl(component, ids);
-  if (!filterGroupComponentZ.safeParse(control).success) return [migrationError(`${path}/props/filter`, '旧筛选声明需要有效的 filterId 和固定 options；保留原声明并修复后重试')];
+  if (!object(control.props)?.options || !filterGroupComponentZ.safeParse(control).success) return [migrationError(`${path}/props/filter`, '旧筛选声明需要有效的 filterId 和固定 options；保留原声明并修复后重试')];
   if (path.includes('/props/components/')) return [migrationError(`${path}/props/filter`, '组合卡内旧图表筛选需在同一卡内显式拆成 filterGroup 与图表，自动包装会产生禁止的嵌套组合卡')];
   if (path.startsWith('/detailViews/')) return [migrationError(`${path}/props/filter`, '旧图表筛选不支持详情视图，不能自动迁移')];
   const chart = { ...component, props: { ...props }, layout: { span: 12 } };

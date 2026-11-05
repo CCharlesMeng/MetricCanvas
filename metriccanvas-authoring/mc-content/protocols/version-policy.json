@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 89,
-  "current": "6.89",
+  "minor": 90,
+  "current": "6.90",
   "capabilities": {
     "chart-series-visibility": {
       "minor": 89,
@@ -21,6 +21,11 @@
     "quarter-query-period": {
       "minor": 86,
       "description": "季度查询使用 quarter 与 YYYY-Qn 编码",
+      "legacyReadable": false
+    },
+    "filter-source-candidates": {
+      "minor": 90,
+      "description": "筛选候选读取页面数据源完整输出，支持树节点独立单多选",
       "legacyReadable": false
     },
     "table-select-param-initialization": {
@@ -884,6 +889,7 @@
     "6.86",
     "6.87",
     "6.88",
-    "6.89"
+    "6.89",
+    "6.90"
   ]
 }

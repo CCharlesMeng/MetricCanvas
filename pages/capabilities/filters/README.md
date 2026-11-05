@@ -268,3 +268,17 @@
 默认选择 2026-Q3，按所选周期查询发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，其他筛选和聚合开关保留。按选择策略未声明 quarter 时拒绝查询；Q0/Q5、日/月格式混入季度和倒置范围的发送前拒绝由自动测试覆盖。
 
 自动验收：`node apps/playground/tests/quarter-query-browser.mjs <证据目录>`，环境变量 `QUARTER_QUERY_BASE_URL` 指向页面试验场（默认端口 5208）。浏览器测试按页面 JSON 驱动控件，以合成 HTTP 回执验证实际请求编码和表格渲染；未调用真实 DQE/Relay，页面脱离测试运行时需要可用的数据网关。
+## 数据源候选与静态组织树
+
+入口：`/pages/filter-source-candidates`；[页面 JSON](filter-source-candidates.json)。
+
+启动：`pnpm dev:playground`，不需要 DQE Sim。使用本地合成查询 Adapter。
+
+1. 组织下拉为 JSON 中的 inline 页面数据源。选“北区”，URL 仅包含 `organization=north`，图表显示北区自身的 100，不加入上海或北京。再选“上海”后同时保留两个节点。
+2. 渠道来源为查询页面数据源，以每页 2 行读取全部 5 行，去重后显示“直营、伙伴、线上”三项。选“线上”后金额变为原来的 3 倍；重新打开仍能选择其他渠道。
+3. 刷新 URL 恢复组织与渠道选择；窄屏两个控件回流，仍靠右且可操作。
+4. `?state=error` 显示候选失败及重试；`?state=incomplete` 在后续页总数变化时失败，不展示先取得的部分渠道；`?state=empty` 显示无候选项。
+
+正式字段为 `filters[].candidates.{dataSource,valueField,labelField,parentField}`；filterGroup 只引用 filterId 且省略旧 options。父子节点独立选择，显示名不进入查询值。静态导出冻结显示名与值，浏览期间再切换不改变已捕获导出。
+
+证据仅覆盖产品协议、合成分页 Adapter 与浏览器；真实 DQE、Relay、组织权限服务和生产部署不在本页验收范围。

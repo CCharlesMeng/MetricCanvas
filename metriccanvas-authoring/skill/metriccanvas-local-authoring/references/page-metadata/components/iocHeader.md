@@ -7,7 +7,7 @@
 重点国代标准 boolean 筛选 `key-office` / `key-national-only` 勾选后默认覆盖 Region，页头和筛选声明无需添加 `overridesFilters`。Region 保留完整候选和最新选择；取消勾选后恢复 Region，时间、客户级别及权限继续生效。默认覆盖不提供名单，集成应用仍须完成授权名单桥接。详见[布尔筛选覆盖](../filters.md#boolean-filter-overrides)。
 
 
-页面协议 6.89。结构真源为本册[schema.json](../schema.json)，SHA256 `40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.90。结构真源为本册[schema.json](../schema.json)，SHA256 `34107cf105578479ad49be8e6d05f39aa18f7023d1e599fd45bf4f23a6c5b39d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

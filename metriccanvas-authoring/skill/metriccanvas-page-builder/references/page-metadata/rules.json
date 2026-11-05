@@ -567,6 +567,17 @@
       ]
     },
     {
+      "id": "filter-source-candidates",
+      "description": "6.90 页面数据源完整候选、静态树及独立单多选",
+      "valid": [
+        "filter-source-candidates"
+      ],
+      "invalid": [
+        "source-candidate-version",
+        "source-candidate-self"
+      ]
+    },
+    {
       "id": "filter-group-presentation",
       "description": "6.47固定单选下拉和左右对齐",
       "valid": [

@@ -1928,18 +1928,16 @@
       "type": "filterGroup",
       "label": "独立筛选",
       "aliases": [],
-      "purpose": "用固定单选按钮或下拉控制一个或多个查询消费者",
+      "purpose": "用固定单选按钮或数据源候选下拉控制一个或多个查询消费者",
       "chooseWhen": [
         "Dashboard 正文独立筛选，或组合卡内多个指标共用筛选"
       ],
-      "dataShape": "不绑定数据源；通过 filterId 写入筛选状态，查询通过 filterBindings 消费",
+      "dataShape": "通过 filterId 引用筛选声明及其候选来源，写入筛选状态；查询通过 filterBindings 消费",
       "authoringShape": {
         "bindsData": false
       },
       "requiredProps": [
-        "filterId",
-        "options[].label",
-        "options[].value"
+        "filterId"
       ],
       "title": "unsupported",
       "defaultSpan": 12

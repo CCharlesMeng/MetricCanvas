@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.89",
-  "schemaSha256": "40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d",
+  "schemaVersion": "6.90",
+  "schemaSha256": "34107cf105578479ad49be8e6d05f39aa18f7023d1e599fd45bf4f23a6c5b39d",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -303,7 +303,8 @@
         "ioc-region-url-demo",
         "authoring-evaluation-context",
         "key-office-priority-demo",
-        "key-office-priority-target"
+        "key-office-priority-target",
+        "filter-source-candidates"
       ],
       "rules": [
         "filter-id-unique",
@@ -1048,7 +1049,8 @@
       "examples": [
         "filter-group-page",
         "filter-group-state-page",
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "filter-source-candidates"
       ],
       "rules": [
         "filter-group",
@@ -1279,7 +1281,8 @@
         "6.86",
         "6.87",
         "6.88",
-        "6.89"
+        "6.89",
+        "6.90"
       ]
     },
     {
@@ -8144,6 +8147,36 @@
         "values",
         "unrestricted"
       ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates",
+      "path": "@dimensionFilter.candidates",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/dataSource",
+      "path": "@dimensionFilter.candidates.dataSource",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/valueField",
+      "path": "@dimensionFilter.candidates.valueField",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/labelField",
+      "path": "@dimensionFilter.candidates.labelField",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/parentField",
+      "path": "@dimensionFilter.candidates.parentField",
+      "required": "本分支可选",
+      "module": "filters.md"
     },
     {
       "pointer": "#/definitions/dimensionFilter/properties/options",
@@ -16207,7 +16240,7 @@
     {
       "pointer": "#/definitions/filterGroupComponent/properties/props/properties/options",
       "path": "@filterGroupComponent.props.options",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "components/filterGroup.md"
     },
     {
@@ -21326,5 +21359,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "6ed6dcf3f176e9e977567c25967e53d9f7f38c29be60c66cf8d532510fd9a31a"
+  "semanticSourceDigest": "3e1607a66f61fdf112a29163215f62d48cd3d1f93b6368f0c85b566c38ee18d7"
 }

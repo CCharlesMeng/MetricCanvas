@@ -1,0 +1,263 @@
+{
+  "case": "source-candidate-self",
+  "invariant": "filter-source-candidates",
+  "input": {
+    "schemaVersion": "6.90",
+    "id": "filter-source-candidates",
+    "layout": "dashboard",
+    "meta": {
+      "title": "图表数据源候选与静态组织树（合成演示）"
+    },
+    "filters": [
+      {
+        "id": "organization",
+        "type": "dimension",
+        "dimension": "org",
+        "label": "组织",
+        "display": "tree",
+        "treeSelection": "independent",
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidates": {
+          "dataSource": "organization-options",
+          "valueField": "code",
+          "labelField": "name",
+          "parentField": "parent"
+        }
+      },
+      {
+        "id": "channel",
+        "type": "dimension",
+        "dimension": "channel",
+        "label": "渠道",
+        "selection": {
+          "mode": "single"
+        },
+        "candidates": {
+          "dataSource": "channel-options",
+          "valueField": "code",
+          "labelField": "name"
+        }
+      }
+    ],
+    "dataSources": {
+      "organization-options": {
+        "fields": {
+          "code": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "parent": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "code": "north",
+              "name": "北区",
+              "parent": null
+            },
+            {
+              "code": "shanghai",
+              "name": "上海",
+              "parent": "north"
+            },
+            {
+              "code": "beijing",
+              "name": "北京",
+              "parent": "north"
+            },
+            {
+              "code": "south",
+              "name": "南区",
+              "parent": null
+            },
+            {
+              "code": "shenzhen",
+              "name": "深圳",
+              "parent": "south"
+            }
+          ]
+        }
+      },
+      "channel-options": {
+        "fields": {
+          "code": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "code"
+          },
+          "name": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "name"
+          },
+          "weight": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "weight"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "channel": {
+                "target": "dimension",
+                "queryField": "code"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "code",
+                    "name"
+                  ],
+                  "output_metrics": [
+                    "weight"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {
+                    "limit": 2,
+                    "offset": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "chart-data": {
+        "fields": {
+          "org": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "org"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "amount"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "organization": {
+                "target": "dimension",
+                "queryField": "org"
+              },
+              "channel": {
+                "target": "dimension",
+                "queryField": "channel"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "org"
+                  ],
+                  "output_metrics": [
+                    "amount"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "filters-chart",
+        "components": [
+          {
+            "id": "candidate-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "metricGrid",
+              "filterLayout": "toolbar",
+              "components": [
+                {
+                  "id": "organization-picker",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "organization",
+                    "display": "select",
+                    "align": "right"
+                  }
+                },
+                {
+                  "id": "channel-picker",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "channel",
+                    "display": "select",
+                    "align": "right"
+                  }
+                },
+                {
+                  "id": "organization-chart",
+                  "type": "barChart",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "chart-data"
+                  },
+                  "props": {
+                    "title": "按选中节点自身值筛选",
+                    "series": [
+                      {
+                        "field": "amount",
+                        "label": "金额"
+                      }
+                    ],
+                    "categoryField": "org"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1/candidates/dataSource",
+      "message": "候选来源不能直接或间接消费自身筛选"
+    }
+  ]
+}

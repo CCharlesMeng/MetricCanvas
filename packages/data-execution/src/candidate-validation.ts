@@ -1,7 +1,7 @@
 import {requiresTimeValidation,timeAvailabilityIssue,timeFilterBoundaryError,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import { queryFilterIds,numberRangeIssue,rangeContextIssue,filterGroupOptions, candidateDependencies, filterDependencies, dimensionSelectionIssue, conditionSourceIds, canonicalizeJson, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway,FilterCandidate} from './ports';
-import type {FilterValues} from './filter-values';
+import type {FilterValue,FilterValues} from './filter-values';
 import {candidateContextKey,filterCandidatesRequest,validFilterCandidates} from './filter-candidates';
 import {overriddenFilterIds,isUnrestrictedIocRegion,iocHeaderDeclaration} from '@metriccanvas/page/internal';
 
@@ -42,7 +42,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       if(!filter||!selection(filter,values))return false;
       const selected=values.get(filter.id);
       // Optional empty choices need no candidate receipt; explicit contexts still do.
-      const receipt=filter.type==='dimension'&&(filter.candidateContext||filter.treeSelection==='level'||filter.candidateWindow||selected?.type==='dimension'&&selected.values.length>0);
+      const receipt=filter.type==='dimension'&&needsCandidateReceipt(filter,selected);
       return !dynamic(filter)||!requires(sourceId)||!receipt;
     });
   }
@@ -52,7 +52,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
     const cache=new Map<string,readonly FilterCandidate[]>();
     function alreadyVerified(id:string):boolean {return done.has(id)||overridden.has(id);}
     async function requestCandidates(dimension:Extract<FilterDeclaration,{type:'dimension'}>,request:import('./ports').FilterCandidatesRequest):Promise<readonly FilterCandidate[]> {
-      if(dimension.candidateContext||dimension.treeSelection==='level'||dimension.candidateWindow){
+      if(dimension.candidates||dimension.candidateContext||dimension.treeSelection==='level'||dimension.candidateWindow){
         if(!gateway.fetchFilterCandidates)reject();
         const result=await gateway.fetchFilterCandidates!(request,{signal});signal.throwIfAborted();
         if(result.kind!=='values'||!Array.isArray(result.candidates)||!validFilterCandidates(result.candidates,dimension.treeSelection==='level'?dimension.hierarchy?.map(item=>item.id):undefined))reject();
@@ -71,7 +71,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       for(const parent of candidateDependencies(filter!))await verifyFilter(parent);
       if(!filter||filter.type!=='dimension'||!dynamic(filter))return;
       const selected=values.get(id);
-      if(!filter.candidateContext&&filter.treeSelection!=='level'&&!filter.candidateWindow&&!(selected?.type==='dimension'&&selected.values.length))return;
+      if(!needsCandidateReceipt(filter,selected))return;
       const dimension=filter;
       const identity=key(dimension,values);let candidates=cache.get(identity.key);
       if(!candidates){
@@ -83,7 +83,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
     }
     for(const id of new Set([...filterIds(sourceId,values),...extraIds]))await verifyFilter(id);
   }
-  const requires=(sourceId:string)=>filterIds(sourceId).some(id=>{const filter=byId.get(id);return localOptions.has(id)||(filter?.type==='dimension'&&!!(filter.selection||filter.options||filter.candidateContext||filter.treeSelection||filter.candidateWindow))||(filter&&requiresTimeValidation(filter))||(filter?.type==='numberRange'&&!!(filter.constraints||filter.units||filter.presets));});
+  const requires=(sourceId:string)=>filterIds(sourceId).some(id=>{const filter=byId.get(id);return localOptions.has(id)||(filter?.type==='dimension'&&!!(filter.selection||filter.options||filter.candidates||filter.candidateContext||filter.treeSelection||filter.candidateWindow))||(filter&&requiresTimeValidation(filter))||(filter?.type==='numberRange'&&!!(filter.constraints||filter.units||filter.presets));});
   return {trusted,verify,requires};
 }
 function legacyConstraints(page:Page,filter:Extract<FilterDeclaration,{type:'dimension'}>,values:FilterValues,overridden:ReadonlySet<string>):Record<string,string[]> {
@@ -95,4 +95,8 @@ function reject():never {throw Object.assign(new Error('筛选条件尚未通过
 function validateGlobalRegionNames(page:Page,filter:FilterDeclaration,candidates:readonly FilterCandidate[]):void {
   if(filter.id!=='region'||!iocHeaderDeclaration(page)?.filterIds?.includes('region'))return;
   if(candidates.some(candidate=>candidate.label==='全球'&&candidate.value!=='全球'))throw Object.assign(new Error('IOC Region 的全球节点必须归一为中文值“全球”'),{code:'DQE_CONFIG_ERROR'});
+}
+
+function needsCandidateReceipt(filter:Extract<FilterDeclaration,{type:'dimension'}>,selected:FilterValue|undefined):boolean {
+  return !!(filter.candidates||filter.candidateContext||filter.treeSelection==='level'||filter.candidateWindow||selected?.type==='dimension'&&selected.values.length>0);
 }

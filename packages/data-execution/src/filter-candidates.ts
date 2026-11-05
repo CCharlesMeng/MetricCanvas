@@ -59,7 +59,7 @@ function calendarWindow(declaration:DimensionFilterDeclaration,context:Candidate
 }
 export function filterCandidatesRequest(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[],values:FilterValues,level?:string,context:CandidateContext={}):FilterCandidatesRequest {
   const window=calendarWindow(declaration,context);
-  return {...(window?{calendarWindow:window}:{}),...(declaration.candidateWindow?.anchorFact?{permissions:{},values:{},permissionRevision:context.displayInputs?.permissionRevision,filterRevision:context.filterRevision,factRevision:canonicalizeJson(periodFact(context.displayInputs,declaration.candidateWindow.anchorFact,context.filterRevision))}:{}),filterId:declaration.id,dimension:declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension,...(level?{level}:{}),constraints:candidateConstraints(candidateDependencyIds(declaration,declarations),candidateValues(declarations,values,context.page))};
+  return {...(declaration.candidates?{sourceValues:sourceCandidateValues(declaration,declarations,values)}:{}),...(window?{calendarWindow:window}:{}),...(declaration.candidateWindow?.anchorFact?{permissions:{},values:{},permissionRevision:context.displayInputs?.permissionRevision,filterRevision:context.filterRevision,factRevision:canonicalizeJson(periodFact(context.displayInputs,declaration.candidateWindow.anchorFact,context.filterRevision))}:{}),filterId:declaration.id,dimension:declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension,...(level?{level}:{}),constraints:candidateConstraints(candidateDependencyIds(declaration,declarations),candidateValues(declarations,values,context.page))};
 }
 /** Validate a complete structural receipt before it can authorize a selection. */
 export function validFilterCandidates(candidates:readonly FilterCandidate[],levels?:readonly string[]):boolean {
@@ -78,4 +78,9 @@ export function validFilterCandidates(candidates:readonly FilterCandidate[],leve
     }
   }
   return true;
+}
+
+function sourceCandidateValues(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[],values:FilterValues):Record<string,import('./filter-values').FilterValue> {
+  const ids=candidateDependencyIds(declaration,declarations);
+  return Object.fromEntries([...values].filter(([id])=>ids.has(id)).map(([id,value])=>[id,structuredClone(value)]));
 }

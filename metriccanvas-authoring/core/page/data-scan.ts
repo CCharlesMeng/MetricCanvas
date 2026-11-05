@@ -170,6 +170,7 @@ export function scanPageData(page:Json,schema:Json):{uses:DataUse[];diagnostics:
   const uses:DataUse[]=[],diagnostics:Json[]=[];
   if(!Array.isArray(page.sections)) diagnostics.push({path:'/sections',type:'INVALID_PAGE_SHAPE'});
   const pageContext={componentId:String(page.id ?? ''),componentType:'page',label:String(page.id ?? '')};
+  sourceCandidateUses(page,pageContext,uses);
   for(const key of ['iocHeader','meta']) auxiliaryUses(page[key],`/${key}`,pageContext,uses);
   (Array.isArray(page.sections)?page.sections:[]).forEach((section:Json,i:number)=>{
     for(const key of ['title','visibleWhen']) auxiliaryUses(section[key],`/sections/${i}/${key}`,pageContext,uses);
@@ -228,4 +229,13 @@ export function scanPresentationBindings(component:Json,schema:Json,path=''):Arr
     bindings.set(use.path,{path:use.path,binding});
   }
   return [...bindings.values()];
+}
+
+/** Candidate mappings are data uses even when the control itself has no data slot. */
+function sourceCandidateUses(page:Json,context:ScanContext,uses:DataUse[]):void {
+  for(const [index,filter] of (Array.isArray(page.filters)?page.filters:[]).entries()) {
+    const spec=filter.candidates;if(!spec)continue;
+    for(const key of ['valueField','labelField','parentField'])if(typeof spec[key]==='string')
+      uses.push({...context,path:`/filters/${index}/candidates/${key}`,kind:'field',source:spec.dataSource,field:spec[key],label:filter.label??context.label});
+  }
 }

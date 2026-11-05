@@ -17,11 +17,12 @@ export interface FilterTreeNode {
 }
 
 export function buildFilterTree(
-  options: readonly (string | (DimensionValueCandidate & {disabled?:boolean}))[]
+  options: readonly (string | (DimensionValueCandidate & {disabled?:boolean}))[],
+  explicitParents = false
 ): FilterTreeNode[] {
   const codes = options.map(option => typeof option === 'string' ? option : option.value);
   if (new Set(codes).size !== codes.length) throw new Error('DUPLICATE_CANDIDATE');
-  if (options.some(option => typeof option !== 'string' && option.parentValue !== undefined)) {
+  if (explicitParents || options.some(option => typeof option !== 'string' && option.parentValue !== undefined)) {
     return buildExplicitTree(options.map(option => typeof option === 'string' ? {value:option,label:option} : option));
   }
   const roots: FilterTreeNode[] = [];

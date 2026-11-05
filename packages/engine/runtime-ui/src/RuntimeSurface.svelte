@@ -14,7 +14,7 @@
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import {sourceFilterIds} from '@metriccanvas/page/internal';
-  import {createCandidateGatewaySession} from '@metriccanvas/data-execution/runtime';
+  import {sourceCandidatesGateway,createCandidateGatewaySession} from '@metriccanvas/data-execution/runtime';
   let candidateSession:ReturnType<typeof createCandidateGatewaySession>|undefined;
   import {filterInputIssue} from '../../runtime/src/navigation-inputs';
   import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
@@ -116,6 +116,7 @@
   import {projectFieldSelections} from '@metriccanvas/page/internal';
   import {periodFactPage, filterTextPage } from './filter-text';
   import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
+  import {SOURCE_FILTER_CONTEXT,sourceFilterValues,type SourceFilterReader} from './dashboard/source-filter-context';
   import FilterBar from './filters/FilterBar.svelte';
   import { compatibilityHeaderSection, leadingHeaderSectionId } from './ioc-header/render-plan';
   import { usesIocRegion } from '@metriccanvas/page/internal';
@@ -248,7 +249,8 @@
       return [id,value.status==='ready'?{...value}:{status:'empty' as const}];
     }));
     if (Object.keys(page.dataSources).some(id=>sourceBlocked(page,id))) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出页面');
-    const state={page,now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
+    const sourceCandidates=structuredClone(new Map(declarations.flatMap(filter=>filter.type==='dimension'&&filter.candidates?[[filter.id,sourceFilterCandidates(filter)] as const]:[])));
+    const state={page,sourceCandidates,now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
     return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
@@ -317,6 +319,15 @@
   let initialTabs = $state<ReadonlyMap<string, string>>(new Map());
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
+  function sourceFilterCandidates(declaration:Extract<FilterDeclaration,{type:'dimension'}>) {
+    return dimensionCandidates.get(candidateScopeKey(declaration.id,declaration.dimension,undefined,cascadeContext(declaration,declarations,filterValues,filterCandidateContext()))) ?? {status:'loading' as const};
+  }
+  setContext<SourceFilterReader>(SOURCE_FILTER_CONTEXT,id=>{
+    const declaration=declarations.find(filter=>filter.id===id);
+    if(declaration?.type!=='dimension'||!declaration.candidates)return;
+    return {declaration,values:sourceFilterValues(filterValues,id),candidates:sourceFilterCandidates(declaration),
+      onchange:values=>writeDimension(declaration,values),onretry:()=>retryCandidates(id)};
+  });
   let tableViews = $state<Record<string, TableViewState>>({});
   let selectedGroup = $state<string | undefined>();
   let surfaceRoot: HTMLDivElement;
@@ -481,7 +492,7 @@
       return;
     }
 
-    const nextCandidateSession=createCandidateGatewaySession(gatewayOverride??inlineGateway);
+    const nextCandidateSession=createCandidateGatewaySession(sourceCandidatesGateway(loaded,gatewayOverride??inlineGateway,{displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision,clock:()=>candidateClock}));
     candidateSession=nextCandidateSession;activeGateway=nextCandidateSession.gateway;
     disposers.push(()=>{nextCandidateSession.dispose();if(candidateSession===nextCandidateSession)candidateSession=undefined;});
 
@@ -807,7 +818,7 @@
     const context=cascadeContext(declaration,declarations,values,filterCandidateContext());
     const levels=declaration.hierarchy?.map(level=>level.id)??[undefined];
     for(const level of levels){
-      if(declaration.candidateContext||declaration.treeSelection==='level'||declaration.candidateWindow){
+      if(declaration.candidates||declaration.candidateContext||declaration.treeSelection==='level'||declaration.candidateWindow){
         let request:ReturnType<typeof filterCandidatesRequest>;try{request=filterCandidatesRequest(declaration,declarations,values,level,filterCandidateContext());}catch{const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;loader.unavailable(dimension,{filterId:declaration.id,level,context});continue;}
         if(force)candidateSession?.invalidate(request);
         loader.loadFilter(request,context,declaration.treeSelection==='level'?declaration.hierarchy?.map(item=>item.id):undefined,force);

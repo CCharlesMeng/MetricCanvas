@@ -37,6 +37,7 @@ const dimensionFilterZ = z
     defaultLevel: idZ.optional(),
     dependsOn: idZ.optional(),
     selection:z.object({mode:z.enum(['single','multiple']),required:z.boolean().optional(),allBehavior:z.enum(['values','unrestricted']).optional()}).strict().optional(),
+    candidates:z.object({dataSource:idZ,valueField:fieldNameZ,labelField:fieldNameZ.optional(),parentField:fieldNameZ.optional()}).strict().optional(),
     options:z.array(z.object({value:z.string().min(1),label:z.string().min(1),disabled:z.boolean().optional()}).strict()).min(1).max(1000).optional(),
     treeSelection:z.enum(['level','descendants','independent','leaf']).optional(),
     searchable:z.boolean().optional(),

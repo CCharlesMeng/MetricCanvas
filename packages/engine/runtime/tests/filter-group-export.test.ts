@@ -21,4 +21,8 @@ it('static export renders the captured option label without interactive buttons'
  expect(exported.body).toContain('海外');expect(exported.body).not.toContain('中国区');
  expect(exported.body).toContain('data-filter-group-selection');expect(exported.body).not.toContain('<button');expect(exported.body).not.toContain('listbox');
  }
+ const frozen=render(FilterGroup,{props:{control:{filterId:'org',display:'select'},label:'组织',exportMode:true,onchange:()=>{},
+   source:{declaration:{id:'org',type:'dimension',dimension:'org',display:'tree'},values:['north','shanghai'],candidates:{status:'ready',candidates:[{value:'north',label:'北区'},{value:'shanghai',label:'上海',parentValue:'north'}]},onchange:()=>{throw Error('frozen');},onretry:()=>{throw Error('frozen');}}}});
+ expect(frozen.body).toContain('北区、上海');expect(frozen.body).not.toContain('<button');
+
 });

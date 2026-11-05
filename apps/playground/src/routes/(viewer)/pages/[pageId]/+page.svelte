@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createSourceCandidatesPreview} from '../../../../../fixtures/source-candidates';
   import {createRegionURLGateway} from '../../../../../fixtures/region-url';
   import {createGlobalBenchmarkPreview} from '../../../../../fixtures/global-benchmark';
   import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
@@ -123,6 +124,7 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='source-candidates')return createSourceCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
     if(input==='global-benchmark')return createGlobalBenchmarkPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
     if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;

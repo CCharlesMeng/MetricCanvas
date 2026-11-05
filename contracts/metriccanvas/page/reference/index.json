@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.89",
-  "schemaSha256": "40cbb3ec45288519e3fca2621b5021b664fc6bab74e8ece3940e9ea2273f870d",
+  "schemaVersion": "6.90",
+  "schemaSha256": "34107cf105578479ad49be8e6d05f39aa18f7023d1e599fd45bf4f23a6c5b39d",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -8,7 +8,7 @@
     },
     {
       "file": "metriccanvas-authoring/core/page/data-scan.ts",
-      "sha256": "b348f9a10591039fb3562c4076145a890bec3531c11feee6397d743763b094ac"
+      "sha256": "2880c00413f12cf7ca6eb9ec194ecc6f1b385c7860e34667c0b5001b6922f86f"
     },
     {
       "file": "metriccanvas-authoring/core/page/extension-contract.ts",
@@ -60,7 +60,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
-      "sha256": "9113d06c3c43d066a827eeba042af5b016b921d5e297608a20a92ded2632707e"
+      "sha256": "b11228aec9123fea885b4fc22738d423c1af747f627261d268b0af5987378161"
     },
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
@@ -156,7 +156,7 @@
     },
     {
       "file": "packages/page/src/filter-group.ts",
-      "sha256": "84be5d8937e896970d0ff180b3e0eaadbc9874c9da7dfd41777504e84ecaf0d0"
+      "sha256": "71a4c5745312fb378f59f7a375f56a639055b5e9de0ebc299c80876966f8852d"
     },
     {
       "file": "packages/page/src/filter-text-value.ts",
@@ -256,7 +256,7 @@
     },
     {
       "file": "packages/page/src/schema/components/filter-group.ts",
-      "sha256": "94f40d04b0008a887c32f612f669af2cc8905255bd7d44625f46a909a5f98d2f"
+      "sha256": "8cbaddde27dcb66c81de10d9b3b597ba43603640dc54b1bb230b1f038bba0f0a"
     },
     {
       "file": "packages/page/src/schema/components/gauge.ts",
@@ -316,7 +316,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "1adf67d3c33cad1b637fe0297aca1c1a0617901d24ceabfbd3addc8274e1b6aa"
+      "sha256": "40e6c30f5b69676e7ca82353f93cda2081d89f32807a94d3813a07953d67b378"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
@@ -341,6 +341,10 @@
     {
       "file": "packages/page/src/schema/primitives.ts",
       "sha256": "59749656cffbcca0eeb6576a6014017339436b9d281c34c4f76287d1e151b176"
+    },
+    {
+      "file": "packages/page/src/source-candidates.ts",
+      "sha256": "c401ec2e66e828fbfb34de6ea8e3e54e5693346ace74d3a17a3d8c5f40699d48"
     },
     {
       "file": "packages/page/src/table/expansion.ts",
@@ -380,7 +384,7 @@
     },
     {
       "file": "packages/page/src/upgrade-chart-filters.ts",
-      "sha256": "9ba4a538e03b633c236da3675b7f4a46c51869891812df2eb0e6e69344f83fc4"
+      "sha256": "dd3d2362d1aad3faf75a0169a82084c5bf6706973bb39975b533b99bba5529bc"
     },
     {
       "file": "packages/page/src/upgrade-document.ts",
@@ -416,7 +420,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "a827298549ed19f569c46071d90f2d71320e6faf8ec5ad1866efad40561303c7"
+      "sha256": "e7098b123e9294a5aff99b60534ab7cfa93048b8fd35b181d015111a77c226dc"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -428,7 +432,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "dc9f13431c1496bd1e9c53be6acbc3974f87516bf8e73c80feea5a0f5ecd5af4"
+      "sha256": "31f54c13163b91fc8b41a22b5cf29c75cb0481207153e2ee8985c1dd9793decf"
     }
   ],
   "modules": {
@@ -791,7 +795,8 @@
         "ioc-region-url-demo",
         "authoring-evaluation-context",
         "key-office-priority-demo",
-        "key-office-priority-target"
+        "key-office-priority-target",
+        "filter-source-candidates"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -809,7 +814,8 @@
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
         "packages/page/src/time-extension-validation.ts",
-        "packages/page/src/filter-url.ts"
+        "packages/page/src/filter-url.ts",
+        "packages/page/src/source-candidates.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -1698,7 +1704,8 @@
       "examples": [
         "filter-group-page",
         "filter-group-state-page",
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "filter-source-candidates"
       ],
       "sources": [
         "packages/page/src/schema/components/filter-group.ts",
@@ -1955,7 +1962,8 @@
         "6.86",
         "6.87",
         "6.88",
-        "6.89"
+        "6.89",
+        "6.90"
       ]
     },
     {
@@ -8820,6 +8828,36 @@
         "values",
         "unrestricted"
       ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates",
+      "path": "@dimensionFilter.candidates",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/dataSource",
+      "path": "@dimensionFilter.candidates.dataSource",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/valueField",
+      "path": "@dimensionFilter.candidates.valueField",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/labelField",
+      "path": "@dimensionFilter.candidates.labelField",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/parentField",
+      "path": "@dimensionFilter.candidates.parentField",
+      "required": "本分支可选",
+      "module": "filters.md"
     },
     {
       "pointer": "#/definitions/dimensionFilter/properties/options",
@@ -16883,7 +16921,7 @@
     {
       "pointer": "#/definitions/filterGroupComponent/properties/props/properties/options",
       "path": "@filterGroupComponent.props.options",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "components/filterGroup.md"
     },
     {
