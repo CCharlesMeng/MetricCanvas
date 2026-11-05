@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "cf7122cad7280ce8aee7792b5c00bf24b3ac3b430aaadabc13f57ef6869d1ae3",
+  "sha256": "1694ee5b37c0b45330e09d96c80e3a2ebfd59ae6c9805601e092ab88afafee35",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -2656,7 +2656,7 @@
     },
     {
       "file": "pages/capabilities/navigation/README.md",
-      "sha256": "af6c394ba71645d95c0dfd58c18c07614bc1807c0b7a599ea381bf80b01a6847"
+      "sha256": "704e25874a5575fb66ef6f5fd61b9803dda539820468288e495abbb57405cd4e"
     },
     {
       "file": "pages/capabilities/navigation/embed-url-params.json",
@@ -2665,6 +2665,14 @@
     {
       "file": "pages/capabilities/navigation/ioc-content-navigation.json",
       "sha256": "9bc179720e677fa851c192804f8fb4ecdd28814d9ee01554ff34376cda310212"
+    },
+    {
+      "file": "pages/capabilities/navigation/playground-route-source.json",
+      "sha256": "65ac8d9f525e791c5b158565c765fc7c2eedd86928af5c1de47e0cea0efd2757"
+    },
+    {
+      "file": "pages/capabilities/navigation/playground-route-target.json",
+      "sha256": "6e3b6d687bf9e6d354f3ed9f9f730210d5130abe5b09dad784f1f4522c230b04"
     },
     {
       "file": "pages/capabilities/navigation/tab-url-initialization.json",
@@ -3320,7 +3328,7 @@
     },
     {
       "file": "tools/scripts/export-authoring-contracts.ts",
-      "sha256": "482827f964023b2435b69b7aae7391c9ec9a4c1ffc79aa038a1bcfbde7e93721"
+      "sha256": "ef81d4bb12c14b94467f5a5395c6eb0711c7593b05d00c92c5c1adb2dc8d87fd"
     },
     {
       "file": "tools/scripts/export-authoring-presentation-policy.ts",

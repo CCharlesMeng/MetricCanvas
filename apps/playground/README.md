@@ -89,7 +89,7 @@ Windows 首次使用还需：
 
 此行为只属于页面试验场，不改变引擎的 URL 协议或线上集成应用的路由。线上仍须提供对应地址并接收参数。现有旧入口重定向保留兼容；自动匹配不会推断 `opportunity-page` 与 `ioc-opportunity-analysis` 是同一页。
 
-完整内联场景：`/pages/playground-route-source` → `/pages/playground-route-target?project-id=P001`；[操作与证据边界](../../pages/capabilities/navigation/README.md#业务路由按-url-末段自动预览)。这项开发工具接线没有 Schema、校验器或独立创作 Skill 协议知识变化，无需重新生成分发副本。
+完整内联场景：`/pages/playground-route-source` → `/pages/playground-route-target?project-id=P001`；[操作与证据边界](../../pages/capabilities/navigation/README.md#业务路由按-url-末段自动预览)。这项开发工具接线没有 Schema、校验器或独立创作 Skill 协议知识变化；新增演示纳入 MC 来源指纹，维护时通过 `pnpm authoring:contracts` 同步来源清单及对应锁文件。
 
 页面发现、文件夹层级和分组直接来自 `pages/**/*.json`；标题和说明读取页面文档，布局形态与正式渲染使用相同规则。组件类型读取产品组件目录及完整组件树，数据来源只区分内联／静态、包含查询与文档无效。没有逐页配置、别名、标签、用途或运行环境登记表。
 
