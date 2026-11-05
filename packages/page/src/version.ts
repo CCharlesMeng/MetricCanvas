@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 85;
+const CURRENT_MINOR = 86;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -55,6 +55,7 @@ function hasPinnedText(columns: unknown): boolean {
 }
 
 export const pageCapabilities = {
+  'chart-series-visibility': {minor:86,legacyReadable:false,description:'图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴',usedAt:chartSeriesConditionPaths},
   'table-select-param-initialization': {minor:85,legacyReadable:false,description:'表头参数初值与显式全选不限',usedAt:document=>columnDefaultPaths(document,['initialParam','allBehavior'])},
   'compute-scalar-join': {minor:83,legacyReadable:false,description:'独立单行度量无键关联到全部主行',
     usedAt:document=>dataSourcePaths(document,data=>Array.isArray(data.compute)&&data.compute.some(op=>record(op)?.op==='joinAggregate'&&Array.isArray(record(op)?.keys)&&(record(op)!.keys as unknown[]).length===0))},
@@ -1209,6 +1210,19 @@ function findPaths(document:unknown,matches:(value:Record<string,unknown>)=>bool
  const paths:string[]=[];
  function visit(value:unknown,path:string){if(Array.isArray(value))value.forEach((item,i)=>visit(item,`${path}/${i}`));else if(value&&typeof value==='object'){if(opaque.has(value))return;const item=value as Record<string,unknown>;if(matches(item))paths.push(path);for(const [key,child]of Object.entries(item))visit(child,`${path}/${key}`);}}
  visit(document,'');return paths;
+}
+
+function chartSeriesConditionPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'barChart' && component.type !== 'lineChart') return;
+    const series = record(component.props)?.series;
+    if (!Array.isArray(series)) return;
+    series.forEach((item, index) => {
+      if (has(record(item), 'visibleWhen')) paths.push(`${path}/props/series/${index}/visibleWhen`);
+    });
+  });
+  return paths;
 }
 
 function presentationCapabilityPaths(document: unknown): string[] {

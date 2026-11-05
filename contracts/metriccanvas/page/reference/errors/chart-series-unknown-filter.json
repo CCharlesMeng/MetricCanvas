@@ -1,0 +1,39 @@
+{
+  "case": "chart-series-unknown-filter",
+  "invariant": "chart-series-visibility",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件引用了不存在的来源、非法筛选部分或缺少行上下文",
+      "paths": [
+        "/sections/1/components/0/props/series/2/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "series": [
+                "…",
+                "…",
+                {
+                  "visibleWhen": {
+                    "filter": "unknown",
+                    "part": "value",
+                    "op": "eq",
+                    "value": true
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-series-unknown-filter.json"
+}

@@ -35,7 +35,7 @@
   "knowledge": "barChart.overview",
   "reference": "references/page-metadata/components/barChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.85",
+  "currentWriter": "6.86",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/forecast-page.json",
@@ -173,6 +173,48 @@
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/chart-series-visibility.json",
+      "requiredVersion": "6.86",
+      "capabilities": [
+        {
+          "id": "chart-series-visibility",
+          "minor": 86,
+          "description": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "chart-echarts-option",
+          "minor": 32,
+          "description": "柱状图、折线图、饼图高级 ECharts 呈现扩展"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "mixed-chart-series",
+          "minor": 12,
+          "description": "柱线混合系列与显式坐标轴"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

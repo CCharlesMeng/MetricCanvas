@@ -39,3 +39,37 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 ## 数值格式
 
 标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。
+
+<a id="chart-series-visibility"></a>
+
+## 系列条件显隐（6.86）
+
+`props.series[].visibleWhen` 使用[展示条件](../conditions.md)，支持字段系列和常量系列；柱线组合中的柱和折线均适用。省略时始终具有展示资格。系列没有行上下文，不能引用 `row`；筛选器必须已声明且类型与操作匹配。单系列条件本身可作为筛选消费方，内联页面也能观察显隐效果。
+
+```json
+{
+  "id": "trend",
+  "type": "barChart",
+  "layout": { "span": 12 },
+  "data": { "main": "trend" },
+  "props": {
+    "categoryField": "month",
+    "dualAxis": true,
+    "series": [
+      { "field": "sales", "label": "销售额", "kind": "bar", "axis": "primary" },
+      {
+        "field": "rate", "label": "达成率", "kind": "line", "axis": "secondary",
+        "visibleWhen": { "filter": "scope", "part": "values", "op": "containsAny", "values": ["office"] }
+      }
+    ]
+  }
+}
+```
+
+示例需声明 `scope` 维度筛选器和 `trend` 数据源（`month` 为维度，`sales/rate` 为度量）；完整合法页面见 `/pages/chart-series-visibility`。
+
+条件读取当前已应用的筛选状态和已有外部事实，错误、缺失和等待均不展示。条件不满足时系列、图例、悬浮提示和常驻标签同步消失，用户点击图例不能恢复被条件排除的系列；再次满足时自动恢复。原声明序、配色槽位、堆叠次序和高级 `echartsOption.series[]` 补丁对应关系保留。堆叠合计按当前可见系列重新计算。
+
+没有可见系列使用的数值轴隐藏轴名、刻度和网格线；仍保留内部轴索引，避免其他系列绑定错轴。仅副轴仍在使用时独立绘制刻度和网格线。全部系列被隐藏时保留图表标题、容器及类别轴，不把展示投影当作源数据为空。查询定义、筛选状态及共享源行集不改变，也不因系列隐藏停止查询。PDF/PNG 使用导出捕获的条件状态；显示资格不能替代服务端授权。
+
+新条件仅可在 Schema 6.86 及以后声明，旧系列省略该字段时沿用原行为。本能力没有新增显示模式、轴显隐开关或脚本入口。

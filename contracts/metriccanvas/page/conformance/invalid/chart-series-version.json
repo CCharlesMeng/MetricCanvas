@@ -1,0 +1,251 @@
+{
+  "case": "chart-series-version",
+  "invariant": "chart-series-visibility",
+  "input": {
+    "schemaVersion": "6.85",
+    "id": "chart-series-visibility",
+    "layout": "dashboard",
+    "meta": {
+      "title": "柱线组合图 · 系列条件显隐"
+    },
+    "filters": [
+      {
+        "id": "scope",
+        "type": "dimension",
+        "dimension": "demo_scope",
+        "label": "统计范围",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "options": [
+          {
+            "value": "global",
+            "label": "全球"
+          },
+          {
+            "value": "office",
+            "label": "代表处"
+          }
+        ],
+        "default": [
+          "office"
+        ]
+      },
+      {
+        "id": "show-rate",
+        "type": "boolean",
+        "label": "显示达成率",
+        "default": true
+      }
+    ],
+    "dataSources": {
+      "trend": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "sales": {
+            "type": "number",
+            "role": "measure",
+            "label": "销售额",
+            "unit": "万元"
+          },
+          "plan": {
+            "type": "number",
+            "role": "measure",
+            "label": "目标额",
+            "unit": "万元"
+          },
+          "rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "达成率",
+            "unit": "%",
+            "defaultFormat": "percent-0"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "month": "一月",
+              "sales": 120,
+              "plan": 150,
+              "rate": 80
+            },
+            {
+              "month": "二月",
+              "sales": 190,
+              "plan": 200,
+              "rate": 95
+            },
+            {
+              "month": "三月",
+              "sales": 180,
+              "plan": 200,
+              "rate": 90
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "header",
+        "container": "plain",
+        "components": [
+          {
+            "id": "header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "系列条件显隐 · 内联合成数据"
+              },
+              "filterIds": [
+                "scope",
+                "show-rate"
+              ],
+              "presentation": {
+                "layout": "inline",
+                "collapse": "none"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "charts",
+        "container": "plain",
+        "components": [
+          {
+            "id": "mixed",
+            "type": "barChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "trend"
+            },
+            "props": {
+              "title": "销售额与目标额；代表处可查看达成率",
+              "categoryField": "month",
+              "dualAxis": true,
+              "series": [
+                {
+                  "field": "sales",
+                  "label": "销售额",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "field": "plan",
+                  "label": "目标额",
+                  "kind": "line",
+                  "axis": "primary"
+                },
+                {
+                  "field": "rate",
+                  "label": "达成率",
+                  "kind": "line",
+                  "axis": "secondary",
+                  "visibleWhen": {
+                    "all": [
+                      {
+                        "filter": "scope",
+                        "part": "values",
+                        "op": "containsAny",
+                        "values": [
+                          "office"
+                        ]
+                      },
+                      {
+                        "filter": "show-rate",
+                        "part": "value",
+                        "op": "eq",
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              ],
+              "echartsOption": {
+                "animation": false,
+                "series": [
+                  {},
+                  {
+                    "lineStyle": {
+                      "type": "dashed"
+                    }
+                  },
+                  {
+                    "lineStyle": {
+                      "width": 4
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "id": "rate-only",
+            "type": "lineChart",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "trend"
+            },
+            "props": {
+              "title": "单系列对照：隐藏后保留标题",
+              "xField": "month",
+              "series": [
+                {
+                  "field": "rate",
+                  "label": "达成率",
+                  "visibleWhen": {
+                    "all": [
+                      {
+                        "filter": "scope",
+                        "part": "values",
+                        "op": "containsAny",
+                        "values": [
+                          "office"
+                        ]
+                      },
+                      {
+                        "filter": "show-rate",
+                        "part": "value",
+                        "op": "eq",
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              ],
+              "echartsOption": {
+                "animation": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/series/2/visibleWhen",
+      "message": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴 由 6.86 引入，文档声明的是 6.85"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/1/props/series/0/visibleWhen",
+      "message": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴 由 6.86 引入，文档声明的是 6.85"
+    }
+  ]
+}

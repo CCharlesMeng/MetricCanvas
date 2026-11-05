@@ -622,3 +622,5 @@ Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/
 创作关联与普通换源：[/pages/authoring-analysis-rebind](capabilities/authoring/analysis-rebind/README.md)，覆盖共享消费者和原子拒绝。受控多槽与 Tokens 呈现：[/pages/relay-multislot-presentation](capabilities/authoring/relay-multislot-presentation/README.md)，覆盖乱序、缺匹配和百万显示，均为合成数据。
 
 表头参数初值：`/pages/table-header-filter-param-source` 提供下钻入口；场景与启动步骤见[表格示例](capabilities/table/README.md#表头参数初始化schema-685)。
+
+- [柱线组合的系列条件显隐](capabilities/chart/README.md#系列条件显隐686)：`/pages/chart-series-visibility`，内联合成数据。

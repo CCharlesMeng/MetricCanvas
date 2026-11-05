@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.85",
-  "schemaSha256": "b0ba03bf1cfbdc0914e6b9ab5dc05d015b3b63dadf9d545217e08eb0f999e751",
+  "schemaVersion": "6.86",
+  "schemaSha256": "524030ad19b8f0b31f29694b1d60445d5172d363d72d8799e2634f0f0800bcfb",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -84,7 +84,7 @@
     },
     {
       "file": "packages/engine/runtime/src/presentation.ts",
-      "sha256": "d5ab1c7654286c6ada032102c9fb11617c412344331de1b931b8a779a685736d"
+      "sha256": "42b8520ae8a77aabd37a28fc11fa4cd36a4435eed5993e7973bcccd9d9e2da6b"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -204,7 +204,7 @@
     },
     {
       "file": "packages/page/src/presentation-policy.ts",
-      "sha256": "9c07134cf3938a51db771f86cef630466d83a1c910913bc9a9b76b916eb17311"
+      "sha256": "b008d2c616a86717ddf8cc3c9c0d4c0c6e6f3fbff6e209ff78145829cd9cf27d"
     },
     {
       "file": "packages/page/src/query-output-measures.ts",
@@ -244,7 +244,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "5c2fb73cbd2b7fcbb3d06aef0f544513cb1de59bc782150f2a1770fbe9f08dba"
+      "sha256": "f9ae37a6468b425a0147da7f2ea84e48fa9180b8c7f4db6f4ba59a1cdcf286f5"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -428,7 +428,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "83b283d22f01115a9bbb5680a36b78cf8a0671b2b86392394d7979af5d8dc6e3"
+      "sha256": "a3f96d8efb053f1f6366b8acc7152807cc56d8b86602fdbb8baec61d2be0594c"
     }
   ],
   "modules": {
@@ -1157,7 +1157,8 @@
         "stored-count-measures",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "dual-axis-alignment"
+        "dual-axis-alignment",
+        "chart-series-visibility"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -1183,7 +1184,8 @@
         "mixed-page",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "dual-axis-alignment"
+        "dual-axis-alignment",
+        "chart-series-visibility"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -1651,7 +1653,8 @@
         "page-visibility-inputs",
         "reference-conditions-page",
         "page-visibility-report",
-        "period-query-columns-demo"
+        "period-query-columns-demo",
+        "chart-series-visibility"
       ],
       "sources": [
         "packages/page/src/schema/condition.ts",
@@ -1945,7 +1948,8 @@
         "6.82",
         "6.83",
         "6.84",
-        "6.85"
+        "6.85",
+        "6.86"
       ]
     },
     {
@@ -12136,6 +12140,19 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/visibleWhen",
+      "path": "@barChartSeries · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@barChartSeries · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/barChartSeries/anyOf/0/properties/kind",
       "path": "@barChartSeries · anyOf[0].kind",
       "required": "本分支可选",
@@ -12281,6 +12298,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/barChart.md",
       "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/visibleWhen",
+      "path": "@barChartSeries · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@barChartSeries · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/barChartSeries/anyOf/1/properties/kind",
@@ -12569,6 +12599,19 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/visibleWhen",
+      "path": "@chartSeries · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@chartSeries · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/chartSeries/anyOf/1",
       "path": "@chartSeries · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -12678,6 +12721,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/lineChart.md",
       "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/visibleWhen",
+      "path": "@chartSeries · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@chartSeries · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/lineChartComponent/properties/props/properties/smooth",
@@ -20528,8 +20584,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/0",
       "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sectionGroups/0/visibleWhen"
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/1",
@@ -20576,14 +20632,14 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/5",
       "module": "conditions.md",
-      "file": "examples/table-column-visibility.json",
-      "pointer": "#/sections/0/components/0/props/columns/0/visibleWhen"
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
       "module": "conditions.md",
-      "file": "examples/table-column-visibility.json",
-      "pointer": "#/sections/0/components/0/props/columns/0/visibleWhen/values/0"
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0/values/0"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
@@ -20998,14 +21054,14 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/1",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/1/props/echartsOption/grid/right"
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/echartsOption/series/2/lineStyle/width"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/2",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/1/props/echartsOption/animation"
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/echartsOption/animation"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/3",
@@ -21016,8 +21072,8 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/4",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/1/props/echartsOption/series"
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/echartsOption/series"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/5",

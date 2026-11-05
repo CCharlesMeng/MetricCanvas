@@ -725,7 +725,8 @@
         "stored-count-measures",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "dual-axis-alignment"
+        "dual-axis-alignment",
+        "chart-series-visibility"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -751,7 +752,8 @@
         "mixed-page",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "dual-axis-alignment"
+        "dual-axis-alignment",
+        "chart-series-visibility"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -1219,7 +1221,8 @@
         "page-visibility-inputs",
         "reference-conditions-page",
         "page-visibility-report",
-        "period-query-columns-demo"
+        "period-query-columns-demo",
+        "chart-series-visibility"
       ],
       "sources": [
         "packages/page/src/schema/condition.ts",
@@ -2162,7 +2165,8 @@
     "6.83": "独立完整单行指标通过无键unique关联用于全部主行。",
     "6.84": "布尔勾选覆盖维度筛选，完整授权名单为空时产生空结果。",
     "#/properties/schemaVersion=\"6.85\"": "表头字符串维度参数初值与显式全选不限。",
-    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior=\"unrestricted\"": "选中完整显式枚举集时省略该列条件，回显不限，可包含原有 null 和未知值。"
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior=\"unrestricted\"": "选中完整显式枚举集时省略该列条件，回显不限，可包含原有 null 和未知值。",
+    "6.86": "图表系列展示条件与系列、图例、提示项、空闲轴的同步显隐"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2881,6 +2885,20 @@
       "headings": [
         "表头参数初值与全选语义（6.85）"
       ]
+    },
+    "chart.series-visibility": {
+      "module": "barChart",
+      "title": "图表系列按筛选条件显隐",
+      "roots": [
+        "#/definitions/barChartSeries",
+        "#/definitions/chartSeries"
+      ],
+      "headings": [
+        "系列条件显隐（6.86）"
+      ],
+      "dependencies": [
+        "conditions.overview"
+      ]
     }
   },
   "authoringSemanticHeadings": {
@@ -3013,13 +3031,15 @@
       "双轴刻度与网格线",
       "查阅方式",
       "常量取值（6.59）",
-      "数值格式"
+      "数值格式",
+      "系列条件显隐（6.86）"
     ],
     "components/lineChart.md": [
       "双轴刻度与网格线",
       "查阅方式",
       "常量取值（6.59）",
-      "数值格式"
+      "数值格式",
+      "系列条件显隐（6.86）"
     ],
     "components/pieChart.md": [
       "表格式图例与顺序（6.64）",

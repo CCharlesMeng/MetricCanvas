@@ -75,7 +75,7 @@
 目标页使用 IOC Header 并认领 Region 时，默认接受 `region-dept` 与 `rep-office` 参数，无需页面 URL 映射。来源导航可显式把行字段、参数或筛选 value 映射到 `query.rep-office` 或 `query.region-dept`，键名决定目标层级，不再映射 level。目标输入投影从实际 Header 推导组织输入能力，同组按 URL 顺序取最后值；筛选来源的层级必须与目标键一致。候选权限仍由目标页验证，旧 value/level 链接继续兼容。完整合成目标为 `/pages/ioc-region-url-demo`；声明和边界见[筛选声明](filters.md#region-level-url)。
 
 
-页面协议 6.85。结构真源为本册[schema.json](schema.json)，SHA256 `b0ba03bf1cfbdc0914e6b9ab5dc05d015b3b63dadf9d545217e08eb0f999e751`。字段表自动生成；可选不等于有默认值。
+页面协议 6.86。结构真源为本册[schema.json](schema.json)，SHA256 `524030ad19b8f0b31f29694b1d60445d5172d363d72d8799e2634f0f0800bcfb`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
