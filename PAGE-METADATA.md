@@ -27,6 +27,8 @@ Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query�
 6.79 支持多条独立完整汇总查询组成同一置顶行：`pinnedTop.additionalData` 声明额外查询槽，列级 `pinnedTop.text` 声明固定纯文本。明细不参与汇总计算，任一汇总异常保留明细并拒绝完整导出。见[表格模块](docs/page-metadata/components/table.md#独立查询置顶行660)，可观察入口 `/pages/business-result-metrics`（真实 DQE 查询配置，内网取数另验）。
 
 
+IOC Header 认领的客户类型筛选由组件查询规则固定使用 `dim_name:"客户级别"`，覆盖页面误写的查询字段；既有绑定仍控制订阅范围，普通筛选不受影响。无需新增 Schema 字段，标识与边界见[筛选规则](docs/page-metadata/filters.md#business-filters)，合成入口 `/pages/ioc-customer-query-field?customer-category=战略`。
+
 IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或代表处，页面无需增加 URL 映射字段。同组参数按 URL 顺序取最后项，旧 value/level 链接继续兼容，普通页面筛选保持原行为。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)，合成入口 `/pages/ioc-region-url-demo`。本更新不新增页面字段或 Schema 能力下限。
 6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
 

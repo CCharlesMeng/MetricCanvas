@@ -282,3 +282,9 @@
 正式字段为 `filters[].candidates.{dataSource,valueField,labelField,parentField}`；filterGroup 只引用 filterId 且省略旧 options。父子节点独立选择，显示名不进入查询值。静态导出冻结显示名与值，浏览期间再切换不改变已捕获导出。
 
 证据仅覆盖产品协议、合成分页 Adapter 与浏览器；真实 DQE、Relay、组织权限服务和生产部署不在本页验收范围。
+
+## IOC 客户类型固定查询字段
+
+入口 `/pages/ioc-customer-query-field?customer-category=战略`，完整页面 `ioc-customer-query-field.json` 使用首分区首个 `iocHeader` 组件，复用重点国代合成网关。启动 `pnpm dev:playground` 后直接打开。此回归页故意把客户类型绑定写成旧名 `客户类型`；组件查询规则仍固定传 `客户级别`，表格应显示上海、广州两行，XLSX 完整导出相同。改选卓越显示南京、深圳，清空选择恢复四行；勾选重点国代继续与客户条件共同生效。未认领的普通筛选沿用页面显式字段，不能按显示文案推断客户语义。
+
+客户类型约定标识为 `customer-category`、`customer-type`、`na-type`；规则仅作用于页头认领且已绑定的平面维度筛选，不自动订阅数据源。该页为合成数据，仅证明统一运行时和查询投影，不证明真实 DQE、权限或部署。

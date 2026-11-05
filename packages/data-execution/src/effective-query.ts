@@ -9,6 +9,7 @@ import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { preservedQueryError } from './query-error';
 import {filterOverrideTargets,overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { rawSnapshot } from './snapshots';
+import { iocHeaderQuery } from './ioc-header-query';
 
 export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
 
@@ -32,7 +33,7 @@ export function composeEffectiveQuery(
   search?: { fields: readonly string[]; query: string; match?: 'equals' }
 ): EffectiveQuery {
   const dataSource = selectQuerySource(binding.dataSource, values);
-  const query = dataSource.source.query;
+  const query = iocHeaderQuery(dataSource.source.query,binding.page);
   const bindings=query.filterBindings??{};
   validateOverrideBindings(binding.filters??[],values,bindings);
   const filterValues: EffectiveQuery['filterValues'] = [];

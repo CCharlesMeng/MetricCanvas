@@ -22,7 +22,7 @@ for(let year=2024;year<=2026;year++)for(let month=1;month<=12;month++) {
     const opportunities=12+index*3+typeIndex*2+month;
     const signings=(index+2)*(typeIndex+1)*80+month*35+(year-2024)*120;
     facts.push({demo_global:'GLOBAL',demo_department:office.department,demo_department_name:office.departmentName,
-      demo_office:office.code,demo_office_name:office.name,demo_key:office.key,demo_customer:customer,
+      demo_office:office.code,demo_office_name:office.name,demo_key:office.key,demo_customer:customer,'客户级别':customer,
       demo_month:`${year}-${String(month).padStart(2,'0')}`,signings,revenue:Math.round(signings*.76),opportunities,won:Math.floor(opportunities*(.25+typeIndex*.1))});
   }));
 }

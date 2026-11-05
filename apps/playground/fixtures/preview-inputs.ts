@@ -11,7 +11,7 @@ const exactInputs = new Map([
   ['period-comparison-query-page','query-comparison'],
   ['period-comparison-demo','period-comparison'],
   ['key-office-filter-demo','key-office'], ['key-office-filter-target','key-office'],
-  ['key-office-priority-demo','key-office-priority'], ['key-office-priority-target','key-office-priority'],
+  ['key-office-priority-demo','key-office-priority'], ['key-office-priority-target','key-office-priority'], ['ioc-customer-query-field','key-office-priority'],
   ['business-decision-all-details','ioc-region'],
   ['ioc-project-overview','ioc-region'], ['ioc-opportunity-list','ioc-region'], ['ioc-opportunity-analysis','ioc-region-dept'],
   ['table-column-candidates-query', 'full-query-candidates'],

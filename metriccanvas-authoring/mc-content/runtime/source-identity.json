@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "4f2e7975aea191d69fc74b50ba58e3ae70e29c9cd3b44ee3cc826710f6be205a",
+  "sha256": "c82915726fca661bce93d15dafcee026898b3452e06dc30b3e4ee0793c0a15a0",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "bd6a17b083633a089215b930ef2b09e6752b19fc1654dd8177423638422af5bc"
+      "sha256": "5ffae5110b4df35fe6f0ae9d8b814b81de075d1a0c73fcc6d32a36260bdf863f"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -2352,7 +2352,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "dcb2889e3087ebcef1dcc12caf91f94b96f3fd9fd8e8790e88e4416426518e14"
+      "sha256": "4a58387e85729b490d887a353e6f7500b3521db7ca1ffce2ae1e48213055b8dc"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",
@@ -2373,6 +2373,10 @@
     {
       "file": "pages/capabilities/filters/filter-source-candidates.json",
       "sha256": "d75c10dfe8ce723620c07702942a2833e7a6d950966d1fabbe447933828ba677"
+    },
+    {
+      "file": "pages/capabilities/filters/ioc-customer-query-field.json",
+      "sha256": "924c4821b09dac7c977509d7a2365c43745bb2b7732346d6d6fc3cd7ccbffc2e"
     },
     {
       "file": "pages/capabilities/filters/ioc-region-url-demo.json",
