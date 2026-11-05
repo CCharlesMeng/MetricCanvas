@@ -1,8 +1,21 @@
-# 旧页头快速迁移为 iocHeader
+# IOC 页头创作与迁移
 
-用户要求“旧 header 换新版”“reportHeader 换 iocHeader”或“工具栏迁移”时使用。直接在用户指定页面完成局部替换，沿用原 Dashboard/Report 形态。6.81起 `iocHeader` 是首 section 的第一个组件，使用普通 `id/type/layout/props` 外壳，span固定12；旧根级写法兼容读取。不能只重命名reportHeader而不处理属性、筛选和操作差异。
+新建、调整已有或迁移 IOC 页头时，先核对下节的筛选布局顺序。用户要求“旧 header 换新版”“reportHeader 换 iocHeader”或“工具栏迁移”时，再执行后续迁移步骤。直接在用户指定页面完成局部替换，沿用原 Dashboard/Report 形态。6.81起 `iocHeader` 是首 section 的第一个组件，使用普通 `id/type/layout/props` 外壳，span固定12；旧根级写法兼容读取。不能只重命名reportHeader而不处理属性、筛选和操作差异。
 
-从原始页面元数据盘点功能，再按[旧页升级](page-upgrade.md)保留原件、检查并完成可执行的协议升级，最后做页头替换。升级脚本不执行页头语义迁移。字段、版本下限与运行行为以包内[页面](page-metadata/page.md)的“IOC 公共页头”“唯一页头”为准；涉及动态标题再查[参数与文字](page-metadata/params-and-text-values.md)。
+## 筛选布局顺序
+
+IOC 页头的筛选控件按以下优先级从左到右排列，并据此写入 `iocHeader` 组件的 `props.filterIds`：
+
+1. 仅看重点国代。
+2. 时间选择。
+3. Region 选择。
+4. 其他筛选。
+
+只排列本次页面实际需要并已由页头认领的控件；缺少某项时，其余项依次前移，不为凑齐顺序新增筛选或占位。`filterIds` 使用目标页真实筛选 id，按对应筛选的业务含义识别上述三类控件，不照抄示例 id。多个时间控件之间、其他筛选之间沿用已有相对顺序；新建时按本次需求安排，尚未约定更细的统一顺序。
+
+这是创作约定，由作者显式排列 `filterIds`，运行时仍按该数组呈现。新建、调整和迁移时均检查最终数组；协议校验通过不能代替此项检查。调整顺序时保留筛选定义、默认值、候选依赖和查询绑定。
+
+迁移时，从原始页面元数据盘点功能，再按[旧页升级](page-upgrade.md)保留原件、检查并完成可执行的协议升级，最后做页头替换。升级脚本不执行页头语义迁移。字段、版本下限与运行行为以包内[页面](page-metadata/page.md)的“IOC 公共页头”“唯一页头”为准；涉及动态标题再查[参数与文字](page-metadata/params-and-text-values.md)。
 
 ## 从元数据建立功能清单
 
@@ -26,7 +39,7 @@
 
 | 旧页特征 | 迁移动作 |
 |---|---|
-| Dashboard 的 `dashboardToolbar` 缺省或为 `"visible"` | 声明首分区首位 `type:"iocHeader"` 组件，以下属性位于props；将原先实际显示的标题显式写入 `identity.title`，保留 `meta.title`。按原顺序认领应在页头的筛选，使用 `presentation:{layout:"inline",density:"normal",collapse:"overflow"}` 承接旧工具栏呈现。删除显式 `dashboardToolbar`。 |
+| Dashboard 的 `dashboardToolbar` 缺省或为 `"visible"` | 声明首分区首位 `type:"iocHeader"` 组件，以下属性位于props；将原先实际显示的标题显式写入 `identity.title`，保留 `meta.title`。按筛选布局顺序认领应在页头的筛选，使用 `presentation:{layout:"inline",density:"normal",collapse:"overflow"}` 承接旧工具栏呈现。删除显式 `dashboardToolbar`。 |
 | `dashboardToolbar:{variant:"compact",readOnly,note}` | 使用 `presentation:{layout:"inline",density:"compact",collapse:"none"}`；将原 `readOnly`、`note` 原值搬到 `iocHeader`，再删除旧声明。不得因删除旧工具栏解锁原只读筛选。 |
 | `dashboardToolbar:"hidden"`，正文 `reportHeader` 承担整页身份 | 按下表映射身份，将该页头认领的筛选转交 `iocHeader`。确认内容均承接后删除旧页头；只移除因此变空且无其他语义或引用的分区。新组件不能与dashboardToolbar混写，须删除hidden；旧文档读取可保留。 |
 | 首个 `reportHeader` 或 `variant:"projectDetail"` | 逐项处理身份与附属内容；与 `iocHeader` 并存会被校验拒绝。遇到下述能力缺口时保留原页及候选，不通过丢功能制造迁移成功。 |
@@ -51,7 +64,7 @@
 
 ## 筛选与返回保持
 
-- `filterIds` 只列本页已声明、静态可见且应属于页头的筛选，顺序就是显示顺序。没有认领项时省略字段，不写空数组。未认领项保留在正文；不删除或复制 `filters` 来移动控件。
+- `filterIds` 只列本页已声明、静态可见且应属于页头的筛选，按上节筛选布局顺序排列，数组顺序就是显示顺序。没有认领项时省略字段，不写空数组。未认领项保留在正文；不删除或复制 `filters` 来移动控件。
 - 图表独立筛选、详情私有筛选、被 `filterGroup` 或保留的 `reportHeader` 消费的筛选不能重复认领。旧页头认领转移后解除原位置；搜索是否留在正文按原布局核对。不要把所有 filter id 无条件收进页头。
 - 保留 `params`、查询体、`filterBindings`、`initial`、来源及正文组件绑定。期间继续使用原 `timeRange`；详情单月继续 `timePoint`，离散月份继续原维度。页头迁移不顺带改候选权限、时间粒度或查询口径。
 - 原来需要返回时可声明 `back:true`，新页头默认使用浏览器 `history.back()`，无需集成应用提供路由或 returnContext。浏览器判断不可后退时默认隐藏；有 `navigation.back` 时优先使用该函数，无需 returnContext。保持原有自定义返回意图，不编造 Page 参数、URL 或来源上下文；浏览器返回不保证完整视图恢复。旧工具栏兼容路径仍依赖已有回调，迁移时记录默认行为的差异。
@@ -108,7 +121,7 @@
 
 先按清单双向对账，不以字段数或当前可见元素数相等代替功能等价：
 
-- 从原页到候选：每项功能有明确承接位置，文字、值/引用、顺序、条件与依赖保持；拆分到正文的说明仍需记录位置和呈现变化。保留的章节身份不重复迁入页头。
+- 从原页到候选：每项功能有明确承接位置，文字、值/引用、条件与依赖保持；页头筛选按上述布局顺序调整，其余顺序保持。拆分到正文的说明仍需记录位置和呈现变化。保留的章节身份不重复迁入页头。
 - 从候选回原页：每项业务文字、筛选、事实及操作均能追溯到原清单；示例内容、推测的编码/时间和多余控件不得成为新增项。同一原功能不能在新旧位置重复出现。
 - 对每项标记“等价承接”“呈现变化”“能力缺口”或“依赖待验”，并给出依据。改变功能、丢失动态/显隐条件或没有合法承接位置时，保留原工作页与未完成候选，不覆盖工作页并宣称迁移成功。需要改变原语义时先确认具体取舍；结构调整不新增通用确认步骤。
 

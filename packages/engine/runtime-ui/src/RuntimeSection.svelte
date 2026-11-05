@@ -290,7 +290,12 @@
 
     min-height: 0;
   }
-  .ioc-header-cell { grid-column:1 / -1 !important; }
+  .ioc-header-cell {
+    grid-column: 1 / -1 !important;
+    /* 页头延伸到看板两侧，同分区的正文仍沿用内容轨内距。 */
+    margin-left: calc(-1 * var(--mc-page-sections-padding-left, 0px));
+    margin-right: calc(-1 * var(--mc-page-sections-padding-right, 0px));
+  }
   .header-cell,
   .filter-group-cell {
     min-height: 0;

@@ -1784,15 +1784,20 @@
     margin-top: 16px;
   }
   .page-content.layout-dashboard > .page-sections {
+    --mc-page-sections-padding-left: 23px;
+    --mc-page-sections-padding-right: 24px;
+
     /* 看板内容轨只保留 23/24px 非对称页面内距；实际宽度始终由宿主容器决定。 */
-    padding-right: 24px;
-    padding-left: 23px;
+    padding-right: var(--mc-page-sections-padding-right);
+    padding-left: var(--mc-page-sections-padding-left);
   }
   .page-content.layout-dashboard[data-dashboard-toolbar='compact'] {
     --mc-page-sections-margin-top: 0;
   }
   .page-content.layout-dashboard[data-dashboard-toolbar='compact'] > .page-sections {
-    padding: 0 24px 24px;
+    --mc-page-sections-padding-left: 24px;
+
+    padding-bottom: 24px;
   }
   @container mc-runtime (max-width: 1050px) {
     .page-content {
