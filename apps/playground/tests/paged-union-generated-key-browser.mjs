@@ -38,7 +38,7 @@ try {
   }
   await page.goto(`${base}/pages/multi-source-generated-key?rowFailure=order`);
   await expect(table.locator('.total')).toContainText('256');
-  await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toBeVisible();
+  await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toHaveCount(0);
   expect(consoleErrors).toEqual([]);
   await page.screenshot({ path: path.join(output, 'order-error.png'), fullPage: true });
   expect(pageErrors).toEqual([]);

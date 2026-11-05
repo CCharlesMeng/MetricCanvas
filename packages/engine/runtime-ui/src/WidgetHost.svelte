@@ -14,15 +14,16 @@
 
   let { snapshot, ready, notices = [], showLoadingIndicator = true }: Props = $props();
   const renderable = $derived(displayDataSnapshot(snapshot));
+
+  $effect(() => {
+    if (notices.length) console.warn('[MetricCanvas][DATA_NOTICE]', ...notices);
+  });
 </script>
 
 <div class="widget-content" aria-busy={snapshot.status === 'loading'}>
   {#if snapshot.status === 'loading' && showLoadingIndicator}
     <span class="loading-indicator"><LoadingSpinner /></span>
   {/if}
-  {#each notices as notice}
-    <div class="data-notice" role="status">{notice}</div>
-  {/each}
   {@render ready(renderable)}
 </div>
 
@@ -43,11 +44,5 @@
     transform: translate(-50%, -50%);
     line-height: 0;
     pointer-events: none;
-  }
-  .data-notice {
-    padding: 4px 8px;
-    color: var(--mc-color-muted, #71717a);
-    font-size: 12px;
-    flex: none;
   }
 </style>

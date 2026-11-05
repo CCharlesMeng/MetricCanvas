@@ -40,7 +40,7 @@ try {
     consoleErrors.length = 0;
     await page.goto(`${base}/pages/multi-source-composite-key?rowFailure=${failure}`);
     await expect(table.locator('.total')).toContainText('255');
-    await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toBeVisible();
+    await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toHaveCount(0);
     expect(consoleErrors).toEqual([]);
     await page.screenshot({ path: path.join(output, `${failure}.png`), fullPage: true });
   }

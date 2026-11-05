@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-bc493773ac46cd6e",
-  "contentSha256": "bc493773ac46cd6eded13a43ab88c592e856f8da032b170846caac1fb22ad9b5",
+  "contentVersion": "1-4eabffbd9a0b267d",
+  "contentSha256": "4eabffbd9a0b267d770272a6f0a6a37548a081e4985ca9aa14f73fdbb77b341c",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -1905,11 +1905,11 @@
     },
     {
       "file": "knowledge/data-sources.section-414823a8.json",
-      "sha256": "d1d00771e0e6c55b0a78c0315b95629e1beab869f15331b3afbc363c8aa03150"
+      "sha256": "1b6762134cde103fbb13e8286bddfc4207e6d03d3125b3ee439fdd21a07b4f1d"
     },
     {
       "file": "knowledge/data-sources.section-556ed3dd.json",
-      "sha256": "1f6255eecf8da05802f87db76a23eda5763d2d07f2ff6efab13cc6cf57f9b5e7"
+      "sha256": "d474678afc4381e27d52801dcff62ab0ea614d575084ce70657d9dc20c10b110"
     },
     {
       "file": "knowledge/data-sources.section-5651dea3.json",
@@ -1965,11 +1965,11 @@
     },
     {
       "file": "knowledge/data.query.json",
-      "sha256": "f02589ea20c9ce3e7dfb09ca9b0c4da2dfd77511c3e955cf7cce7e62d0bd1934"
+      "sha256": "3677a4c02c9fa6bc9a1ee6fc8014278cb8c8dfa5062f51f9e529bc5251a5c6cb"
     },
     {
       "file": "knowledge/data.recovery.json",
-      "sha256": "5cf814c430a70e1b12502b121cf8cc73a3f30ee83d1a302fb33e36c3669273ac"
+      "sha256": "a47ed435a858066edda26aa5bf0db5798ea47571e1b91efd99345fac771f70fe"
     },
     {
       "file": "knowledge/field-bindings-and-formats.overview.json",
@@ -2489,7 +2489,7 @@
     },
     {
       "file": "knowledge/table.export.json",
-      "sha256": "e5362a12b2011aba68ddae4b43a72729f54f164f11fd8d78a37305cf0afc6fb3"
+      "sha256": "dddb0cf2edb814a55692250a8e7e425c8868d1d80be346688cb5dfcb95549dfc"
     },
     {
       "file": "knowledge/table.headerDefaults.json",
@@ -2553,7 +2553,7 @@
     },
     {
       "file": "knowledge/table.section-2ba04792.json",
-      "sha256": "7ed2a1d32ec1078c04e0681c58ce77f3e82d83978cdee8c59e1c176d12966188"
+      "sha256": "e3d970de797bc4ffa6b8217e7fe877452298c8578e0c202ceb2cf9e7c2a0ec7d"
     },
     {
       "file": "knowledge/table.section-2c81c12b.json",
@@ -2733,7 +2733,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "341ffaabec04b782e648493f5cb4405590e99a947d0129f31a81b99effa3e3d6"
+      "sha256": "f6f35bd0a66e75073efee2601d0de70b96045d4247717c12d720b7bb23ec0f9b"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -5613,7 +5613,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "3238778f70172fc1e1cdc158054332dd657231ab8c2ac7f07fb7e9749b22fff5"
+      "sha256": "0598e7941796d5b88af3aaedbeee43d44481518f7f989d880b707604d38c6f14"
     },
     {
       "file": "references/page-metadata/actions-and-navigation.md",
@@ -5709,7 +5709,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "a76d6e5b92a65ade0176eb966946ef0c5eb2601aca67b0fb8082575394b046bb"
+      "sha256": "c27903c245ef6de62aeb3d9fa5c1a29adf9aab231bee45caf49b7c87f1a59e0a"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -5725,7 +5725,7 @@
     },
     {
       "file": "references/page-metadata/data-sources.md",
-      "sha256": "96463a3859026132836faf00eb8e2275d007946aa7fcb50226fc7d5aaaab4eec"
+      "sha256": "cfc763b088d2c700c4507c732e3ce41d951a05526b5f7dc1376fb93b7262e100"
     },
     {
       "file": "references/page-metadata/errors/actual-after-captured-month.json",
@@ -8569,7 +8569,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "6c0e04c45d4cac63be542675658253dd667a2d1b985c1200e8aa61a345a28c4d"
+      "sha256": "7037557d791f37c86b25211a2d0b2ca5a968b75f612d75e0d66766d9b95ab5ce"
     },
     {
       "file": "runtime/coverage.json",
@@ -8617,7 +8617,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "90ad122791d7c3ac2aa1207241775a9281efe4687cdefd532b4fe493e729e83c"
+      "sha256": "13da6c6bf60b749e9582bb9e7744bfd05388b4f8d949f90573e00d8e9cff743a"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -8727,7 +8727,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "341ffaabec04b782e648493f5cb4405590e99a947d0129f31a81b99effa3e3d6",
+    "productManifestSha256": "f6f35bd0a66e75073efee2601d0de70b96045d4247717c12d720b7bb23ec0f9b",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "3d6747aa23b1794288a8c540dcefbccb77cddbd74238a5a7cef6d088dbccb9ae",

@@ -313,7 +313,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 
 ## 组合源数据异常提示与导出
 
-当 main 或其他数据槽的 pagedUnion/pagedJoin 动态结果经过兼容整理时，表格在标题下显示可展开 warning，列出来源、处理方式和次数。默认空值显示 —；交互继续消费整理后的类型值，不将显示原文作为行键。Excel 数据工作表保留可用匹配行，另附“数据异常说明”；正常导出不增说明表。异常语义及资源边界由[组合表格异常兼容](../data-sources.md#table-result-recovery)维护，合成入口 `/pages/table-data-recovery`。
+当 main 或其他数据槽的 pagedUnion/pagedJoin 动态结果经过兼容整理时，表格不插入额外提示；来源、处理方式和次数仅通过 `console.warn` 输出。默认空值显示 —；交互继续消费整理后的类型值，不将显示原文作为行键。Excel 数据工作表保留可用匹配行，另附“数据异常说明”；正常导出不增说明表。异常语义及资源边界由[组合表格异常兼容](../data-sources.md#table-result-recovery)维护，合成入口 `/pages/table-data-recovery`。
 
 ## 期间比较的查询分页（6.78）
 

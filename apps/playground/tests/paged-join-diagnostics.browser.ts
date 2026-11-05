@@ -37,7 +37,7 @@ for(const mode of ['ready','null','duplicate','truncated','budget'] as const){
     }else if(mode!=='budget'){
       await expect(table.locator('tbody tr')).toHaveCount(3);
       await expect(table.locator('.total')).toContainText(mode==='truncated'?'8':'7');
-      await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toBeVisible();
+      await expect(table.getByText('部分数据异常，当前展示可用结果',{exact:true})).toHaveCount(0);
       await expect.poll(async()=>JSON.stringify(await Promise.all(logs))).toContain('TABLE_RESULT_RECOVERED');
       const text=JSON.stringify(await Promise.all(logs));
       expect(text).toContain('office-directory');expect(text).not.toContain('上海');expect(text).not.toContain('SH-01');

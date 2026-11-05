@@ -8,18 +8,19 @@ const output = process.argv[2] ?? path.resolve('docs/evidence/table-data-recover
 await mkdir(output,{recursive:true});
 const browser = await chromium.launch({headless:true,channel:'chrome'});
 const page = await browser.newPage({viewport:{width:1440,height:1100},acceptDownloads:true});
-const errors = [];
+const errors = [], warnings = [];
 page.on('pageerror',error=>errors.push(error.message));
+page.on('console',message=>{if(message.type()==='warning')warnings.push(message.text());});
 try {
   await page.goto(`${base}/pages/table-data-recovery`);
   const union = page.locator('.table-widget[data-table-title="多来源合并"]');
   const records = page.locator('.table-widget[data-table-title="记录关联"]');
   await expect(union.locator('.total')).toContainText('6',{timeout:45000});
   await expect(records.locator('.total')).toContainText('8');
-  await expect(page.getByText('部分数据异常，当前展示可用结果',{exact:true})).toHaveCount(2);
+  await expect(page.getByText('部分数据异常，当前展示可用结果',{exact:true})).toHaveCount(0);
   await expect(union.locator('tbody tr')).toHaveCount(3);
-  await union.getByText('部分数据异常，当前展示可用结果',{exact:true}).click();
-  await expect(union.getByText('commercial：重复行标识仅保留第一条（1）',{exact:true})).toBeVisible();
+  await expect(page.locator('.data-warning, .data-notice')).toHaveCount(0);
+  await expect.poll(()=>warnings.join('\n')).toContain('TABLE_RESULT_RECOVERED');
   await union.getByRole('button',{name:'下一页',exact:true}).click();
   await expect(union.locator('button[aria-current="page"]')).toHaveText('2');
   await expect(union.locator('tbody tr')).toHaveCount(3);
@@ -35,13 +36,22 @@ try {
     expect(workbook.worksheets[0].rowCount).toBe(count+1);
     expect(workbook.worksheets[1].getCell('A1').text).toContain('缺项');
   }
+  warnings.length = 0;
   await page.goto(`${base}/pages/table-data-recovery?recoveryState=ready`);
   await expect(union.locator('.total')).toContainText('8');
   await expect(records.locator('.total')).toContainText('8');
   await expect(page.getByText('部分数据异常，当前展示可用结果',{exact:true})).toHaveCount(0);
+  expect(warnings.filter(message=>message.includes('TABLE_RESULT_RECOVERED'))).toEqual([]);
   await page.setViewportSize({width:390,height:844});
   await expect(union.getByRole('table')).toBeVisible();
   await page.screenshot({path:path.join(output,'ready-narrow.png'),fullPage:true});
+  for (const [id,code] of [['missing-organization-key','TABLE_DATA_WARNING'],['tokens-monthly-trend','DATA_NOTICE']]) {
+    warnings.length = 0;
+    await page.goto(`${base}/pages/${id}`);
+    await expect(page.locator('.table-widget').first()).toBeVisible();
+    await expect.poll(()=>warnings.join('\n')).toContain(code);
+    await expect(page.locator('.data-warning, .data-notice')).toHaveCount(0);
+  }
   expect(errors).toEqual([]);
-  await writeFile(path.join(output,'result.json'),JSON.stringify({synthetic:true,errors,passed:['union recovery and paging','record join recovery','source warnings','both complete Excel downloads include warnings','healthy refresh clears warnings','narrow screen']},null,2));
+  await writeFile(path.join(output,'result.json'),JSON.stringify({synthetic:true,errors,passed:['union recovery and paging','record join recovery','console warnings without page notices','both complete Excel downloads include warnings','healthy refresh clears warnings','narrow screen','missing organization keys warn only in console','partial initial results warn only in console']},null,2));
 } finally {await browser.close();}

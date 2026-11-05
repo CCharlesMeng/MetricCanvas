@@ -66,7 +66,7 @@ IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提
 
 双数值轴默认对齐主副轴刻度且仅主轴绘制网格线，保留两侧标签、格式与单位；显式高级配置仍生效。见[双轴呈现](docs/page-metadata/components/barChart.md#双轴刻度与网格线)，验收入口 `/pages/dual-axis-alignment`。
 
-组合表格默认兼容动态异常数据：空值或缺字段局部补空，无效行跳过，同一来源重复 key 保留第一条；页面展示 warning，Excel 附“数据异常说明”。先完整整理可用行再排序、计数、分页，配置、权限、网络和资源限制保持。无需新增页面字段；声明、限制及合成入口 `/pages/table-data-recovery` 见[组合表格异常兼容](docs/page-metadata/data-sources.md#table-result-recovery)。
+组合表格默认兼容动态异常数据：空值或缺字段局部补空，无效行跳过，同一来源重复 key 保留第一条；页面不额外展示诊断提示，诊断通过 console.warn 输出；Excel 附“数据异常说明”。先完整整理可用行再排序、计数、分页，配置、权限、网络和资源限制保持。无需新增页面字段；声明、限制及合成入口 `/pages/table-data-recovery` 见[组合表格异常兼容](docs/page-metadata/data-sources.md#table-result-recovery)。
 
 ## 从需求到页面
 
