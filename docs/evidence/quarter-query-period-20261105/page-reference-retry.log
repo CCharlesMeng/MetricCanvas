@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run tests/page-reference.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/quarter-time-filter/DataDashboard
-
-
- Test Files  1 passed (1)
-      Tests  8 passed (8)
-   Start at  16:08:29
-   Duration  29.35s (transform 1.50s, setup 0ms, import 19.38s, tests 9.80s, environment 0ms)

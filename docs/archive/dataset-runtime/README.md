@@ -18,6 +18,6 @@
 
 ## 恢复条件的逐条对账
 
-在 [`docs/evidence/dataset-reconciliation.md`](../../evidence/dataset-reconciliation.md)——它被 ADR 基线的[未决事项](../../adr/topics/open-questions.md)当作论据引用，所以不在归档里，在证据层。
+在 [`docs/evidence/dataset-reconciliation.md`](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/dataset-reconciliation.md)——它被 ADR 基线的[未决事项](../../adr/topics/open-questions.md)当作论据引用，所以不在归档里，在证据层。
 
 第一条的**契约侧已由 [ADR-0044](../../adr/0044-first-class-metric-entries.md) 打通，数据侧未补齐**；后两条未动。在此之前不得以任何名义在服务端或页面协议中引入 Transform/Compute 层。

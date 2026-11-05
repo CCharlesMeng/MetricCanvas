@@ -1,6 +1,6 @@
 # Relay 四项交付实施任务与状态
 
-更新：2026-11-04。契约真源：[Spec](relay-reference-spec.md)，依赖与范围：[实施规划](four-artifact-delivery-plan.md)，来源和日志：[统一集成证据](../../evidence/2026-11-03-relay-reference-integration/README.md)。本页替代过程性进度，集成前台账保留在证据中。
+更新：2026-11-04。契约真源：[Spec](relay-reference-spec.md)，依赖与范围：[实施规划](four-artifact-delivery-plan.md)，来源和日志：[统一集成证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-03-relay-reference-integration/README.md)。本页替代过程性进度，集成前台账保留在证据中。
 
 ## 本仓继续收口（2026-11-03）
 

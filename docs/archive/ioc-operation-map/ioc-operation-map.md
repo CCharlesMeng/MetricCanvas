@@ -126,11 +126,11 @@ ADR-0045 ~ 0050 当前状态是 `proposed`。本阶段完成评审并置为 `acc
 
 来源规格的 `004-indicators.md` 逐字段列出了 55+ 指标及其口径。它自称覆盖 `project-overview` / `opportunity-list` / `project-detail` 三个页面，ADR-0046 的「共 12 处计算」即出自这个口径；全仓实测约 130 个场景（非格式化约 95），**「12 处」不要再用于估算工作量**。
 
-它在 `:13` 与 `:557` 引用的 `frontend-calculation-cases.md`（声称含「场景 77~95」「场景 96~99」）**在来源仓与本仓都不存在**，场景号体系因此不可解析——引用「场景 XX」的提问无法作答。替代真源是 [前端计算能力对账](../../evidence/2026-08-frontend-calculation-reconciliation.md)。
+它在 `:13` 与 `:557` 引用的 `frontend-calculation-cases.md`（声称含「场景 77~95」「场景 96~99」）**在来源仓与本仓都不存在**，场景号体系因此不可解析——引用「场景 XX」的提问无法作答。替代真源是 [前端计算能力对账](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-08-frontend-calculation-reconciliation.md)。
 
 落地时必须做的两件事：
 
-**逐处显式声明空值语义。** 全仓实读确认存在**五套**互不兼容的空值判断（见 [前端计算能力对账](../../evidence/2026-08-frontend-calculation-reconciliation.md) §4）：四个文件各复制一份的 `isNull` 把 `0` 视为空、`IndicatorCalculate.validate` 不把 `0` 视为空、`CommonUtil.isNull` 只判 `undefined`/`null`、`BlankUtil`、以及占 70+ 处主力的行内匿名 `[0, null, undefined].includes(x)`。主力那一套在不同调用点产出**不同的空态语义**——指标卡返 `null`、表格行级返 `0`，同一份文件同一开发者两种写法并存且无注释。后果已经可见：立项率有四处实现，界面上同一页面的指标卡显空、概览表显 `0%`。ADR-0046 要求 `ratio` 显式声明分母为零语义，正是为此；落地统一取 `null`，由呈现层决定显示。
+**逐处显式声明空值语义。** 全仓实读确认存在**五套**互不兼容的空值判断（见 [前端计算能力对账](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-08-frontend-calculation-reconciliation.md) §4）：四个文件各复制一份的 `isNull` 把 `0` 视为空、`IndicatorCalculate.validate` 不把 `0` 视为空、`CommonUtil.isNull` 只判 `undefined`/`null`、`BlankUtil`、以及占 70+ 处主力的行内匿名 `[0, null, undefined].includes(x)`。主力那一套在不同调用点产出**不同的空态语义**——指标卡返 `null`、表格行级返 `0`，同一份文件同一开发者两种写法并存且无注释。后果已经可见：立项率有四处实现，界面上同一页面的指标卡显空、概览表显 `0%`。ADR-0046 要求 `ratio` 显式声明分母为零语义，正是为此；落地统一取 `null`，由呈现层决定显示。
 
 > 早前版本称「`CommonUtil.isNull` 把 `0` 也视为空」，与实现相反（`common-util.ts:15-17` 是 `obj === undefined || obj === null`）。该说法源自来源文档 `004-indicators.md:380` 的张冠李戴，已按代码修正。
 
@@ -142,7 +142,7 @@ ADR-0045 ~ 0050 当前状态是 `proposed`。本阶段完成评审并置为 `acc
 
 **GraphQL 路径上没有发现描述，AI 建页能力退化。** ADR-0034 要求 GraphQL/REST 路径补一份以操作名、参数、响应字段为可枚举面的发现描述，ADR-0045 本批不交付。这与「目标形态是平台通用能力」的裁决存在张力：三个页面本身可以人工建，但「后续同类应用由 AI 生成」这个目标在发现描述补齐前不成立。**补齐它需要一份独立决策，建议在 P3 期间启动。**
 
-**ADR-0046 第二批未定形状，概览页核心指标因此无排期；但裁决输入已经齐了。** 跨数据源聚合正是 ADR-0015 与 ADR-0033 共同挂起的那批语义（空集与失败传播、输入集合上限、循环依赖、缓存键、取消）。[前端计算能力对账](../../evidence/2026-08-frontend-calculation-reconciliation.md) §2 已用来源实现的五处活跃跨源计算答出其中两项：缺 key 传播实测两种语义并存（汇总减法当 0、行级 join 当 null），失败传播实测三种走向且**无一处报错**——最危险的一种会按 0 参与减法算出「看起来正常的错误支撑率」并照常显示。因此 `onMissingKey` 与失败传播必须是必填、无默认、fail-closed，源数上限可定为 4。**裁决不必等第一批实战经验，可提前启动。** 剩余未答的只有缓存键与取消语义。
+**ADR-0046 第二批未定形状，概览页核心指标因此无排期；但裁决输入已经齐了。** 跨数据源聚合正是 ADR-0015 与 ADR-0033 共同挂起的那批语义（空集与失败传播、输入集合上限、循环依赖、缓存键、取消）。[前端计算能力对账](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-08-frontend-calculation-reconciliation.md) §2 已用来源实现的五处活跃跨源计算答出其中两项：缺 key 传播实测两种语义并存（汇总减法当 0、行级 join 当 null），失败传播实测三种走向且**无一处报错**——最危险的一种会按 0 参与减法算出「看起来正常的错误支撑率」并照常显示。因此 `onMissingKey` 与失败传播必须是必填、无默认、fail-closed，源数上限可定为 4。**裁决不必等第一批实战经验，可提前启动。** 剩余未答的只有缓存键与取消语义。
 
 **排序后位置派生（`rank` / `no`）无归属 ADR。** 全仓 13 处，服务端不返回名次列，闭集五算子表达不了，ADR-0049 的表格能力也未覆盖。它的值依赖用户可交互的排序状态，与 ADR-0046「计算发生在查询之后、输出是数据快照」的模型正面冲突。建议归呈现层（表格按当前视图渲染行号）；来源实现在数据层做它已经出了两类错（五处不先排序就发名次、作者自标 TODO）。同批须定并列时的二级排序键声明方式——来源实现有三套各写各的兜底。
 

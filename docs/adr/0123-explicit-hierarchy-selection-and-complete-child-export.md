@@ -19,4 +19,4 @@ note: 用户确认层级筛选的父整体口径、显式归属定位、展开�
 
 取舍是增加一条显式受控查询及一个局部输入分支，避免扩展通用表达式、候选端口或隐含组织推理。完整父结果和定位模板受严格语义校验，按需执行复用 SourceProgram。旧页面不补字段、不迁移、不增加定位请求。
 
-依据：[唯一主方案](../plan/2026-10-27-hierarchical-row-expansion.md)、[正式协议](../page-metadata/components/table.md#hierarchy-selection)、[验收证据](../evidence/hierarchical-row-expansion/result.md)。真实 DQE/Relay 与生产权限接入单独验收。
+依据：[唯一主方案](../plan/2026-10-27-hierarchical-row-expansion.md)、[正式协议](../page-metadata/components/table.md#hierarchy-selection)、[验收证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/hierarchical-row-expansion/result.md)。真实 DQE/Relay 与生产权限接入单独验收。

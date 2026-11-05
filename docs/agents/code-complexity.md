@@ -19,7 +19,7 @@ METRICCANVAS_PYTHON=/path/to/python pnpm complexity:audit --baseline HEAD --outp
 
 [存量台账](../../tools/scripts/complexity-debt.json) 显式保留本次测量时仍超过 15 的函数及其 CC 上界。默认门禁拒绝新增超限、存量增长、跨文件迁移和改名后的超限；匿名回调以父级路径和带计数的分值集合匹配，行号变化不误判，增加同名回调不能复用一份额度。已关闭条目不再加入台账，更新台账须重新审计和说明，不能把自动重建台账作为日常检查的一部分。台账是待治理事项，不等于全仓函数已达标。可使用 `pnpm complexity:audit --check-functions` 执行全部维护函数 `CC≤15` 的严格检查；只要仍有存量超限，该命令就应失败。
 
-CI authoring job 在安装固定 Radon 后执行 `pnpm complexity:check`，覆盖平均值、测量器回归和新增/增长超限。原 Python 创作公共模块的固定门禁继续独立执行，不放宽其现有限制。当前实施、20 条清单核对及完整剩余项见 [2026-11-04 审计](../evidence/code-complexity/2026-11-04-audit/README.md)。
+CI authoring job 在安装固定 Radon 后执行 `pnpm complexity:check`，覆盖平均值、测量器回归和新增/增长超限。原 Python 创作公共模块的固定门禁继续独立执行，不放宽其现有限制。当前实施、20 条清单核对及完整剩余项见 [2026-11-04 审计](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-11-04-audit/README.md)。
 
 ## 执行顺序与完成条件
 
@@ -71,6 +71,6 @@ node --test tools/scripts/measure-ts-complexity.test.mjs
 
 ## 当前存量依据
 
-[2026-10-22 全清单核对](../evidence/code-complexity/2026-10-22-audit.md) 记录了清单漂移、自身分支与闭包累计的区别；[分批优化计划](../plan/2026-10-22-code-complexity.md) 记录了拆分候选及行为验收。两者是时间点证据，后续编码以当前源码重新测量。
+[2026-10-22 全清单核对](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-10-22-audit.md) 记录了清单漂移、自身分支与闭包累计的区别；[分批优化计划](../plan/2026-10-22-code-complexity.md) 记录了拆分候选及行为验收。两者是时间点证据，后续编码以当前源码重新测量。
 
-当前原清单的逐项关闭状态以 [原始259条续修对照](../evidence/code-complexity/2026-10-22-original-list-follow-up.md) 为最新时间点证据；首轮的“剩余17”仅是局部范围计数。
+当前原清单的逐项关闭状态以 [原始259条续修对照](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-10-22-original-list-follow-up.md) 为最新时间点证据；首轮的“剩余17”仅是局部范围计数。

@@ -2,7 +2,7 @@
 
 日期：2026-10-24。状态：MC 内容补全及本仓验收完成；Skill / Relay 真实接线另验。
 
-完整性复核已实施：知识、发现/查询字段、场景、完整工具参数、检索与覆盖门禁现已补齐；本仓验收见[实施记录](../../evidence/mc-content-layout/implementation-results.md)。逐项范围仍以[完整性主计划](mc-content-completeness-plan.md)为准；真实 Relay/DQE/保存/预览部署未验，不能用本地结果替代。
+完整性复核已实施：知识、发现/查询字段、场景、完整工具参数、检索与覆盖门禁现已补齐；本仓验收见[实施记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/implementation-results.md)。逐项范围仍以[完整性主计划](mc-content-completeness-plan.md)为准；真实 Relay/DQE/保存/预览部署未验，不能用本地结果替代。
 
 本文件是本批次的架构主入口。两份附件原文保留：[布局冻结提案](layout-standards-frozen-design.md)、[MC 侧需求提案](mc-engine-requirements.md)。与本轮确认冲突的表述以本文件为准；原文的“设计冻结”不代表其中所有外部环境断言已经通过 MC 仓或部署验收。
 
@@ -137,7 +137,7 @@ MC 不写入具有流程准入意义的 evalStatus，不替 Skill 出具豁免�
 
 MC 交付完成与外部集成完成分别报告。可执行脚本无法运行时，只读文档只能算知识交付，不算脚本能力通过；是否采用该降级仍由 Skill 决定。
 
-实施遵守现有[功能验收要求](../../agents/feature-acceptance.md)。新建验证页面默认 Dashboard；专门验收 Report 布局的页面可使用 Report。协议变更、页面与 local-authoring 同步按实际改动执行。本批实现与证据见[验收记录](../../evidence/mc-content-layout/result.md)。
+实施遵守现有[功能验收要求](../../agents/feature-acceptance.md)。新建验证页面默认 Dashboard；专门验收 Report 布局的页面可使用 Report。协议变更、页面与 local-authoring 同步按实际改动执行。本批实现与证据见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/result.md)。
 
 ## 8. 原文需修正的事实与表述
 

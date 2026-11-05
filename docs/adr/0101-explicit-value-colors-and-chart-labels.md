@@ -17,6 +17,6 @@ note: 用户批准红绿规则就地声明、全部类别标签与常驻数值�
 
 此决定延续 [0013](0013-format-belongs-to-component-field-binding.md) 的呈现位置所有权、[0018](0018-keep-page-metadata-locally-explicit.md) 的局部显式及 [0051](0051-additive-minor-versions-for-page-schema.md) 的增量版本策略。6.15 与此前已支持版本继续读取，新声明只能用于6.16；原有颜色与标签开关仍有效。不要求 Relay/DQE 或 Java 资产接口改动，外部校验器须更新生成契约。
 
-本地测试、浏览器和静态导出证据见[实施结果](../evidence/2026-10-12-explicit-presentation/result.md)；这些证据不替代真实模型创作或生产联调。
+本地测试、浏览器和静态导出证据见[实施结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-explicit-presentation/result.md)；这些证据不替代真实模型创作或生产联调。
 
-后续[表格适配与数值间距修正](../evidence/2026-10-12-table-fit-chart-distance/result.md)取消远距离交错标签，数字保持接近自身节点；用户明确正常尺寸展示全列、窄屏允许表格内部横向滚动。商务SDT六表就地使用既有fit容器模式，不改变其他页面默认值。
+后续[表格适配与数值间距修正](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-table-fit-chart-distance/result.md)取消远距离交错标签，数字保持接近自身节点；用户明确正常尺寸展示全列、窄屏允许表格内部横向滚动。商务SDT六表就地使用既有fit容器模式，不改变其他页面默认值。

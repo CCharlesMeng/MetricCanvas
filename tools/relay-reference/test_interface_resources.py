@@ -9,6 +9,7 @@ import tempfile
 import unittest
 
 from export import install_private
+from frozen_consumer import snapshot_json
 from interface_resources import publish_interface
 from relay_content import annotate
 from release import canonical, digest, read_json
@@ -24,7 +25,7 @@ class InterfaceResourceTests(unittest.TestCase):
         shutil.copytree(ROOT / "metriccanvas-authoring/mc-content", self.root / "mc-content")
         annotate(self.root / "mc-content")
         install_private(self.root)
-        old = read_json(Path(__file__).with_name("fixtures") / "consumer-0.1.0.json")["interface"]
+        old = snapshot_json(Path(__file__).with_name("fixtures") / "consumer-0.1.0.json")["interface"]
         self.interface = deepcopy(old)
         self.interface["version"] = "1.1.0"
         description = deepcopy(old["operations"]["page.validate"])

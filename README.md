@@ -186,7 +186,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `pages/` | 页面 |
 | `docs/design-facts/` | 设计稿字面量取证产物(设计稿本身不随仓交付) |
 
-旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码、TypeScript 页面生命周期、Postgres 持久化、compose 与纵切命令已退出主线。完整历史见 [固定基线](docs/evidence/2026-09-08-legacy-baseline.md)。Platform 已是静态 SPA，目录、详情、保存和更新由浏览器直接消费外部 Java 页面资产接口；未确认的历史修订与差异能力显式不可用。
+旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码、TypeScript 页面生命周期、Postgres 持久化、compose 与纵切命令已退出主线。完整历史见 [固定基线](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-08-legacy-baseline.md)。Platform 已是静态 SPA，目录、详情、保存和更新由浏览器直接消费外部 Java 页面资产接口；未确认的历史修订与差异能力显式不可用。
 
 公共 Chat 尚未接通，问数入口显示不可用。页面目录中的已保存页面可打开页面搭建工作台，进行十类组件切换、文档编辑、布局、保存和当前修订预览。本版不提供历史修订、发布治理、模板与 ACL 界面；上方发布模型描述治理目标，保存修订不等于人工确认发布。
 

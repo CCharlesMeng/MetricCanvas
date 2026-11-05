@@ -114,11 +114,11 @@ def demo(rows):
 def main():
     rows, report = results()
     outputs = {ROOT / 'pages/capabilities/layout/mc-content-layout-demo.json': demo(rows),
-        ROOT / 'docs/evidence/mc-content-layout/diagnostics.json': report}
+        ROOT / 'tools/fixtures/mc-content-layout/diagnostics.json': report}
     for scene in ('business-report', 'usage-report'):
         document, inspection = report_example(scene)
         outputs[ROOT / f'pages/capabilities/layout/mc-layout-{scene}.json'] = document
-        outputs[ROOT / f'docs/evidence/mc-content-layout/{scene}.json'] = inspection
+        outputs[ROOT / f'tools/fixtures/mc-content-layout/{scene}.json'] = inspection
     for file, value in outputs.items():
         text = json.dumps(value, ensure_ascii=False, indent=2) + '\n'
         if '--check' in sys.argv:

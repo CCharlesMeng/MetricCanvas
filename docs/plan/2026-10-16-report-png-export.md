@@ -234,4 +234,4 @@ B0 是风险收敛步骤，不是现成能力。优先消除跨文档样式注�
 
 U1中的名称与U3的单张PNG输出已于2026-10-16由用户确认，替代此前多图打包建议，不再作为待选项。整体方案随后已获实施授权；单PNG编码、内存与解码验证纳入首期工作。
 
-2026-10-19：6.30协议、独立文档、固定入口、3/4倍图表和单张流式PNG完成；属性编辑、页面、文档、Skill与分发闭合。全仓源码、类型/构建、Chrome安装消费者及最终差异复验通过。结果与精确验证树见[验收记录](../evidence/report-png-export/result.md)。剩余真实门户/DQE/Relay、Edge与部署验收；未执行Git提交推送。
+2026-10-19：6.30协议、独立文档、固定入口、3/4倍图表和单张流式PNG完成；属性编辑、页面、文档、Skill与分发闭合。全仓源码、类型/构建、Chrome安装消费者及最终差异复验通过。结果与精确验证树见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-png-export/result.md)。剩余真实门户/DQE/Relay、Edge与部署验收；未执行Git提交推送。

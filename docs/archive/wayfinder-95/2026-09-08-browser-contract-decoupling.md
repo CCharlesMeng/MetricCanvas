@@ -1,6 +1,6 @@
 # 页面搭建工作台与契约生成解耦（#123 / #124）
 
-实施基线为 `fbc391a27419e1de7f5d20d8cf3f269611b27b04`，决策为 ADR-0074；旧链历史索引见 [完整基线](../../evidence/2026-09-08-legacy-baseline.md)。
+实施基线为 `fbc391a27419e1de7f5d20d8cf3f269611b27b04`，决策为 ADR-0074；旧链历史索引见 [完整基线](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-08-legacy-baseline.md)。
 
 ## 已实现
 

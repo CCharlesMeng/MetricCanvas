@@ -19,7 +19,7 @@
 3. [x] 共享执行：完整结果用途、计算、结果绑定、组合源及子表；回归原有取消、缓存、过期回执与窗口行为。
 4. [x] Playground：Dashboard 页面、相邻 README、Sim 合成数据和浏览器操作覆盖筛选、分页排序、导出及上下游数据变化。
 5. [x] 文档与分发：页面元数据文档、参数说明、能力版本、生成契约及 local-authoring；仓外独立安装校验。
-6. [x] 本地验收：1471项产品回归、73项 local-authoring 检查、类型/构建、复杂度和实际浏览器均完成，见[验收记录](../evidence/dqe-object-query/result.md)。
+6. [x] 本地验收：1471项产品回归、73项 local-authoring 检查、类型/构建、复杂度和实际浏览器均完成，见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/dqe-object-query/result.md)。
 7. [ ] 真实 DQE/Relay：核对分页差异、多列排序及候选等接口事实；不以Sim通过替代。
 
 ## 技术落点

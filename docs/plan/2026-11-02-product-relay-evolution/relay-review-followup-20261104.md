@@ -3,14 +3,14 @@
 日期：2026-11-04。状态：已收到Relay R01–R05自报并完成本地核对；MC本地实现已推进至0.3.2，整包验证已通过；Relay实际接入及上下文轨迹另验。本页跟踪本次审核增量，四项总体契约仍以 [Spec](relay-reference-spec.md) 和 [ADR-0129](../../adr/0129-four-artifact-product-tools-and-relay-execution.md) 为准。
 
 - 可直接发给 Relay：[现场回复单](relay-response-request-20261104.md)。
-- 本次机器测量：[measurements.json](../../evidence/2026-11-04-relay-review-context-audit/measurements.json)。
-- Relay回复的[原文、逐项答复与新增发现](../../evidence/2026-11-04-relay-reply-review/README.md)，以及[五个本地探针](../../evidence/2026-11-04-relay-reply-review/local-probes.json)。
-- [M00/M07本地代码、可运行产物与验收](../../evidence/2026-11-04-relay-tools-plural/README.md)：release0.3.1 / Interface2.0.0；未提交/push，真实Relay另验。
+- 本次机器测量：[measurements.json](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-relay-review-context-audit/measurements.json)。
+- Relay回复的[原文、逐项答复与新增发现](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-relay-reply-review/README.md)，以及[五个本地探针](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-relay-reply-review/local-probes.json)。
+- [M00/M07本地代码、可运行产物与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-relay-tools-plural/README.md)：release0.3.1 / Interface2.0.0；未提交/push，真实Relay另验。
 
 - [接入映射与可执行样例](relay-adapter-mapping-20261104.md)：旧compile/inspect的非等价缺口明确列出，Relay可据此立即接入。
-- [第二批本地验收](../../evidence/2026-11-04-relay-consumption/README.md)：Node路径、19项按操作概览、35条公开请求及上下文读取字节。
+- [第二批本地验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-relay-consumption/README.md)：Node路径、19项按操作概览、35条公开请求及上下文读取字节。
 
-主线交付批次已接续为release0.3.4 / Interface2.0.0 / Schema6.84，整合已发布main的协议与embed材料；[交付验收](../../evidence/2026-11-04-mc-tools-main-delivery/README.md)另记。下文0.3.1/0.3.2是各批本地验收时点，真实Relay边界保持。
+主线交付批次已接续为release0.3.4 / Interface2.0.0 / Schema6.84，整合已发布main的协议与embed材料；[交付验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-mc-tools-main-delivery/README.md)另记。下文0.3.1/0.3.2是各批本地验收时点，真实Relay边界保持。
 
 ## 已确认命名
 

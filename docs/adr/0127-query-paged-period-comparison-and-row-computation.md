@@ -14,4 +14,4 @@ note: 用户确认主查询选页、本页业务键补查历史期及组合后�
 
 主查询原始列执行后端全局操作，计算列只展示；历史独有对象由主查询行域决定。需要三期并集或计算列全局操作时显式使用原完整集合路径，或后端提供可按计算结果选页的查询。完整导出冻结条件、逐页选页补查并统一计算，保留10000行/60秒和失败不给部分文件；此规则不改写ADR-0107对普通resultBindings的当前窗口导出。
 
-未采用新数据源类型或组件级查询器：会重复分页、关联、取消和导出职责。普通query+resultBindings可构造本页键补查，但还需另接组合视图、范围和全表导出；本场景优先扩展已经拥有这些职责的pagedJoin。实施与验收见[实施设计](../evidence/period-comparison-query-page/design.md)和[本地验收](../evidence/period-comparison-query-page/acceptance.md)。
+未采用新数据源类型或组件级查询器：会重复分页、关联、取消和导出职责。普通query+resultBindings可构造本页键补查，但还需另接组合视图、范围和全表导出；本场景优先扩展已经拥有这些职责的pagedJoin。实施与验收见[实施设计](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/period-comparison-query-page/design.md)和[本地验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/period-comparison-query-page/acceptance.md)。

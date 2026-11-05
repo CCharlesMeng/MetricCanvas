@@ -1,6 +1,6 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
-> **2026-09-08 盘古交互边界：** [ADR-0077](../../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 保留平台现有布局，只替换左侧对话区。所有对话呈现归盘古，原页面画布、检查器与显式沉淀保留；每次 ask 有本轮答复，确认问题也算结果，用户回应后可继续分析。首版允许整体处理中，失败/取消等保留并标识上轮页面。浏览器不自打旧 WebSocket/`role_name`；真实接线和恢复仍待 #106–#108，详见[接入基线](../../evidence/wayfinder-107-pangu-integration-baseline.md)。
+> **2026-09-08 盘古交互边界：** [ADR-0077](../../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 保留平台现有布局，只替换左侧对话区。所有对话呈现归盘古，原页面画布、检查器与显式沉淀保留；每次 ask 有本轮答复，确认问题也算结果，用户回应后可继续分析。首版允许整体处理中，失败/取消等保留并标识上轮页面。浏览器不自打旧 WebSocket/`role_name`；真实接线和恢复仍待 #106–#108，详见[接入基线](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/wayfinder-107-pangu-integration-baseline.md)。
 
 > 状态：S4 已完成；S5 首个无保存 `compose` Core/有序并发切片与 M1 首批 Agent 契约、
 > Python 指标词解析切片已落地（2026-09-03）；

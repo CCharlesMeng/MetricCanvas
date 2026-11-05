@@ -121,4 +121,4 @@
 
 ## 9. 当前衔接
 
-布局形态确认与一致性检查的实现／验收见 [当前记录](../evidence/local-authoring-layout-form/result.md)。后续范式设计完成后，由本文件承接执行状态，避免改写前一轮行为测试结论。
+布局形态确认与一致性检查的实现／验收见 [当前记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/local-authoring-layout-form/result.md)。后续范式设计完成后，由本文件承接执行状态，避免改写前一轮行为测试结论。

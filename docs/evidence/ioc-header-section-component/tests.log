@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run --exclude tests/authoring-export-isolation.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-header-section/DataDashboard
-
-
- Test Files  435 passed (435)
-      Tests  3905 passed | 5 skipped (3910)
-   Start at  23:34:54
-   Duration  62.88s (transform 15.09s, setup 0ms, import 518.31s, tests 234.50s, environment 29ms)

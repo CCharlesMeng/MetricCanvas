@@ -16,4 +16,4 @@ note: 用户确认配置项可从字段或常量取值，覆盖全部图表及�
 
 所有 ChartComponent 和仪表的数值入口适配该能力，地图附加 tooltip 和固定摘要同样支持常量。常量沿真实行展开时保留该点的行交互；没有真实行时不制造行身份。echartsOption 的数据和结构保护继续遵循 [0110](0110-hidden-echarts-presentation-options.md)。
 
-代价是协议联合分支、组件目录、运行态投影、纯渲染组件和创作工具必须共同适配；共享取值模块集中这一差异。实施和分层验收见[设计与架构影响](../evidence/chart-constant-values/design.md)，不得将决策接受等同全部验收已通过。
+代价是协议联合分支、组件目录、运行态投影、纯渲染组件和创作工具必须共同适配；共享取值模块集中这一差异。实施和分层验收见[设计与架构影响](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/chart-constant-values/design.md)，不得将决策接受等同全部验收已通过。

@@ -1,8 +1,8 @@
 # partner-health 组织并集与缺项求和整改方案
 
-状态：组织并集、分类及总分计算、数值空文本呈现已实施，本地 Mock/页面试验场验收完成；真实 DQE 返回另验。证据：[诊断报告](../evidence/partner-health-union-null-20261029/README.md)。正式页面已接入统一组织计算数据源，24条现有查询定义与真实 DQE 网关保持原样。最新结果见[实施验收](../evidence/partner-health-union-null-20261029/implementation/README.md)。
+状态：组织并集、分类及总分计算、数值空文本呈现已实施，本地 Mock/页面试验场验收完成；真实 DQE 返回另验。证据：[诊断报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-union-null-20261029/README.md)。正式页面已接入统一组织计算数据源，24条现有查询定义与真实 DQE 网关保持原样。最新结果见[实施验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-union-null-20261029/implementation/README.md)。
 
-顶部补充：用户确认顶部按中国区/海外取后端整体记录，不对地区部得分求和；现有地区部查询不包含整体记录，按用户“构造一套”的要求增加独立整体Mock及11项查询候选，在原Mock入口恢复正式顶部布局，验证切换、缺项、真实0及全缺总分0。正式页未接入待验真的整体查询。[顶部验收和查询候选](../evidence/partner-health-union-null-20261029/overview/README.md)。
+顶部补充：用户确认顶部按中国区/海外取后端整体记录，不对地区部得分求和；现有地区部查询不包含整体记录，按用户“构造一套”的要求增加独立整体Mock及11项查询候选，在原Mock入口恢复正式顶部布局，验证切换、缺项、真实0及全缺总分0。正式页未接入待验真的整体查询。[顶部验收和查询候选](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-union-null-20261029/overview/README.md)。
 
 ## 目标与口径
 

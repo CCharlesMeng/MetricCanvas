@@ -2,9 +2,9 @@
 
 > **2026-11-03 执行更新：** 用户已确认[四项交付与 Relay 拆分规划](four-artifact-delivery-plan.md)。本文保留 11 月 2 日的模块分析和行为要求；其中“公共 MCP/状态/保存编排整体留在 MC”“暂不拆产品工具”等归属与顺序由新规划修订：MC 保留确定性规则，实际在线执行及 MCP 装配由 Relay 维护。后续实施从新规划 B0 开始，旧任务映射见其第 7 节；不要按旧归属直接实施。
 
-日期：2026-11-02。状态：实施规格第二版，已纳入「优化 mc-content 创作规范」会话及其[流程整理](skill-flow-simplification.md)。公共入口与已生效 ADR 不变；未新增运行代码、公共协议字段或 Skill 行为。其余依据为[本仓探查](source-audit.md)、[Relay 报告及采纳复核](../../evidence/2026-11-02-relay-authoring-static-audit/README.md)和[迁移计划](migration-sync-plan.md)。本文把后续实现的输入、不变量、责任和验收明确到任务，不能代替实现完成回执。
+日期：2026-11-02。状态：实施规格第二版，已纳入「优化 mc-content 创作规范」会话及其[流程整理](skill-flow-simplification.md)。公共入口与已生效 ADR 不变；未新增运行代码、公共协议字段或 Skill 行为。其余依据为[本仓探查](source-audit.md)、[Relay 报告及采纳复核](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-authoring-static-audit/README.md)和[迁移计划](migration-sync-plan.md)。本文把后续实现的输入、不变量、责任和验收明确到任务，不能代替实现完成回执。
 
-Relay 返回意见已合入[评审稿 v1.1](relay-review-design-v1.1.md)，逐项采纳及冲突见[返回意见评估](../../evidence/2026-11-02-relay-design-feedback/assessment.md)。下述历史检查数据按原时间点保留；最新复核为公共 9 工具、活动协议 6.80、Bundle 6,568 项摘要通过，不代表正式发行冻结。
+Relay 返回意见已合入[评审稿 v1.1](relay-review-design-v1.1.md)，逐项采纳及冲突见[返回意见评估](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-design-feedback/assessment.md)。下述历史检查数据按原时间点保留；最新复核为公共 9 工具、活动协议 6.80、Bundle 6,568 项摘要通过，不代表正式发行冻结。
 
 ## 1. 实施顺序与范围
 

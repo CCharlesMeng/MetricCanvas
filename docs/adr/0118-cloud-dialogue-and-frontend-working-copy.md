@@ -12,4 +12,4 @@ note: 用户确认云宝承载 Agent、独立 dialogue 保留，创作 URL 同�
 
 工作台中的自然语言修改、发布和确认保存经同一对话入口；左上角页面标题直接更新接口并将回执合入当前工作副本，保留其他未保存修改。管理目录不挂 Chat，仅提供基本信息与可视化编辑入口；独立基本信息表单直接更新标题、描述和可访问路径。访问路径是部署管理信息，不新增页面 Schema 字段。
 
-本决策局部修订 [0083](0083-platform-evidence-work-and-internal-draft-save.md) 与 [0079](0079-trusted-authoring-turns-gate-content-tools.md)：新云宝端口的创作输入来自前端冻结快照，不要求先保存或先强制读取远端 latest。可信执行、单发送者与未知写入不重发仍成立。现存 v1 Relay 接入保持兼容，不自动声称具备新模式。采用两个入口是为了保留独立内网部署能力；接入侧必须实现新增公开端口才能启用云宝模式。实现及外部未验项见[交接说明](../pangu-agent-authoring.md)与[验收](../evidence/agent-authoring-flow/acceptance.md)。
+本决策局部修订 [0083](0083-platform-evidence-work-and-internal-draft-save.md) 与 [0079](0079-trusted-authoring-turns-gate-content-tools.md)：新云宝端口的创作输入来自前端冻结快照，不要求先保存或先强制读取远端 latest。可信执行、单发送者与未知写入不重发仍成立。现存 v1 Relay 接入保持兼容，不自动声称具备新模式。采用两个入口是为了保留独立内网部署能力；接入侧必须实现新增公开端口才能启用云宝模式。实现及外部未验项见[交接说明](../pangu-agent-authoring.md)与[验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/agent-authoring-flow/acceptance.md)。

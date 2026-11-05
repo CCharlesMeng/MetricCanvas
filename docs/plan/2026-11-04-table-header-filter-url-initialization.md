@@ -262,4 +262,4 @@ flowchart TD
 真实内网 DQE、Relay、权限服务、目标部署、Windows 原生构建与远端 CI 未由本批验收。本地验收后，用户于 2026-11-05 授权提交并推送 main；交付时保留上游诊断仅控制台呈现的修复，重新从合并后真源生成契约与 local-authoring 1.23.0。远端提交和同 SHA CI 结果由交付回执另记。
 
 
-[完整本地验收记录](../evidence/table-header-params/acceptance.md)包含最终日志、超时与复测、复杂度、归档和实际证据边界。
+[完整本地验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-header-params/acceptance.md)包含最终日志、超时与复测、复杂度、归档和实际证据边界。

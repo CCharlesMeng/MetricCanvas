@@ -10,11 +10,11 @@
 
 顶部保留正式页“中国区 / 海外”控件与5张卡片的布局，复用11项整体查询，每项同时返回国内、海外两行。整体分数是人为构造的每范围唯一记录，与下方ORG组织行没有汇总关系。默认中国区显示总分35、感知20、满意度`--`、能力与贡献17、风险-2；点击海外显示30、4、15、14、-3。缺失分类保留`--`，总分对缺失按0处理。`?state=overviewMissing`验证全部单项缺失时4张分类卡`--`、总分0；`?state=overviewZero`验证5张卡均为真实0。两种状态只改变顶部，表格仍为15行。
 
-顶部按用户确认移除地区部投影，对象只输出得分及`国内或海外`，条件同时请求国内、海外；其他7项保留指标查询形式，以同名范围维度分组。每范围应为唯一整体记录，多条相同范围记录仍报错，不因少投影字段就在前端求和。实际服务能否提供该粒度仍需真实DQE回执验证。完整候选、可执行请求JSON及截图见[顶部整体Mock验收](../../../docs/evidence/partner-health-union-null-20261029/overview/README.md)。
+顶部按用户确认移除地区部投影，对象只输出得分及`国内或海外`，条件同时请求国内、海外；其他7项保留指标查询形式，以同名范围维度分组。每范围应为唯一整体记录，多条相同范围记录仍报错，不因少投影字段就在前端求和。实际服务能否提供该粒度仍需真实DQE回执验证。完整候选、可执行请求JSON及截图见[顶部整体Mock验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-union-null-20261029/overview/README.md)。
 
 通过 URL 参数 `state` 验收：默认 `ready`；`?state=emptyMain` 声音闭环查询空但仍显示14行；`?state=empty` 全部为空，图表/表格为空；`?state=error` 合成失败、`?state=truncated` 已知计数不完整、`?state=duplicate` 来源组织重复，均不产出部分总分；内部快照与诊断保留错误分类，当前统一呈现策略将错误显示为空数据。非法声明、键类型、字段省略及迟到响应等由行为测试补充。切换图表与表格的区域/代表处页签验证两种粒度；表格本地分页/导出复用计算结果。
 
-原始 Mock、可运行诊断脚本、日志和截图见 [诊断报告](../../../docs/evidence/partner-health-union-null-20261029/README.md)，后续修改见 [整改方案](../../../docs/plan/2026-10-29-partner-health-union-and-missing-scores.md)。
+原始 Mock、可运行诊断脚本、日志和截图见 [诊断报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/partner-health-union-null-20261029/README.md)，后续修改见 [整改方案](../../../docs/plan/2026-10-29-partner-health-union-and-missing-scores.md)。
 
 `?state=zeroTotal` 保留全部合成行，只将每份 DQE 响应的 `total_count` 设为0。地区部、代表处仍各有15个组织，表格分页可看到全部行，图表与总分保持；顶部中国区35、海外30。Console 保留 `TOTAL_COUNT_MISMATCH` 和 `completeness: unverified`，原查询总数不改写。计算只描述已返回行，不能证明真实服务完整性；严格对象完整导出仍拒绝矛盾计数。正式页面无需改 JSON，需部署修复后的运行时。
 

@@ -89,6 +89,6 @@
 
 已确认：业务候选范围、保留其他条件并排除自身、不从当前页冒充全量。
 
-分析时已完成：源码 gap 识别、对接示例与核验问题、引擎架构与冲突规划。后续已获实施授权并完成本仓引擎实现和本地验收，详见[实施证据](../../evidence/table-column-candidates/result.md)；上文“当前”源码事实保留为实施前分析基线。
+分析时已完成：源码 gap 识别、对接示例与核验问题、引擎架构与冲突规划。后续已获实施授权并完成本仓引擎实现和本地验收，详见[实施证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-candidates/result.md)；上文“当前”源码事实保留为实施前分析基线。
 
 剩余：DQE 外部事实、准确远程查询编码、真实 DQE/Relay/部署权限验收。本仓实现状态以主计划和实施证据为准。

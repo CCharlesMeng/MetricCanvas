@@ -1,6 +1,6 @@
 # 商务 SDT 级联查询具体实施方案
 
-本方案落实已确认的两阶段数据请求，保留普通DQE查询及组件数据槽。实施细则已落地，具体结果见[验收结论](../../evidence/2026-10-12-business-sdt-cascade/result.md)。业务说明和结构只维护于[讨论入口](README.md)与[结构草案](data-sources.proposed.json)。
+本方案落实已确认的两阶段数据请求，保留普通DQE查询及组件数据槽。实施细则已落地，具体结果见[验收结论](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-business-sdt-cascade/result.md)。业务说明和结构只维护于[讨论入口](README.md)与[结构草案](data-sources.proposed.json)。
 
 ## 协议与执行职责
 

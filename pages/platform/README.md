@@ -37,7 +37,7 @@
 6. 刷新分别打开 `?sessionId=existing-session`、无参数入口、`?pageId=flow-page&sessionId=broken`，核对仅恢复对话、空画布自动新建，以及会话失败仍能读页面。
 7. `?pageId=flow-page&delaySession=1` 可暂停会话准备，在“验收记录”点“完成会话准备”继续。等待期间仍能预览页面。
 
-边界：本夹具的服务记录在内存，重新加载会重置。执行中禁止编辑、重复提交、失败、取消及过期结果由工作副本单元测试补充。真实 SDK 与真实服务尚未验收，见[记录](../../docs/evidence/agent-authoring-flow/acceptance.md)。
+边界：本夹具的服务记录在内存，重新加载会重置。执行中禁止编辑、重复提交、失败、取消及过期结果由工作副本单元测试补充。真实 SDK 与真实服务尚未验收，见[记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/agent-authoring-flow/acceptance.md)。
 
 管理目录入口：正常 Platform `/manage` 操作列仅保留“基本信息”和“可视化编辑”，分别进入独立信息表单和页面搭建工作台；不再提供行内编辑或单独预览入口。
 

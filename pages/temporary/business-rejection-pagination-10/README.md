@@ -20,4 +20,4 @@ JSON沿用户提供的审批明细元数据修改：主源为object查询，`ord
 
 生命状态来自当前窗口补列，未提供全局生命状态筛选。窗口级联导出保留捕获窗口，不等同原全量关联导出。商务编码包含搜索须接入可信搜索编码器；不会只搜索当前页。相同审批时间的服务排序稳定性、真实字段权限及默认返回上限需真实服务复验。
 
-对象参数与用户原始范例见[查询协议](../../../docs/page-metadata/queries-and-bindings.md#object-query-parameters)。验收与复杂度见[本批记录](../../../docs/evidence/object-query-candidates-20261030/README.md)。
+对象参数与用户原始范例见[查询协议](../../../docs/page-metadata/queries-and-bindings.md#object-query-parameters)。验收与复杂度见[本批记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/object-query-candidates-20261030/README.md)。

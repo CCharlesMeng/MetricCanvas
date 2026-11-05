@@ -1,6 +1,6 @@
 # 表格列条件显隐实施计划与兼容性审查
 
-日期：2026-10-26。状态：产品规则已确认；本仓实现与本地验收完成；已授权提交推送 main，真实接入另验。实施证据见[本地验收记录](../evidence/table-column-visibility/result.md)。
+日期：2026-10-26。状态：产品规则已确认；本仓实现与本地验收完成；已授权提交推送 main，真实接入另验。实施证据见[本地验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-visibility/result.md)。
 
 本批目标：顶部页面筛选器可以通过统一展示条件控制同一张表的字段列和分组列，搜索、表头交互及导出与可见列保持一致。这里只扩展列的展示资格，不切换结果行粒度、统计口径或查询结构。
 
@@ -394,8 +394,8 @@ pnpm build:packages
 
 最终源码的 341 测试文件通过，3039 测试通过、4 项原有跳过；仓外独立导出检查单独通过。类型/Svelte、包构建、生成一致性以及两个 Chrome 脚本通过；Skill 新主题完整且未放宽 16 KiB 预算。复杂度扫描无新增超限或存量超限增长，历史大文件和编排/校验债务保留并明确列出。
 
-变更文件职责、命令结果、源级与私有作用域边界、逐函数前后测量和外部未验项统一见[实施与验收记录](../evidence/table-column-visibility/result.md)。本计划的早期版本与目录树是规划时点材料，实际文件以该记录及能力目录 README 为准。
+变更文件职责、命令结果、源级与私有作用域边界、逐函数前后测量和外部未验项统一见[实施与验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-visibility/result.md)。本计划的早期版本与目录树是规划时点材料，实际文件以该记录及能力目录 README 为准。
 
 ## 12. main 交付集成
 
-已按用户授权进入提交推送：main 基线 `50485ec7b421a44ab01a461fc0c4adf1d7c6b191`，本批按序使用 Schema 6.62、ADR-0122。保留 main 已实现的原文容错、置顶行与 pagedUnion；契约从合并后真源重新生成，实际结果见[验收记录](../evidence/table-column-visibility/result.md)。远端精确 SHA、CI 和清理以最终交付回执为准；不以旧基线测试代替本次补验。
+已按用户授权进入提交推送：main 基线 `50485ec7b421a44ab01a461fc0c4adf1d7c6b191`，本批按序使用 Schema 6.62、ADR-0122。保留 main 已实现的原文容错、置顶行与 pagedUnion；契约从合并后真源重新生成，实际结果见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-visibility/result.md)。远端精确 SHA、CI 和清理以最终交付回执为准；不以旧基线测试代替本次补验。

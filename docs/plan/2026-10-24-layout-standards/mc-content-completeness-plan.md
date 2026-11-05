@@ -6,7 +6,7 @@
 
 本文是后续补全工作的主入口。已有[架构结果](architecture.md)中的能力方、Skill 与 Relay 分工继续有效；此前“MC 侧完成”仅能证明已交付能力的本地与 CI 验证，不能证明全部 MC 知识已经迁移。两份附件保持原文，不作为当前实现完整性的证明。
 
-静态核查数据见[完整性审查摘要](../../evidence/mc-content-layout/completeness-audit.md)；原始机器 JSON 按当前仓库规则仅留本地，不作为 Git 交付依赖。以下审查数据是实施前基线；当前实施结果见第 11 节，不将历史基线当作最新实现状态。
+静态核查数据见[完整性审查摘要](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/completeness-audit.md)；原始机器 JSON 按当前仓库规则仅留本地，不作为 Git 交付依赖。以下审查数据是实施前基线；当前实施结果见第 11 节，不将历史基线当作最新实现状态。
 
 ## 1. 结论与必须纠正的交付口径
 
@@ -252,7 +252,7 @@ targetVersions 当前只做传入字段精确比较。这是保守的一致性�
 
 MC 发包前负责自身契约、支持范围内历史文件与迁移、受影响的产品引擎回放；真实 Relay/DQE/保存/预览部署由 Relay 采用前验证。包内和发布说明保留各层结论与未验范围，不把部署可用性默认为本地测试结论。
 
-已进行 [30 次本地冷进程探测](../../evidence/mc-content-layout/schema-latency-probe.md)，底层检查/升级约 0.16–0.22 秒；这不包含 MC Python 包校验、Relay、模型、网络与引擎渲染。约 1 MiB 的样例主要增加 inline 行数，不代表复杂组件图的性能。
+已进行 [30 次本地冷进程探测](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/schema-latency-probe.md)，底层检查/升级约 0.16–0.22 秒；这不包含 MC Python 包校验、Relay、模型、网络与引擎渲染。约 1 MiB 的样例主要增加 inline 行数，不代表复杂组件图的性能。
 
 Q7 待确认的建议：在固定参考执行环境，以约 1 MiB / 1 万 inline 行的常规基准验证检查不超过 1 秒、必要迁移不超过 2 秒；复杂页面另列样例与测量，Relay 端到端耗时独立报告。具体回归统计方式、样例矩阵由实施补齐，当前探测不是生产 p95 或正式性能验收。
 
@@ -376,10 +376,10 @@ W1–W4 可以在 MC 仓完成，不需要等待 Relay SDK。W7 需要真实加�
 | MC 查询、编译与检查 | [mc_resources.py](../../../tools/mc-content/scripts/mc_resources.py)、[mc_layout_compiler.py](../../../tools/mc-content/scripts/mc_layout_compiler.py)、[mc_inspection.py](../../../tools/mc-content/scripts/mc_inspection.py) |
 | 完整产品校验与旧文件程序 | [validate.ts](../../../packages/page/src/validate.ts)、[upgrade-document.ts](../../../packages/page/src/upgrade-document.ts)、[mc-content-page.ts](../../../tools/scripts/mc-content-page.ts) |
 | 分发与当前 CI | [Bundle 检查](../../../metriccanvas-authoring/scripts/check_bundle.py)、[wheel 包含范围](../../../metriccanvas-authoring/tool/hatch_build.py)、[CI](../../../.github/workflows/ci.yml) |
-| 本轮静态证据 | [completeness-audit.md](../../evidence/mc-content-layout/completeness-audit.md) |
+| 本轮静态证据 | [completeness-audit.md](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/completeness-audit.md) |
 
 ## 11. 本仓实施收口（2026-10-24）
 
-W1–W6 已完成；G01–G07/G12–G16 关闭，G08–G11 关闭 MC 本仓职责，部署层仍由 W7 另验。逐项范围、175 项 local-authoring 检查、最后 5 项定向隔离、30 项 MC 回归、6 项覆盖负例、3 项浏览器回放、最小依赖仓外安装、源码/归档身份及完整链路测量，见 [实施与验收记录](../../evidence/mc-content-layout/implementation-results.md)。
+W1–W6 已完成；G01–G07/G12–G16 关闭，G08–G11 关闭 MC 本仓职责，部署层仍由 W7 另验。逐项范围、175 项 local-authoring 检查、最后 5 项定向隔离、30 项 MC 回归、6 项覆盖负例、3 项浏览器回放、最小依赖仓外安装、源码/归档身份及完整链路测量，见 [实施与验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/mc-content-layout/implementation-results.md)。
 
 Q7 继续保留候选预算，不增加 SLA 或保存准入。MC 提供事实/确定性实现和结论，Skill 保留采用与流程；实际 Relay 注册、双通道、并发/重载、真实 DQE/权限、保存/预览与标记注入仍未验。CI 已纳入检查和归档，本地没有提交或 push。原工作树和并行修改保留。

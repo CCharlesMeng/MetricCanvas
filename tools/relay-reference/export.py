@@ -16,6 +16,7 @@ sys.dont_write_bytecode = True
 from python_closure import closure
 from relay_content import annotate, content_error_codes
 from interface_resources import publish_interface
+from frozen_consumer import snapshot_json
 from release import canonical, digest, read_json, require, seal, verify, PUBLIC_PATHS
 
 HERE = Path(__file__).resolve().parent
@@ -93,7 +94,7 @@ def postprocess_metadata(module, operations, handlers):
     require(isinstance(hooks, dict), "PRODUCT_POSTPROCESS_INVALID", "Expected operation metadata")
     if not hooks:
         return hooks
-    legacy = read_json(HERE / "fixtures/consumer-0.1.0.json")["interface"]["operations"]
+    legacy = snapshot_json(HERE / "fixtures/consumer-0.1.0.json")["interface"]["operations"]
     require(callable(getattr(module, "apply_postprocess", None)),
             "PRODUCT_POSTPROCESS_INVALID", "Missing product result merger")
     for operation, plan in hooks.items():

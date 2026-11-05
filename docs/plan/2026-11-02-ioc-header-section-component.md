@@ -244,4 +244,4 @@ flowchart TD
 
 ## 8. 实施记录
 
-Schema实际版本为6.81，独立local-authoring版本为1.18.0。[实现与验收](../evidence/ioc-header-section-component/README.md)记录实际模块、命令、复杂度与本地/真实环境边界。旧非法JSON的结构诊断从同一产品Schema派生旧组件联合，避免新增分支改变历史有序错误列表。
+Schema实际版本为6.81，独立local-authoring版本为1.18.0。[实现与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/ioc-header-section-component/README.md)记录实际模块、命令、复杂度与本地/真实环境边界。旧非法JSON的结构诊断从同一产品Schema派生旧组件联合，避免新增分支改变历史有序错误列表。

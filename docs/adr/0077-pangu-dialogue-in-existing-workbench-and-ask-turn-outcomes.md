@@ -33,6 +33,6 @@ note: 已确认布局与首版反馈边界；接口及页面交付仍待 #106–
 
 ## 验收与实施状态
 
-当前仅有交互原型及产品裁决，尚未完成盘古接入。可验收行为、接口缺口、误读修正与执行切片见[接入基线](../evidence/wayfinder-107-pangu-integration-baseline.md)。原型是布局和交互意图证据，不是实际盘古组件外观、字段或运行能力的证据。
+当前仅有交互原型及产品裁决，尚未完成盘古接入。可验收行为、接口缺口、误读修正与执行切片见[接入基线](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/wayfinder-107-pangu-integration-baseline.md)。原型是布局和交互意图证据，不是实际盘古组件外观、字段或运行能力的证据。
 
 来源：[#107 单轮结果](https://github.com/CCharlesMeng/MetricCanvas/issues/107#issuecomment-5586030017)、[首版进度](https://github.com/CCharlesMeng/MetricCanvas/issues/107#issuecomment-5586109632)、[保留页面及对话归属](https://github.com/CCharlesMeng/MetricCanvas/issues/107#issuecomment-5586250560)、[只替换左侧](https://github.com/CCharlesMeng/MetricCanvas/issues/107#issuecomment-5586547941)。

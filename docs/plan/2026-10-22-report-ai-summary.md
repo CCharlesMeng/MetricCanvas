@@ -21,7 +21,7 @@ page 拥有两种模式与关联范围契约、版本能力下限 6.51。runtime
 
 真实云宝助手、内网身份、真实 DQE/Relay 不属于本地 mock 验收。结果及命令记录写入 `docs/evidence/report-ai-summary/`。
 
-本仓实现与本地验收已完成，详见 [验收结果](../evidence/report-ai-summary/result.md)。真实云宝助手由用户在内网替换单文件实现后另验；本批未提交或 push。
+本仓实现与本地验收已完成，详见 [验收结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/report-ai-summary/result.md)。真实云宝助手由用户在内网替换单文件实现后另验；本批未提交或 push。
 
 ## 模块架构图
 

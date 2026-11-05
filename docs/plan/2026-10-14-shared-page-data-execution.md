@@ -263,7 +263,7 @@ Platform / Embed
 
 ## 8. 实施状态
 
-用户已授权实施。S1–S5本仓实现与本地验收完成：新包、查询核心提取、引擎/填参initial规则、Node程序、Skill说明、公开面/分发检查和浏览器已交付当前工作区。完整证据见[实施验收](../evidence/shared-page-data-execution/result.md)。
+用户已授权实施。S1–S5本仓实现与本地验收完成：新包、查询核心提取、引擎/填参initial规则、Node程序、Skill说明、公开面/分发检查和浏览器已交付当前工作区。完整证据见[实施验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/shared-page-data-execution/result.md)。
 
 提交交付已获用户授权，已在最新main独立worktree整理本次范围并重新验证；提交/推送/远端CI结论按最终SHA报告。剩余外部工作是Relay部署方安装与身份/DQE接线、真实集成验收及实际包发布。本地HTTP、Node独立安装和Chrome证据分别成立，不将其称为真实Relay/DQE接通或已发布。原混合工作区无关改动保留。
 

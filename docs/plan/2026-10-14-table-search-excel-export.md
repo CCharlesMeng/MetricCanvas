@@ -1,6 +1,6 @@
 # 表格右上角搜索与 Excel 导出
 
-状态：2026-10-14 用户已授权开始实施；本仓实现与本地验收完成，真实 DQE 文本搜索编码／接入待验。[验收记录](../evidence/table-toolbar/acceptance.md)。
+状态：2026-10-14 用户已授权开始实施；本仓实现与本地验收完成，真实 DQE 文本搜索编码／接入待验。[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-toolbar/acceptance.md)。
 
 实施安排：用户先要求记录并等待统一实施，后于2026-10-14明确要求“开始实施”。本次在最新共享查询执行及查询结果过滤代码上接入表格工具区，保留其他在途改动。
 

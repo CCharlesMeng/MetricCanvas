@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 const require = createRequire(import.meta.url);
 const postcss = createRequire(require.resolve('vite/package.json'))('postcss');
 const repo = fileURLToPath(new URL('../../..', import.meta.url));
-const evidence = resolve(repo, 'docs/evidence/platform-ui-os-theme-2026-10-12');
+const evidence = resolve(repo, 'packages/ui/fixtures/os-theme');
 const manifest = JSON.parse(readFileSync(resolve(evidence, 'sources.json'), 'utf8'));
 const families = /\.tiny-(?:button|input|textarea|select|option|tabs|tag|tree|checkbox|radio|svg|pager|grid|dropdown|dialog-box)(?:\b|__)/;
 const classes = new Set();

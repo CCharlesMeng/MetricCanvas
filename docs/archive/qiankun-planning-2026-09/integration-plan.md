@@ -1,9 +1,9 @@
 # Platform HTML 微前端改造与 qiankun 集成方案
 
-> 2026-09-28 实施进度：源码、静态归档及候选 qiankun 2.10.16 测试主应用验收已落地；目标门户与真实服务仍为 NOT_RUN。现行实现、证据与交付摘要见 [实施验收](../../evidence/qiankun-platform/implementation.md)。下文方案阶段状态描述保留为交接基线。
+> 2026-09-28 实施进度：源码、静态归档及候选 qiankun 2.10.16 测试主应用验收已落地；目标门户与真实服务仍为 NOT_RUN。现行实现、证据与交付摘要见 [实施验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/qiankun-platform/implementation.md)。下文方案阶段状态描述保留为交接基线。
 日期：2026-09-28。状态：通用 HTML 微前端已实现（ADR-0093）；本次补充独立部署 Adapter 边界，目标门户与真实服务仍未验收。本文替代此前“外部子应用消费平台 npm 包、平台内部使用内存导航”的方案。
 
-执行交接：[MC 维护者](../../evidence/qiankun-platform/design-baseline/handoff-mc.md)、[主应用维护者](handoff-qiankun.md)。版本与构建事实参考 [官方研究](official-research.md)；目标暂按 qiankun 2.x，精确版本以主应用锁文件为准。
+执行交接：[MC 维护者](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/qiankun-platform/design-baseline/handoff-mc.md)、[主应用维护者](handoff-qiankun.md)。版本与构建事实参考 [官方研究](official-research.md)；目标暂按 qiankun 2.x，精确版本以主应用锁文件为准。
 
 ## 1. 已确认目标与范围
 
@@ -54,9 +54,9 @@ flowchart TD
 
 ## 3. 当前实现与路由选择
 
-已按 [ADR-0093](../../adr/0093-platform-html-microfrontend-and-instance-lifecycle.md) 采用普通 Svelte + 客户端 URL 路由，独立与嵌入共用业务视图。Kit 探针发现当前版本公共销毁接口不足，详见 [既有实施证据](../../evidence/qiankun-platform/implementation.md)。不重复迁移或把已完成改造标为待实现；既有候选 loader 证据不等于目标门户验收。
+已按 [ADR-0093](../../adr/0093-platform-html-microfrontend-and-instance-lifecycle.md) 采用普通 Svelte + 客户端 URL 路由，独立与嵌入共用业务视图。Kit 探针发现当前版本公共销毁接口不足，详见 [既有实施证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/qiankun-platform/implementation.md)。不重复迁移或把已完成改造标为待实现；既有候选 loader 证据不等于目标门户验收。
 
-本轮进一步按 [部署维护边界](../../evidence/qiankun-platform/design-baseline/deployment-boundary.md) 收敛：GitHub 提供框架通用输入验证、生命周期和静态组合工具；门户映射由仓外独立项目维护。平台与部署 Adapter 通过版本化契约分别演进，内网调查原文保存在 portal-handoff 资料目录，不进入平台构建。
+本轮进一步按 [部署维护边界](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/qiankun-platform/design-baseline/deployment-boundary.md) 收敛：GitHub 提供框架通用输入验证、生命周期和静态组合工具；门户映射由仓外独立项目维护。平台与部署 Adapter 通过版本化契约分别演进，内网调查原文保存在 portal-handoff 资料目录，不进入平台构建。
 
 ## 4. 接入层与实例接口
 

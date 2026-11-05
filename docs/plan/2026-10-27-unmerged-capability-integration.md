@@ -6,7 +6,7 @@
 
 将已经开发的产品增量按依赖迁入最新 main，补齐同版协议分发和内部运行验证；对已交付的旧副本、原型、临时业务页、文档及证据分别收口，避免重复实现或覆盖较新的代码。
 
-本轮再次执行 `git fetch origin --prune`，基线仍为 `1955324fe7392957c5663996a1e076842ad19efe`，main 当前 Schema 为 6.66。范围与逐文件分类见[本地盘点](../evidence/local-main-audit-20261027.md)，机器清单为 `out/unmerged-main-audit-20261027/analysis.json`。执行每一批之前重新 fetch；以下版本号是按当前基线建议的分配，若 main 先有其他版本交付则顺延。
+本轮再次执行 `git fetch origin --prune`，基线仍为 `1955324fe7392957c5663996a1e076842ad19efe`，main 当前 Schema 为 6.66。范围与逐文件分类见[本地盘点](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/local-main-audit-20261027.md)，机器清单为 `out/unmerged-main-audit-20261027/analysis.json`。执行每一批之前重新 fetch；以下版本号是按当前基线建议的分配，若 main 先有其他版本交付则顺延。
 
 本次仅新增计划及计划索引，不改源代码、页面或工作树状态，不进行 commit、push、部署或清理。产品函数复杂度测量不适用于本次文档变更；实施时按各批修改函数重新测量。
 

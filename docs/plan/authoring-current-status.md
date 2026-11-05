@@ -7,9 +7,9 @@
 | 批次 | 已完成范围 | 证据与限度 |
 |---|---|---|
 | 创作模块与平台流程收敛 | 模块归位、结构计划收敛、参数接入工作稿、来源矩阵与测试分类 | [历史批次结论](../archive/authoring-foundation-2026-09/README.md)；各阶段检查不等于当前生产验收 |
-| 0.3.1 部署就绪 | 结果字段派生、按操作就绪检查、包外装配及正常oneshot共享状态 | [实施验收](../evidence/2026-09-23-authoring-deployment-readiness-report.md)：本地/离线完成，内部接入未验收 |
-| 发现、引用与鲁棒性整改 | 公共发现/查询/装配及失败隔离修复 | [整改证据](../evidence/2026-09-28-authoring-robustness.md)；原线上问题复验仍缺真实环境证据 |
-| 9235/9236执行整改 M0–M7 | 有界模型证据与完整程序结果分离、别名歧义、元数据期限、口径说明维护、分发演练 | [执行报告](../evidence/2026-09-29-authoring-mc-execution-report.md)：本地回归、真实模型分批及本地浏览器完成，内部采用/生产集成未执行 |
+| 0.3.1 部署就绪 | 结果字段派生、按操作就绪检查、包外装配及正常oneshot共享状态 | [实施验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-23-authoring-deployment-readiness-report.md)：本地/离线完成，内部接入未验收 |
+| 发现、引用与鲁棒性整改 | 公共发现/查询/装配及失败隔离修复 | [整改证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-28-authoring-robustness.md)；原线上问题复验仍缺真实环境证据 |
+| 9235/9236执行整改 M0–M7 | 有界模型证据与完整程序结果分离、别名歧义、元数据期限、口径说明维护、分发演练 | [执行报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-29-authoring-mc-execution-report.md)：本地回归、真实模型分批及本地浏览器完成，内部采用/生产集成未执行 |
 | 页面参数本仓实现 | 参数提取、填值、实例、发布消费者及对等校验 | [参数批次结论](../archive/page-parameters-2026-09/README.md)；早期6.5/6.6写法不再作为现行协议，按正式参数文档与当前契约执行 |
 
 以上“完成”限定于已有记录明确覆盖的本仓工作，不新增提交、CI或部署结论。

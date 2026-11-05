@@ -167,4 +167,4 @@ before 仅声明展示关系，不执行 A=B+C+D，不校验各数值能否相�
 
 建议第一版保留限制：Dashboard 顶层、plain/card、默认 12 列；不开放 after、通用文字自动列或自由 CSS。若后续需要 Report、权重列轨或组合卡内连接，另行证明相应布局语义，不通过静默忽略或复制布局代码扩展。
 
-本批已实现协议6.34、连接排布、搭建编辑、示例迁移及local-authoring同步；本地验收见 [验收记录](../evidence/metric-card-before-layout/acceptance.md)。远端提交与CI以交付回执为准。
+本批已实现协议6.34、连接排布、搭建编辑、示例迁移及local-authoring同步；本地验收见 [验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/metric-card-before-layout/acceptance.md)。远端提交与CI以交付回执为准。

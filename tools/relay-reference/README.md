@@ -1,7 +1,9 @@
 # Relay 四项导出与发行检查
 
-
 0.4.0 的正式消费基线更新为Schema6.89，Interface保持2.0.0。新46条消费保留6.85的41条原请求，审查15条版本/Schema摘要差异，另加当前报告换源与系列条件正反例；旧快照和实际current迁移门禁保持。详见[Schema6.89消费基线审查](fixtures/schema689-adoption-review.md)。
+
+历史消费者以 `fixtures/consumer-*.json.gz` 无损保存，逻辑 JSON 路径保持原样，由 `frozen_consumer.py` 解压读取；所有固定 SHA256 仍校验解压后的原始字节。存储压缩不重录请求、期望或发行基线，也不改变迁移判定。
+
 本目录实现 [四项交付 Spec](../../docs/plan/2026-11-02-product-relay-evolution/relay-reference-spec.md) 的发行检查、MC 构建侧四项导出和稳定产品进程入口。真实 MCP、身份、DQE、状态/CAS、保存、采用和回退程序由 Relay 维护。
 
 当前发行版本以`release-config.json`为准，Interface2.0.0；默认页面版本从当前产品真源导出，正式工具名称为`mc-tools/`和`mc-tools.md`。共享references安装根允许Relay自有文件，产品CLI只遍历四项；seal/verify/compare的候选根仍须严格四项。旧单数发行可由构建检查器只读验证，1→2的入口/公开路径变化明确返回needs_migration。

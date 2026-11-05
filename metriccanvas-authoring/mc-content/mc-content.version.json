@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-247011f262583e23",
-  "contentSha256": "247011f262583e232fa09cb72c1ec48b42c2d6c79f24d1d3005d4fe344e45fef",
+  "contentVersion": "1-0c4050cc972026fb",
+  "contentSha256": "0c4050cc972026fbb12937d038990b949edf147ed00e318fd97e5e90c0579ae0",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -81,7 +81,7 @@
     },
     {
       "file": "authoring-contracts/authored/platform-v2-protocol.md",
-      "sha256": "6fc4529f63b517f68b9ede2692e704c8c1bfd41c36bda6f9c586b7472ae83b98"
+      "sha256": "589b611735334c279d5a8553c075fd785b40abb7288dcf106c8ec3e2cb619b86"
     },
     {
       "file": "authoring-contracts/authored/publication-conformance.json",
@@ -129,7 +129,7 @@
     },
     {
       "file": "authoring-contracts/manifest.json",
-      "sha256": "0fff1a57825d3fe945fb4d1c01c760e04a2b1d69a1327945b6f7d5c7ea71a579"
+      "sha256": "6a232ccae4a415222445d9079154e769e6fce1442fc580ba13ef7dddafb06633"
     },
     {
       "file": "components/aiSummary.json",
@@ -8865,7 +8865,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "3e86830b6641d1dcbf05b286d3626f1ba98ed7ff0eb36ce864ed7543c74ff25f"
+      "sha256": "e25073e8fb4008cba5c4e6c21171bee9ddc1dc460f08acba674d8b1a790c161b"
     },
     {
       "file": "runtime/coverage.json",
@@ -8913,7 +8913,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "b32f742c60114174f8954be718f5637fae75149ca88ee79656b2c0bd96026125"
+      "sha256": "7f58a0ecd9f20c80849e6c5c5b82f14a8250a5b5ad7c8141d60b94bffcb17613"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -9026,7 +9026,7 @@
     "productManifestSha256": "a99558524677874fe03b4cf76cc47d8d0afa6da36eb798fb74602a4bc8df336c",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
-    "authoringManifestSha256": "0fff1a57825d3fe945fb4d1c01c760e04a2b1d69a1327945b6f7d5c7ea71a579",
+    "authoringManifestSha256": "6a232ccae4a415222445d9079154e769e6fce1442fc580ba13ef7dddafb06633",
     "pageSchemaVersion": "6.91",
     "platformProtocolVersion": "2.0"
   },

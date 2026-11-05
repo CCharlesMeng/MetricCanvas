@@ -1,6 +1,6 @@
 # 创作流程调整对实际 Skill 与 Relay 的架构影响
 
-日期：2026-09-20。状态：已确认方向与实际部署约束的对账，未实施。配套：[修订图](2026-09-20-authoring-flow-v2.md)、[调整计划](../../evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)。
+日期：2026-09-20。状态：已确认方向与实际部署约束的对账，未实施。配套：[修订图](2026-09-20-authoring-flow-v2.md)、[调整计划](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)。
 
 内部模块组织、文件归属与真源治理的专项方案见 [创作模块架构调整识别](2026-09-20-authoring-module-architecture.md)。本期将预览数据投影与 Relay 协议包装分开，但保留现有 emit 工具与两个占位符。
 

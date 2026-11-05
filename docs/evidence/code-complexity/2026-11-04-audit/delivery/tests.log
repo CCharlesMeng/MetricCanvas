@@ -1,9 +1,0 @@
-$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests packages/engine/runtime/tests apps/platform/tests/workbench packages/data-execution/tests/filter-overrides.test.ts tests/page-reference.test.ts tests/ci-workflow.test.ts
-
- RUN  v4.1.11 /Users/moon/.codex/worktrees/complexity-under-five/DataDashboard
-
-
- Test Files  213 passed (213)
-      Tests  1973 passed (1973)
-   Start at  16:14:02
-   Duration  92.16s (transform 18.79s, setup 0ms, import 390.23s, tests 392.27s, environment 176ms)

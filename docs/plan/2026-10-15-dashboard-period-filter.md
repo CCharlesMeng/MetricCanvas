@@ -1,6 +1,6 @@
 # Dashboard 期间筛选实施规划
 
-更新：2026-10-15。状态：用户批准后已完成本地实现，本功能引入于 Schema 6.27，保留 6.26 读取兼容；并行 PDF 批次已将当前写出版本升级为 6.28。功能验收与限制见[验收记录](../evidence/dashboard-period-filter/result.md)。下文“当前能力与缺口”为实施前勘察，实施结果以验收记录为准。
+更新：2026-10-15。状态：用户批准后已完成本地实现，本功能引入于 Schema 6.27，保留 6.26 读取兼容；并行 PDF 批次已将当前写出版本升级为 6.28。功能验收与限制见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/dashboard-period-filter/result.md)。下文“当前能力与缺口”为实施前勘察，实施结果以验收记录为准。
 
 建议在现有 `timeRange` 筛选器上增量增加期间选择形态，复用顶部筛选栏、筛选状态、相对时间求值与查询时间绑定。年／季／月／近一年共同拥有一个筛选器 ID，范围变化一次性提交。正式实现不复制原型的 Dashboard 外框或另建查询执行流程。
 

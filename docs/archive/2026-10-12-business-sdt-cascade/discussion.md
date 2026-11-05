@@ -1,6 +1,6 @@
 # 商务 SDT 报告级联查询讨论与实施入口
 
-2026年10月12日，用户确认商务 SDT 报告的请求顺序和方案方向，并要求落盘讨论、细化实施与验证方案。本批目标是在较小的页面 Schema 和渲染引擎增量下，实现项目 Top5 自动查询阶段明细，并合并到原表格。该方案现已完成本地实施和验证；生产数据集成未执行。实现与证据见[验收结论](../../evidence/2026-10-12-business-sdt-cascade/result.md)。
+2026年10月12日，用户确认商务 SDT 报告的请求顺序和方案方向，并要求落盘讨论、细化实施与验证方案。本批目标是在较小的页面 Schema 和渲染引擎增量下，实现项目 Top5 自动查询阶段明细，并合并到原表格。该方案现已完成本地实施和验证；生产数据集成未执行。实现与证据见[验收结论](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-business-sdt-cascade/result.md)。
 
 ## 阅读顺序
 
@@ -8,7 +8,7 @@
 2. [完整数据源结构草案](data-sources.proposed.json)：最快与最慢两组共四个页面数据源，供人工审阅；不是当前可执行页面。
 3. [具体实施方案](implementation.md)：协议、调度、计算、导出、兼容与交付任务。
 4. [验证方案](acceptance.md)：用例、命令、完成判据和证据分层。
-5. [当前页面基线](../../evidence/2026-10-12-business-sdt-cascade/README.md)：截图、原始编号集合和基线限制。
+5. [当前页面基线](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-10-12-business-sdt-cascade/README.md)：截图、原始编号集合和基线限制。
 
 ## 用户已确认的业务过程
 

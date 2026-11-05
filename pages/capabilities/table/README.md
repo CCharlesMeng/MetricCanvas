@@ -349,7 +349,7 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 7. 访问 `/pages/multi-source-table?sourceFailure=commercial`：任一参与来源失败，整表报错，不展示合同半份记录。非法投影、单位冲突、缺失行键和旧协议版本有产品契约反例；取消、总数变化重试、缓存检查点和大规模按需源由行为测试补充。
 8. 访问 `/pages/multi-source-table?rowFailure=duplicate`：同一商务来源重复行键仅保留第一条，总数255；`?rowFailure=missing-key` 跳过空键记录，总数255；`?rowFailure=order` 有界完整整理后全局排序，总数256。均不显示额外提示，来源诊断通过控制台 warning 输出，Excel 附数据异常说明。清除参数恢复正常；跨200行批次重复及检查点由行为测试覆盖，合成故障不证明真实 DQE 分页稳定性。
 
-验收记录：[paged-union](../../../docs/evidence/paged-union/acceptance.md)。模拟、真实浏览器、静态协议及真实 DQE 分层报告；本页不证明真实服务具有稳定排序、NULL 规则、搜索编码、准确计数或候选接口。
+验收记录：[paged-union](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/paged-union/acceptance.md)。模拟、真实浏览器、静态协议及真实 DQE 分层报告；本页不证明真实服务具有稳定排序、NULL 规则、搜索编码、准确计数或候选接口。
 
 ## 顶部筛选联动列显隐
 

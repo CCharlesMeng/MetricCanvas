@@ -2,7 +2,7 @@
 
 日期：2026-10-21。
 
-状态：四项产品裁决、原型与 Interface 核对已完成；本仓引擎实现及本地验收完成，详见[实施证据](../evidence/table-column-candidates/result.md)。现有表格统一升级，无候选 scope 开关。DQE 真实查询编码、部署权限与 Relay 接入仍待外部核验；不是生产验收完成。
+状态：四项产品裁决、原型与 Interface 核对已完成；本仓引擎实现及本地验收完成，详见[实施证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-candidates/result.md)。现有表格统一升级，无候选 scope 开关。DQE 真实查询编码、部署权限与 Relay 接入仍待外部核验；不是生产验收完成。
 
 2026-10-21 演示修正：示例已改为 Dashboard（统一工具栏、中性画布、白色卡片），接入昨天已交付的 TinyVue OS Grid 表格；20项浏览器回归通过，详见实施证据。后续 pages 示例默认 Dashboard 的约定已写入 AGENTS.md。
 

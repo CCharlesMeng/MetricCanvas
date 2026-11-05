@@ -10,7 +10,7 @@
 
 1. 先读本文、当前 AGENTS.md 和 CONTEXT.md。
 2. [实施规格](implementation-seams-v1.md)：首批文件职责、D1–D4、I00–I08 和退出条件。
-3. [Relay 意见采纳判断](../../evidence/2026-11-02-relay-design-feedback/assessment.md)：哪些已采纳、哪些仍矛盾，避免按返回件机械重写。
+3. [Relay 意见采纳判断](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-02-relay-design-feedback/assessment.md)：哪些已采纳、哪些仍矛盾，避免按返回件机械重写。
 4. 需要完整 Interface 时读[内网评审稿 v1.1](relay-review-design-v1.1.md)的第 7–12、14.1 节；方法整理读 [skill-flow-simplification.md](skill-flow-simplification.md)。
 
 主计划为[统一演进](../2026-11-02-product-relay-evolution.md)，执行任务为[迁移同步](migration-sync-plan.md)。v1.0 原稿和旧 ZIP 是历史冻结快照，当前评审版为 v1.1。维护文档不加入日常 Skill 必读链。

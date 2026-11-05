@@ -2,7 +2,7 @@
 
 日期：2026-10-12。状态：Q14–Q21 的关键架构与范围决策已确认，工程计划已收敛。Q17 为“UI 独立版本，工程保持统一”；Q18–Q21 均选择 A。后续按工作包建立视觉冻结基线并实施；验收条件不代表已经通过产品验证。
 
-阅读顺序：[已确认交互](2026-10-12-platform-page-management-design.md) → [组件架构与视觉范围](2026-10-12-platform-os-theme-component-architecture.md) → 本文。仓库保存的[原型](../evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)是交互来源；视觉真源是指定 TinyVue OS Theme 的对应组件。
+阅读顺序：[已确认交互](2026-10-12-platform-page-management-design.md) → [组件架构与视觉范围](2026-10-12-platform-os-theme-component-architecture.md) → 本文。仓库保存的[原型](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)是交互来源；视觉真源是指定 TinyVue OS Theme 的对应组件。
 
 新会话接续时先读 [Handoff](2026-10-12-platform-ui-management-handoff.md)，其中记录当前起点、并行修改、阅读顺序和第一迭代推进步骤。
 

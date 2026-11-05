@@ -15,7 +15,7 @@
 - **附件证据**：报告提供的请求/回执片段；需以原始关联调用补齐部署因果。
 - **外部未验**：IAM、真实 DQE 编码、Relay 工具包装层、最终页面是否由九月转八月。
 
-本轮证据入口：[离线复现说明](../evidence/authoring-session-audit-20261027/README.md)。现有相关回归 56 项通过；新增探针 15 个测试方法中，8 个缺陷探针失败（含 strict/relaxed 子场景，共 9 条断言失败），7 个对照通过。这是确认未修复缺陷的调查结果，不能称为功能验收通过。
+本轮证据入口：[离线复现说明](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/authoring-session-audit-20261027/README.md)。现有相关回归 56 项通过；新增探针 15 个测试方法中，8 个缺陷探针失败（含 strict/relaxed 子场景，共 9 条断言失败），7 个对照通过。这是确认未修复缺陷的调查结果，不能称为功能验收通过。
 
 ## 2. 已有职责与不变量
 
@@ -187,6 +187,6 @@ A 的外部取证可与 B/C 的本地改进并行；不能因为缺生产访问�
 
 ## 7. 实施收口（2026-10-27）
 
-已在基线 d227d538 的隔离工作树实施 B/C、D 的公共接口与检查接线能力，以及 A/M1/P1 的安全模块身份和调用归因；记录见 [本地实施验收](../evidence/authoring-session-audit-20261027/implementation.md)。T1 同时覆盖 Python 首次创作查询与 TypeScript 浏览器重查。此前8个缺陷探针的修复已转入正式测试，原 probe.log 保留为历史失败证据。
+已在基线 d227d538 的隔离工作树实施 B/C、D 的公共接口与检查接线能力，以及 A/M1/P1 的安全模块身份和调用归因；记录见 [本地实施验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/authoring-session-audit-20261027/implementation.md)。T1 同时覆盖 Python 首次创作查询与 TypeScript 浏览器重查。此前8个缺陷探针的修复已转入正式测试，原 probe.log 保留为历史失败证据。
 
 部署侧 A/D/E 仍待实际加载模块、内部 Adapter 接入、Relay 包装层、IAM 与 DQE 服务及最终需求范围的证据。当前没有提交/push/线上验收，不把公共实现通过写成整条生产链路已完成。浏览器还确认了现有错误源显示为“暂无数据”的呈现限制，详见实施验收记录。

@@ -2,7 +2,7 @@
 
 日期：2026-09-20。状态：仅架构方案识别；用户要求本轮不改代码、不移动目录、不修改正式 Skill 或运行契约。目标目录与名称为建议，不代表已实施或兼容性已验证。
 
-相关：[交互与 Skill 计划](../../evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)、[修订时序与架构图](2026-09-20-authoring-flow-v2.md)、[Relay 架构影响](2026-09-20-authoring-relay-impact.md)。本轮重新读取关键源码验证问题，不将 [9 月 18 日评审](2026-09-18-authoring-architecture.md) 的旧测试结果当作当前验证结果。
+相关：[交互与 Skill 计划](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-20-authoring-minimal-flow-and-skill-plan.md)、[修订时序与架构图](2026-09-20-authoring-flow-v2.md)、[Relay 架构影响](2026-09-20-authoring-relay-impact.md)。本轮重新读取关键源码验证问题，不将 [9 月 18 日评审](2026-09-18-authoring-architecture.md) 的旧测试结果当作当前验证结果。
 
 ## 1. 调整目标与范围
 

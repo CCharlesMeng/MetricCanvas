@@ -46,7 +46,7 @@ Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取�
 
 维度在 `filter.dims[].dim_value_list` 上原位引用 `{param: id}`；`period` 与 `is_aggregate` 始终留在查询侧。引用不得与筛选绑定或旧 `paramBindings` 共同控制同一条件，也不得与查询体里的字面量起止并存。
 
-完整字段、引用、URL 与兼容规则见[生成的参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)；[正交化设计背景](docs/evidence/page-parameters/2026-09-21-page-params-orthogonal-shape.md)保留当时形状与spike，完整页面见[时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 里时间是纯文本——单点写 `?report-month=2026-03`，区间写 `?report-period=2026-01..2026-06`；维度仍使用重复键；显式非法输入不回退保存值。
+完整字段、引用、URL 与兼容规则见[生成的参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)；[正交化设计背景](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/page-parameters/2026-09-21-page-params-orthogonal-shape.md)保留当时形状与spike，完整页面见[时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 里时间是纯文本——单点写 `?report-month=2026-03`，区间写 `?report-period=2026-01..2026-06`；维度仍使用重复键；显式非法输入不回退保存值。
 
 ### 当前声明的四个位置
 

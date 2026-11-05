@@ -142,7 +142,7 @@ pnpm --filter platform test:pangu-deployment
 MICROFRONTEND_PROFILE=debug pnpm --filter platform test:pangu-deployment
 ```
 
-本仓执行结果、复杂度口径和真实验收边界见[本次验证记录](../evidence/pangu-deployment-migration/2026-10-31.md)。内网回执需包含：原/目标提交、旧/新文件映射、公开声明摘要、实际 SDK 类型与版本、构建与场景结果、剩余保护项、完整回滚入口。未通过项明确标为 FAILED/NOT_RUN，不用本仓合成 SDK 通过代替。
+本仓执行结果、复杂度口径和真实验收边界见[本次验证记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/pangu-deployment-migration/2026-10-31.md)。内网回执需包含：原/目标提交、旧/新文件映射、公开声明摘要、实际 SDK 类型与版本、构建与场景结果、剩余保护项、完整回滚入口。未通过项明确标为 FAILED/NOT_RUN，不用本仓合成 SDK 通过代替。
 
 ## 7. 可直接交给内网实施人员的任务
 

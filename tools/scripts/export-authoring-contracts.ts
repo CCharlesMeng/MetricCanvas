@@ -688,12 +688,11 @@ async function buildBundleLock(): Promise<string> {
       return { file, sha256: sha256(content) };
     })
   );
-  // Keep the complete inventory within the repository's 1 MB file limit.
-  return JSON.stringify({
+  return `${JSON.stringify({
     bundleVersion: bundle.bundleVersion,
     pageSchemaVersion: versionPolicy.current,
     artifacts: artifacts.sort((left, right) => left.file.localeCompare(right.file))
-  }) + '\n';
+  })}\n`;
 }
 
 async function assertCurrent(

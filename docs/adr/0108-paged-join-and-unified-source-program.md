@@ -21,4 +21,4 @@ SourceProgram.read 统一普通 raw/compute、固定级联、组合源、单次�
 
 新组合语义校验只在产品 TS 中实现。Python 通过 Bundle 内 Node Bridge 调用，同版生成协议、契约、知识、独立校验器与锁文件；缺 Node 22+ 或 Bridge 明确失败。旧 Python 语义按能力逐步迁移，不在本批整体重写。
 
-替代方案和已授权架构见[实施方案](../plan/2026-10-14-multi-query-table.md)，验收层级与真实接入缺口见[证据](../evidence/multi-query-table/result.md)。保留通用 SQL/计算资产挂起结论。
+替代方案和已授权架构见[实施方案](../plan/2026-10-14-multi-query-table.md)，验收层级与真实接入缺口见[证据](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/multi-query-table/result.md)。保留通用 SQL/计算资产挂起结论。
