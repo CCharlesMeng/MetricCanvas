@@ -87,8 +87,8 @@ test('query loading and failure keep the declared table width', async ({ page })
   await page.getByRole('button', { name: '客户01', exact: true }).click();
   const loadingWidth = await expectWidePanel(page, true);
   await page.evaluate(() => window.rejectDetail(new Error('详情加载失败')));
-  // Existing detail rendering projects a failed request to an empty table.
-  await expect(page.getByRole('dialog')).toContainText('暂无数据');
+  // Failure preserves the configured table without injecting empty-state copy.
+  await expect(page.getByRole('dialog').locator('table tbody')).toHaveText('');
   expect(await expectWidePanel(page, true)).toBeCloseTo(loadingWidth, 0);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: '客户01', exact: true })).toBeFocused();

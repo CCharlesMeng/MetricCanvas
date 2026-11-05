@@ -49,14 +49,17 @@ for(const mode of ['年','季','近一年','月']) {
  await page.screenshot({path:`${output}/mode-${['年','季','近一年','月'].indexOf(mode)}.png`,fullPage:true});
 }
 await page.goto(`${base}/pages/period-comparison-demo?state=error`);
-await expect(page.locator('body')).toContainText('失败');
-await expect(page.getByRole('alert')).toContainText('关联数据加载或计算失败');
-await expect(page.getByRole('table')).toHaveCount(0);
+await expect(page.getByRole('button',{name:'重试',exact:true})).toHaveCount(0);
+await expect(page.getByText('关联数据加载或计算失败',{exact:false})).toHaveCount(0);
+await expect(page.getByRole('table')).toBeVisible();
+await expect(page.locator('tbody')).not.toContainText('甲');
 await page.screenshot({path:`${output}/query-error.png`,fullPage:true});
 await page.goto(`${base}/pages/period-comparison-demo?state=retry`);
-await expect(page.getByRole('alert')).toContainText('失败');
-await page.getByRole('button',{name:'重试',exact:true}).click();
+await expect(page.getByRole('table')).toBeVisible();
+await page.getByRole('button',{name:'季',exact:true}).click();
+await page.getByRole('button',{name:'月',exact:true}).click();
+await expect(page.getByRole('button',{name:'重试',exact:true})).toHaveCount(0);
 await expect(page.locator('tbody tr').filter({hasText:'甲'})).toContainText('+20.00%');
 expect(errors).toEqual([]);
 await browser.close();
-console.log(JSON.stringify({ok:true,output,checks:['global-sort','numeric-filter','all-period-modes','complete-export','failed-comparison','retry']}));
+console.log(JSON.stringify({ok:true,output,checks:['global-sort','numeric-filter','all-period-modes','complete-export','failed-comparison','configured-period-recovery','no-injected-controls']}));

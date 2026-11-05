@@ -20,7 +20,7 @@ for (const mode of ['classic','esm']) {
     await expect(page.getByRole('heading',{name:'Executed instance',exact:true})).toBeVisible();
     await expect(page.getByRole('table').first().getByText('NA',{exact:true})).toBeVisible();
     await expect(page.getByRole('alert')).toHaveCount(0);
-    await expect(page.getByRole('table').nth(1).getByText('暂无数据', { exact: true })).toBeVisible();
+    await expect(page.getByRole('table').nth(1).locator('tbody')).toHaveText('');
     await expect(page.getByText('private-provider-details',{exact:false})).toHaveCount(0);
     expect(await page.evaluate(()=>(window as any).executionState.calls.length)).toBe(0);
     await page.evaluate(()=>history.replaceState(null,'','?regions=FORBIDDEN'));

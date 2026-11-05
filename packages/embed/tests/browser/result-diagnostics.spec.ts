@@ -29,7 +29,7 @@ for (const mode of ['missing-field', 'invalid-dimension', 'total-smaller', 'tota
     const host = page.locator('[data-metriccanvas-runtime]');
     await expect(table.getByRole('table')).toBeVisible();
     if (mode === 'missing-field' || mode === 'invalid-dimension') {
-      await expect(table.getByRole('cell', { name: '暂无数据', exact: true })).toBeVisible();
+      await expect(table.locator('tbody')).toHaveText('');
       await expect(host.getByRole('alert')).toHaveCount(0);
       await expect(host.getByText(/DQE_(FIELD_MAPPING|ROW_CONTRACT)_ERROR/)).toHaveCount(0);
       const code = mode === 'missing-field' ? 'DQE_FIELD_MAPPING_ERROR' : 'DQE_ROW_CONTRACT_ERROR';

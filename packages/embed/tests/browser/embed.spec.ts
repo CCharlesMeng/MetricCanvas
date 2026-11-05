@@ -2311,7 +2311,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       }
     });
   }, flowReportDocument);
-  await expect(yoyDropTable.getByText('暂无数据', { exact: true })).toBeVisible();
+  await expect(yoyDropTable.locator('tbody')).toHaveText('');
   await expect(yoyDropTable.getByRole('alert')).toHaveCount(0);
   await expect(yoyDropTable.getByText('流水数据网关测试错误')).toHaveCount(0);
   await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();

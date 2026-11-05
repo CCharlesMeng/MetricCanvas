@@ -4,6 +4,28 @@ import { parsePage } from '@metriccanvas/page';
 import { orchestrate } from '../../runtime/src/orchestrator';
 import type { FilterValue } from '@metriccanvas/data-execution/runtime';
 import { createTableController } from '../src/table/controller';
+import comparisonFixture from '../../../../pages/capabilities/data/period-comparison/period-comparison-query-page.json';
+import { createQueryComparisonPreview } from '../../../../apps/playground/fixtures/query-comparison-gateway';
+import { initialFilterValues } from '../../runtime/src/filter-state';
+
+it('reads candidates from the owning member despite a failed comparison supplement', async () => {
+  const parsed = parsePage(comparisonFixture); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  const table = parsed.page.sections.flatMap(section => section.components).find(component => component.type === 'table');
+  if (!table || table.type !== 'table') throw Error('table');
+  const preview = createQueryComparisonPreview('error');
+  const context = { displayInputs: () => preview.displayInputs.getSnapshot(), now: new Date('2026-10-30T12:00:00+08:00') };
+  const conditions = initialFilterValues(parsed.page.filters ?? [], context.now, context.displayInputs());
+  const stream = orchestrate(parsed.page, preview.dataGateway, undefined, undefined, undefined, context);
+  const stop = stream.subscribe(() => {}), controller = createTableController(parsed.page, () => stream, () => {}, () => conditions,
+    () => ({ now: context.now, displayInputs: context.displayInputs() }));
+  try {
+    await vi.waitFor(() => expect(stream.captureRawSnapshots().get(table.data.main)?.status).toBe('error'));
+    controller.candidateBinding(table).oncandidateopen('customer', true);
+    await vi.waitFor(() => expect(controller.candidateBinding(table).columnCandidates.customer?.totalCount).toBe(23));
+    expect(controller.candidateBinding(table).columnCandidates.customer.status).toBe('ready');
+    expect(stream.captureRawSnapshots().get(table.data.main)?.status).toBe('error');
+  } finally { controller.dispose(); stop(); }
+});
 
 it('preloads actual main-field IDs, including explicit bindings, without opening a filter', async () => {
   const parsed = parsePage(fixture); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));

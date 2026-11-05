@@ -1,4 +1,8 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+
+async function openFilter(header: Locator) {
+  if (await header.locator('details').getAttribute('open') === null) await header.locator('summary').click();
+}
 
 async function observeRequests(page: Page) {
   await page.addInitScript(() => {
@@ -49,7 +53,7 @@ test('remote candidates read across 200-row batches and keep alternatives after 
   await expect(offices.getByRole('checkbox')).toHaveCount(1);
   await offices.getByRole('checkbox', { name: '办事处80', exact: true }).click();
   await expect(table).toContainText('总条数： 1');
-  await offices.locator('summary').click();
+  await openFilter(offices);
   await offices.getByRole('searchbox').fill('');
   await expect(offices.getByRole('button', { name: '加载更多（50/80）' })).toBeVisible();
   await offices.getByRole('button', { name: '加载更多（50/80）' }).click();
@@ -60,7 +64,7 @@ test('remote candidates read across 200-row batches and keep alternatives after 
   await region.locator('summary').click();
   await region.getByRole('checkbox', { name: '华南', exact: true }).click();
   await expect(table).toContainText('总条数： 1');
-  await offices.locator('summary').click();
+  await openFilter(offices);
   await expect(offices.getByRole('checkbox')).toHaveCount(20);
   await expect(offices.getByRole('checkbox', { name: '办事处61', exact: true })).toBeVisible();
   await page.screenshot({ path: test.info().outputPath('full-query-candidates.png'), fullPage: true });

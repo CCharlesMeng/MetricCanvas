@@ -321,7 +321,7 @@ for (const container of ['plain', 'card'] as const) test(`${container}: loading/
       await expect(page.locator('.echart')).toBeVisible();
     } else if (mode === 'error') {
       await expect(page.getByRole('alert')).toHaveCount(0);
-      await expect(page.getByRole('cell', { name: '暂无数据' })).toBeVisible();
+      await expect(page.locator('table tbody')).toHaveText('');
       await expect(page.getByText('DQE_TRANSPORT_ERROR')).toHaveCount(0);
     } else {
       await expect(page.getByText('配置列头', { exact: true })).toBeVisible();

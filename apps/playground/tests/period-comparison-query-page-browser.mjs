@@ -59,9 +59,13 @@ for(const mode of ['年','季','近一年','月']){
 await open('?state=large');await expect.poll(first).toBe('C100000');expect((await calls()).length).toBe(3);
 await page.screenshot({path:`${output}/large-domain.png`,fullPage:true});
 await page.goto(`${base}/pages/period-comparison-query-page?state=error`);
-await expect(page.getByRole('alert')).toContainText('比较期数据加载或计算失败');expect(await page.getByRole('table').count()).toBe(0);
+await expect(page.getByRole('button',{name:'重试',exact:true})).toHaveCount(0);
+await expect(page.getByText('比较期数据加载或计算失败',{exact:false})).toHaveCount(0);
+await expect(page.getByRole('table')).toBeVisible();await expect(page.locator('tbody')).not.toContainText('C000023');
 await page.screenshot({path:`${output}/error.png`,fullPage:true});
-await page.goto(`${base}/pages/period-comparison-query-page?state=retry`);await expect(page.getByRole('alert')).toBeVisible();
-await page.getByRole('button',{name:'重试',exact:true}).click();await expect.poll(first).toBe('C000023');
+await page.goto(`${base}/pages/period-comparison-query-page?state=retry`);
+const customers=page.locator('th[data-column-field="customer"]');await customers.locator('summary').click();
+await customers.getByRole('checkbox',{name:'C000023',exact:true}).click();await expect.poll(first).toBe('C000023');
+await expect(page.getByRole('button',{name:'重试',exact:true})).toHaveCount(0);
 expect(errors).toEqual([]);await browser.close();
-console.log(JSON.stringify({ok:true,output,checks:['bounded-page','page-key-supplements','all-periods','metric-filter-scope','complete-export','large-domain','failure-retry']}));
+console.log(JSON.stringify({ok:true,output,checks:['bounded-page','page-key-supplements','all-periods','metric-filter-scope','complete-export','large-domain','configured-filter-recovery','no-injected-controls']}));

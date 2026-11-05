@@ -679,10 +679,12 @@
         {:else}
           <tr>
             <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
-              {#if props.variant === 'reportCompact'}
-                <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
-              {:else}
-                <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
+              {#if data.main.sourceStatus !== 'error'}
+                {#if props.variant === 'reportCompact'}
+                  <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
+                {:else}
+                  <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
+                {/if}
               {/if}
             </td>
           </tr>
