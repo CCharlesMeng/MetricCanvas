@@ -1,904 +1,1998 @@
 {
-  "schemaVersion": "6.77",
-  "id": "partner-health",
-  "layout": "dashboard",
-  "meta": {
-    "title": "伙伴健康度"
-  },
-  "iocHeader": {
-    "identity": {
+    "schemaVersion": "6.80",
+    "id": "partner-health",
+    "layout": "dashboard",
+    "meta": {
       "title": "伙伴健康度"
     },
-    "filterIds": [
-      "stat-year",
-      "region"
+    "iocHeader": {
+      "identity": {
+        "title": "伙伴健康度"
+      },
+      "filterIds": [
+        "stat-year",
+        "region"
+      ],
+      "presentation": {
+        "layout": "inline",
+        "density": "normal",
+        "collapse": "overflow"
+      }
+    },
+    "filters": [
+      {
+        "id": "stat-year",
+        "type": "timeRange",
+        "display": "period",
+        "periodModes": ["year"],
+        "default": {
+          "mode": "year",
+          "value": "2026"
+        },
+        "label": "统计日期",
+        "precision": "month"
+      },
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "geo-pc-code",
+        "label": "区域",
+        "emptyLabel": "区域",
+        "selection": {
+          "mode": "single"
+        },
+        "display": "tree",
+        "hierarchy": [
+          {
+            "id": "geo",
+            "dimension": "geo-pc-code",
+            "label": "全球"
+          },
+          {
+            "id": "region-dept",
+            "dimension": "region-dept-code",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "rep-office-code",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "geo",
+        "treeSelection": "level"
+      },
+      {
+        "id": "china-overseas",
+        "type": "dimension",
+        "dimension": "china-overseas",
+        "label": "中国区/海外",
+        "default": [
+          "国内"
+        ]
+      },
+      {
+        "id": "level",
+        "type": "dimension",
+        "dimension": "level",
+        "label": "层级",
+        "default": [
+          "地区部"
+        ],
+        "visible": false
+      },
+      {
+        "id": "voice-closure-region",
+        "type": "dimension",
+        "dimension": "voice-closure-region",
+        "label": "伙伴声音闭环率-地区部",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "csp-payment-ratio-region",
+        "type": "dimension",
+        "dimension": "csp-payment-ratio-region",
+        "label": "CSP价值客户付费占比-地区部",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "cloud-dealer-payment-ratio-region",
+        "type": "dimension",
+        "dimension": "cloud-dealer-payment-ratio-region",
+        "label": "价值云经销商付费占比-地区部",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "csp-growth-region",
+        "type": "dimension",
+        "dimension": "csp-growth-region",
+        "label": "CSP价值客户数量增长-地区部",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "csp-growth-representative",
+        "type": "dimension",
+        "dimension": "csp-growth-representative",
+        "label": "CSP价值客户数量增长-代表处",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "cloud-dealer-growth-region",
+        "type": "dimension",
+        "dimension": "cloud-dealer-growth-region",
+        "label": "价值云经销商数量增长-地区部",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "cloud-dealer-payment-ratio-representative",
+        "type": "dimension",
+        "dimension": "cloud-dealer-payment-ratio-representative",
+        "label": "价值云经销商付费占比-代表处",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "csp-payment-ratio-representative",
+        "type": "dimension",
+        "dimension": "csp-payment-ratio-representative",
+        "label": "CSP价值客户付费占比-代表处",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "cloud-dealer-growth-representative",
+        "type": "dimension",
+        "dimension": "cloud-dealer-growth-representative",
+        "label": "价值云经销商数量增长-代表处",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "service-capability-region",
+        "type": "dimension",
+        "dimension": "service-capability-region",
+        "label": "具备服务能力标签-地区部",
+        "default": [],
+        "visible": false
+      },
+      {
+        "id": "service-capability-representative",
+        "type": "dimension",
+        "dimension": "service-capability-representative",
+        "label": "具备服务能力标签-代表处",
+        "default": [],
+        "visible": false
+      }
     ],
-    "presentation": {
-      "layout": "inline",
-      "density": "normal",
-      "collapse": "overflow"
-    }
-  },
-  "filters": [
-    {
-      "id": "stat-year",
-      "type": "timeRange",
-      "display": "period",
-      "default": {
-        "mode": "month",
-        "value": "2026-10"
-      },
-      "label": "统计日期",
-      "precision": "month"
-    },
-    {
-      "id": "region",
-      "type": "dimension",
-      "dimension": "region-dept",
-      "label": "区域",
-      "default": [],
-      "display": "tree",
-      "emptyLabel": "全球",
-      "selection": {
-        "mode": "single"
-      },
-      "hierarchy": [
-        {
-          "id": "region-dept",
-          "dimension": "region-dept",
-          "label": "地区部"
-        },
-        {
-          "id": "representative",
-          "dimension": "representative",
-          "label": "代表处"
-        }
-      ],
-      "defaultLevel": "region-dept",
-      "treeSelection": "level"
-    },
-    {
-      "id": "china-overseas",
-      "type": "dimension",
-      "dimension": "china-overseas",
-      "label": "中国区/海外",
-      "default": [
-        "中国区"
-      ]
-    },
-    {
-      "id": "level",
-      "type": "dimension",
-      "dimension": "level",
-      "label": "层级",
-      "default": [
-        "地区部"
-      ],
-      "visible": false
-    }
-  ],
-  "dataSources": {
-    "health-overview": {
-      "fields": {
-        "perception-willingness": {
-          "type": "number",
-          "role": "measure",
-          "label": "合作意愿感知评分"
-        },
-        "perception-feedback": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴声音闭环率得分"
-        },
-        "satisfaction-evaluation": {
-          "type": "number",
-          "role": "measure",
-          "label": "客户对伙伴的评价得分"
-        },
-        "contribution-business": {
-          "type": "number",
-          "role": "measure",
-          "label": "收入得分"
-        },
-        "contribution-human": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域专职团队认证达标率得分"
-        },
-        "csp-customer-payment-ratio": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值客户付费占比得分"
-        },
-        "csp-customer-growth": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值客户数增长得分"
-        },
-        "cloud-dealer-payment-ratio": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值云经销商付费占比得分"
-        },
-        "cloud-dealer-growth": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值云经销商数增长得分"
-        },
-        "service-capability-ratio": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域能力标签伙伴得分"
-        },
-        "risk-control": {
-          "type": "number",
-          "role": "measure",
-          "label": "扣分"
-        },
-        "perception-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "satisfaction-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "total-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "china-overseas": {
-          "type": "string",
-          "role": "dimension",
-          "label": "国内或海外"
-        },
-        "perception-score-china": {
-          "type": "number",
-          "role": "measure"
-        },
-        "perception-score-overseas": {
-          "type": "number",
-          "role": "measure"
-        },
-        "satisfaction-score-china": {
-          "type": "number",
-          "role": "measure"
-        },
-        "satisfaction-score-overseas": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-score-china": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-score-overseas": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-score-china": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-score-overseas": {
-          "type": "number",
-          "role": "measure"
-        },
-        "total-score-china": {
-          "type": "number",
-          "role": "measure"
-        },
-        "total-score-overseas": {
-          "type": "number",
-          "role": "measure"
-        },
-        "perception-score-by-scope": {
-          "type": "number",
-          "role": "measure"
-        },
-        "satisfaction-score-by-scope": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-score-by-scope": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-score-by-scope": {
-          "type": "number",
-          "role": "measure"
-        },
-        "total-score-by-scope": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      },
-      "compute": [
-        {
-          "op": "unionKeys",
-          "sources": [
-            "perception-willingness-score-overview",
-            "voice-closure-score-overview",
-            "customer-eval-score-overview",
-            "contribution-business-score-overview",
-            "cert-compliance-score-overview",
-            "csp-customer-payment-score-overview",
-            "csp-customer-growth-score-overview",
-            "cloud-dealer-payment-score-overview",
-            "cloud-dealer-growth-score-overview",
-            "service-capability-score-overview",
-            "risk-control-score-overview"
-          ],
-          "keys": [
-            "china-overseas"
-          ]
-        },
-        {
-          "op": "joinAggregate",
-          "source": "perception-willingness-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "perception-willingness-rate",
-              "output": "perception-willingness",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "voice-closure-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "closure-rate",
-              "output": "perception-feedback",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "customer-eval-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "customer-eval-rate",
-              "output": "satisfaction-evaluation",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "contribution-business-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "contribution-business-rate",
-              "output": "contribution-business",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "cert-compliance-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "cert-compliance-rate",
-              "output": "contribution-human",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "csp-customer-payment-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "csp-customer-payment-rate",
-              "output": "csp-customer-payment-ratio",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "csp-customer-growth-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "csp-customer-growth-rate",
-              "output": "csp-customer-growth",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "cloud-dealer-payment-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "cloud-dealer-payment-rate",
-              "output": "cloud-dealer-payment-ratio",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "cloud-dealer-growth-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "cloud-dealer-growth-rate",
-              "output": "cloud-dealer-growth",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "service-capability-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "service-capability-rate",
-              "output": "service-capability-ratio",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "joinAggregate",
-          "source": "risk-control-score-overview",
-          "keys": [
-            {
-              "local": "china-overseas",
-              "foreign": "china-overseas"
-            }
-          ],
-          "values": [
-            {
-              "field": "risk-control-rate",
-              "output": "risk-control",
-              "aggregate": "unique"
-            }
-          ],
-          "onMissing": "null"
-        },
-        {
-          "op": "sumFields",
-          "fields": [
-            "perception-willingness",
-            "perception-feedback"
-          ],
-          "output": "perception-score-by-scope",
-          "onMissing": "ignore"
-        },
-        {
-          "op": "sumFields",
-          "fields": [
-            "satisfaction-evaluation"
-          ],
-          "output": "satisfaction-score-by-scope",
-          "onMissing": "ignore"
-        },
-        {
-          "op": "sumFields",
-          "fields": [
-            "contribution-business",
-            "contribution-human",
-            "csp-customer-payment-ratio",
-            "csp-customer-growth",
-            "cloud-dealer-payment-ratio",
-            "cloud-dealer-growth",
-            "service-capability-ratio"
-          ],
-          "output": "contribution-score-by-scope",
-          "onMissing": "ignore"
-        },
-        {
-          "op": "sumFields",
-          "fields": [
-            "risk-control"
-          ],
-          "output": "risk-score-by-scope",
-          "onMissing": "ignore"
-        },
-        {
-          "op": "sumFields",
-          "fields": [
-            "perception-score-by-scope",
-            "satisfaction-score-by-scope",
-            "contribution-score-by-scope",
-            "risk-score-by-scope"
-          ],
-          "output": "total-score-by-scope",
-          "onMissing": "zero"
-        },
-        {
-          "op": "pivot",
-          "categoryField": "china-overseas",
-          "valueField": "total-score-by-scope",
-          "keyFields": [],
-          "columns": [
-            {
-              "valueField": "perception-score-by-scope",
-              "output": "perception-score-china",
-              "categories": [
-                "国内"
-              ]
-            },
-            {
-              "valueField": "perception-score-by-scope",
-              "output": "perception-score-overseas",
-              "categories": [
-                "海外"
-              ]
-            },
-            {
-              "valueField": "satisfaction-score-by-scope",
-              "output": "satisfaction-score-china",
-              "categories": [
-                "国内"
-              ]
-            },
-            {
-              "valueField": "satisfaction-score-by-scope",
-              "output": "satisfaction-score-overseas",
-              "categories": [
-                "海外"
-              ]
-            },
-            {
-              "valueField": "contribution-score-by-scope",
-              "output": "contribution-score-china",
-              "categories": [
-                "国内"
-              ]
-            },
-            {
-              "valueField": "contribution-score-by-scope",
-              "output": "contribution-score-overseas",
-              "categories": [
-                "海外"
-              ]
-            },
-            {
-              "valueField": "risk-score-by-scope",
-              "output": "risk-score-china",
-              "categories": [
-                "国内"
-              ]
-            },
-            {
-              "valueField": "risk-score-by-scope",
-              "output": "risk-score-overseas",
-              "categories": [
-                "海外"
-              ]
-            },
-            {
-              "valueField": "total-score-by-scope",
-              "output": "total-score-china",
-              "categories": [
-                "国内"
-              ]
-            },
-            {
-              "valueField": "total-score-by-scope",
-              "output": "total-score-overseas",
-              "categories": [
-                "海外"
-              ]
-            }
-          ]
-        },
-        {
-          "op": "selectField",
-          "filter": "china-overseas",
-          "cases": {
-            "中国区": "perception-score-china",
-            "海外": "perception-score-overseas"
+    "dataSources": {
+      "health-overview": {
+        "fields": {
+          "perception-willingness": {
+            "type": "number",
+            "role": "measure",
+            "label": "合作意愿感知评分"
           },
-          "defaultMode": "中国区",
-          "output": "perception-score"
-        },
-        {
-          "op": "selectField",
-          "filter": "china-overseas",
-          "cases": {
-            "中国区": "satisfaction-score-china",
-            "海外": "satisfaction-score-overseas"
+          "perception-feedback": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴声音闭环率得分"
           },
-          "defaultMode": "中国区",
-          "output": "satisfaction-score"
-        },
-        {
-          "op": "selectField",
-          "filter": "china-overseas",
-          "cases": {
-            "中国区": "contribution-score-china",
-            "海外": "contribution-score-overseas"
+          "satisfaction-evaluation": {
+            "type": "number",
+            "role": "measure",
+            "label": "客户对伙伴的评价得分"
           },
-          "defaultMode": "中国区",
-          "output": "contribution-score"
-        },
-        {
-          "op": "selectField",
-          "filter": "china-overseas",
-          "cases": {
-            "中国区": "risk-score-china",
-            "海外": "risk-score-overseas"
+          "contribution-business": {
+            "type": "number",
+            "role": "measure",
+            "label": "收入得分"
           },
-          "defaultMode": "中国区",
-          "output": "risk-score"
-        },
-        {
-          "op": "selectField",
-          "filter": "china-overseas",
-          "cases": {
-            "中国区": "total-score-china",
-            "海外": "total-score-overseas"
+          "contribution-human": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域专职团队认证达标率得分"
           },
-          "defaultMode": "中国区",
-          "output": "total-score"
-        }
-      ]
-    },
-    "regional-comparison": {
-      "fields": {
-        "level": {
-          "type": "string",
-          "role": "dimension"
+          "csp-customer-payment-ratio": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值客户付费占比得分"
+          },
+          "csp-customer-growth": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值客户数增长得分"
+          },
+          "cloud-dealer-payment-ratio": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值云经销商付费占比得分"
+          },
+          "cloud-dealer-growth": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值云经销商数增长得分"
+          },
+          "service-capability-ratio": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域能力标签伙伴得分"
+          },
+          "risk-control": {
+            "type": "number",
+            "role": "measure",
+            "label": "扣分"
+          },
+          "perception-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "total-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "china-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外"
+          },
+          "perception-score-china": {
+            "type": "number",
+            "role": "measure"
+          },
+          "perception-score-overseas": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-score-china": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-score-overseas": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-score-china": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-score-overseas": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-score-china": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-score-overseas": {
+            "type": "number",
+            "role": "measure"
+          },
+          "total-score-china": {
+            "type": "number",
+            "role": "measure"
+          },
+          "total-score-overseas": {
+            "type": "number",
+            "role": "measure"
+          },
+          "perception-score-by-scope": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-score-by-scope": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-score-by-scope": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-score-by-scope": {
+            "type": "number",
+            "role": "measure"
+          },
+          "total-score-by-scope": {
+            "type": "number",
+            "role": "measure"
+          }
         },
-        "region": {
-          "type": "string",
-          "role": "dimension"
+        "source": {
+          "type": "inline",
+          "rows": []
         },
-        "perception-score": {
-          "type": "number",
-          "role": "measure"
+        "compute": [
+          {
+            "op": "unionKeys",
+            "sources": [
+              "perception-willingness-score-overview",
+              "voice-closure-score-overview",
+              "customer-eval-score-overview",
+              "contribution-business-score-overview",
+              "cert-compliance-score-overview",
+              "csp-customer-payment-score-overview",
+              "csp-customer-growth-score-overview",
+              "cloud-dealer-payment-score-overview",
+              "cloud-dealer-growth-score-overview",
+              "service-capability-score-overview",
+              "risk-control-score-overview"
+            ],
+            "keys": [
+              "china-overseas"
+            ]
+          },
+          {
+            "op": "joinAggregate",
+            "source": "perception-willingness-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "perception-willingness-rate",
+                "output": "perception-willingness",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "voice-closure-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "closure-rate",
+                "output": "perception-feedback",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "customer-eval-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "customer-eval-rate",
+                "output": "satisfaction-evaluation",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "contribution-business-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "contribution-business-rate",
+                "output": "contribution-business",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "cert-compliance-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "cert-compliance-rate",
+                "output": "contribution-human",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "csp-customer-payment-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "csp-customer-payment-rate",
+                "output": "csp-customer-payment-ratio",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "csp-customer-growth-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "csp-customer-growth-rate",
+                "output": "csp-customer-growth",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "cloud-dealer-payment-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "cloud-dealer-payment-rate",
+                "output": "cloud-dealer-payment-ratio",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "cloud-dealer-growth-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "cloud-dealer-growth-rate",
+                "output": "cloud-dealer-growth",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "service-capability-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "service-capability-rate",
+                "output": "service-capability-ratio",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "joinAggregate",
+            "source": "risk-control-score-overview",
+            "keys": [
+              {
+                "local": "china-overseas",
+                "foreign": "china-overseas"
+              }
+            ],
+            "values": [
+              {
+                "field": "risk-control-rate",
+                "output": "risk-control",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
+          {
+            "op": "sumFields",
+            "fields": [
+              "perception-willingness",
+              "perception-feedback"
+            ],
+            "output": "perception-score-by-scope",
+            "onMissing": "ignore"
+          },
+          {
+            "op": "sumFields",
+            "fields": [
+              "satisfaction-evaluation"
+            ],
+            "output": "satisfaction-score-by-scope",
+            "onMissing": "ignore"
+          },
+          {
+            "op": "sumFields",
+            "fields": [
+              "contribution-business",
+              "contribution-human",
+              "csp-customer-payment-ratio",
+              "csp-customer-growth",
+              "cloud-dealer-payment-ratio",
+              "cloud-dealer-growth",
+              "service-capability-ratio"
+            ],
+            "output": "contribution-score-by-scope",
+            "onMissing": "ignore"
+          },
+          {
+            "op": "sumFields",
+            "fields": [
+              "risk-control"
+            ],
+            "output": "risk-score-by-scope",
+            "onMissing": "ignore"
+          },
+          {
+            "op": "sumFields",
+            "fields": [
+              "perception-score-by-scope",
+              "satisfaction-score-by-scope",
+              "contribution-score-by-scope",
+              "risk-score-by-scope"
+            ],
+            "output": "total-score-by-scope",
+            "onMissing": "zero"
+          },
+          {
+            "op": "pivot",
+            "categoryField": "china-overseas",
+            "valueField": "total-score-by-scope",
+            "keyFields": [],
+            "columns": [
+              {
+                "valueField": "perception-score-by-scope",
+                "output": "perception-score-china",
+                "categories": [
+                  "国内"
+                ]
+              },
+              {
+                "valueField": "perception-score-by-scope",
+                "output": "perception-score-overseas",
+                "categories": [
+                  "海外"
+                ]
+              },
+              {
+                "valueField": "satisfaction-score-by-scope",
+                "output": "satisfaction-score-china",
+                "categories": [
+                  "国内"
+                ]
+              },
+              {
+                "valueField": "satisfaction-score-by-scope",
+                "output": "satisfaction-score-overseas",
+                "categories": [
+                  "海外"
+                ]
+              },
+              {
+                "valueField": "contribution-score-by-scope",
+                "output": "contribution-score-china",
+                "categories": [
+                  "国内"
+                ]
+              },
+              {
+                "valueField": "contribution-score-by-scope",
+                "output": "contribution-score-overseas",
+                "categories": [
+                  "海外"
+                ]
+              },
+              {
+                "valueField": "risk-score-by-scope",
+                "output": "risk-score-china",
+                "categories": [
+                  "国内"
+                ]
+              },
+              {
+                "valueField": "risk-score-by-scope",
+                "output": "risk-score-overseas",
+                "categories": [
+                  "海外"
+                ]
+              },
+              {
+                "valueField": "total-score-by-scope",
+                "output": "total-score-china",
+                "categories": [
+                  "国内"
+                ]
+              },
+              {
+                "valueField": "total-score-by-scope",
+                "output": "total-score-overseas",
+                "categories": [
+                  "海外"
+                ]
+              }
+            ]
+          },
+          {
+            "op": "selectField",
+            "filter": "china-overseas",
+            "cases": {
+              "海外": "perception-score-overseas",
+              "国内": "perception-score-china"
+            },
+            "defaultMode": "国内",
+            "output": "perception-score"
+          },
+          {
+            "op": "selectField",
+            "filter": "china-overseas",
+            "cases": {
+              "海外": "satisfaction-score-overseas",
+              "国内": "satisfaction-score-china"
+            },
+            "defaultMode": "国内",
+            "output": "satisfaction-score"
+          },
+          {
+            "op": "selectField",
+            "filter": "china-overseas",
+            "cases": {
+              "海外": "contribution-score-overseas",
+              "国内": "contribution-score-china"
+            },
+            "defaultMode": "国内",
+            "output": "contribution-score"
+          },
+          {
+            "op": "selectField",
+            "filter": "china-overseas",
+            "cases": {
+              "海外": "risk-score-overseas",
+              "国内": "risk-score-china"
+            },
+            "defaultMode": "国内",
+            "output": "risk-score"
+          },
+          {
+            "op": "selectField",
+            "filter": "china-overseas",
+            "cases": {
+              "海外": "total-score-overseas",
+              "国内": "total-score-china"
+            },
+            "defaultMode": "国内",
+            "output": "total-score"
+          }
+        ]
+      },
+      "regional-comparison": {
+        "fields": {
+          "level": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "perception-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-score": {
+            "type": "number",
+            "role": "measure"
+          }
         },
-        "satisfaction-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-score": {
-          "type": "number",
-          "role": "measure"
+        "source": {
+          "type": "inline",
+          "rows": []
         }
       },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "representative-comparison": {
-      "fields": {
-        "level": {
-          "type": "string",
-          "role": "dimension"
+      "representative-comparison": {
+        "fields": {
+          "level": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "perception-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-score": {
+            "type": "number",
+            "role": "measure"
+          }
         },
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "perception-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "satisfaction-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-score": {
-          "type": "number",
-          "role": "measure"
+        "source": {
+          "type": "inline",
+          "rows": []
         }
       },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "health-detail-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
+      "health-detail-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "partner-name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "detail-title": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "total-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "perception-willingness": {
+            "type": "number",
+            "role": "measure"
+          },
+          "perception-feedback": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-evaluation": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-business": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-human": {
+            "type": "number",
+            "role": "measure"
+          },
+          "csp-customer-payment-ratio": {
+            "type": "number",
+            "role": "measure"
+          },
+          "csp-customer-growth": {
+            "type": "number",
+            "role": "measure"
+          },
+          "cloud-dealer-payment-ratio": {
+            "type": "number",
+            "role": "measure"
+          },
+          "cloud-dealer-growth": {
+            "type": "number",
+            "role": "measure"
+          },
+          "service-capability-ratio": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-control": {
+            "type": "number",
+            "role": "measure"
+          },
+          "cert-compliance-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "区域专职团队认证达标率得分"
+          }
         },
-        "partner-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "total-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "perception-willingness": {
-          "type": "number",
-          "role": "measure"
-        },
-        "perception-feedback": {
-          "type": "number",
-          "role": "measure"
-        },
-        "satisfaction-evaluation": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-business": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-human": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-customer-payment-ratio": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-customer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "cloud-dealer-payment-ratio": {
-          "type": "number",
-          "role": "measure"
-        },
-        "cloud-dealer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "service-capability-ratio": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-control": {
-          "type": "number",
-          "role": "measure"
-        },
-        "cert-compliance-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "区域专职团队认证达标率得分"
+        "source": {
+          "type": "inline",
+          "rows": []
         }
       },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "health-detail-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
+      "health-detail-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "partner-name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "detail-title": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "total-score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "perception-willingness": {
+            "type": "number",
+            "role": "measure"
+          },
+          "perception-feedback": {
+            "type": "number",
+            "role": "measure"
+          },
+          "satisfaction-evaluation": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-business": {
+            "type": "number",
+            "role": "measure"
+          },
+          "contribution-human": {
+            "type": "number",
+            "role": "measure"
+          },
+          "csp-customer-payment-ratio": {
+            "type": "number",
+            "role": "measure"
+          },
+          "csp-customer-growth": {
+            "type": "number",
+            "role": "measure"
+          },
+          "cloud-dealer-payment-ratio": {
+            "type": "number",
+            "role": "measure"
+          },
+          "cloud-dealer-growth": {
+            "type": "number",
+            "role": "measure"
+          },
+          "service-capability-ratio": {
+            "type": "number",
+            "role": "measure"
+          },
+          "risk-control": {
+            "type": "number",
+            "role": "measure"
+          },
+          "cert-compliance-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "区域专职团队认证达标率得分"
+          }
         },
-        "partner-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "total-score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "perception-willingness": {
-          "type": "number",
-          "role": "measure"
-        },
-        "perception-feedback": {
-          "type": "number",
-          "role": "measure"
-        },
-        "satisfaction-evaluation": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-business": {
-          "type": "number",
-          "role": "measure"
-        },
-        "contribution-human": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-customer-payment-ratio": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-customer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "cloud-dealer-payment-ratio": {
-          "type": "number",
-          "role": "measure"
-        },
-        "cloud-dealer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "service-capability-ratio": {
-          "type": "number",
-          "role": "measure"
-        },
-        "risk-control": {
-          "type": "number",
-          "role": "measure"
-        },
-        "cert-compliance-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "区域专职团队认证达标率得分"
+        "source": {
+          "type": "inline",
+          "rows": []
         }
       },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "voice-closure-detail": {
+      "voice-closure-detail": {
+        "fields": {
+          "representative": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处",
+            "label": "代表处"
+          },
+          "voice-count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "伙伴声音总数",
+            "label": "伙伴声音总数"
+          },
+          "closed-count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "伙伴声音闭环数",
+            "label": "伙伴声音闭环数"
+          },
+          "closure-rate": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "伙伴声音闭环率",
+            "label": "伙伴声音闭环率"
+          },
+          "score": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "伙伴声音闭环率得分",
+            "label": "伙伴声音闭环率得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "伙伴声音闭环率",
+                    "伙伴声音总数",
+                    "伙伴声音闭环率得分",
+                    "伙伴声音闭环数"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": false
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "voice-closure-region": {
+                "target": "dimension",
+                "queryField": "地区部"
+              }
+            }
+          }
+        }
+      },
+      "voice-closure-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "closure-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴声音闭环率得分",
+            "queryField": "伙伴声音闭环率得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "地区部"
+                  ],
+                  "output_metrics": [
+                    "伙伴声音闭环率得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "voice-closure-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "closure-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴声音闭环率得分",
+            "queryField": "伙伴声音闭环率得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "伙伴声音闭环率得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },
+      "cert-compliance-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "cert-compliance-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域专职团队认证达标率得分",
+            "queryField": "伙伴健康度-区域专职团队认证达标率得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "地区部"
+                  ],
+                  "output_metrics": [
+                    "伙伴健康度-区域专职团队认证达标率得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "cert-compliance-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "cert-compliance-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域专职团队认证达标率得分",
+            "queryField": "伙伴健康度-区域专职团队认证达标率得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "伙伴健康度-区域专职团队认证达标率得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },
+      "risk-control-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "risk-control-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "扣分",
+            "queryField": "扣分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Partner Deduction Score",
+                  "output_fields": [
+                    "地区部",
+                    "扣分",
+                    "国内或海外"
+                  ],
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "risk-control-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "risk-control-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "扣分",
+            "queryField": "扣分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Partner Deduction Score",
+                  "output_fields": [
+                    "代表处",
+                    "扣分",
+                    "国内或海外"
+                  ],
+                  "order": {},
+                  "filter": {
+                    "fields": [
+                      {
+                        "field_name": "国内或海外",
+                        "value_list": [
+                          "国内",
+                          "海外"
+                        ],
+                        "operator": "="
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },
+      "customer-eval-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "customer-eval-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "客户对伙伴的评价得分",
+            "queryField": "客户对伙伴的评价得分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Custormer Partner Evaluation Score",
+                  "output_fields": [
+                    "地区部",
+                    "客户对伙伴的评价得分",
+                    "国内或海外"
+                  ],
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "customer-eval-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "customer-eval-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "客户对伙伴的评价得分",
+            "queryField": "客户对伙伴的评价得分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Custormer Partner Evaluation Score",
+                  "output_fields": [
+                    "代表处",
+                    "客户对伙伴的评价得分",
+                    "国内或海外"
+                  ],
+                  "order": {},
+                  "filter": {
+                    "fields": [
+                      {
+                        "field_name": "国内或海外",
+                        "value_list": [
+                          "国内",
+                          "海外"
+                        ],
+                        "operator": "="
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },
+      "contribution-business-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "contribution-business-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "收入得分",
+            "queryField": "收入得分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Partner Core Income Score",
+                  "output_fields": [
+                    "地区部",
+                    "收入得分",
+                    "国内或海外"
+                  ],
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "contribution-business-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "contribution-business-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "收入得分",
+            "queryField": "收入得分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Partner Core Income Score",
+                  "output_fields": [
+                    "代表处",
+                    "收入得分",
+                    "国内或海外"
+                  ],
+                  "order": {},
+                  "filter": {
+                    "fields": [
+                      {
+                        "field_name": "国内或海外",
+                        "value_list": [
+                          "国内",
+                          "海外"
+                        ],
+                        "operator": "="
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },
+      "perception-willingness-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "perception-willingness-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "合作意愿感知评分",
+            "queryField": "合作意愿感知评分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Cooperate Willingness Score",
+                  "output_fields": [
+                    "地区部",
+                    "合作意愿感知评分",
+                    "国内或海外"
+                  ],
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "perception-willingness-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "perception-willingness-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "合作意愿感知评分",
+            "queryField": "合作意愿感知评分"
+          },
+          "domestic-overseas": {
+            "type": "string",
+            "role": "dimension",
+            "label": "国内或海外",
+            "queryField": "国内或海外"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "Partner Health/Cooperate Willingness Score",
+                  "output_fields": [
+                    "代表处",
+                    "合作意愿感知评分",
+                    "国内或海外"
+                  ],
+                  "order": {},
+                  "filter": {
+                    "fields": [
+                      {
+                        "field_name": "国内或海外",
+                        "value_list": [
+                          "国内",
+                          "海外"
+                        ],
+                        "operator": "="
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },
+      "cloud-dealer-growth-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "cloud-dealer-growth-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值云经销商数增长得分",
+            "queryField": "伙伴健康度-区域价值云经销商数增长得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "地区部"
+                  ],
+                  "output_metrics": [
+                    "伙伴健康度-区域价值云经销商数增长得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "cloud-dealer-growth-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "cloud-dealer-growth-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值云经销商数增长得分",
+            "queryField": "伙伴健康度-区域价值云经销商数增长得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "伙伴健康度-区域价值云经销商数增长得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },
+      "csp-customer-growth-score-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "地区部",
+            "queryField": "地区部"
+          },
+          "csp-customer-growth-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值客户数增长得分",
+            "queryField": "伙伴健康度-区域价值客户数增长得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "地区部"
+                  ],
+                  "output_metrics": [
+                    "伙伴健康度-区域价值客户数增长得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "csp-customer-growth-score-representative": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "csp-customer-growth-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "伙伴健康度-区域价值客户数增长得分",
+            "queryField": "伙伴健康度-区域价值客户数增长得分"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "伙伴健康度-区域价值客户数增长得分"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "stat-year": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "china-overseas": {
+                "target": "dimension",
+                "queryField": "国内或海外"
+              }
+            }
+          }
+        }
+      },"csp-payment-ratio-detail": {
       "fields": {
         "representative": {
           "type": "string",
           "role": "dimension",
-          "queryField": "rep_office_name_cn",
+          "queryField": "代表处",
           "label": "代表处"
         },
-        "region-dept": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "region_dept_name_cn",
-          "label": "地区部"
-        },
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "geo_pc_name_cn",
-          "label": "区域"
-        },
-        "voice-count": {
+        "csp-count": {
           "type": "number",
           "role": "measure",
-          "queryField": "metrics_cnt_number",
-          "label": "伙伴声音总数"
+          "queryField": "CSP数量",
+          "label": "CSP数量"
         },
-        "closed-count": {
+        "csp-value-customer-count": {
           "type": "number",
           "role": "measure",
-          "queryField": "metrics_cnt_number_close",
-          "label": "伙伴声音闭环数"
+          "queryField": "CSP商业市场价值客户数",
+          "label": "CSP价值客户数"
         },
-        "closure-rate": {
+        "value-customer-payment": {
           "type": "number",
           "role": "measure",
-          "label": "闭环率"
+          "queryField": "CSP商业市场价值客户数消费金额-人民币",
+          "label": "价值客户消费金额"
         },
-        "score-1": {
+        "commercial-payment": {
           "type": "number",
           "role": "measure",
-          "label": "评分分量1"
+          "queryField": "CSP商业市场付费金额-人民币",
+          "label": "商业市场付费金额"
         },
-        "score-2": {
+        "payment-ratio": {
           "type": "number",
           "role": "measure",
-          "label": "评分分量2"
+          "queryField": "伙伴健康度-区域价值客户付费占比",
+          "label": "价值客户付费占比"
         },
-        "score-3": {
+        "growth-score": {
           "type": "number",
           "role": "measure",
-          "label": "评分分量3"
-        },
-        "score-4": {
-          "type": "number",
-          "role": "measure",
-          "label": "评分分量4"
-        },
-        "score-5": {
-          "type": "number",
-          "role": "measure",
-          "label": "评分分量5"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure",
-          "label": "评分"
+          "queryField": "伙伴健康度-区域价值客户数增长得分",
+          "label": "价值客户数增长得分"
         }
       },
       "source": {
@@ -910,13 +2004,15 @@
             "dsl_list": [
               {
                 "output_dims": [
-                  "region_dept_name_cn",
-                  "rep_office_name_cn",
-                  "geo_pc_name_cn"
+                  "代表处"
                 ],
                 "output_metrics": [
-                  "metrics_cnt_number",
-                  "metrics_cnt_number_close"
+                  "CSP数量",
+                  "CSP商业市场价值客户数消费金额-人民币",
+                  "CSP商业市场价值客户数",
+                  "CSP商业市场付费金额-人民币",
+                  "伙伴健康度-区域价值客户付费占比",
+                  "伙伴健康度-区域价值客户数增长得分"
                 ],
                 "filter": {
                   "time": {
@@ -933,1251 +2029,45 @@
             "stat-year": {
               "target": "time"
             },
-            "level": {
+            "csp-payment-ratio-region": {
               "target": "dimension",
-              "queryField": "region_dept_name_cn"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            },
-            "china-overseas": {
-              "target": "dimension",
-              "queryField": "data_site_type"
+              "queryField": "地区部"
             }
           }
         }
-      },
-      "compute": [
-        {
-          "op": "ratio",
-          "numerator": "closed-count",
-          "denominator": "voice-count",
-          "output": "closure-rate",
-          "onZeroDenominator": "null",
-          "scale": 100
-        },
-        {
-          "op": "ratio",
-          "numerator": "closed-count",
-          "denominator": "voice-count",
-          "output": "score-1",
-          "onZeroDenominator": "null"
-        },
-        {
-          "op": "ratio",
-          "numerator": "closed-count",
-          "denominator": "voice-count",
-          "output": "score-2",
-          "onZeroDenominator": "null"
-        },
-        {
-          "op": "ratio",
-          "numerator": "closed-count",
-          "denominator": "voice-count",
-          "output": "score-3",
-          "onZeroDenominator": "null"
-        },
-        {
-          "op": "ratio",
-          "numerator": "closed-count",
-          "denominator": "voice-count",
-          "output": "score-4",
-          "onZeroDenominator": "null"
-        },
-        {
-          "op": "ratio",
-          "numerator": "closed-count",
-          "denominator": "voice-count",
-          "output": "score-5",
-          "onZeroDenominator": "null"
-        },
-        {
-          "op": "sumFields",
-          "fields": [
-            "score-1",
-            "score-2",
-            "score-3",
-            "score-4",
-            "score-5"
-          ],
-          "output": "score",
-          "onMissing": "null"
-        }
-      ]
-    },
-    "voice-closure-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "closure-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴声音闭环率得分",
-          "queryField": "伙伴声音闭环率得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "地区部"
-                ],
-                "output_metrics": [
-                  "伙伴声音闭环率得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "voice-closure-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "closure-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴声音闭环率得分",
-          "queryField": "伙伴声音闭环率得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "代表处"
-                ],
-                "output_metrics": [
-                  "伙伴声音闭环率得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "cert-compliance-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "cert-compliance-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域专职团队认证达标率得分",
-          "queryField": "伙伴健康度-区域专职团队认证达标率得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "地区部"
-                ],
-                "output_metrics": [
-                  "伙伴健康度-区域专职团队认证达标率得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "cert-compliance-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "cert-compliance-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域专职团队认证达标率得分",
-          "queryField": "伙伴健康度-区域专职团队认证达标率得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "代表处"
-                ],
-                "output_metrics": [
-                  "伙伴健康度-区域专职团队认证达标率得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "risk-control-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "risk-control-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "扣分",
-          "queryField": "扣分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Partner Deduction Score",
-                "output_fields": [
-                  "地区部",
-                  "扣分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "risk-control-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "risk-control-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "扣分",
-          "queryField": "扣分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Partner Deduction Score",
-                "output_fields": [
-                  "代表处",
-                  "扣分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "customer-eval-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "customer-eval-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "客户对伙伴的评价得分",
-          "queryField": "客户对伙伴的评价得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Custormer Partner Evaluation Score",
-                "output_fields": [
-                  "地区部",
-                  "客户对伙伴的评价得分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "customer-eval-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "customer-eval-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "客户对伙伴的评价得分",
-          "queryField": "客户对伙伴的评价得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Custormer Partner Evaluation Score",
-                "output_fields": [
-                  "代表处",
-                  "客户对伙伴的评价得分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "contribution-business-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "contribution-business-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "收入得分",
-          "queryField": "收入得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Partner Core Income Score",
-                "output_fields": [
-                  "地区部",
-                  "收入得分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "contribution-business-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "contribution-business-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "收入得分",
-          "queryField": "收入得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Partner Core Income Score",
-                "output_fields": [
-                  "代表处",
-                  "收入得分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "perception-willingness-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "perception-willingness-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "合作意愿感知评分",
-          "queryField": "合作意愿感知评分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Cooperate Willingness Score",
-                "output_fields": [
-                  "地区部",
-                  "合作意愿感知评分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "perception-willingness-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "perception-willingness-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "合作意愿感知评分",
-          "queryField": "合作意愿感知评分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "query_type": "object",
-                "object_type": "Partner Health/Cooperate Willingness Score",
-                "output_fields": [
-                  "代表处",
-                  "合作意愿感知评分"
-                ],
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "cloud-dealer-growth-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "cloud-dealer-growth-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值云经销商数增长得分",
-          "queryField": "伙伴健康度-区域价值云经销商数增长得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "地区部"
-                ],
-                "output_metrics": [
-                  "伙伴健康度-区域价值云经销商数增长得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "cloud-dealer-growth-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "cloud-dealer-growth-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值云经销商数增长得分",
-          "queryField": "伙伴健康度-区域价值云经销商数增长得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "代表处"
-                ],
-                "output_metrics": [
-                  "伙伴健康度-区域价值云经销商数增长得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "csp-customer-growth-score-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        },
-        "csp-customer-growth-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值客户数增长得分",
-          "queryField": "伙伴健康度-区域价值客户数增长得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "地区部"
-                ],
-                "output_metrics": [
-                  "伙伴健康度-区域价值客户数增长得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "csp-customer-growth-score-representative": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "代表处",
-          "queryField": "代表处"
-        },
-        "csp-customer-growth-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "伙伴健康度-区域价值客户数增长得分",
-          "queryField": "伙伴健康度-区域价值客户数增长得分"
-        }
-      },
-      "source": {
-        "type": "query",
-        "resultScope": "complete",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "代表处"
-                ],
-                "output_metrics": [
-                  "伙伴健康度-区域价值客户数增长得分"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
-              }
-            }
-          }
-        }
-      }
-    },
-    "csp-payment-ratio-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "representative": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "csp-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "last-year-csp-value-customer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-growth-rate": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
       }
     },
     "csp-payment-ratio-partner-detail": {
       "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-account": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "commercial-payment": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-customer-payment": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-customer-payment-ratio": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "csp-growth-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "representative": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "csp-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "last-year-csp-value-customer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-growth-rate": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "csp-growth-partner-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-account": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "csp-value-customer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "last-year-csp-value-customer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "csp-value-customer-growth-rate": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "cloud-dealer-payment-ratio-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "representative": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "total-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "total-dealer-payment": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-payment": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-payment-ratio": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "cloud-dealer-payment-ratio-partner-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-account": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "total-dealer-payment": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-payment": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-payment-ratio": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "cloud-dealer-growth-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "representative": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "total-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "last-year-value-cloud-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-growth-rate": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "cloud-dealer-growth-partner-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "detail-title": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "partner-account": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "value-cloud-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "last-year-value-cloud-dealer-count": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-growth": {
-          "type": "number",
-          "role": "measure"
-        },
-        "value-cloud-dealer-growth-rate": {
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": []
-      }
-    },
-    "service-capability-detail": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "geo_pc_name_cn",
-          "label": "区域"
-        },
         "partner-name": {
           "type": "string",
           "role": "dimension",
-          "queryField": "partner_company_name",
+          "queryField": "伙伴名称",
           "label": "伙伴名称"
         },
         "partner-account": {
           "type": "string",
           "role": "dimension",
-          "queryField": "partner_customer_name",
+          "queryField": "伙伴账号",
           "label": "伙伴账号"
         },
-        "partner-plan-level": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "partner_plan",
-          "label": "伙伴计划"
+        "commercial-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "CSP商业市场付费金额-人民币",
+          "label": "商业市场付费金额"
         },
-        "partner-id": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "partner_id",
-          "label": "伙伴ID"
+        "value-customer-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "CSP商业市场价值客户数消费金额-人民币",
+          "label": "价值客户商业市场付费金额"
         },
-        "capability-label": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "first_level_tag_name",
-          "label": "能力标签"
+        "value-customer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值客户付费占比",
+          "label": "价值客户商业市场付费金额占比"
         }
       },
       "source": {
@@ -2189,14 +2079,14 @@
             "dsl_list": [
               {
                 "output_dims": [
-                  "geo_pc_name_cn",
-                  "partner_company_name",
-                  "partner_customer_name",
-                  "partner_plan",
-                  "partner_id",
-                  "first_level_tag_name"
+                  "伙伴名称",
+                  "伙伴账号"
                 ],
-                "output_metrics": [],
+                "output_metrics": [
+                  "CSP商业市场付费金额-人民币",
+                  "CSP商业市场价值客户数消费金额-人民币",
+                  "伙伴健康度-区域价值客户付费占比"
+                ],
                 "filter": {
                   "time": {
                     "period": "month",
@@ -2212,20 +2102,598 @@
             "stat-year": {
               "target": "time"
             },
-            "level": {
+            "csp-payment-ratio-representative": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "csp-growth-detail": {
+      "fields": {
+        "representative": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处",
+          "label": "代表处"
+        },
+        "csp-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "CSP数量",
+          "label": "CSP数量"
+        },
+        "csp-value-customer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "CSP商业市场价值客户数",
+          "label": "CSP价值客户数"
+        },
+        "last-year-csp-value-customer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "去年同期CSP商业市场价值客户数",
+          "label": "去年同期CSP价值客户数"
+        },
+        "csp-value-customer-growth": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-价值客户增长量",
+          "label": "CSP价值客户数增长量"
+        },
+        "csp-value-customer-growth-rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-价值客户增长率",
+          "label": "CSP价值客户数增长率"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值客户数增长得分",
+          "label": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "CSP数量",
+                  "CSP商业市场价值客户数",
+                  "去年同期CSP商业市场价值客户数",
+                  "伙伴健康度-价值客户增长量",
+                  "伙伴健康度-价值客户增长率",
+                  "伙伴健康度-区域价值客户数增长得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "csp-growth-region": {
               "target": "dimension",
               "queryField": "地区部"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "region-dept": "地区部",
-                "representative": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "csp-growth-partner-detail": {
+      "fields": {
+        "partner-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "伙伴名称",
+          "label": "伙伴名称"
+        },
+        "partner-account": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "伙伴账号",
+          "label": "伙伴账号"
+        },
+        "csp-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "CSP数量",
+          "label": "CSP数量"
+        },
+        "last-year-csp-value-customer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "去年同期CSP商业市场价值客户数",
+          "label": "去年同期CSP价值客户数"
+        },
+        "csp-value-customer-growth": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-价值客户增长量",
+          "label": "CSP价值客户数增量"
+        },
+        "csp-value-customer-growth-rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-价值客户增长率",
+          "label": "CSP价值客户数增长率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "伙伴名称",
+                  "伙伴账号"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-价值客户增长率",
+                  "伙伴健康度-价值客户增长量",
+                  "CSP数量",
+                  "去年同期CSP商业市场价值客户数"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "去年同期CSP商业市场价值客户数",
+                  "type": "DESC"
+                }
               }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
             },
-            "china-overseas": {
+            "csp-growth-representative": {
               "target": "dimension",
-              "queryField": "data_site_type"
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "cloud-dealer-payment-ratio-detail": {
+      "fields": {
+        "representative": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处",
+          "label": "代表处"
+        },
+        "total-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "总经销商数量",
+          "label": "总经销商数量"
+        },
+        "total-dealer-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "当年总经销商商业市场付费金额-人民币",
+          "label": "总经销商商业市场付费金额"
+        },
+        "value-cloud-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "价值云经销商数",
+          "label": "价值云经销商数"
+        },
+        "value-cloud-dealer-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "当年价值云经销商数消费金额-人民币",
+          "label": "价值云经销商数消费金额"
+        },
+        "value-cloud-dealer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商付费占比",
+          "label": "价值云经销商付费占比"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商付费占比得分",
+          "label": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "总经销商数量",
+                  "当年总经销商商业市场付费金额-人民币",
+                  "价值云经销商数",
+                  "当年价值云经销商数消费金额-人民币",
+                  "伙伴健康度-区域价值云经销商付费占比",
+                  "伙伴健康度-区域价值云经销商付费占比得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "cloud-dealer-payment-ratio-region": {
+              "target": "dimension",
+              "queryField": "地区部"
+            }
+          }
+        }
+      }
+    },
+    "cloud-dealer-payment-ratio-partner-detail": {
+      "fields": {
+        "partner-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "伙伴名称",
+          "label": "伙伴名称"
+        },
+        "partner-account": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "伙伴账号",
+          "label": "伙伴账号"
+        },
+        "total-dealer-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "当年总经销商商业市场付费金额-人民币",
+          "label": "总经销商商业市场付费金额"
+        },
+        "value-cloud-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "价值云经销商数",
+          "label": "价值云经销商数"
+        },
+        "value-cloud-dealer-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "当年价值云经销商数消费金额-人民币",
+          "label": "价值云经销商数消费金额"
+        },
+        "value-cloud-dealer-payment-ratio": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商付费占比",
+          "label": "价值云经销商付费占比"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "伙伴名称",
+                  "伙伴账号"
+                ],
+                "output_metrics": [
+                  "当年总经销商商业市场付费金额-人民币",
+                  "价值云经销商数",
+                  "当年价值云经销商数消费金额-人民币",
+                  "伙伴健康度-区域价值云经销商付费占比"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "cloud-dealer-payment-ratio-representative": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "cloud-dealer-growth-detail": {
+      "fields": {
+        "representative": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处",
+          "label": "代表处"
+        },
+        "total-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "总经销商数量",
+          "label": "总经销商数量"
+        },
+        "value-cloud-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "价值云经销商数",
+          "label": "价值云经销商数"
+        },
+        "last-year-value-cloud-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "去年同期价值云经销商数",
+          "label": "去年同期价值云经销商数"
+        },
+        "value-cloud-dealer-growth": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商增长量",
+          "label": "价值云经销商增长量"
+        },
+        "value-cloud-dealer-growth-rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商增长率",
+          "label": "价值云经销商增长率"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商数增长得分",
+          "label": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "总经销商数量",
+                  "价值云经销商数",
+                  "去年同期价值云经销商数",
+                  "伙伴健康度-区域价值云经销商增长率",
+                  "伙伴健康度-区域价值云经销商增长量",
+                  "伙伴健康度-区域价值云经销商数增长得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "cloud-dealer-growth-region": {
+              "target": "dimension",
+              "queryField": "地区部"
+            }
+          }
+        }
+      }
+    },
+    "cloud-dealer-growth-partner-detail": {
+      "fields": {
+        "partner-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "伙伴名称",
+          "label": "伙伴名称"
+        },
+        "partner-account": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "伙伴账号",
+          "label": "伙伴账号"
+        },
+        "value-cloud-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "价值云经销商数",
+          "label": "价值云经销商数"
+        },
+        "last-year-value-cloud-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "去年同期价值云经销商数",
+          "label": "去年同期价值云经销商数"
+        },
+        "value-cloud-dealer-growth": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商增长量",
+          "label": "价值云经销商增长量"
+        },
+        "value-cloud-dealer-growth-rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域价值云经销商增长率",
+          "label": "价值云经销商增长率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "伙伴名称",
+                  "伙伴账号"
+                ],
+                "output_metrics": [
+                  "价值云经销商数",
+                  "去年同期价值云经销商数",
+                  "伙伴健康度-区域价值云经销商增长率",
+                  "伙伴健康度-区域价值云经销商增长量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "cloud-dealer-growth-representative": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "service-capability-detail": {
+      "fields": {
+        "representative": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处",
+          "label": "代表处"
+        },
+        "total-dealer-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域能力标签总经销商总数",
+          "label": "总经销商总数"
+        },
+        "csp-core-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-CSP核心级伙伴数",
+          "label": "CSP核心级伙伴数"
+        },
+        "certified-partner-count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域能力标签能力认证的伙伴数",
+          "label": "能力认证的伙伴数"
+        },
+        "certified-ratio": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-标签能力认证的伙伴数占比",
+          "label": "能力认证的伙伴数占比"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "伙伴健康度-区域能力标签伙伴得分",
+          "label": "得分"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "伙伴健康度-区域能力标签总经销商总数",
+                  "伙伴健康度-CSP核心级伙伴数",
+                  "伙伴健康度-区域能力标签能力认证的伙伴数",
+                  "伙伴健康度-标签能力认证的伙伴数占比",
+                  "伙伴健康度-区域能力标签伙伴得分"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "伙伴健康度-CSP核心级伙伴数",
+                  "type": "DESC"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "stat-year": {
+              "target": "time"
+            },
+            "service-capability-region": {
+              "target": "dimension",
+              "queryField": "地区部"
             }
           }
         }
@@ -2278,8 +2746,9 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
+                "geo": "geo_pc_code",
                 "region-dept": "地区部",
-                "representative": "代表处"
+                "office": "代表处"
               }
             }
           }
@@ -2333,9 +2802,14 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
+                "geo": "geo_pc_code",
                 "region-dept": "地区部",
-                "representative": "代表处"
+                "office": "代表处"
               }
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           }
         }
@@ -2388,8 +2862,9 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
+                "geo": "geo_pc_code",
                 "region-dept": "地区部",
-                "representative": "代表处"
+                "office": "代表处"
               }
             }
           }
@@ -2443,9 +2918,14 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
+                "geo": "geo_pc_code",
                 "region-dept": "地区部",
-                "representative": "代表处"
+                "office": "代表处"
               }
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           }
         }
@@ -2498,8 +2978,9 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
+                "geo": "geo_pc_code",
                 "region-dept": "地区部",
-                "representative": "代表处"
+                "office": "代表处"
               }
             }
           }
@@ -2553,9 +3034,14 @@
             "region": {
               "target": "dimension",
               "levelQueryFields": {
+                "geo": "geo_pc_code",
                 "region-dept": "地区部",
-                "representative": "代表处"
+                "office": "代表处"
               }
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           }
         }
@@ -3320,7 +3806,12 @@
               }
             ]
           },
-          "filterBindings": {}
+          "filterBindings": {
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
+            }
+          }
         }
       }
     },
@@ -3376,12 +3867,15 @@
           "filterBindings": {
             "stat-year": {
               "target": "time"
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           }
         }
       }
-    },
-    "customer-eval-score-overview": {
+    },"customer-eval-score-overview": {
       "fields": {
         "china-overseas": {
           "type": "string",
@@ -3426,7 +3920,12 @@
               }
             ]
           },
-          "filterBindings": {}
+          "filterBindings": {
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
+            }
+          }
         }
       }
     },
@@ -3475,7 +3974,12 @@
               }
             ]
           },
-          "filterBindings": {}
+          "filterBindings": {
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
+            }
+          }
         }
       }
     },
@@ -3530,6 +4034,10 @@
           "filterBindings": {
             "stat-year": {
               "target": "time"
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           },
           "language": "dqe"
@@ -3587,6 +4095,10 @@
           "filterBindings": {
             "stat-year": {
               "target": "time"
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           },
           "language": "dqe"
@@ -3645,6 +4157,10 @@
           "filterBindings": {
             "stat-year": {
               "target": "time"
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           }
         }
@@ -3701,6 +4217,10 @@
           "filterBindings": {
             "stat-year": {
               "target": "time"
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           },
           "language": "dqe"
@@ -3759,6 +4279,10 @@
           "filterBindings": {
             "stat-year": {
               "target": "time"
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           }
         }
@@ -3815,6 +4339,10 @@
           "filterBindings": {
             "stat-year": {
               "target": "time"
+            },
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
             }
           },
           "language": "dqe"
@@ -3866,7 +4394,71 @@
               }
             ]
           },
-          "filterBindings": {}
+          "filterBindings": {
+            "china-overseas": {
+              "target": "dimension",
+              "queryField": "国内或海外"
+            }
+          }
+        }
+      }
+    },
+    "service-capability-partner-detail": {
+      "fields": {
+        "capability-label": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "一级标签名称",
+          "label": "一级标签名称"
+        },
+        "partner-plan-level": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "伙伴计划等级",
+          "label": "伙伴计划等级"
+        },
+        "partner-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "公司名称",
+          "label": "公司名称"
+        },
+        "partner-account": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "华为云账号",
+          "label": "华为云账号"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Partner-Capability_Certification_Metric_Detail_Global",
+                "output_fields": [
+                  "一级标签名称",
+                  "伙伴计划等级",
+                  "公司名称",
+                  "华为云账号"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "service-capability-representative": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
         }
       }
     }
@@ -3888,18 +4480,13 @@
             "options": [
               {
                 "label": "中国区",
-                "value": "中国区"
+                "value": "国内"
               },
               {
                 "label": "海外",
                 "value": "海外"
               }
             ]
-          },
-          "visibleWhen": {
-            "filter": "region",
-            "part": "values",
-            "op": "isEmpty"
           }
         },
         {
@@ -3927,9 +4514,31 @@
             ]
           },
           "visibleWhen": {
-            "filter": "region",
-            "part": "values",
-            "op": "isEmpty"
+            "any": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -3961,9 +4570,31 @@
             ]
           },
           "visibleWhen": {
-            "filter": "region",
-            "part": "values",
-            "op": "isEmpty"
+            "any": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -3995,9 +4626,31 @@
             ]
           },
           "visibleWhen": {
-            "filter": "region",
-            "part": "values",
-            "op": "isEmpty"
+            "any": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -4029,9 +4682,31 @@
             ]
           },
           "visibleWhen": {
-            "filter": "region",
-            "part": "values",
-            "op": "isEmpty"
+            "any": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -4063,9 +4738,31 @@
             ]
           },
           "visibleWhen": {
-            "filter": "region",
-            "part": "values",
-            "op": "isEmpty"
+            "any": [
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -4319,7 +5016,7 @@
                 "filter": "region",
                 "part": "level",
                 "op": "eq",
-                "value": "representative"
+                "value": "office"
               }
             ]
           }
@@ -4363,7 +5060,7 @@
                 "filter": "region",
                 "part": "level",
                 "op": "eq",
-                "value": "representative"
+                "value": "office"
               }
             ]
           }
@@ -4407,7 +5104,7 @@
                 "filter": "region",
                 "part": "level",
                 "op": "eq",
-                "value": "representative"
+                "value": "office"
               }
             ]
           }
@@ -4451,7 +5148,7 @@
                 "filter": "region",
                 "part": "level",
                 "op": "eq",
-                "value": "representative"
+                "value": "office"
               }
             ]
           }
@@ -4495,7 +5192,7 @@
                 "filter": "region",
                 "part": "level",
                 "op": "eq",
-                "value": "representative"
+                "value": "office"
               }
             ]
           }
@@ -4572,9 +5269,31 @@
                   }
                 ],
                 "visibleWhen": {
-                  "filter": "region",
-                  "part": "values",
-                  "op": "isEmpty"
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "isEmpty"
+                    },
+                    {
+                      "all": [
+                        {
+                          "filter": "region",
+                          "part": "level",
+                          "op": "eq",
+                          "value": "geo"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "全球"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               {
@@ -4727,7 +5446,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "voice-closure-detail-view"
+                                    "view": "voice-closure-detail-view",
+                                    "bindings": {
+                                      "voice-closure-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -4819,7 +5544,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "csp-payment-ratio-detail-view"
+                                    "view": "csp-payment-ratio-detail-view",
+                                    "bindings": {
+                                      "csp-payment-ratio-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 },
                                 {
@@ -4836,7 +5567,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "csp-growth-detail-view"
+                                    "view": "csp-growth-detail-view",
+                                    "bindings": {
+                                      "csp-growth-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -4860,7 +5597,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "cloud-dealer-payment-ratio-detail-view"
+                                    "view": "cloud-dealer-payment-ratio-detail-view",
+                                    "bindings": {
+                                      "cloud-dealer-payment-ratio-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 },
                                 {
@@ -4877,7 +5620,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "cloud-dealer-growth-detail-view"
+                                    "view": "cloud-dealer-growth-detail-view",
+                                    "bindings": {
+                                      "cloud-dealer-growth-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -4901,7 +5650,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "service-capability-detail-view"
+                                    "view": "service-capability-detail-view",
+                                    "bindings": {
+                                      "service-capability-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -4960,7 +5715,7 @@
                       "columns": [
                         {
                           "field": "region",
-                          "title": "区域",
+                          "title": "代表处",
                           "width": 120
                         },
                         {
@@ -5016,7 +5771,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "voice-closure-detail-view"
+                                    "view": "voice-closure-detail-view",
+                                    "bindings": {
+                                      "voice-closure-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -5108,7 +5869,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "csp-payment-ratio-partner-detail-view"
+                                    "view": "csp-payment-ratio-partner-detail-view",
+                                    "bindings": {
+                                      "csp-payment-ratio-representative": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 },
                                 {
@@ -5125,7 +5892,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "csp-growth-partner-detail-view"
+                                    "view": "csp-growth-partner-detail-view",
+                                    "bindings": {
+                                      "csp-growth-representative": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -5149,7 +5922,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "cloud-dealer-payment-ratio-partner-detail-view"
+                                    "view": "cloud-dealer-payment-ratio-partner-detail-view",
+                                    "bindings": {
+                                      "cloud-dealer-payment-ratio-representative": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 },
                                 {
@@ -5166,7 +5945,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "cloud-dealer-growth-partner-detail-view"
+                                    "view": "cloud-dealer-growth-partner-detail-view",
+                                    "bindings": {
+                                      "cloud-dealer-growth-representative": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -5190,7 +5975,13 @@
                                   "openDetail": {
                                     "surface": "modal",
                                     "titleField": "region",
-                                    "view": "service-capability-detail-view"
+                                    "view": "service-capability-detail-view",
+                                    "bindings": {
+                                      "service-capability-region": {
+                                        "source": "row",
+                                        "field": "region"
+                                      }
+                                    }
                                   }
                                 }
                               ]
@@ -5236,8 +6027,7 @@
         }
       ]
     }
-  ],
-  "detailViews": [
+  ],"detailViews": [
     {
       "id": "region-detail",
       "mode": "snapshot",
@@ -5337,6 +6127,11 @@
                 "format": "xlsx",
                 "filename": "区域伙伴明细"
               }
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
@@ -5344,7 +6139,7 @@
     },
     {
       "id": "voice-closure-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "voice-closure-table",
@@ -5406,14 +6201,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "voice-closure-region"
       ]
     },
     {
       "id": "csp-payment-ratio-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "csp-payment-ratio-table",
@@ -5454,55 +6257,63 @@
               {
                 "field": {
                   "data": "main",
-                  "field": "last-year-csp-value-customer-count",
+                  "field": "value-customer-payment",
                   "format": "number-grouped"
                 },
-                "title": "去年同期CSP价值客户数",
-                "width": 200,
-                "sortable": true
-              },
-              {
-                "field": {
-                  "data": "main",
-                  "field": "csp-value-customer-growth",
-                  "format": "number-grouped"
-                },
-                "title": "CSP价值客户数增长量",
+                "title": "价值客户消费金额",
                 "width": 180,
                 "sortable": true
               },
               {
                 "field": {
                   "data": "main",
-                  "field": "csp-value-customer-growth-rate",
-                  "format": "number-1"
+                  "field": "commercial-payment",
+                  "format": "number-grouped"
                 },
-                "title": "CSP价值客户数增长率(%)",
+                "title": "商业市场付费金额",
                 "width": 180,
                 "sortable": true
               },
               {
                 "field": {
                   "data": "main",
-                  "field": "score",
+                  "field": "payment-ratio",
                   "format": "number-1"
                 },
-                "title": "得分",
-                "width": 100,
+                "title": "价值客户付费占比(%)",
+                "width": 180,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "growth-score",
+                  "format": "number-1"
+                },
+                "title": "价值客户数增长得分",
+                "width": 180,
                 "sortable": true
               }
             ],
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "csp-payment-ratio-region"
       ]
     },
     {
       "id": "csp-payment-ratio-partner-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "csp-payment-ratio-partner-table",
@@ -5559,14 +6370,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "csp-payment-ratio-representative"
       ]
     },
     {
       "id": "csp-growth-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "csp-growth-table",
@@ -5648,14 +6467,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "csp-growth-region"
       ]
     },
     {
       "id": "csp-growth-partner-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "csp-growth-partner-table",
@@ -5681,11 +6508,11 @@
               {
                 "field": {
                   "data": "main",
-                  "field": "csp-value-customer-count",
+                  "field": "csp-count",
                   "format": "number-grouped"
                 },
-                "title": "CSP价值客户数",
-                "width": 150,
+                "title": "CSP数量",
+                "width": 120,
                 "sortable": true
               },
               {
@@ -5722,14 +6549,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "csp-growth-representative"
       ]
     },
     {
       "id": "cloud-dealer-payment-ratio-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "cloud-dealer-payment-ratio-table",
@@ -5811,14 +6646,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "cloud-dealer-payment-ratio-region"
       ]
     },
     {
       "id": "cloud-dealer-payment-ratio-partner-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "cloud-dealer-payment-ratio-partner-table",
@@ -5885,14 +6728,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "cloud-dealer-payment-ratio-representative"
       ]
     },
     {
       "id": "cloud-dealer-growth-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "cloud-dealer-growth-table",
@@ -5974,14 +6825,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "cloud-dealer-growth-region"
       ]
     },
     {
       "id": "cloud-dealer-growth-partner-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "cloud-dealer-growth-partner-table",
@@ -6048,14 +6907,22 @@
             "pagination": {
               "mode": "local",
               "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
             }
           }
         }
+      ],
+      "filters": [
+        "cloud-dealer-growth-representative"
       ]
     },
     {
       "id": "service-capability-detail-view",
-      "mode": "snapshot",
+      "mode": "query",
       "components": [
         {
           "id": "service-capability-table",
@@ -6069,24 +6936,119 @@
           "props": {
             "columns": [
               {
+                "field": "representative",
+                "title": "代表处",
+                "width": 150
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "total-dealer-count",
+                  "format": "number-grouped"
+                },
+                "title": "总经销商总数",
+                "width": 150,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "csp-core-count",
+                  "format": "number-grouped"
+                },
+                "title": "CSP核心级伙伴数",
+                "width": 150,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "certified-partner-count",
+                  "format": "number-grouped"
+                },
+                "title": "能力认证的伙伴数",
+                "width": 180,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "certified-ratio",
+                  "format": "number-1"
+                },
+                "title": "能力认证的伙伴数占比(%)",
+                "width": 220,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "score",
+                  "format": "number-1"
+                },
+                "title": "得分",
+                "width": 100,
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            },
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
+            }
+          }
+        }
+      ],
+      "filters": [
+        "service-capability-region"
+      ]
+    },
+    {
+      "id": "service-capability-partner-detail-view",
+      "mode": "query",
+      "filters": [
+        "service-capability-representative"
+      ],
+      "components": [
+        {
+          "id": "service-capability-partner-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "service-capability-partner-detail"
+          },
+          "props": {
+            "rowNumber": {
+              "title": "序号",
+              "width": 64,
+              "fixed": "left"
+            },
+            "columns": [
+              {
                 "field": "partner-name",
                 "title": "伙伴名称",
-                "width": 150
+                "width": 200
               },
               {
                 "field": "partner-account",
                 "title": "伙伴账号",
-                "width": 150
+                "width": 200
               },
               {
                 "field": "partner-plan-level",
                 "title": "伙伴计划+等级",
-                "width": 150
+                "width": 200
               },
               {
                 "field": "capability-label",
                 "title": "能力标签名称",
-                "width": 150
+                "width": 200
               }
             ],
             "pagination": {
