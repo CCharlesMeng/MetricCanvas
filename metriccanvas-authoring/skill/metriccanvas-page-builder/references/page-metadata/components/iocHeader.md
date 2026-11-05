@@ -387,7 +387,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/bac
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；必须同时有合法returnContext和back处理函数。 |
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "6.91",
+  "id": "ioc-default-back-target",
+  "layout": "dashboard",
+  "meta": {
+    "title": "默认返回：目标页"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "默认返回：目标页"
+            },
+            "presentation": {
+              "layout": "inline"
+            },
+            "back": true
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示。声明 back:true 后，默认调用浏览器 history.back()；无需集成应用提供返回函数。"
+          }
+        }
+      ]
+    }
+  ]
+}

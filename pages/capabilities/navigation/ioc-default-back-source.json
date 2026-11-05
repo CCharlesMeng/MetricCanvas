@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "6.91",
+  "id": "ioc-default-back-source",
+  "layout": "dashboard",
+  "meta": {
+    "title": "默认返回：来源页"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "默认返回：来源页"
+            },
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示。点击链接进入目标页，再使用页头返回。",
+            "links": [
+              {
+                "label": "打开默认返回页",
+                "href": "/pages/ioc-default-back-target"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

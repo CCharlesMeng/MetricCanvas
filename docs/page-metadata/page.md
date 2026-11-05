@@ -42,7 +42,7 @@ IOC 业务页的公共 `region` 输入只允许页头中的一个组织树：`di
 
 `presentation.density`为normal/compact；`collapse`为none/firstRow，缺省normal/none。firstRow按直接容器实际换行测量，折叠保留首行，隐藏项inert并关闭弹层；展开不改值、不查询。日期复用DatePicker/PeriodFilter；月→季→年→月保留月份锚点，近一年为当前月之前12完整月。锚点与展开是实例局部状态，不写入Page。
 
-`back:true`只表达返回意图。集成应用须同时提供非空`navigation.returnContext.entryId`与back函数才显示；直接打开无来源隐藏。B1没有完整视图快照或导航栈恢复。可选actions、有限枚举/单选、条件启用、V2候选、最新期上限和全页操作分别保留B2–B6规划，6.36不接受这些尚未交付字段。
+`back:true` 声明返回意图，运行时默认调用当前窗口的 `history.back()`，无需集成应用提供路由或 `returnContext`。浏览器挂载后优先用 `window.navigation.canGoBack` 判断可否后退；不支持该 API 时回退到 `history.length>1`。无浏览器环境或判断不可后退时隐藏默认按钮。历史长度包含前进记录，旧浏览器的长度回退不能保证存在前一条记录，此时按原生行为不跳转。集成应用可选提供 `navigation.back` 覆盖默认行为，提供函数即显示按钮，`returnContext` 只用于可选来源信息及无障碍标签。未声明 back 时不显示；只读允许返回，静态导出不包含返回按钮。旧工具栏兼容路径仍需自定义返回函数，不新增默认行为。返回不维护第二套导航栈，不承诺分页、排序、滚动等完整视图恢复。合成场景 `/pages/ioc-default-back-source` → `/pages/ioc-default-back-target` 验证浏览器返回、刷新与自定义覆盖。可选actions、有限枚举/单选、条件启用、V2候选、最新期上限和全页操作分别保留B2–B6规划，6.36不接受这些尚未交付字段。
 
 共用筛选协调对write/writeMany/控件/action/地图/URL恢复执行整组类型与边界校验；非法组整次拒绝。依赖变化一次清理所有后代，自动清空进入待确认门禁；用户显式选择或清空才解除。非空维度初值须经当前候选验证；loading/error/unavailable或不合法候选只暂停消费它的查询及下游，无关查询继续。候选重试读取当前依赖；成功和失败都检查代次，缓存按本实例、filterId、层级、完整规范化依赖隔离。只读拦截全部用户写入口，初始化/restore仍校验，静态隐藏不意味着停止查询。门禁同时约束目标表导出和整页静态准备。
 
@@ -64,14 +64,14 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 
 页头组件自身统一提供 **16px 底部外间距**，适用于普通行内、上下排、紧凑及静态呈现。该间距位于页头外框与后续正文之间，不是页头内部padding；不需页面JSON声明。旧工具栏适配与导出正文不再叠加另一份页头间距。未渲染页头时没有此占位。当前可观察入口为 `ioc-header-demo`、`ioc-header-standard` 与旧紧凑入口 `ioc-opportunity-analysis`。
 
-`readOnly:true` 统一限制用户筛选写入，包括更多面板与组件动作；初始化与合法恢复保持原有机制。`note` 是页头纯文本说明。只读不阻止合法返回；显式 `back:true` 仍要求集成应用提供合法 returnContext 和 back。未声明 back 的新页头不接管返回，避免隐藏集成应用的返回入口。
+`readOnly:true` 统一限制用户筛选写入，包括更多面板与组件动作；初始化与合法恢复保持原有机制。`note` 是页头纯文本说明。只读不阻止合法返回；显式 `back:true` 使用浏览器默认返回或集成应用可选的 `navigation.back` 覆盖。未声明 back 的新页头不接管返回，避免隐藏集成应用的返回入口。
 
 所有筛选通过同一 FilterBar 接收候选重试、只读和时间事实；没有 IOC 专属筛选状态。 IOC Region 必须使用页头内单个可搜索的单选结构树，在同一棵树内选择地区部或代表处，不增加前置层级按钮；声明 `display:"tree"`、`treeSelection:"level"`、`selection.mode:"single"`，交互和候选契约见[结构树](filters.md#business-filters)。未认领的筛选留在内容区，已被 reportHeader 或图表认领的筛选不会再次进入页头。静态呈现复用 IocHeader，移除交互而保留身份与已应用条件。B6 的主题、全屏和附加操作仍未启用。
 
 实际页面复用既有 `ioc-project-overview`、`ioc-opportunity-list`、`ioc-opportunity-analysis`：分别验证普通、更多筛选及紧凑呈现。`dashboard-period-filter` 使用同一页头且仅保留一个年份入口。旧文档回归使用完整兼容夹具，不再新增演示入口。筛选声明见[筛选模块](filters.md)。
 
 
-普通行内页头（`layout:"inline"`、`density:"normal"`、`collapse:"none"`）按小箭头 `<`、标题、可选灰色标签、筛选依次进入同一个换行流；窄容器不固定两栏。标准/密集/详情合成页不自动添加说明、编码或期间事实。compact、firstRow、overflow和stacked继续各自原有呈现。返回仍要求可信 returnContext/back。完整场景见 `ioc-header-standard`、`ioc-header-dense`、`ioc-header-detail` 与 `/ioc-header-review`。
+普通行内页头（`layout:"inline"`、`density:"normal"`、`collapse:"none"`）按小箭头 `<`、标题、可选灰色标签、筛选依次进入同一个换行流；窄容器不固定两栏。标准/密集/详情合成页不自动添加说明、编码或期间事实。compact、firstRow、overflow和stacked继续各自原有呈现。返回沿用浏览器默认行为与集成应用可选覆盖。完整场景见 `ioc-header-standard`、`ioc-header-dense`、`ioc-header-detail` 与 `/ioc-header-review`。
 
 MC 内容投影与本地创作知识由同一产品参考生成。完整性诊断场景为 `mc-content-layout-demo`；内容身份、页面版本与实际部署身份分别核对。旧文件的可读性、能力下限、可迁移性和人工语义处理项分别返回，不能仅提升 schemaVersion 绕过迁移。
 

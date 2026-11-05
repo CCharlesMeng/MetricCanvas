@@ -1,15 +1,20 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import { onMount } from 'svelte';
   import type { ResolvedIocHeader } from './model';
+  import { headerBackAction, type BrowserReturn } from './back';
   let {model, filterIds, overflowIds=[], controls, returnContext, onback, readOnly=false, note, staticView=false}: {
     model:ResolvedIocHeader;filterIds:string[];overflowIds?:string[];controls:Snippet<[string,boolean]>;
     returnContext?:{entryId:string;label?:string};onback?:()=>void;readOnly?:boolean;note?:string;staticView?:boolean;
   } = $props();
+  let browser = $state<BrowserReturn>();
+  onMount(() => { browser = window; });
+  const backAction = $derived(headerBackAction(model, onback, browser));
   const flow=$derived(model.layout==='inline' && model.density==='normal' && model.collapse==='none');
   const uid = $props.id();
   const displayedIds=$derived(staticView?[...filterIds,...overflowIds]:filterIds);
-  const showBack=$derived(!staticView && model.back && !!onback && (model.legacyBack || !!returnContext?.entryId));
+  const showBack=$derived(!staticView && !!backAction);
   const hasIdentity=$derived(!!(model.title || model.code || model.tags.length || model.description || model.facts.length || showBack));
   let expanded=$state(false), overflowing=$state(false), firstHeight=$state(0), hiddenIds=$state<string[]>([]);
   let filters=$state<HTMLDivElement>();
@@ -43,7 +48,7 @@
   {#if hasIdentity}
     <div class="identity">
       <div class="heading">
-        {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回来源页'} onclick={onback}>{flow?'<':'←'}</button>{/if}
+        {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回来源页'} onclick={backAction}>{flow?'<':'←'}</button>{/if}
         {#if model.title}<h1 data-ioc-title>{model.title}</h1>{/if}
         {#each model.tags as tag (tag.id)}<span data-ioc-tag={tag.id} data-tone={tag.tone} class="tag">{tag.text}</span>{/each}
       </div>

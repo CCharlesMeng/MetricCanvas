@@ -74,3 +74,11 @@ URL 仅提供初始化输入；未声明参数不生效，无效或重复值回�
 验证实际 embed：先 `pnpm --filter @metriccanvas/embed build`，再 `pnpm --filter @metriccanvas/embed preview:examples`，打开 `http://127.0.0.1:4175/examples/url-params.html?account-name=合成账号甲`；省略 initialSearch 的 ES mount 自动读取账号。改为 `#/detail?account-name=合成账号乙` 同样显示乙；外层与 hash 同键时 hash 优先。显式传 `initialSearch: ''` 阻止自动继承。地址变化本身不重查；调用完整 update 且省略 initialSearch 才重新读取当前 URL。
 
 浏览器回归使用同一完整页面，覆盖 ES/global、显式覆盖/空串、更新、重复值校验；参数绑定查询另用既有 dimension-params-page 夹具验证有效条件及缺值不查数。真实 Operation Map 路由和账号权限另验。
+
+## IOC 页头默认返回
+
+入口：`/pages/ioc-default-back-source` → `/pages/ioc-default-back-target`，无需 URL 参数。
+
+启动：`pnpm dev:playground`。两个页面均为静态合成演示，不访问 DQE。点击来源页的“打开默认返回页”，目标页声明 `props.back:true`，点击页头返回后回到来源地址；刷新目标页后仍可返回。来源页未声明 back，不显示按钮。在支持 Navigation API 的全新浏览上下文直接打开目标页，按钮隐藏。
+
+Embed 原生 HTML 示例不提供返回适配器，用于验证运行时默认动作。Playground 保留已有应用级自定义返回，验证可选覆盖兼容。浏览器回归另验证只传 navigation.back、不传 returnContext 的覆盖，以及完整 update 移除回调后恢复默认行为。不承诺分页、排序、滚动或完整视图恢复。

@@ -19,11 +19,12 @@ export interface RuntimeNavigation {
   resolveHref?(href:string):string;
   /** Trusted target declaration projection; never loads authorization candidates. */
   resolveTargetInputs?(href:string,options:{signal:AbortSignal}):import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined|Promise<import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined>;
+  /** Optional application return context and accessible label; not required by the IOC browser default. */
   returnContext?: { entryId: string; label?: string };
   replaceSearch?(search: string): void;
   /** 返回 true 表示宿主已接管；否则保留浏览器导航。 */
   navigate?(target: RuntimeNavigationTarget): boolean | void;
-  /** 返回宿主记录的来源页；深链由宿主决定是否回退浏览器历史。 */
+  /** Overrides the IOC header's default browser history.back(); does not require returnContext. */
   back?(): void;
 }
 

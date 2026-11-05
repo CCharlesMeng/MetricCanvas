@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "a46bed50daac6912d5801b0279b96b97fb33109e542ec2ce4fe20a5134c186c1",
+  "sha256": "4f2e7975aea191d69fc74b50ba58e3ae70e29c9cd3b44ee3cc826710f6be205a",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "8fae9a3911f45a2dea883a6347de00e0ce2b55d1d9f7e8f9a55c742bbc190924"
+      "sha256": "3fd71b7501cfe4b525f270488d42361bd98d6f7cbf7b9f5da7626b99aa6885a4"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "c752209b0fb17f5bd4e2c5ed579d09632017b47abe3b32765dd12e963be03c8b"
+      "sha256": "15d3152452951cef25f7df73b79f96b1939ccbaf5f49909b822a6e44ca6bb99e"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2636,7 +2636,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "0204695e524c56295a42ad02bd21ea354862d6f4571c13bd43806d0ff9892fa2"
+      "sha256": "583c94e456668b23dd17461dfa1ae1604bc5cd7a8df2e51a6958e1f07d98f150"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2656,7 +2656,7 @@
     },
     {
       "file": "pages/capabilities/navigation/README.md",
-      "sha256": "af6c394ba71645d95c0dfd58c18c07614bc1807c0b7a599ea381bf80b01a6847"
+      "sha256": "eada2271ac83ec33c74ff0820b7bb0dbba05f07ce7273ab2a7679a0f0aa5f57a"
     },
     {
       "file": "pages/capabilities/navigation/embed-url-params.json",
@@ -2665,6 +2665,14 @@
     {
       "file": "pages/capabilities/navigation/ioc-content-navigation.json",
       "sha256": "9bc179720e677fa851c192804f8fb4ecdd28814d9ee01554ff34376cda310212"
+    },
+    {
+      "file": "pages/capabilities/navigation/ioc-default-back-source.json",
+      "sha256": "d35781cb40420860746ad321000f9cd287c79f4f29a8ede567e2c37dd0cdc147"
+    },
+    {
+      "file": "pages/capabilities/navigation/ioc-default-back-target.json",
+      "sha256": "33a6ee071488efe60ec49918b79134b95ee5b810bdd3cccee7ab0056397abb02"
     },
     {
       "file": "pages/capabilities/navigation/tab-url-initialization.json",

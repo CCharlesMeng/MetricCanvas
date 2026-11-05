@@ -80,6 +80,8 @@ IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提
 
 组合表格默认兼容动态异常数据：空值或缺字段局部补空，无效行跳过，同一来源重复 key 保留第一条；页面不额外展示诊断提示，诊断通过 console.warn 输出；Excel 附“数据异常说明”。先完整整理可用行再排序、计数、分页，配置、权限、网络和资源限制保持。无需新增页面字段；声明、限制及合成入口 `/pages/table-data-recovery` 见[组合表格异常兼容](docs/page-metadata/data-sources.md#table-result-recovery)。
 
+IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器 `history.back()`，浏览器判断不可后退时隐藏；可选 `navigation.back` 覆盖，不要求 `returnContext`。不增删 Schema 字段。合成入口 `/pages/ioc-default-back-source` → `/pages/ioc-default-back-target`，详见[IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632)。
+
 ## 从需求到页面
 
 记录模式组合源 `pagedJoin.records` 的查询参数按成员显式绑定：下钻审批人可仅进入主表，不创建审批人筛选器或候选查询；补列源仍按关联键补列。非记录模式的全员参数约束与业务筛选规则保持。此为参数消费校验修复，不新增字段或 Schema 版本；需同步更新引擎。声明、可选标题缺值与合成验收入口见[记录模式](docs/page-metadata/data-sources.md)和 `/pages/record-join-query-params`。
