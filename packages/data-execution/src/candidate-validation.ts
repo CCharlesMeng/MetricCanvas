@@ -98,5 +98,5 @@ function validateGlobalRegionNames(page:Page,filter:FilterDeclaration,candidates
 }
 
 function needsCandidateReceipt(filter:Extract<FilterDeclaration,{type:'dimension'}>,selected:FilterValue|undefined):boolean {
-  return !!(filter.candidates||filter.candidateContext||filter.treeSelection==='level'||filter.candidateWindow||selected?.type==='dimension'&&selected.values.length>0);
+  return !!(filter.candidates||filter.candidateContext||filter.candidateWindow||selected?.type==='dimension'&&selected.values.length>0);
 }

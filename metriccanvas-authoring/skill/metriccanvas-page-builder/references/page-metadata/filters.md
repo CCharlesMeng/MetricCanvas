@@ -196,7 +196,9 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 6.46起 `candidateContext:{filterIds:[],reconcile:"clear"}` 显式声明无筛选依赖的外部候选，仍走完整 `FilterCandidatesGateway` 状态、重试及门禁。适用于权限组织加工、日历月预拉等；月份选择或无关筛选变化不重取。未声明 candidateContext 的旧页面继续既有候选端口，不自动改变路由。
 
-普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。
+可选维度在空选且没有 `candidates`、`candidateContext` 或 `candidateWindow` 时，不要求候选回执；包括 `treeSelection:"level"` 的 IOC Region。首屏立即执行查询，省略该筛选的谓词，也允许复用既有合法嵌入初始行。候选加载中、空结果、不可用或失败均不阻断这一空选查询；一旦有动态选值，仍须通过当前完整候选校验。必选维度空选、自动联动清空后待确认、显式数据源候选 `candidates`、`candidateContext`（含无依赖上下文）及窗口要求继续遵循原门禁，不能借初始行绕过。
+
+可搜索的候选弹层只在候选列表内滚动，搜索框固定在弹层顶部；组织树展开和搜索后仍受可用视口高度限制。验收入口 `/pages/region-authorization-norms`：不传 Region 时首屏发起地区部、代表处和趋势查询；选择全球时继续不附加 Region 谓词，选择其他节点后下推对应层级字段。Playground 使用合成组织候选；业务响应由实际 DQE 网关提供，自动浏览器回归使用拦截响应验证正常、空结果和失败状态，不代表真实服务验收。
 
 
 <a id="boolean-filter-overrides"></a>

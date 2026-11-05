@@ -125,7 +125,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   }>, selected: FilterValue | undefined, result: Set<string>): void {
     if (!editing.candidates || dimensionOptions.has(declaration.id) || declaration.options)
       return;
-    if (declaration.candidates || declaration.candidateContext || declaration.treeSelection === 'level' || declaration.candidateWindow) {
+    if (declaration.candidates || declaration.candidateContext || declaration.candidateWindow) {
       if (receipts.get(declaration.id)?.status !== 'ready')
         result.add(declaration.id);
     }

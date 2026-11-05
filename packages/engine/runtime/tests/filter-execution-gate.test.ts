@@ -24,6 +24,6 @@ it('the acceptance page gates selected candidates and downstream sources, leavin
   await flush();expect(calls).toHaveLength(1);expect(snapshots.get('bound')?.status).toBe('loading');expect(snapshots.get('downstream')?.status).toBe('loading');expect(snapshots.get('unbound')?.status).toBe('empty');
   state.candidate('region','ready',['R99']);await flush();expect(snapshots.get('bound')?.status).toBe('empty');expect(snapshots.get('downstream')?.status).toBe('empty');
   const before=calls.length;state.candidate('region','error');await flush();expect(calls).toHaveLength(before);expect(snapshots.get('bound')?.status).toBe('loading');expect(snapshots.get('downstream')?.status).toBe('loading');
-  state.commit({type:'restore',values:new Map([...values].filter(([id])=>id!=='region')) as FilterValues});await flush();expect(snapshots.get('bound')?.status).toBe('loading');
+  state.commit({type:'restore',values:new Map([...values].filter(([id])=>id!=='region')) as FilterValues});await flush();expect(snapshots.get('bound')?.status).toBe('empty');
   state.candidate('region','ready',['R99']);await flush();expect(snapshots.get('bound')?.status).toBe('empty');expect(calls.filter(query=>!(query.body!.dsl_list[0].filter as any)?.time)).toHaveLength(1);stop();
 });

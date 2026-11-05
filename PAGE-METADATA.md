@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+可选 IOC Region 空选时首屏立即查询，不等待组织候选；有选值及显式候选上下文仍执行原校验。候选弹层固定搜索框，仅列表滚动。声明边界与业务页验收见[筛选器](docs/page-metadata/filters.md)，入口 `/pages/region-authorization-norms`；不新增 Schema 字段。
+
 6.91：IOC 页头通过 `props.components` 组合 `filterControl` 和内置标准 Region 的 `regionFilter`，复用现有筛选、查询与集成应用接线。旧 `filterIds` 继续读取。见[页头子控件](docs/page-metadata/components/iocHeader.md#页头子控件691)，合成验收 `/pages/ioc-header-controls`。
 
 6.90：普通维度筛选可从 inline/query 页面数据源指定输出读取完整候选，按稳定值去重；图表卡下拉复用该声明，树的父子节点按自身值独立单多选。见[数据源候选](docs/page-metadata/filters.md#source-candidates)，合成入口 `/pages/filter-source-candidates`。

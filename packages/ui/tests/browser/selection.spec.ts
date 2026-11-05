@@ -1,5 +1,21 @@
 import {test,expect} from '@playwright/test';
 test.beforeEach(async({page})=>{await page.goto('/tests/browser/index.html?selection');});
+test('long Region tree keeps search fixed and only the options scroll',async({page})=>{
+ await page.setViewportSize({width:1280,height:500});
+ await page.getByRole('button',{name:'装载长组织树'}).click();
+ await page.getByRole('button',{name:'区域',exact:true}).click();
+ const popup=page.getByRole('dialog',{name:'区域候选'}),tree=page.getByRole('tree',{name:'区域选项'});
+ expect(await popup.evaluate(el=>el.scrollHeight-el.clientHeight)).toBeLessThanOrEqual(1);
+ expect(await tree.evaluate(el=>el.scrollHeight-el.clientHeight)).toBeGreaterThan(0);
+ const search=page.getByRole('textbox',{name:'搜索区域'}),before=await search.boundingBox();
+ await tree.hover();await page.mouse.wheel(0,500);
+ await expect.poll(()=>tree.evaluate(el=>el.scrollTop)).toBeGreaterThan(0);
+ expect((await search.boundingBox())!.y).toBe(before!.y);
+ await search.fill('示例代表处 39');
+ await expect(page.getByRole('button',{name:'示例代表处 39',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'示例代表处 39',exact:true}).click();
+ await expect(page.getByLabel('值',{exact:true})).toHaveText('["office-39"]');
+});
 test('tree single, local search, geometry and keyboard',async({page})=>{
  await page.getByRole('button',{name:'区域',exact:true}).click();
  await expect(page.getByRole('textbox',{name:'搜索区域'})).toBeFocused();

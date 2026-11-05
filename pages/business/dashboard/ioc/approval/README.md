@@ -1,5 +1,7 @@
 # 代表处指标卡业务页
 
+行权规范情况入口：`/pages/region-authorization-norms`，[JSON](region-authorization-norms.json)。无必填 URL 参数；沿用页面默认统计期间，Region 空选时立即发起地区部、代表处和三张趋势图的查询，不必先选全球。全球不添加区域谓词，选择地区部或代表处后按对应字段筛选。Playground 使用合成组织候选，业务查询仍走 DQE 网关；可先运行 `pnpm dev:dqe` 和 `pnpm dev:playground`。打开 Region，展开长组织树并缩短窗口时，只滚动候选列表，搜索框固定。自动回归 `apps/playground/tests/authorization-norms.browser.ts` 拦截业务响应，覆盖首屏请求、区域切换、单层滚动及正常/空/失败状态，不代表真实 DQE 或线上部署验收。
+
 - 行权效率：`/pages/rep-office-execution-efficiency`，[JSON](rep-office-execution-efficiency.json)。
 - 业务结果指标：`/pages/rep-business-result`，[JSON](rep-business-result.json)。
 
