@@ -7,7 +7,7 @@ let copiedDist: string;
 const publicPath = '/copied-project/static/metriccanvas/';
 const runtimeExports = [
   'ExecutionError', 'ExportViewError', 'createDqeGateway', 'createLastFilterRecorder',
-  'loadExecution', 'mount', 'prepareExecution', 'projectNavigationInputs'
+  'loadExecution', 'mount', 'prepareExecution', 'projectNavigationInputs', 'withOperationMapRegion'
 ];
 
 test.beforeAll(async () => {
