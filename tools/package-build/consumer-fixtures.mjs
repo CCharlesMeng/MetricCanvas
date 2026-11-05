@@ -7,6 +7,9 @@ export const consumerFixturePaths = [
   "packages/metric-canvas/tests/browser",
   "packages/embed/tests/browser",
   "packages/embed/examples",
+  // Webpack's large-image probe uses the actual build policy in the isolated host.
+  "packages/embed/vite.config.ts",
+  "packages/embed/build-tools",
   "packages/embed/tests/serve.mjs",
   "packages/embed/tests/dqe-fixture-endpoint.mjs",
   "tools/dqe-sim/fixtures/ioc-opportunity-list.json",
