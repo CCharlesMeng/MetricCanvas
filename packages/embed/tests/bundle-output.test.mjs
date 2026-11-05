@@ -12,6 +12,11 @@ test('copied distribution declares its ESM package scope for integrating bundler
   assert.equal(JSON.parse(readFileSync(resolve(dist, 'package.json'), 'utf8')).type, 'module');
 });
 
+test('packaged images cannot reintroduce external asset URLs', () => {
+  const images = readdirSync(dist, { recursive: true }).filter(file => /\.(?:svg|png|jpe?g|gif|webp|avif|ico)$/i.test(file));
+  assert.deepEqual(images, [], 'Imported images must be embedded as data URLs');
+});
+
 test('distribution contains about ten bounded JS files and the two stable entries', () => {
   assert(files.length >= 10 && files.length <= 16, `Expected 10–16 JS files, got ${files.length}`);
   for (const entry of ['metriccanvas-runtime.es.js', 'metriccanvas-runtime.global.js']) {
@@ -26,7 +31,7 @@ test('distribution contains about ten bounded JS files and the two stable entrie
   console.info(JSON.stringify({ baseline: 'embed-distribution', maxJsBytes: 1_000_000, jsFiles: files.length, largest }));
 });
 
-test('every ESM dependency and module-relative image resolves inside the copied distribution', () => {
+test('every ESM dependency and module-relative URL resolves inside the copied distribution', () => {
   for (const file of files.filter((name) => name !== 'metriccanvas-runtime.global.js')) {
     const fullPath = resolve(dist, file);
     const source = ts.createSourceFile(file, readFileSync(fullPath, 'utf8'), ts.ScriptTarget.Latest, true);

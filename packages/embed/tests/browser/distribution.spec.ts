@@ -54,7 +54,7 @@ test('copied ESM entry mounts synchronously and shares chunks with the global en
   }, `${publicPath}metriccanvas-runtime.es.js`);
   expect(exports).toEqual(runtimeExports);
   await expect(page.getByRole('heading', { name: 'Copied runtime' }).first()).toBeVisible();
-  await expectHeaderImages(page, publicPath);
+  await expectHeaderImages(page);
   const chunkRequests = requests.filter((path) => path.includes('/chunks/'));
   expect(chunkRequests.length).toBeGreaterThan(5);
   expect(chunkRequests.some((path) => /excel|china|world/.test(path))).toBe(false);
@@ -70,13 +70,13 @@ test('copied ESM entry mounts synchronously and shares chunks with the global en
   await expect(page.locator('[data-metriccanvas-runtime]')).toHaveCount(0);
 });
 
-async function expectHeaderImages(page: Page, prefix: string) {
+async function expectHeaderImages(page: Page) {
   const images = page.locator('img[data-decorative-image], img[data-decorative-icon]');
   await expect(images).toHaveCount(2);
-  await expect.poll(() => images.evaluateAll((nodes, path) => nodes.every(node => {
+  await expect.poll(() => images.evaluateAll(nodes => nodes.every(node => {
     const image = node as HTMLImageElement;
-    return image.complete && image.naturalWidth > 0 && new URL(image.currentSrc).pathname.startsWith(`${path}assets/`);
-  }), prefix)).toBe(true);
+    return image.complete && image.naturalWidth > 0 && image.currentSrc.startsWith('data:image/');
+  }))).toBe(true);
 }
 
 test('classic global entry resolves beside its own URL and exposes the same public API', async ({ page }) => {
@@ -105,7 +105,7 @@ test('classic global entry resolves beside its own URL and exposes the same publ
       }] }]
     } });
   });
-  await expectHeaderImages(page, publicPath);
+  await expectHeaderImages(page);
   await page.evaluate(() => window.runtime.destroy());
 });
 

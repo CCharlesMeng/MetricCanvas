@@ -101,7 +101,10 @@ pnpm packages:check # 检查实际 tarball 的入口、声明和组件
 pnpm dev:playground   # 按需启动页面试验场
 pnpm build:playground # 按需构建页面试验场
 pnpm test:embed   # 嵌入运行时浏览器测试
+pnpm svg:optimize /path/to/image.svg # 按需生成 SVG 优化副本
 ```
+
+SVG 优化的参数、体积报告与应用方式见 [SVG 优化工具](docs/svg-optimization.md)。
 
 ## 最小仅内联页面
 
