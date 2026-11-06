@@ -129,3 +129,13 @@ it('recalculates visible stacked totals and keeps declaration patches after stac
     { value: 40 }, { value: 40 }, { value: 40 }
   ] });
 });
+
+it('keeps explicit unit names aligned with projected visible series and legend entries', () => {
+  const { page, data } = fixture();
+  const chart = page.sections[1]!.components[0] as BarChartComponent;
+  chart.props.series.forEach((series, index) => { series.unit = index === 2 ? '%' : '元'; });
+  const program = compilePresentation(page);
+  const hidden = mixed(projectedChart(program, input('global')).props, data);
+  expect(seriesOf(hidden).map(series => series.name)).toEqual(['销售额（元）', '目标额（元）']);
+  expect(hidden.legend).toMatchObject({ data: ['销售额（元）', '目标额（元）'] });
+});

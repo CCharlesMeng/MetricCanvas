@@ -1,3 +1,4 @@
+import { seriesDisplayName, chartLegendVisible } from '../../shared/display-unit';
 import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartAxisFormats } from '../../../../runtime/src/chart-series-state';
 import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveComponentValue } from '../../shared/component-value';
@@ -30,7 +31,7 @@ export function lineOption(
     grid: { ...GRID, ...(props.showPointLabels ? { top: 36, right: 30 } : {}),
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? { bottom: 36 } : {}) },
     tooltip: { trigger: 'axis', confine: true, hideDelay: 200 },
-    ...(chartDeclaration(props).series.length > 1 ? { legend: { top: 0, left: 0 } } : {}),
+    ...(chartLegendVisible(chartDeclaration(props).series) ? { legend: { top: 0, left: 0 } } : {}),
     xAxis: {
       type: 'category',
       name: fieldLabel(props.xField, data),
@@ -42,10 +43,10 @@ export function lineOption(
     series: props.series.map((series, i) => {
       const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
-        name: series.label ?? field.label,
+        name: seriesDisplayName(series.label ?? field.label, series.unit),
         type: 'line' as const,
         smooth: props.smooth ?? false,
-        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText, field.unit),
+        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText, field.unit, series.unit),
           labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), true), showAllSymbol: true } : {}),
         ...(props.stacked ? { stack: 'total' } : {}),
         yAxisIndex: chartSeriesAxis(props, i),
@@ -59,13 +60,13 @@ export function lineOption(
                 color: '#191919',
                 fontSize: 12,
                 formatter: (params: unknown) =>
-                  formatChartNumber(formatterValue(params), field.format, field.missingText, field.unit)
+                  formatChartNumber(formatterValue(params), field.format, field.missingText, field.unit, series.unit)
               }
             }
           : {}),
         tooltip: {
           valueFormatter: (value: unknown) =>
-            formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit)
+            formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit, series.unit)
         },
         data: rows.map((row) => props.showValueLabels ? finiteNumber(field.read(row)) ?? null : finiteNumber(field.read(row)))
       };

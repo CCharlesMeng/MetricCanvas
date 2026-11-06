@@ -1,8 +1,8 @@
 # 明细表 table
 
-展示 dimension/metric 行集，支持逐行核对、排序、筛选、单元格联动和多级表头。
+展示 dimension/metric 行集，支持核对、排序、筛选、单元格联动和多级表头。
 
-columns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。
+columns区分字段列与kind:group递归列组；children保持层级。query分页使用服务总条数；排序/表头筛选不得绕过查询分页限制。selection优先于link；主/次/徽标字段独立声明，不拼接字符串。派生行样式由rowKindField决定，不从文案识别合计。
 
 ## 列头筛选默认值（6.82）
 
@@ -345,8 +345,12 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 
 表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败不注入未配置的按钮或失败说明，失败状态也不显示“暂无数据”；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
 
+## 自定义展示单位
 
-页面协议 6.93。结构真源为本册[schema.json](../schema.json)，SHA256 `fda283138f408b5c861e80f98c9b9139b9f37de7e240b91f7c765b1cac5bfa85`。字段表自动生成；可选不等于有默认值。
+6.94 起字段列可声明 `unit`，例如 `{"field":"duration","unit":"天"}`。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
+
+
+页面协议 6.94。结构真源为本册[schema.json](../schema.json)，SHA256 `55d41a5c7782a5ba003ba1d160481013ef8be70b4e002e8333b2bfc3faab03c6`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1284,6 +1288,26 @@ Schema位置：`#/definitions/tableColumn/properties/field`。目标：[#/defini
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f756e6974"></a>
+
+### `@tableColumn.unit`
+
+Schema位置：`#/definitions/tableColumn/properties/unit`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 主数值展示单位 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f756e69742f616c6c4f662f30"></a>
+
+### `@tableColumn.unit · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/unit/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f7365636f6e646172794669656c64"></a>
 
@@ -3751,8 +3775,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/2/props/toolbar/search`。
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1`：[合法完整页面](../examples/table-search-options-page.json)，JSON Pointer `#/sections/0/components/0/props/toolbar/search`。
 - `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-table.json)，JSON Pointer `#/sections/0/components/0/props/columns/0`。
-- `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/table-pinned-summary-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
-- `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/table-multiple-pinned-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/pinnedTop`。
+- `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/chart-table-unit.json)，JSON Pointer `#/sections/0/components/5/props/columns/1/children/0/pinnedTop`。
+- `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/chart-table-unit.json)，JSON Pointer `#/sections/0/components/5/props/columns/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/enumValues/0/value`。
 - `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/enumValues/0/value`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。

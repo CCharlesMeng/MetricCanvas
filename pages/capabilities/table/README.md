@@ -490,3 +490,7 @@ JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type
 1. 初始每页1条，共16页；选择每页20条后显示全部16条，每页条数选择器继续保留，再选择10条可恢复两页。单页隐藏页码、前后页与跳页控件。
 2. 将分页条数菜单的触发控件滚动到视口底部，菜单向上展开；控件靠近顶部时向下展开。表头数值筛选、搜索字段下拉同样根据空间定位，空间不足时可在菜单内滚动。
 3. `pnpm --filter playground exec playwright test tests/table-pagination-popovers.browser.ts --workers=1` 自动验证16页切单页再切回及上下边缘定位、Escape关闭。UI组件的多选、树、范围、单选、菜单及日期在普通DOM和ShadowRoot中由 `packages/ui/tests/browser/popover-edges.spec.ts` 回归。这里只验证浏览器交互，不作为真实DQE、Relay或部署证明。
+
+### 自定义展示单位
+
+入口 `/pages/chart-table-unit`，无需 URL 参数，明细为 inline 合成数据，汇总为完整 query 的合成 initial 快照。运行 `pnpm --filter playground dev --host 127.0.0.1 --port 5183` 后打开页面：柱图和折线单系列图例分别含“审批时长（天）”与“平均用时（天）”；数字标签及悬浮提示为“12.5 天”，混合图对照金额显示“2.5 万元”。表格时长含单位，零为“0 天”，缺失为“—”；置顶汇总为“10.5 天”。点击时长排序仍按原数值，点击导出表格后 Excel 保留原值并展示单位。饼图图例显示“12 家”。窄屏检查完整文字与表内滚动。该场景验证展示和本地导出，不证明真实 DQE/Relay。

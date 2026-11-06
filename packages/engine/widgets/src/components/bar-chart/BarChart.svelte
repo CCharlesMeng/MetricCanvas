@@ -8,6 +8,7 @@
   import { type ChartDiagnostic } from '../../shared/chart-option-extension';
   import { cartesianChartSource } from '../../shared/chart-series-presentation';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
+  import { chartLegendVisible } from '../../shared/display-unit';
   import { barOption, barSeriesOrder } from './options';
 
   /**
@@ -46,7 +47,7 @@
   data-series-count={props.series.length}
   data-month-count={data.main.snapshot.rows.length}
   data-tooltip="axis"
-  data-legend={props.series.length > 1 ? 'visible' : 'hidden'}
+  data-legend={chartLegendVisible(props.series) ? 'visible' : 'hidden'}
   data-stack-order={props.series.map((series, index) => series.stackOrder ?? index).join(',')}
   data-stack-join={props.rounded && props.stacked ? 'flush' : 'default'}
   data-segment-labels={props.showSegmentLabels === true ? 'true' : 'false'}

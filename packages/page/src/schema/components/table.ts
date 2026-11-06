@@ -41,6 +41,7 @@ export interface TableColumn {
   visibleWhen?: import('../condition').Condition;
   kind?: 'field';
   field: FieldBinding;
+  unit?: string;
   secondaryField?: FieldBinding;
   badgeField?: FieldBinding;
   dangerValues?: string[];
@@ -96,6 +97,7 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     kind: z.literal('field').optional(),
     enumValues: z.array(z.object({value:z.union([z.string(),z.number()]),label:z.string().min(1)}).strict()).min(1).max(1000).optional(),
     field: fieldBindingZ,
+    unit: textValueZ.optional().meta({ description: '主数值展示单位' }),
     secondaryField: fieldBindingZ.optional(),
     badgeField: fieldBindingZ.optional(),
     dangerValues: z.array(z.string()).meta({ uniqueItems: true }).optional(),

@@ -35,7 +35,7 @@
   "knowledge": "barChart.overview",
   "reference": "references/page-metadata/components/barChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.93",
+  "currentWriter": "6.94",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/forecast-page.json",
@@ -215,6 +215,63 @@
           "id": "filter-boolean",
           "minor": 0,
           "description": "boolean 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/chart-table-unit.json",
+      "requiredVersion": "6.94",
+      "capabilities": [
+        {
+          "id": "chart-table-display-unit",
+          "minor": 94,
+          "description": "柱线系列与表格列显式展示单位"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "table-multiple-pinned-sources",
+          "minor": 79,
+          "description": "多条独立汇总查询组成置顶行及固定文字"
+        },
+        {
+          "id": "pie-legend-table",
+          "minor": 64,
+          "description": "饼图表格式图例、显式数值排序与类别顺序"
+        },
+        {
+          "id": "table-pinned-top",
+          "minor": 60,
+          "description": "表格独立查询置顶行"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "chart-label-presentation",
+          "minor": 16,
+          "description": "类别标签全量展示与旋转、常驻节点数值标签"
+        },
+        {
+          "id": "mixed-chart-series",
+          "minor": 12,
+          "description": "柱线混合系列与显式坐标轴"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

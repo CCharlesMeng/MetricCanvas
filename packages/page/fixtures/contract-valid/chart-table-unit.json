@@ -1,0 +1,346 @@
+{
+  "schemaVersion": "6.94",
+  "id": "chart-table-unit",
+  "layout": "dashboard",
+  "meta": {
+    "title": "图表与表格自定义单位 · inline 合成数据"
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "类别"
+        },
+        "duration": {
+          "type": "number",
+          "role": "measure",
+          "label": "时长",
+          "unit": "天",
+          "nullable": true
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元",
+          "nullable": true
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "label": "客户数量",
+          "nullable": true
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "mixAmount": {
+          "type": "number",
+          "role": "measure",
+          "label": "对照金额",
+          "unit": "元",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "正值",
+            "duration": 12.5,
+            "amount": 125000,
+            "count": 12,
+            "rate": 25,
+            "mixAmount": 25000
+          },
+          {
+            "category": "零",
+            "duration": 0,
+            "amount": 0,
+            "count": 0,
+            "rate": 0,
+            "mixAmount": 100000
+          },
+          {
+            "category": "负值",
+            "duration": -2,
+            "amount": -20000,
+            "count": 3,
+            "rate": -2,
+            "mixAmount": -4000
+          },
+          {
+            "category": "缺失",
+            "duration": null,
+            "amount": null,
+            "count": null,
+            "rate": null,
+            "mixAmount": null
+          }
+        ]
+      }
+    },
+    "summary": {
+      "fields": {
+        "duration": {
+          "type": "number",
+          "role": "measure",
+          "label": "时长",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "duration"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "duration"
+                ]
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-11-06T00:00:00Z",
+          "rows": [
+            {
+              "duration": 10.5
+            }
+          ],
+          "totalCount": 1
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "demo",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "图表与表格自定义单位"
+            },
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        },
+        {
+          "id": "bar",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "柱图 · 图例与数字单位",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "duration",
+                  "format": "number-1"
+                },
+                "label": "审批时长",
+                "unit": "天"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "line",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "折线 · 零与负值",
+            "xField": "category",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "duration",
+                  "format": "number-1"
+                },
+                "label": "平均用时",
+                "unit": "天"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "mixed",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "柱线混合 · 独立单位",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "duration",
+                  "format": "number-1"
+                },
+                "label": "审批时长",
+                "kind": "bar",
+                "axis": "primary",
+                "unit": "天"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "mixAmount",
+                  "format": "compact-wan-1"
+                },
+                "label": "金额",
+                "kind": "line",
+                "axis": "secondary",
+                "unit": "万元"
+              }
+            ],
+            "dualAxis": true,
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "pie",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "饼图 · 表格式图例",
+            "categoryField": "category",
+            "valueField": "count",
+            "legend": {
+              "position": "right",
+              "columns": [
+                {
+                  "label": "客户数量",
+                  "field": {
+                    "data": "main",
+                    "field": "count",
+                    "format": "number"
+                  },
+                  "unit": "家"
+                }
+              ],
+              "type": "table"
+            }
+          }
+        },
+        {
+          "id": "table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample",
+            "summary": "summary"
+          },
+          "props": {
+            "title": "表格 · 分组列与置顶汇总",
+            "rowKey": "category",
+            "pinnedTop": {
+              "data": "summary"
+            },
+            "columns": [
+              {
+                "field": "category",
+                "title": "类别",
+                "pinnedTop": {
+                  "text": "合计"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "values",
+                "title": "自定义单位",
+                "children": [
+                  {
+                    "field": {
+                      "data": "main",
+                      "field": "duration",
+                      "format": "number-1"
+                    },
+                    "title": "时长",
+                    "unit": "天",
+                    "sortable": true,
+                    "secondaryField": "category",
+                    "pinnedTop": {
+                      "field": {
+                        "data": "summary",
+                        "field": "duration"
+                      }
+                    }
+                  },
+                  {
+                    "field": {
+                      "data": "main",
+                      "field": "amount",
+                      "format": "compact-wan-1"
+                    },
+                    "title": "金额",
+                    "unit": "万元"
+                  },
+                  {
+                    "field": {
+                      "data": "main",
+                      "field": "rate",
+                      "format": "percent-1"
+                    },
+                    "title": "比率",
+                    "unit": "%"
+                  }
+                ]
+              }
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "自定义单位"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

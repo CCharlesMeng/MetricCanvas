@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 93,
-  "current": "6.93",
+  "minor": 94,
+  "current": "6.94",
   "capabilities": {
     "semantic-numeric-formats": {
       "minor": 93,
@@ -41,6 +41,11 @@
     "filter-source-candidates": {
       "minor": 90,
       "description": "筛选候选读取页面数据源完整输出，支持树节点独立单多选",
+      "legacyReadable": false
+    },
+    "chart-table-display-unit": {
+      "minor": 94,
+      "description": "柱线系列与表格列显式展示单位",
       "legacyReadable": false
     },
     "table-select-param-initialization": {
@@ -908,6 +913,7 @@
     "6.90",
     "6.91",
     "6.92",
-    "6.93"
+    "6.93",
+    "6.94"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.93",
+  "schemaVersion": "6.94",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-58b4d4e1"
@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示 dimension/metric 行集，支持逐行核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。",
+        "# 明细表 table\n\n展示 dimension/metric 行集，支持核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分字段列与kind:group递归列组；children保持层级。query分页使用服务总条数；排序/表头筛选不得绕过查询分页限制。selection优先于link；主/次/徽标字段独立声明，不拼接字符串。派生行样式由rowKindField决定，不从文案识别合计。",
         "## 列条件显隐（6.62）\n\n字段列及递归 `kind: \"group\"` 列组可就地声明 `visibleWhen`，复用[展示条件](../conditions.md)，读取本作用域筛选状态、已有权限结果或业务事实，不允许引用当前行。未声明列条件的表格保留原有搜索及状态规则；普通列上的 `selection.visibleWhen` 等仅控制入口，不会启用本能力。\n\n```json\n{\"field\":\"amount\",\"title\":\"合同金额\",\"visibleWhen\":{\"filter\":\"business-type\",\"part\":\"values\",\"op\":\"containsAny\",\"values\":[\"contract\"]}}\n```\n\n示意中的筛选器必须已声明。父组隐藏覆盖后代，无可见叶子的列组不生成空表头；其他业务容器仍遵守子项不反推父级。零业务列保留表格标题，显示“当前条件下无可见列”，不生成序号、展开入口或表体，不开放表格操作和该表 Excel 导出；页面静态导出保留此状态。条件等待或错误同样不展示列。\n\n隐藏列清除其用户排序、表头条件、草稿与候选交互；重新显示不恢复这些操作。其他列的状态与查询定义中的业务条件、默认排序保留。单纯列显隐不重置分页；有效操作或搜索范围变化时回第一页。隐藏不删结果字段、不自动停查，也不代替数据权限。\n\n启用列条件的表格，工具栏搜索字段必须属于声明列的 main 槽主/次/徽标字段。搜索实际范围为声明字段与当前可见字段的交集；同字段仍属于其他可见列时继续可搜。多字段搜索保留有效关键词，字段隐藏或重显导致范围变化时重算；已清空关键词不恢复。静态搜索选项随列裁剪，当前项失效则清空关键词/草稿并选择首个可用项，不自动将旧词提交到新字段；没有可搜字段则清除搜索并隐藏搜索框。\n\n本能力覆盖各表格变体、Tab/组合卡内表格、详情及行内子表，使用各自作用域输入。父表零列时释放全部展开实例并取消/隔离在途请求，恢复后默认收起。已有子表导出限制不因此解除。涉及远程排序、表头筛选或搜索的新能力表格必须独占查询页面数据源；inline 和无分页窗口的 complete 结果仍可共享、分别持有表格状态。\n\nExcel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列和已提交状态；不导出隐藏字段，复合列只展开可见列的次字段/徽标。权限修订变化仍按已有规则停止旧实例及导出。\n\n可观察入口：`/pages/table-column-visibility`（四种表格外观、搜索与 Excel）、`/pages/table-column-visibility-scopes`（Tab、详情、展开子表）、`/pages/table-column-visibility-report`（PDF/PNG）。均为内联合成数据；远程状态调和由集成测试覆盖，不作为真实 DQE/Relay 验收。"
       ],
       "rules": [

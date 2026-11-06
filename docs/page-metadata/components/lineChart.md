@@ -31,3 +31,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 ## 系列条件显隐（6.89）
 
 `props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。完整内联合成入口 `/pages/chart-series-visibility`。
+
+## 自定义展示单位
+
+6.94 起系列可声明 `unit`，图例名称、数值标签与悬浮提示共用。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。

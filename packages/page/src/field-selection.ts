@@ -42,7 +42,7 @@ function projectSelectedMetadata(page:Page,component:Component,object:Record<str
  if(!field)return;
  const unit=fieldUnit(field),label=field.label??fieldName(leaf);
  const format=(typeof leaf==='string'?undefined:leaf.format)??('defaultFormat' in field?field.defaultFormat:undefined);
- if('unit' in object||key==='valueField')object.unit=moneyFormatCurrency(format)?'':unit;
+ if(projectsCurrencyUnit(component.type,object,key))object.unit=moneyFormatCurrency(format)?'':unit;
  if(component.type==='table'&&key==='field'&&'title' in object)object.title=unit?`${label}（${unit}）`:label;
 }
 /** Pure applied-state projection; no first-case or currency fallback. */
@@ -79,4 +79,10 @@ export function* fieldSelectionVariants(page:Page):Generator<Page>{
   assignments=assignments.flatMap(values=>options.map(option=>new Map(values).set(id,{type:'dimension',values:[option.value]})));
  }
  for(const values of assignments)yield projectFieldSelections(page,values);
+}
+
+/** Explicit chart/table units belong to the view, including a selected money field. */
+function projectsCurrencyUnit(type: string, object: Record<string, unknown>, key: string): boolean {
+  if (key === 'valueField') return true;
+  return !['table','barChart','lineChart'].includes(type) && 'unit' in object;
 }

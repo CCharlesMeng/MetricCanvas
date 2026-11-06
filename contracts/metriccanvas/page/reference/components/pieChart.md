@@ -58,7 +58,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.93。结构真源为本册[schema.json](../schema.json)，SHA256 `fda283138f408b5c861e80f98c9b9139b9f37de7e240b91f7c765b1cac5bfa85`。字段表自动生成；可选不等于有默认值。
+页面协议 6.94。结构真源为本册[schema.json](../schema.json)，SHA256 `55d41a5c7782a5ba003ba1d160481013ef8be70b4e002e8333b2bfc3faab03c6`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1012,7 +1012,7 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 ## 联合分支见证（生成）
 
 - `#/definitions/pieChartComponent/properties/props/anyOf/0`：[合法完整页面](../examples/component-pieChart.json)，JSON Pointer `#/sections/0/components/0/props`。
-- `#/definitions/pieLegendColumn/anyOf/0`：[合法完整页面](../examples/pie-table-legend.json)，JSON Pointer `#/sections/0/components/0/props/legend/columns/0`。
+- `#/definitions/pieLegendColumn/anyOf/0`：[合法完整页面](../examples/chart-table-unit.json)，JSON Pointer `#/sections/0/components/4/props/legend/columns/0`。
 - `#/definitions/pieLegendColumn/anyOf/1`：[合法完整页面](../examples/pie-table-legend.json)，JSON Pointer `#/sections/2/components/0/props/legend/columns/1`。
 - `#/definitions/pieChartComponent/properties/props/anyOf/1`：[合法完整页面](../examples/chart-constant-values-page.json)，JSON Pointer `#/sections/0/components/5/props`。
 - `#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/0`：[合法完整页面](../examples/chart-constant-values-page.json)，JSON Pointer `#/sections/0/components/5/props/value`。

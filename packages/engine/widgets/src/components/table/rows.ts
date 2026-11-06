@@ -1,3 +1,4 @@
+import { appendDisplayUnit } from '../../shared/display-unit';
 import { tablePinnedSlots, tableLeafColumns, restoreCellFallbacks, rowCellFallback, pinnedSnapshotError, type TableProps, type TableColumn, type FieldBinding, type FieldValue, type Row } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
@@ -110,12 +111,15 @@ export function alignedFallback(binding: FieldBinding, data: NamedDataSlots, row
   const resolved = resolveField(binding, data);
   return rowCellFallback(row.bySlot[resolved.data], resolved.field);
 }
-export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow, enumValues?:TableColumn['enumValues']): string {
+export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow, enumValues?:TableColumn['enumValues'], unit?: string): string {
   const resolved = resolveField(binding, data);
   if (row.kind === 'pinnedTop' && resolved.data === '__unbound') return '';
   const fallback = alignedFallback(binding, data, row);
   if (fallback) return String(fallback.raw);
   const value=alignedFieldValue(binding,data,row);
-  return tableEnumLabel(value,enumValues)??formatTableCell(value, resolved.format, resolved.missingText,
+  const enumLabel = tableEnumLabel(value, enumValues);
+  if (enumLabel !== undefined) return enumLabel;
+  const text = formatTableCell(value, resolved.format, resolved.missingText,
     resolved.definition && 'unit' in resolved.definition ? resolved.definition.unit : undefined);
+  return appendDisplayUnit(text, value, unit, resolved.format);
 }

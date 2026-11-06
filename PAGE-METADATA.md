@@ -615,3 +615,7 @@ DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一
 Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创作呈现](docs/page-metadata/authoring-presentation.md)，合成入口 `/pages/relay-multislot-presentation`；旧合法引擎格式保留。页面 Schema 字段净增减为零。
 
 表格分页交互修复：启用分页后每页条数选择器在单页和空结果下仍保留；菜单按可视视口空间自动翻转并限制高度。无新增字段，查询分页语义不变。见[表格分页选择与弹层定位](docs/page-metadata/components/table.md)，内联合成验收 `/pages/table-pagination-popovers`。
+
+6.94 新增柱/线/混合图系列 `unit` 与表格字段列 `unit`，图例和数值可按组件显式展示单位；不执行缩放。见[展示单位](docs/page-metadata/field-bindings-and-formats.md#display-unit)，场景 `/pages/chart-table-unit`。
+
+图表与表格的整数展示复用统一数值格式化，去掉小数尾零；`unit` 在格式化后追加，`-2 天`、`0 天` 和 `12.5 天` 对照见 `/pages/chart-table-unit`。

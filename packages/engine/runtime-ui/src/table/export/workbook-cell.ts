@@ -1,3 +1,4 @@
+import { appendDisplayUnit } from '../../../../widgets/src/shared/display-unit';
 import type { FieldDefinition, TableColumn, ValueFormatPreset } from '@metriccanvas/page/internal';
 import type { Cell, CellObject } from 'write-excel-file/universal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
@@ -9,7 +10,8 @@ import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation'
 import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
 
 /** Numbers retain raw values; scale formats display the frozen presentation. */
-function numberFormat(value: number, format?: ValueFormatPreset, unit?: string): string {
+function numberFormat(value: number, format?: ValueFormatPreset, unit?: string, displayUnit?: string): string {
+  if (displayUnit) return `"${appendDisplayUnit(formatValue(value, format, undefined, { unit }), value, displayUnit, format).replaceAll('"', '""')}"`;
   if (!format || format === 'number') return 'General';
   if (format === 'number-grouped') return '#,##0.###############';
   if (format === 'number-1') return '0.0';
@@ -32,8 +34,8 @@ function dateCell(value: unknown, type: 'date' | 'datetime'): CellObject {
   return { value: date, type: Date, format: type === 'date' ? 'yyyy-mm-dd' : 'yyyy-mm-dd hh:mm:ss' };
 }
 
-function valueCell(value: unknown, type: FieldDefinition['type'] | undefined, format: ValueFormatPreset | undefined, unit?: string): CellObject {
-  if (typeof value === 'number') return { value, type: Number, format: numberFormat(value, format, unit) };
+function valueCell(value: unknown, type: FieldDefinition['type'] | undefined, format: ValueFormatPreset | undefined, unit?: string, displayUnit?: string): CellObject {
+  if (typeof value === 'number') return { value, type: Number, format: numberFormat(value, format, unit, displayUnit) };
   if (typeof value === 'boolean') return { value, type: Boolean };
   if (type === 'semanticHtml') return { value: plainText(String(value)), type: String };
   if (type === 'date' || type === 'datetime') return dateCell(value, type);
@@ -52,5 +54,5 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
   }
-  return valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved));
+  return valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved), column.unit);
 }

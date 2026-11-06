@@ -209,3 +209,23 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 `amount-cny` 声明 `type:"money", role:"measure", currency:"CNY"`；`amount-usd` 声明相应 USD；currency 筛选为 required 单选封闭枚举。默认格式、直接组件绑定、非默认 byFilter case 和图表常量都检查币种一致性。数值参数也可显式使用这些格式；组件绑定优先于字段 defaultFormat。选择投影抑制重复的独立单位文案；小额无“元”的 A 格式也不额外补“元”。
 
 合成页面 `/pages/operation-money-formats` 同时展示人民币 A/B、美元和旧格式，并以币种筛选驱动指标卡、图表和表格。屏幕及静态呈现消费同一格式函数；XLSX 保留基本单位原数值与币种标题，不把 `2.5亿`、`250M` 当作金额数据写回。此场景只证明本地合成数据、展示及导出，不代表真实 Operation Map、DQE、Relay 或部署验收。完整声明见[合成验收页](examples/operation-money-formats.json)，启动与操作见仓库 pages/capabilities/data/README.md。
+
+<a id="display-unit"></a>
+
+## 图表系列与表格列展示单位（6.94）
+
+柱/线/混合图用 `series[].unit`：图例为“审批时长（天）”，标签及提示为“12.5 天”；非空单位使单系列也显示图例。表格字段列 `unit` 作用于主数值与置顶汇总，支持列组及展开子表；次字段、徽标、枚举、异常回退原文不追加。饼图沿用 `legend.columns[].unit`。
+
+```json
+{"type":"barChart","id":"duration-chart","layout":{"span":6},"data":{"main":"sample"},"props":{"categoryField":"category","series":[{"field":{"data":"main","field":"duration","format":"number-1"},"label":"审批时长","unit":"天"}],"showValueLabels":true}}
+```
+
+```json
+{"type":"table","id":"duration-table","layout":{"span":12},"data":{"main":"sample"},"props":{"columns":[{"field":{"data":"main","field":"duration","format":"number-1"},"title":"审批时长","unit":"天"}]}}
+```
+
+以上声明要求 `sample` 含有类别与数值字段。单位是组件局部展示声明，不从结果字段契约 `unit` 自动追加，不改变查询、数值、计算、排序、筛选或货币语义；币种字段选择保留显式局部单位。未声明时保留原呈现。空字符串表示不追加；有效零与负值追加，缺失与非数字保留原文。数值轴保留原格式，不逐刻度追加本单位。
+
+`format` 独立负责精度及缩放。`compact-wan-1` 与 `unit:"万元"` 将原值125000显示为“12.5 万元”，运行时合并预设“万”与显式“万元”的重叠后缀；`percent-1` 与 `unit:"%"` 保持“25%”。格式已完整包含指定单位时不再追加，其他单位在格式化结果后以一个空格连接，不猜测业务换算。Excel 保留基本单位数值，通过单元格数字格式展示捕获的单位文本；PNG/PDF沿运行时呈现。
+
+`/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。

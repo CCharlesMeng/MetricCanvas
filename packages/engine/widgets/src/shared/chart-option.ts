@@ -1,3 +1,4 @@
+import { appendDisplayUnit } from './display-unit';
 import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
 import { formatValue } from './value-format';
 
@@ -24,8 +25,8 @@ export const CHART_PALETTE = [
 ] as const;
 
 /** 柱、线与混合图的数值入口：显式格式优先，缺省最多两位小数。 */
-export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string, unit?: string): string {
-  return formatValue(value, format ?? 'number-2', missingText, { unit }).replace(/^--(?=%|$)/, '- -');
+export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string, unit?: string, displayUnit?: string): string {
+  return appendDisplayUnit(formatValue(value, format ?? 'number-2', missingText, { unit }).replace(/^--(?=%|$)/, '- -'), value, displayUnit, format);
 }
 
 type AxisFormat = ValueFormatPreset | { format?: ValueFormatPreset; unit?: string } | undefined;

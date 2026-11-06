@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.93",
-  "schemaSha256": "fda283138f408b5c861e80f98c9b9139b9f37de7e240b91f7c765b1cac5bfa85",
+  "schemaVersion": "6.94",
+  "schemaSha256": "55d41a5c7782a5ba003ba1d160481013ef8be70b4e002e8333b2bfc3faab03c6",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -606,7 +606,8 @@
         "chart-constant-values-page",
         "chart-constant-branches",
         "dual-axis-alignment",
-        "chart-series-visibility"
+        "chart-series-visibility",
+        "chart-table-unit"
       ],
       "rules": [
         "bar-forecast-boundary",
@@ -628,7 +629,8 @@
         "chart-constant-values-page",
         "chart-constant-branches",
         "dual-axis-alignment",
-        "chart-series-visibility"
+        "chart-series-visibility",
+        "chart-table-unit"
       ],
       "rules": [
         "schema-structure",
@@ -1288,7 +1290,8 @@
         "6.90",
         "6.91",
         "6.92",
-        "6.93"
+        "6.93",
+        "6.94"
       ]
     },
     {
@@ -11718,6 +11721,19 @@
       "ref": "#/definitions/condition"
     },
     {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/unit",
+      "path": "@barChartSeries · anyOf[0].unit",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/unit/allOf/0",
+      "path": "@barChartSeries · anyOf[0].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
       "pointer": "#/definitions/barChartSeries/anyOf/0/properties/kind",
       "path": "@barChartSeries · anyOf[0].kind",
       "required": "本分支可选",
@@ -12188,6 +12204,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/lineChart.md",
       "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/unit",
+      "path": "@chartSeries · anyOf[0].unit",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/unit/allOf/0",
+      "path": "@chartSeries · anyOf[0].unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/textValue"
     },
     {
       "pointer": "#/definitions/chartSeries/anyOf/1",
@@ -13605,6 +13634,19 @@
       "required": "本分支必填",
       "module": "components/table.md",
       "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/unit",
+      "path": "@tableColumn.unit",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/unit/allOf/0",
+      "path": "@tableColumn.unit · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
     },
     {
       "pointer": "#/definitions/tableColumn/properties/secondaryField",
@@ -20828,8 +20870,8 @@
     {
       "schemaPointer": "#/definitions/pieLegendColumn/anyOf/0",
       "module": "components/pieChart.md",
-      "file": "examples/pie-table-legend.json",
-      "pointer": "#/sections/0/components/0/props/legend/columns/0"
+      "file": "examples/chart-table-unit.json",
+      "pointer": "#/sections/0/components/4/props/legend/columns/0"
     },
     {
       "schemaPointer": "#/definitions/pieLegendColumn/anyOf/1",
@@ -20882,14 +20924,14 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0",
       "module": "components/table.md",
-      "file": "examples/table-pinned-summary-page.json",
-      "pointer": "#/sections/0/components/0/props/columns/0/pinnedTop"
+      "file": "examples/chart-table-unit.json",
+      "pointer": "#/sections/0/components/5/props/columns/1/children/0/pinnedTop"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/1",
       "module": "components/table.md",
-      "file": "examples/table-multiple-pinned-page.json",
-      "pointer": "#/sections/0/components/0/props/columns/0/pinnedTop"
+      "file": "examples/chart-table-unit.json",
+      "pointer": "#/sections/0/components/5/props/columns/0/pinnedTop"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0",
@@ -21681,5 +21723,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "ab5b640b64b48ec953a94decaca1d62466297826623218dfe19d101e05b26f92"
+  "semanticSourceDigest": "cbba59cd0362bda7cb4ae5100635e6d7d12d16e955a5c304e20ca812382d2125"
 }

@@ -735,7 +735,8 @@
         "chart-constant-values-page",
         "chart-constant-branches",
         "dual-axis-alignment",
-        "chart-series-visibility"
+        "chart-series-visibility",
+        "chart-table-unit"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -762,7 +763,8 @@
         "chart-constant-values-page",
         "chart-constant-branches",
         "dual-axis-alignment",
-        "chart-series-visibility"
+        "chart-series-visibility",
+        "chart-table-unit"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -2207,7 +2209,8 @@
     "percent-adaptive": "百分数刻度按量级选精度，保留微小非零值，绝对值500起显示上升或下降>500%。",
     "percent-adaptive-signed": "自适应百分比的普通正值带+、负值带-、零无符号；绝对值500起显示方向与>500%。",
     "percent-raw": "个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。",
-    "#/properties/schemaVersion=\"6.93\"": "语义数值格式、设备精度及相对变化基期边界；作者版本6.93。"
+    "#/properties/schemaVersion=\"6.93\"": "语义数值格式、设备精度及相对变化基期边界；作者版本6.93。",
+    "#/properties/schemaVersion=\"6.94\"": "柱状图、折线图系列与表格字段列可显式声明展示单位。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2487,7 +2490,8 @@
       ],
       "headings": [
         "前端列枚举（6.80）",
-        "期间模式列显隐（6.67）"
+        "期间模式列显隐（6.67）",
+        "自定义展示单位"
       ],
       "dependencies": []
     },
@@ -2979,6 +2983,15 @@
         "统一语义格式（6.93）"
       ],
       "dependencies": []
+    },
+    "fields.display-unit": {
+      "module": "field-bindings-and-formats",
+      "title": "图表系列与表格列展示单位",
+      "roots": [],
+      "headings": [
+        "图表系列与表格列展示单位（6.94）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3084,7 +3097,8 @@
       "百分点差值（6.77）",
       "柱线图数值格式一致性",
       "同比格式（6.87）",
-      "金额去尾零与美元KM（6.88）"
+      "金额去尾零与美元KM（6.88）",
+      "图表系列与表格列展示单位（6.94）"
     ],
     "actions-and-navigation.md": [
       "查阅方式",
@@ -3117,14 +3131,16 @@
       "查阅方式",
       "常量取值（6.59）",
       "数值格式",
-      "系列条件显隐（6.89）"
+      "系列条件显隐（6.89）",
+      "自定义展示单位"
     ],
     "components/lineChart.md": [
       "双轴刻度与网格线",
       "查阅方式",
       "常量取值（6.59）",
       "数值格式",
-      "系列条件显隐（6.89）"
+      "系列条件显隐（6.89）",
+      "自定义展示单位"
     ],
     "components/pieChart.md": [
       "表格式图例与顺序（6.64）",
@@ -3157,7 +3173,8 @@
       "层级筛选联动（6.70）",
       "完整父子 Excel（6.70）",
       "组合源数据异常提示与导出",
-      "期间比较的查询分页（6.78）"
+      "期间比较的查询分页（6.78）",
+      "自定义展示单位"
     ],
     "components/mapChart.md": [
       "查阅方式",

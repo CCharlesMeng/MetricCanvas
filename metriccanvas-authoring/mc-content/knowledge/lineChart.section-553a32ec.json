@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.93",
+  "schemaVersion": "6.94",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "lineChart.section-553a32ec"
@@ -116,7 +116,8 @@
         "references/page-metadata/examples/chart-constant-values-page.json",
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/dual-axis-alignment.json",
-        "references/page-metadata/examples/chart-series-visibility.json"
+        "references/page-metadata/examples/chart-series-visibility.json",
+        "references/page-metadata/examples/chart-table-unit.json"
       ]
     }
   ],

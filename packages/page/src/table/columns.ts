@@ -48,7 +48,7 @@ export function columnDefaultPaths(document: unknown, properties = ['defaultValu
         return record(value) ? properties.filter(key => Object.hasOwn(value as object, key)).map(key => path + '/' + key) : [];
     });
 }
-function columnPropertyPaths(document: unknown, property:string): string[] {
+export function columnPropertyPaths(document: unknown, property:string): string[] {
     const paths: string[] = [];
     const collect = (value: unknown, path: string) => {
         if (!Array.isArray(value))

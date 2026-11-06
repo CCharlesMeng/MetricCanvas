@@ -606,7 +606,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
+                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -635,7 +635,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
+                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -648,7 +648,7 @@
                         class="rate-bar"
                         style={`width: ${rateBarWidth(bodyColumn, rawValue)}%;`}
                       ></span>
-                      <span class="cell-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
+                      <span class="cell-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
                     </span>
                     {@render supplementaryFields()}
                     </div>
@@ -662,7 +662,7 @@
                           inline
                         />
                       {:else}
-                        <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues)}</span>
+                        <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
                       {/if}
                       {@render supplementaryFields()}
                     </div>

@@ -15,11 +15,11 @@ export interface WorkbookSheet {
   stickyRowsCount: number;
 }
 
-function columnTitle(binding: FieldBinding, data: NamedDataSlots, given?: string): string {
+function columnTitle(binding: FieldBinding, data: NamedDataSlots, given?: string, explicitUnit?: string): string {
   const resolved = resolveField(binding, data);
   const definition = resolved.definition;
   const text = given ?? definition?.label ?? resolved.field;
-  const unit = definition && 'unit' in definition ? definition.unit : undefined;
+  const unit = explicitUnit ?? (definition && 'unit' in definition ? definition.unit : undefined);
   return unit && !text.includes(unit) ? `${text}（${unit}）` : text;
 }
 
@@ -27,12 +27,12 @@ function exportColumns(nodes: TableColumnNode[], data: NamedDataSlots): TableCol
   let groupIndex = 0;
   return nodes.map(node => {
     if (node.kind === 'group') return { ...node, children: exportColumns(node.children, data) };
-    const title = columnTitle(node.field, data, node.title);
+    const title = columnTitle(node.field, data, node.title, node.unit);
     const extras = (['secondaryField', 'badgeField'] as const)
       .flatMap(key => node[key] ? [{ field: node[key], pinned: node.pinnedTop?.[key] }] : []);
     if (!extras.length) return { ...node, title };
     return { kind: 'group', id: `export-${groupIndex++}`, title,
-      children: [{ ...node, title: columnTitle(node.field, data) }, ...extras.map(({ field, pinned }) => ({
+      children: [{ ...node, title: columnTitle(node.field, data, undefined, node.unit) }, ...extras.map(({ field, pinned }) => ({
         field, title: columnTitle(field, data), ...(pinned ? { pinnedTop: { field: pinned } } : {})
       }))] };
   });

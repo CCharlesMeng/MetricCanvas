@@ -1,3 +1,4 @@
+import { seriesDisplayName, chartLegendVisible } from '../../shared/display-unit';
 import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartRoleIndex, chartAxisFormats, explicitChartAxes } from '../../../../runtime/src/chart-series-state';
 import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveComponentValue } from '../../shared/component-value';
@@ -63,7 +64,7 @@ export function barOption(
   );
   const legendData = props.series.map((series) => {
     const field = resolveComponentValue(series, data, props.emptyBehavior);
-    return series.label ?? field.label;
+    return seriesDisplayName(series.label ?? field.label, series.unit);
   });
   return {
     ...(palette ? { color: [...palette] } : {}),
@@ -73,7 +74,7 @@ export function barOption(
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
     },
     tooltip: { trigger: 'axis', confine: true },
-    ...(chartDeclaration(props).series.length > 1
+    ...(chartLegendVisible(chartDeclaration(props).series)
       ? {
           legend: reportForecast
             ? {
@@ -126,7 +127,7 @@ export function barOption(
           : {})
       };
       const values = rows.map((row) => finiteNumber(field.read(row)));
-      const segmentLabelFormatter = valueLabelFormatter(field.format, field.unit);
+      const segmentLabelFormatter = valueLabelFormatter(field.format, field.unit, series.unit);
       const displayedValues = props.showValueLabels ? values.map(value => value === undefined ? null : {
         value, label: { position: props.horizontal ? (value < 0 ? 'left' as const : 'right' as const) : (value < 0 ? 'bottom' as const : 'top' as const) }
       }) : props.showSegmentLabels
@@ -146,13 +147,13 @@ export function barOption(
         return [{ name: categories[rowIndex] ?? '', coord: [categories[rowIndex], value], value }];
       });
       return {
-        name: series.label ?? field.label,
+        name: seriesDisplayName(series.label ?? field.label, series.unit),
         type: 'bar' as const,
         ...(props.stacked ? { stack: 'total' } : {}),
         barWidth: DEFAULT_BAR_WIDTH,
         ...barAxisIndex(props, originalIndex),
         ...(Object.keys(itemStyle).length > 0 ? { itemStyle } : {}),
-        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText, field.unit), labelLayout: valueLabelLayout(values, false, props.horizontal) } : {}),
+        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText, field.unit, series.unit), labelLayout: valueLabelLayout(values, false, props.horizontal) } : {}),
         ...(props.showSegmentLabels
           ? {
               // 短金额保持柱内居中；长金额才横向避让，避免在画布边缘被截断。
@@ -178,7 +179,7 @@ export function barOption(
                   distance: 5,
                   color: '#121e3b',
                   fontSize: 12,
-                  formatter: valueLabelFormatter(field.format, field.unit)
+                  formatter: valueLabelFormatter(field.format, field.unit, series.unit)
                 },
                 data: totalPoints
               }
@@ -196,7 +197,7 @@ export function barOption(
           : {}),
         tooltip: {
           valueFormatter: (value: unknown) =>
-            formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit)
+            formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit, series.unit)
         },
         data: displayedValues
       };
@@ -211,11 +212,11 @@ function horizontalValueLabels<T extends { axisLabel?: object }>(axis: T) {
     alignMinLabel: 'left' as const, alignMaxLabel: 'right' as const } };
 }
 
-function valueLabelFormatter(format?: ValueFormatPreset, unit?: string) {
+function valueLabelFormatter(format?: ValueFormatPreset, unit?: string, displayUnit?: string) {
   return (params: unknown): string => {
     const value = finiteNumber(formatterValue((params as { value?: unknown })?.value));
     if (value === undefined) return '';
-    return formatChartNumber(value, format, undefined, unit);
+    return formatChartNumber(value, format, undefined, unit, displayUnit);
   };
 }
 
@@ -269,15 +270,15 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
     series: props.series.map((series, index) => {
       const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
-        type: series.kind ?? 'bar', name: series.label ?? field.label,
+        type: series.kind ?? 'bar', name: seriesDisplayName(series.label ?? field.label, series.unit),
         yAxisIndex: chartSeriesAxis(props, index),
         itemStyle: { color: chartSeriesColor(props, index, palette) },
         ...(series.kind === 'line' ? { connectNulls: false } : { barWidth: DEFAULT_BAR_WIDTH }),
         ...(props.showValueLabels ? {
-          label: pointValueLabel(field.format, field.missingText, field.unit), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
+          label: pointValueLabel(field.format, field.missingText, field.unit, series.unit), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
           ...(series.kind === 'line' ? { showAllSymbol: true } : {})
         } : {}),
-        tooltip: { valueFormatter: (value: unknown) => formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit) },
+        tooltip: { valueFormatter: (value: unknown) => formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit, series.unit) },
         data: rows.map(row => {
           const value = finiteNumber(field.read(row));
           if (value === undefined) return null;

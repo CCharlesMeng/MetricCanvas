@@ -32,8 +32,12 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 `props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。完整内联合成入口 `/pages/chart-series-visibility`。
 
+## 自定义展示单位
 
-页面协议 6.93。结构真源为本册[schema.json](../schema.json)，SHA256 `fda283138f408b5c861e80f98c9b9139b9f37de7e240b91f7c765b1cac5bfa85`。字段表自动生成；可选不等于有默认值。
+6.94 起系列可声明 `unit`，图例名称、数值标签与悬浮提示共用。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
+
+
+页面协议 6.94。结构真源为本册[schema.json](../schema.json)，SHA256 `55d41a5c7782a5ba003ba1d160481013ef8be70b4e002e8333b2bfc3faab03c6`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -296,6 +300,26 @@ Schema位置：`#/definitions/chartSeries/anyOf/0/properties/visibleWhen/allOf/0
 |---|---|---|---|---|
 | 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f302f70726f706572746965732f756e6974"></a>
+
+### `@chartSeries · anyOf[0].unit`
+
+Schema位置：`#/definitions/chartSeries/anyOf/0/properties/unit`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 系列展示单位：图例名称、数值标签及悬浮提示共用；不执行缩放 |
+
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f302f70726f706572746965732f756e69742f616c6c4f662f30"></a>
+
+### `@chartSeries · anyOf[0].unit · allOf[0]`
+
+Schema位置：`#/definitions/chartSeries/anyOf/0/properties/unit/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f31"></a>
 
 ### `@chartSeries · anyOf[1]`
@@ -415,7 +439,7 @@ Schema位置：`#/definitions/chartSeries/anyOf/1/properties/unit`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示单位，不自动改变数值刻度。 |
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 系列展示单位：图例名称、数值标签及悬浮提示共用；不执行缩放 |
 
 <a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f312f70726f706572746965732f756e69742f616c6c4f662f30"></a>
 
@@ -618,6 +642,7 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/act
 - [chart-constant-branches](../examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [dual-axis-alignment](../examples/dual-axis-alignment.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-series-visibility](../examples/chart-series-visibility.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-table-unit](../examples/chart-table-unit.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-lineChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
