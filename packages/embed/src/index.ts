@@ -5,6 +5,7 @@ import {
 import { createDqeGateway } from '@metriccanvas/engine/dqe';
 import EmbedRoot from './EmbedRoot.svelte';
 import {resolveInitialSearch} from './initial-search';
+import {browserNavigation} from './browser-navigation';
 import type {
   MountOptions,
   RuntimeEvent,
@@ -109,7 +110,7 @@ function runtimeInput(input: RuntimeInput): RuntimeInput {
     ...(input.displayInputs!==undefined?{displayInputs:input.displayInputs}:{}),
     ...(input.execution !== undefined ? {execution:input.execution} : {}),
     ...(input.filterEditing !== undefined ? { filterEditing: input.filterEditing } : {}),
-    ...(input.navigation !== undefined ? { navigation: input.navigation } : {}),
+    navigation: browserNavigation(input.navigation, window),
     ...(input.dataGateway !== undefined
       ? { dataGateway: input.dataGateway }
       : {}),

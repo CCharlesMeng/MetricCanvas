@@ -528,7 +528,9 @@
         "packages/engine/runtime/src/navigate.ts",
         "packages/page/src/navigate.ts",
         "packages/engine/runtime/src/navigation-inputs.ts",
-        "packages/page/src/filter-url.ts"
+        "packages/page/src/filter-url.ts",
+        "packages/engine/runtime-ui/src/url-search.ts",
+        "packages/embed/src/browser-navigation.ts"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -3122,7 +3124,8 @@
       "当前内容工具边界",
       "链接传参与目标页签",
       "6.40 显式跨页传值",
-      "IOC Region 默认 URL 输入"
+      "IOC Region 默认 URL 输入",
+      "URL 参数清理与地址同步"
     ],
     "semantic-html.md": [
       "查阅方式"

@@ -27,7 +27,7 @@
 6.83 支持独立单行指标关联：`joinAggregate.keys: []` 将独立查询的整体均值等度量用于每个主行，仅允许 unique，空值、失败和多行结果沿完整依赖规则处理。无需新增图表专用字段；均值查询不绑定区域即可保持全局范围。语义见[具名算子](docs/page-metadata/compute.md#独立单行指标关联683)，合成入口 `/pages/chart-global-benchmark`。
 
 
-Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query），显式值或空串优先；页面字段与 Schema 不变。规则和合成入口见 [URL 输入](docs/page-metadata/params-and-text-values.md#embed-的-url-输入)。
+Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query），显式值或空串优先；初始化通过后清理未声明参数，保留页面参数、筛选、Tab 和宿主指定键；Embed 提供默认地址替换，宿主可覆盖。页面字段与 Schema 不变。地址同步见 [URL 参数清理](docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)，规则和合成入口见 [URL 输入](docs/page-metadata/params-and-text-values.md#embed-的-url-输入)。
 
 6.82：select 列头筛选支持 `filterable.defaultValues` 固定原始值，首屏查询与选中态同步；清空后保持清空。声明、重置例外和数据源所有权见[列头筛选默认值](docs/page-metadata/components/table.md#列头筛选默认值682)，入口 `/pages/table-header-filter-defaults` 与 `/pages/table-header-filter-defaults-query`。
 

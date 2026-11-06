@@ -49,7 +49,7 @@
       displayInputs:window.displayInputs,
       dataGateway: window.dataGateway,
       initialSearch,
-      navigation:{async resolveTargetInputs(href,{signal}){
+      navigation:{preserveSearchParams:['page','state','revision'],async resolveTargetInputs(href,{signal}){
         const target=new URL(href,document.baseURI),match=/^\/pages\/([^/]+)$/.exec(target.pathname);
         if(target.origin!==location.origin||!match)return undefined;
         const response=await fetch(`/pages/${encodeURIComponent(decodeURIComponent(match[1]))}.json`,{signal});
@@ -59,10 +59,7 @@
         window.queryEvents.push(event);
         if (event.type === 'filter-change' || event.type === 'tab-change') {
           recordShared(event.search);
-          const current = new URL(location.href);
-          current.search = event.search;
-          history.replaceState(null, '', current);
-          // 不原样回灌 update，真实切页由浏览器加载完整输入。
+          // Embed 默认同步 URL；只记录共享筛选，不原样回灌 update。
         }
       }
     });}

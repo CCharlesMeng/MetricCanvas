@@ -19,6 +19,7 @@
   const returnHref=page.url.searchParams.get('back')==='1' ? '/' : pageReturnHref(pageId);
   const navigation:RuntimeNavigation={
     ...(returnHref?{returnContext:{entryId:returnHref,label:'返回'},back:()=>void goto(returnHref)}:{}),
+    preserveSearchParams:['back'],
     replaceSearch(search){const url=new URL(page.url);url.search=search;if(returnHref==='/')url.searchParams.set('back','1');replaceState(url,{});}
   };
 </script>

@@ -218,7 +218,8 @@ test('宿主可选接管，同文档更换初始参数重新初始化，省略�
   await expect(link).toHaveAttribute('href', '?code=B&previous=A#next');
   await page.evaluate(() => document.body.dataset.sameDocument = 'yes');
   await link.click();
-  await expect(page).toHaveURL(/code=B&previous=A#next$/);
+  // previous is not an input declared by the receiving page.
+  await expect(page).toHaveURL(/code=B#next$/);
   await expect(page.locator('body')).toHaveAttribute('data-same-document', 'yes');
   await expect(link).toHaveAttribute('href', '?code=B&previous=B#next');
   await page.evaluate(() => window.runtime.update({ document: window.pageDocument, initialSearch: 'code=C' }));

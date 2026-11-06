@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "6.85",
+  "id": "url-input-cleanup",
+  "layout": "dashboard",
+  "meta": {
+    "title": "URL 参数初始化与清理",
+    "description": "合成内联场景：保留页面参数、筛选和页签输入，初始化成功后删除多余参数。"
+  },
+  "strictURLInputs": true,
+  "params": {
+    "display": [{ "id": "account", "type": "string", "required": true }]
+  },
+  "filters": [{ "id": "active", "type": "boolean", "label": "仅有效", "default": false }],
+  "dataSources": {},
+  "sections": [{
+    "id": "main",
+    "components": [
+      { "id": "account", "type": "text", "layout": { "span": 12 }, "props": { "title": "当前账号", "body": { "param": "account" } } },
+      { "id": "active-value", "type": "text", "layout": { "span": 12 }, "props": { "title": "已应用筛选", "body": { "filter": "active" } } },
+      {
+        "id": "views", "type": "tabContainer", "layout": { "span": 12 },
+        "props": {
+          "contentLayout": "grid", "initialTabUrlParam": "view", "defaultTab": "overview",
+          "tabs": [
+            { "id": "overview", "label": "概况", "components": [{ "id": "overview-text", "type": "text", "layout": { "span": 12 }, "props": { "body": "概况内容" } }] },
+            { "id": "detail", "label": "明细", "components": [{ "id": "detail-text", "type": "text", "layout": { "span": 12 }, "props": { "body": "明细内容" } }] }
+          ]
+        }
+      }
+    ]
+  }]
+}

@@ -68,7 +68,8 @@
         document.querySelector('#dashboard-page').textContent
       );
       window.runtime = MetricCanvas.mount('#dashboard', {
-        document: window.pageDocument
+        document: window.pageDocument,
+        initialSearch: ''
       });
     </script>
   </body>

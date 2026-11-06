@@ -17,6 +17,7 @@ export function createReadingRuntimeNavigation(services:Pick<PlatformServices,'n
  }
  function resolveHref(href:string){const found=target(href);if(!found)return href;const {url,pageId}=found;url.pathname=platformPath(navigation.base,'/manage/pages/[pageId]',{pageId});return url.href;}
  return {
+  preserveSearchParams:['resource'],
   resolveHref,
   async resolveTargetInputs(href,{signal}){
    const found=target(href);if(!found)return;

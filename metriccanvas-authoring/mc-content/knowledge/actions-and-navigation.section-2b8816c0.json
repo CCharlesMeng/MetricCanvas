@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "6.95",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "actions-and-navigation.section-2b8816c0"
+  ],
+  "semantics": [
+    {
+      "module": "actions-and-navigation",
+      "reference": "references/page-metadata/actions-and-navigation.md",
+      "blocks": [
+        "# 交互与导航\n\n受控action支持写筛选与导航。writeFilter目标须存在且类型匹配；表格selection只把受控字段/固定值映射到允许目标。URL导航使用目标页面公开参数名，保留标准anchor能力，宿主可选择接管。\n\n表格列selection与link同时存在时selection优先。行导航只在声明的入口列触发。当前页字段、目标页面参数和筛选器id不能靠同名猜映射。文本链接与普通URL不开放脚本执行。",
+        "## URL 参数清理与地址同步\n\n页面声明、页面参数和筛选初始化通过后，统一运行时清理本次输入查询串中的未知键：保留页面参数 id、筛选器实际 URL 键（含别名、范围分量和 IOC Region 标准键）、Tab 的 `initialTabUrlParam` 与 `tab.<组件id>`，以及集成应用在 `RuntimeNavigation.preserveSearchParams` 指定的宿主键。不按参数内容猜类型，不改写保留值、重复值及相对顺序，不把默认值补入地址。已声明的非法值仍按原初始化规则诊断；阻止初始化时不清理地址。此行为不增加页面字段或 Schema 能力下限。\n\n仅实际删除未知键时，初始化调用一次 `RuntimeNavigation.replaceSearch(search)`，传入不带 `?` 的完整保留查询串；该清理不发送 `filter-change` / `tab-change`，不触发重查。后续筛选、Tab 和来源页回跳上下文沿用清理规则，已删除参数不会重新带回。表头的 `initialParam` 仍是本次会话的初值，不因地址替换重新读取。\n\n`RuntimeView` 不直接操作浏览器地址，由集成应用提供可选的 `replaceSearch`；Embed 自动补齐缺省实现，宿主自定义回调优先。默认实现在当前 window 用 `history.replaceState(history.state, '', url)` 替换当前历史记录；保持路径、普通锚点及历史状态，不刷新页面、不新增记录、不模拟 `popstate` / `hashchange`，不访问父窗口。识别 `#/...` / `#!/...` 时同时清理外层与 hash 查询；保留键原有位置，同名键以 hash 为准且删除外层旧副本，新筛选或 Tab 键写入 hash 路由查询。回写异常只报告诊断，不中断页面查询。\n\n宿主控制参数通过接入配置认领，例如 `navigation:{preserveSearchParams:['resource','tenant']}`，不进入页面 JSON。自定义回调可以额外补回自己维护的参数。显式 `initialSearch` 仍决定本次输入；空串没有可清理的初始化键，因此不会因初始化改写地址。之后的筛选或 Tab 操作仍经地址适配器同步；需要完全自行管理地址时提供自己的回调。\n\nAngular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query 并替换当前记录；仅改浏览器 history 不能保证 Router 的内部状态同步。集成应用的 Angular 适配器使用 `Router.parseUrl` / `navigateByUrl(...,{replaceUrl:true})` 并保留重复键、路径和 fragment。路由订阅只在页面身份变化时调用 mount/update；清理或页内筛选导致的 query 变化不回灌完整 update。Router 的导航事件、守卫、取消与实际 Operation Map 生命周期由宿主验证，核心引擎不依赖 Angular。\n\n完整合成页面 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除` 展示账号、筛选及页签初始化，地址应移除 `unused`；`active=invalid` 展示输入错误并保留原地址。此页面只有合成内联数据；真实宿主路由与服务接入另验。"
+      ],
+      "rules": [
+        {
+          "id": "url-navigation-source-contract",
+          "description": "URL 与来源绑定可校验，目标存在性与必填项由目标负责",
+          "valid": [
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "navigation-invalid-authority",
+            "navigation-invalid-port",
+            "navigation-scheme-without-authority",
+            "navigation-unsafe-url",
+            "navigation-missing-row-field",
+            "navigation-unknown-param",
+            "navigation-wrong-filter-part",
+            "navigation-text-row-source",
+            "navigation-text-unsafe-url",
+            "navigation-url-input-collision",
+            "navigation-url-input-wrong-part",
+            "navigation-clicked-slot-missing-field",
+            "navigation-legacy-target-rejected"
+          ]
+        },
+        {
+          "id": "metric-row-link-needs-navigate",
+          "description": "指标行声明 link 时组件必须至少有一个 navigate 动作",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "metric-row-link-without-navigate"
+          ]
+        },
+        {
+          "id": "actions-live-only",
+          "description": "旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "params-page",
+            "composite-page",
+            "map-page"
+          ],
+          "invalid": [
+            "write-filter-on-inline-component"
+          ]
+        },
+        {
+          "id": "write-filter-target",
+          "description": "回写目标是已声明的 dimension 筛选器",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "write-filter-undeclared",
+            "write-filter-non-dimension"
+          ]
+        },
+        {
+          "id": "navigation-filter-source",
+          "description": "导航绑定只能引用已声明的筛选器",
+          "valid": [
+            "filters-page",
+            "map-page"
+          ],
+          "invalid": [
+            "navigation-filter-undeclared"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/url-navigation-page.json",
+        "references/page-metadata/examples/reference-export-detail-bindings.json",
+        "references/page-metadata/examples/tab-url-source.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/navigation-source-page.json",
+        "references/page-metadata/examples/navigation-list-page.json",
+        "references/page-metadata/examples/navigation-detail-page.json",
+        "references/page-metadata/examples/ioc-region-url-demo.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

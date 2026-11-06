@@ -61,12 +61,13 @@ test('automatic input reaches native DQE conditions and missing input blocks req
     requests.push(...items);
     await route.fulfill({json:{retCode:'CBC.0000',results:items.map(()=>({code:'SUCCESS',data:[{region:'EU',gmv:1}],total_count:1}))}});
   });
-  await page.goto('/examples/inline.html?regions=EU&regions=NA&heading=FromURL');
+  await page.goto('/examples/inline.html?regions=EU&regions=NA&heading=FromURL&unused=remove');
   await page.evaluate(raw=>{
     window.runtime.destroy();
     window.runtime=MetricCanvas.mount('#dashboard',{document:raw,dataGateway:MetricCanvas.createDqeGateway({endpoint:'/url-params-dqe'})});
   },raw);
   await expect.poll(()=>requests.filter(q=>q.output_metrics.length>0).length).toBe(1);
+  expect(new URL(page.url()).searchParams.has('unused')).toBe(false);
   const bound=requests.filter(q=>q.output_metrics.length>0&&q.filter.dims.length>0);
   expect(bound).toHaveLength(1);
   for(const query of bound)expect(query.filter.dims).toContainEqual({dim_name:'region',dim_value_list:['EU','NA']});

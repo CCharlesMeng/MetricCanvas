@@ -39,6 +39,10 @@
       "sha256": "df01bdfd99f56f28390b306049168a924513e7005d64bdc90e1670acb305b63d"
     },
     {
+      "file": "packages/embed/src/browser-navigation.ts",
+      "sha256": "7e8d0218df83d49c5ac62e7479ad507364b4d966556dc4b1cb30a2d12f86203f"
+    },
+    {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
       "sha256": "27579112a4412fa09a660c5cf1d75304a7e442787707fc6c321ed94eee3f1ff3"
     },
@@ -69,6 +73,10 @@
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
       "sha256": "5a65ff2f61b13981bdf03857cf0bebc3b6568e526bdc6bca993d6e4eb45a0387"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/url-search.ts",
+      "sha256": "2ac2a38cb66e2231196b91b999b916b6aae29acd0e82b48c18029e59b3685bb5"
     },
     {
       "file": "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
@@ -984,7 +992,9 @@
         "packages/engine/runtime/src/navigate.ts",
         "packages/page/src/navigate.ts",
         "packages/engine/runtime/src/navigation-inputs.ts",
-        "packages/page/src/filter-url.ts"
+        "packages/page/src/filter-url.ts",
+        "packages/engine/runtime-ui/src/url-search.ts",
+        "packages/embed/src/browser-navigation.ts"
       ],
       "rules": [
         "url-navigation-source-contract",

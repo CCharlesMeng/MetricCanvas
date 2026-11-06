@@ -12,7 +12,7 @@ test('explicit IOC back returns through browser history and survives reload', as
   await page.reload();
   await expect(back).toBeVisible();
   await back.click();
-  await expect(page).toHaveURL(new RegExp(source + '\\?from=browser-test$'));
+  await expect(page).toHaveURL(new RegExp(source + '$'));
   await expect(page.locator('[data-dashboard-back]')).toHaveCount(0);
 });
 

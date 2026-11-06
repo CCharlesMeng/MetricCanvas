@@ -101,6 +101,7 @@
   import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
   import { initialTabsFromSearch } from './initial-tabs';
+  import { initializeURLSearch, pageURLSearch, replaceRuntimeSearch } from './url-search';
   import DetailContent from './DetailContent.svelte';
   import { detailViewInput } from '../../runtime/src/detail-view';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
@@ -482,7 +483,7 @@
       const nextSearch = tabSearch(search, selections, loaded);
       if (nextSearch === search.replace(/^\?/, '')) return;
       search = nextSearch;
-      navigationAdapter?.replaceSearch?.(search);
+      replaceRuntimeSearch(navigationAdapter, search);
       emit?.({ type: 'tab-change', search });
     };
     const mode = dataSourceMode(loaded.dataSources);
@@ -564,7 +565,7 @@
         if (primed && capabilities.filters && changedFilters(previous,values).size > 0) {
           const nextSearch = syncedTabSearch(mergedSearch(state, search));
           search = nextSearch;
-          navigationAdapter?.replaceSearch?.(nextSearch);
+          replaceRuntimeSearch(navigationAdapter, nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch,filterRevision:state.revision });
           try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
           if (changedFilters(previous, values).size > 0) closeDetail(false);
@@ -575,6 +576,7 @@
       })
     );
 
+    search = initializeURLSearch(loaded, search, navigationAdapter);
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:blockedFilters,displaySnapshot,filterRevision}));
     syncTableState(loaded);
     pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues),displaySnapshot,state.revision), capabilities };
@@ -757,7 +759,7 @@
   }
 
   function mergedSearch(state: FilterState, initial: string): string {
-    const params = new URLSearchParams(initial);
+    const params = new URLSearchParams(pageURLSearch(declarationPage!, initial, navigation?.preserveSearchParams));
     for (const declaration of declarations) {
       for (const key of Object.values(filterURLKeys(declaration,!!declarationPage&&usesIocRegion(declarationPage)))) params.delete(key);
     }

@@ -164,7 +164,7 @@ interface RuntimeInput {
 
 IOC 页头声明 `props.back:true` 后，浏览器可后退时默认显示返回按钮并调用当前窗口的 `history.back()`（优先 navigation.canGoBack，不支持时回退 history.length>1）。无需配置路由或 `returnContext`；可选 `navigation.back` 覆盖默认动作，提供函数即可显示。`returnContext.label` 可设置无障碍标签。无浏览器环境或判断不可后退时默认隐藏，静态导出不包含按钮；未声明 back 的页头不接管返回。此行为使用原生历史，不额外记录来源或恢复完整页面视图。合成验收入口：`/pages/ioc-default-back-source` → `/pages/ioc-default-back-target`。
 
-Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离宿主 URL。只在挂载/更新时读取，不监听地址变化、不写 URL、不读取父窗口。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。
+Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离宿主 URL。只在挂载/更新时读取，不监听地址变化、不读取父窗口。初始化通过后自动清理未声明的 URL 参数；地址回写与 Angular 适配规则见[URL 参数清理](../../docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。
 
 Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 
@@ -293,7 +293,7 @@ ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行
 
 在报表顶层页头统一配置`exportButtons: [{format, label?, filename?, scale?}]`，每项一个直接下载按钮；PNG默认3倍、支持3/4倍，PDF默认2倍、支持2/3/4倍；结果始终为一张完整PNG。单张长图由独立文档和Worker行流式编码生成，不提供多文件或其他图片格式回退。既有PDF独立保留；完整声明及运行限制见[报告页头](../../docs/page-metadata/components/reportHeader.md#导出按钮631)和[报告导出](../../docs/report-export.md)。[HTML例子](examples/report-image-download.html)直接消费`pages/capabilities/export/report-png-export.json`，不需集成应用安装截图/编码依赖。正常父文档水印被隔离，主动向frame注入的门户脚本仍需真实接入验收。
 
-Tab混合内容的活动项使用 `tab.<组件id>` 查询参数。`navigation.replaceSearch` 接收筛选与页签更新；仅使用事件同步URL的集成应用同时处理 `filter-change` 与 `tab-change`，替换当前历史记录且不立即回灌 update。既有对事件联合做穷尽switch的消费者需要补充tab-change分支。组件局部筛选沿用既有筛选URL；表格分页、排序、搜索草稿和滚动不新增URL编码。
+Tab混合内容的活动项使用 `tab.<组件id>` 查询参数。`navigation.replaceSearch` 接收初始化清理、筛选与页签更新；Embed 默认处理地址同步，事件用于观察与记录，无需再次写 URL，也不立即回灌 update。既有对事件联合做穷尽switch的消费者需要补充tab-change分支。组件局部筛选沿用既有筛选URL；表格分页、排序、搜索草稿和滚动不新增URL编码。
 
 
 ## 宿主共享筛选值示例
@@ -313,3 +313,33 @@ Schema 6.91 支持页头 `props.components` 组合控件。显式 `regionFilter`
 详情弹窗和抽屉通过原生 `dialog.showModal()` 进入浏览器顶层，遮罩覆盖同一文档的整个窗口及集成应用侧栏，打开期间背景不可交互。页面仍可 mount 到小 div，弹层保留在原 ShadowRoot 内；无需新增挂载参数。关闭按钮、Esc、点击遮罩及首尾焦点循环可用，页面更新与 destroy 会清理弹层。iframe 内只能覆盖当前 iframe 文档。
 
 运行 `pnpm build`、`MC_EMBED_EXAMPLE_PORT=4186 pnpm preview:examples`，打开 [带侧栏的小 div 挂载示例](http://127.0.0.1:4186/examples/detail-overlay.html)。它使用 `pages/capabilities/table/table-detail-overlay.json` 的内联合成数据，覆盖高层级侧栏、transform 和 overflow 裁剪，不依赖 DQE。
+
+## 默认 URL 清理与 Angular 接入
+
+初始化通过后自动删除未声明的 URL 参数；页面参数、筛选器实际 URL 名称和 Tab 输入保留，值不被重写，非法已声明输入仍按原规则报错。清理只替换当前历史记录，不刷新、不增加记录、不重查、不发送筛选或 Tab 变更事件。详细行为见[URL 参数清理与地址同步](../../docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)。
+
+普通浏览器接入无需提供 `replaceSearch`。宿主有自用参数时显式认领：
+
+```ts
+mount(container, {
+  document,
+  navigation: { preserveSearchParams: ['resource', 'tenant'] }
+});
+```
+
+默认实现保留当前 `history.state`、路径、锚点，支持普通 query 与 `#/...?...` / `#!/...?...`；不访问父窗口、不派发伪造路由事件。`navigation.replaceSearch` 自定义实现优先，其他导航回调继续保留。地址回写支持同步或 `Promise<void>`，失败时输出诊断而不打断已初始化页面。需要自行管理地址时提供回调；完整 update 未再提供覆盖时恢复默认实现。多个实例共享同一宿主 URL 时，由宿主提供统一地址适配器协调。
+
+Operation Map 使用 Angular，建议采用[完整 Angular 适配示例](examples/angular-navigation.ts)：
+
+```ts
+import { createAngularNavigation } from './angular-navigation';
+
+const navigation = createAngularNavigation(router, ngZone, ['resource', 'tenant']);
+const runtime = mount(container, { document, navigation });
+```
+
+示例通过 Angular Router 解析当前 UrlTree，只替换 query，保留重复键、宿主键、路径和 fragment，经 `NgZone.run` 执行 `navigateByUrl(...,{replaceUrl:true})`。Angular 自己处理 path/hash location strategy，引擎不引用 Angular 运行依赖。导航取消会作为同步失败诊断，不自动反复导航。
+
+宿主订阅应按页面身份（例如 pageId / revisionId）变化装载文档；仅 query 变化不重新 mount/update，否则会重建页面会话和发起重复查询。清理及页内筛选使用同一接缝。Router 仍会产生导航事件，其守卫、resolver 与 Operation Map 的实际组件生命周期需要宿主环境确认。
+
+合成演示：`/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除`。本仓浏览器覆盖默认 ES/global 与自定义回调；不以合成回调测试替代真实 Operation Map 接入验收。

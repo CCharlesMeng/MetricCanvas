@@ -74,3 +74,19 @@
 ## IOC Region 默认 URL 输入
 
 目标页使用 IOC Header 并认领 Region 时，默认接受 `region-dept` 与 `rep-office` 参数，无需页面 URL 映射。来源导航可显式把行字段、参数或筛选 value 映射到 `query.rep-office` 或 `query.region-dept`，键名决定目标层级，不再映射 level。目标输入投影从实际 Header 推导组织输入能力，同组按 URL 顺序取最后值；筛选来源的层级必须与目标键一致。候选权限仍由目标页验证，旧 value/level 链接继续兼容。完整合成目标为 `/pages/ioc-region-url-demo`；声明和边界见[筛选声明](filters.md#region-level-url)。
+
+<a id="url-参数清理与地址同步"></a>
+
+## URL 参数清理与地址同步
+
+页面声明、页面参数和筛选初始化通过后，统一运行时清理本次输入查询串中的未知键：保留页面参数 id、筛选器实际 URL 键（含别名、范围分量和 IOC Region 标准键）、Tab 的 `initialTabUrlParam` 与 `tab.<组件id>`，以及集成应用在 `RuntimeNavigation.preserveSearchParams` 指定的宿主键。不按参数内容猜类型，不改写保留值、重复值及相对顺序，不把默认值补入地址。已声明的非法值仍按原初始化规则诊断；阻止初始化时不清理地址。此行为不增加页面字段或 Schema 能力下限。
+
+仅实际删除未知键时，初始化调用一次 `RuntimeNavigation.replaceSearch(search)`，传入不带 `?` 的完整保留查询串；该清理不发送 `filter-change` / `tab-change`，不触发重查。后续筛选、Tab 和来源页回跳上下文沿用清理规则，已删除参数不会重新带回。表头的 `initialParam` 仍是本次会话的初值，不因地址替换重新读取。
+
+`RuntimeView` 不直接操作浏览器地址，由集成应用提供可选的 `replaceSearch`；Embed 自动补齐缺省实现，宿主自定义回调优先。默认实现在当前 window 用 `history.replaceState(history.state, '', url)` 替换当前历史记录；保持路径、普通锚点及历史状态，不刷新页面、不新增记录、不模拟 `popstate` / `hashchange`，不访问父窗口。识别 `#/...` / `#!/...` 时同时清理外层与 hash 查询；保留键原有位置，同名键以 hash 为准且删除外层旧副本，新筛选或 Tab 键写入 hash 路由查询。回写异常只报告诊断，不中断页面查询。
+
+宿主控制参数通过接入配置认领，例如 `navigation:{preserveSearchParams:['resource','tenant']}`，不进入页面 JSON。自定义回调可以额外补回自己维护的参数。显式 `initialSearch` 仍决定本次输入；空串没有可清理的初始化键，因此不会因初始化改写地址。之后的筛选或 Tab 操作仍经地址适配器同步；需要完全自行管理地址时提供自己的回调。
+
+Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query 并替换当前记录；仅改浏览器 history 不能保证 Router 的内部状态同步。集成应用的 Angular 适配器使用 `Router.parseUrl` / `navigateByUrl(...,{replaceUrl:true})` 并保留重复键、路径和 fragment。路由订阅只在页面身份变化时调用 mount/update；清理或页内筛选导致的 query 变化不回灌完整 update。Router 的导航事件、守卫、取消与实际 Operation Map 生命周期由宿主验证，核心引擎不依赖 Angular。
+
+完整合成页面 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除` 展示账号、筛选及页签初始化，地址应移除 `unused`；`active=invalid` 展示输入错误并保留原地址。此页面只有合成内联数据；真实宿主路由与服务接入另验。

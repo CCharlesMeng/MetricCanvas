@@ -88,6 +88,7 @@
 
   const navigation = $derived.by<RuntimeNavigation>(() => {
     const base: RuntimeNavigation = {
+      preserveSearchParams: ['revision', 'state', 'supplementKey', 'sourceFailure', 'rowFailure', 'recoveryState'],
       async resolveTargetInputs(href,{signal}) {
         const target=new URL(href,document.baseURI),match=/^\/pages\/([^/]+)$/.exec(target.pathname);
         if(target.origin!==location.origin||!match)return undefined;

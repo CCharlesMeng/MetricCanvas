@@ -82,3 +82,16 @@ URL 仅提供初始化输入；未声明参数不生效，无效或重复值回�
 启动：`pnpm dev:playground`。两个页面均为静态合成演示，不访问 DQE。点击来源页的“打开默认返回页”，目标页声明 `props.back:true`，点击页头返回后回到来源地址；刷新目标页后仍可返回。来源页未声明 back，不显示按钮。在支持 Navigation API 的全新浏览上下文直接打开目标页，按钮隐藏。
 
 Embed 原生 HTML 示例不提供返回适配器，用于验证运行时默认动作。Playground 保留已有应用级自定义返回，验证可选覆盖兼容。浏览器回归另验证只传 navigation.back、不传 returnContext 的覆盖，以及完整 update 移除回调后恢复默认行为。不承诺分页、排序、滚动或完整视图恢复。
+
+## URL 参数清理与地址同步
+
+完整页面：[url-input-cleanup.json](url-input-cleanup.json)。启动 `pnpm dev:playground`，打开 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除#main`。
+
+1. 正文显示“合成账号”和已应用筛选 `true`，初始选中“明细”。地址保留 `account`、`active`、`view` 和锚点，自动删除 `unused`，不刷新页面。
+2. 切换“概况”，地址新增 `tab.views=overview`，不会重新带回 `unused`；刷新仍显示该页签和原账号。
+3. 改用 `/pages/url-input-cleanup?account=合成账号&active=invalid&unused=删除`，应显示“页面输入不完整或无效”，保留完整地址以便诊断。
+4. Playground 自己的 `state=ready` 等预览控制键会保留，不被当作页面未知输入清理。
+
+实际 Embed 验证：构建后启动 `pnpm --filter @metriccanvas/embed preview:examples`，打开 `http://127.0.0.1:4175/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除`。ES/global 回归直接读取同一 JSON；覆盖 hash 路由、重复键、宿主保留键、自定义回调优先、更新移除覆盖恢复默认、回写异常和历史状态。查询夹具另验证清理地址时只有一次初始 DQE 请求。
+
+此页只有合成内联文字，无真实业务数据。Angular 接入示例见 `packages/embed/examples/angular-navigation.ts`，真实 Operation Map 的路由订阅、守卫、部署与权限仍需在其环境验收。

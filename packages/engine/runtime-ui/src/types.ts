@@ -21,7 +21,10 @@ export interface RuntimeNavigation {
   resolveTargetInputs?(href:string,options:{signal:AbortSignal}):import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined|Promise<import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined>;
   /** Optional application return context and accessible label; not required by the IOC browser default. */
   returnContext?: { entryId: string; label?: string };
-  replaceSearch?(search: string): void;
+  /** Host-owned query keys retained alongside declared page inputs; never page Schema. */
+  preserveSearchParams?: readonly string[];
+  /** Replace the current entry without feeding the change back into mount/update. */
+  replaceSearch?(search: string): void | Promise<void>;
   /** 返回 true 表示宿主已接管；否则保留浏览器导航。 */
   navigate?(target: RuntimeNavigationTarget): boolean | void;
   /** Overrides the IOC header's default browser history.back(); does not require returnContext. */

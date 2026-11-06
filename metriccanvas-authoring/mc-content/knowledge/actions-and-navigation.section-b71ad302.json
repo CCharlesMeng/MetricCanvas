@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/actions-and-navigation.md",
       "blocks": [
         "# 交互与导航\n\n受控action支持写筛选与导航。writeFilter目标须存在且类型匹配；表格selection只把受控字段/固定值映射到允许目标。URL导航使用目标页面公开参数名，保留标准anchor能力，宿主可选择接管。\n\n表格列selection与link同时存在时selection优先。行导航只在声明的入口列触发。当前页字段、目标页面参数和筛选器id不能靠同名猜映射。文本链接与普通URL不开放脚本执行。",
-        "## IOC Region 默认 URL 输入\n\n目标页使用 IOC Header 并认领 Region 时，默认接受 `region-dept` 与 `rep-office` 参数，无需页面 URL 映射。来源导航可显式把行字段、参数或筛选 value 映射到 `query.rep-office` 或 `query.region-dept`，键名决定目标层级，不再映射 level。目标输入投影从实际 Header 推导组织输入能力，同组按 URL 顺序取最后值；筛选来源的层级必须与目标键一致。候选权限仍由目标页验证，旧 value/level 链接继续兼容。完整合成目标为 `/pages/ioc-region-url-demo`；声明和边界见[筛选声明](filters.md#region-level-url)。"
+        "## IOC Region 默认 URL 输入\n\n目标页使用 IOC Header 并认领 Region 时，默认接受 `region-dept` 与 `rep-office` 参数，无需页面 URL 映射。来源导航可显式把行字段、参数或筛选 value 映射到 `query.rep-office` 或 `query.region-dept`，键名决定目标层级，不再映射 level。目标输入投影从实际 Header 推导组织输入能力，同组按 URL 顺序取最后值；筛选来源的层级必须与目标键一致。候选权限仍由目标页验证，旧 value/level 链接继续兼容。完整合成目标为 `/pages/ioc-region-url-demo`；声明和边界见[筛选声明](filters.md#region-level-url)。\n\n<a id=\"url-参数清理与地址同步\"></a>"
       ],
       "rules": [
         {
