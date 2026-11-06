@@ -81,12 +81,13 @@ export function compilePresentation(page:Page) {
   };
 }
 export type Presentation = ReturnType<ReturnType<typeof compilePresentation>['evaluate']>;
-/** Resolve callbacks against the current private row view; ambiguous keys never execute. */
+/** Keep exact current rows; stale callbacks may only rebind through an unambiguous key. */
 export function resolvePresentationRow(table:TableComponent,rows:readonly Row[],clicked:Row):Row|undefined {
   const field=table.props.rowKey;
   if(!field)return rows.includes(clicked)?clicked:undefined;
   const key=clicked[field];
   if(typeof key!=='string'&&(typeof key!=='number'||!Number.isFinite(key)))return;
+  if(rows.includes(clicked))return clicked;
   const matches=rows.filter(row=>row[field]===key);
   return matches.length===1?matches[0]:undefined;
 }

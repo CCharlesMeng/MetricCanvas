@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "6.95",
+  "id": "table-multi-source-navigation-detail",
+  "layout": "dashboard",
+  "meta": {
+    "title": "阶段跳转参数明细",
+    "description": "展示来源当前行显式携带的参数，使用合成数据，无真实 DQE。"
+  },
+  "params": [
+    {
+      "id": "project-name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "rep-office-name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "stage-name",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "project-name",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "项目名称",
+            "body": {
+              "param": "project-name"
+            }
+          }
+        },
+        {
+          "id": "rep-office-name",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "代表处",
+            "body": {
+              "param": "rep-office-name"
+            }
+          }
+        },
+        {
+          "id": "stage-name",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "决策阶段",
+            "body": {
+              "param": "stage-name"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

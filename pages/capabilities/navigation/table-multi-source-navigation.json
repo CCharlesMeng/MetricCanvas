@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "6.95",
+  "id": "table-multi-source-navigation",
+  "layout": "dashboard",
+  "meta": {
+    "title": "多阶段明细点击跳转",
+    "description": "内联合成数据：四条阶段明细按两个商务编号关联基础信息与人数，逐行点击保留当前项目、代表处和阶段。"
+  },
+  "dataSources": {
+    "stages": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号"
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期"
+        },
+        "stage-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "决策阶段"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "biz-code": "B001",
+            "project-name": "合成项目甲",
+            "rep-office-name": "合成代表处",
+            "dtime": "2026-11",
+            "stage-name": "代表处SDT"
+          },
+          {
+            "biz-code": "B002",
+            "project-name": "合成项目乙",
+            "rep-office-name": "合成代表处",
+            "dtime": "2026-11",
+            "stage-name": "代表处SDT"
+          },
+          {
+            "biz-code": "B002",
+            "project-name": "合成项目乙",
+            "rep-office-name": "合成代表处",
+            "dtime": "2026-11",
+            "stage-name": "地区部SDT"
+          },
+          {
+            "biz-code": "B002",
+            "project-name": "合成项目乙",
+            "rep-office-name": "合成代表处",
+            "dtime": "2026-11",
+            "stage-name": "华为云计算SDT"
+          }
+        ]
+      }
+    },
+    "basic": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号"
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "biz-code": "B002",
+            "customer-name": "合成客户乙"
+          },
+          {
+            "biz-code": "B001",
+            "customer-name": "合成客户甲"
+          }
+        ]
+      }
+    },
+    "headcount": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号"
+        },
+        "approval-headcount": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审决策人数"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "biz-code": "B001",
+            "approval-headcount": 1
+          },
+          {
+            "biz-code": "B002",
+            "approval-headcount": 12
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "description",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "多阶段明细点击跳转",
+            "body": "合成项目乙有三个决策阶段，共用商务编号 B002。点击任一阶段的人数 12，目标页应显示该行的项目、代表处和阶段；基础信息与人数继续按商务编号关联。"
+          }
+        },
+        {
+          "id": "stage-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "stages",
+            "basic": "basic",
+            "headcount": "headcount"
+          },
+          "props": {
+            "title": "商务审批阶段明细（内联合成数据）",
+            "rowKey": "biz-code",
+            "columns": [
+              {
+                "field": "biz-code",
+                "title": "商务编号"
+              },
+              {
+                "field": "project-name",
+                "title": "项目名称"
+              },
+              {
+                "field": "stage-name",
+                "title": "决策阶段"
+              },
+              {
+                "field": {
+                  "data": "basic",
+                  "field": "customer-name"
+                },
+                "title": "客户名称"
+              },
+              {
+                "field": {
+                  "data": "headcount",
+                  "field": "approval-headcount"
+                },
+                "title": "商审决策人数",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/table-multi-source-navigation-detail",
+                  "query": {
+                    "project-name": {
+                      "source": "row",
+                      "field": "project-name"
+                    },
+                    "rep-office-name": {
+                      "source": "row",
+                      "field": "rep-office-name"
+                    },
+                    "stage-name": {
+                      "source": "row",
+                      "field": "stage-name"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

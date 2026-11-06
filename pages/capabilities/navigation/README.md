@@ -2,6 +2,14 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 多阶段明细点击跳转
+
+来源：`/pages/table-multi-source-navigation`；目标：`/pages/table-multi-source-navigation-detail`（从来源进入会携带必需的 `project-name`、`rep-office-name`、`stage-name`）。启动：`pnpm dev:playground`，无需额外数据服务。
+
+内联合成数据包含四条阶段明细，按两个商务编号关联基础信息和人数。点击合成项目乙三个阶段的人数 `12`，目标页应分别显示当前阶段，项目和代表处保持对应值；点击人数 `1` 应显示合成项目甲。基础信息记录顺序与主表不同，客户名称仍应正确关联。
+
+主表重复商务编号不阻止当前实际行的动作。过期回调遇到歧义、行被移除或缺少有效行键时仍拒绝执行；动作条件与禁用行为由引擎及浏览器回归覆盖。此场景不证明真实 DQE、Operation Map 路由接管或部署已通过。
+
 ## 内容导航与局部状态保留
 
 入口：`/pages/ioc-content-navigation`；[页面 JSON](ioc-content-navigation.json)。

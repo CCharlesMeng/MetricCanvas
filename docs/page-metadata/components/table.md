@@ -77,6 +77,16 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 
 可观察入口：`/pages/table-column-visibility`（四种表格外观、搜索与 Excel）、`/pages/table-column-visibility-scopes`（Tab、详情、展开子表）、`/pages/table-column-visibility-report`（PDF/PNG）。均为内联合成数据；远程状态调和由集成测试覆盖，不作为真实 DQE/Relay 验收。
 
+<a id="table-row-action-identity"></a>
+
+## 当前行定位与补充数据关联
+
+多数据源表格仍按 `props.rowKey` 将补充数据槽对齐到主数据槽。主数据中同一商务编号可以有多条阶段明细，基础信息与人数可继续按商务编号关联；无需为了点击跳转改变查询粒度、删除 `rowKey` 或增加页面字段。
+
+点击导航、单元格筛选联动和详情入口时，运行时优先使用仍在当前可见主数据中的实际行，避免同一个关联键的其他阶段替换被点击行。声明了 `rowKey` 时，其值仍须为有效字符串或有限数字。旧行回调不再属于当前数据时，仅在行键唯一匹配当前行的情况下重新定位并检查最新动作条件；行已移除、行键缺失或存在歧义时拒绝执行。当前行的 `visibleWhen`、`enabledWhen` 及权限限制继续生效。
+
+完整合成示例 `/pages/table-multi-source-navigation` 有四条阶段明细和两条基础信息、人数记录。点击三条人数为 12 的明细均进入 `/pages/table-multi-source-navigation-detail`，目标页显示被点击行的项目、代表处与阶段；补充数据顺序不同也按商务编号正确对齐。此场景不访问真实 DQE 或 Operation Map。
+
 <a id="table-cell-selection"></a>
 
 ## 单元格点击与筛选联动

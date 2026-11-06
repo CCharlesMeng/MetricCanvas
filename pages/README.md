@@ -62,6 +62,8 @@ pages/
 
 主题说明：
 
+- 多阶段明细按商务编号关联补充数据并逐行跳转：[导航示例](capabilities/navigation/README.md#多阶段明细点击跳转)，入口 `/pages/table-multi-source-navigation`。
+
 - 旧页面升级后继续开发：[步骤与边界](capabilities/layout/README.md#旧页面升级后继续开发)、[实际页面](capabilities/layout/schema-upgrade-demo.json)。
 - 饼图表格式图例与固定类别顺序：[图表场景](capabilities/chart/README.md)，入口 `/pages/pie-table-legend`。
 
