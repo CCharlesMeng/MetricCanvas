@@ -1,0 +1,277 @@
+{
+  "schemaVersion": "6.81",
+  "id": "query-sort-baseline",
+  "layout": "dashboard",
+  "meta": {
+    "title": "查询默认排序与固定基线",
+    "description": "合成初始快照，验证 DQE 降序、首屏表头方向与常量基线；不证明真实 DQE 执行。"
+  },
+  "dataSources": {
+    "decision-validity-trend": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "sdt-avg-duration": {
+          "type": "number",
+          "role": "measure",
+          "label": "代表处SDT平均决策时长",
+          "unit": "天",
+          "queryField": "商审SDT平均决策时长"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "商审SDT平均决策时长"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "order_by_field": "商审SDT平均决策时长",
+                  "type": "desc"
+                }
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-11-06T00:00:00Z",
+          "rows": [
+            {
+              "代表处": "乙代表处",
+              "商审SDT平均决策时长": 6
+            },
+            {
+              "代表处": "丙代表处",
+              "商审SDT平均决策时长": 3
+            },
+            {
+              "代表处": "甲代表处",
+              "商审SDT平均决策时长": 1
+            }
+          ],
+          "totalCount": 3
+        }
+      }
+    },
+    "urgent-decision-trend": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "sdt-avg-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "代表处SDT平均决策人数",
+          "unit": "人",
+          "queryField": "商审SDT平均决策人数"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "商审SDT平均决策人数"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "order_by_field": "商审SDT平均决策人数",
+                  "type": "desc"
+                }
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-11-06T00:00:00Z",
+          "rows": [
+            {
+              "代表处": "乙代表处",
+              "商审SDT平均决策人数": 8
+            },
+            {
+              "代表处": "丙代表处",
+              "商审SDT平均决策人数": 4
+            },
+            {
+              "代表处": "甲代表处",
+              "商审SDT平均决策人数": 2
+            }
+          ],
+          "totalCount": 3
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "sorted",
+      "components": [
+        {
+          "id": "duration-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "decision-validity-trend"
+          },
+          "props": {
+            "title": "首屏显示查询降序",
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            },
+            "columns": [
+              {
+                "field": "rep-office",
+                "title": "代表处",
+                "sortable": true
+              },
+              {
+                "field": "sdt-avg-duration",
+                "title": "平均决策时长",
+                "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "sdt-duration-bar-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "decision-validity-trend"
+          },
+          "props": {
+            "categoryField": "rep-office",
+            "dualAxis": true,
+            "series": [
+              {
+                "field": "sdt-avg-duration",
+                "label": "代表处SDT平均决策时长",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "value": 2,
+                "label": "基线",
+                "kind": "line",
+                "axis": "secondary",
+                "unit": "天"
+              }
+            ],
+            "categoryLabels": {
+              "mode": "all",
+              "rotate": -45
+            },
+            "echartsOption": {
+              "grid": {
+                "bottom": 44
+              },
+              "legend": {
+                "top": null,
+                "bottom": 0,
+                "left": "center"
+              },
+              "series": [
+                {
+                  "barWidth": 16
+                },
+                {}
+              ]
+            }
+          }
+        },
+        {
+          "id": "sdt-count-bar-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "urgent-decision-trend"
+          },
+          "props": {
+            "categoryField": "rep-office",
+            "dualAxis": true,
+            "series": [
+              {
+                "field": "sdt-avg-count",
+                "label": "代表处SDT平均决策人数",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "value": 5,
+                "label": "基线",
+                "kind": "line",
+                "axis": "secondary",
+                "unit": "人"
+              }
+            ],
+            "categoryLabels": {
+              "mode": "all",
+              "rotate": -45
+            },
+            "echartsOption": {
+              "grid": {
+                "bottom": 44
+              },
+              "legend": {
+                "top": null,
+                "bottom": 0,
+                "left": "center"
+              },
+              "series": [
+                {
+                  "barWidth": 16
+                },
+                {}
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

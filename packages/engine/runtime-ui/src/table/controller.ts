@@ -1,4 +1,5 @@
 import {isPagedJoinQuery,pagedJoinCandidateView,type PagedJoinDataSource} from '@metriccanvas/page/internal';
+import { declaredQuerySort } from './query-sort';
 import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
 import {normalizeTableSelectView,columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
@@ -38,6 +39,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       session.sync(hierarchyContext());
     }
     const sessions = new Map<string, TableSession>();
+    const sortTouched = new Set<string>();
     const pendingDefaults = new Set<string>();
     const candidates = new Map<string, ReturnType<typeof createColumnCandidatesSession>>();
     const notices = new Map<string,string>();
@@ -75,6 +77,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         return session;
     }
     function resetHierarchyDefault(table: TableComponent): void {
+      sortTouched.delete(table.id);
       if(!hasHeaderDefaults(table.props.columns)){local(table).resetDefault();return;}
       const size=table.props.pagination?.mode==='local'?table.props.pagination.pageSize:undefined;
       const baseline=defaultTableView(page,table,context(),defaultSourceView(page,table.data.main,size));
@@ -186,7 +189,8 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         },
         render(table: TableComponent): TableViewState {
             const committed = view(table);
-            return { allowEmptyFilter:isPagedJoinQuery(page.dataSources[table.data.main].source), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort: committed.sort, searchQuery: committed.search?.query, search: committed.search,
+            const sort = committed.sort.length || sortTouched.has(table.id) ? committed.sort : declaredQuerySort(page.dataSources[table.data.main], conditions());
+            return { allowEmptyFilter:isPagedJoinQuery(page.dataSources[table.data.main].source), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort, searchQuery: committed.search?.query, search: committed.search,
                 headerFilters: { ...renderHeaders(tableHeaders(committed.predicates)), ...headers.get(table.id) } };
         },
         headers(table: TableComponent) { return tableHeaders(view(table).predicates); },
@@ -227,9 +231,10 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
             local(table).setPageSize(pageSize); changed(); },
         sort(table: TableComponent, sort: TableQueryView['sort']) { if (columns(table).enabled && sort.some(rule => !columns(table).fields.has(rule.field)))
             return; if (remote(table))
-            operate(table,()=>stream()?.setQuerySort(table.data.main, sort));
-        else
-            local(table).setSort(sort); changed(); },
+            operate(table,()=>{ stream()?.setQuerySort(table.data.main, sort); sortTouched.add(table.id); });
+        else {
+            local(table).setSort(sort); sortTouched.add(table.id);
+        } changed(); },
         header(table: TableComponent, field: string, value: TableHeaderFilterValue | null) {
             if (columns(table).enabled && !columns(table).fields.has(field))
                 return;
@@ -266,6 +271,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 changed();return;
             }
             if (fieldSelectionIds(table.props).some(id => changedIds.has(id))) {
+                sortTouched.delete(table.id);
                 headers.delete(table.id);
                 searches.delete(table.id);
                 searchOptions.delete(table.id);
@@ -287,7 +293,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         },
         dispose() { for(const session of hierarchies.values())session.dispose();hierarchies.clear();for (const session of candidates.values())
             session.dispose(); candidates.clear(); for (const session of sessions.values())
-            session.dispose(); sessions.clear(); headers.clear(); searches.clear(); searchOptions.clear(); }
+            session.dispose(); sessions.clear(); sortTouched.clear(); headers.clear(); searches.clear(); searchOptions.clear(); }
     };
     return controller;
 }

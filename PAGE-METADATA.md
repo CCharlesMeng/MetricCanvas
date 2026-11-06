@@ -2,6 +2,8 @@
 
 6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。同比/环比基期非正或缺失返回null，普通ratio保持。缺失文案为 `--` / `--%`，图表显示分开的短横线。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
 
+普通查询表格首屏按 DQE `order.order_by_field/type` 回显列头方向，用户操作后沿用会话排序；不新增字段或改变查询。常量基线与指标排序可以同时使用。声明和边界见[查询默认排序](docs/page-metadata/components/table.md#查询默认排序的首屏方向)，入口 `/pages/query-sort-baseline`。
+
 6.92：期间比较可省略 `fact`，直接按页头已应用的完整期间查询本期、去年同期和上期，无需预览或宿主截止事实；旧显式 fact 仍保持进度对齐与缺失拒绝。见[完整期间比较](docs/page-metadata/queries-and-bindings.md#按页头完整期间比较692)，入口 `/pages/business-result-metrics-2`。
 
 可选 IOC Region 空选时首屏立即查询，不等待组织候选；有选值及显式候选上下文仍执行原校验。候选弹层固定搜索框，仅列表滚动。声明边界与业务页验收见[筛选器](docs/page-metadata/filters.md)，入口 `/pages/region-authorization-norms`；不新增 Schema 字段。

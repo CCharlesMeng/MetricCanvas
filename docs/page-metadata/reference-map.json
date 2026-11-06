@@ -2878,6 +2878,13 @@
       ],
       "dependencies": []
     },
+    "table.query-sort": {
+      "module": "table",
+      "title": "查询默认排序的首屏方向",
+      "roots": [],
+      "headings": ["查询默认排序的首屏方向"],
+      "dependencies": []
+    },
     "table.headerDefaults": {
       "module": "table",
       "title": "列头筛选默认选中值",
@@ -3158,6 +3165,7 @@
       "常量取值（6.59）"
     ],
     "components/table.md": [
+      "查询默认排序的首屏方向",
       "列头筛选默认值（6.82）",
       "表头参数初值与全选语义（6.85）",
       "前端列枚举（6.80）",

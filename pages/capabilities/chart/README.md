@@ -2,6 +2,8 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+固定基线与查询排序的共同场景为 `/pages/query-sort-baseline`；启动、操作、合成数据性质及证据边界见[表格场景说明](../table/README.md#查询默认方向与固定基线)。
+
 ## 独立全局均值（6.83）
 
 入口 `/pages/chart-global-benchmark`，使用 `chart-global-benchmark.json`，Dashboard，全部数据为 Playground 合成网关，直接运行 `pnpm dev:playground` 即可，无需真实 DQE。

@@ -34,6 +34,8 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 ## 常量取值（6.59）
 
+`series[].field` 与 `series[].value` 是互斥来源分支；固定基线可使用 `{"value":2,"kind":"line","axis":"secondary","unit":"天"}`。常量分支不要求 field，支持 unit。类别和指标系列共同沿用数据源行序，常量不会触发按类别重排；排序仍在该数据源的 DQE `body.dsl_list[0].order.order_by_field/type` 声明，使用原查询字段名，不对常量配置排序。示例 `/pages/query-sort-baseline` 同时展示 2 天与 5 人基线及查询降序。
+
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 ## 数值格式

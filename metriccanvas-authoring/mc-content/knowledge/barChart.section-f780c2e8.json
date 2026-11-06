@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/barChart.md",
       "blocks": [
         "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。\n\n6.56 起，DQE 通过 `output_dims` 返回的现成计数或金额也可显式声明为数值度量，再绑定 `series[].field`；图表直接使用每行数值，不重新聚合。声明见[结果字段角色](../fields.md#dqe-output-measures)，柱图、明细与零值/缺失对照见 `stored-count-measures` 示例。",
-        "## 常量取值（6.59）\n\n本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。"
+        "## 常量取值（6.59）\n\n`series[].field` 与 `series[].value` 是互斥来源分支；固定基线可使用 `{\"value\":2,\"kind\":\"line\",\"axis\":\"secondary\",\"unit\":\"天\"}`。常量分支不要求 field，支持 unit。类别和指标系列共同沿用数据源行序，常量不会触发按类别重排；排序仍在该数据源的 DQE `body.dsl_list[0].order.order_by_field/type` 声明，使用原查询字段名，不对常量配置排序。示例 `/pages/query-sort-baseline` 同时展示 2 天与 5 人基线及查询降序。\n\n本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。"
       ],
       "rules": [
         {

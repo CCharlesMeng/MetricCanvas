@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "e5413f118c4e0b2daf81c9e18062346c6dd48530eb209e7319b1a35d4bb8885e",
+  "sha256": "8e8f607382fa2b04a4f664486e30f64600af0ee0f91af8141e141a838aff369a",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -36,7 +36,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "4f362bc926e3ae2d27dba20e25c64f79ad66176bd6a101729a40f97defbc486e"
+      "sha256": "12806c754371981c1eeb2e8d5c9929dfe08bf72a45dd3215edd2a16aa01792ac"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "73ae9eec53176a63553b0f38a6979ccb6521fade64f3b2143bc210b3f1b118bb"
+      "sha256": "d14ef1ade6a9cf48269607d1863abe38562e91e32d9d5a800407a8c31e8c2ebc"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "24ab75dd8e8d11deabbec75316590a32d42e6911f9eda56825cf546602799488"
+      "sha256": "cc6c20be6523343826b6d4a12ed30f58e91ac96688c13463c33bead1794e1550"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2252,7 +2252,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "ae4d4f8e85b39a5fac7075f84e7a3cb2e878af00ead1a0933d099f4c96e1b857"
+      "sha256": "319a95365c8aaef6b8be69c88b628520f6c69a55777b7d913883502ea89e8d89"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
@@ -2756,7 +2756,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "0a0812d6b343233ab35d19b62c049a9aee5b26f047a0276fc0c52de610e88072"
+      "sha256": "7ebf87309820fcdae029b2c1154d6972b639b588d62afebf00c162db26dc391c"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2793,6 +2793,10 @@
     {
       "file": "pages/capabilities/table/paged-join-on-demand.json",
       "sha256": "ec0dacd4e78cafa705f00f6096434b57b668872e059d8718886b728bee938437"
+    },
+    {
+      "file": "pages/capabilities/table/query-sort-baseline.json",
+      "sha256": "07eeb01967c3f0f4e8443f294e4a05f7aa2954e34a3679b0d446b32801f2e22e"
     },
     {
       "file": "pages/capabilities/table/record-join-batch-timeout.json",

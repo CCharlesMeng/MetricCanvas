@@ -2,6 +2,12 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 查询默认方向与固定基线
+
+运行 `pnpm dev:playground`，打开 `/pages/query-sort-baseline`，无需 URL 参数或 DQE 服务。该页包含合成 query 初始快照，首次打开平均决策时长列即显示降序，三个代表处依次为乙、丙、甲。点击该列循环清除、升序、降序；移开鼠标后活动方向仍可见。
+
+下方复用行权效率页面中的两段图表声明，时长柱为 6/3/1 并显示固定 2 天基线，人数柱为 8/4/2 并显示固定 5 人基线；悬浮各类别核对指标与基线。常量不用声明 field。页面只验证初始快照、Schema 和浏览器呈现，真实 DQE 返回顺序需在内网另外核对。自动验收入口为 `tests/query-sort-baseline.browser.ts`。
+
 ## 审批人下钻查询参数
 
 入口：[主表筛选](http://localhost:5187/pages/record-join-query-params?approver-name=合成审批人甲)、[全部记录](http://localhost:5187/pages/record-join-query-params)、[无匹配](http://localhost:5187/pages/record-join-query-params?approver-name=没有匹配记录)。
