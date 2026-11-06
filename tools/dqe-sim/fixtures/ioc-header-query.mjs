@@ -13,11 +13,12 @@ export function iocHeaderFixture(item) {
   const scope=[time?`${time.start??''} 至 ${time.end??''}`:'',...dims.map(d=>`${d.dim_name}=${(d.dim_value_list??[]).join(',')}`)].filter(Boolean).join('；') || '无绑定条件';
   return result(item,[{...Object.fromEntries(item.output_dims.map(field=>[field,dims.find(dim=>dim.dim_name===field)?.dim_value_list?.[0]??null])),ioc_header_scope:`合成 · ${scope}`,ioc_header_count:1}],item.output_dims,['ioc_header_count']);
 }
-/** Existing period-page demo: echo only its two declared date queries. */
+/** Existing period-page demo: echo its two declared queries using the applied day/year grain. */
 function periodFilterFixture(item) {
   if(JSON.stringify(item.output_dims)!==JSON.stringify(['entry']) || !['["amount"]','["unbound_amount"]'].includes(JSON.stringify(item.output_metrics)))return;
   const time=item.filter?.time;
-  if(time?.period!=='day' || !/^\d{4}-\d{2}-\d{2}$/.test(time.start) || !/^\d{4}-\d{2}-\d{2}$/.test(time.end) || time.start>time.end)return;
+  const pattern=time?.period==='year'?/^\d{4}$/:time?.period==='day'?/^\d{4}-\d{2}-\d{2}$/:undefined;
+  if(!pattern || !pattern.test(time.start) || !pattern.test(time.end) || time.start>time.end)return;
   if(item.filter.dims?.length || item.filter.metrics?.length)return;
   const metric=item.output_metrics[0];
   return result(item,[{entry:`${time.start}~${time.end}`,[metric]:42}],['entry'],[metric]);

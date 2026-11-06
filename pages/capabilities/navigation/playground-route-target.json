@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "6.40",
+  "id": "playground-route-target",
+  "layout": "dashboard",
+  "strictURLInputs": true,
+  "meta": { "title": "Playground 本地路由目标", "description": "纯内联合成目标，显示 URL 传入的项目编码，不调用真实服务。" },
+  "params": { "query": { "dimensions": [{ "id": "region", "dim_name": "demo_region", "dim_value_list": ["north", "south"] }] }, "display": [{ "id": "project-id", "type": "string", "required": true }] },
+  "dataSources": {},
+  "sections": [{
+    "id": "summary",
+    "components": [{
+      "id": "project",
+      "type": "text",
+      "layout": { "span": 12 },
+      "props": { "title": { "parts": ["收到的项目编码 · ", { "param": "region" }] }, "body": { "param": "project-id" } }
+    }]
+  }]
+}

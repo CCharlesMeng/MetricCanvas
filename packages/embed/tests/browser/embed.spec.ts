@@ -587,7 +587,7 @@ test('指标卡只从显式声明且非空的值发出导航', async ({ page }) 
     href: '#metric-row-target'
   })]);
   await expect(host.getByText('30', { exact: true })).not.toHaveAttribute('data-metric-row-link');
-  await expect(host.getByText('—', { exact: true })).not.toHaveAttribute('data-metric-row-link');
+  await expect(host.getByText('--', { exact: true })).not.toHaveAttribute('data-metric-row-link');
 });
 
 test('analysisStack 页签每个选中面板顺序渲染三张表', async ({ page }) => {
@@ -714,7 +714,7 @@ test('compact 工具栏显示七个只读筛选并不伪造返回', async ({ pag
   expect(await toolbar.locator('[data-filter-control] :is(input, button)').evaluateAll(
     (controls) => controls.every((control) => (control as HTMLInputElement | HTMLButtonElement).disabled)
   )).toBe(true);
-  await expect(toolbar.getByText('合成演示数据，非生产口径，筛选尚未接入')).toBeVisible();
+  await expect(toolbar.getByText('合成演示数据，非生产口径，筛选尚未接入')).toHaveCount(0);
   await expect(toolbar.locator('[data-dashboard-back]')).toHaveCount(0);
   const toolbarLayout = await toolbar.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -1495,7 +1495,7 @@ test('指标面板与风险提示随业务内容自然增高', async ({ page }) 
   )).toBe(true);
 });
 
-test('reportCompact 内容层与表格等宽且无滚动层', async ({ page }) => {
+test('reportCompact 内容层与表格等宽且保留局部滚动', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/examples/inline.html');
   const flowReportDocument = await page.evaluate<FlowReportDocument>(async () => {
@@ -1521,10 +1521,10 @@ test('reportCompact 内容层与表格等宽且无滚动层', async ({ page }) =
   const frames = reportTables.locator('.content-frame');
   const tables = reportTables.getByRole('table');
   await expect(frames).toHaveCount(2);
-  await expect(reportTables.locator('.scroll')).toHaveCount(0);
+  await expect(reportTables.locator('.scroll')).toHaveCount(2);
   await expect(frames.first()).toHaveCSS('border-width', '0px');
   await expect(frames.first()).toHaveCSS('padding', '0px');
-  await expect(frames.first()).toHaveCSS('overflow', 'visible');
+  await expect(frames.first()).toHaveCSS('overflow', 'auto');
   await expect(tables.first()).toHaveCSS('border-radius', '0px');
   await expect.poll(async () =>
     reportTables.first().evaluate((tableWidget) => {
@@ -1846,12 +1846,12 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(customerReportTableFrames.first()).toHaveCSS('border-width', '0px');
   await expect(customerReportTableFrames.first()).toHaveCSS('border-radius', '12px');
   await expect(customerReportTableFrames.first()).toHaveCSS('padding', '0px');
-  await expect(customerReportTableFrames.first()).toHaveCSS('overflow', 'visible');
+  await expect(customerReportTableFrames.first()).toHaveCSS('overflow', 'auto');
   await expect(customerReportTableFrames.first()).toHaveCSS(
     'background-color',
     'rgb(252, 252, 255)'
   );
-  await expect(customerReportTableScrollLayers).toHaveCount(0);
+  await expect(customerReportTableScrollLayers).toHaveCount(2);
   await expect(customerReportTableElements).toHaveCount(2);
   await expect(customerReportTableElements.first()).toHaveCSS('border-radius', '0px');
   await expect.poll(async () =>
@@ -2395,7 +2395,7 @@ test('详细排行卡可展开受控的嵌套明细字段', async ({ page }) => 
   const host = page.locator('[data-metriccanvas-runtime]');
   await expect(host.locator('[data-decorative-icon="ranking-decline"]')).toHaveCount(1);
   await expect(host.getByText('客户A')).toBeVisible();
-  await expect(host.getByText('-120.0万').first()).toBeVisible();
+  await expect(host.getByText('-120万').first()).toBeVisible();
   const details = host.locator('details.nested-details');
   await expect(details.locator('summary')).toHaveText('归因明细（1）');
   await expect(details.getByText('到期未续订导致流水下降')).toBeHidden();

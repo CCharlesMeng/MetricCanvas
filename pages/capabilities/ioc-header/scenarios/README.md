@@ -320,3 +320,10 @@
 关联：[ioc-header-navigation-source-demo](ioc-header-navigation-source-demo.json)。
 
 关联：[ioc-header-navigation-list-demo](ioc-header-navigation-list-demo.json)。
+
+
+## 页头外部诊断不占页面空间
+
+入口 `/pages/ioc-header-detail-demo` 使用完整页面中的 note 合成诊断，页面不出现这行文字，控制台可见 `IOC_HEADER_NOTICE`；切换月份、返回按钮与业务身份说明照常工作。宿主传入只读原因时控件仍禁用，原因仅在控制台记录。`/pages/ioc-header-overview-demo` 的候选失败时，组件内部的错误状态与重试按钮仍可用，页头外不插入汇总提示。
+
+启动 `pnpm dev:playground` 后检查上述页面。自动验收为 Embed 的 `ioc-header.spec.ts`；本地 DQE 仿真与合成候选不代表真实 DQE、权限或部署验收。

@@ -28,7 +28,7 @@ test('Node-filled SDT metadata renders raw initial, refreshes a cascade and inva
     } });
   }, { filled, main });
   await expect(page.getByRole('table').getByText('回填项目')).toBeVisible();
-  await expect(page.getByRole('table').getByText('0.0', { exact: true })).toBeVisible();
+  await expect(page.getByRole('table').getByText('0', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => (window as any).sharedCalls)).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath('sdt-filled-initial.png'), fullPage: true });
   await page.evaluate(({ filled, main }) => {

@@ -7,8 +7,9 @@ const output=process.argv[2]??'/tmp/metriccanvas-unified-header';
 await mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:'chrome'});
 const page=await browser.newPage({viewport:{width:1440,height:1000},timezoneId:'Asia/Shanghai'});
-const requests=[],errors=[],checks=[];let failCandidate=true,candidateAttempts=0;
+const requests=[],errors=[],checks=[],warnings=[];let failCandidate=true,candidateAttempts=0;
 page.on('pageerror',error=>errors.push(error.message));
+page.on('console',message=>{if(message.type()==='warning')warnings.push(message.text());});
 await page.addInitScript(()=>{window.__METRICCANVAS__={dqeEndpoint:'/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',pageMetadataBaseUrl:'/pages',authToken:'synthetic',operatorId:'synthetic',workspaceId:'synthetic'};});
 await page.clock.install({time:new Date('2026-10-20T12:00:00+08:00')});
 await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',async route=>{
@@ -30,14 +31,14 @@ try{
  await expect.poll(()=>candidateAttempts).toBeGreaterThan(1);await expect(industry.getByRole('button',{name:'重试'})).toHaveCount(0);await industry.locator('button[aria-haspopup]').click();
  for(const width of [1440,1024,390]){await page.setViewportSize({width,height:1000});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:path.join(output,`list-${width}.png`),fullPage:false});}
  checks.push('single canonical header; 4 primary + 6 overflow; failed candidate retries; 1440/1024/390 layout');
- await page.goto(`${base}/pages/ioc-opportunity-analysis`);await expect(header).toHaveClass(/compact/);await expect(header.locator('[data-filter-control]')).toHaveCount(7);await expect(header).toContainText('七个筛选位均已下推');
- for(const width of [1440,1024,390]){await page.setViewportSize({width,height:900});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:path.join(output,`compact-${width}.png`),fullPage:false});}checks.push('same header renders compact 7-filter page and note at wide and narrow widths');
+ await page.goto(`${base}/pages/ioc-opportunity-analysis`);await expect(header).toHaveClass(/compact/);await expect(header.locator('[data-filter-control]')).toHaveCount(7);await expect(header).not.toContainText('合成演示数据，非生产口径；重点国代完整名单由集成应用接入');await expect.poll(()=>warnings.join('\n')).toContain('合成演示数据，非生产口径；重点国代完整名单由集成应用接入');
+ for(const width of [1440,1024,390]){await page.setViewportSize({width,height:900});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:path.join(output,`compact-${width}.png`),fullPage:false});}checks.push('compact seven-filter header preserves controls and logs note without displaying it');
  requests.length=0;await page.goto(`${base}/pages/dashboard-period-filter`);
  const input=header.getByRole('combobox');await expect(header).toHaveCount(1);await expect(input).toHaveValue('2026 年');await expect(header.getByRole('group',{name:'时间粒度'})).toHaveCount(0);
  await expect.poll(()=>requests.length).toBe(2);await input.click();await expect(page.getByRole('button',{name:'2027',exact:true})).toBeDisabled();await page.getByRole('button',{name:'2024',exact:true}).click();
- await expect(input).toHaveValue('2024 年');await expect.poll(()=>requests.length).toBe(3);expect(requests.at(-1).filter.time).toMatchObject({start:'2024-01-01',end:'2024-12-31'});
+ await expect(input).toHaveValue('2024 年');await expect.poll(()=>requests.length).toBe(3);expect(requests.at(-1).filter.time).toMatchObject({period:'year',start:'2024',end:'2024'});
  expect(requests.filter(query=>query.output_metrics[0]==='unbound_amount')).toHaveLength(1);
- await expect(page.getByText('2024-01-01~2024-12-31',{exact:true})).toBeVisible();
+ await expect(page.getByText('2024~2024',{exact:true})).toBeVisible();
  await page.screenshot({path:path.join(output,'year-1440.png'),fullPage:false});
  await input.fill('2025');await input.press('Enter');await expect(input).toHaveValue('2025 年');
  await page.goto(`${base}/pages/dashboard-period-filter?period-filter=year%3A2023`);await expect(input).toHaveValue('2023 年');

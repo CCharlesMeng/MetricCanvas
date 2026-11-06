@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.36",
+  "schemaVersion": "6.41",
   "id": "ioc-header-detail-demo",
   "layout": "report",
   "meta": {
@@ -40,6 +40,7 @@
     ]
   },
   "iocHeader": {
+    "note": "页头状态诊断仅输出控制台",
     "back": true,
     "identity": {
       "title": {

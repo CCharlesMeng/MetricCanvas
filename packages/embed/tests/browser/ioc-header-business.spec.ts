@@ -4,11 +4,12 @@ test.use({timezoneId:'Asia/Shanghai'});
 test.beforeEach(async({page})=>{await page.clock.install({time:new Date('2026-10-19T12:00:00+08:00')});});
 const endpoint='/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 test('closed enums preserve UI codes, single choice, all-unrestricted, and boolean false',async({page},info)=>{
+  const warnings:string[]=[];page.on('console',message=>{if(message.type()==='warning')warnings.push(message.text());});
   const queries:any[]=[];let candidateRequests=0;page.on('request',request=>{if(request.url().includes('/__fixtures/filter-candidates'))candidateRequests++;if(request.url().includes(endpoint)&&request.method()==='POST')queries.push(...request.postDataJSON().dsl_list);});
   await page.goto('/pages/ioc-header-business-options-demo');const header=page.locator('[data-ioc-header]');
   await expect(page.getByText(/合成 · .*customer_kind=A.*focus_flag=1/)).toBeVisible();await header.getByRole('checkbox',{name:'仅看重点',exact:true}).uncheck();await expect(page.getByText(/合成 · .*focus_flag=0/)).toBeVisible();
   const initial=queries.find(query=>query.filter?.time);expect(initial.filter.dims.some((item:any)=>item.dim_name==='breakthrough')).toBe(false);expect(candidateRequests).toBe(0);
-  const kind=header.locator('[data-filter-id="kind"]');await kind.getByRole('button',{name:'客户分类',exact:true}).click();await expect(kind.getByRole('option',{name:'停用档位'})).toBeDisabled();await kind.getByRole('option',{name:'一般客户'}).click();await expect(header).toContainText('等待筛选确认');
+  const kind=header.locator('[data-filter-id="kind"]');await kind.getByRole('button',{name:'客户分类',exact:true}).click();await expect(kind.getByRole('option',{name:'停用档位'})).toBeDisabled();await kind.getByRole('option',{name:'一般客户'}).click();await expect(header).not.toContainText('等待筛选确认');await expect.poll(()=>warnings.join('\n')).toContain('等待筛选确认');
   const cleared=header.locator('[data-filter-id="breakthrough"]');await openSelection(cleared);await cleared.getByRole('option',{name:'全选',exact:true}).click();await expect(page.getByText(/合成 · .*customer_kind=B/)).toBeVisible();await closeSelection(cleared);
   const all=header.locator('[data-filter-id="breakthrough"]');await openSelection(all);await all.getByRole('option',{name:'否',exact:true}).click();await expect(page.getByText(/合成 · .*breakthrough=1/)).toBeVisible();await all.getByRole('option',{name:'全选',exact:true}).click();await expect(page.getByText(/合成 · .*breakthrough=/)).toHaveCount(0);expect(new URL(page.url()).searchParams.getAll('breakthrough')).toEqual(['1','0']);
   await header.getByRole('checkbox',{name:'仅看重点',exact:true}).check();await expect(page.getByText(/合成 · .*focus_flag=1/)).toBeVisible();
@@ -23,12 +24,13 @@ test('single structure tree chooses level inside one dropdown; legacy tree still
   await page.setViewportSize({width:390,height:850});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:info.outputPath('business-tree-390.png'),fullPage:true});
 });
 test('time context intersects trusted candidates; empty intersection waits explicit clear; denied and unconfigured remain gated',async({page})=>{
+  const warnings:string[]=[];page.on('console',message=>{if(message.type()==='warning')warnings.push(message.text());});
   const requests:any[]=[];const candidateRequests:any[]=[];page.on('request',r=>{if(r.url().includes(endpoint)&&r.method()==='POST')requests.push(...r.postDataJSON().dsl_list);if(r.url().includes('/__fixtures/filter-candidates'))candidateRequests.push(r.postDataJSON());});
   await page.goto('/pages/ioc-header-business-tree-demo');const header=page.locator('[data-ioc-header]');await expect(page.getByText(/合成 · .*model_code=A,B/)).toBeVisible();
   if(await header.getByRole('button',{name:'展开筛选'}).count())await header.getByRole('button',{name:'展开筛选'}).click();
   const period=header.locator('[data-period-filter]');const model=header.locator('[data-filter-id="model"]');
   const month=period.getByRole('combobox');await month.fill('2026-08');await month.press('Enter');await expect(page.getByText(/合成 · 2026-08.*model_code=B/)).toBeVisible();expect(candidateRequests.find(r=>r.filterId==='model'&&r.constraints.times.period.from==='2026-08')).toBeTruthy();
-  const count=requests.filter(q=>q.filter?.time).length;await month.fill('2026-07');await month.press('Enter');await expect(header).toContainText('等待筛选确认');expect(requests.filter(q=>q.filter?.time)).toHaveLength(count);await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();
+  const count=requests.filter(q=>q.filter?.time).length;await month.fill('2026-07');await month.press('Enter');await expect(header).not.toContainText('等待筛选确认');await expect.poll(()=>warnings.join('\n')).toContain('等待筛选确认');expect(requests.filter(q=>q.filter?.time)).toHaveLength(count);await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();
   await openSelection(model);await expect(model.getByRole('button',{name:'清除筛选',exact:true})).toHaveCount(0);await closeSelection(model);await model.getByRole('button',{name:'确认不限',exact:true}).click();await expect(page.getByText(/合成 · 2026-07/)).toBeVisible();
   await month.fill('2026-06');await month.press('Enter');await expect(model.locator('[data-candidates-status="denied"]')).toBeVisible();await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();
   await month.fill('2026-05');await month.press('Enter');await expect(model.locator('[data-candidates-status="unconfigured"]')).toBeVisible();await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();

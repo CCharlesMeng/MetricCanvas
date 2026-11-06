@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "bdb3af9d48c2de05c71877e5b005c15bec3e84fd9a17958a6cf08a2b7c0993c4",
+  "sha256": "7960c6fac2ca97b0ea6bde961833a4e3681c2925747d2a0e0272d8f47faf1259",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "3fd71b7501cfe4b525f270488d42361bd98d6f7cbf7b9f5da7626b99aa6885a4"
+      "sha256": "5ce298cf8f0cca1299e3c916de6ee9bcfdb292e044b1a2cde38375cb12783d1f"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -2516,7 +2516,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/README.md",
-      "sha256": "bab47ea50c5cb302be42a594cd865de29162f6515909c49b78ecf76a19ee0b4b"
+      "sha256": "6d432f307066da1476765755594a416fd84e48b2d607b7a566c50aac16e10af1"
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/ioc-header-availability-demo.json",
@@ -2548,7 +2548,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json",
-      "sha256": "3579f95137a040a4173ada7b68ef0f06de2a9b18b9109a09bbd1b10099693c8a"
+      "sha256": "e8ec3f0f4dd2c908dd628c257c81b67e5db05edd300ffe85f13061d26ad29b0e"
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/ioc-header-month-set-demo.json",
@@ -2684,7 +2684,7 @@
     },
     {
       "file": "pages/capabilities/navigation/README.md",
-      "sha256": "c8cb6ed1d53f4861aa9193bdb080d5e221be8c40c77425a95f59d3d0668c891e"
+      "sha256": "7485f85f10118a8c681be5070ab9ec91fffafdb18f9152f5a78b6e5aeecaafc0"
     },
     {
       "file": "pages/capabilities/navigation/embed-url-params.json",
@@ -2701,6 +2701,14 @@
     {
       "file": "pages/capabilities/navigation/ioc-default-back-target.json",
       "sha256": "33a6ee071488efe60ec49918b79134b95ee5b810bdd3cccee7ab0056397abb02"
+    },
+    {
+      "file": "pages/capabilities/navigation/playground-route-source.json",
+      "sha256": "65ac8d9f525e791c5b158565c765fc7c2eedd86928af5c1de47e0cea0efd2757"
+    },
+    {
+      "file": "pages/capabilities/navigation/playground-route-target.json",
+      "sha256": "092c3eff2416a9db3f14c6dce74b72bc2d5626a9afcfc478f454e20343245903"
     },
     {
       "file": "pages/capabilities/navigation/tab-url-initialization.json",

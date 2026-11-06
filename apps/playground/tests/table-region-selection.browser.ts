@@ -2,8 +2,8 @@ import {expect,test,type Page} from '@playwright/test';
 import {chooseTree,closeSelection,openSelection} from '../../../packages/embed/tests/browser/selection-actions';
 
 type Receipt=Array<{target:string;queryField?:string;values?:string[]}>;
-type ReceiptWindow=Window & {headerControlCalls:Receipt[]};
-const calls=(page:Page)=>page.evaluate(()=>(window as ReceiptWindow).headerControlCalls);
+declare global { interface Window { headerControlCalls:Receipt[] } }
+const calls=(page:Page)=>page.evaluate(()=>window.headerControlCalls);
 
 test('table selection uses Header Region state, levels and existing query bindings',async({page})=>{
   await page.addInitScript(()=>{
@@ -48,5 +48,5 @@ test('table selection uses Header Region state, levels and existing query bindin
   await expect(results).toContainText('全球（当前范围不限）');
   await expect(entry.locator('button[aria-pressed="true"]')).toHaveCount(0);
   await expect(year.getByRole('combobox')).toHaveValue('2026 年');
-  expect(new URL(page.url()).searchParams.get('keep')).toBe('retained');
+  expect(new URL(page.url()).searchParams.has('keep')).toBe(false);
 });

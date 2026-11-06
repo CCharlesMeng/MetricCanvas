@@ -11,6 +11,9 @@
   let browser = $state<BrowserReturn>();
   onMount(() => { browser = window; });
   const backAction = $derived(headerBackAction(model, onback, browser));
+  $effect(() => {
+    if (note && !staticView) console.warn('[MetricCanvas][IOC_HEADER_NOTICE]', note);
+  });
   const flow=$derived(model.layout==='inline' && model.density==='normal' && model.collapse==='none');
   const uid = $props.id();
   const displayedIds=$derived(staticView?[...filterIds,...overflowIds]:filterIds);
@@ -81,7 +84,6 @@
       {#if !staticView && model.collapse==='firstRow' && overflowing}<button class="toggle" type="button" aria-expanded={expanded} aria-controls={uid} onclick={toggle}>{expanded?'收起筛选':'展开筛选'}</button>{/if}
     </div>
   {/if}
-  {#if note}<p class="note" role="status">{note}</p>{/if}
 </header>
 {/if}
 <style>
@@ -97,7 +99,6 @@
   .filter-region{display:flex;align-items:flex-start;gap:16px;min-width:0;}.filters{position:relative;display:flex;flex-wrap:wrap;align-items:flex-start;gap:5px 16px;min-width:0;flex:1;}
   .filter{min-width:0;max-width:100%;}.concealed{visibility:hidden;}.collapsed{overflow:visible;}
   .toggle{border:0;background:transparent;color:#1476ff;font:inherit;cursor:pointer;min-height:32px;flex:none;padding:0;}
-  .note{margin:10px 0 0;color:#71717a;overflow-wrap:anywhere;}
   button:focus-visible{outline:2px solid #1476ff;outline-offset:2px;}
   .filter{--mc-filter-bar-padding:0;--mc-filter-bar-margin:0;--mc-filter-bar-border:0;--mc-filter-bar-background:transparent;--mc-filter-bar-gap:0;--mc-filter-label-display:inline;}
 
@@ -114,20 +115,18 @@
   .overflow-arrow{color:#8c8c8c;}.filter-overflow[open] .overflow-arrow{transform:rotate(180deg);}
   .overflow-panel{position:absolute;top:calc(100% + 10px);right:0;box-sizing:border-box;width:min(760px,calc(100cqi - 48px));max-width:calc(100cqi - 48px);display:flex;flex-wrap:wrap;gap:16px;padding:16px;background:#fff;border:1px solid var(--mc-color-border,#e4e4e7);border-radius:8px;box-shadow:0 12px 32px rgb(15 23 42 / .16);}
   .overflow-panel .filter{--mc-filter-bar-flex:0 1 auto;--mc-filter-bar-wrap:wrap;}
-  .inline>.note{grid-column:1 / -1;}
   header.inline.compact{position:sticky;z-index:66;top:0;display:flex;width:100%;height:56px;min-height:56px;gap:0;padding:0 24px;border-bottom:1px solid #e8e8e8;}
   .inline.compact .identity{flex:none;margin-right:24px;}.inline.compact .filter-region{flex:1;overflow-x:auto;}.inline.compact .filters{flex:0 0 auto;flex-wrap:nowrap;gap:12px;}
-  .inline.compact h1{font-size:18px;font-weight:600;line-height:24px;}.inline.compact>.note{margin:0 0 0 12px;white-space:nowrap;}
-  @container mc-runtime (max-width: 1050px){header.inline{grid-template-columns:minmax(0,1fr);gap:12px;padding:18px 20px;}.inline .filter-region{align-items:flex-start;}.inline h1{white-space:normal;}header.inline.compact{height:auto;min-height:56px;flex-wrap:wrap;gap:8px;}.inline.compact>.note{flex-basis:100%;white-space:normal;margin:0;}}
+  .inline.compact h1{font-size:18px;font-weight:600;line-height:24px;}
+  @container mc-runtime (max-width: 1050px){header.inline{grid-template-columns:minmax(0,1fr);gap:12px;padding:18px 20px;}.inline .filter-region{align-items:flex-start;}.inline h1{white-space:normal;}header.inline.compact{height:auto;min-height:56px;flex-wrap:wrap;gap:8px;}}
 
   header.static-view.inline.compact{position:static;height:auto;flex-wrap:wrap;}
   .static-view.inline.compact .filter-region{overflow:visible;flex-basis:100%;}
   .static-view.inline.compact .filters{flex:1;flex-wrap:wrap;}
-  .static-view.inline.compact>.note{flex-basis:100%;white-space:normal;}
 
   header.flow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;}
   .flow .identity,.flow .heading,.flow .filter-region,.flow .filters{display:contents;}
   .flow .back{font-size:20px;width:20px;min-height:32px;padding:0;}
   .flow h1{margin:0 24px 0 0;white-space:normal;}
-  .flow .code,.flow .description,.flow dl,.flow .note{flex-basis:100%;}
+  .flow .code,.flow .description,.flow dl{flex-basis:100%;}
 </style>

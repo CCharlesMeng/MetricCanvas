@@ -13,6 +13,7 @@ export function createIocHeaderControlsPreview(){
       signal.throwIfAborted();
       const result=iocRegionCandidates(request,{names:true});
       if(!result)return {kind:'unconfigured'};
+      if(result.kind!=='values')return result;
       return {...result,candidates:[...result.candidates,
         {level:'region-dept',value:'SAME',label:'同码地区部',parent:{level:'geo',value:'全球'}},
         {level:'office',value:'SAME',label:'同码代表处',parent:{level:'region-dept',value:'SAME'}}]};

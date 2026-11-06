@@ -1,6 +1,8 @@
 <script lang="ts">
   import { dev } from '$app/environment';
   import { page } from '$app/state';
+  import { goto } from '$app/navigation';
+  import { createPlaygroundNavigation } from '$lib/playground-navigation';
   import IocHeaderComponentExample from '$lib/prototypes/IocHeaderComponentExample.svelte';
   import ReportDateExample from '$lib/ReportDateExample.svelte';
   import { validate } from '@metriccanvas/page';
@@ -8,10 +10,14 @@
     DEFAULT_PREVIEW_JSON,
     parsePreviewDocument
   } from '$lib/preview-document';
-  import { aiSummary, dataGateway } from '$lib/services';
+  import { aiSummary, dataGateway, pageRepository } from '$lib/services';
   import { RuntimeView } from '@metriccanvas/engine/ui';
 
   let source = $state(DEFAULT_PREVIEW_JSON);
+  const navigation = createPlaygroundNavigation(pageRepository, {
+    baseURL: () => location.href,
+    visit: (href) => void goto(href)
+  });
   let result = $derived(
     parsePreviewDocument(source, validate)
   );
@@ -83,6 +89,7 @@
             document={result.document}
             {dataGateway}
             {aiSummary}
+            {navigation}
           />
         {:else}
           <div class="empty-preview">

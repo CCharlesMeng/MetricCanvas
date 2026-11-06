@@ -34,6 +34,11 @@ function withChangedFile(relative: string, content: string, verify: () => void, 
   }
 }
 
+it('完整 Bundle 来源锁文件不超过 1 MB', () => {
+  const lock = readFileSync(path.join(root, 'metriccanvas-authoring/bundle.lock.json'));
+  expect(lock.byteLength).toBeLessThanOrEqual(1_000_000);
+});
+
 describe.sequential('当前契约检查无需旧服务源码', () => {
   beforeAll(() => {
     for (const relative of ['tools/scripts', 'tools/mc-content', 'docs/page-metadata', 'pages', 'service', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {

@@ -44,7 +44,7 @@ for (const mode of ['missing-field', 'invalid-dimension', 'total-smaller', 'tota
     } else {
       await expect(table.locator('tbody tr')).toHaveCount(8);
       await expect(table.getByRole('cell', { name: '正常', exact: true })).toBeVisible();
-      await expect(table.getByRole('cell', { name: '-4.0', exact: true }).first()).toBeVisible();
+      await expect(table.getByRole('cell', { name: '-4', exact: true }).first()).toBeVisible();
       await expect(host.getByRole('alert')).toHaveCount(0);
       await expect.poll(async () => JSON.stringify(await Promise.all(logs))).toContain('TOTAL_COUNT_MISMATCH');
       expect(await Promise.all(logs)).toEqual(expect.arrayContaining([[expect.stringContaining('TOTAL_COUNT_MISMATCH'), expect.objectContaining({

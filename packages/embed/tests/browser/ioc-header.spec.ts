@@ -39,11 +39,13 @@ test('dense measured collapse, candidate retry, recursive gate and export safety
   await header.getByRole('button',{name:'收起筛选'}).click();await expect(header.getByRole('dialog')).toHaveCount(0);
 });
 test('detail single month, optional facts, legal back intent and readonly update',async({page},info)=>{
-  await page.goto('/pages/ioc-header-detail-demo');const header=page.locator('[data-ioc-header]');await expect(header.locator('[data-ioc-tag]')).toHaveCount(1);await expect(header.locator('[data-ioc-fact]')).toHaveCount(1);await expect(header.getByRole('button',{name:'返回来源页'})).toHaveCount(0);
+  const warnings:string[]=[];page.on('console',message=>{if(message.type()==='warning')warnings.push(message.text());});
+  await page.goto('/pages/ioc-header-detail-demo');const header=page.locator('[data-ioc-header]');await expect(header.locator('[data-ioc-tag]')).toHaveCount(1);await expect(header.locator('[data-ioc-fact]')).toHaveCount(1);
+  await expect(header.locator('.note')).toHaveCount(0);await expect(header).not.toContainText('页头状态诊断仅输出控制台');await expect.poll(()=>warnings.join('\n')).toContain('页头状态诊断仅输出控制台');await expect(header.getByRole('button',{name:'返回来源页'})).toHaveCount(0);
   const month=header.getByRole('combobox');await month.fill('2026-08');await month.press('Enter');await expect(header.locator('[data-ioc-fact]')).toContainText('2026-08');await expect(page.getByText(/mtime=202608/)).toBeVisible();
   await header.getByRole('button',{name:'打开日期选择器'}).click();await expect(page.getByRole('dialog')).toBeVisible();
   await page.evaluate(()=>{const w=window as any;w.backCount=0;w.runtime.update({document:w.pageDocument,dataGateway:w.dataGateway,initialSearch:location.search,filterEditing:{readOnly:true,reason:'验收只读'},navigation:{returnContext:{entryId:'source-entry'},back:()=>w.backCount++}});});
-  await expect(page.getByRole('dialog')).toHaveCount(0);await expect(header.getByRole('combobox')).toBeDisabled();await expect(header).toContainText('验收只读');await header.getByRole('button',{name:'返回来源页'}).click();expect(await page.evaluate(()=>(window as any).backCount)).toBe(1);
+  await expect(page.getByRole('dialog')).toHaveCount(0);await expect(header.getByRole('combobox')).toBeDisabled();await expect(header).not.toContainText('验收只读');await expect.poll(()=>warnings.join('\n')).toContain('验收只读');await header.getByRole('button',{name:'返回来源页'}).click();expect(await page.evaluate(()=>(window as any).backCount)).toBe(1);
   await page.setViewportSize({width:390,height:850});expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:info.outputPath('detail-390.png'),fullPage:true});
 });
 test('titleless header keeps a discrete January/March predicate',async({page})=>{
@@ -60,7 +62,7 @@ test('selected URL value waits for candidates; failed candidates retry current r
     const items=route.request().postDataJSON().dsl_list;
     business.push(...items.filter((item:any)=>item.output_dims[0]==='ioc_header_scope'&&item.filter?.time));await route.continue();
   });
-  await page.goto('/pages/ioc-header-overview-demo?region=R99');const region=page.locator('[data-filter-id="region"]');await openSelection(region);await expect(region.locator('[data-candidates-status="error"]')).toBeVisible();expect(business).toHaveLength(0);
+  await page.goto('/pages/ioc-header-overview-demo?region=R99');const region=page.locator('[data-filter-id="region"]');await openSelection(region);await expect(region.locator('[data-candidates-status="error"]')).toBeVisible();await expect(page.locator('[data-ioc-header] > .note')).toHaveCount(0);expect(business).toHaveLength(0);
   await region.getByRole('button',{name:'重试',exact:true}).click();await openSelection(region);await expect(region.locator('[role="treeitem"][aria-selected="true"]')).toContainText('中国');await expect(page.getByText(/合成 · .*geo_pc_code=R99/)).toBeVisible();expect(business).toHaveLength(1);
 });
 

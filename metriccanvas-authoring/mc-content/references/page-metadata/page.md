@@ -32,6 +32,8 @@ report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHead
 
 ## IOC 公共页头（6.36）
 
+页头不在筛选组件外插入额外状态说明。`note`、兼容的 `dashboardToolbar.note`、宿主只读原因、自动生成的“筛选只读”和“等待筛选确认或可信候选”仅输出为 `console.warn`，不占据页面或静态导出的空间；不新增页面开关。控件内部的候选加载/失败、期间状态、禁用和重试照常保留。用户显式声明的 `identity.description`、标题、标签和事实信息仍按声明呈现。旧声明继续可读，合成场景 `/pages/ioc-header-detail-demo` 覆盖 note 与只读原因；候选失败与重试见 `/pages/ioc-header-overview-demo`。
+
 6.81起使用首分区首组件 `type:"iocHeader"`，业务属性写入 `props`，用于 IOC 身份与页级筛选归属。旧根级 `iocHeader` 仍兼容读取，属性含义相同。普通/密集看板和详情报表共用同一个呈现 Module；meta.title仍是目录标题。6.41 新页面声明 iocHeader 时无需同时写 dashboardToolbar；显式声明 visible/compact 与 iocHeader 仍为冲突。旧版本的显式 hidden 继续读取，没有 IOC 声明的旧页面通过同一呈现 Module 保持原布局。正文独立章节页头可保留，首个业务reportHeader或projectDetail不能重复承担页面身份。
 
 `identity`可省略；title不声明就没有标题占位，不回退meta.title。title显式参数引用缺值显示“未命名”；code、description、tags、facts缺值整体省略。编码用label/value；标签有唯一id及显式neutral/info/success/warning/danger色调，数组决定顺序。说明为纯文本，inline或键盘可达tooltip；不接受任意HTML。facts区分queryPeriod/latestDataPeriod/refreshedAt/generatedAt；value显式TextValue，不根据kind生成当前时间。统计期间应引用已应用filter。B1尚无HeaderFactReference/displayInputs，可信时间可通过已声明参数传入。
@@ -64,7 +66,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 
 页头组件自身统一提供 **16px 底部外间距**，适用于普通行内、上下排、紧凑及静态呈现。该间距位于页头外框与后续正文之间，不是页头内部padding；不需页面JSON声明。旧工具栏适配与导出正文不再叠加另一份页头间距。未渲染页头时没有此占位。当前可观察入口为 `ioc-header-demo`、`ioc-header-standard` 与旧紧凑入口 `ioc-opportunity-analysis`。
 
-`readOnly:true` 统一限制用户筛选写入，包括更多面板与组件动作；初始化与合法恢复保持原有机制。`note` 是页头纯文本说明。只读不阻止合法返回；显式 `back:true` 使用浏览器默认返回或集成应用可选的 `navigation.back` 覆盖。未声明 back 的新页头不接管返回，避免隐藏集成应用的返回入口。
+`readOnly:true` 统一限制用户筛选写入，包括更多面板与组件动作；初始化与合法恢复保持原有机制。`note` 是兼容的纯文本诊断输入，仅输出控制台。只读不阻止合法返回；显式 `back:true` 使用浏览器默认返回或集成应用可选的 `navigation.back` 覆盖。未声明 back 的新页头不接管返回，避免隐藏集成应用的返回入口。
 
 所有筛选通过同一 FilterBar 接收候选重试、只读和时间事实；没有 IOC 专属筛选状态。 IOC Region 必须使用页头内单个可搜索的单选结构树，在同一棵树内选择地区部或代表处，不增加前置层级按钮；声明 `display:"tree"`、`treeSelection:"level"`、`selection.mode:"single"`，交互和候选契约见[结构树](filters.md#business-filters)。未认领的筛选留在内容区，已被 reportHeader 或图表认领的筛选不会再次进入页头。静态呈现复用 IocHeader，移除交互而保留身份与已应用条件。B6 的主题、全屏和附加操作仍未启用。
 
