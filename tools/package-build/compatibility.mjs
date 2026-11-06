@@ -116,6 +116,7 @@ for (const version of versions) {
       '@sveltejs/vite-plugin-svelte': '7.2.0',
       vite: '8.1.5',
       webpack: json(join(source, 'packages/embed/package.json')).devDependencies.webpack,
+      exceljs: json(join(source, 'packages/engine/package.json')).devDependencies.exceljs,
       typescript: '5.9.3', 'svelte-check': '4.7.3', '@types/node': '26.1.1', '@playwright/test': '1.62.0'
     },
     // 产品和 UI 版本尚未发到 registry；只把彼此的依赖来源固定为这次真实 tarball。
