@@ -8,6 +8,22 @@ import ts from 'typescript';
 const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const files = readdirSync(dist, { recursive: true }).filter((file) => /\.[cm]?js$/.test(file));
 
+function dependencyChunks(paths, prefix) {
+  return paths.filter(file => file.replaceAll('\\', '/').startsWith(prefix));
+}
+
+test('dependency chunk matching accepts native and mixed directory separators', () => {
+  for (const paths of [
+    ['chunks/charts~index.js', 'chunks/excel~index.js', 'chunks/vendor~index.js'],
+    ['chunks\\charts~index.js', 'chunks\\excel~index.js', 'chunks\\vendor~index.js'],
+    ['chunks/charts~nested\\index.js', 'chunks\\excel~nested/index.js', 'chunks/vendor~index.js']
+  ]) {
+    assert.deepEqual(dependencyChunks(paths, 'chunks/charts~'), [paths[0]], 'Missing dependency chunks: chunks/charts~');
+    assert.deepEqual(dependencyChunks(paths, 'chunks/excel~'), [paths[1]]);
+    assert.deepEqual(dependencyChunks(paths, 'chunks/missing~'), []);
+  }
+});
+
 test('copied distribution declares its ESM package scope for integrating bundlers', () => {
   assert.equal(JSON.parse(readFileSync(resolve(dist, 'package.json'), 'utf8')).type, 'module');
 });
@@ -22,7 +38,7 @@ test('chart and workbook dependencies retain their reduced bundle budgets', () =
     { prefix: 'chunks/charts~', limit: 600_000 },
     { prefix: 'chunks/excel~', limit: 100_000 }
   ]) {
-    const chunks = files.filter(file => file.startsWith(prefix));
+    const chunks = dependencyChunks(files, prefix);
     assert(chunks.length > 0, `Missing dependency chunks: ${prefix}`);
     const bytes = chunks.reduce((total, file) => total + statSync(resolve(dist, file)).size, 0);
     assert(bytes <= limit, `${prefix}: ${bytes} bytes exceeds the ${limit}-byte dependency budget`);
