@@ -3131,7 +3131,7 @@
                         "additionalProperties": false
                       }
                     ],
-                    "description": "独立消费已应用的期间选择，独占查询 period/start/end；旧绑定未声明时保留原行为"
+                    "description": "独立消费已应用的期间选择，独占查询 period/start/end；IOC 页头普通期间绑定省略时默认跟随选择，其他旧绑定保留原行为"
                   }
                 },
                 "required": [
@@ -3697,7 +3697,7 @@
                                   "additionalProperties": false
                                 }
                               ],
-                              "description": "独立消费已应用的期间选择，独占查询 period/start/end；旧绑定未声明时保留原行为"
+                              "description": "独立消费已应用的期间选择，独占查询 period/start/end；IOC 页头普通期间绑定省略时默认跟随选择，其他旧绑定保留原行为"
                             }
                           },
                           "required": [

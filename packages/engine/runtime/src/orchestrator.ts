@@ -1,7 +1,7 @@
 import {isUnrestrictedIocRegion,queryFilterIds} from '@metriccanvas/page/internal';
 import {comparisonFilterIds} from '@metriccanvas/page/internal';
 import {reconcileTableSources} from './table/presentation-session';
-import {requiresQueryContext} from '@metriccanvas/page/internal';
+import {requiresQueryContext,hasIocPeriodDefault} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents,sourceFilterIds} from '@metriccanvas/page/internal';
 import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, initialTableViews, remoteHeaderDefaultSources } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
@@ -85,7 +85,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
           initial = undefined;
         if (source.source.type === 'inline' && !initial)
           initial = { status: source.source.rows.length ? 'ready' : 'empty', ...(source.source.rows.length ? { rows: source.source.rows } : {}) } as DataSnapshot;
-        const protectedSource = [...conditionSourceIds(page, id)].some(key => { const s = page.dataSources[key]; return s?.source.type === 'query' && (requiresQueryContext(s.source.query, page.filters)||isUnrestrictedIocRegion(page,'region',values.get('region'))&&queryFilterIds(s.source.query).includes('region')); });
+        const protectedSource = [...conditionSourceIds(page, id)].some(key => { const s = page.dataSources[key]; return s?.source.type === 'query' && (requiresQueryContext(s.source.query, page.filters)||hasIocPeriodDefault(s.source.query,page)||isUnrestrictedIocRegion(page,'region',values.get('region'))&&queryFilterIds(s.source.query).includes('region')); });
         acceptExecutionReceipt();
         useEmptyIntersection();
         if (gated(id)) {

@@ -13,7 +13,7 @@ describe('B2 complete execution boundary',()=>{
   it('all-unrestricted omits only the dynamic enum predicate and capture/read share it',async()=>{
     const page=load('options'),values=initialFilterValues(page.filters??[]),source=page.dataSources.bound;if(source.source.type!=='query')throw Error();
     source.source.query.body!.dsl_list[0].filter={dims:[{dim_name:'breakthrough',dim_value_list:['STATIC']}]};
-    const query=composeEffectiveQuery({dataSource:{...source,source:{...source.source,type:'query'}},filters:page.filters},values,0,[],{});
+    const query=composeEffectiveQuery({page,dataSource:{...source,source:{...source.source,type:'query'}},filters:page.filters},values,0,[],{});
     expect(query.filterValues.some(v=>v.target==='dimension'&&v.queryField==='breakthrough')).toBe(false);expect(values.get('breakthrough')).toMatchObject({values:['1','0']});expect(query.body!.dsl_list[0].filter).toMatchObject({dims:[{dim_name:'breakthrough',dim_value_list:['STATIC']}]});
     const seen:any[]=[];const program=createSourceProgram(page,{gateway:{async fetchData(query){seen.push(query);return {rows:[],totalCount:0};}}});
     const captured=program.captureQueries(values,new Map(),new Map());expect(captured.get('bound')?.filterValues).toEqual(query.filterValues);

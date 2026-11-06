@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "季度时间过滤编码",
-    "description": "quarter 与 YYYY-Qn 传输验收；浏览器自动验收使用合成回执，真实 DQE 另验。"
+    "description": "IOC 页头普通期间绑定默认跟随年、季、月，近一年按月；浏览器使用合成回执验收，真实 DQE 另验。"
   },
   "filters": [
     {
@@ -20,7 +20,8 @@
       "periodModes": [
         "year",
         "quarter",
-        "month"
+        "month",
+        "last12Months"
       ]
     }
   ],
@@ -55,7 +56,8 @@
                 ],
                 "filter": {
                   "time": {
-                    "is_aggregate": true
+                    "is_aggregate": true,
+                    "period": "month"
                   },
                   "dims": [],
                   "metrics": []
@@ -66,15 +68,7 @@
           },
           "filterBindings": {
             "statistics-period": {
-              "target": "time",
-              "periodPolicy": {
-                "kind": "selection",
-                "supportedPeriods": [
-                  "month",
-                  "quarter",
-                  "year"
-                ]
-              }
+              "target": "time"
             }
           }
         }

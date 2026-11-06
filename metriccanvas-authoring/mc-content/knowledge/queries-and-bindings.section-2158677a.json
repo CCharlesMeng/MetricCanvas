@@ -9,7 +9,7 @@
       "module": "queries-and-bindings",
       "reference": "references/page-metadata/queries-and-bindings.md",
       "blocks": [
-        "# 查询定义与显式绑定",
+        "# 查询定义与显式绑定\n\n<a id=\"查询独立期间策略\"></a>",
         "## 查询输入行过滤 6.19\n\n每个 `resultBindings` 可以增加可选 `where`，先在该绑定的 `source` 原始归一化结果中筛行，再提取 `field`。上游完整结果保持不变，多个下游可各自筛选；缺省where沿用全部原始行。过滤字段可为原始维度或度量，提取字段仍为原始string/number维度，目标仍为dimension。过滤及提取不消费compute产出，不读取局部表格视图。\n\n```json\n{\"source\":\"projects\",\"field\":\"project-id\",\"target\":\"dimension\",\"queryField\":\"项目编号\",\"maxValues\":500,\"where\":{\"all\":[{\"field\":\"status\",\"op\":\"eq\",\"value\":\"进行中\"},{\"field\":\"amount\",\"op\":\"gt\",\"value\":1000000}]}}\n```\n\n条件节点严格互斥：非空all/any组合，或field/op叶子。eq/ne使用value，in/notIn使用非空values，gt/gte/lt/lte使用数值value，isNull/isNotNull不声明value。最多4层组合、64个叶子，每个values最多1000项。字段必须来自同一上游并有queryField映射，数组明细和语义HTML不能参与。日期/时间支持合法契约字符串的等值与集合匹配，不支持有序比较。\n\n字面量必须与字段类型相符：number/money为有限数值，boolean为布尔，string/date/datetime为字符串；有序比较只允许number/money。比较使用原始单位，不进行展示舍入、类型转换或字符串裁剪。null在所有普通比较中均不匹配，包括ne/notIn；需要空值使用isNull。首版仅字面量，不支持筛选器/页面参数引用、表达式、函数或字段路径。\n\n先核验原始声明范围与字段契约，再过滤、提取、去重与排序，最后检查maxValues；上限只限制最终去重集合。过滤后空集合跳过下游请求，不删除条件后查询全部。选中行提取字段无效仍报错；原始响应契约违规不因过滤隐藏。Top5只在该5行内过滤；6.20起也可在本轮查询分页窗口内过滤。\n\n导出用本轮原始结果执行同一规则，输入规则不写用户筛选或URL。多个绑定是独立集合条件的AND，不能替代组合键匹配。完整复用例子见本模块query-result-where-page示例；真实DQE/Relay接入与模型创作需各自验收。"
       ],
       "rules": [

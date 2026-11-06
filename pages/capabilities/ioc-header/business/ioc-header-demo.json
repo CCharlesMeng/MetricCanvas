@@ -395,7 +395,11 @@
           "language": "dqe",
           "filterBindings": {
             "period": {
-              "target": "time"
+              "target": "time",
+              "periodPolicy": {
+                "kind": "fixed",
+                "period": "month"
+              }
             },
             "region": {
               "target": "dimension",
@@ -434,7 +438,6 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "month",
                     "is_aggregate": false
                   }
                 },

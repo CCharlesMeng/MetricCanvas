@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "e16e7e1285482d151cf292e3d11be5fd30dd292df8539615ae1783d6a8646fd1",
+  "sha256": "6ac8a3e146a64422892a37bca21443f44b4832842571bc69ed64878deb5fb6ad",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -64,7 +64,7 @@
     },
     {
       "file": "docs/page-metadata/components/iocHeader.md",
-      "sha256": "3a275aadfdcec3073ba11a45c79d39fbd9d0862614e225867b9dae995b606a4b"
+      "sha256": "07c053123988255af0c5228e04fad05539468c1b9a2cd751d629aeda8d93b10f"
     },
     {
       "file": "docs/page-metadata/components/keyValuePanel.md",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "b222a1458e597fed3b563932db2f2a515c59bbd650b4458b9c7d2dc65efa8276"
+      "sha256": "90a8f76570d47f203856a2517e981cfece7ff2e42374e9254b4e0e476861342b"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -156,7 +156,7 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "fd3cef51b4c9d50a8dc6babaa6ea5acfaed1c14ad81c725edb77fc47ae408148"
+      "sha256": "be386cd91fd722aff34a30babd2540579043bed1899e9131f3e06ac17e0c000f"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
@@ -1612,7 +1612,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "29f3014a81d03380090504166c6dcbdf344d39ec11e1e37bb2415136c38ed507"
+      "sha256": "248caf1add142b2eaaf6620f1bbbda7921b8f09c248c78d37d304b78b51742cc"
     },
     {
       "file": "packages/page/src/ioc-header-controls.ts",
@@ -1625,6 +1625,10 @@
     {
       "file": "packages/page/src/ioc-header.ts",
       "sha256": "51fe0f7fe27ff61c203773af66b397859464a25463927c2c52192aabf7d4d250"
+    },
+    {
+      "file": "packages/page/src/ioc-period-query.ts",
+      "sha256": "e2556ea726f152e8774251f50ea3096d88afd033325c2b8df6859e9e55deaec4"
     },
     {
       "file": "packages/page/src/layout-compatibility.ts",
@@ -1784,7 +1788,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "1177b5d022ec830cfc4ae49583ccd30e2097fbcbb1400f6eb07bf532033d165a"
+      "sha256": "e607a2965fa9f718061d7de1ecbb3c0af75e0c1a5c3c623db78400b6ebe636d3"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -1896,7 +1900,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "c7248d4953d617ebd1467b30d2345ebd6ffcbb1e16fa4f8b01137ca89b747d9e"
+      "sha256": "70504fabceb14ee0f266fd986b55ce4ca9cec39c8f4f3c64b48191b0f7b18ade"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -2128,7 +2132,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/rep-office-execution-efficiency.json",
-      "sha256": "dd9610e374df3026c386a5d3e2e39daab557b353d459efa763c4f26f94a2406c"
+      "sha256": "72b3db7b407198ccc7da18b0a5eacfdc0c909a3718a998ae0db0348fb6d741f9"
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/README.md",
@@ -2372,7 +2376,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "4a58387e85729b490d887a353e6f7500b3521db7ca1ffce2ae1e48213055b8dc"
+      "sha256": "32ad3cd69425531e36bd9780f3c7b1f51c1ecccd03fca43491d0bd54af6d20ae"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",
@@ -2436,7 +2440,7 @@
     },
     {
       "file": "pages/capabilities/filters/quarter-query-period.json",
-      "sha256": "836749f54f729b3467debd30195ed4abe2b47a5b16237ed67eeba4fcbb9152ea"
+      "sha256": "d5f303471d90f601797a8dca83499d62eaa779d3ff619bc4b48311b4a4c00216"
     },
     {
       "file": "pages/capabilities/filters/query-mode-chart-demo.json",
@@ -2460,7 +2464,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/business/ioc-header-demo.json",
-      "sha256": "4cd6220cc7bbe521ed18af11b1f9d1becd90ad111e7c35e5fc5ece3ff5b43f0c"
+      "sha256": "ea920b702e76eaa14ce6a2b728af9e9ef638eaf173def42fc893de1e0e615743"
     },
     {
       "file": "pages/capabilities/ioc-header/business/ioc-header-dense.json",
@@ -2636,15 +2640,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "e1543873b5a448de3e45ff69c840c88298fa3ee01da72c1fc285b8740919d441"
+      "sha256": "789e730a5f41f7569083b01896d16d60b6bc2c480a31f4df104dfe3ed9658296"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "7429466f74f458fb226fb37cdf778c4c7305902c911f159328be4b5b9731501d"
+      "sha256": "9961ca492400492243b5099c416b39f3b12b189bec27d3d5b4dd00607c8e78e0"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "3eb0dd2cbbbb64009d23b214c416ff3e3bbf94da69b5ac37ab3a1a37c630694d"
+      "sha256": "1b8a29138468c24229e47babfb23402cf6e36657d14645c26d1075161951ae3b"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2660,7 +2664,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "7ad44fde4ce7a10401e5abec1bdaa0138d3291c3e5a023c160af2ac38de17beb"
+      "sha256": "977c1d267cd46b96f5e799d8b690367b11e08a7465b65f042b60660067973861"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",

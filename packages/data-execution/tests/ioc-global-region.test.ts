@@ -1,3 +1,4 @@
+import {initialFilterValues} from '../src/filter-values';
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
@@ -77,9 +78,9 @@ describe('IOC global Region is unrestricted',()=>{
     if(source.source.type!=='query')continue;
     for(const leaf of queryLeaves(source.source.query)){
      const definition={...source,source:{...source.source,query:leaf}} as QueryDataSource;
-     const values=new Map<string,FilterValue>([['region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['全球']}]]);
+     const values=initialFilterValues((page.filters??[]).filter(filter=>filter.type==='timeRange'||filter.type==='timePoint'));values.set('region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['全球']});
      const query=composeEffectiveQuery({page,filters:page.filters,dataSource:definition},values,0,[],{});
-     expect(query.filterValues,id).toEqual([]);branches++;
+     expect(query.filterValues.filter(value=>value.target==='dimension'),id).toEqual([]);branches++;
     }
    }
   }

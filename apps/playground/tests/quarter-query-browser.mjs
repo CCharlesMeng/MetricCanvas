@@ -27,6 +27,8 @@ try {
   await expect.poll(() => times().some(time => time.period === 'year')).toBe(true);
   await page.getByRole('button', {name: '季', exact: true}).click();
   await expect(page.getByRole('button', {name: '季', exact: true})).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', {name: '近一年', exact: true}).click();
+  await expect.poll(() => times().some(time => time.period === 'month' && time.start !== time.end)).toBe(true);
   await expect(page.getByText('合成地区', {exact: true})).toBeVisible();
   expect(errors).toEqual([]);
   await writeFile(path.join(output, 'result.json'), JSON.stringify({page: fixture.id, data: 'synthetic HTTP response', requests, errors}, null, 2));

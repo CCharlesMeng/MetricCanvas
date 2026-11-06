@@ -172,7 +172,6 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "month",
                     "is_aggregate": false
                   }
                 },
@@ -185,7 +184,11 @@
           },
           "filterBindings": {
             "period": {
-              "target": "time"
+              "target": "time",
+              "periodPolicy": {
+                "kind": "fixed",
+                "period": "month"
+              }
             }
           },
           "paramBindings": {

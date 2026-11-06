@@ -87,7 +87,7 @@
         {#each ['month','quarter','year'] as period}<label class="binding"><input type="checkbox" value={period} bind:group={supported[choice.id]} onchange={()=>policyChanged[choice.id]=true}/>{period==='month'?'月':period==='quarter'?'季':'年'}</label>{/each}
       {/if}
       <p class="hint">{current==='preserve'?'各分支保留各自配置；选择新策略后统一转换。':periodPolicyPreview(periodMode,from,policyFromChoice(current,supported[choice.id]??[]),previewNow)}</p>
-      {#if current==='legacy'}<p class="hint">选择新策略才转换此查询的全部分支；其他查询继续保留。</p>{/if}
+      {#if current==='legacy'}<p class="hint">需要固定粒度时显式选择；应用后转换此查询的全部分支。</p>{/if}
     {/if}</div>
   {/each}</fieldset>
   <PrimaryAction disabled={busy||!filterId||!selected.length||incompletePeriod} onclick={save}>应用日期配置</PrimaryAction>

@@ -265,7 +265,7 @@
 
 入口：`/pages/quarter-query-period`；[页面 JSON](quarter-query-period.json)。启动 `pnpm dev:playground`。
 
-默认选择 2026-Q3，按所选周期查询发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，其他筛选和聚合开关保留。按选择策略未声明 quarter 时拒绝查询；Q0/Q5、日/月格式混入季度和倒置范围的发送前拒绝由自动测试覆盖。
+默认选择 2026-Q3，IOC Header 认领的时间绑定仅声明 `target:"time"`，没有 periodPolicy，旧查询体保留 month 用于验证引擎默认覆盖。首次请求发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，近一年发送 month 和此前十二个完整月范围，聚合开关保留。显式 fixed/selection、期间比较、字段时间绑定与普通非 IOC 绑定的优先级由自动测试覆盖；月度趋势例外见 `ioc-header-demo` 的 trend 查询。Q0/Q5、日/月格式混入季度和倒置范围继续在发送前拒绝。
 
 自动验收：`node apps/playground/tests/quarter-query-browser.mjs <证据目录>`，环境变量 `QUARTER_QUERY_BASE_URL` 指向页面试验场（默认端口 5208）。浏览器测试按页面 JSON 驱动控件，以合成 HTTP 回执验证实际请求编码和表格渲染；未调用真实 DQE/Relay，页面脱离测试运行时需要可用的数据网关。
 ## 数据源候选与静态组织树

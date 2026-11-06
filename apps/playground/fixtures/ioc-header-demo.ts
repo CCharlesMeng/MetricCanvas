@@ -1,5 +1,5 @@
 import type { DimensionValueCandidate, RuntimeDataGateway } from '@metriccanvas/engine';
-import type { Row } from '@metriccanvas/page/internal';
+import type { EffectiveQuery,Row } from '@metriccanvas/page/internal';
 
 // Local synthetic facts, deliberately unrelated to production IOC business codes.
 const offices = [
@@ -31,6 +31,10 @@ function aggregate(rows:Row[]) {
   const opportunities=sum('opportunities');
   return {signings:sum('signings'),revenue:sum('revenue'),opportunities,win_rate:opportunities?sum('won')/opportunities*100:0};
 }
+function withinDemoPeriod(month:string,filter:Extract<EffectiveQuery['filterValues'][number],{target:'time'}>):boolean {
+  const key=filter.period==='year'?month.slice(0,4):filter.period==='quarter'?`${month.slice(0,4)}-Q${Math.ceil(Number(month.slice(5,7))/3)}`:month;
+  return key>=filter.value.from.slice(0,7)&&key<=filter.value.to.slice(0,7);
+}
 /** Uses the normal effective query and candidate ports; never contacts a service. */
 export function createIocHeaderDemoGateway():RuntimeDataGateway {
   return {
@@ -49,7 +53,7 @@ export function createIocHeaderDemoGateway():RuntimeDataGateway {
       let filtered=facts;
       let metric='signings';
       for(const filter of query.filterValues) {
-        if(filter.target==='time')filtered=filtered.filter(row=>String(row.demo_month)>=filter.value.from.slice(0,7)&&String(row.demo_month)<=filter.value.to.slice(0,7));
+        if(filter.target==='time')filtered=filtered.filter(row=>withinDemoPeriod(String(row.demo_month),filter));
         else if(filter.target==='dimension'&&filter.queryField==='demo_metric')metric=filter.values[0]==='REVENUE'?'revenue':'signings';
         else if(filter.target==='dimension'&&filter.queryField==='demo_region')filtered=filtered.filter(row=>filter.values.some(value=>[row.demo_global,row.demo_department,row.demo_office].includes(value)));
         else if(filter.target==='dimension')filtered=filtered.filter(row=>filter.values.includes(String(row[filter.queryField])));

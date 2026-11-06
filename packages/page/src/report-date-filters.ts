@@ -1,4 +1,5 @@
 import { iocHeaderDeclaration } from './header-binding';
+import {withIocPeriodDefaults} from './ioc-period-query';
 import { isObjectDqeItem } from './dqe-object';
 import {ordinaryQuery} from './time-mode';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
@@ -31,7 +32,7 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
     if (filter.type === 'timePoint' || filter.type === 'timeRange') dateDeclarationErrors(page, filter, `/filters/${index}`, error);
   }
   for (const [id, source] of Object.entries(page.dataSources)) {
-    if (source.source.type === 'query') queryDateFilterErrors(source.source.query, `/dataSources/${id}/source/query/filterBindings`, filters, error);
+    if (source.source.type === 'query') queryDateFilterErrors(withIocPeriodDefaults(source.source.query,page), `/dataSources/${id}/source/query/filterBindings`, filters, error);
   }
   return errors;
 }
