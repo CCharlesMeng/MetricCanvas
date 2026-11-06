@@ -177,6 +177,8 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 单选值替换后关闭；多选保持32px单行标签并横向滚动。未知已选值保留代码，可移除；required仍恰好一个，不提供清空。树内容左侧16px、带框加减号及浅灰连接线使用冻结OpenTiny样式。
 
+维度下拉未选择时，`emptyLabel` 仅作为输入框占位文案，不在候选面板中重复显示为标题或清除项；选中后使用输入框清空按钮或标签移除操作。合成验收 `/pages/ioc-header-demo` 覆盖客户分类的空选、选择、清空及搜索无匹配；不新增 Schema 字段，不改变筛选值和查询绑定。
+
 验收场景：[ioc-header-selection](examples/dimension-selection-page.json)，仅本地合成候选与表格查询；不代表真实服务验收。
 
 

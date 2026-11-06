@@ -29,7 +29,7 @@ test('time context intersects trusted candidates; empty intersection waits expli
   const period=header.locator('[data-period-filter]');const model=header.locator('[data-filter-id="model"]');
   const month=period.getByRole('combobox');await month.fill('2026-08');await month.press('Enter');await expect(page.getByText(/合成 · 2026-08.*model_code=B/)).toBeVisible();expect(candidateRequests.find(r=>r.filterId==='model'&&r.constraints.times.period.from==='2026-08')).toBeTruthy();
   const count=requests.filter(q=>q.filter?.time).length;await month.fill('2026-07');await month.press('Enter');await expect(header).toContainText('等待筛选确认');expect(requests.filter(q=>q.filter?.time)).toHaveLength(count);await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();
-  await openSelection(model);await model.getByRole('button',{name:'清除筛选',exact:true}).click();await expect(page.getByText(/合成 · 2026-07/)).toBeVisible();
+  await openSelection(model);await expect(model.getByRole('button',{name:'清除筛选',exact:true})).toHaveCount(0);await closeSelection(model);await model.getByRole('button',{name:'确认不限',exact:true}).click();await expect(page.getByText(/合成 · 2026-07/)).toBeVisible();
   await month.fill('2026-06');await month.press('Enter');await expect(model.locator('[data-candidates-status="denied"]')).toBeVisible();await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();
   await month.fill('2026-05');await month.press('Enter');await expect(model.locator('[data-candidates-status="unconfigured"]')).toBeVisible();await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();
 });
