@@ -4,6 +4,14 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "表格单元格选择显式写入目标筛选层级 由 6.95 引入，文档声明的是 6.90",
+      "paths": [
+        "/sections/0/components/1/props/columns/0/selection/writes/region/level",
+        "/sections/0/components/1/props/columns/1/selection/writes/region/level"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "IOC 页头组合筛选控件及内置 RegionFilter 由 6.91 引入，文档声明的是 6.90",
       "paths": [
         "/sections/0/components/0/props/components"
@@ -27,6 +35,30 @@
                 {
                   "id": "region-control",
                   "type": "regionFilter"
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                {
+                  "selection": {
+                    "writes": {
+                      "region": {
+                        "level": "region-dept"
+                      }
+                    }
+                  }
+                },
+                {
+                  "selection": {
+                    "writes": {
+                      "region": {
+                        "level": "office"
+                      }
+                    }
+                  }
                 }
               ]
             }

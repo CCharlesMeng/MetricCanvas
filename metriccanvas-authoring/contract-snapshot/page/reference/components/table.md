@@ -77,6 +77,8 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 
 可观察入口：`/pages/table-column-visibility`（四种表格外观、搜索与 Excel）、`/pages/table-column-visibility-scopes`（Tab、详情、展开子表）、`/pages/table-column-visibility-report`（PDF/PNG）。均为内联合成数据；远程状态调和由集成测试覆盖，不作为真实 DQE/Relay 验收。
 
+<a id="table-cell-selection"></a>
+
 ## 单元格点击与筛选联动
 
 交互态的 `selection` 选择列和 `link: true` 链接列均以下划线提示可点击，覆盖普通、`forecastMatrix`、`embedded` 和 `reportCompact` 变体；普通数据列不加下划线。选择列不额外添加蓝色背景，选中后保持普通文字颜色，不加蓝色边框；显式业务颜色照常生效，键盘焦点框跟随文字颜色。静态导出不呈现点击控件。
@@ -97,11 +99,29 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 }
 ```
 
-页面须声明 `id: "region"`、`type: "dimension"` 的筛选器；点击将当前行原始取值转为字符串写入其单选状态，不使用格式化文案。空值不写入，多目标写入一次完成。再次点击同一取值保持选中，不自动清空；`fixed` 和 `width` 只影响呈现，不影响写入。
+目标须是页面声明的 `dimension` 筛选器，或 IOC 页头 `regionFilter` 自动提供的公共筛选 `region`；后者无需再声明 `filters.region`。点击将当前行原始取值转为字符串写入其单选状态，不使用格式化文案。空值不写入，多目标写入一次完成。再次点击同一取值保持选中，不自动清空；`fixed` 和 `width` 只影响呈现，不影响写入。
+
+6.95 起，每个写入目标可增加可选 `level`，引用该筛选器 `hierarchy` 的层级 ID；字段或固定值两种输入均支持。代表处列的完整声明示例：
+
+```json
+{
+  "field": "office-name",
+  "title": "代表处",
+  "selection": {
+    "writes": { "region": { "field": "office-value", "level": "office" } }
+  }
+}
+```
+
+`office-value` 须与目标层级候选的原始 `value` 一致；名称仅展示，不能据此猜测编码或层级。普通维度不允许声明 `level`，未知层级在写入目标的 `/level` 位置报错。省略时保持原行为：层级筛选使用 `defaultLevel`，未声明默认层级则取首层；不继承上一次用户所选层级。选中态同时比较有效层级和取值，不同层级同码不会互相选中。
+
+表格和页头写入同一份筛选状态；页头回显、候选确认、URL 同步及依赖查询刷新沿用现有链路。新 Header 的子控件 ID 不参与写入配置。查询仍显式使用 `filterBindings.region.levelQueryFields` 映射各层业务字段；时间及其他筛选、布尔覆盖 Region 的既有规则保持。
 
 选择动作沿用组件动作资格；当前协议允许 `inline` 入口写入会产生可观察结果的筛选，例如联动下游查询。维度筛选值还须通过显式 `options` 或可信动态候选确认，候选未就绪时相关查询等待。选择列写入筛选状态，不直接筛选其他表格；下游查询必须显式声明 `source.query.filterBindings.region: { "target": "dimension", "queryField": "region_dept_name" }`。这里 `region_dept_name` 是真实 DQE 字段，不能从页面字段 id 猜测。不订阅该筛选的查询不重跑，`inline` 行也不会因此自动过滤。
 
 可观察示例：`table-cell-selection` 使用 DQE Sim 合成数据，点击“华南地区部”后，下表仅显示“深圳代表处”；上表不订阅该筛选，保留全部入口。浏览器回归同时覆盖四种变体下划线、键盘选择、重复点击、未绑定下游及内联入口联动查询的行为，不代表真实 DQE 验收。
+
+层级选择示例：`ioc-header-controls` 使用应用级合成候选与查询网关，点击地区部或代表处后，页头、查询结果和 URL 同步；同码地区部与代表处验证层级隔离，内联入口始终保留全部行。该场景不证明真实 Operation Map 或 DQE 接入。
 
 ## 十二行可视高度
 
@@ -366,7 +386,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 6.94 起字段列可声明 `unit`，例如 `{"field":"duration","unit":"天"}`。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
 
-页面协议 6.94。结构真源为本册[schema.json](../schema.json)，SHA256 `55d41a5c7782a5ba003ba1d160481013ef8be70b4e002e8333b2bfc3faab03c6`。字段表自动生成；可选不等于有默认值。
+页面协议 6.95。结构真源为本册[schema.json](../schema.json)，SHA256 `fbdf8b121970a7776b037f5a46fee0455c2f0b14b3859db710eb4afeaf4da906`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1475,6 +1495,16 @@ Schema位置：`#/definitions/tableColumn/properties/selection/properties/writes
 |---|---|---|---|---|
 | 引用 #/definitions/fieldReference | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f7772697465732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6c6576656c"></a>
+
+### `@tableColumn.selection.writes{key} · anyOf[0].level`
+
+Schema位置：`#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0/properties/level`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 当前层级或层级绑定部分。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f7772697465732f6164646974696f6e616c50726f706572746965732f616e794f662f31"></a>
 
 ### `@tableColumn.selection.writes{key} · anyOf[1]`
@@ -1494,6 +1524,16 @@ Schema位置：`#/definitions/tableColumn/properties/selection/properties/writes
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f7772697465732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6c6576656c"></a>
+
+### `@tableColumn.selection.writes{key} · anyOf[1].level`
+
+Schema位置：`#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1/properties/level`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 当前层级或层级绑定部分。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f7772697465732f70726f70657274794e616d6573"></a>
 

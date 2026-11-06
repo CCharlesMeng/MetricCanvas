@@ -1,7 +1,7 @@
 import { headerDeclarations } from './header-binding';
 import { comparisonCapabilityPaths,comparisonJoinCapabilityPaths } from './period-comparison-validation';
 import { periodCapabilityPaths, quarterQueryCapabilityPaths } from './period-capability';
-import { columnConditionPaths, columnEnumPaths, columnDefaultPaths, columnPropertyPaths } from './table/columns';
+import { columnConditionPaths, columnEnumPaths, columnDefaultPaths, columnPropertyPaths, columnSelectionLevelPaths } from './table/columns';
 import { isObjectDqeItem } from './dqe-object';
 import {chartOptionScopes} from './chart-option';
 import type { TypedError } from './errors';
@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 94;
+const CURRENT_MINOR = 95;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -55,6 +55,7 @@ function hasPinnedText(columns: unknown): boolean {
 }
 
 export const pageCapabilities = {
+  'table-selection-level': {minor:95,legacyReadable:false,description:'表格单元格选择显式写入目标筛选层级',usedAt:columnSelectionLevelPaths},
   'semantic-numeric-formats': {minor:93,legacyReadable:false,description:'按指标语义自适应单位、精度与计费时长',usedAt:document=>namedFormatPaths(document,/^(?:count-adaptive|resource-adaptive|bytes-adaptive|minutes-adaptive|messages-adaptive|billing-hours|percent-raw|percent-adaptive(?:-signed)?)$/)},
   'selection-period-comparison': {minor:92,legacyReadable:false,description:'直接按已应用完整期间查询同比环比，无需宿主截止事实',usedAt:document=>comparisonCapabilityPaths(document,true)},
   'ioc-header-controls': {minor:91,legacyReadable:false,description:'IOC 页头组合筛选控件及内置 RegionFilter',usedAt:document=>componentPaths(document,c=>c.type==='iocHeader'&&has(props(c),'components')).map(path=>path+'/props/components')},

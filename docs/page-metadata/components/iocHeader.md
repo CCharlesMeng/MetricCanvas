@@ -31,4 +31,6 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 
 解析时只在运行投影展开标准筛选，源文档保留简写。统一筛选状态、URL、候选加载、查询 `filterBindings.region`、初始化和现有选择回写继续复用。未绑定 region 的查询不会新增组织谓词；绑定的查询仍显式声明自己的 `levelQueryFields`。此能力不引入实时跨应用同步机制。应用级代码示例见集成应用契约的 Operation Map Region 接入章节。
 
+6.95 起，表格列可通过 `selection.writes.region: {field:"office-value",level:"office"}` 更新这个公共筛选，页头自动回显并沿用相同查询刷新链路。`regionFilter` 子控件 ID 无需被表格引用，页面无需重复声明 `filters.region`。详见[单元格点击与筛选联动](table.md#table-cell-selection)。
+
 完整合成验收入口 `/pages/ioc-header-controls`，声明与操作见场景目录 `pages/capabilities/ioc-header/controls/README.md`。真实 Operation Map 接口与 DQE 数据由集成环境另验。

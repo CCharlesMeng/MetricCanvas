@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.94",
-  "schemaSha256": "55d41a5c7782a5ba003ba1d160481013ef8be70b4e002e8333b2bfc3faab03c6",
+  "schemaVersion": "6.95",
+  "schemaSha256": "fbdf8b121970a7776b037f5a46fee0455c2f0b14b3859db710eb4afeaf4da906",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1291,7 +1291,8 @@
         "6.91",
         "6.92",
         "6.93",
-        "6.94"
+        "6.94",
+        "6.95"
       ]
     },
     {
@@ -13744,6 +13745,12 @@
       "ref": "#/definitions/fieldReference"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0/properties/level",
+      "path": "@tableColumn.selection.writes{key} · anyOf[0].level",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1",
       "path": "@tableColumn.selection.writes{key} · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -13753,6 +13760,12 @@
       "pointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1/properties/value",
       "path": "@tableColumn.selection.writes{key} · anyOf[1].value",
       "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1/properties/level",
+      "path": "@tableColumn.selection.writes{key} · anyOf[1].level",
+      "required": "本分支可选",
       "module": "components/table.md"
     },
     {
@@ -21723,5 +21736,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "cbba59cd0362bda7cb4ae5100635e6d7d12d16e955a5c304e20ca812382d2125"
+  "semanticSourceDigest": "2f192cd980fadbebb963f6e52988b4a681807879089c283a91594d4e2c17a4a0"
 }

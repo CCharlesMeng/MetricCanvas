@@ -77,6 +77,8 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 
 可观察入口：`/pages/table-column-visibility`（四种表格外观、搜索与 Excel）、`/pages/table-column-visibility-scopes`（Tab、详情、展开子表）、`/pages/table-column-visibility-report`（PDF/PNG）。均为内联合成数据；远程状态调和由集成测试覆盖，不作为真实 DQE/Relay 验收。
 
+<a id="table-cell-selection"></a>
+
 ## 单元格点击与筛选联动
 
 交互态的 `selection` 选择列和 `link: true` 链接列均以下划线提示可点击，覆盖普通、`forecastMatrix`、`embedded` 和 `reportCompact` 变体；普通数据列不加下划线。选择列不额外添加蓝色背景，选中后保持普通文字颜色，不加蓝色边框；显式业务颜色照常生效，键盘焦点框跟随文字颜色。静态导出不呈现点击控件。
@@ -97,11 +99,29 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 }
 ```
 
-页面须声明 `id: "region"`、`type: "dimension"` 的筛选器；点击将当前行原始取值转为字符串写入其单选状态，不使用格式化文案。空值不写入，多目标写入一次完成。再次点击同一取值保持选中，不自动清空；`fixed` 和 `width` 只影响呈现，不影响写入。
+目标须是页面声明的 `dimension` 筛选器，或 IOC 页头 `regionFilter` 自动提供的公共筛选 `region`；后者无需再声明 `filters.region`。点击将当前行原始取值转为字符串写入其单选状态，不使用格式化文案。空值不写入，多目标写入一次完成。再次点击同一取值保持选中，不自动清空；`fixed` 和 `width` 只影响呈现，不影响写入。
+
+6.95 起，每个写入目标可增加可选 `level`，引用该筛选器 `hierarchy` 的层级 ID；字段或固定值两种输入均支持。代表处列的完整声明示例：
+
+```json
+{
+  "field": "office-name",
+  "title": "代表处",
+  "selection": {
+    "writes": { "region": { "field": "office-value", "level": "office" } }
+  }
+}
+```
+
+`office-value` 须与目标层级候选的原始 `value` 一致；名称仅展示，不能据此猜测编码或层级。普通维度不允许声明 `level`，未知层级在写入目标的 `/level` 位置报错。省略时保持原行为：层级筛选使用 `defaultLevel`，未声明默认层级则取首层；不继承上一次用户所选层级。选中态同时比较有效层级和取值，不同层级同码不会互相选中。
+
+表格和页头写入同一份筛选状态；页头回显、候选确认、URL 同步及依赖查询刷新沿用现有链路。新 Header 的子控件 ID 不参与写入配置。查询仍显式使用 `filterBindings.region.levelQueryFields` 映射各层业务字段；时间及其他筛选、布尔覆盖 Region 的既有规则保持。
 
 选择动作沿用组件动作资格；当前协议允许 `inline` 入口写入会产生可观察结果的筛选，例如联动下游查询。维度筛选值还须通过显式 `options` 或可信动态候选确认，候选未就绪时相关查询等待。选择列写入筛选状态，不直接筛选其他表格；下游查询必须显式声明 `source.query.filterBindings.region: { "target": "dimension", "queryField": "region_dept_name" }`。这里 `region_dept_name` 是真实 DQE 字段，不能从页面字段 id 猜测。不订阅该筛选的查询不重跑，`inline` 行也不会因此自动过滤。
 
 可观察示例：`table-cell-selection` 使用 DQE Sim 合成数据，点击“华南地区部”后，下表仅显示“深圳代表处”；上表不订阅该筛选，保留全部入口。浏览器回归同时覆盖四种变体下划线、键盘选择、重复点击、未绑定下游及内联入口联动查询的行为，不代表真实 DQE 验收。
+
+层级选择示例：`ioc-header-controls` 使用应用级合成候选与查询网关，点击地区部或代表处后，页头、查询结果和 URL 同步；同码地区部与代表处验证层级隔离，内联入口始终保留全部行。该场景不证明真实 Operation Map 或 DQE 接入。
 
 ## 十二行可视高度
 

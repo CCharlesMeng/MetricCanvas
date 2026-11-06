@@ -2146,6 +2146,11 @@ type BindingCheck = (
   allowedDetailType?: FieldDefinition['type']
 ) => void;
 
+function tableSelectionLevelErrors(target: FilterDeclaration | undefined, level: string | undefined, path: string): TypedError[] {
+  if (level === undefined || target?.type !== 'dimension') return [];
+  return target.hierarchy?.some(item => item.id === level) ? []
+    : [schemaError(path, '单元格选择层级必须引用目标筛选器已声明的 hierarchy 层级')];
+}
 
 function tableErrors(
   columns: TableColumnNode[],
@@ -2177,6 +2182,7 @@ function tableErrors(
           )
         );
       }
+      errors.push(...tableSelectionLevelErrors(target, write.level, `${path}/selection/writes/${escapePointer(filterId)}/level`));
       if ('field' in write) {
         check(write.field, `${path}/selection/writes/${escapePointer(filterId)}/field`);
       }

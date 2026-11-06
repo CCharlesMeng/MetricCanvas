@@ -25,6 +25,49 @@
       }
     ],
     "dataSources": {
+      "organizations": {
+        "fields": {
+          "department-name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "department-value": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "office-name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "office-value": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "department-name": "华东地区部",
+              "department-value": "华东地区部",
+              "office-name": "上海代表处",
+              "office-value": "上海代表处"
+            },
+            {
+              "department-name": "华北地区部",
+              "department-value": "华北地区部",
+              "office-name": "北京代表处",
+              "office-value": "北京代表处"
+            },
+            {
+              "department-name": "同码地区部",
+              "department-value": "SAME",
+              "office-name": "同码代表处",
+              "office-value": "SAME"
+            }
+          ]
+        }
+      },
       "scope": {
         "fields": {
           "region": {
@@ -116,6 +159,44 @@
             }
           },
           {
+            "id": "organization-entry",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "organizations"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "department-name",
+                  "title": "点击选择地区部",
+                  "selection": {
+                    "writes": {
+                      "region": {
+                        "field": "department-value",
+                        "level": "region-dept"
+                      }
+                    }
+                  }
+                },
+                {
+                  "field": "office-name",
+                  "title": "点击选择代表处",
+                  "selection": {
+                    "writes": {
+                      "region": {
+                        "field": "office-value",
+                        "level": "office"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
             "id": "results",
             "type": "table",
             "layout": {
@@ -142,6 +223,16 @@
     ]
   },
   "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns/0/selection/writes/region/level",
+      "message": "表格单元格选择显式写入目标筛选层级 由 6.95 引入，文档声明的是 6.90"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns/1/selection/writes/region/level",
+      "message": "表格单元格选择显式写入目标筛选层级 由 6.95 引入，文档声明的是 6.90"
+    },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/components",

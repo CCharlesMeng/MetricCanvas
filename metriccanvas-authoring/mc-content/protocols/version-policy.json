@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 94,
-  "current": "6.94",
+  "minor": 95,
+  "current": "6.95",
   "capabilities": {
+    "table-selection-level": {
+      "minor": 95,
+      "description": "表格单元格选择显式写入目标筛选层级",
+      "legacyReadable": false
+    },
     "semantic-numeric-formats": {
       "minor": 93,
       "description": "按指标语义自适应单位、精度与计费时长",
@@ -914,6 +919,7 @@
     "6.91",
     "6.92",
     "6.93",
-    "6.94"
+    "6.94",
+    "6.95"
   ]
 }

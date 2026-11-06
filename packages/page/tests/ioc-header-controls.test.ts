@@ -21,6 +21,7 @@ describe('IOC Header controls',()=>{
   it('keeps legacy controls, defaults and query bindings readable',()=>{
     const source=sample(),header=source.sections[0].components[0].props;
     delete header.components;header.filterIds=['stat-year','region'];source.filters.push(standardIocRegionFilter());source.schemaVersion='6.88';
+    for(const column of source.sections[0].components[1].props.columns)delete column.selection.writes.region.level;
     const parsed=parsePage(source);expect(parsed.ok).toBe(true);if(!parsed.ok)return;
     expect(parsed.page.filters).toEqual(source.filters);
     expect(parsed.page.dataSources).toEqual(source.dataSources);
@@ -32,6 +33,7 @@ describe('IOC Header controls',()=>{
   });
   it('does not create Region for a header containing only ordinary filters',()=>{
     const source=sample();source.sections[0].components[0].props.components.pop();delete source.dataSources.scope.source.query.filterBindings.region;
+    source.sections[0].components.splice(1,1);
     const parsed=parsePage(source);expect(parsed.ok).toBe(true);if(!parsed.ok)return;
     expect(parsed.page.filters?.some(filter=>filter.id==='region')).toBe(false);
   });

@@ -44,9 +44,17 @@ export function columnEnumPaths(document:unknown):string[]{
 }
 export function columnDefaultPaths(document: unknown, properties = ['defaultValues']): string[] {
     return columnPropertyPaths(document, 'filterable').flatMap(path => {
-        const value = path.split('/').slice(1).reduce<unknown>((node, key) => record(node)?.[key.replaceAll('~1', '/').replaceAll('~0', '~')] ?? (Array.isArray(node) ? node[Number(key)] : undefined), document);
+        const value = documentValueAt(document, path);
         return record(value) ? properties.filter(key => Object.hasOwn(value as object, key)).map(key => path + '/' + key) : [];
     });
+}
+function documentValueAt(document: unknown, path: string): unknown {
+    return path.split('/').slice(1).reduce<unknown>((node, key) => record(node)?.[key.replaceAll('~1', '/').replaceAll('~0', '~')] ?? (Array.isArray(node) ? node[Number(key)] : undefined), document);
+}
+export function columnSelectionLevelPaths(document: unknown): string[] {
+    return columnPropertyPaths(document, 'selection').flatMap(path =>
+        Object.entries(record(record(documentValueAt(document, path))?.writes) ?? {}).flatMap(([id, write]) =>
+            record(write)?.level === undefined ? [] : [`${path}/writes/${id.replaceAll('~', '~0').replaceAll('/', '~1')}/level`]));
 }
 export function columnPropertyPaths(document: unknown, property:string): string[] {
     const paths: string[] = [];

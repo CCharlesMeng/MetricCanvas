@@ -23,7 +23,7 @@ import { colorRuleZ, type ColorRule } from '../presentation';
  * 用 `z.ZodType<T>` 约束 zod 定义与之一致，而不是反过来用 z.infer 推导。
  * 一旦两者出现结构性偏差，TS 编译会直接失败，效果等同于单一真源。
  */
-export type TableSelectionWrite = { field: FieldReference } | { value: string };
+export type TableSelectionWrite = ({ field: FieldReference } | { value: string }) & { level?: string };
 
 export interface TableCellSelection {
   visibleWhen?: import('../condition').Condition;
@@ -76,8 +76,8 @@ export interface TableColumnGroup {
 export type TableColumnNode = TableColumn | TableColumnGroup;
 
 const tableCellSelectionWriteZ: z.ZodType<TableSelectionWrite> = z.union([
-  z.object({ field: fieldReferenceZ }).strict(),
-  z.object({ value: z.string() }).strict()
+  z.object({ field: fieldReferenceZ, level: idZ.optional() }).strict(),
+  z.object({ value: z.string(), level: idZ.optional() }).strict()
 ]);
 
 const tableCellSelectionZ: z.ZodType<TableCellSelection> = z

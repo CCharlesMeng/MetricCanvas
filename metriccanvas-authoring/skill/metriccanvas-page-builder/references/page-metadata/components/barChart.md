@@ -81,7 +81,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 6.94 起系列可声明 `unit`，图例名称、数值标签与悬浮提示共用。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
 
-页面协议 6.94。结构真源为本册[schema.json](../schema.json)，SHA256 `55d41a5c7782a5ba003ba1d160481013ef8be70b4e002e8333b2bfc3faab03c6`。字段表自动生成；可选不等于有默认值。
+页面协议 6.95。结构真源为本册[schema.json](../schema.json)，SHA256 `fbdf8b121970a7776b037f5a46fee0455c2f0b14b3859db710eb4afeaf4da906`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

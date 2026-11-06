@@ -2,7 +2,7 @@
   "case": "ioc-controls-root-region",
   "invariant": "ioc-header-controls",
   "input": {
-    "schemaVersion": "6.91",
+    "schemaVersion": "6.95",
     "id": "ioc-header-controls",
     "layout": "dashboard",
     "meta": {
@@ -25,6 +25,49 @@
       }
     ],
     "dataSources": {
+      "organizations": {
+        "fields": {
+          "department-name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "department-value": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "office-name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "office-value": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "department-name": "华东地区部",
+              "department-value": "华东地区部",
+              "office-name": "上海代表处",
+              "office-value": "上海代表处"
+            },
+            {
+              "department-name": "华北地区部",
+              "department-value": "华北地区部",
+              "office-name": "北京代表处",
+              "office-value": "北京代表处"
+            },
+            {
+              "department-name": "同码地区部",
+              "department-value": "SAME",
+              "office-name": "同码代表处",
+              "office-value": "SAME"
+            }
+          ]
+        }
+      },
       "scope": {
         "fields": {
           "region": {
@@ -85,6 +128,44 @@
       {
         "id": "main",
         "components": [
+          {
+            "id": "organization-entry",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "organizations"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "department-name",
+                  "title": "点击选择地区部",
+                  "selection": {
+                    "writes": {
+                      "region": {
+                        "field": "department-value",
+                        "level": "region-dept"
+                      }
+                    }
+                  }
+                },
+                {
+                  "field": "office-name",
+                  "title": "点击选择代表处",
+                  "selection": {
+                    "writes": {
+                      "region": {
+                        "field": "office-value",
+                        "level": "office"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
           {
             "id": "results",
             "type": "table",

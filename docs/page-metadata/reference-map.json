@@ -2210,7 +2210,8 @@
     "percent-adaptive-signed": "自适应百分比的普通正值带+、负值带-、零无符号；绝对值500起显示方向与>500%。",
     "percent-raw": "个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。",
     "#/properties/schemaVersion=\"6.93\"": "语义数值格式、设备精度及相对变化基期边界；作者版本6.93。",
-    "#/properties/schemaVersion=\"6.94\"": "柱状图、折线图系列与表格字段列可显式声明展示单位。"
+    "#/properties/schemaVersion=\"6.94\"": "柱状图、折线图系列与表格字段列可显式声明展示单位。",
+    "#/properties/schemaVersion=\"6.95\"": "表格单元格 selection.writes 可指定目标筛选的 level，复用统一筛选状态、页头回显和逐层查询绑定。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

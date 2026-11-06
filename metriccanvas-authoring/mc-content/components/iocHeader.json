@@ -23,7 +23,7 @@
   "knowledge": "iocHeader.overview",
   "reference": "references/page-metadata/components/iocHeader.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.94",
+  "currentWriter": "6.95",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/ioc-header-section-placement.json",
@@ -183,8 +183,13 @@
     },
     {
       "file": "references/page-metadata/examples/ioc-header-controls.json",
-      "requiredVersion": "6.91",
+      "requiredVersion": "6.95",
       "capabilities": [
+        {
+          "id": "table-selection-level",
+          "minor": 95,
+          "description": "表格单元格选择显式写入目标筛选层级"
+        },
         {
           "id": "ioc-header-controls",
           "minor": 91,

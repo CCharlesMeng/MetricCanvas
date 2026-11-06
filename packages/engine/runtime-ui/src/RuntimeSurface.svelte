@@ -4,6 +4,7 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import { hierarchyLevelOf } from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
@@ -702,10 +703,13 @@
         const matches = Object.entries(column.selection.writes).every(
           ([filterId, write]) => {
             const current = filterValues.get(filterId);
+            const declaration = declarations.find(item => item.id === filterId);
+            const level = declaration?.type === 'dimension' ? hierarchyLevelOf(declaration, write.level)?.id : undefined;
             const expected =
               'field' in write ? row[fieldName(write.field)] : write.value;
             return (
               current?.type === 'dimension' &&
+              (level === undefined || current.level === level) &&
               expected != null &&
               current.values.length === 1 &&
               current.values[0] === String(expected)
@@ -734,11 +738,13 @@
       const declaration = declarations.find((candidate) => candidate.id === filterId);
       const raw = 'field' in write ? row[fieldName(write.field)] : write.value;
       if (declaration?.type !== 'dimension' || raw == null) return;
+      const level = hierarchyLevelOf(declaration, write.level);
       updates.push([
         filterId,
         {
           type: 'dimension',
-          dimension: declaration.dimension,
+          dimension: level?.dimension ?? declaration.dimension,
+          ...(level ? { level: level.id } : {}),
           values: [String(raw)]
         }
       ]);
