@@ -4,7 +4,7 @@
 
 6.95：表格列 `selection.writes` 可用 `level` 显式选择目标维度筛选的组织层级；复用页头 Region 状态、候选校验和查询绑定。省略保持原默认层级行为。见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，入口 `/pages/ioc-header-controls`。
 
-6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。同比/环比基期非正或缺失返回null，普通ratio保持。缺失文案为 `--` / `--%`，图表显示分开的短横线。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
+6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示连续两个 ASCII 短横线 `--`，图表与百分比同样不加空格、百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
 
 普通查询表格首屏按 DQE `order.order_by_field/type` 回显列头方向，用户操作后沿用会话排序；不新增字段或改变查询。常量基线与指标排序可以同时使用。声明和边界见[查询默认排序](docs/page-metadata/components/table.md#查询默认排序的首屏方向)，入口 `/pages/query-sort-baseline`。
 
@@ -628,3 +628,5 @@ Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创
 6.94 新增柱/线/混合图系列 `unit` 与表格字段列 `unit`，图例和数值可按组件显式展示单位；不执行缩放。见[展示单位](docs/page-metadata/field-bindings-and-formats.md#display-unit)，场景 `/pages/chart-table-unit`。
 
 图表与表格的整数展示复用统一数值格式化，去掉小数尾零；`unit` 在格式化后追加，`-2 天`、`0 天` 和 `12.5 天` 对照见 `/pages/chart-table-unit`。
+
+空值占位统一修复：图表、表格、指标卡、进度环、仪表和期间占位共用 `--`，移除图表间隔转换及百分比空值后缀。既有业务自定义文案和真实字符串保持。无 Schema 字段增减，场景 `/pages/chart-table-unit`、`/pages/numeric-value-display` 和 `/pages/semantic-numeric-display`。

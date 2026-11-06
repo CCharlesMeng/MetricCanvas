@@ -118,7 +118,7 @@ describe('pie table legend', () => {
     zero.main.snapshot.rows = [{ band: '重复', count: 0 }, { band: '重复', count: 0 }];
     const view = table(props, zero);
     expect(view.rows).toHaveLength(2);
-    expect(view.rows[0]!.values[1]).toBe('--%');
+    expect(view.rows[0]!.values[1]).toBe('--');
   });
 
   it('hides outer labels only by default for table legends and keeps existing charts unchanged', () => {

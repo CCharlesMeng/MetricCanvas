@@ -7,7 +7,7 @@ import { mobilePresentation } from './presentation-environment';
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 type SignedNumberFormat = Extract<ValueFormatPreset, `number${string}-signed`>;
 
-const DEFAULT_NULL_TEXT = '--';
+export const DEFAULT_NULL_TEXT = '--';
 export interface ValueFormatContext { unit?: string; mobile?: boolean }
 
 /** 是否呈现真实值；0、false 和恰好等于缺省文案的文本均有效。 */
@@ -25,7 +25,7 @@ export function formatValue(
   missingText = DEFAULT_NULL_TEXT,
   context: ValueFormatContext = {}
 ): string {
-  if (!hasDisplayValue(value)) return missingValueText(format, missingText);
+  if (!hasDisplayValue(value)) return missingValueText(missingText);
   if (!format || format === 'text') return String(value);
   if (format === 'period') return formatPeriod(String(value));
   if (format === 'date') return formatDate(value);
@@ -40,9 +40,8 @@ export function formatValue(
   return formatNumericValue(numeric, format, context);
 }
 
-function missingValueText(format: ValueFormatPreset | undefined, text: string): string {
-  if (!['--', '- -', '—'].includes(text)) return text;
-  return format?.startsWith('percent-') ? `${DEFAULT_NULL_TEXT}%` : DEFAULT_NULL_TEXT;
+function missingValueText(text: string): string {
+  return ['--', '- -', '—', '–', '-', '--%', '- -%'].includes(text) ? DEFAULT_NULL_TEXT : text;
 }
 
 function formatNumericValue(numeric: number, format: ValueFormatPreset, context: ValueFormatContext): string {

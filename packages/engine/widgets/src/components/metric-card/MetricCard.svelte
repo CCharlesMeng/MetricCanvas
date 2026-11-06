@@ -3,7 +3,7 @@
   import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
-  import { finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
+  import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
   import { fieldUnitText, formatChangeValue, formatFieldValue, isPercentFormat } from '../../shared/field-presentation';
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
   import ProgressRing from './ProgressRing.svelte';
@@ -48,7 +48,7 @@
 {#snippet metricValue(row: MetricCardProps['rows'][number])}
   {#if row.context}<span class="row-context">{row.context}</span>{/if}
   <span class="row-value">{fieldText(row.valueField, row.unit)}</span>
-  {@const unit = fieldUnitText(row.unit, resolveField(row.valueField, data).format)}
+  {@const unit = hasDisplayValue(fieldValue(row.valueField, data)) ? fieldUnitText(row.unit, resolveField(row.valueField, data).format) : undefined}
   {#if unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
 
@@ -96,7 +96,7 @@
                       aria-hidden="true"
                     >{direction === 'positive' ? '↑' : '↓'}</span>
                   {/if}
-                  <span>{changeText(change.field, change.tone)}{#if fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>
+                  <span>{changeText(change.field, change.tone)}{#if hasDisplayValue(raw) && fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>
                 </span>
               </span>
             {/each}
@@ -115,12 +115,12 @@
     {:else}
       <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
         <div class="metric-row">
-          <span class="row-label">年累计</span><span class="row-value">—</span>
-          <span class="change"><span class="change-label">同比</span>—</span>
+          <span class="row-label">年累计</span><span class="row-value">{DEFAULT_NULL_TEXT}</span>
+          <span class="change"><span class="change-label">同比</span>{DEFAULT_NULL_TEXT}</span>
         </div>
         <div class="metric-row">
-          <span class="row-label">本月</span><span class="row-value">—</span>
-          <span class="change"><span class="change-label">环比</span>—</span>
+          <span class="row-label">本月</span><span class="row-value">{DEFAULT_NULL_TEXT}</span>
+          <span class="change"><span class="change-label">环比</span>{DEFAULT_NULL_TEXT}</span>
         </div>
       </div>
     {/if}

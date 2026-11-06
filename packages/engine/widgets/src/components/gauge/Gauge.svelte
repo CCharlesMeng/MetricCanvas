@@ -5,7 +5,7 @@
   import type { NamedDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField } from '../../shared/component-data';
   import { fieldUnitText } from '../../shared/field-presentation';
-  import { finiteNumber, formatValue } from '../../shared/value-format';
+  import { finiteNumber, formatValue, hasDisplayValue } from '../../shared/value-format';
   import { gaugeArc, gaugeProgress } from './gauge';
 
   /**
@@ -41,7 +41,7 @@
       </svg>
       <div class="reading">
         <strong>{display}</strong>
-        {#if fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
+        {#if hasDisplayValue(raw) && fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
       </div>
     </button>
   {:else}
@@ -52,7 +52,7 @@
       </svg>
       <div class="reading">
         <strong>{display}</strong>
-        {#if fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
+        {#if hasDisplayValue(raw) && fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
       </div>
     </div>
   {/if}

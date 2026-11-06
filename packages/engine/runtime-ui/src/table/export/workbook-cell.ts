@@ -48,7 +48,7 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   const value = alignedFieldValue(column.field, data, row);
   const fallback = alignedFallback(column.field, data, row);
   if (fallback) return { value: String(fallback.raw), type: String };
-  if (!hasDisplayValue(value)) return resolved.missingText ?? missingText;
+  if (!hasDisplayValue(value)) return resolved.missingText === undefined ? missingText : formatValue(value, resolved.format, resolved.missingText);
   const label = tableEnumLabel(value, column.enumValues);
   if (label !== undefined) return { value: label, type: String };
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {

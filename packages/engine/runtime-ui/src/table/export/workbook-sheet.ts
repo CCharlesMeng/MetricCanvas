@@ -1,3 +1,4 @@
+import { DEFAULT_NULL_TEXT } from '../../../../widgets/src/shared/value-format';
 import type { FieldBinding, TableComponent, TableColumnNode } from '@metriccanvas/page/internal';
 import type { CellObject, SheetData } from 'write-excel-file/universal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
@@ -67,7 +68,7 @@ export function tableWorkbookSheet(table: WorkbookTable, signal: AbortSignal): W
   const layout = buildTableColumnLayout(exportColumns(component.props.columns, data));
   const rows = headerRows(layout, component);
   const stickyRowsCount = rows.length;
-  const missingText = tableDataWarnings(data).length ? '—' : null;
+  const missingText = tableDataWarnings(data).length ? DEFAULT_NULL_TEXT : null;
   projectTableRows(data, component.props).forEach((row, index) => {
     signal.throwIfAborted();
     const cells = layout.leaves.map(column => tableWorkbookCell(column, row, data, missingText));
@@ -87,7 +88,7 @@ export function warningWorkbookSheet(tables: readonly WorkbookTable[], sheets: r
   let name = '数据异常说明', suffix = 1;
   while (names.has(name)) name = `数据异常说明${suffix++}`;
   return { sheet: name, stickyRowsCount: 2, columns: [24, 30, 68, 12].map(width => ({ width })), data: [
-    [{ value: '本文件包含经过容错整理的可用数据，可能存在缺项；空值显示为 —。', fontWeight: 'bold', textColor: '#8A5700' }],
+    [{ value: '本文件包含经过容错整理的可用数据，可能存在缺项；空值显示为 --。', fontWeight: 'bold', textColor: '#8A5700' }],
     ['数据表', '数据源', '异常及处理方式', '次数'].map(value => ({ value, fontWeight: 'bold' })),
     ...warnings
   ] };

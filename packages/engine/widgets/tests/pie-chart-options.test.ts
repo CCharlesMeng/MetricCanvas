@@ -166,6 +166,6 @@ describe('pieOption · 外围百分比格式', () => {
     ] } } };
     const formatter = series(pieOption(input, props)).label!.formatter!;
     expect(formatter).toBeTypeOf('function');
-    expect(formatter({ name: '零', value: 0 })).toBe('零: - -%');
+    expect(formatter({ name: '零', value: 0 })).toBe('零: --');
   });
 });

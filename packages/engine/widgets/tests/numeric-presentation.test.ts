@@ -62,7 +62,7 @@ describe('semantic numeric presentation', () => {
     expect(formatFieldValue(99.999, resolveField({ data: 'main', field: 'slo', format: 'number' }, data))).toBe('99.999');
     expect(resolveField('unknown', data).format).toBe('number-2');
     expect(formatChangeValue(12.3, resolveField('rate', data))).toBe('+12.3%');
-    expect(formatChangeValue(null, resolveField('rate', data))).toBe('--%');
+    expect(formatChangeValue(null, resolveField('rate', data))).toBe('--');
   });
 });
 

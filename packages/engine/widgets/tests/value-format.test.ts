@@ -183,15 +183,15 @@ it.each([
   expect(formatValue(value, format)).toBe(expected);
 });
 
-it.each([null, undefined, NaN, Infinity, -Infinity])('missing %s uses spaced dashes', value => {
+it.each([null, undefined, NaN, Infinity, -Infinity])('missing %s uses adjacent ASCII hyphens', value => {
   expect(formatValue(value)).toBe('--');
-  expect(formatValue(value, 'percent-2')).toBe('--%');
+  expect(formatValue(value, 'percent-2')).toBe('--');
   expect(formatValue(value, 'number-2', '暂无')).toBe('暂无');
 });
 
 
-it.each(['--', '—', '- -'])('legacy missing placeholder %s uses the spaced display', missingText => {
-  expect(formatValue(null, 'percent-1', missingText)).toBe('--%');
+it.each(['--', '—', '- -'])('legacy missing placeholder %s uses adjacent ASCII hyphens', missingText => {
+  expect(formatValue(null, 'percent-1', missingText)).toBe('--');
   expect(formatValue(0, 'percent-1', missingText)).toBe('0%');
   expect(formatValue(missingText, 'text', missingText)).toBe(missingText);
 });

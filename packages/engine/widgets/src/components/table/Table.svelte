@@ -44,7 +44,7 @@
     TableViewState
   } from './view-state';
   import { shouldShowTablePaginationControls } from './view-state';
-  import { finiteNumber, formatValue, hasDisplayValue } from '../../shared/value-format';
+  import { DEFAULT_NULL_TEXT, finiteNumber, formatValue, hasDisplayValue } from '../../shared/value-format';
   import { tableValueColor, valueColorStyle } from '../../shared/value-color';
   import { readPixelLength } from '../../shared/inherited-style';
 
@@ -699,7 +699,7 @@
 
   {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
     <div class="pager" inert={loading}>
-      <span class="total">总条数： <span>{loading ? '—' : pagination.totalCount}</span></span>
+      <span class="total">总条数： <span>{loading ? DEFAULT_NULL_TEXT : pagination.totalCount}</span></span>
         <div class="pager-actions">
           <details class="page-size-select" use:tableFilterPopover>
             <summary aria-label={`每页 ${pagination.pageSize} 条`}>

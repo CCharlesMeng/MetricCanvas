@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { DEFAULT_NULL_TEXT } from '../../../widgets/src/shared/value-format';
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
   import { timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
@@ -33,7 +34,7 @@
     commit(resolvePeriodSelection(selection,new Date(),precision));
   }
   const selected=$derived(value?.selection.mode==='last12Months'?undefined:value?.selection.value);
-  const text=$derived(mode==='last12Months'?value?periodRangeLabel(value):'—':selected?.replace('-Q',' 年 Q')+(mode==='year'?' 年':''));
+  const text=$derived(mode==='last12Months'?value?periodRangeLabel(value):DEFAULT_NULL_TEXT:selected?.replace('-Q',' 年 Q')+(mode==='year'?' 年':''));
 </script>
 <div class="period-filter" data-period-filter>
   {#if label}<span class="label">{label}</span>{/if}
@@ -46,7 +47,7 @@
     </div>
     {/if}
     {#if mode==='last12Months'}
-      <span class="range" data-period-range>{value?periodRangeLabel(value):'—'}</span>
+      <span class="range" data-period-range>{value?periodRangeLabel(value):DEFAULT_NULL_TEXT}</span>
     {:else}
       <div class="picker">
         <DatePicker label={label??'统计期间'} precision={mode} {min} {max} {blockedRanges} required value={selected?{from:selected,to:selected}:null}

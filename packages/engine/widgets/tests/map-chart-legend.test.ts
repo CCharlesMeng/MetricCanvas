@@ -207,7 +207,7 @@ describe('mapTooltipRows / mapTooltipMarkup', () => {
 
   it('行缺席或字段缺值时走空值文本,不写出 undefined', () => {
     expect(mapTooltipRows(undefined, [{ label: '机会点数', field: 'deals' }])).toEqual([
-      { label: '机会点数', value: '- -' }
+      { label: '机会点数', value: '--' }
     ]);
   });
 
@@ -277,6 +277,6 @@ it('unformatted map values retain raw precision and separate missing dashes', ()
   const raw = structuredClone(data);
   raw.main.fields.rate = { type: 'number', role: 'measure' };
   const option = mapOption(raw, props, centers) as { tooltip: { valueFormatter: (value: unknown) => string } };
-  expect(option.tooltip.valueFormatter(null)).toBe('- -');
+  expect(option.tooltip.valueFormatter(null)).toBe('--');
   expect(option.tooltip.valueFormatter(12.3456)).toBe('12.3456');
 });

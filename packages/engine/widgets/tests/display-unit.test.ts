@@ -32,7 +32,7 @@ it('uses the explicit unit in every bar/line numeric presentation and the single
       expect(first.tooltip.valueFormatter(value)).toBe(text);
       if(first.markPoint)expect(first.markPoint.label.formatter({value})).toBe(text);
     }
-    expect(first.tooltip.valueFormatter(null)).toBe('- -');
+    expect(first.tooltip.valueFormatter(null)).toBe('--');
   }
   expect(data).toEqual(before);
 });

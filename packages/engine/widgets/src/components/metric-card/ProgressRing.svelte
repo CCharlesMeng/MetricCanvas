@@ -1,7 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import type { ValueFormatPreset } from '@metriccanvas/page/internal';
-  import { formatValue } from '../../shared/value-format';
+  import { formatValue, hasDisplayValue } from '../../shared/value-format';
   import EChart from '../../shared/EChart.svelte';
   import { normalizeProgressValue, progressRingOption } from './ring-options';
 
@@ -15,7 +15,7 @@
 
   let { value, ringPercent, label = '完成率', missingText, format = 'percent-adaptive' }: Props = $props();
   const text = $derived(formatValue(value, format, missingText));
-  const display = $derived(text.endsWith('%') || value === undefined ? text : `${text}%`);
+  const display = $derived(text.endsWith('%') || !hasDisplayValue(value) ? text : `${text}%`);
   const normalized = $derived(value === undefined || !Number.isFinite(value) ? undefined : normalizeProgressValue(value));
   const visibleTrackPercent = $derived(normalizeProgressValue(ringPercent ?? 100));
   const option = $derived(progressRingOption(normalized ?? 0, visibleTrackPercent));

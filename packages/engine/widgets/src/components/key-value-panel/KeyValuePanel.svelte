@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { hasDisplayValue } from '../../shared/value-format';
   import { formatFieldValue, fieldUnitText } from '../../shared/field-presentation';
   import { getContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
@@ -58,7 +59,7 @@
           {:else}
             {formatFieldValue(value, resolved, item.unit)}
           {/if}
-          {#if fieldUnitText(item.unit, resolved.format)}<span class="unit">{item.unit}</span>{/if}
+          {#if hasDisplayValue(value) && fieldUnitText(item.unit, resolved.format)}<span class="unit">{item.unit}</span>{/if}
         </dd>
       </div>
     {/each}
