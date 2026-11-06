@@ -38,14 +38,14 @@ export function lineOption(
       ...categoryLabelOption(props.categoryLabels, props.showValueLabels)
     },
     yAxis: dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, props.hideYAxis,
-      chartAxisFormats(props, props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior).format))),
+      chartAxisFormats(props, props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior)))),
     series: props.series.map((series, i) => {
       const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {
         name: series.label ?? field.label,
         type: 'line' as const,
         smooth: props.smooth ?? false,
-        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText),
+        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText, field.unit),
           labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), true), showAllSymbol: true } : {}),
         ...(props.stacked ? { stack: 'total' } : {}),
         yAxisIndex: chartSeriesAxis(props, i),
@@ -59,13 +59,13 @@ export function lineOption(
                 color: '#191919',
                 fontSize: 12,
                 formatter: (params: unknown) =>
-                  formatChartNumber(formatterValue(params), field.format, field.missingText)
+                  formatChartNumber(formatterValue(params), field.format, field.missingText, field.unit)
               }
             }
           : {}),
         tooltip: {
           valueFormatter: (value: unknown) =>
-            formatChartNumber(formatterValue(value), field.format, field.missingText)
+            formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit)
         },
         data: rows.map((row) => props.showValueLabels ? finiteNumber(field.read(row)) ?? null : finiteNumber(field.read(row)))
       };

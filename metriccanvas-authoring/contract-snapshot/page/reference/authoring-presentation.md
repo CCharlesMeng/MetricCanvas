@@ -29,7 +29,7 @@ node scripts/associate-data.mjs page.presentation --page page.json --input prese
 空对象输入检查全页；提供 baseline 时比较受影响语义。产品拒绝退出 2，调用或文件错误退出 3，结果只写 stdout。它不查询、不保存、不重写页面。合成 Dashboard 入口为 `/pages/relay-multislot-presentation`，用于观察 Tokens 百万显示、乱序对齐、缺匹配留空及原值对照。
 
 
-页面协议 6.92。结构真源为本册[schema.json](schema.json)，SHA256 `4b6d8c6d814f7b0e53f41aae381c0792a513cb44712262af2cf026e7252dd780`。字段表自动生成；可选不等于有默认值。
+页面协议 6.93。结构真源为本册[schema.json](schema.json)，SHA256 `fda283138f408b5c861e80f98c9b9139b9f37de7e240b91f7c765b1cac5bfa85`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

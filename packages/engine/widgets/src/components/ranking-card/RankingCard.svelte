@@ -1,12 +1,13 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { formatFieldValue, formatChangeValue } from '../../shared/field-presentation';
   import { getContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type { RankingCardProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldLabel, resolveField } from '../../shared/component-data';
-  import { formatValue, valuePolarity } from '../../shared/value-format';
+  import { valuePolarity } from '../../shared/value-format';
 
   interface Props {
     /** 已由统一运行时确定顺序的 main 数据槽；组件不排序、不取数。 */
@@ -38,12 +39,12 @@
         {index + 1}
       </span>
       {#if onrowclick}
-        <button class="name" type="button" onclick={() => onrowclick?.(row)}>{formatValue(row[name.field], name.format, name.missingText)}</button>
+        <button class="name" type="button" onclick={() => onrowclick?.(row)}>{formatFieldValue(row[name.field], name)}</button>
       {:else}
-        <span class="name">{formatValue(row[name.field], name.format, name.missingText)}</span>
+        <span class="name">{formatFieldValue(row[name.field], name)}</span>
       {/if}
       <span class="ranking-value">
-        {formatValue(row[value.field], value.format, value.missingText)}
+        {formatFieldValue(row[value.field], value)}
       </span>
       {#if change}
         <span
@@ -52,7 +53,7 @@
           class="change"
         >
           <span class="change-label">{fieldLabel(props.changeField!, data)}</span>
-          {formatValue(row[change.field], change.format, change.missingText)}
+          {formatChangeValue(row[change.field], change)}
         </span>
       {/if}
     </li>

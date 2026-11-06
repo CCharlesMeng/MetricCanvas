@@ -86,7 +86,7 @@ Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证�
 {"op":"joinAggregate","source":"previous","keys":[{"local":"customer","foreign":"customer"}],"values":[{"field":"sales","output":"previous-sales","aggregate":"unique","onMissing":"zero"},{"field":"rate","output":"previous-rate","aggregate":"unique"}],"onMissing":"null"}
 ```
 
-先用 `unionKeys` 对本期/上期/去年同期的完整行集取键并集，再关联各期值。增长率为 delta(本期,基期) 后 ratio(差额,基期,scale=100,onZeroDenominator=null)，基期为零包括0/0均产出null；负基期照公式计算。百分点差值只用delta，数值使用0–100刻度，用 `points-1-signed` 显示。表格绑定计算结果，允许全表排序和筛选；空值始终排在有效值之后。见 `/pages/period-comparison-demo` 和查询模块的“自动同比环比查询”。
+先用 `unionKeys` 对本期/上期/去年同期的完整行集取键并集，再关联各期值。增长率为 delta(本期,基期) 后 ratio(差额,基期,scale=100,onZeroDenominator=null)，基期为零包括0/0均产出null；该相对变化声明的负基期同样产出null；普通ratio保留负分母相除。百分点差值只用delta，数值使用0–100刻度，用 `points-1-signed` 显示。表格绑定计算结果，允许全表排序和筛选；空值始终排在有效值之后。见 `/pages/period-comparison-demo` 和查询模块的“自动同比环比查询”。
 
 <a id="paged-join-row-compute"></a>
 

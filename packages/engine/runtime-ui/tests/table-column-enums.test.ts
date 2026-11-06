@@ -23,7 +23,7 @@ it('renders and exports enum labels while preserving unknown, missing and raw va
   const {table,data}=fixture(),before=structuredClone(data),column=table.props.columns[1];
   if(column.kind==='group')throw Error('field');
   const rows=projectTableRows(data,table.props);
-  expect(rows.map(row=>alignedCellText(column.field,data,row,column.enumValues))).toEqual(['项目商务框架','项目非框架','9','—']);
+  expect(rows.map(row=>alignedCellText(column.field,data,row,column.enumValues))).toEqual(['项目商务框架','项目非框架','9','--']);
   const bytes=await encodeTableWorkbook(table,data,new AbortController().signal);
   const workbook=new ExcelJS.Workbook();await workbook.xlsx.load(bytes.buffer);
   expect([2,3,4,5].map(index=>workbook.worksheets[0].getCell(index,2).value)).toEqual(['项目商务框架','项目非框架','9',null]);

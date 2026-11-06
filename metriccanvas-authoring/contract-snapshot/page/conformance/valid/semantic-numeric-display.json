@@ -1,0 +1,685 @@
+{
+  "schemaVersion": "6.93",
+  "id": "semantic-numeric-display",
+  "layout": "dashboard",
+  "meta": {
+    "title": "数值呈现规范 · 合成数据",
+    "description": "币种、比率、数量、资源、存储与时长规则；不代表真实DQE。"
+  },
+  "dataSources": {
+    "values": {
+      "fields": {
+        "cny": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "defaultFormat": "compact-wan-1"
+        },
+        "usd": {
+          "type": "money",
+          "role": "measure",
+          "currency": "USD"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%",
+          "defaultFormat": "percent-2"
+        },
+        "tiny": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%"
+        },
+        "limit": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%"
+        },
+        "slo": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%"
+        },
+        "users": {
+          "type": "number",
+          "role": "measure",
+          "unit": "户"
+        },
+        "people": {
+          "type": "number",
+          "role": "measure",
+          "unit": "人"
+        },
+        "resource": {
+          "type": "number",
+          "role": "measure",
+          "unit": "核"
+        },
+        "resource-tb": {
+          "type": "number",
+          "role": "measure",
+          "unit": "TB",
+          "defaultFormat": "resource-adaptive"
+        },
+        "storage": {
+          "type": "number",
+          "role": "measure",
+          "unit": "GB"
+        },
+        "bandwidth": {
+          "type": "number",
+          "role": "measure",
+          "unit": "Mbps"
+        },
+        "minutes": {
+          "type": "number",
+          "role": "measure",
+          "unit": "分钟"
+        },
+        "messages": {
+          "type": "number",
+          "role": "measure",
+          "unit": "条"
+        },
+        "billing": {
+          "type": "number",
+          "role": "measure",
+          "unit": "秒",
+          "defaultFormat": "billing-hours"
+        },
+        "missing": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "unit": "%"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "cny": 12345,
+            "usd": 12345,
+            "rate": 12.345,
+            "tiny": 0.001,
+            "limit": 500,
+            "slo": 99.999,
+            "users": 12345,
+            "people": 12345,
+            "resource": 12345,
+            "resource-tb": 12345,
+            "storage": 1024,
+            "bandwidth": 1024,
+            "minutes": 1234,
+            "messages": 12345,
+            "billing": 3666,
+            "missing": null
+          }
+        ]
+      }
+    },
+    "growth": {
+      "fields": {
+        "case": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "current": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "base": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "growth": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "unit": "%",
+          "defaultFormat": "percent-2-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "case": "正常",
+            "current": 112.345,
+            "base": 100
+          },
+          {
+            "case": "零基期",
+            "current": 10,
+            "base": 0
+          },
+          {
+            "case": "缺失基期",
+            "current": 10,
+            "base": null
+          },
+          {
+            "case": "负基期",
+            "current": 10,
+            "base": -10
+          },
+          {
+            "case": "边界500",
+            "current": 600,
+            "base": 100
+          },
+          {
+            "case": "下降",
+            "current": 50,
+            "base": 100
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "delta",
+          "minuend": "current",
+          "subtrahend": "base",
+          "output": "change"
+        },
+        {
+          "op": "ratio",
+          "numerator": "change",
+          "denominator": "base",
+          "output": "growth",
+          "scale": 100,
+          "onZeroDenominator": "null"
+        }
+      ]
+    },
+    "storage-chart": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "unit": "GB"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "甲",
+            "value": 1024
+          },
+          {
+            "category": "乙",
+            "value": 2048
+          },
+          {
+            "category": "缺失",
+            "value": null
+          }
+        ]
+      }
+    },
+    "empty-pie": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "甲",
+            "value": 0
+          },
+          {
+            "category": "乙",
+            "value": 0
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "rules",
+      "container": "plain",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "数值呈现规范 · 合成数据"
+            },
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        },
+        {
+          "id": "cny-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "人民币金额",
+                "valueField": "cny",
+                "unit": "元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "usd-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "美元金额",
+                "valueField": "usd",
+                "unit": "美元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "rate-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "比率",
+                "valueField": "rate",
+                "unit": "%",
+                "changes": [
+                  {
+                    "label": "同比变化",
+                    "field": "rate",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ],
+            "showTrendArrows": true
+          }
+        },
+        {
+          "id": "tiny-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "微小比率",
+                "valueField": "tiny",
+                "unit": "%"
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "大幅变化",
+                "valueField": "limit",
+                "unit": "%"
+              }
+            ]
+          }
+        },
+        {
+          "id": "slo-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "SLO精度",
+                "valueField": {
+                  "data": "main",
+                  "field": "slo",
+                  "format": "percent-raw"
+                },
+                "unit": "%"
+              }
+            ]
+          }
+        },
+        {
+          "id": "users-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "用户数",
+                "valueField": "users",
+                "unit": "户"
+              }
+            ]
+          }
+        },
+        {
+          "id": "people-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "精确人力",
+                "valueField": {
+                  "data": "main",
+                  "field": "people",
+                  "format": "number-grouped"
+                },
+                "unit": "个"
+              }
+            ]
+          }
+        },
+        {
+          "id": "resource-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "资源量",
+                "valueField": "resource",
+                "unit": "核"
+              }
+            ]
+          }
+        },
+        {
+          "id": "resource-tb-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "资源TB",
+                "valueField": "resource-tb",
+                "unit": "TB"
+              }
+            ]
+          }
+        },
+        {
+          "id": "storage-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "存储量",
+                "valueField": "storage",
+                "unit": "GB"
+              }
+            ]
+          }
+        },
+        {
+          "id": "bandwidth-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "带宽",
+                "valueField": "bandwidth",
+                "unit": "Mbps"
+              }
+            ]
+          }
+        },
+        {
+          "id": "minutes-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "套餐时长",
+                "valueField": "minutes",
+                "unit": "分钟"
+              }
+            ]
+          }
+        },
+        {
+          "id": "messages-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "消息条数",
+                "valueField": "messages",
+                "unit": "条"
+              }
+            ]
+          }
+        },
+        {
+          "id": "billing-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "按需计费",
+                "valueField": "billing",
+                "unit": "小时"
+              }
+            ]
+          }
+        },
+        {
+          "id": "missing-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "缺失比率",
+                "valueField": "missing",
+                "unit": "%"
+              }
+            ]
+          }
+        },
+        {
+          "id": "growth-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "growth"
+          },
+          "props": {
+            "title": "基期边界",
+            "columns": [
+              {
+                "field": "case",
+                "title": "场景"
+              },
+              {
+                "field": "current",
+                "title": "本期"
+              },
+              {
+                "field": "base",
+                "title": "基期"
+              },
+              {
+                "field": "growth",
+                "title": "增长率"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            },
+            "toolbar": {
+              "export": {
+                "filename": "数值呈现规则",
+                "format": "xlsx"
+              }
+            }
+          }
+        },
+        {
+          "id": "storage-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "storage-chart"
+          },
+          "props": {
+            "title": "图表单位与缺失值",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "value",
+                "label": "存储量"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "missing-pie",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "empty-pie"
+          },
+          "props": {
+            "title": "图表缺失符号间距",
+            "categoryField": "category",
+            "valueField": "value",
+            "labelLine": true
+          }
+        }
+      ]
+    }
+  ]
+}

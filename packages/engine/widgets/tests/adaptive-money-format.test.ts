@@ -44,15 +44,15 @@ describe('explicit trimmed money formats', () => {
     ['usd-adaptive-km', '0$', '12.3K']
   ] as const)('%s preserves missing values, numeric strings and zero', (format, zero, numericString) => {
     for (const value of [0, -0, -0.4]) expect(formatValue(value, format)).toBe(zero);
-    for (const value of [null, undefined, NaN, Infinity, -Infinity]) expect(formatValue(value, format)).toBe('—');
+    for (const value of [null, undefined, NaN, Infinity, -Infinity]) expect(formatValue(value, format)).toBe('--');
     expect(formatValue('12345', format)).toBe(numericString);
     expect(formatValue('暂无', format)).toBe('暂无');
     expect(formatValue(null, format, '缺失')).toBe('缺失');
   });
 
-  it('keeps existing adaptive formats unchanged', () => {
-    expect(formatValue(10000, 'cny-adaptive')).toBe('1.00万');
-    expect(formatValue(250000000, 'cny-adaptive')).toBe('2.50亿');
-    expect(formatValue(1234.56, 'usd-adaptive')).toBe('1,234.56美元');
+  it('uses global device precision and strips zeros for standard adaptive formats', () => {
+    expect(formatValue(10000, 'cny-adaptive')).toBe('1万');
+    expect(formatValue(250000000, 'cny-adaptive')).toBe('2.5亿');
+    expect(formatValue(1234.56, 'usd-adaptive')).toBe('1,235美元');
   });
 });

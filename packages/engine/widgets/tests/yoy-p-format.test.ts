@@ -17,10 +17,10 @@ it.each([
   [-0, '0P', 'neutral', undefined],
   ['0.123456', '+12P', 'positive', 'red'],
   ['-0.004', '0P', 'neutral', undefined],
-  [null, '—', 'neutral', undefined],
-  [undefined, '—', 'neutral', undefined],
-  [NaN, '—', 'neutral', undefined],
-  [Infinity, '—', 'neutral', undefined]
+  [null, '--', 'neutral', undefined],
+  [undefined, '--', 'neutral', undefined],
+  [NaN, '--', 'neutral', undefined],
+  [Infinity, '--', 'neutral', undefined]
 ] as const)('同比先保留2位再乘100：%s → %s，符号和颜色一致', (value, text, polarity, color) => {
   const colorRule = { mode: 'sign', positive: 'red', negative: 'green' } as const;
   expect(formatValue(value, 'yoy-p-signed')).toBe(text);

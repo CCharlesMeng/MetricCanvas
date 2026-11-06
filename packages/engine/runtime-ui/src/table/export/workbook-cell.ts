@@ -5,19 +5,20 @@ import { resolveField } from '../../../../widgets/src/shared/component-data';
 import { alignedFallback, alignedFieldValue, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
 import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/components/table/cell-presentation';
 import { tableEnumLabel } from '../../../../widgets/src/components/table/enum-values';
+import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation';
 import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
 
 /** Numbers retain raw values; scale formats display the frozen presentation. */
-function numberFormat(value: number, format?: ValueFormatPreset): string {
+function numberFormat(value: number, format?: ValueFormatPreset, unit?: string): string {
   if (!format || format === 'number') return 'General';
   if (format === 'number-grouped') return '#,##0.###############';
   if (format === 'number-1') return '0.0';
   if (format === 'number-2') return '0.00';
-  if (format.startsWith('percent-') && !format.endsWith('signed')) {
+  if (/^percent-[012]$/.test(format)) {
     const precision = Number(format.slice(-1));
     return `0${precision ? `.${'0'.repeat(precision)}` : ''}"%"`;
   }
-  return `"${formatValue(value, format).replaceAll('"', '""')}"`;
+  return `"${formatValue(value, format, undefined, { unit }).replaceAll('"', '""')}"`;
 }
 
 function plainText(html: string): string {
@@ -31,8 +32,8 @@ function dateCell(value: unknown, type: 'date' | 'datetime'): CellObject {
   return { value: date, type: Date, format: type === 'date' ? 'yyyy-mm-dd' : 'yyyy-mm-dd hh:mm:ss' };
 }
 
-function valueCell(value: unknown, type: FieldDefinition['type'] | undefined, format: ValueFormatPreset | undefined): CellObject {
-  if (typeof value === 'number') return { value, type: Number, format: numberFormat(value, format) };
+function valueCell(value: unknown, type: FieldDefinition['type'] | undefined, format: ValueFormatPreset | undefined, unit?: string): CellObject {
+  if (typeof value === 'number') return { value, type: Number, format: numberFormat(value, format, unit) };
   if (typeof value === 'boolean') return { value, type: Boolean };
   if (type === 'semanticHtml') return { value: plainText(String(value)), type: String };
   if (type === 'date' || type === 'datetime') return dateCell(value, type);
@@ -51,5 +52,5 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
   }
-  return valueCell(value, resolved.definition?.type, resolved.format);
+  return valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved));
 }

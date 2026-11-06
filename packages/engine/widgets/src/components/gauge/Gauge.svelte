@@ -4,6 +4,7 @@
   import type { GaugeProps } from '@metriccanvas/page/internal';
   import type { NamedDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField } from '../../shared/component-data';
+  import { fieldUnitText } from '../../shared/field-presentation';
   import { finiteNumber, formatValue } from '../../shared/value-format';
   import { gaugeArc, gaugeProgress } from './gauge';
 
@@ -25,7 +26,7 @@
   const min = $derived(props.min ?? 0);
   const max = $derived(props.max ?? 100);
   const progress = $derived(numeric === undefined ? 0 : gaugeProgress(numeric, min, max));
-  const display = $derived(formatValue(raw, resolved.format, resolved.missingText));
+  const display = $derived(formatValue(raw, resolved.format, resolved.missingText, { unit: resolved.unit }));
   const track = gaugeArc(1, 36);
   const valueArc = $derived(gaugeArc(progress, 36));
 </script>
@@ -40,7 +41,7 @@
       </svg>
       <div class="reading">
         <strong>{display}</strong>
-        {#if props.unit}<span>{props.unit}</span>{/if}
+        {#if fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
       </div>
     </button>
   {:else}
@@ -51,7 +52,7 @@
       </svg>
       <div class="reading">
         <strong>{display}</strong>
-        {#if props.unit}<span>{props.unit}</span>{/if}
+        {#if fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
       </div>
     </div>
   {/if}

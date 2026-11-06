@@ -1,5 +1,5 @@
 import type { Row, ValueFormatPreset } from '@metriccanvas/page/internal';
-import { formatValue } from '../../shared/value-format';
+import { formatChartNumber } from '../../shared/chart-option';
 
 /** 已解析的 tooltip 追加项:标签 + 字段名 + 该绑定最终生效的展示格式。 */
 export interface MapTooltipField {
@@ -8,6 +8,7 @@ export interface MapTooltipField {
   read?: (row?: Row) => import('@metriccanvas/page/internal').FieldValue | undefined;
   format?: ValueFormatPreset;
   missingText?: string;
+  unit?: string;
 }
 
 export interface MapTooltipRow {
@@ -22,7 +23,7 @@ export function mapTooltipRows(
 ): MapTooltipRow[] {
   return fields.map((entry) => ({
     label: entry.label,
-    value: formatValue(entry.read ? entry.read(row) : row?.[entry.field ?? ''], entry.format, entry.missingText)
+    value: formatChartNumber(entry.read ? entry.read(row) : row?.[entry.field ?? ''], entry.format ?? 'number', entry.missingText, entry.unit)
   }));
 }
 

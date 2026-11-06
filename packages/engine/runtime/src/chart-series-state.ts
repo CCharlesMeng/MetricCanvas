@@ -1,4 +1,4 @@
-import type { BarChartProps, ChartSeries, LineChartProps, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { BarChartProps, ChartSeries, LineChartProps } from '@metriccanvas/page/internal';
 
 export type CartesianChartProps = BarChartProps | LineChartProps;
 const projection = Symbol('chart-series-presentation');
@@ -33,7 +33,7 @@ export function chartSeriesAxis(props: CartesianChartProps, index: number): numb
 }
 
 /** Keep implicit first-series/remaining-series axis ownership when the first is hidden. */
-export function chartAxisFormats(props: CartesianChartProps, formats: Array<ValueFormatPreset | undefined>) {
+export function chartAxisFormats<T>(props: CartesianChartProps, formats: T[]) {
   if (chartDeclaration(props) === props || !props.dualAxis) return formats;
   const primary = formats.filter((_, index) => chartSeriesAxis(props, index) === 0);
   const secondary = formats.filter((_, index) => chartSeriesAxis(props, index) === 1);

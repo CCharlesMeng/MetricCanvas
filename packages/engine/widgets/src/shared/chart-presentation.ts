@@ -13,12 +13,12 @@ export function categoryLabelOption(labels?: CategoryLabels, showValues = false)
   } };
 }
 
-export function pointValueLabel(valueFormat?: ValueFormatPreset, missingText?: string) {
+export function pointValueLabel(valueFormat?: ValueFormatPreset, missingText?: string, unit?: string) {
   return {
     show: true, position: 'top' as const, distance: 5, color: '#191919', fontSize: 11,
     formatter: (params: unknown) => {
       const value = finiteNumber(formatterValue(params));
-      return value === undefined ? '' : formatChartNumber(value, valueFormat, missingText);
+      return value === undefined ? '' : formatChartNumber(value, valueFormat, missingText, unit);
     }
   };
 }

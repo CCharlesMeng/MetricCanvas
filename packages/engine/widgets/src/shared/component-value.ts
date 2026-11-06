@@ -1,4 +1,4 @@
-import { valueSourceBinding, staticFieldBinding, type ComponentValueSource, type Row, type FieldValue, type ValueFormatPreset } from '@metriccanvas/page/internal';
+import { semanticValueFormat, valueSourceBinding, staticFieldBinding, type ComponentValueSource, type Row, type FieldValue, type ValueFormatPreset } from '@metriccanvas/page/internal';
 import { resolveField, fieldValue, type NamedDataSlots } from './component-data';
 
 export interface ResolvedComponentValue {
@@ -18,7 +18,9 @@ export function resolveComponentValue(
 ): ResolvedComponentValue {
   const binding = valueSourceBinding(source);
   if (binding === undefined) return {
-    label: '常量', format: source.format, missingText: source.missingText,
+    label: '常量', format: source.format ?? semanticValueFormat(source.currency
+      ? { type: 'money', role: 'measure', currency: source.currency, unit: source.unit }
+      : { type: 'number', role: 'measure', unit: source.unit }), missingText: source.missingText,
     unit: source.unit, currency: source.currency,
     read: () => constantsAvailable(data, emptyBehavior) ? source.value : undefined
   };

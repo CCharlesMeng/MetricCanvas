@@ -104,6 +104,7 @@ export { normalizeQueryTime, QueryTimeRangeError } from './query-time';
 
 export * from './field-resolution';
 export * from './source-candidates';
+export { semanticValueFormat } from './semantic-format';
 
 export { normalizeTableSelectView, normalizeTableSelectValues } from './table/select-values';
 export { tableHeaderParamReferences, tableHeaderInputErrors } from './table/header-params';

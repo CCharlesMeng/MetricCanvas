@@ -17,7 +17,7 @@ test('chart labels and real hover tooltips share the declared numeric format', a
     await expect(chart.getByText(expected[index]!, { exact: true })).toBeVisible();
   }
   await charts.first().hover({ position: { x: 287, y: 100 } });
-  await expect(charts.first().getByText('0.00', { exact: true })).toBeVisible();
+  await expect(charts.first().getByText('0', { exact: true })).toBeVisible();
   await charts.first().hover({ position: { x: 433, y: 100 } });
   await expect(charts.first().getByText('-2345.68', { exact: true })).toBeVisible();
   await page.mouse.move(0, 0);
@@ -54,20 +54,20 @@ test('pie outer percentages use the common formatter on the actual canvas', asyn
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`/pages/${fixture.id}`);
   await expect(page.locator('[_echarts_instance_]')).toHaveCount(fixture.sections[0].components.length);
-  for (const label of ['甲: 1.2%', '乙: 98.8%', '零: 0.0%', '甲: —', '乙: —', '甲: 33.3%', '乙: 33.3%', '丙: 33.3%']) {
+  for (const label of ['甲: 1.25%', '乙: 98.8%', '零: 0%', '甲: - -%', '乙: - -%', '甲: 33.3%', '乙: 33.3%', '丙: 33.3%']) {
     await expect.poll(() => page.evaluate(() => window.__pieLabels)).toContain(label);
   }
   const legends = page.locator('[aria-label="表格式图例"]');
-  await expect(legends.first().getByText('1.2%', { exact: true })).toBeVisible();
-  await expect(legends.first().getByText('0.0%', { exact: true })).toBeVisible();
+  await expect(legends.first().getByText('1.25%', { exact: true })).toBeVisible();
+  await expect(legends.first().getByText('0%', { exact: true })).toBeVisible();
   await page.screenshot({ path: '/tmp/pie-percentage-wide.png', fullPage: true });
   await page.evaluate(() => { window.__pieLabels = []; window.__piePaints = []; });
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const label of ['甲: 1.2%', '乙: 98.8%', '零: 0.0%', '甲: —', '乙: —', '甲: 33.3%', '乙: 33.3%', '丙: 33.3%']) {
+  for (const label of ['甲: 1.25%', '乙: 98.8%', '零: 0%', '甲: - -%', '乙: - -%', '甲: 33.3%', '乙: 33.3%', '丙: 33.3%']) {
     await expect.poll(() => page.evaluate(() => window.__pieLabels)).toContain(label);
   }
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  for (const label of ['甲: —', '乙: —']) {
+  for (const label of ['甲: - -%', '乙: - -%']) {
     await expect.poll(async () => {
       const paint = (await page.evaluate(() => window.__piePaints)).filter(paint => paint.text === label).at(-1);
       return paint !== undefined && paint.left >= 0 && paint.right <= paint.width;

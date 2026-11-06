@@ -101,7 +101,7 @@ describe('buildRankingDetailRows', () => {
       '客户A',
       '客户E',
       '客户C',
-      '—'
+      '--'
     ]);
     expect(rows.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5]);
   });
@@ -112,7 +112,7 @@ describe('buildRankingDetailRows', () => {
     expect(rows[0]).toMatchObject({
       value: '200万',
       badges: ['SMB', '卓越'],
-      change: { text: '12.5%', polarity: 'positive' },
+      change: { text: '+12.5%', polarity: 'positive' },
       description: '云通信流水增长20万'
     });
     expect(rows[1]).toMatchObject({
@@ -121,9 +121,9 @@ describe('buildRankingDetailRows', () => {
     });
     expect(rows[2]).toMatchObject({
       badges: ['KA'],
-      change: { text: '0.0%', polarity: 'neutral' }
+      change: { text: '0%', polarity: 'neutral' }
     });
-    expect(rows[4]).toMatchObject({ name: '—', badges: [] });
+    expect(rows[4]).toMatchObject({ name: '--', badges: [] });
   });
 
   it('字段未声明时只省略对应可选内容，不抛出整页错误', () => {
@@ -147,8 +147,8 @@ describe('buildRankingDetailRows', () => {
     expect(rows[0]?.details).toEqual({
       defaultExpanded: false,
       items: [
-        { title: 'ModelArts', value: '-12.0万', description: '到期未续订' },
-        { title: '对象存储服务', value: '3.0万', description: '用量增加' }
+        { title: 'ModelArts', value: '-12万', description: '到期未续订' },
+        { title: '对象存储服务', value: '3万', description: '用量增加' }
       ]
     });
     expect(rows[1]?.details).toBeUndefined();

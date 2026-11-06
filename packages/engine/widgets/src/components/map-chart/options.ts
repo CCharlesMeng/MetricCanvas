@@ -3,7 +3,8 @@ import type { MapChartProps, Row } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
-import { finiteNumber, formatValue } from '../../shared/value-format';
+import { formatChartNumber } from '../../shared/chart-option';
+import { finiteNumber } from '../../shared/value-format';
 import { formatterValue } from '../../shared/chart-option';
 import type { ColorList } from '../../shared/chart-palette';
 import { mapLegendLevels, mapLegendPieces } from './legend';
@@ -122,7 +123,7 @@ export function mapOption(
   const tooltipFields: MapTooltipField[] = (props.tooltipFields ?? []).map((entry) => {
     const resolved = resolveComponentValue(entry, data, props.emptyBehavior);
     return {
-      label: entry.label,
+      label: entry.label, unit: resolved.unit,
       read: resolved.read,
       ...(resolved.format === undefined ? {} : { format: resolved.format }),
       missingText: resolved.missingText
@@ -148,7 +149,7 @@ export function mapOption(
               return mapTooltipMarkup(title, [
                 {
                   label: value.label,
-                  value: formatValue(hovered ? value.read(hovered) : undefined, value.format, value.missingText)
+                  value: formatChartNumber(hovered ? value.read(hovered) : undefined, value.format, value.missingText, value.unit)
                 },
                 ...mapTooltipRows(hovered, tooltipFields)
               ]);
@@ -156,12 +157,8 @@ export function mapOption(
           }
         : {
             trigger: 'item',
-            ...(value.format
-              ? {
-                  valueFormatter: (raw: unknown) =>
-                    formatValue(mapFormatterValue(raw), value.format, value.missingText)
-                }
-              : {})
+            valueFormatter: (raw: unknown) =>
+              formatChartNumber(mapFormatterValue(raw), value.format ?? 'number', value.missingText, value.unit)
           },
     // geo 组件承载底图(散点叠加需要 geo 坐标系),map 系列经 geoIndex 挂靠其上
     geo: {

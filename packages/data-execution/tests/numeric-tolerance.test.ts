@@ -53,8 +53,8 @@ describe('完整页面的查询数值容错', () => {
       {sample:'真实零',value:0,amount:null},
       {sample:'负数',value:-4,amount:null}
     ]);
-    expect(result.rows.map(row => formatValue(row.value, 'number-1'))).toEqual(['—','0.0','-4.0']);
-    expect(result.rows.map(row => formatValue(row.amount, 'number-2'))).toEqual(['—','—','—']);
+    expect(result.rows.map(row => formatValue(row.value, 'number-1'))).toEqual(['--','0','-4']);
+    expect(result.rows.map(row => formatValue(row.amount, 'number-2'))).toEqual(['--','--','--']);
   });
 
   it('响应漏返数值属性时保留声明、行和其他值；首屏、动态与保存重开一致', async () => {
@@ -71,7 +71,7 @@ describe('完整页面的查询数值容错', () => {
     expect(dynamic.rows[0]).toMatchObject({value:null,amount:null,rate:null,target:100});
     expect(dynamic.rows[4]).toMatchObject({value:0,amount:0});
     expect(dynamic.rows[5]).toMatchObject({value:-4,amount:-40});
-    expect(formatValue(dynamic.rows[0].value, 'number-1')).toBe('—');
+    expect(formatValue(dynamic.rows[0].value, 'number-1')).toBe('--');
     expect(transport.diagnostics.records()[0]).toMatchObject({status:'success',warnings:expect.arrayContaining([
       {code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'value',queryField:'容错数值',expectedType:'number',count:1},
       {code:'MISSING_NUMERIC_QUERY_FIELD',fieldId:'amount',queryField:'容错金额',expectedType:'money',count:1}
@@ -107,7 +107,7 @@ describe('完整页面的查询数值容错', () => {
     expect(dynamic.rows.map(row => row.amount)).toEqual([100, null, null, 1250.5, 0, -40, null, null]);
     expect(dynamic.rows[1].details).toEqual([{ label: '示例', value: null }]);
     expect(dynamic.rows[3].details).toEqual([{ label: '示例', value: 3.5 }]);
-    expect(dynamic.rows.map(row => formatValue(row.value, 'number-1'))).toEqual(['10.0', '—', '—', '12.5', '0.0', '-4.0', '—', '—']);
+    expect(dynamic.rows.map(row => formatValue(row.value, 'number-1'))).toEqual(['10', '--', '--', '12.5', '0', '-4', '--', '--']);
     const component = dynamic.page.sections[0].components.find(c => c.type === 'lineChart');
     if (component?.type !== 'lineChart') throw Error('页面缺少图表验收配置');
     const option = lineOption({ main: { fields: dynamic.page.dataSources.samples.fields, snapshot: dynamic.snapshot } }, component.props);

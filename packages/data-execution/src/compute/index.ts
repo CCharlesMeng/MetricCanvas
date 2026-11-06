@@ -31,17 +31,19 @@ export function applyComputation(
   diagnostics?: ComputationDiagnostics
 ): DataRow[] {
   let current: DataRow[] = rows as DataRow[];
+  const deltaBases = new Map<string, string>();
   for (const operator of operators) {
+    if (operator.op === 'delta') deltaBases.set(operator.output, operator.subtrahend);
     current = operator.op === 'unionKeys' ? unionKeys(operator, dependencies, diagnostics) : operator.op === 'joinAggregate'
       ? joinAggregate(operator, current, dependencyRows(dependencies, operator.source), diagnostics)
       : operator.op === 'timeFill' ? timeFill(operator, current, context)
       : operator.op === 'selectField' ? selectField(operator, current, context)
-      : applyOperator(operator, current);
+      : applyOperator(operator, current, deltaBases);
   }
   return current;
 }
 
-function applyOperator(operator: Exclude<ComputeOperator, { op: 'unionKeys' | 'joinAggregate' | 'timeFill' | 'selectField' }>, rows: DataRow[]): DataRow[] {
+function applyOperator(operator: Exclude<ComputeOperator, { op: 'unionKeys' | 'joinAggregate' | 'timeFill' | 'selectField' }>, rows: DataRow[], deltaBases: ReadonlyMap<string, string>): DataRow[] {
   switch (operator.op) {
     case 'sumFields':
       return rows.map(row => copyRowFallbacks(row, { ...row, [operator.output]: sumFields(operator, row) }));
@@ -61,7 +63,8 @@ function applyOperator(operator: Exclude<ComputeOperator, { op: 'unionKeys' | 'j
           numeric(row[operator.numerator]),
           numeric(row[operator.denominator]),
           operator.onZeroDenominator,
-          operator.scale
+          operator.scale,
+          operator.scale === 100 && deltaBases.get(operator.numerator) === operator.denominator
         )
       }));
     case 'delta':
@@ -113,8 +116,10 @@ function ratio(
   numerator: number | undefined,
   denominator: number | undefined,
   onZeroDenominator: 'null' | 'zero',
-  scale: RatioScale | undefined
+  scale: RatioScale | undefined,
+  growth: boolean
 ): number | null {
+  if (growth && (denominator === undefined || denominator <= 0)) return null;
   if (denominator === undefined || denominator === 0) {
     return onZeroDenominator === 'zero' ? 0 : null;
   }

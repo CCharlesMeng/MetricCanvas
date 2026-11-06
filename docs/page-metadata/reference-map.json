@@ -471,7 +471,8 @@
         "chart-constant-branches",
         "period-comparison-demo",
         "authoring-percent-coverage",
-        "operation-money-formats"
+        "operation-money-formats",
+        "semantic-numeric-display"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -480,7 +481,10 @@
         "packages/page/src/schema/presentation.ts",
         "packages/page/src/amount-filter.ts",
         "packages/page/src/amount-validation.ts",
-        "packages/page/src/field-selection.ts"
+        "packages/page/src/field-selection.ts",
+        "packages/page/src/semantic-format.ts",
+        "packages/page/src/field-resolution.ts",
+        "packages/engine/widgets/src/shared/numeric-presentation.ts"
       ],
       "rules": [
         "data-slot-known-source",
@@ -2084,7 +2088,7 @@
     "#/definitions/staticFieldBinding/anyOf/1/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
     "CNY": "静态人民币金额，基本单位元。",
     "USD": "静态美元金额，基本单位美元；没有隐式汇率换算。",
-    "usd-adaptive": "美元数值带千分位、两位小数和美元单位。",
+    "usd-adaptive": "美元按原始绝对值切换美元/K/M，小额取整，1万至100万按K最多1位小数，100万至1亿按K取整，1亿起按M取整。",
     "strict": "双边范围必须from<to，不改变下推>=/<=语义。",
     "inclusive": "双边范围允许相等，仍校验上下限。",
     "#/properties/schemaVersion=\"6.38\"": "USD、金额范围和静态货币字段选择独立能力增量。",
@@ -2193,7 +2197,17 @@
     "#/properties/schemaVersion=\"6.88\"": "新增人民币双呈现与美元 K/M 金额格式，旧格式语义不变。",
     "#/properties/schemaVersion=\"6.90\"": "页面数据源完整候选、稳定值去重与父子节点独立单多选。",
     "#/properties/schemaVersion=\"6.91\"": "IOC 页头显式组合 filterControl 与内置标准 Region 的 regionFilter，旧 filterIds 继续读取。",
-    "#/properties/schemaVersion=\"6.92\"": "期间比较可省略 fact，直接按已应用完整期间查询本期、上期和去年同期，无需宿主截止事实；显式 fact 保持原截止进度语义。"
+    "#/properties/schemaVersion=\"6.92\"": "期间比较可省略 fact，直接按已应用完整期间查询本期、上期和去年同期，无需宿主截止事实；显式 fact 保持原截止进度语义。",
+    "count-adaptive": "人数等计数按万缩放：小于1万取整，1万至10万最多1位小数，10万起取整；保留声明单位。",
+    "resource-adaptive": "资源量按原单位、万、亿选档，缩放后最多2位小数；同为TB时可显式区别于存储容量。",
+    "bytes-adaptive": "从声明的Bytes/KB至YB或bit单位按1024换算，保留bit/byte及每秒维度；最多2位小数。",
+    "minutes-adaptive": "分钟按分钟、千分钟、万分钟选档，缩放后最多2位小数。",
+    "messages-adaptive": "条数小于1万取整，1万起按万条显示且最多2位小数。",
+    "billing-hours": "原始秒数除以3600显示小时，四舍五入至最多2位小数，不改写原值。",
+    "percent-adaptive": "百分数刻度按量级选精度，保留微小非零值，绝对值500起显示上升或下降>500%。",
+    "percent-adaptive-signed": "自适应百分比的普通正值带+、负值带-、零无符号；绝对值500起显示方向与>500%。",
+    "percent-raw": "个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。",
+    "#/properties/schemaVersion=\"6.93\"": "语义数值格式、设备精度及相对变化基期边界；作者版本6.93。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2443,6 +2457,7 @@
         "#/definitions/staticFieldBinding"
       ],
       "headings": [
+        "整数与缺失值的统一显示",
         "柱线图数值格式一致性",
         "百分比创作与覆盖边界",
         "同比格式（6.87）",
@@ -2952,6 +2967,18 @@
         "页面数据源候选（6.90）"
       ],
       "dependencies": []
+    },
+    "fields.semantic-formats": {
+      "module": "field-bindings-and-formats",
+      "title": "金额比率数量与资源的语义格式",
+      "roots": [
+        "#/definitions/fieldBinding",
+        "#/definitions/staticFieldBinding"
+      ],
+      "headings": [
+        "统一语义格式（6.93）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3045,6 +3072,8 @@
       "查阅方式"
     ],
     "field-bindings-and-formats.md": [
+      "整数与缺失值的统一显示",
+      "统一语义格式（6.93）",
       "百分比创作与覆盖边界",
       "带符号普通数值（6.17起）",
       "按百万呈现",

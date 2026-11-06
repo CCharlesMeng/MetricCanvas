@@ -41,7 +41,7 @@ it('computes exact results and distinguishes absent records, explicit null, zero
   expect(list[1]['previous-growth']).toBeNull();expect(list[2]['previous-rate-delta']).toBeNull();
   expect(list[3]).toMatchObject({'previous-sales':0,'previous-growth':null,'previous-rate':null});
   expect(list[4]).toMatchObject({'previous-sales':null,'previous-growth':null});
-  expect(list[5]).toMatchObject({'previous-sales':-50,'previous-growth':-540});
+  expect(list[5]).toMatchObject({'previous-sales':-50,'previous-growth':null});
 });
 it('keeps metric selection predicates on the current query and only carries keys to history',async()=>{
   const preview=createQueryComparisonPreview(),{snapshot}=await read(preview,{sort:[],predicates:[{field:'current-sales',op:'gte',value:300}]});

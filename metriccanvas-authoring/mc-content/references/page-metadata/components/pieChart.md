@@ -25,9 +25,9 @@
 }
 ```
 
-列按声明顺序展示。`field` 绑定 main 数据槽里的度量字段，继承字段格式，也可在字段绑定处覆盖；例如占比已由业务查询返回时，使用 `{ "label": "占比", "field": { "data": "main", "field": "share", "format": "percent-1" } }`，运行时不会重新计算该列。`value: "percentage"` 才按本图有效数值合计计算百分数（0–100 刻度），默认 `percent-1`；合计为零时返回缺失值，显示为“—”。饼图的数值应为业务可加总的非负数；本功能不改变查询和统计口径。
+列按声明顺序展示。`field` 绑定 main 数据槽里的度量字段，继承字段格式，也可在字段绑定处覆盖；例如占比已由业务查询返回时，使用 `{ "label": "占比", "field": { "data": "main", "field": "share", "format": "percent-1" } }`，运行时不会重新计算该列。`value: "percentage"` 才按本图有效数值合计计算百分数（0–100 刻度），默认 `percent-1`；合计为零时返回缺失值，显示为“- -”。饼图的数值应为业务可加总的非负数；本功能不改变查询和统计口径。
 
-每列的 `unit` 和 `align` 均可省略。`unit` 缺省不追加单位；声明 `"家"` 时，格式化后的 `96` 显示为 `96 家`，仅用于显示，不改变原始数值、扇区大小、排序或占比计算。缺失值保持“—”或字段绑定的 `missingText`，不会追加单位；真实零显示为 `0 家`。`align` 支持 `left`、`center`、`right`，缺省保持数值列右对齐，同时作用于该列列头和全部数据单元格。普通字段列与自动占比列都支持这两个属性；这些选项仅属于饼图图例，不改变独立分类明细的页面协议。
+每列的 `unit` 和 `align` 均可省略。`unit` 缺省不追加单位；声明 `"家"` 时，格式化后的 `96` 显示为 `96 家`，仅用于显示，不改变原始数值、扇区大小、排序或占比计算。缺失值保持“- -”或字段绑定的 `missingText`，不会追加单位；真实零显示为 `0 家`。`align` 支持 `left`、`center`、`right`，缺省保持数值列右对齐，同时作用于该列列头和全部数据单元格。普通字段列与自动占比列都支持这两个属性；这些选项仅属于饼图图例，不改变独立分类明细的页面协议。
 
 **默认不按数值排序**，保留输入行序。需要跨刷新稳定的业务类别顺序时显式声明 `categoryOrder`，按类别字段的原始标量取值匹配，已声明类别保持此顺序并预留色位；未列出的类别按输入行序接在末尾。`sort: "asc" | "desc"` 是显式按扇区数值排序的可选项，同值保持输入相对顺序，不得与 `categoryOrder` 同时声明。排序对整个饼图生效，图例、扇区和点击对应的数据行始终一致；它不是修改源数据或排序查询。
 
@@ -39,9 +39,9 @@
 
 ## 外围百分比标签
 
-普通饼图及 `labelLine: true` 显示的外围标签统一采用通用 `percent-1` 格式，显示“类别: 1.2%”。占比与表格式图例的自动占比列共用有效原值合计及百分数计算，直接按 0–100 刻度格式化，不使用 ECharts 预舍入的 `percent`，也不为凑齐 100% 分配舍入差额。三个相等扇区各显示 `33.3%`。真实零在有效合计下显示 `0.0%`，零合计显示“—”；缺失值不参与合计，也不生成扇区。
+普通饼图及 `labelLine: true` 显示的外围标签统一采用通用 `percent-adaptive` 格式，显示“类别: 1.25%”。占比与表格式图例的自动占比列共用有效原值合计及百分数计算，直接按 0–100 刻度格式化，不使用 ECharts 预舍入的 `percent`，也不为凑齐 100% 分配舍入差额。三个相等扇区各显示 `33.3%`。真实零在有效合计下显示 `0%`，零合计显示“- -%”；缺失值不参与合计，也不生成扇区。
 
-外围标签是派生占比，使用固定 `percent-1`；数值字段的格式仍负责原数值展示，图例列的显式格式只作用于该列。已有 `compactRing`、`labelLine: false` 和表格式图例默认隐藏外围标签的行为保持。显式高级 `echartsOption.series[].label.formatter` 仍按原扩展规则覆盖默认标签。本次修正默认呈现，不新增字段或 Schema 版本。
+外围标签是派生占比，使用默认 `percent-adaptive`；数值字段的格式仍负责原数值展示，图例列的显式格式只作用于该列。已有 `compactRing`、`labelLine: false` 和表格式图例默认隐藏外围标签的行为保持。显式高级 `echartsOption.series[].label.formatter` 仍按原扩展规则覆盖默认标签。本次修正默认呈现，不新增字段或 Schema 版本。
 
 内联合成验收入口：`/pages/chart-number-format`，包含舍入边界、有效零、缺失、零合计、均分占比及外围与表格式图例对照。
 
@@ -58,7 +58,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.92。结构真源为本册[schema.json](../schema.json)，SHA256 `4b6d8c6d814f7b0e53f41aae381c0792a513cb44712262af2cf026e7252dd780`。字段表自动生成；可选不等于有默认值。
+页面协议 6.93。结构真源为本册[schema.json](../schema.json)，SHA256 `fda283138f408b5c861e80f98c9b9139b9f37de7e240b91f7c765b1cac5bfa85`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -438,7 +438,7 @@ Schema位置：`#/definitions/pieLegendColumn/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -458,13 +458,22 @@ Schema位置：`#/definitions/pieLegendColumn/anyOf/1/properties/format`。
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
-| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
+| "usd-adaptive" | 美元按原始绝对值切换美元/K/M，小额取整，1万至100万按K最多1位小数，100万至1亿按K取整，1亿起按M取整。 |
 | "cny-adaptive-trimmed" | 6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。 |
 | "cny-adaptive-trimmed-no-yuan" | 6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。 |
 | "usd-adaptive-km" | 6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。 |
+| "count-adaptive" | 人数等计数按万缩放：小于1万取整，1万至10万最多1位小数，10万起取整；保留声明单位。 |
+| "resource-adaptive" | 资源量按原单位、万、亿选档，缩放后最多2位小数；同为TB时可显式区别于存储容量。 |
+| "bytes-adaptive" | 从声明的Bytes/KB至YB或bit单位按1024换算，保留bit/byte及每秒维度；最多2位小数。 |
+| "minutes-adaptive" | 分钟按分钟、千分钟、万分钟选档，缩放后最多2位小数。 |
+| "messages-adaptive" | 条数小于1万取整，1万起按万条显示且最多2位小数。 |
+| "billing-hours" | 原始秒数除以3600显示小时，四舍五入至最多2位小数，不改写原值。 |
+| "percent-adaptive" | 百分数刻度按量级选精度，保留微小非零值，绝对值500起显示上升或下降>500%。 |
+| "percent-adaptive-signed" | 自适应百分比的普通正值带+、负值带-、零无符号；绝对值500起显示方向与>500%。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "percent-raw" | 个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。 |
 | "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
@@ -695,7 +704,7 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","percent-0","percent-1","percent-2","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -715,13 +724,22 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
-| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
+| "usd-adaptive" | 美元按原始绝对值切换美元/K/M，小额取整，1万至100万按K最多1位小数，100万至1亿按K取整，1亿起按M取整。 |
 | "cny-adaptive-trimmed" | 6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。 |
 | "cny-adaptive-trimmed-no-yuan" | 6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。 |
 | "usd-adaptive-km" | 6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。 |
+| "count-adaptive" | 人数等计数按万缩放：小于1万取整，1万至10万最多1位小数，10万起取整；保留声明单位。 |
+| "resource-adaptive" | 资源量按原单位、万、亿选档，缩放后最多2位小数；同为TB时可显式区别于存储容量。 |
+| "bytes-adaptive" | 从声明的Bytes/KB至YB或bit单位按1024换算，保留bit/byte及每秒维度；最多2位小数。 |
+| "minutes-adaptive" | 分钟按分钟、千分钟、万分钟选档，缩放后最多2位小数。 |
+| "messages-adaptive" | 条数小于1万取整，1万起按万条显示且最多2位小数。 |
+| "billing-hours" | 原始秒数除以3600显示小时，四舍五入至最多2位小数，不改写原值。 |
+| "percent-adaptive" | 百分数刻度按量级选精度，保留微小非零值，绝对值500起显示上升或下降>500%。 |
+| "percent-adaptive-signed" | 自适应百分比的普通正值带+、负值带-、零无符号；绝对值500起显示方向与>500%。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
+| "percent-raw" | 个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。 |
 | "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
 | "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
@@ -969,18 +987,19 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 
 ```json
 {
-  "id": "pie",
+  "id": "missing-pie",
   "type": "pieChart",
   "layout": {
     "span": 6
   },
-  "props": {
-    "title": "饼图：三个现有类别均为 2",
-    "categoryField": "category",
-    "value": 2
-  },
   "data": {
-    "main": "main"
+    "main": "empty-pie"
+  },
+  "props": {
+    "title": "图表缺失符号间距",
+    "categoryField": "category",
+    "valueField": "value",
+    "labelLine": true
   }
 }
 ```
@@ -988,9 +1007,9 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 
 ## 联合分支见证（生成）
 
-- `#/definitions/pieChartComponent/properties/props/anyOf/0`：[合法完整页面](../examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/4/props`。
+- `#/definitions/pieChartComponent/properties/props/anyOf/0`：[合法完整页面](../examples/component-pieChart.json)，JSON Pointer `#/sections/0/components/0/props`。
 - `#/definitions/pieLegendColumn/anyOf/0`：[合法完整页面](../examples/pie-table-legend.json)，JSON Pointer `#/sections/0/components/0/props/legend/columns/0`。
 - `#/definitions/pieLegendColumn/anyOf/1`：[合法完整页面](../examples/pie-table-legend.json)，JSON Pointer `#/sections/2/components/0/props/legend/columns/1`。
-- `#/definitions/pieChartComponent/properties/props/anyOf/1`：[合法完整页面](../examples/component-pieChart.json)，JSON Pointer `#/sections/0/components/0/props`。
-- `#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/0`：[合法完整页面](../examples/component-pieChart.json)，JSON Pointer `#/sections/0/components/0/props/value`。
+- `#/definitions/pieChartComponent/properties/props/anyOf/1`：[合法完整页面](../examples/chart-constant-values-page.json)，JSON Pointer `#/sections/0/components/5/props`。
+- `#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/0`：[合法完整页面](../examples/chart-constant-values-page.json)，JSON Pointer `#/sections/0/components/5/props/value`。
 - `#/definitions/pieChartComponent/properties/props/anyOf/1/properties/value/anyOf/1`：[合法完整页面](../examples/chart-constant-branches.json)，JSON Pointer `#/sections/0/components/2/props/value`。

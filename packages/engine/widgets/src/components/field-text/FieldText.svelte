@@ -1,10 +1,10 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { formatFieldValue, fieldUnitText } from '../../shared/field-presentation';
   import type { FieldTextProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField, semanticHtmlFieldPresentation } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import { formatValue } from '../../shared/value-format';
 
   /**
    * 字段长文本(纯渲染):正文来自数据字段而不是页面文档。
@@ -46,7 +46,7 @@
   {#if semantic}
     <SemanticHtml source={semantic.source} format={semantic.format} />
   {:else}
-    <p>{formatValue(value, resolved.format, resolved.missingText)}</p>
+    <p>{formatFieldValue(value, resolved)}</p>
   {/if}
 </section>
 

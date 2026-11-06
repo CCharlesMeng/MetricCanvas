@@ -53,9 +53,9 @@ it('only replaces absent records, never explicit null or a failed/unknown value'
   expect(()=>joinAggregate(op,[{id:'x'}],[{id:'x',value:1},{id:'x',value:2}])).toThrow('重复');
 });
 
-it('keeps the signed denominator and leaves all zero denominators unknown',async()=>{
+it('rejects nonpositive growth baselines',async()=>{
   const {applyComputation}=await import('../src/compute');
   const operators=[{op:'delta' as const,minuend:'current',subtrahend:'base',output:'delta'},{op:'ratio' as const,numerator:'delta',denominator:'base',output:'growth',scale:100 as const,onZeroDenominator:'null' as const}];
   const result=applyComputation(operators,[{current:-50,base:-100},{current:0,base:0},{current:100,base:0}]);
-  expect(result.map(row=>row.growth)).toEqual([-50,null,null]);
+  expect(result.map(row=>row.growth)).toEqual([null,null,null]);
 });

@@ -67,7 +67,7 @@ function projectColumn(column: LegendColumn, data: MainDataSlots, value: Resolve
   }
   return {
     label: column.label,
-    definition: { type: 'number', role: 'measure', defaultFormat: column.format ?? 'percent-1' },
+    definition: { type: 'number', role: 'measure', defaultFormat: column.format ?? 'percent-adaptive' },
     read: row => piePercentage(value.read(row), total)
   };
 }
@@ -96,7 +96,7 @@ export function pieLegendData(data: MainDataSlots, props: PieChartProps) {
     swatches: true,
     columns: columns.map((column, index) => ({
       label: column.label,
-      field: { data: 'main', field: `__value_${index}`, missingText: column.missingText }
+      field: { data: 'main', field: `__value_${index}`, missingText: column.missingText, format: column.definition.role === 'detail' ? undefined : column.definition.defaultFormat }
     }))
   };
   const columnPresentation = props.legend?.columns.map(({ unit, align }) => ({ unit, align }));

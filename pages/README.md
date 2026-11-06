@@ -630,3 +630,6 @@ Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/
 - [柱线组合的系列条件显隐](capabilities/chart/README.md#系列条件显隐687)：`/pages/chart-series-visibility`，内联合成数据。
 
 - [IOC Header 子控件](capabilities/ioc-header/controls/README.md)：`/pages/ioc-header-controls`，显式 RegionFilter、应用级 Adapter 与原查询绑定。
+数值显示：[整数与缺失值](capabilities/data/numeric-value-display.json)，入口 `/pages/numeric-value-display`；合成数据覆盖整数百分比、单位缩放、真实零、自定义缺失及指标卡进度环，步骤见[数据场景说明](capabilities/data/README.md#整数与缺失值显示)。
+
+全局语义数值规范：[semantic-numeric-display](capabilities/data/semantic-numeric-display.json)，入口 `/pages/semantic-numeric-display`，涵盖移动/PC金额、比率、数量、资源、存储与计费及例外，见[数据场景](capabilities/data/README.md#全局语义数值规范)。

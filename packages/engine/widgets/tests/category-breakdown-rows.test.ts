@@ -33,9 +33,9 @@ describe('categoryBreakdownView', () => {
 
     expect(view.columns).toEqual(['机会点', '预签金额']);
     expect(view.rows).toEqual([
-      { category: '卓越', values: ['46', '40.0亿'] },
-      { category: '战略', values: ['38', '20.0亿'] },
-      { category: '核心', values: ['12', '9.0亿'] }
+      { category: '卓越', values: ['46', '40亿'] },
+      { category: '战略', values: ['38', '20亿'] },
+      { category: '核心', values: ['12', '9亿'] }
     ]);
   });
 

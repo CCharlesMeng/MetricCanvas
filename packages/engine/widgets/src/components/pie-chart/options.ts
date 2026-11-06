@@ -3,6 +3,7 @@ import type { PieChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption, DefaultLabelFormatterCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
+import { formatChartNumber } from '../../shared/chart-option';
 import { finiteNumber, formatValue } from '../../shared/value-format';
 import { pieRows, pieCategoryDomain, pieValueTotal, piePercentage } from './presentation';
 export { pieRows } from './presentation';
@@ -39,7 +40,7 @@ export function pieOption(
       ...(value.format
         ? {
             valueFormatter: (raw: unknown) =>
-              formatValue(formatterValue(raw), value.format, value.missingText)
+              formatChartNumber(formatterValue(raw), value.format, value.missingText, value.unit)
           }
         : {})
     },
@@ -56,7 +57,7 @@ export function pieOption(
           show: compactRing ? false : showLabelLine,
           ...(total === 0 ? { alignTo: 'edge' as const, edgeDistance: 8, overflow: 'none' as const } : {}),
           formatter: (params: DefaultLabelFormatterCallbackParams) =>
-            `${params.name}: ${formatValue(piePercentage(formatterValue(params.value), total), 'percent-1')}`
+            `${params.name}: ${formatChartNumber(piePercentage(formatterValue(params.value), total), 'percent-adaptive')}`
         },
         labelLine: { show: compactRing ? false : showLabelLine },
         data: rows.flatMap((row, index) => {

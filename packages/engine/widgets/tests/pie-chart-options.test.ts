@@ -154,9 +154,9 @@ describe('pieOption · 外围百分比格式', () => {
     const original = structuredClone(input);
     const formatter = series(pieOption(input, props)).label!.formatter!;
     expect(formatter).toBeTypeOf('function');
-    expect(formatter({ name: '甲', value: 1.2499 })).toBe('甲: 1.2%');
+    expect(formatter({ name: '甲', value: 1.2499 })).toBe('甲: 1.25%');
     expect(formatter({ name: '乙', value: 98.7501 })).toBe('乙: 98.8%');
-    expect(formatter({ name: '零', value: 0 })).toBe('零: 0.0%');
+    expect(formatter({ name: '零', value: 0 })).toBe('零: 0%');
     expect(input).toEqual(original);
   });
 
@@ -166,6 +166,6 @@ describe('pieOption · 外围百分比格式', () => {
     ] } } };
     const formatter = series(pieOption(input, props)).label!.formatter!;
     expect(formatter).toBeTypeOf('function');
-    expect(formatter({ name: '零', value: 0 })).toBe('零: —');
+    expect(formatter({ name: '零', value: 0 })).toBe('零: - -%');
   });
 });

@@ -9,6 +9,7 @@
   import EChart from '../../shared/EChart.svelte';
   import { MAP_SCALE_PROPERTY, readColorList } from '../../shared/chart-palette';
   import { formatValue } from '../../shared/value-format';
+  import { formatChartNumber } from '../../shared/chart-option';
   import {
     geoRegionName,
     mapOption,
@@ -118,7 +119,7 @@
         const field = resolveComponentValue(entry, data, props.emptyBehavior);
         return {
           label: entry.label,
-          value: formatValue(field.read(row), field.format, field.missingText)
+          value: formatChartNumber(field.read(row), field.format ?? 'number', field.missingText, field.unit)
         };
       })
     };

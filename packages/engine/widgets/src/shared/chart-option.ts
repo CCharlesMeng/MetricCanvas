@@ -23,17 +23,19 @@ export const CHART_PALETTE = [
   '#fc8452'
 ] as const;
 
-/** 柱、线与混合图的数值入口：显式格式优先，缺省固定两位小数。 */
-export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string): string {
-  return formatValue(value, format ?? 'number-2', missingText);
+/** 柱、线与混合图的数值入口：显式格式优先，缺省最多两位小数。 */
+export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string, unit?: string): string {
+  return formatValue(value, format ?? 'number-2', missingText, { unit }).replace(/^--(?=%|$)/, '- -');
 }
+
+type AxisFormat = ValueFormatPreset | { format?: ValueFormatPreset; unit?: string } | undefined;
 
 /** 双轴:第二个及之后的指标走右轴;单轴时只留左轴 */
 export function dualOrSingleAxis(
   dualAxis: boolean | undefined,
   metricCount: number,
   hideAxis = false,
-  formats: Array<ValueFormatPreset | undefined> = []
+  formats: AxisFormat[] = []
 ) {
   if (dualAxis && metricCount > 1) {
     return [formattedValueAxis(formats.slice(0, 1), hideAxis), alignedSecondaryAxis(formattedValueAxis(formats.slice(1), hideAxis))];
@@ -46,14 +48,24 @@ export function alignedSecondaryAxis<T extends object>(axis: T) {
   return { ...axis, alignTicks: true, splitLine: { show: false } };
 }
 
+/** Percent scales remain compatible when a semantic field shares an axis with a fixed-format constant. */
+function sharedAxisField(fields: Array<{ format?: ValueFormatPreset; unit?: string }>) {
+  const first = fields[0];
+  if (fields.length && fields.every(field => field.format?.startsWith('percent-'))) {
+    return { format: fields.every(field => field.format === first?.format) ? first?.format : 'percent-adaptive' as const };
+  }
+  return fields.every(field => field.format === first?.format && field.unit === first?.unit) ? first : undefined;
+}
+
 /** All numeric chart branches share the same format consensus and hidden-axis policy. */
-export function formattedValueAxis(group: Array<ValueFormatPreset | undefined>, hideAxis = false) {
+export function formattedValueAxis(group: AxisFormat[], hideAxis = false) {
   // One axis has one scale. Mixed formats use basic two-decimal ticks rather than choosing
   // the first series' unit for unrelated values on that axis.
-  const format = group.every(format => format === group[0]) ? group[0] : undefined;
+  const fields = group.map(item => typeof item === 'object' ? item : { format: item });
+  const field = sharedAxisField(fields);
   return {
     type: 'value' as const,
-    axisLabel: { formatter: (value: number) => formatChartNumber(value, format) },
+    axisLabel: { formatter: (value: number) => formatChartNumber(value, field?.format, undefined, field?.unit) },
     ...(hideAxis
       ? {
           axisLabel: { show: false },

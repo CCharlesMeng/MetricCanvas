@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "6.93",
+  "id": "numeric-value-display",
+  "layout": "dashboard",
+  "meta": {
+    "title": "数值与缺失值显示 · 合成数据"
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "case": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "number-2"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "percent-2"
+        },
+        "compact": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "compact-wan-1"
+        },
+        "custom": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "number-2"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "case": "整数",
+            "amount": 50,
+            "rate": 50,
+            "compact": 500000,
+            "custom": 50
+          },
+          {
+            "case": "小数",
+            "amount": 12.5,
+            "rate": 12.5,
+            "compact": 125000.0,
+            "custom": 12.5
+          },
+          {
+            "case": "零",
+            "amount": 0,
+            "rate": 0,
+            "compact": 0,
+            "custom": 0
+          },
+          {
+            "case": "负整数",
+            "amount": -12,
+            "rate": -12,
+            "compact": -120000,
+            "custom": -12
+          },
+          {
+            "case": "缺失",
+            "amount": null,
+            "rate": null,
+            "compact": null,
+            "custom": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "values",
+      "container": "plain",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "数值与缺失值显示"
+            },
+            "presentation": {
+              "layout": "inline",
+              "collapse": "none"
+            }
+          }
+        },
+        {
+          "id": "integer-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "整数百分比",
+                "valueField": "rate"
+              }
+            ]
+          }
+        },
+        {
+          "id": "missing-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "缺失数值",
+                "valueField": {
+                  "data": "main",
+                  "field": "amount",
+                  "match": {
+                    "field": "case",
+                    "equals": "缺失"
+                  },
+                  "missingText": "—"
+                }
+              }
+            ],
+            "progress": {
+              "valueField": {
+                "data": "main",
+                "field": "rate",
+                "match": {
+                  "field": "case",
+                  "equals": "缺失"
+                },
+                "missingText": "--"
+              }
+            }
+          }
+        },
+        {
+          "id": "values-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "统一格式",
+            "columns": [
+              {
+                "field": "case",
+                "title": "场景"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount",
+                  "missingText": "--"
+                },
+                "title": "数值"
+              },
+              {
+                "field": "rate",
+                "title": "百分比"
+              },
+              {
+                "field": "compact",
+                "title": "万单位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "custom",
+                  "missingText": "未提供"
+                },
+                "title": "自定义缺失"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。同比/环比基期非正或缺失返回null，普通ratio保持。缺失文案为 `--` / `--%`，图表显示分开的短横线。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
+
 6.92：期间比较可省略 `fact`，直接按页头已应用的完整期间查询本期、去年同期和上期，无需预览或宿主截止事实；旧显式 fact 仍保持进度对齐与缺失拒绝。见[完整期间比较](docs/page-metadata/queries-and-bindings.md#按页头完整期间比较692)，入口 `/pages/business-result-metrics-2`。
 
 可选 IOC Region 空选时首屏立即查询，不等待组织候选；有选值及显式候选上下文仍执行原校验。候选弹层固定搜索框，仅列表滚动。声明边界与业务页验收见[筛选器](docs/page-metadata/filters.md)，入口 `/pages/region-authorization-norms`；不新增 Schema 字段。
@@ -229,13 +231,15 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 <a id="百万单位的使用65"></a>
 
+缺失值默认显示 `--`（百分比为 `--%`，图表短横线分开绘制）；整数（含百分比、金额、缩放单位及舍入后整数）省略 `.0` / `.00`，非整数按声明精度四舍五入并舍弃小数末尾零；自定义缺失文字仍优先。无需新增字段或升级 Schema，场景 `/pages/numeric-value-display`。详见[整数与缺失值的统一显示](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)。
+
 格式由组件字段绑定声明，页面数据源可以提供 `defaultFormat` 建议，原始数据保留基础单位。格式清单、覆盖优先级及百万单位的用法统一见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md)。
 
 创作期已确认的百分数刻度不因查询覆盖不完整而丢失百分号；来源格式建议、可信刻度与组件显式格式分别处理。微小非零值的精度限制见[百分比创作与覆盖边界](docs/page-metadata/field-bindings-and-formats.md#百分比创作与覆盖边界)，合成对照场景 `/pages/authoring-percent-coverage`。
 
-柱状图、折线图及混合图的标签、悬浮提示和同格式数值轴统一采用通用格式化；未配置格式时默认两位小数，元数据可覆盖；旧柱图标签不再隐式缩放为万。规则及兼容说明见[柱线图数值格式一致性](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，场景 `/pages/chart-number-format`。
+柱状图、折线图及混合图的标签、悬浮提示和同格式数值轴统一采用通用格式化；未配置格式时默认非整数两位小数，元数据可覆盖；旧柱图标签不再隐式缩放为万。规则及兼容说明见[柱线图数值格式一致性](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，场景 `/pages/chart-number-format`。
 
-饼图外围百分比标签统一使用通用 `percent-1`，按有效原值合计直接计算，零合计显示“—”；规则及边界见[饼图外围标签](docs/page-metadata/components/pieChart.md#percentage-labels)，对照场景 `/pages/chart-number-format`。
+饼图外围百分比标签统一使用通用 `percent-1`，按有效原值合计直接计算，零合计显示“- -%”；规则及边界见[饼图外围标签](docs/page-metadata/components/pieChart.md#percentage-labels)，对照场景 `/pages/chart-number-format`。
 
 ## 旧锚点导航
 

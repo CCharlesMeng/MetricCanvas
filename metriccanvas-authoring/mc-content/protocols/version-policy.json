@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 92,
-  "current": "6.92",
+  "minor": 93,
+  "current": "6.93",
   "capabilities": {
+    "semantic-numeric-formats": {
+      "minor": 93,
+      "description": "按指标语义自适应单位、精度与计费时长",
+      "legacyReadable": false
+    },
     "selection-period-comparison": {
       "minor": 92,
       "description": "直接按已应用完整期间查询同比环比，无需宿主截止事实",
@@ -902,6 +907,7 @@
     "6.89",
     "6.90",
     "6.91",
-    "6.92"
+    "6.92",
+    "6.93"
   ]
 }

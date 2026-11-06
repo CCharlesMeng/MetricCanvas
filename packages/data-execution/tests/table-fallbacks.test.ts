@@ -57,7 +57,7 @@ describe('serializable table cell fallbacks', () => {
     expect(selected.cellFallbacks).toBeUndefined();
     const data = {main:{fields,snapshot:selected}};
     const rows = projectTableRows(data,{columns:[{field:'date'}]});
-    expect(alignedCellText('date',data,rows[0])).toBe('—');
+    expect(alignedCellText('date',data,rows[0])).toBe('--');
   });
   it('keeps malformed scalars separate from typed values and never exposes them in diagnostics', () => {
     const result = normalized();

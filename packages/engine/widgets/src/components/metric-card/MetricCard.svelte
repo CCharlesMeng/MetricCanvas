@@ -3,7 +3,8 @@
   import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
-  import { finiteNumber, formatValue, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
+  import { finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
+  import { fieldUnitText, formatChangeValue, formatFieldValue, isPercentFormat } from '../../shared/field-presentation';
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
   import ProgressRing from './ProgressRing.svelte';
 
@@ -18,9 +19,9 @@
 
   let { data, props, onlink, linkHref }: Props = $props();
 
-  function fieldText(field: FieldBinding): string {
+  function fieldText(field: FieldBinding, unit?: string): string {
     const resolved = resolveField(field, data);
-    return formatValue(fieldValue(field, data), resolved.format, resolved.missingText);
+    return formatFieldValue(fieldValue(field, data), resolved, unit);
   }
 
   function changeText(
@@ -28,15 +29,14 @@
     tone: 'auto' | 'neutral' | 'positive' | 'danger' | undefined
   ): string {
     const raw = fieldValue(field, data);
-    const text = fieldText(field);
-    const format = resolveField(field, data).format;
-    return tone === 'positive' && typeof raw === 'number' && raw > 0 && !isSignedNumberFormat(format) ? `+${text}` : text;
+    return formatChangeValue(raw, resolveField(field, data), tone === 'positive');
   }
 
   const progressValue = $derived(
     props.progress ? finiteNumber(fieldValue(props.progress.valueField, data)) : undefined
   );
   const progressMissingText = $derived(props.progress ? resolveField(props.progress.valueField, data).missingText : undefined);
+  const progressFormat = $derived(props.progress ? resolveField(props.progress.valueField, data).format : undefined);
 
   function activateLink(field: FieldBinding, event: MouseEvent) {
     const row = fieldRow(field, data);
@@ -47,8 +47,9 @@
 
 {#snippet metricValue(row: MetricCardProps['rows'][number])}
   {#if row.context}<span class="row-context">{row.context}</span>{/if}
-  <span class="row-value">{fieldText(row.valueField)}</span>
-  {#if row.unit}<span class="unit">{row.unit}</span>{/if}
+  <span class="row-value">{fieldText(row.valueField, row.unit)}</span>
+  {@const unit = fieldUnitText(row.unit, resolveField(row.valueField, data).format)}
+  {#if unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
 
 {#snippet metricRows(rows: MetricCardProps['rows'])}
@@ -87,7 +88,7 @@
               <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
                 <span class="change-label">{change.label}</span>
                 <span class="change-value">
-                  {#if props.showTrendArrows && direction !== 'neutral'}
+                  {#if props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(format)}
                     <span
                       class:up={direction === 'positive'}
                       class:down={direction === 'negative'}
@@ -95,7 +96,7 @@
                       aria-hidden="true"
                     >{direction === 'positive' ? '↑' : '↓'}</span>
                   {/if}
-                  <span>{changeText(change.field, change.tone)}{#if change.unit}<span class="change-unit">{change.unit}</span>{/if}</span>
+                  <span>{changeText(change.field, change.tone)}{#if fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>
                 </span>
               </span>
             {/each}
@@ -144,7 +145,7 @@
     {/if}
     {#if props.progress}
       <div class="progress-slot">
-        <ProgressRing value={progressValue} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
+        <ProgressRing value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
       </div>
     {/if}
   {:else}
@@ -154,6 +155,7 @@
       {#if props.progress}
         <div class="progress-slot">
           <ProgressRing
+            format={progressFormat}
             value={progressValue}
             missingText={progressMissingText}
             ringPercent={props.progress.ringPercent}

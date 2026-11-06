@@ -1,7 +1,8 @@
+import { formatFieldValue } from '../../shared/field-presentation';
 import type { CategoryBreakdownProps, FieldValue } from '@metriccanvas/page/internal';
 import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
-import { formatValue, hasDisplayValue } from '../../shared/value-format';
+import { hasDisplayValue } from '../../shared/value-format';
 import {
   categoricalColor,
   categoryDomain,
@@ -35,7 +36,7 @@ export interface CategoryColumnPresentation {
 }
 
 function columnValue(value: FieldValue | undefined, resolved: ResolvedField, unit?: string): string {
-  const text = formatValue(value, resolved.format, resolved.missingText);
+  const text = formatFieldValue(value, resolved);
   return unit && hasDisplayValue(value) ? `${text} ${unit}` : text;
 }
 
@@ -62,7 +63,7 @@ export function categoryBreakdownView(
   }));
   const rows = data.main.snapshot.rows;
   const categories = rows.map((row) =>
-    formatValue(row[category.field], category.format, category.missingText)
+    formatFieldValue(row[category.field], category)
   );
   const domain = swatchDomain ?? categoryDomain(categories);
   const categoryLabel =

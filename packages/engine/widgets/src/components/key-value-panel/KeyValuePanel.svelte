@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { formatFieldValue, fieldUnitText } from '../../shared/field-presentation';
   import { getContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
@@ -7,7 +8,6 @@
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField, semanticHtmlFieldPresentation } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import { formatValue } from '../../shared/value-format';
   import rewardIconUrl from '../../assets/ioc-card-title-reward.svg?inline';
   import medalIconUrl from '../../assets/ioc-medal.svg?inline';
   import penaltyCardIconUrl from '../../assets/ioc-penalty-card.svg?inline';
@@ -56,9 +56,9 @@
           {#if semantic}
             <SemanticHtml source={semantic.source} format={semantic.format} inline />
           {:else}
-            {formatValue(value, resolved.format, resolved.missingText)}
+            {formatFieldValue(value, resolved, item.unit)}
           {/if}
-          {#if item.unit}<span class="unit">{item.unit}</span>{/if}
+          {#if fieldUnitText(item.unit, resolved.format)}<span class="unit">{item.unit}</span>{/if}
         </dd>
       </div>
     {/each}

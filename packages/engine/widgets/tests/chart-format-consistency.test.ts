@@ -36,7 +36,7 @@ describe('chart numeric display consistency', () => {
     const original = structuredClone(data);
     for (const option of options(data)) {
       expect(option.yAxis.name).toBeUndefined();
-      for (const [value, expected] of [[12345.6789, '12345.68'], [0, '0.00'], [-12345.6789, '-12345.68']] as const) {
+      for (const [value, expected] of [[12345.6789, '12345.68'], [0, '0'], [-12345.6789, '-12345.68']] as const) {
         const series = option.series[0]!;
         expect(series.tooltip?.valueFormatter?.(value)).toBe(expected);
         expect(series.label.formatter({ value })).toBe(expected);
@@ -93,7 +93,7 @@ it('formats horizontal numeric axes and labels while retaining raw data and cate
   const option = barOption(data, { categoryField: 'category', series: [{ field: 'value' }], horizontal: true, showValueLabels: true });
   const view = option as unknown as DisplayOption & { xAxis: DisplayOption['yAxis']; yAxis: { data: string[] } };
   expect(view.xAxis.axisLabel.formatter(12345.6789)).toBe('12345.68');
-  expect(view.series[0]!.label.formatter({ value: 0 })).toBe('0.00');
+  expect(view.series[0]!.label.formatter({ value: 0 })).toBe('0');
   expect(view.yAxis.data).toEqual(['甲', '乙']);
   expect(option.series).toMatchObject([{ data: [{ value: 12345.6789 }, { value: 0 }] }]);
 });

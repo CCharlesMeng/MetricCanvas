@@ -40,7 +40,7 @@ it('composes independent scalar results and literal text without computing the r
   expect(rows).toHaveLength(2);
   const columns=tableLeafColumns(component.props.columns);
   expect(alignedCellText(tableRowColumn(columns[0],rows[0],data).field,data,rows[0])).toBe('合计');
-  expect(alignedCellText(tableRowColumn(columns[3],rows[0],data).field,data,rows[0])).toBe('90.0%');
+  expect(alignedCellText(tableRowColumn(columns[3],rows[0],data).field,data,rows[0])).toBe('90%');
   const bytes=await encodeTableWorkbook(component,data,new AbortController().signal);
   const book=new ExcelJS.Workbook();await book.xlsx.load(bytes.buffer);
   expect(book.worksheets[0].getCell('B2').value).toBe('合计');

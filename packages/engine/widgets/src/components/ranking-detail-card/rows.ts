@@ -1,3 +1,4 @@
+import { formatFieldValue, formatChangeValue } from '../../shared/field-presentation';
 import type {
   DetailRecord,
   FieldValue,
@@ -7,7 +8,7 @@ import type {
 } from '@metriccanvas/page/internal';
 import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
-import { formatValue, valuePolarity, type ValuePolarity } from '../../shared/value-format';
+import { valuePolarity, type ValuePolarity } from '../../shared/value-format';
 
 export interface RankingDetailChange {
   text: string;
@@ -57,19 +58,19 @@ export function buildRankingDetailRows(
 
   return data.main.snapshot.rows.map((row, index) => ({
     rank: index + 1,
-    name: formatValue(row[name.field], name.format, name.missingText),
-    value: formatValue(row[value.field], value.format, value.missingText),
+    name: formatFieldValue(row[name.field], name),
+    value: formatFieldValue(row[value.field], value),
     badges: badges.flatMap((field) => badgeText(row[field.field], field)),
     ...(change
       ? {
           change: {
-            text: formatValue(row[change.field], change.format, change.missingText),
+            text: formatChangeValue(row[change.field], change),
             polarity: valuePolarity(row[change.field])
           }
         }
       : {}),
     ...(description && hasDisplayValue(row[description.field])
-      ? { description: formatValue(row[description.field], description.format, description.missingText) }
+      ? { description: formatFieldValue(row[description.field], description) }
       : {}),
     ...(semanticDescription
       ? buildSemanticDescription(row, semanticDescription)
@@ -113,33 +114,27 @@ function nestedItem(
   definition: RecordListFieldDefinition | undefined,
   props: RecordListDetailsProps
 ): RankingDetailNestedItem {
-  const titleDefinition = definition?.items.fields[props.titleField];
-  const title = formatValue(item[props.titleField], titleDefinition?.defaultFormat);
+  const slots = { main: { fields: definition?.items.fields ?? {} } };
+  const title = formatFieldValue(item[props.titleField], resolveField(props.titleField, slots));
   const valueField = props.valueField;
   const descriptionField = props.descriptionField;
   return {
     title,
     ...(valueField
       ? {
-          value: formatValue(
-            item[valueField.field],
-            valueField.format ?? definition?.items.fields[valueField.field]?.defaultFormat
-          )
+          value: formatFieldValue(item[valueField.field], resolveField({ data: 'main', field: valueField.field, format: valueField.format }, slots))
         }
       : {}),
     ...(descriptionField && hasDisplayValue(item[descriptionField])
       ? {
-          description: formatValue(
-            item[descriptionField],
-            definition?.items.fields[descriptionField]?.defaultFormat
-          )
+          description: formatFieldValue(item[descriptionField], resolveField(descriptionField, slots))
         }
       : {})
   };
 }
 
 function badgeText(value: FieldValue | undefined, field: ResolvedField): string[] {
-  return hasDisplayValue(value) ? [formatValue(value, field.format, field.missingText)] : [];
+  return hasDisplayValue(value) ? [formatFieldValue(value, field)] : [];
 }
 
 function hasDisplayValue(value: unknown): boolean {

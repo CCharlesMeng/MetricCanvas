@@ -1,11 +1,14 @@
 import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
 import { formatPeriod } from '@metriccanvas/page/internal';
 import { formatAdaptiveMoney } from './adaptive-money-format';
+import { adaptiveNumericText } from './numeric-presentation';
+import { mobilePresentation } from './presentation-environment';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 type SignedNumberFormat = Extract<ValueFormatPreset, `number${string}-signed`>;
 
-const DEFAULT_NULL_TEXT = '—';
+const DEFAULT_NULL_TEXT = '--';
+export interface ValueFormatContext { unit?: string; mobile?: boolean }
 
 /** 是否呈现真实值；0、false 和恰好等于缺省文案的文本均有效。 */
 export function hasDisplayValue(value: FieldValue | undefined): value is NonNullable<FieldValue> {
@@ -19,9 +22,10 @@ export function hasDisplayValue(value: FieldValue | undefined): value is NonNull
 export function formatValue(
   value: FieldValue | undefined,
   format?: ValueFormatPreset,
-  missingText = DEFAULT_NULL_TEXT
+  missingText = DEFAULT_NULL_TEXT,
+  context: ValueFormatContext = {}
 ): string {
-  if (!hasDisplayValue(value)) return missingText;
+  if (!hasDisplayValue(value)) return missingValueText(format, missingText);
   if (!format || format === 'text') return String(value);
   if (format === 'period') return formatPeriod(String(value));
   if (format === 'date') return formatDate(value);
@@ -33,10 +37,18 @@ export function formatValue(
   const numeric = finiteNumber(value);
   if (numeric === undefined) return String(value);
 
-  return formatNumericValue(numeric, format);
+  return formatNumericValue(numeric, format, context);
 }
 
-function formatNumericValue(numeric: number, format: ValueFormatPreset): string {
+function missingValueText(format: ValueFormatPreset | undefined, text: string): string {
+  if (!['--', '- -', '—'].includes(text)) return text;
+  return format?.startsWith('percent-') ? `${DEFAULT_NULL_TEXT}%` : DEFAULT_NULL_TEXT;
+}
+
+function formatNumericValue(numeric: number, format: ValueFormatPreset, context: ValueFormatContext): string {
+  const adaptive = adaptiveNumericText(numeric, format, context.unit, context.mobile ?? mobilePresentation());
+  if (adaptive !== undefined) return adaptive;
+  if (format === 'percent-raw') return `${numeric}%`;
   if (format === 'yoy-p-signed') return yoyPresentation(numeric).text;
   if (format === 'points-1-signed') return `${signedNumberPresentation(numeric, 'number-1-signed').text}P`;
   const percent = /^percent-([012])(-signed)?$/.exec(format);
@@ -59,10 +71,6 @@ function formatStandardNumber(numeric: number, format: ValueFormatPreset): strin
       return formatNumber(numeric, 2);
     case 'number-grouped':
       return formatNumber(numeric, undefined, true);
-    case 'usd-adaptive':
-      return `${formatNumber(numeric,2,true)}美元`;
-    case 'cny-adaptive':
-      return formatCnyAdaptive(numeric);
     case 'cny-adaptive-trimmed':
     case 'cny-adaptive-trimmed-no-yuan':
     case 'usd-adaptive-km':
@@ -132,25 +140,6 @@ export function wanUnits(value: number, fractionDigits = 0, grouped = true): str
   return formatNumber(value / 1e4, fractionDigits, grouped);
 }
 
-// 人民币元值按原始绝对值选档，再执行该档位的舍入。
-function formatCnyAdaptive(value: number): string {
-  const normalized = Object.is(value, -0) ? 0 : value;
-  const magnitude = Math.abs(normalized);
-  if (magnitude < 10_000) {
-    return `${formatNumber(normalized, 0, true)}元`;
-  }
-  if (magnitude < 100_000) {
-    return `${formatNumber(normalized / 1e4, 2, true)}万`;
-  }
-  if (magnitude < 100_000_000) {
-    return `${formatNumber(normalized / 1e4, 0, true)}万`;
-  }
-  if (magnitude < 1_000_000_000) {
-    return `${formatNumber(normalized / 1e8, 2, true)}亿`;
-  }
-  return `${formatNumber(normalized / 1e8, 1, true)}亿`;
-}
-
 function formatNumber(
   value: number,
   fractionDigits: number | undefined = undefined,
@@ -161,7 +150,7 @@ function formatNumber(
     ...(fractionDigits === undefined
       ? {}
       : {
-          minimumFractionDigits: fractionDigits,
+          minimumFractionDigits: 0,
           maximumFractionDigits: fractionDigits
         })
   }).format(value);

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "be1c8c3b9cc0a8b48cb8868bad54ef963e5cd38aff0d32d43d1754a9eae47d30",
+  "sha256": "66221296d5217979e2ea457bc43eb1ebe8098db298698c691b9699fcd671f9fc",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -80,11 +80,11 @@
     },
     {
       "file": "docs/page-metadata/components/metricCard.md",
-      "sha256": "5ebbbd37c2737ec6fb6953999d2a21721f0768bb4027f6090f67935988f7b030"
+      "sha256": "3c4b32f1f597fc246969dfd5d1263cdceb8368055af4ab3596b06ed1bafcf693"
     },
     {
       "file": "docs/page-metadata/components/pieChart.md",
-      "sha256": "a4b9b44f2909bc674829fc28adb23cc978f92e2cbd114d6d35a5b472b9845f70"
+      "sha256": "efaa3a60d9d44e6c58d1988c6bbeaee3c4d48438fb0706146660435fcab93f1a"
     },
     {
       "file": "docs/page-metadata/components/rankingCard.md",
@@ -112,7 +112,7 @@
     },
     {
       "file": "docs/page-metadata/compute.md",
-      "sha256": "49644002820798e5ea464190d55ee06ee93b7a5f405763f5104c5ea209a84f46"
+      "sha256": "11a34064da759337bf458d632901154b63d2522e38d4b44371b273c9a2b6e42a"
     },
     {
       "file": "docs/page-metadata/conditions.md",
@@ -128,7 +128,7 @@
     },
     {
       "file": "docs/page-metadata/field-bindings-and-formats.md",
-      "sha256": "1a89dad5dc32946d83b472fa571e9d1c1bed4d40b0b46b8522377db9763b29fc"
+      "sha256": "0af6595c7f554004193ac1536e9e8e19ac9a88e2f4a9e3edacf8d9d46711f96b"
     },
     {
       "file": "docs/page-metadata/fields.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "57a4e721c80a351cbc3bfff9f1b8fe9ce04915b768daf5e79515a0fdaaac96ec"
+      "sha256": "39700957234b1a07f83721894b292986f6e27fdc5da567587ffe20e8efb7df98"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1556,7 +1556,7 @@
     },
     {
       "file": "packages/page/src/field-resolution.ts",
-      "sha256": "06362258ae3992f4d5a8198c137e651cf05d0e5035861e4be5b02c67c461e38c"
+      "sha256": "f5dea4e8325e1e6921a6190fce4ab584699aab188237bebd87638c6a5359ecd4"
     },
     {
       "file": "packages/page/src/field-selection.ts",
@@ -1564,7 +1564,7 @@
     },
     {
       "file": "packages/page/src/field.ts",
-      "sha256": "33f47886a6e1025e9cb5b841c11d05782d2575a38b3f7eabd79d8424f1c0330a"
+      "sha256": "d3b99c4aa6c3b9e62ea3b6f48d66e1c7b013bf552ad18a111726463d2df6d2ce"
     },
     {
       "file": "packages/page/src/file-name.ts",
@@ -1608,7 +1608,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "e3d1e20b38662f1cff49c7d5192d3c75524cbf60fa5ba5b37e62ccf8918fe1ef"
+      "sha256": "29f3014a81d03380090504166c6dcbdf344d39ec11e1e37bb2415136c38ed507"
     },
     {
       "file": "packages/page/src/ioc-header-controls.ts",
@@ -1939,6 +1939,10 @@
       "sha256": "65478eb7f1c702a771d398106475c4d9ddfa2fa0ce4970d5ae9f061ddfe2672c"
     },
     {
+      "file": "packages/page/src/semantic-format.ts",
+      "sha256": "4628d0ce9a3b4c3c4f00cc0efe6d35972582b3641404be986336286a928a3b6a"
+    },
+    {
       "file": "packages/page/src/snapshot.ts",
       "sha256": "4eb7932534fe66e2dedf961d88ef6cd7b40c0f88912c1b59b30e1119040f31c6"
     },
@@ -2092,11 +2096,11 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "b75a36508fea322981c01b2bad1a1a24ce187d16625fe1e25acb6536e865770c"
+      "sha256": "355e299ce12765969b8334cc2740634495df10dfb157dff3490e2f200a8d8a5e"
     },
     {
       "file": "pages/README.md",
-      "sha256": "fc835308dd536c25c2d2b4d4bcfa93dcb0248043dc0098392615c103f47a3865"
+      "sha256": "756347eef9d71b6c0ade1c1db02eaeba109e34771cf3cd944ed82062d90e8cd8"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2244,7 +2248,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "3b4d7d2b7c35af2d2bd838bd2d9008099b8c9b4814a15d73b014b3117e33e495"
+      "sha256": "f463d70e09839f12a912b2793206ebdddc9eec5b2b486687b7b24711b58c6b67"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
@@ -2296,7 +2300,7 @@
     },
     {
       "file": "pages/capabilities/data/README.md",
-      "sha256": "411d1785d6e951acbff07f3188064ba886725248855de570a04368fbcdf0dcef"
+      "sha256": "29c8a9062c36aaeb7d0aefc1e1bb6d4444972fc902058ca97002835b98fdc48a"
     },
     {
       "file": "pages/capabilities/data/authoring-percent-coverage.json",
@@ -2305,6 +2309,10 @@
     {
       "file": "pages/capabilities/data/missing-organization-key.json",
       "sha256": "f8ab8b8ea4b53eb138603f4c8e54593e0a75eb5392a050946aab6c8a0633eda0"
+    },
+    {
+      "file": "pages/capabilities/data/numeric-value-display.json",
+      "sha256": "9e7e5c2ddd6d22263486231e4502d87de302543efeeba7e3aa2eddd0902274f5"
     },
     {
       "file": "pages/capabilities/data/operation-money-formats.json",
@@ -2321,6 +2329,10 @@
     {
       "file": "pages/capabilities/data/period-comparison/period-comparison-query-page.json",
       "sha256": "587b0a48e8b4825b306b5be6a539a050ca1481b0c4ab1ae6943cfb195f7c9f25"
+    },
+    {
+      "file": "pages/capabilities/data/semantic-numeric-display.json",
+      "sha256": "cbc74db7a12a9b2aaa6bc627191796aa3269c6a5b4f5b91d8b9112ce15894f1f"
     },
     {
       "file": "pages/capabilities/data/sum-fields-missing-values.json",
@@ -2640,7 +2652,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "583c94e456668b23dd17461dfa1ae1604bc5cd7a8df2e51a6958e1f07d98f150"
+      "sha256": "2ba68aec5700a81af525ca5c944b03e00fd395284e0d093a36e1cffaae842125"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3436,7 +3448,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "5154ccd79cf27b93ef6c900d2d5c973019968234761952a33b3d87b9314a3e09"
+      "sha256": "10e2634f8c60082ba84904bd9742f7e9036a2178259f76f2b5808b4e2b77c222"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",

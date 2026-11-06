@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.92",
+  "schemaVersion": "6.93",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-67ba66fa"
@@ -9,8 +9,8 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\nformat优先于字段defaultFormat；未设置时走组件/类型的既有格式行为。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。",
-        "## 百分比创作与覆盖边界\n\n创作工具使用可信 `scale: \"percent\"`，或无冲突的 `%` / `％` 原始单位，确认原值已是百分数刻度。完整、部分和未知覆盖均可默认采用 `percent-2`；覆盖率只限制依赖全量分布的紧凑尺度推断。来源 `defaultFormat: \"number*\"` 是显示建议，不能覆盖已确认的百分数刻度；工具改用 `percent-2` 并返回 `PRESENTATION_FORMAT_ADJUSTED`，关联数据源和字段身份。来源原始描述保留。`fraction`、`unknown` 和已缩放刻度不能据名称猜为百分数，也不自动乘100。\n\n组件显式 `format` 仍优先，已有页面或没有来源描述的显式默认格式保持；本批不重写已有页面或保存规则。`percent-*` 最多保留两位小数，微小非零值如 `0.0001` 用 `percent-2` 显示 `0.00%`。工具保留百分号及原值，并返回 `PRESENTATION_PRECISION_LIMIT`，不改成无单位的 number 来掩盖限制；需要核对时可在明细列显式用 `number` 查看原值。零与缺失分别显示 `0.00%` 与缺失文案。\n\n场景 `/pages/authoring-percent-coverage` 使用程序格式决策对应的 inline 合成数据：12.5 显示 12.50%，微小正负值在相邻原值列可核对，显式 `percent-1` 显示 12.5%。它验证渲染与覆盖优先级；真实查询覆盖、格式调整和精度告警由查询回归验证，不代表真实 DQE 或 Relay 已接入。local 直接编辑页面沿此相同格式语义，静态校验不宣称已验证来源业务刻度。"
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"numeric-value-display\"></a>",
+        "## 百分比创作与覆盖边界\n\n创作工具使用可信 `scale: \"percent\"`，或无冲突的 `%` / `％` 原始单位，确认原值已是百分数刻度。完整、部分和未知覆盖均可默认采用 `percent-2`；覆盖率只限制依赖全量分布的紧凑尺度推断。来源 `defaultFormat: \"number*\"` 是显示建议，不能覆盖已确认的百分数刻度；工具改用 `percent-2` 并返回 `PRESENTATION_FORMAT_ADJUSTED`，关联数据源和字段身份。来源原始描述保留。`fraction`、`unknown` 和已缩放刻度不能据名称猜为百分数，也不自动乘100。\n\n组件显式 `format` 仍优先，已有页面或没有来源描述的显式默认格式保持；本批不重写已有页面或保存规则。组件显式 `percent-0/1/2` 保持对应最大精度，微小非零值如 `0.0001` 显式用 `percent-2` 显示 `0%`；作为来源默认建议时按统一语义规则自适应显示 `0.0001%`。工具保留百分号及原值，并返回 `PRESENTATION_PRECISION_LIMIT`，不改成无单位的 number 来掩盖限制；需要核对时可在明细列显式用 `number` 查看原值。零与缺失分别显示 `0%` 与缺失文案。\n\n场景 `/pages/authoring-percent-coverage` 使用程序格式决策对应的 inline 合成数据：12.5 显示 12.5%，微小正负值按自适应精度显示，在相邻原值列可核对，显式 `percent-1` 显示 12.5%。它验证渲染与覆盖优先级；真实查询覆盖、格式调整和精度告警由查询回归验证，不代表真实 DQE 或 Relay 已接入。local 直接编辑页面沿此相同格式语义，静态校验不宣称已验证来源业务刻度。"
       ],
       "rules": [
         {
@@ -185,7 +185,8 @@
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/authoring-percent-coverage.json",
-        "references/page-metadata/examples/operation-money-formats.json"
+        "references/page-metadata/examples/operation-money-formats.json",
+        "references/page-metadata/examples/semantic-numeric-display.json"
       ]
     }
   ],

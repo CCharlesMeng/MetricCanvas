@@ -110,7 +110,7 @@ describe('all labels and persistent values', () => {
         for (const row of data.main.snapshot.rows) expect(texts.some(text => text[2] === row.name)).toBe(true);
         const valueLabels = texts.filter(text => text[1]!.includes('font-size:11px'));
         expect(valueLabels).toHaveLength(59 * (index === 2 ? 2 : 1));
-        expect(valueLabels.filter(text => text[2] === '0.0')).toHaveLength(index === 2 ? 2 : 1);
+        expect(valueLabels.filter(text => text[2] === '0')).toHaveLength(index === 2 ? 2 : 1);
         chart.resize({ width: 800, height: frame.minHeight });
         const once = [...chart.renderToSVGString().matchAll(/<text([^>]+)>(.*?)<\/text>/gu)].filter(text => text[1]!.includes('font-size:11px')).map(text => text[0]);
         chart.resize({ width: 800, height: frame.minHeight });

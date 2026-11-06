@@ -106,3 +106,20 @@ it('exports generated row numbers across all sorted matches with a merged header
   expect(sheet.getCell('A9').value).toBe(7); expect(sheet.getCell('B9').value).toBe('客户2');
   expect(data.main?.snapshot.rows[0]).not.toHaveProperty('rowNumber');
 });
+
+it('freezes semantic display units while preserving raw numeric values in Excel', async () => {
+  const component: TableComponent = { id: 'semantic', type: 'table', layout: { span: 12 }, data: { main: 'main' }, props: {
+    columns: ['amount', 'storage', 'billing', 'rate'].map(field => ({ field }))
+  } };
+  const data: NamedDataSlots = { main: { fields: {
+    amount: { type: 'money', role: 'measure', currency: 'CNY' },
+    storage: { type: 'number', role: 'measure', unit: 'GB' },
+    billing: { type: 'number', role: 'measure', unit: '秒', defaultFormat: 'billing-hours' },
+    rate: { type: 'number', role: 'measure', unit: '%' }
+  }, snapshot: { status: 'ready', rows: [{ amount: 12345, storage: 1024, billing: 3666, rate: 12.345 }] } } };
+  const bytes = await encodeTableWorkbook(component, data, new AbortController().signal);
+  const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(bytes.buffer);
+  const sheet = workbook.worksheets[0]!;
+  expect(['A2', 'B2', 'C2', 'D2'].map(cell => sheet.getCell(cell).value)).toEqual([12345, 1024, 3666, 12.345]);
+  expect(['A2', 'B2', 'C2', 'D2'].map(cell => sheet.getCell(cell).numFmt)).toEqual(['"1.23万"', '"1 TB"', '"1.02小时"', '"12.3%"']);
+});

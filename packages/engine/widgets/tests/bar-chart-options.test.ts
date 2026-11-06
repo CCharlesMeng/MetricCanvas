@@ -213,7 +213,7 @@ describe('barOption 实际/预测系列', () => {
     expect(typeof labelLayout).toBe('function');
     if (typeof labelLayout === 'function') {
       expect(labelLayout({ text: '1.22亿' })).toEqual({});
-      expect(labelLayout({ text: '1,220.0亿' })).toEqual({ moveOverlap: 'shiftX' });
+      expect(labelLayout({ text: '1,220.5亿' })).toEqual({ moveOverlap: 'shiftX' });
     }
     expect(option.series.map((series) => series.label?.color)).toEqual([
       '#fff',
@@ -231,9 +231,9 @@ describe('barOption 实际/预测系列', () => {
     ).toBe(true);
     expect(option.series[0]?.label?.formatter?.({ value: 3_100_000 })).toBe('310万');
     expect(option.series[0]?.label?.formatter?.({ value: 9_999 })).toBe('9,999元');
-    expect(option.series[0]?.label?.formatter?.({ value: 10_000 })).toBe('1.00万');
-    expect(option.series[0]?.label?.formatter?.({ value: 100_000_000 })).toBe('1.00亿');
-    expect(option.series[0]?.label?.formatter?.({ value: 1_000_000_000 })).toBe('10.0亿');
+    expect(option.series[0]?.label?.formatter?.({ value: 10_000 })).toBe('1万');
+    expect(option.series[0]?.label?.formatter?.({ value: 100_000_000 })).toBe('1亿');
+    expect(option.series[0]?.label?.formatter?.({ value: 1_000_000_000 })).toBe('10亿');
     expect(option.series[0]?.label?.formatter?.({ value: 123_456_789_000 })).toBe('1,234.6亿');
     expect(option.series[2]?.markPoint?.data?.map((point) => point.value)).toEqual([
       11_300_000,
@@ -351,7 +351,7 @@ it('IOC F6 显式柱线共享横轴、正确分轴与单位、缺点不连成0',
     { field: 'income', kind: 'bar', axis: 'primary' }, { field: 'rate', kind: 'line', axis: 'secondary' }
   ] });
   expect(result).toMatchObject({
-    xAxis: { data: ['1月', '2月'] }, yAxis: [{ name: '元' }, { name: '%' }],
+    xAxis: { data: ['1月', '2月'] }, yAxis: [{ name: '元' }, { name: undefined }],
     series: [{ type: 'bar', yAxisIndex: 0, data: [100, 200] }, { type: 'line', yAxisIndex: 1, connectNulls: false, data: [10, null] }]
   });
 });

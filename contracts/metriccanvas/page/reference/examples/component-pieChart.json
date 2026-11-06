@@ -1,37 +1,29 @@
 {
-  "schemaVersion": "6.59",
-  "id": "chart-constant-values-page",
+  "schemaVersion": "6.93",
+  "id": "semantic-numeric-display",
   "layout": "dashboard",
   "dataSources": {
-    "main": {
+    "empty-pie": {
       "fields": {
         "category": {
           "type": "string",
-          "role": "dimension",
-          "label": "地区"
+          "role": "dimension"
         },
-        "actual": {
+        "value": {
           "type": "number",
-          "role": "measure",
-          "label": "实际值",
-          "unit": "个",
-          "defaultFormat": "number"
+          "role": "measure"
         }
       },
       "source": {
         "type": "inline",
         "rows": [
           {
-            "category": "北京",
-            "actual": 1
+            "category": "甲",
+            "value": 0
           },
           {
-            "category": "上海",
-            "actual": 3
-          },
-          {
-            "category": "广东",
-            "actual": 4
+            "category": "乙",
+            "value": 0
           }
         ]
       }
@@ -42,18 +34,19 @@
       "id": "main",
       "components": [
         {
-          "id": "pie",
+          "id": "missing-pie",
           "type": "pieChart",
           "layout": {
             "span": 6
           },
-          "props": {
-            "title": "饼图：三个现有类别均为 2",
-            "categoryField": "category",
-            "value": 2
-          },
           "data": {
-            "main": "main"
+            "main": "empty-pie"
+          },
+          "props": {
+            "title": "图表缺失符号间距",
+            "categoryField": "category",
+            "valueField": "value",
+            "labelLine": true
           }
         }
       ]

@@ -12,8 +12,8 @@ export function compatibleTableFormat(value: FieldValue, format: ValueFormatPres
   return finiteNumber(value) !== undefined;
 }
 /** Format-only mismatch retains the typed value; the current cell displays its original text. */
-export function formatTableCell(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string): string {
-  if (!hasDisplayValue(value) || !format || compatibleTableFormat(value, format)) return formatValue(value, format, missingText);
+export function formatTableCell(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string, unit?: string): string {
+  if (!hasDisplayValue(value) || !format || compatibleTableFormat(value, format)) return formatValue(value, format, missingText, { unit });
   return String(value);
 }
 

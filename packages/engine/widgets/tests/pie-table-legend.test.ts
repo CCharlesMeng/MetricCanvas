@@ -33,7 +33,7 @@ describe('pie table legend', () => {
     const config: PieChartProps = { categoryField: 'band', value: 3, sort: 'desc',
       legend: { type: 'table', columns: [{ label: '占比', value: 'percentage' }] } };
     expect(pieRows(data, config)).toEqual(data.main.snapshot.rows);
-    expect(table(config).rows.map(row => row.values)).toEqual(Array(5).fill(['20.0%']));
+    expect(table(config).rows.map(row => row.values)).toEqual(Array(5).fill(['20%']));
     expect(pieOption(data, config).series).toMatchObject([{ data: Array(5).fill({ value: 3 }) }]);
     expect(pieRows(data, config)[0]).toBe(data.main.snapshot.rows[0]);
   });
@@ -56,8 +56,8 @@ describe('pie table legend', () => {
       { label: '占比', value: 'percentage', align: 'left' }
     ] } };
     const original = structuredClone(data);
-    expect(table(config).rows[0]!.values).toEqual(['2.0 家', '20.0%']);
-    expect(table(config).rows[3]!.values).toEqual(['0.0 家', '0.0%']);
+    expect(table(config).rows[0]!.values).toEqual(['2 家', '20%']);
+    expect(table(config).rows[3]!.values).toEqual(['0 家', '0%']);
     expect(pieRows(data, config)[0]!.count).toBe(2);
     expect(data).toEqual(original);
     expect(pieLegendData(data, config).columnPresentation).toEqual([
@@ -73,7 +73,7 @@ describe('pie table legend', () => {
       { label: '数量', field: 'count' }
     ] } };
     expect(table(config, input).rows[0]!.values).toEqual(['暂无', '2']);
-    expect(table().rows[0]!.values).toEqual(['2', '20.0%']);
+    expect(table().rows[0]!.values).toEqual(['2', '20%']);
     expect(pieLegendData(data, props).columnPresentation).toEqual([
       { unit: undefined, align: undefined }, { unit: undefined, align: undefined }
     ]);
@@ -104,12 +104,12 @@ describe('pie table legend', () => {
   });
 
   it('distinguishes returned percentage fields from calculated percentages and retains column order', () => {
-    expect(table().rows[0]!.values).toEqual(['2', '20.0%']);
+    expect(table().rows[0]!.values).toEqual(['2', '20%']);
     const bound: PieChartProps = { ...props, legend: { type: 'table', columns: [
       { label: '返回占比', field: 'share' }, { label: '数量', field: 'count' }
     ] } };
     expect(table(bound).columns).toEqual(['返回占比', '数量']);
-    expect(table(bound).rows[0]!.values).toEqual(['15.0%', '2']);
+    expect(table(bound).rows[0]!.values).toEqual(['15%', '2']);
     expect(table().categoryLabel).toBeUndefined();
   });
 
@@ -118,7 +118,7 @@ describe('pie table legend', () => {
     zero.main.snapshot.rows = [{ band: '重复', count: 0 }, { band: '重复', count: 0 }];
     const view = table(props, zero);
     expect(view.rows).toHaveLength(2);
-    expect(view.rows[0]!.values[1]).toBe('—');
+    expect(view.rows[0]!.values[1]).toBe('--%');
   });
 
   it('hides outer labels only by default for table legends and keeps existing charts unchanged', () => {
