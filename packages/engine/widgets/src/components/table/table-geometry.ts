@@ -1,3 +1,5 @@
+import { measureTableViewport, reconcileResizeTargets } from './table-viewport';
+
 /** Presentation-only geometry. Query/view state remains owned by the runtime. */
 export function tableGeometry(root: HTMLElement, enabled: boolean) {
   let dispose: (() => void) | undefined;
@@ -50,9 +52,9 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
       root.classList.toggle('fixed-overflow', pinnedWidth >= scroll.clientWidth && pinnedWidth > 0);
       root.classList.toggle('scrolled-left', scroll.scrollLeft > 1);
       root.classList.toggle('scrolled-right', scroll.scrollLeft + scroll.clientWidth < scroll.scrollWidth - 1);
-      const targets = new Set<Element>([root, table, ...rows, ...table.querySelectorAll(':scope > thead > tr > th')]);
-      for (const element of observed) if (!targets.has(element)) { resize.unobserve(element); observed.delete(element); }
-      for (const element of targets) if (!observed.has(element)) { resize.observe(element); observed.add(element); }
+      const bodyRows = measureTableViewport(root, table, scroll);
+      const targets = new Set<Element>([root, table, ...rows, ...bodyRows, ...table.querySelectorAll(':scope > thead > tr > th')]);
+      reconcileResizeTargets(resize, observed, targets);
     }
     function schedule() { if (!frame) frame = win.requestAnimationFrame(measure); }
     const mutation = new MutationObserver(schedule);
@@ -66,6 +68,7 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
       if (frame) win.cancelAnimationFrame(frame);
       root.classList.remove('scrolled-left', 'scrolled-right', 'fixed-overflow');
       root.style.removeProperty('--table-viewport-width');
+      root.style.removeProperty('--table-viewport-max-height');
       for (const cell of table.querySelectorAll<HTMLElement>(':scope > :is(thead,tbody) > tr > .fixed[data-column-index]')) {
         cell.style.removeProperty('--table-sticky-left');
         cell.style.removeProperty('--table-sticky-right');

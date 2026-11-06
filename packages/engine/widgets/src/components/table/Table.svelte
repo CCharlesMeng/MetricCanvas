@@ -356,7 +356,7 @@
 <div
   bind:this={root}
   use:visibleAfterPaint={interactive && !staticExport && (data.main.snapshot.status === 'ready' || data.main.snapshot.status === 'empty') ? oncandidatepreloadvisible : undefined}
-  use:tableGeometry={props.variant !== 'reportCompact' && !staticExport && leaves.length>0}
+  use:tableGeometry={!staticExport && leaves.length>0}
   class:os-theme={props.variant !== 'reportCompact'}
   class:fit-container={props.fit === 'container'}
   class:row-content={nested}
@@ -388,7 +388,7 @@
   {:else}
   <div
     class:content-frame={props.variant === 'reportCompact'}
-    class:scroll={props.variant !== 'reportCompact'}
+    class="scroll"
   >
     <table>
       <colgroup>
@@ -1758,6 +1758,19 @@
   .table-widget.os-theme .empty-state { box-sizing: border-box; display: flex; min-height: 60px; padding: 60px 0; align-items: center; justify-content: center; text-align: center; }
   .table-widget.os-theme.static-export :global(.fixed-left-boundary)::after,
   .table-widget.os-theme.static-export :global(.fixed-right-boundary)::after { display: none; }
+  /* Runtime owns the twelve-row viewport; static exports expand below. */
+  .table-widget.embedded, .table-widget.forecast-matrix { height: auto; }
+  .table-widget > :is(.scroll, .content-frame) {
+    box-sizing: border-box;
+    flex: 0 1 auto;
+    height: auto;
+    min-height: 0;
+    max-height: var(--table-viewport-max-height);
+    overflow: auto;
+  }
+  .report-compact > .content-frame { border: 0; }
+  .table-widget thead th { top: var(--table-header-top, 0px) !important; }
+
   .table-widget.static-export, .static-export .scroll, .static-export .content-frame { height:auto!important; min-height:0!important; max-height:none!important; overflow:visible!important; }
   .static-export table { height:auto!important; }
   .static-export th, .static-export td { position:static!important; }

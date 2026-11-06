@@ -118,6 +118,8 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 
 表格 `selection.writes` 通过声明的维度筛选器联动下游查询；有真实值的选择列与链接列显示下划线；显示缺省文案的单元格为普通文本，不响应选择、导航或详情点击。完整声明、查询订阅与内联入口边界见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，可观察示例为 [table-cell-selection](pages/capabilities/table/table-cell-selection.json)。
 
+所有表格默认最多显示十二行数据，超出部分表内滚动，表头和分页保留，静态导出展开完整内容；见[十二行可视高度](docs/page-metadata/components/table.md#十二行可视高度)，合成入口 `/pages/table-twelve-row-viewport`。无需新增字段。
+
 表格的普通、预测矩阵与内嵌变体采用 TinyVue OS 网格外观，`reportCompact` 保持既有紧凑外观；范围及可观察示例见[表格渲染外观与变体](docs/page-metadata/components/table.md#渲染外观与变体)。此调整不新增协议字段。
 
 本文件维护页面协议概览、版本边界与阅读导航。使用步骤与跨字段示例由专题文档维护，字段语义由模块维护，精确结构表从Schema生成；同一规则在所属文档维护后由其他入口引用。

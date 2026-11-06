@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "693264bf32472bc8c0f43ccaf7b6f7e7140b2f6f44dda4b11b4252323135764f",
+  "sha256": "e5413f118c4e0b2daf81c9e18062346c6dd48530eb209e7319b1a35d4bb8885e",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "48fa4c9841fff00c73ab0aea964c6746c860b7a2aab98bf793efca6a95b3440b"
+      "sha256": "73ae9eec53176a63553b0f38a6979ccb6521fade64f3b2143bc210b3f1b118bb"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "a4a42cb40c95a425043e41597e39a4d65e58cc999559c4f03fab27a5a6e6e16c"
+      "sha256": "24ab75dd8e8d11deabbec75316590a32d42e6911f9eda56825cf546602799488"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2636,7 +2636,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "ced49199929350788e308db2020a792b28b15972202a55e7bfaf1fd064191fc4"
+      "sha256": "91aa4a81e200a2bd969924fc9158636a005362a85ff344da632b090b18c69f5c"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
@@ -2756,7 +2756,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "3aa7f6fd25fdfd34bedfcc06c4d9532a735e2745684847ee02e90e9bd2a9ecd7"
+      "sha256": "0a0812d6b343233ab35d19b62c049a9aee5b26f047a0276fc0c52de610e88072"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2913,6 +2913,10 @@
     {
       "file": "pages/capabilities/table/table-toolbar-demo.json",
       "sha256": "c476277dbb7d15328d2b9d44807cb0d1856c04aefcbe98091a1b5921c4d36156"
+    },
+    {
+      "file": "pages/capabilities/table/table-twelve-row-viewport.json",
+      "sha256": "ffcef1a5278182e24992c13d31aeebf6ffabb5be1d16e7cdd2c9db165b85b7e1"
     },
     {
       "file": "pages/capabilities/table/table-value-tolerance.json",
