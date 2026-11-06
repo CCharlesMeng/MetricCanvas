@@ -47,7 +47,7 @@ describe('partner-health 正式页面使用完整组织并集',()=>{
     const aligned=projectTableRows(data,table.props);
     const columns=tableColumnLeaves(table.props.columns);
     const total=columns.find(c=>typeof c.field==='object'&&'field' in c.field&&c.field.field==='total-score')!;
-    expect(alignedCellText(total.field,data,aligned.find(r=>r.main.region===`${prefix}-03`)!)).toBe('0.0');
+    expect(alignedCellText(total.field,data,aligned.find(r=>r.main.region===`${prefix}-03`)!)).toBe('0');
     const missing=columns.find(c=>typeof c.field==='object'&&'field' in c.field&&c.field.field==='satisfaction-evaluation')!;
     expect(alignedCellText(missing.field,data,aligned.find(r=>r.main.region===`${prefix}-04`)!)).toBe('--');
   });
@@ -75,7 +75,7 @@ describe('partner-health 正式页面使用完整组织并集',()=>{
 });
 
 describe('DQE 数字归一化与展示',()=>{
-  it.each([[0,'0.0',5],[null,'--',5],['','--',5],['   ','--',5],['0','0.0',5],[-2,'-2.0',3],['坏值','坏值',5]])('%s 的显示和求和', (input,text,total)=>{
+  it.each([[0,'0',5],[null,'--',5],['','--',5],['   ','--',5],['0','0',5],[-2,'-2',3],['坏值','坏值',5]])('%s 的显示和求和', (input,text,total)=>{
     const fields={score:{type:'number',role:'measure',queryField:'得分'}} as const;
     const result=normalizeQueryRows([{得分:input}],fields);
     if(!result.ok) throw Error(JSON.stringify(result.issues));

@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-d817c803b58fbee0",
-  "contentSha256": "d817c803b58fbee0d4a5403ca251a4ff24b7eeb7ee14c3deb4f41241e4abacfc",
+  "contentVersion": "1-e3560912db4b51af",
+  "contentSha256": "e3560912db4b51afe59502371c69c9a7dc1169616c774a8e6ca0622448e78adc",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -109,7 +109,7 @@
     },
     {
       "file": "authoring-contracts/authored/source-format.conformance.json",
-      "sha256": "dd5d67cb45237c5cb7b6ee9bebc5488b3d822586984703d598022a31b7ea2084"
+      "sha256": "4dfc52ab7abe44525513cfed548537eee78940cd08de6aa0e27fef055c80cb52"
     },
     {
       "file": "authoring-contracts/exported/agent-conformance.json",
@@ -129,7 +129,7 @@
     },
     {
       "file": "authoring-contracts/manifest.json",
-      "sha256": "4f8d7a2dfebcbb5dd875cdc7b25ec68ae49dadbd95d6a80e1b2f211c1bb6089a"
+      "sha256": "0e89b4de84204a8b3e71395f135f79ae17aa5506b8751367db26f3122d7dd946"
     },
     {
       "file": "components/aiSummary.json",
@@ -8913,7 +8913,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "4cc3caa202a3280b617b60b3e5f1e2c52e2e861d2a060fa777391863655e0266"
+      "sha256": "821dbe66ac71a4b9ee4050858fa7407cb0ffa41e7e79f59ce9ab41bffda08e60"
     },
     {
       "file": "runtime/coverage.json",
@@ -8961,7 +8961,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "b3b85a4326d64b8fc036628c9dafa8b2a2f680fd6a9c5509aa938347701f1362"
+      "sha256": "87cb3af42efb85f2804b4733b94103d0ced4b9231e4c08b8aa358950913ea5b0"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -9074,7 +9074,7 @@
     "productManifestSha256": "7a0f6653c0ef9c2ae4b9f98ce75ccb163fe8e70d548475302221ea23834a06db",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
-    "authoringManifestSha256": "4f8d7a2dfebcbb5dd875cdc7b25ec68ae49dadbd95d6a80e1b2f211c1bb6089a",
+    "authoringManifestSha256": "0e89b4de84204a8b3e71395f135f79ae17aa5506b8751367db26f3122d7dd946",
     "pageSchemaVersion": "6.94",
     "platformProtocolVersion": "2.0"
   },

@@ -51,7 +51,7 @@ describe('AI authoring presentation policy, not page legality', () => {
       expect(probes[0]!.axis.matches).toBe(true);
       expect(probes[0]!.label.matches).toBe(true);
       expect(probes[0]!.tooltip.matches).toBe(true);
-      expect(probes[0]!.axis.actual).toBe('1.0百万');
+      expect(probes[0]!.axis.actual).toBe('1百万');
     }
   });
 });
