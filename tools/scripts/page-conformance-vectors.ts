@@ -343,7 +343,7 @@ export const invariants: InvariantDefinition[] = [
     {case:'period-filter-report',base:'dashboard-period-filter',expect:/Dashboard/,mutate:d=>{d.layout='report';}},
     {case:'period-filter-datetime',base:'dashboard-period-filter',expect:/datetime/,mutate:d=>{d.filters[0].precision='datetime';}},
     {case:'period-filter-no-default',base:'dashboard-period-filter',expect:/期间默认选择/,mutate:d=>{delete d.filters[0].default;}},
-    {case:'period-filter-static-time',base:'dashboard-period-filter',expect:/固定时间来源/,mutate:d=>{d.dataSources.sales.source.query.body.dsl_list[0].filter.time.start='2026-01-01';}}
+    {case:'period-filter-static-time',base:'dashboard-period-filter',expect:/查询体不能重复声明时间来源/,mutate:d=>{d.dataSources.sales.source.query.body.dsl_list[0].filter.time.start='2026-01-01';}}
   ]},
   {id:'filter-source-candidates',description:'6.90 页面数据源完整候选、静态树及独立单多选',valid:['filter-source-candidates'],cases:[
     {case:'source-candidate-version',base:'filter-source-candidates',expect:/由 6.90 引入/,mutate:d=>{d.schemaVersion='6.89';}},

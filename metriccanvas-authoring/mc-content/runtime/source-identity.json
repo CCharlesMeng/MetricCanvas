@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "2af184e497ead9c75f7a79919a97a1b78f0071f95584a48f6ff9386be0efdc43",
+  "sha256": "685e291f617a4dbe7f8a63e379a5439407aef9c9819fc1db70352c23d2a9eb81",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -64,7 +64,7 @@
     },
     {
       "file": "docs/page-metadata/components/iocHeader.md",
-      "sha256": "07c053123988255af0c5228e04fad05539468c1b9a2cd751d629aeda8d93b10f"
+      "sha256": "b0714cf6121295f816f442d15f421291efc6bc95ec31d7d660b86f6648bcb80e"
     },
     {
       "file": "docs/page-metadata/components/keyValuePanel.md",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "90a8f76570d47f203856a2517e981cfece7ff2e42374e9254b4e0e476861342b"
+      "sha256": "56e7c4065620bba38c559b4875f0dd23ac782a89412a3c8290ff1eca8c3d27e3"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -156,7 +156,7 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "be386cd91fd722aff34a30babd2540579043bed1899e9131f3e06ac17e0c000f"
+      "sha256": "d8d060b59e12aa82a96ff9d75fde3b8e32eb3cf383f0e2c316bcac337fa6d190"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
@@ -1612,7 +1612,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "248caf1add142b2eaaf6620f1bbbda7921b8f09c248c78d37d304b78b51742cc"
+      "sha256": "17ec274371b7b2056cc17e0ac1ce45ef680f9dbd8d9417f8078f27ca82a1d784"
     },
     {
       "file": "packages/page/src/ioc-header-controls.ts",
@@ -1628,7 +1628,7 @@
     },
     {
       "file": "packages/page/src/ioc-period-query.ts",
-      "sha256": "e2556ea726f152e8774251f50ea3096d88afd033325c2b8df6859e9e55deaec4"
+      "sha256": "748ba005788e8870d7846deced542f732c148d3a79c9096f6e86580066a73c80"
     },
     {
       "file": "packages/page/src/layout-compatibility.ts",
@@ -1727,6 +1727,10 @@
       "sha256": "a15566b374aae4e536a3a2d9504195b098e0beb2f9e70ddde9663b388465de42"
     },
     {
+      "file": "packages/page/src/period-query-defaults.ts",
+      "sha256": "0c609faae9a96844dd573a08633c730424061567c04ae5aa68f7312b92cc863c"
+    },
+    {
       "file": "packages/page/src/period-query.ts",
       "sha256": "dafad7020cea91edb44ac1645ef43bb29ba65d5f392a0ab6395c537483a4ff89"
     },
@@ -1788,7 +1792,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "e607a2965fa9f718061d7de1ecbb3c0af75e0c1a5c3c623db78400b6ebe636d3"
+      "sha256": "4695bd6daf58b84d95af43e6a41676131a81ae0d22e4e74e8f79e40df3298f3a"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -1900,7 +1904,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "70504fabceb14ee0f266fd986b55ce4ca9cec39c8f4f3c64b48191b0f7b18ade"
+      "sha256": "be00ad94a33a01dee4fd0b3299a51501246bc1cbd81512b413dfea96fec86cbf"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -2376,7 +2380,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "32ad3cd69425531e36bd9780f3c7b1f51c1ecccd03fca43491d0bd54af6d20ae"
+      "sha256": "a2c04009a6ef4b29d9c3f5f5f8cba960bfc66c1518d94dfde7cead1332c42277"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",
@@ -2439,8 +2443,12 @@
       "sha256": "ea12c4db5e1481ca24c55cd912c453f3f0616ec0ee60ba3bc2ce8bd5b2846bbe"
     },
     {
+      "file": "pages/capabilities/filters/period-query-defaults-legacy.json",
+      "sha256": "674d435d1e77861ccfeb136e18449a87647ff65b59eaf1e2e8a9ee291d758b95"
+    },
+    {
       "file": "pages/capabilities/filters/quarter-query-period.json",
-      "sha256": "d5f303471d90f601797a8dca83499d62eaa779d3ff619bc4b48311b4a4c00216"
+      "sha256": "bbd1a083c49293544e7d60786282c0b5b928b0281ff408855c7dc57628555bc4"
     },
     {
       "file": "pages/capabilities/filters/query-mode-chart-demo.json",
@@ -3488,11 +3496,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "10e2634f8c60082ba84904bd9742f7e9036a2178259f76f2b5808b4e2b77c222"
+      "sha256": "6dbc1feade9c08db7ab5ae638f57a6249e412972fd5520a874d89cdf569a33ea"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "55f9c01dcdbe4a968d1436e0a5add5b6203305dda6dcb893f8961292826230f9"
+      "sha256": "d8cfd16b481b06f867f20696064ad2be1f0b119bf3b67a7097dd6ae7ccaff572"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

@@ -1,4 +1,4 @@
-import {requiresQueryContext,hasIocPeriodDefault} from '@metriccanvas/page/internal';
+import {requiresQueryContext,hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import { resolvePageParams, type PageDocument } from '@metriccanvas/page';
 import { createSourceProgram, type SourceUpdate } from './source-program/session';
 import { initialFilterValues } from './filter-values';
@@ -15,7 +15,7 @@ export function createPageDataExecutor(config: { gateway: RuntimeDataGateway;dis
     if (!resolved.ok) throw new Error(resolved.issues[0].message);
     const page = seedPageParamFilters(resolved.resolvedPage, resolved.effectiveInputs);
     const output = structuredClone(resolved.document);
-    for(const source of Object.values(output.dataSources))if(source.source.type==='query'&&(requiresQueryContext(source.source.query,page.filters)||hasIocPeriodDefault(source.source.query,page)))delete source.source.initial;
+    for(const source of Object.values(output.dataSources))if(source.source.type==='query'&&(requiresQueryContext(source.source.query,page.filters)||hasPeriodQueryDefault(source.source.query,page)))delete source.source.initial;
     const now=config.now??new Date(),displayInputs=structuredClone(config.displayInputs?.()),filterRevision=config.filterRevision?.()??0;
     const conditions=initialFilterValues(page.filters ?? [],now,displayInputs,filterRevision);
     const {initialization,filtered}=prepareTableExecution(page,output,{declarations:page.filters??[],filters:conditions,displaySnapshot:displayInputs,filterRevision});

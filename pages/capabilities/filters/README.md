@@ -265,9 +265,17 @@
 
 入口：`/pages/quarter-query-period`；[页面 JSON](quarter-query-period.json)。启动 `pnpm dev:playground`。
 
-默认选择 2026-Q3，IOC Header 认领的时间绑定仅声明 `target:"time"`，没有 periodPolicy，旧查询体保留 month 用于验证引擎默认覆盖。首次请求发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，近一年发送 month 和此前十二个完整月范围，聚合开关保留。显式 fixed/selection、期间比较、字段时间绑定与普通非 IOC 绑定的优先级由自动测试覆盖；月度趋势例外见 `ioc-header-demo` 的 trend 查询。Q0/Q5、日/月格式混入季度和倒置范围继续在发送前拒绝。
+默认选择 2026-Q3，IOC Header 认领的时间绑定仅声明 `target:"time"`，没有 periodPolicy，旧查询体保留 month 用于验证引擎默认覆盖。首次请求发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，近一年发送 month 和此前十二个完整月范围，聚合开关保留。显式 fixed/selection、期间比较、字段时间绑定的优先级由自动测试覆盖；月度趋势例外见 `ioc-header-demo` 的 trend 查询。Q0/Q5、日/月格式混入季度和倒置范围继续在发送前拒绝。
 
 自动验收：`node apps/playground/tests/quarter-query-browser.mjs <证据目录>`，环境变量 `QUARTER_QUERY_BASE_URL` 指向页面试验场（默认端口 5208）。浏览器测试按页面 JSON 驱动控件，以合成 HTTP 回执验证实际请求编码和表格渲染；未调用真实 DQE/Relay，页面脱离测试运行时需要可用的数据网关。
+## 旧工具栏期间默认规则
+
+入口：`/pages/period-query-defaults-legacy`；[页面 JSON](period-query-defaults-legacy.json)。此能力回归场景刻意保留旧 `dashboardToolbar`，不迁移页头，Schema 6.95 没有新增字段。
+
+启动 `pnpm dev:playground` 并接入可用数据网关。默认 2026-Q3，同一选择驱动三条真实 DQE 请求：普通时间绑定发送 quarter/2026-Q3；显式 fixed month 发送 month/2026-07～2026-09；自定义账期字段发送 >=20260701、<=20260930，不增加指标时间条件。切换年、月、近一年后三者继续遵守各自规则，月趋势不会被季度默认覆盖。
+
+自动验收：先用 `DQE_SIM_PORT=18348 pnpm --filter playground dev --host 127.0.0.1 --port 5218 --strictPort` 启动页面试验场，再运行 `node apps/playground/tests/period-query-defaults.browser.mjs <证据目录>`。测试自行启动 18348 的合成 HTTP 服务，`PERIOD_QUERY_BASE_URL` 可改页面试验场地址，`PERIOD_QUERY_BACKEND_PORT` 应与代理端口一致。原生 HTTP 验证传参、表格和服务不支持时不回退，原有错误事件由集成应用处理；不证明真实 DQE 指标口径。非期间日期范围、时间点窗口、期间比较和对象查询由定向回归验证。月趋势例外沿用现有 periodPolicy，未声明策略的旧 period 不再承担固定粒度含义。
+
 ## 数据源候选与静态组织树
 
 入口：`/pages/filter-source-candidates`；[页面 JSON](filter-source-candidates.json)。

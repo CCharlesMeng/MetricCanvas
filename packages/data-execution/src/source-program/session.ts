@@ -1,5 +1,5 @@
 import { sourceCandidatesGateway } from '../source-candidates';
-import {hasIocPeriodDefault} from '@metriccanvas/page/internal';
+import {hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import {flattenPageComponents,hasHeaderDefaults,tableDefaultsRemote,normalizeTableSelectView} from '@metriccanvas/page/internal';
 import {hasPeriodComparison} from '@metriccanvas/page/internal';
 import {clearRecordJoinCache} from '../paged-join/records-reader';
@@ -77,7 +77,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   const candidates = createCandidateValidator(page, config.gateway, config);
 
   const cascaded = cascadeSourceIds(page.dataSources);
-  const defaultPeriodSources=new Set([...compiled.sources].filter(([,source])=>source.source.type==='query'&&hasIocPeriodDefault(source.source.query,page)).map(([id])=>id));
+  const defaultPeriodSources=new Set([...compiled.sources].filter(([,source])=>source.source.type==='query'&&hasPeriodQueryDefault(source.source.query,page)).map(([id])=>id));
   const headerTables = flattenPageComponents(page).filter(node => node.type === 'table');
   const unsafeInitials = new Set(headerTables.filter(table => hasHeaderDefaults(table.props.columns) && tableDefaultsRemote(page,table) && page.dataSources[table.data.main]?.source.type === 'query').map(table => table.data.main));
   const defaults = new Map<string, import('../filter-values').FilterValue>();

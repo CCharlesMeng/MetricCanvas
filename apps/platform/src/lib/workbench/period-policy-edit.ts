@@ -19,7 +19,7 @@ export function preservePeriodBinding(choice:PeriodPolicyChoice,existing:boolean
   return choice==='legacy'||choice==='preserve'||existing&&!changed;
 }
 export function periodPolicyPreview(mode:PeriodMode,value:string,policy:PeriodQueryPolicy|undefined,now:Date):string {
-  if(!policy)return 'IOC 页头普通期间绑定默认跟随选择；其他绑定沿用查询配置';
+  if(!policy)return '普通期间绑定默认跟随选择；自定义字段和显式策略沿用查询配置';
   try {
     const input=mode==='last12Months'?{mode} as const:{mode,...(value?{value}:{})};
     const resolved=resolvePeriodQuery(resolvePeriodSelection(input,now),policy);

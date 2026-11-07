@@ -1,6 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
+import {resolvePeriodSelection} from '@metriccanvas/page/internal';
 import type {DimensionFilterDeclaration,Page,QueryDataSource,EffectiveQuery} from '@metriccanvas/page/internal';
 import {composeEffectiveQuery} from '../src/effective-query';
 import {effectiveDqeItem} from '../src/dqe/dqe';
@@ -64,8 +65,9 @@ describe('default key-office override and explicit boolean override contract',()
     const page=load(JSON.parse(readFileSync('pages/capabilities/ioc-header/business/ioc-header-demo.json','utf8')));
     const source=Object.values(page.dataSources).find(source=>source.source.type==='query') as QueryDataSource;
     const input=new Map<string,FilterValue>([['key-office',{type:'boolean',value:true}],['region',{type:'dimension',dimension:'demo_office',level:'office',values:['CN-SH']}]]);
+    input.set('period',{type:'timeRange',...resolvePeriodSelection({mode:'quarter',value:'2026-Q3'},new Date(2026,9,15),'month')});
     const q=composeEffectiveQuery({dataSource:source,filters:page.filters},input,0,[],{});
-    expect(q.filterValues).toEqual([{target:'dimension',queryField:'demo_key',values:['1']}]);
+    expect(q.filterValues).toEqual([{target:'time',period:'quarter',value:{from:'2026-Q3',to:'2026-Q3'}},{target:'dimension',queryField:'demo_key',values:['1']}]);
   });
   it.each([
     {ids:['missing'],message:'覆盖筛选必须引用'},

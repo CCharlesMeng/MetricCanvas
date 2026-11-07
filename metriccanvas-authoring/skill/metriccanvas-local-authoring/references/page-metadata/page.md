@@ -105,7 +105,7 @@ inline+compact 保持整页吸顶。位置切换使用同一个控件实例；�
 新声明采用 `iocHeader.props.components`，支持引用普通筛选的 `filterControl` 和拥有标准 Region 的 `regionFilter`；旧 `filterIds` 保留读取，两者互斥。Region 由子控件显式引入，查询范围和筛选状态不变。完整声明及边界见[页头子控件](components/iocHeader.md#页头子控件691)，合成场景 `/pages/ioc-header-controls`。
 
 
-页面协议 6.95。结构真源为本册[schema.json](schema.json)，SHA256 `f71995c4461c24803925cac8173cc5ab7215551a5938f33124709ef042f757c4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.95。结构真源为本册[schema.json](schema.json)，SHA256 `017029aa28e8b6b5afb86bbf3ab729b710d6f193995e7a0c668b32c9bc289a27`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -2,7 +2,7 @@
 
 ## 期间选择与查询消费
 
-期间查询绑定读取已应用的 selection 和窗口：组件表达 year/quarter/month/last12Months。IOC 页头认领的普通指标时间绑定默认跟随年、季、月，近一年按月，无需逐页声明 periodPolicy；显式 fixed/selection 策略、期间比较和指定字段时间绑定优先。其他旧绑定的 precision 保留原意；它不决定期间策略的粒度。同一个期间可以同时驱动日趋势与月度数据，固定粒度通过查询 periodPolicy 声明。交互、URL恢复、公历/未来边界仍由现有筛选状态流程管理；取消草稿不改变已应用选择。默认行为与兼容边界见[查询独立期间策略](queries-and-bindings.md#查询独立期间策略)，验收入口 `quarter-query-period`。
+期间查询绑定读取已应用的 selection 和窗口：组件表达 year/quarter/month/last12Months。普通指标时间绑定默认跟随年、季、月，近一年按月，无需逐页声明 periodPolicy；显式 fixed/selection 策略、期间比较和指定字段时间绑定优先。非期间范围绑定的 precision 保留原意；它不决定期间策略的粒度。同一个期间可以同时驱动日趋势与月度数据，固定粒度通过查询 periodPolicy 声明。交互、URL恢复、公历/未来边界仍由现有筛选状态流程管理；取消草稿不改变已应用选择。默认行为与兼容边界见[查询独立期间策略](queries-and-bindings.md#查询独立期间策略)，验收入口 `quarter-query-period`。
 
 展示条件可通过 `{filter:"statistics-period",part:"mode",op:"eq",value:"quarter"}` 读取期间模式。它来自 selection.mode，不是查询策略转换后的 period，也不是控件尚未应用的草稿。新旧期间筛选声明均可被读取；未应用时条件等待，不能经 not 转成允许。示例：`period-query-columns-demo`。
 
@@ -67,9 +67,9 @@ Dashboard 的年、季、月按所选自然期间判断：当前年／当前季�
 
 ## Dashboard 期间选择（6.27）
 
-IOC 页头普通期间绑定默认跟随选择；显式 periodPolicy 可覆盖默认粒度，非 IOC 旧绑定继续按原 precision 配对。同一选择可驱动不同查询粒度，具体策略见 query.period-policy 主题。
+普通期间绑定默认跟随选择，与新旧页头及旧工具栏位置无关；显式 periodPolicy 可覆盖默认粒度，非期间范围绑定继续按原 precision 配对。同一选择可驱动不同查询粒度，具体策略见 query.period-policy 主题。
 
-`timeRange` 可声明 `display: "period"`，在 Dashboard 通用顶部 FilterBar 中作为一个筛选器显示「年／季／月／近一年」。省略 display 仍为原有范围编辑器。`precision` 只允许 month/date，分别决定筛选状态的范围编码；查询 period 由期间策略或 IOC 页头默认规则决定，is_aggregate 保持原值。季度输入显示「2026 年 Q4」，四个面板选项为 Q1—Q4。
+`timeRange` 可声明 `display: "period"`，在 Dashboard 通用顶部 FilterBar 中作为一个筛选器显示「年／季／月／近一年」。省略 display 仍为原有范围编辑器。`precision` 只允许 month/date，分别决定筛选状态的范围编码；查询 period 由期间策略或统一默认规则决定，is_aggregate 保持原值。季度输入显示「2026 年 Q4」，四个面板选项为 Q1—Q4。
 
 6.41 可声明 `periodModes:["year"]`，搭配 `default:{"mode":"year"}` 只显示年份选择框。`periodModes` 是 year／quarter／month／last12Months 的非空不重复列表，省略保持四种模式；单模式隐藏切换栏，默认与参数初始化模式必须在列表内。URL、初值、程序写入共用模式限制，不允许的模式保留已应用值。自然年仍为完整 01-01 至 12-31，当前年可选、未来年禁止。它属于共享期间筛选，不属于某个页头；不要与 `display:"modes"` 的日/月/ISO周对象列表混用。完整页面复用 `dashboard-period-filter`，不新增年份演示页。
 
@@ -278,7 +278,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。
 
 
-页面协议 6.95。结构真源为本册[schema.json](schema.json)，SHA256 `f71995c4461c24803925cac8173cc5ab7215551a5938f33124709ef042f757c4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.95。结构真源为本册[schema.json](schema.json)，SHA256 `017029aa28e8b6b5afb86bbf3ab729b710d6f193995e7a0c668b32c9bc289a27`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

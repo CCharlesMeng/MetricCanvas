@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+普通期间时间绑定默认跟随年／季／月，近一年按月，与旧 `dashboardToolbar` 或新旧 `iocHeader` 的位置无关；固定粒度复用 `periodPolicy`，自定义日期字段仍按原格式传入范围。无需新增字段或提升旧页 Schema 版本。见[期间查询策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)，入口 `/pages/period-query-defaults-legacy`。
+
 多数据源表格的链接、筛选联动与详情入口优先定位当前实际行，同一 `rowKey` 可用于多条阶段明细关联补充数据；旧行回调仍只通过唯一有效行键重新定位。无需修改 Schema 或查询粒度。见[当前行定位与补充数据关联](docs/page-metadata/components/table.md#table-row-action-identity)，合成入口 `/pages/table-multi-source-navigation`。
 
 6.95：表格列 `selection.writes` 可用 `level` 显式选择目标维度筛选的组织层级；复用页头 Region 状态、候选校验和查询绑定。省略保持原默认层级行为。见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，入口 `/pages/ioc-header-controls`。

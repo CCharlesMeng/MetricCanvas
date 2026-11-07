@@ -186,7 +186,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/dataSources/sales/source/query/filterBindings/period-filter",
-      "message": "期间筛选不能另有固定时间来源"
+      "message": "期间策略独占 period/start/end，查询体不能重复声明时间来源"
     }
   ]
 }

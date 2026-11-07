@@ -75,7 +75,7 @@ function filterBindingsSchema(includePeriodPolicy:boolean){return z
             z.object({ target: z.literal('time'), periodComparison: z.object({kind:z.enum(['current','previousPeriod','previousYear']),fact:idZ.optional()}).strict().optional(), window: timeWindowZ.optional(), queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional(), ...(includePeriodPolicy?{periodPolicy: z.union([
               z.object({kind:z.literal('fixed'),period:z.enum(QUERY_PERIODS).describe('固定消费期间的查询粒度；季/年允许扩大到完整自然季/年')}).strict(),
               z.object({kind:z.literal('selection'),supportedPeriods:z.array(z.enum(QUERY_PERIODS)).min(1).meta({uniqueItems:true}).describe('作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退')}).strict()
-            ]).describe('独立消费已应用的期间选择，独占查询 period/start/end；IOC 页头普通期间绑定省略时默认跟随选择，其他旧绑定保留原行为').optional()}: {}) }).strict(),
+            ]).describe('独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为').optional()}: {}) }).strict(),
             // 非维度筛选器的三支谓词(ADR-0085)。
             z
               .object({

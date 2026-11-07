@@ -1,6 +1,6 @@
 import {resolvePeriodComparison, type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {bindingOwnedDqeBody, normalizeDisplayQueryRows, restoreCellFallbacks} from '@metriccanvas/page/internal';
-import {resolvePeriodQuery} from '@metriccanvas/page/internal';
+import {resolvePeriodQuery,withPeriodQueryDefaults} from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from './intersect-filters';
 import {selectQuerySource,requiresTimeValidation,timeFilterBoundaryError} from '@metriccanvas/page/internal';
 import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssue, bindingQueryField, hasQueryFieldMapping, timePointPredicateValue, resolveTimeWindow, type FilterDeclaration, type QueryDataSource, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
@@ -24,6 +24,15 @@ function mappedQueryField(
   return field && hasQueryFieldMapping(field) ? field.queryField : undefined;
 }
 
+/** Select and validate one query branch before applying its runtime predicates. */
+function resolveBoundQuery(binding:QueryBinding,values:FilterValues) {
+  const dataSource=selectQuerySource(binding.dataSource,values);
+  const query=withPeriodQueryDefaults(iocHeaderQuery(dataSource.source.query,binding.page),{filters:binding.filters??binding.page?.filters});
+  const bindings=query.filterBindings??{};
+  validateOverrideBindings(binding.filters??[],values,bindings);
+  return {dataSource,query,bindings};
+}
+
 export function composeEffectiveQuery(
   binding: QueryBinding,
   values: FilterValues,
@@ -32,10 +41,7 @@ export function composeEffectiveQuery(
   headerFilters: QueryHeaderFilters,
   search?: { fields: readonly string[]; query: string; match?: 'equals' }
 ): EffectiveQuery {
-  const dataSource = selectQuerySource(binding.dataSource, values);
-  const query = iocHeaderQuery(dataSource.source.query,binding.page);
-  const bindings=query.filterBindings??{};
-  validateOverrideBindings(binding.filters??[],values,bindings);
+  const {dataSource,query,bindings}=resolveBoundQuery(binding,values);
   const filterValues: EffectiveQuery['filterValues'] = [];
   const overridden=overriddenFilterIds(binding.filters??[],values);
   for (const [filterId, target] of Object.entries(bindings)) {

@@ -4,11 +4,11 @@
 
 ## 查询独立期间策略
 
-IOC 页头认领的 `display:"period"` 普通指标时间绑定默认跟随已应用选择：年用 `year`、季度用 `quarter`、月用 `month`，近一年用 `month` 覆盖此前十二个完整月份。页面只需 `{target:"time"}`；旧查询体的 `period` 不覆盖组件默认。`filter.time` 保留 `is_aggregate`，不允许混入固定 start/end/param/window。组件及兼容根级页头、filterControl、queryModes 共用此默认；未绑定不订阅。
+普通 `display:"period"` 指标时间绑定省略策略时：年 year、季 quarter、月及近一年 month，近一年为此前十二个完整月份。旧 dashboardToolbar、新旧页头及独立控件一致；queryModes 各分支独立处理，未绑定不订阅。只需 `{target:"time"}`，查询体旧 period 被覆盖，is_aggregate 保留；固定 start/end/param/window 冲突仍报错。
 
 6.67 起，指标查询的时间绑定可显式声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期并限制数据能力写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","quarter","year"]}}`。显式策略优先；不支持时拒绝查询，不回退。月度趋势、月账期明细等固定粒度查询应显式声明 fixed 策略，选择季度时仍读取对应三个月。
 
-显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。IOC 默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 IOC 页头认领的旧绑定保持原有精度配对和编码。
+显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 display=period 的范围与时间点绑定保持原有精度和编码。
 
 固定日/月/季/年分别编码 YYYY-MM-DD、YYYY-MM、YYYY-Qn、YYYY。固定季/年扩大到窗口涉及的完整自然季/年，预览标记扩大。选年固定月取十二个月；选月固定日取完整自然月，不计算年度得分。按选择时，年用 year、月用 month，近一年用 month 和已应用的前十二个完整月窗口，请求及导出不重新取当前时间。6.86 起季度用 quarter：2026-Q3 发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3"}`，只允许 Q1—Q4，跨年编码一致。显式 supportedPeriods 未声明 quarter 时拒绝；固定日/月策略仍可覆盖整季。
 
@@ -16,7 +16,7 @@ IOC 页头认领的 `display:"period"` 普通指标时间绑定默认跟随已�
 
 屏幕、列候选、完整导出共用生效查询。受影响查询及依赖的旧 initial/seeds 无粒度证明，重新取数；捕获视图可复用，时间谓词按冻结选择重算。失败不回退，原文及 selection 不变，Schema 字段和版本净增为零。
 
-季度编码验收入口：`quarter-query-period`（合成传输验收），默认 2026-Q3；原期间策略与列显隐验收入口：`period-query-columns-demo`，同时展示固定日/月查询与按期间模式切换表格列；数据性质及操作见页面目录 README。
+验收：`quarter-query-period`（季度）、`period-query-defaults-legacy`（旧工具栏、固定月、自定义字段）、`period-query-columns-demo`（固定日/月与列显隐）。均为合成传输，操作及真实服务边界见页面目录 README。
 
 6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。
 

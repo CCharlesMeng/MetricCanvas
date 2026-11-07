@@ -89,11 +89,36 @@ it('preserves comparison and field-based range bindings',()=>{
   binding.queryField='签约日期';binding.valueFormat='iso';
   expect(compose(load(input)).filterValues).toEqual([{target:'time',queryField:'签约日期',valueFormat:'iso',value:{from:'2026-07',to:'2026-09'}}]);
 });
-it('leaves unclaimed and ordinary period filters on their existing binding rules',()=>{
+it('uses the selected grain independently of IOC Header placement',()=>{
   const input=document();delete input.sections[0].components[0].props.filterIds;
-  expect(compose(load(input)).filterValues).toEqual([{target:'time',value:{from:'2026-07',to:'2026-09'}}]);
+  expect(effectiveDqeItem(compose(load(input)))).toMatchObject({filter:{time:{period:'quarter',start:'2026-Q3',end:'2026-Q3'}}});
   input.sections[0].components.shift();
-  expect(compose(load(input)).filterValues).toEqual([{target:'time',value:{from:'2026-07',to:'2026-09'}}]);
+  expect(effectiveDqeItem(compose(load(input)))).toMatchObject({filter:{time:{period:'quarter',start:'2026-Q3',end:'2026-Q3'}}});
+});
+it.each(['6.79','6.90','6.95'])('uses quarter for an unchanged %s legacy toolbar binding',schemaVersion=>{
+  const input=document();input.schemaVersion=schemaVersion;
+  input.sections[0].components.shift();input.dashboardToolbar={variant:'compact'};
+  const before=structuredClone(input);
+  expect(effectiveDqeItem(compose(load(input)))).toMatchObject({filter:{time:{period:'quarter',start:'2026-Q3',end:'2026-Q3',is_aggregate:true}}});
+  expect(input).toEqual(before);
+});
+it('applies the default when a caller supplies declarations without a full page',()=>{
+  const page=load(),conditions=initialFilterValues(page.filters!,now);
+  const query=composeEffectiveQuery({filters:page.filters,dataSource:page.dataSources['quarter-query'] as QueryDataSource,now},conditions,0,[],{});
+  expect(effectiveDqeItem(query)).toMatchObject({filter:{time:{period:'quarter',start:'2026-Q3',end:'2026-Q3'}}});
+});
+it.each([
+  ['iso','2026-07-01','2026-09-30'],
+  ['compact','20260701','20260930'],
+  ['datetime','2026-07-01 00:00:00','2026-09-30 23:59:59']
+] as const)('preserves custom %s field inputs on a legacy toolbar',(valueFormat,from,to)=>{
+  const input=document();input.sections[0].components.shift();input.dashboardToolbar={variant:'compact'};
+  const binding=input.dataSources['quarter-query'].source.query.filterBindings['statistics-period'];
+  binding.queryField='账期';binding.valueFormat=valueFormat;
+  expect(effectiveDqeItem(compose(load(input)))).toMatchObject({filter:{
+    time:{period:'month',is_aggregate:true},
+    dims:[{dim_name:'账期',operator:'>=',dim_value_list:[from]},{dim_name:'账期',operator:'<=',dim_value_list:[to]}]
+  }});
 });
 it('keeps object queries on their explicit date field and range encoding',()=>{
   const input=JSON.parse(readFileSync('packages/page/fixtures/contract-valid/object-query-page.json','utf8'));
@@ -138,9 +163,12 @@ it('uses the same selected grain for remote column candidates',async()=>{
   }finally{program.dispose();}
 });
 it('removes unproven old initials from one-shot output when the new period query fails',async()=>{
-  const input=document(),before=structuredClone(input);
+  const input=document();input.sections[0].components.shift();input.dashboardToolbar={variant:'compact'};
+  const before=structuredClone(input),queries:unknown[]=[];
   input.dataSources['quarter-query'].source.initial={capturedAt:'2026-09-30T00:00:00Z',rows:[{'区域':'旧月度数据','Tokens消耗量':3}],totalCount:1};
-  const output=await createPageDataExecutor({now,gateway:{async fetchData(){throw Error('Synthetic quarter query failure');}}}).execute(input);
+  const output=await createPageDataExecutor({now,gateway:{async fetchData(query){queries.push(effectiveDqeItem(query));throw Object.assign(Error('Synthetic unsupported quarter'),{code:'DQE_QUERY_REJECTED'});}}}).execute(input);
+  expect(queries).toHaveLength(1);
+  expect(queries[0]).toMatchObject({filter:{time:{period:'quarter',start:'2026-Q3',end:'2026-Q3'}}});
   expect(output.dataSources['quarter-query'].source).not.toHaveProperty('initial');
   expect(input.dataSources['quarter-query'].source.initial.rows[0]['区域']).toBe('旧月度数据');
   expect(output.sections).toEqual(before.sections);

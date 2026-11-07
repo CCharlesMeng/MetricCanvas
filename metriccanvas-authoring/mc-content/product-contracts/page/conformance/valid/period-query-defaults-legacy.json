@@ -1,0 +1,265 @@
+{
+  "schemaVersion": "6.95",
+  "id": "period-query-defaults-legacy",
+  "layout": "dashboard",
+  "meta": {
+    "title": "旧工具栏期间默认规则",
+    "description": "同一期间驱动季度指标、固定月趋势及自定义账期字段；合成传输验收，保留旧工具栏。"
+  },
+  "filters": [
+    {
+      "id": "statistics-period",
+      "type": "timeRange",
+      "display": "period",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "quarter",
+        "value": "2026-Q3"
+      },
+      "periodModes": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
+      ],
+      "precision": "month"
+    }
+  ],
+  "dataSources": {
+    "selected-period": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量",
+          "label": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "is_aggregate": true,
+                    "period": "month"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "statistics-period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "fixed-month": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量",
+          "label": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "statistics-period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "fixed",
+                "period": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "custom-account-period": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量",
+          "label": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "statistics-period": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "compact"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "selected-period-section",
+      "components": [
+        {
+          "id": "selected-period-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "selected-period"
+          },
+          "props": {
+            "title": "默认跟随期间",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "amount",
+                "title": "Tokens消耗量"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "fixed-month-section",
+      "components": [
+        {
+          "id": "fixed-month-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "fixed-month"
+          },
+          "props": {
+            "title": "显式固定按月",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "amount",
+                "title": "Tokens消耗量"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "custom-account-period-section",
+      "components": [
+        {
+          "id": "custom-account-period-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "custom-account-period"
+          },
+          "props": {
+            "title": "自定义账期入参",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "amount",
+                "title": "Tokens消耗量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": {
+    "variant": "compact"
+  }
+}

@@ -5,7 +5,7 @@ import expected from './fixtures/complexity-validation-errors.json';
 import { reportDateFilterErrors } from '../src/report-date-filters';
 import { pagedJoinErrors } from '../src/validate-paged-join';
 
-// Freeze the rule entry points' complete ordered diagnostics from before the refactor.
+// Freeze complete ordered diagnostics; unified period defaults own precision/source conflicts.
 function invalidDatePage() {
   const page = JSON.parse(JSON.stringify(dateFixture));
   page.layout = 'dashboard';

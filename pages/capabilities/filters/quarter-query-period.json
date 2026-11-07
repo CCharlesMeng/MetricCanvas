@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "季度时间过滤编码",
-    "description": "IOC 页头普通期间绑定默认跟随年、季、月，近一年按月；浏览器使用合成回执验收，真实 DQE 另验。"
+    "description": "普通期间绑定默认跟随年、季、月，近一年按月；与新旧页头位置无关，真实 DQE 另验。"
   },
   "filters": [
     {

@@ -818,6 +818,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/period-query-defaults-legacy.json",
+      "target": "product-contracts/page/conformance/valid/period-query-defaults-legacy.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/semantic-numeric-display.json",
       "target": "product-contracts/page/conformance/valid/semantic-numeric-display.json",
       "scope": "exact product contract"
@@ -7764,7 +7769,7 @@
     }
   ],
   "counts": {
-    "product": 1520,
+    "product": 1521,
     "authoring": 32,
     "modules": 36,
     "topics": 275,

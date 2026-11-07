@@ -38,17 +38,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/dataSources/sales/source/query/filterBindings/period-filter",
-      "message": "期间筛选需要精度匹配的查询时间配置"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/dataSources/sales/source/query/filterBindings/period-filter",
-      "message": "期间筛选不能另有固定时间来源"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/dataSources/sales/source/query/filterBindings/period-filter",
-      "message": "月份范围需要查询 period=month"
+      "message": "期间策略独占 period/start/end，查询体不能重复声明时间来源"
     }
   ],
   "join": [

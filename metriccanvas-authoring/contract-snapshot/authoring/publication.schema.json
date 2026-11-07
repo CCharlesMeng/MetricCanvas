@@ -3922,7 +3922,7 @@
                             "additionalProperties": false
                           }
                         ],
-                        "description": "独立消费已应用的期间选择，独占查询 period/start/end；IOC 页头普通期间绑定省略时默认跟随选择，其他旧绑定保留原行为"
+                        "description": "独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为"
                       }
                     },
                     "required": [
@@ -4488,7 +4488,7 @@
                                       "additionalProperties": false
                                     }
                                   ],
-                                  "description": "独立消费已应用的期间选择，独占查询 period/start/end；IOC 页头普通期间绑定省略时默认跟随选择，其他旧绑定保留原行为"
+                                  "description": "独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为"
                                 }
                               },
                               "required": [
