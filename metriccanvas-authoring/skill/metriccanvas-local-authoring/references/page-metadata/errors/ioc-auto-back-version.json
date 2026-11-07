@@ -1,0 +1,27 @@
+{
+  "case": "ioc-auto-back-version",
+  "invariant": "ioc-header-auto-back",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 详情页按有效下钻来源自动返回 由 6.96 引入，文档声明的是 6.95",
+      "paths": [
+        "/sections/0/components/0/props/back"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "back": "auto"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

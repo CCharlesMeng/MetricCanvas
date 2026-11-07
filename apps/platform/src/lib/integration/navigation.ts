@@ -1,3 +1,4 @@
+import {preserveNavigationEntry} from '@metriccanvas/engine/ui/navigation';
 import {isPlatformPath,navigationTarget,normalizeRouteBase,platformPath} from './routes';
 export {isPlatformPath,normalizeRouteBase,platformPath} from './routes';
 export type LeaveGuard = (destination?:URL) => boolean|Promise<boolean>;
@@ -10,7 +11,7 @@ export function createPlatformNavigation(container:HTMLElement,routeBase:string)
   let restoration:{href:string;index:number;done:()=>void;promise:Promise<void>}|undefined;
   const guards=new Map<LeaveGuard,()=>boolean>(),listeners=new Set<(url:URL)=>void>();
   const state=()=>({...history.state,[stateKey]:{instance,index}});
-  history.replaceState(state(),'',url);
+  preserveNavigationEntry(()=>history.replaceState(state(),'',url));
   function canLeave(destination?:URL):boolean|Promise<boolean>{
     const checks=[...guards.keys()];
     function check(position:number):boolean|Promise<boolean>{
@@ -49,6 +50,7 @@ export function createPlatformNavigation(container:HTMLElement,routeBase:string)
   const click=(event:MouseEvent)=>{
     if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
     const anchor=(event.target as Element)?.closest<HTMLAnchorElement>('a[href]');
+    if(anchor?.closest('[data-runtime-navigation]'))return;
     if(!anchor||anchor.hasAttribute('download')||anchor.target&&anchor.target!=='_self')return;
     const next=new URL(anchor.href,url);
     if(next.origin!==url.origin||!isPlatformPath(next.pathname,base))return;
@@ -71,7 +73,7 @@ export function createPlatformNavigation(container:HTMLElement,routeBase:string)
       if(allowed){
         index=entry?.instance===instance?entry.index:index;
         // Keep foreign entries foreign; inventing our index would make later history.go offsets wrong.
-        history.replaceState(history.state,'',next);publish(next);return true;
+        preserveNavigationEntry(()=>history.replaceState(history.state,'',next));publish(next);return true;
       }
       if(entry?.instance===instance&&entry.index!==index){
         let done!:()=>void;const promise=new Promise<void>(resolve=>{done=resolve;});
@@ -79,7 +81,7 @@ export function createPlatformNavigation(container:HTMLElement,routeBase:string)
         history.go(index-entry.index);
       }else history.replaceState(history.state,'',url);
       return false;
-    }).catch(()=>{if(!destroyed&&intent===revision&&location.href===input.href)history.replaceState(state(),'',url);});
+    }).catch(()=>{if(!destroyed&&intent===revision&&location.href===input.href)preserveNavigationEntry(()=>history.replaceState(state(),'',url));});
   };
   const unload=(event:BeforeUnloadEvent)=>{if([...guards.values()].some(dirty=>dirty())){event.preventDefault();event.returnValue='';}};
   container.addEventListener('click',click);window.addEventListener('popstate',pop);window.addEventListener('beforeunload',unload);

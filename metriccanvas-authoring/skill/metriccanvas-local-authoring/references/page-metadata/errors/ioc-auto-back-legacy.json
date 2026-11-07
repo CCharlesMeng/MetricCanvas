@@ -1,0 +1,48 @@
+{
+  "case": "ioc-auto-back-legacy",
+  "invariant": "ioc-header-auto-back",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 详情页按有效下钻来源自动返回 由 6.96 引入，文档声明的是 5.4",
+      "paths": [
+        "/sections/0/components/0/props/back"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头作为首分区首组件 由 6.81 引入，文档声明的是 5.4",
+      "paths": [
+        "/sections/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "…": "共1个键"
+              },
+              "presentation": {
+                "…": "共1个键"
+              },
+              "back": "auto",
+              "filterIds": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

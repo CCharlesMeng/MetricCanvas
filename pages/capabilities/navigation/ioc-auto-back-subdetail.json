@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "6.96",
+  "id": "ioc-auto-back-subdetail",
+  "layout": "dashboard",
+  "meta": {
+    "title": "下钻自动返回：下一层详情"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "下钻自动返回：下一层详情"
+            },
+            "presentation": {
+              "layout": "inline"
+            },
+            "back": "auto"
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示。返回刚才的项目详情，再返回清单。"
+          }
+        }
+      ]
+    }
+  ]
+}

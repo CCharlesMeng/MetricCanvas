@@ -1326,7 +1326,7 @@
   }
 </script>
 
-<div class="runtime-view" bind:this={surfaceRoot}>
+<div class="runtime-view" data-runtime-navigation={navigation?.navigate ? true : undefined} bind:this={surfaceRoot}>
   {#if navigationMessage}<p role="alert" data-navigation-error>{navigationMessage}</p>{/if}
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>

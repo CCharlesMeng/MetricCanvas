@@ -1,5 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import {onMount} from 'svelte';
   import PageDocument from '$lib/PageDocument.svelte';
   const framed = browser && window.self !== window.top;
   import { page } from '$app/state';
@@ -8,7 +9,8 @@
   import { Select } from '@metriccanvas/ui';
   import type { RuntimeNavigation } from '@metriccanvas/engine/ui';
   import { pageRepository } from '$lib/services';
-  import { pageReturnHref } from '$lib/page-return';
+  import { createPlaygroundPageReturn } from '$lib/page-return';
+  import {preserveNavigationEntry} from '@metriccanvas/engine/ui/navigation';
   import { createIocBusinessPreview } from '$lib/ioc-business-preview';
 
   const pageId=decodeURIComponent(page.url.pathname.split('/').filter(Boolean).at(-1) ?? '');
@@ -16,11 +18,15 @@
   const dataGateway=createIocBusinessPreview(pageId).dataGateway;
   const initialSearch=page.url.searchParams.toString();
   let chartType=$state('bar');
-  const returnHref=page.url.searchParams.get('back')==='1' ? '/' : pageReturnHref(pageId);
+  const returns=createPlaygroundPageReturn();
+  let returnRevision=$state(0);
+  onMount(()=>returns.subscribe(()=>returnRevision++));
+  const returnHref=$derived.by(()=>{returnRevision;page.url.href;return page.url.searchParams.get('back')==='1' ? '/' : returns.current()?.sourceHref;});
   const navigation:RuntimeNavigation={
-    ...(returnHref?{returnContext:{entryId:returnHref,label:'返回'},back:()=>void goto(returnHref)}:{}),
+    get returnContext(){returnRevision;page.url.href;const context=returns.current();return context?{entryId:context.entryId,label:'返回',back:()=>void returns.back(href=>goto(href)).catch(error=>console.warn('[MetricCanvas][NAVIGATION_ERROR]',error))}:undefined;},
+    get back(){const href=returnHref;return href?()=>void goto(href):undefined;},
     preserveSearchParams:['back'],
-    replaceSearch(search){const url=new URL(page.url);url.search=search;if(returnHref==='/')url.searchParams.set('back','1');replaceState(url,{});}
+    replaceSearch(search){const url=new URL(page.url);url.search=search;if(returnHref==='/')url.searchParams.set('back','1');preserveNavigationEntry(()=>replaceState(url,page.state));}
   };
 </script>
 

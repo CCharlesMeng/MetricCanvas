@@ -39,3 +39,22 @@ describe('IOC header default browser return', () => {
     expect(headerBackAction({ back: true, legacyBack: true }, onback, { history })).toBe(onback);
   });
 });
+
+describe('IOC auto return requires both provenance and action',()=>{
+ const auto={back:'auto' as const};
+ it('never substitutes browser history or a generic callback for a source',()=>{
+  const browser={history:{length:10,back:vi.fn()}},callback=vi.fn();
+  expect(headerBackAction(auto,undefined,browser)).toBeUndefined();
+  expect(headerBackAction(auto,callback,browser)).toBeUndefined();
+  expect(headerBackAction(auto,undefined,browser,{entryId:'source'})).toBeUndefined();
+  expect(headerBackAction(auto,callback,browser,{entryId:''})).toBeUndefined();
+  expect(headerBackAction(auto,callback,browser,{entryId:'source'})).toBe(callback);
+  expect(browser.history.back).not.toHaveBeenCalled();
+ });
+});
+
+it('a context-specific return action is used only by auto and cannot override true',()=>{
+ const sourceBack=vi.fn(),browserBack=vi.fn(),context={entryId:'source',back:sourceBack};
+ headerBackAction({back:'auto'},undefined,undefined,context)?.();expect(sourceBack).toHaveBeenCalledOnce();
+ headerBackAction({back:true},undefined,{history:{length:2,back:browserBack}},context)?.();expect(browserBack).toHaveBeenCalledOnce();expect(sourceBack).toHaveBeenCalledOnce();
+});

@@ -6,11 +6,11 @@
   import { headerBackAction, type BrowserReturn } from './back';
   let {model, filterIds, overflowIds=[], controls, returnContext, onback, readOnly=false, note, staticView=false}: {
     model:ResolvedIocHeader;filterIds:string[];overflowIds?:string[];controls:Snippet<[string,boolean]>;
-    returnContext?:{entryId:string;label?:string};onback?:()=>void;readOnly?:boolean;note?:string;staticView?:boolean;
+    returnContext?:{entryId:string;label?:string;back?:()=>void};onback?:()=>void;readOnly?:boolean;note?:string;staticView?:boolean;
   } = $props();
   let browser = $state<BrowserReturn>();
   onMount(() => { browser = window; });
-  const backAction = $derived(headerBackAction(model, onback, browser));
+  const backAction = $derived(headerBackAction(model, onback, browser, returnContext));
   $effect(() => {
     if (note && !staticView) console.warn('[MetricCanvas][IOC_HEADER_NOTICE]', note);
   });

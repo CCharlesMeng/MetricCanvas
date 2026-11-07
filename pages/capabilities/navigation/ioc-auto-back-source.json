@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "6.96",
+  "id": "ioc-auto-back-source",
+  "layout": "dashboard",
+  "meta": {
+    "title": "下钻自动返回：清单"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "下钻自动返回：清单"
+            },
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示。进入详情后刷新或手改 project 参数，再返回本清单。",
+            "links": [
+              {
+                "label": "下钻项目 1",
+                "href": "/pages/ioc-auto-back-detail?project=1"
+              }
+            ]
+          }
+        },
+        {
+          "id": "region",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "来源条件",
+            "body": {
+              "param": "region"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "id": "region",
+      "type": "string",
+      "required": false
+    }
+  ]
+}

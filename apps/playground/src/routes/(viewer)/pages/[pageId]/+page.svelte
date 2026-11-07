@@ -53,7 +53,10 @@
     RuntimeView,
     type RuntimeNavigation, type RuntimeViewEvent
   } from '@metriccanvas/engine/ui';
-  import { pageReturnHref } from '$lib/page-return';
+  import {preserveNavigationEntry} from '@metriccanvas/engine/ui/navigation';
+  import { createPlaygroundPageReturn } from '$lib/page-return';
+  const returns=createPlaygroundPageReturn();
+  let returnRevision=$state(0);
   import {
     aiSummary,
     dataGateway,
@@ -75,7 +78,6 @@
   let pageRevisionId = $state<string | undefined>(undefined);
   let activeURL = '';
   let loadSession = 0;
-  let returnHref = $state<string | undefined>(undefined);
   /** 页面外框在校验之前就要定下来,因此按原始文档结构读布局形态。 */
   const layoutForm = $derived(
     pageState.phase === 'ready' ? documentLayoutForm(pageState.document) : 'report'
@@ -84,24 +86,24 @@
     pageState.phase === 'ready' && documentUsesRuntimeBackToolbar(pageState.document)
   );
 
-  const navigation = $derived.by<RuntimeNavigation>(() => {
-    const base: RuntimeNavigation = {
+  const returnHref=$derived.by(()=>{returnRevision;page.url.href;return returns.current()?.sourceHref;});
+  const navigation: RuntimeNavigation = {
       preserveSearchParams: ['revision', 'state', 'supplementKey', 'sourceFailure', 'rowFailure', 'recoveryState'],
       ...createPlaygroundNavigation(pageRepository, {
         baseURL: () => location.href,
-        visit: (href) => void goto(href),
+        visit: (href) => goto(href),
+        returns, onReturnChange:()=>returnRevision++,
         rememberSource: true
       }),
       replaceSearch(search) {
         const url = new URL(location.href);
         url.search = search;
         activeURL = url.href;
-        replaceState(url, {});
-      }
-    };
-    const href = returnHref;
-    return href ? { ...base, returnContext: {entryId:href,label:'返回来源页'}, back: () => void goto(href) } : base;
-  });
+        preserveNavigationEntry(()=>replaceState(url, page.state));
+      },
+    get returnContext(){returnRevision;page.url.href;const context=returns.current();return context?{entryId:context.entryId,label:'返回来源页'}:undefined;},
+    get back(){returnRevision;page.url.href;return returns.current()?()=>void returns.back(href=>goto(href)).then(()=>returnRevision++).catch(error=>console.warn('[MetricCanvas][NAVIGATION_ERROR]',error)):undefined;}
+  };
 
   $effect(() => {
     const pageId = page.params.pageId!;
@@ -109,7 +111,6 @@
     activeURL = page.url.href;
     initialSearch = page.url.searchParams.toString();
     pageRevisionId = page.url.searchParams.get('revision') ?? undefined;
-    returnHref = pageReturnHref(pageId);
     void loadPage(pageId);
   });
 

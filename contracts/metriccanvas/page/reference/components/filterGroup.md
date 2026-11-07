@@ -64,7 +64,7 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 完整页面 `/pages/filter-source-candidates` 将内联组织树和查询渠道下拉放入右侧工具栏；二者只通过 `filterBindings` 影响图表。页面使用本地合成 Adapter，无需 DQE Sim；不代表生产查询或权限服务已接通。
 
 
-页面协议 6.95。结构真源为本册[schema.json](../schema.json)，SHA256 `017029aa28e8b6b5afb86bbf3ab729b710d6f193995e7a0c668b32c9bc289a27`。字段表自动生成；可选不等于有默认值。
+页面协议 6.96。结构真源为本册[schema.json](../schema.json)，SHA256 `83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

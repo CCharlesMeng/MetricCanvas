@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| 下钻详情页自动返回 | 本仓实现完成，约定范围内本地验收通过 | [唯一实施入口](2026-11-06-drill-through-auto-back.md)：6.96 `back:"auto"`、来源生命周期、Playground/Platform/Embed 浏览器、local-authoring 1.37.0 ；本地验证附件不随仓交付 |
 | 页面先行与数据先行创作整合 | 本仓核心与本地全仓验收通过；6.83首次基线已确认，发行与主线收口，真实Relay另验 | [可用性与本地测试报告](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-04-relay-readiness/README.md)、[剩余实施表](2026-11-02-product-relay-evolution/relay-reference-completion-plan.md)、[Spec](2026-11-02-product-relay-evolution/relay-reference-spec.md)、[执行台账](2026-11-02-product-relay-evolution/relay-reference-execution.md)：四项独立分发、稳定入口、同源生成、兼容升级与真实接入分层验收；[本轮接入映射](2026-11-02-product-relay-evolution/relay-adapter-mapping-20261104.md)与[上下文/剩余项](2026-11-02-product-relay-evolution/relay-review-followup-20261104.md) |
 | 表头筛选由页面参数初始化 | Schema6.85及local-authoring1.23.0实现与本地验收完成，纳入main交付；业务原件与真实实接另验 | [唯一规划与验收台账](2026-11-04-table-header-filter-url-initialization.md)：一次初值、会话状态、全选语义、快照和分发 |
 | 表格列头筛选默认选中值 | Schema6.82、共享初始化及本地验收完成；main集成交付 | [主计划](2026-11-03-table-header-filter-defaults.md)：select 固定值、会话恢复、查询初始化、快照与导出 |

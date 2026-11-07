@@ -117,3 +117,16 @@ Embed 原生 HTML 示例不提供返回适配器，用于验证运行时默认�
 实际 Embed 验证：构建后启动 `pnpm --filter @metriccanvas/embed preview:examples`，打开 `http://127.0.0.1:4175/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除`。ES/global 回归直接读取同一 JSON；覆盖 hash 路由、重复键、宿主保留键、自定义回调优先、更新移除覆盖恢复默认、回写异常和历史状态。查询夹具另验证清理地址时只有一次初始 DQE 请求。
 
 此页只有合成内联文字，无真实业务数据。Angular 接入示例见 `packages/embed/examples/angular-navigation.ts`，真实 Operation Map 的路由订阅、守卫、部署与权限仍需在其环境验收。
+
+
+## 下钻详情页自动返回
+
+启动 `pnpm dev:playground`；静态合成演示，不访问 DQE。
+
+1. 打开 `/pages/ioc-auto-back-source?region=north`，点击“下钻项目 1”，进入 `/pages/ioc-auto-back-detail?project=1`。详情页 `props.back:"auto"` 显示“返回来源页”，点击回到带 `region=north` 的来源 URL。
+2. 在详情刷新、切换“仅有效”或地址栏把 `project=1` 改为 `project=2`，返回仍指向清单，不退到项目 1。
+3. 新标签页直接打开详情，返回隐藏；在原标签页手改到 `/pages/ioc-auto-back-unrelated` 再直接打开详情，也隐藏。宿主外页面中断亦不能复用旧来源。
+4. 在详情点击“继续下钻”进入 `/pages/ioc-auto-back-subdetail`，先返回项目详情，再返回清单。浏览器自身前进/后退保持原生行为。
+5. 不支持 Navigation API 的浏览器默认跟踪器隐藏自动返回，不猜测来源；Embed 应用可按接入契约提供等价来源。`back:true` 保持既有行为，静态导出不含按钮。
+
+跨页使用正式页面 JSON，浏览器回归直接读取这些页面；来源 URL 中的筛选恢复不等于分页、排序、Tab 和滚动等完整现场恢复。真实门户的路由、导航守卫及权限另外验收。

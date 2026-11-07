@@ -637,3 +637,5 @@ Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/
 全局语义数值规范：[semantic-numeric-display](capabilities/data/semantic-numeric-display.json)，入口 `/pages/semantic-numeric-display`，涵盖移动/PC金额、比率、数量、资源、存储与计费及例外，见[数据场景](capabilities/data/README.md#全局语义数值规范)。
 
 URL 参数清理与宿主地址同步：[初始化与清理场景](capabilities/navigation/README.md#url-参数清理与地址同步)，入口 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除`，Angular 接入示例见 `packages/embed/examples/angular-navigation.ts`。
+
+- [下钻详情页自动返回](capabilities/navigation/README.md#下钻详情页自动返回)：清单下钻、刷新、同页换参数、跨页失效及新标签页独立进入的合成演示。

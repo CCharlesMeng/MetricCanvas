@@ -162,7 +162,7 @@ interface RuntimeInput {
 | `initialSearch` | 页面参数与筛选查询串；省略则自动读取当前 URL，显式空串禁用自动读取 |
 | `navigation` | 可选接管；`navigate(target)` 返回 `true` 时阻止默认跳转 |
 
-IOC 页头声明 `props.back:true` 后，浏览器可后退时默认显示返回按钮并调用当前窗口的 `history.back()`（优先 navigation.canGoBack，不支持时回退 history.length>1）。无需配置路由或 `returnContext`；可选 `navigation.back` 覆盖默认动作，提供函数即可显示。`returnContext.label` 可设置无障碍标签。无浏览器环境或判断不可后退时默认隐藏，静态导出不包含按钮；未声明 back 的页头不接管返回。此行为使用原生历史，不额外记录来源或恢复完整页面视图。合成验收入口：`/pages/ioc-default-back-source` → `/pages/ioc-default-back-target`。
+IOC 页头声明 `props.back:true` 后，浏览器可后退时默认显示返回按钮并调用当前窗口的 `history.back()`（优先 navigation.canGoBack，不支持时回退 history.length>1）。无需配置路由或 `returnContext`；可选 `navigation.back` 覆盖默认动作，提供函数即可显示。`returnContext.label` 可设置无障碍标签。无浏览器环境或判断不可后退时默认隐藏，静态导出不包含按钮；未声明 back 的页头不接管返回。此行为使用原生历史，不额外记录来源或恢复完整页面视图。 `props.back:"auto"` 则要求应用提供有效的 `navigation.returnContext.entryId` 和来源返回动作（优先 `returnContext.back`，兼容既有 `navigation.back`），缺一隐藏，不能用浏览器历史或普通 URL 参数推断来源。刷新及同页换参数保留来源、跨页独立进入和新标签页不复用，由应用维护有效性并更新导航输入；无来源的独立嵌入隐藏自动返回。合成验收入口：`/pages/ioc-default-back-source` → `/pages/ioc-default-back-target`。
 
 Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离宿主 URL。只在挂载/更新时读取，不监听地址变化、不读取父窗口。初始化通过后自动清理未声明的 URL 参数；地址回写与 Angular 适配规则见[URL 参数清理](../../docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。
 

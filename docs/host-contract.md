@@ -237,7 +237,11 @@ Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取�
 
 ## 页面试验场中的集成示例
 
-`apps/playground` 用 `sessionStorage` 按目标页 id 记录来源，并在页面标题栏**上方**画一条「返回」面包屑。刷新后回跳仍在；深链接没有记录则不画箭头。
+`apps/playground` 与 Platform 阅读页通过 `@metriccanvas/engine/ui/navigation` 的 `createBrowserDrillReturn` 将来源绑定到浏览历史条目。受控跨页下钻成功后激活，刷新和连续同页参数修改承接；跨页手改、无活动来源的直接进入、新标签页不会命中旧 pageId 来源。返回导航到已记录的完整来源 URL；嵌套下钻回到直接来源。失败、取消或过期导航不提交新来源。
+
+IOC 页头 `props.back:"auto"` 同时要求有效 `navigation.returnContext.entryId` 与来源返回动作（优先 `returnContext.back`，兼容既有 `navigation.back`）；通用 back 函数独自存在时不显示，缺来源也不回退浏览器历史。既有 `back:true` 保持浏览器默认动作/应用覆盖。集成应用负责来源有效性并在变化后更新导航输入；来源不能由普通 URL 参数填写。
+
+默认浏览器跟踪器使用 Navigation API `entries()`、`currentEntry.getState()` 与 `updateCurrentEntry()`；历史不可读或 API 不可用时隐藏自动返回，其他应用可提供等价来源契约。刷新、筛选及路由规范化调用 `history.replaceState` 时用 `preserveNavigationEntry` 保留条目状态，不能覆盖应用或框架自有状态。Playground 无运行时返回页头的页面仍可呈现宿主返回入口；IOC 自动返回使用运行时入口。见 `/pages/ioc-auto-back-source?region=north` 及[操作说明](../pages/capabilities/navigation/README.md#下钻详情页自动返回)。
 
 
 6.1 的布局兼容读取与存量迁移见 [迁移说明](page-metadata/layout-migration.md)：旧 `layoutForm` 仅在文档输入边界接受，双字段同时出现拒绝，规范化后只写6.1 `layout`。先核验原始修订hash，再规范化；历史修订不原地重写。

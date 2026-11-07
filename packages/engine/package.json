@@ -23,7 +23,8 @@
       "default": "./runtime-ui/src/composition.ts"
     },
     "./dqe": "./data-gateway/src/index.ts",
-    "./ui/ai-summary/yunbao-assistant": "./runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts"
+    "./ui/ai-summary/yunbao-assistant": "./runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts",
+    "./ui/navigation": "./runtime-ui/src/browser-drill-return.ts"
   },
   "dependencies": {
     "@metriccanvas/data-execution": "workspace:*",
@@ -82,6 +83,10 @@
       "./ui/ai-summary/yunbao-assistant": {
         "types": "./dist/runtime-ui/src/ai-summary/adapters/yunbao-assistant.d.ts",
         "default": "./dist/runtime-ui/src/ai-summary/adapters/yunbao-assistant.js"
+      },
+      "./ui/navigation": {
+        "types": "./dist/runtime-ui/src/browser-drill-return.d.ts",
+        "default": "./dist/runtime-ui/src/browser-drill-return.js"
       }
     }
   }

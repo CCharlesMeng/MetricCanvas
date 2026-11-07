@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "6.96",
+  "id": "ioc-auto-back-unrelated",
+  "layout": "dashboard",
+  "meta": {
+    "title": "无关页面"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "无关页面"
+            },
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示。手改地址进入此页，再直接打开详情，不复用旧来源。"
+          }
+        }
+      ]
+    }
+  ]
+}

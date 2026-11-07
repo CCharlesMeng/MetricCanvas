@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.95",
-  "schemaSha256": "017029aa28e8b6b5afb86bbf3ab729b710d6f193995e7a0c668b32c9bc289a27",
+  "schemaVersion": "6.96",
+  "schemaSha256": "83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -40,7 +40,7 @@
     },
     {
       "file": "packages/embed/src/browser-navigation.ts",
-      "sha256": "7e8d0218df83d49c5ac62e7479ad507364b4d966556dc4b1cb30a2d12f86203f"
+      "sha256": "5512c23e08fe8a42c9614a65d2cd54a1a5cca57bc0425e03d6e582ab69063109"
     },
     {
       "file": "packages/embed/tests/browser/ai-summary-regions.spec.ts",
@@ -344,7 +344,7 @@
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
-      "sha256": "f03a96b0a61d5a8ddbbfe72cbfa4a3661dbcae4f16673158d97b55e57a526989"
+      "sha256": "ab5f8824000d2286d67b636d9c28a4c9a737124c25ab4ba23d29a2cbe504ff5a"
     },
     {
       "file": "packages/page/src/schema/navigation.ts",
@@ -460,7 +460,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "d8cfd16b481b06f867f20696064ad2be1f0b119bf3b67a7097dd6ae7ccaff572"
+      "sha256": "0d15eeb9af9a359792bd196fc510a6deb83d66bda3de2e72192e33de8a4719d7"
     }
   ],
   "modules": {
@@ -495,7 +495,9 @@
         "ioc-header-months",
         "ioc-header-unconfigured",
         "tab-mixed-content",
-        "ioc-header-section-placement"
+        "ioc-header-section-placement",
+        "ioc-auto-back-page",
+        "ioc-auto-back-legacy-root"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2010,7 +2012,8 @@
         "6.92",
         "6.93",
         "6.94",
-        "6.95"
+        "6.95",
+        "6.96"
       ]
     },
     {
@@ -2505,8 +2508,21 @@
       "pointer": "#/properties/iocHeader/properties/back",
       "path": "$.iocHeader.back",
       "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/back/anyOf/0",
+      "path": "$.iocHeader.back · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "page.md",
       "const": true
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/back/anyOf/1",
+      "path": "$.iocHeader.back · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "const": "auto"
     },
     {
       "pointer": "#/properties/iocHeader/properties/readOnly",
@@ -19243,8 +19259,21 @@
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back",
       "path": "@iocHeaderComponent.props.back",
       "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0",
+      "path": "@iocHeaderComponent.props.back · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "components/iocHeader.md",
       "const": true
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1",
+      "path": "@iocHeaderComponent.props.back · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md",
+      "const": "auto"
     },
     {
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/readOnly",
@@ -20154,6 +20183,18 @@
       "module": "page.md",
       "file": "examples/availability-page.json",
       "pointer": "#/iocHeader/identity/facts/1/value"
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/back/anyOf/0",
+      "module": "page.md",
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/iocHeader/back"
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/back/anyOf/1",
+      "module": "page.md",
+      "file": "examples/ioc-auto-back-legacy-root.json",
+      "pointer": "#/iocHeader/back"
     },
     {
       "schemaPointer": "#/properties/iocHeader/properties/components/items/oneOf/0",
@@ -22400,6 +22441,18 @@
       "module": "components/iocHeader.md",
       "file": "examples/ioc-component-availability-page.json",
       "pointer": "#/sections/0/components/0/props/identity/facts/1/value"
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/components/0/props/back"
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-auto-back-page.json",
+      "pointer": "#/sections/0/components/0/props/back"
     },
     {
       "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0",

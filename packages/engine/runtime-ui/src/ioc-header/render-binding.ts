@@ -5,7 +5,7 @@ export interface IocHeaderRenderBinding {
   filterIds:string[];
   overflowIds?:string[];
   controls:Snippet<[string,boolean]>;
-  returnContext?:{entryId:string;label?:string};
+  returnContext?:{entryId:string;label?:string;back?:()=>void};
   onback?:()=>void;
   readOnly?:boolean;
   note?:string;

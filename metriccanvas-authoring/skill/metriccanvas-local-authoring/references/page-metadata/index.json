@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.95",
-  "schemaSha256": "017029aa28e8b6b5afb86bbf3ab729b710d6f193995e7a0c668b32c9bc289a27",
+  "schemaVersion": "6.96",
+  "schemaSha256": "83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -33,7 +33,9 @@
         "ioc-header-months",
         "ioc-header-unconfigured",
         "tab-mixed-content",
-        "ioc-header-section-placement"
+        "ioc-header-section-placement",
+        "ioc-auto-back-page",
+        "ioc-auto-back-legacy-root"
       ],
       "rules": [
         "page-layout-compatibility",
@@ -1292,7 +1294,8 @@
         "6.92",
         "6.93",
         "6.94",
-        "6.95"
+        "6.95",
+        "6.96"
       ]
     },
     {
@@ -1787,8 +1790,21 @@
       "pointer": "#/properties/iocHeader/properties/back",
       "path": "$.iocHeader.back",
       "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/back/anyOf/0",
+      "path": "$.iocHeader.back · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "page.md",
       "const": true
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/back/anyOf/1",
+      "path": "$.iocHeader.back · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "const": "auto"
     },
     {
       "pointer": "#/properties/iocHeader/properties/readOnly",
@@ -18525,8 +18541,21 @@
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back",
       "path": "@iocHeaderComponent.props.back",
       "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0",
+      "path": "@iocHeaderComponent.props.back · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "components/iocHeader.md",
       "const": true
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1",
+      "path": "@iocHeaderComponent.props.back · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md",
+      "const": "auto"
     },
     {
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/readOnly",
@@ -19379,6 +19408,18 @@
       "module": "page.md",
       "file": "examples/availability-page.json",
       "pointer": "#/iocHeader/identity/facts/1/value"
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/back/anyOf/0",
+      "module": "page.md",
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/iocHeader/back"
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/back/anyOf/1",
+      "module": "page.md",
+      "file": "examples/ioc-auto-back-legacy-root.json",
+      "pointer": "#/iocHeader/back"
     },
     {
       "schemaPointer": "#/properties/iocHeader/properties/components/items/oneOf/0",
@@ -21598,6 +21639,18 @@
       "pointer": "#/sections/0/components/0/props/identity/facts/1/value"
     },
     {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/components/0/props/back"
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-auto-back-page.json",
+      "pointer": "#/sections/0/components/0/props/back"
+    },
+    {
       "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0",
       "module": "components/iocHeader.md",
       "file": "examples/ioc-header-controls.json",
@@ -21736,5 +21789,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "5b6a2597bac60d71031de904685f2c2596e1a6613f1a26875b7365f14382ae96"
+  "semanticSourceDigest": "eae8708d6dc72de6173ea2ff7ff4327cfc9abb2d23a00984b26dfe440dfce995"
 }

@@ -1,6 +1,6 @@
 import { projectNavigationInputs } from '@metriccanvas/engine';
 import type { RuntimeNavigation } from '@metriccanvas/engine/ui';
-import { rememberPageReturn } from './page-return';
+import type {BrowserDrillReturn} from '@metriccanvas/engine/ui';
 
 interface PreviewPages {
   has(pageId: string): boolean;
@@ -9,7 +9,9 @@ interface PreviewPages {
 
 interface PreviewNavigationOptions {
   baseURL(): string;
-  visit(href: string): void;
+  visit(href: string): void | Promise<void>;
+  returns?: BrowserDrillReturn;
+  onReturnChange?(): void;
   rememberSource?: boolean;
 }
 
@@ -53,10 +55,10 @@ export function createPlaygroundNavigation(pages: PreviewPages, options: Preview
       if (url.origin !== base.origin) return false;
       const match = /^\/pages\/([^/]+)$/.exec(url.pathname);
       if (!match && url.pathname !== '/navigation-target') return false;
-      if (options.rememberSource && match) {
-        rememberPageReturn(decodeURIComponent(match[1]!), { pageId: target.sourcePageId, search: target.sourceSearch });
-      }
-      options.visit(`${url.pathname}${url.search}${url.hash}`);
+      const href = `${url.pathname}${url.search}${url.hash}`;
+      if (options.returns && options.rememberSource && match) {
+        void options.returns.navigate(href, target.sourcePageId, async value=>{await options.visit(value);}).then(options.onReturnChange).catch(error=>console.warn('[MetricCanvas][NAVIGATION_ERROR]',error));
+      } else void options.visit(href);
       return true;
     }
   };

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "6.96",
+  "id": "ioc-auto-back-detail",
+  "layout": "dashboard",
+  "meta": {
+    "title": "下钻自动返回：项目详情"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "下钻自动返回：项目详情"
+            },
+            "presentation": {
+              "layout": "inline"
+            },
+            "back": "auto",
+            "filterIds": [
+              "active"
+            ]
+          }
+        },
+        {
+          "id": "project",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "project"
+            }
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示。同一详情页换项目保留清单来源，新标签页或独立打开不显示返回。",
+            "links": [
+              {
+                "label": "继续下钻",
+                "href": "/pages/ioc-auto-back-subdetail"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "id": "project",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "filters": [
+    {
+      "id": "active",
+      "type": "boolean",
+      "label": "仅有效",
+      "default": false
+    }
+  ]
+}

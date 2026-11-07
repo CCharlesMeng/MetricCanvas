@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { normalizePageDocument } from '@metriccanvas/page';
 import { createPlaygroundNavigation, resolvePlaygroundTarget } from '../src/lib/playground-navigation';
-import { clearPageReturns, pageReturnOf } from '../src/lib/page-return';
 
 const baseURL = 'http://localhost:5173/pages/source';
 const rawTarget = JSON.parse(readFileSync(new URL('../../../pages/capabilities/navigation/playground-route-target.json', import.meta.url), 'utf8'));
@@ -55,8 +54,7 @@ describe('Playground 按 URL 末段自动定位 Pages', () => {
     expect(visit).not.toHaveBeenCalled();
   });
 
-  it('目标声明和真实链接使用同一匹配规则，单击记录来源并切换本地页', async () => {
-    clearPageReturns();
+  it('目标声明和真实链接使用同一匹配规则，单击切换本地页；来源由注入的浏览器跟踪器承接', async () => {
     const { pages, navigation, visit } = fixture();
     const href = '/operation-map/detail?project-id=P001#summary';
     const controller = new AbortController();
@@ -66,15 +64,13 @@ describe('Playground 按 URL 末段自动定位 Pages', () => {
     const localHref = navigation.resolveHref!(href);
     expect(navigation.navigate?.({ href: localHref, sourcePageId: 'source', sourceSearch: 'filter=north' })).toBe(true);
     expect(visit).toHaveBeenCalledWith('/pages/detail?project-id=P001#summary');
-    expect(pageReturnOf('detail')).toEqual({ pageId: 'source', search: 'filter=north' });
   });
 
-  it('即时预览不登记未保存的来源页面', () => {
-    clearPageReturns();
+  it('即时预览没有来源跟踪器时仍可切页', () => {
     const { pages, visit } = fixture();
     const navigation = createPlaygroundNavigation(pages, { baseURL: () => baseURL, visit });
     navigation.navigate?.({ href: '/pages/detail', sourcePageId: 'draft' });
-    expect(pageReturnOf('detail')).toBeUndefined();
+    expect(visit).toHaveBeenCalledWith('/pages/detail');
   });
 
   it('缺目标、原生锚点与已取消请求不加载声明；迟到响应被丢弃', async () => {

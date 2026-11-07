@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 95,
-  "current": "6.95",
+  "minor": 96,
+  "current": "6.96",
   "capabilities": {
+    "ioc-header-auto-back": {
+      "minor": 96,
+      "description": "IOC 详情页按有效下钻来源自动返回",
+      "legacyReadable": false
+    },
     "table-selection-level": {
       "minor": 95,
       "description": "表格单元格选择显式写入目标筛选层级",
@@ -920,6 +925,7 @@
     "6.92",
     "6.93",
     "6.94",
-    "6.95"
+    "6.95",
+    "6.96"
   ]
 }

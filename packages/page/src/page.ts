@@ -269,7 +269,7 @@ export function documentLayoutForm(document: unknown): PageLayoutForm {
  */
 export function documentUsesRuntimeBackToolbar(document: unknown): boolean {
   const ioc = documentIocHeader(document);
-  if (ioc) return ioc.back === true;
+  if (ioc) return ioc.back === true || ioc.back === 'auto';
   if (documentLayoutForm(document) !== 'dashboard') return false;
   if (typeof document !== 'object' || document === null || Array.isArray(document)) return false;
   const toolbar = (document as { dashboardToolbar?: unknown }).dashboardToolbar;

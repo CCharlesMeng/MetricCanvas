@@ -121,9 +121,12 @@ AiSummaryConfig
 AiSummaryContextInfo
 AiSummaryDataSource
 AiSummaryGenerate
+BrowserDrillReturn
 DataPeriodFact
 DisplayInputsSnapshot
 DisplayInputsSource
+DrillReturnBrowser
+DrillReturnContext
 NavigationInputContract
 RuntimeConfigurationError
 RuntimeConfigurationErrorCode
@@ -134,7 +137,9 @@ RuntimeViewEvent
 aiSummaryInputKey
 configurationError
 createAiSummaryTaskSession
+createBrowserDrillReturn
 isDataGateway
+preserveNavigationEntry
 
 ## ./ui/types
 AiSummaryConfig
@@ -151,6 +156,13 @@ RuntimeViewEvent
 RuntimeViewProps
 configurationError
 isDataGateway
+
+## ./ui/navigation
+BrowserDrillReturn
+DrillReturnBrowser
+DrillReturnContext
+createBrowserDrillReturn
+preserveNavigationEntry
 
 ## ./ui/composition
 ComponentContent

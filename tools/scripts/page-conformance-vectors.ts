@@ -55,6 +55,11 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'ioc-header-auto-back',description:'自动返回仅由有效下钻来源启用，6.96增加auto取值',valid:['ioc-auto-back-page','ioc-auto-back-legacy-root'],cases:[
+    {case:'ioc-auto-back-version',base:'ioc-auto-back-page',expect:/由 6.96 引入/,mutate:d=>{d.schemaVersion='6.95';}},
+    {case:'ioc-auto-back-legacy',base:'ioc-auto-back-page',expect:/由 6.96 引入/,mutate:d=>{d.schemaVersion='5.4';}},
+    {case:'ioc-auto-back-unknown',base:'ioc-auto-back-page',expect:/must/,mutate:d=>{firstComponent(d).props.back='history';}}
+  ]},
   {id:'ioc-header-controls',description:'页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读',valid:['ioc-header-controls'],cases:[
     {case:'ioc-controls-root-filter',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[0]]};d.sections[0].components.shift();}},
     {case:'ioc-controls-root-region',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[1]]};d.sections[0].components.shift();}},

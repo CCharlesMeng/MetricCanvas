@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.95",
+  "schemaVersion": "6.96",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "page.section-2f1a0a4c"
@@ -205,7 +205,9 @@
         "references/page-metadata/examples/ioc-header-months.json",
         "references/page-metadata/examples/ioc-header-unconfigured.json",
         "references/page-metadata/examples/tab-mixed-content.json",
-        "references/page-metadata/examples/ioc-header-section-placement.json"
+        "references/page-metadata/examples/ioc-header-section-placement.json",
+        "references/page-metadata/examples/ioc-auto-back-page.json",
+        "references/page-metadata/examples/ioc-auto-back-legacy-root.json"
       ]
     }
   ],

@@ -31,7 +31,9 @@
         "ioc-header-months",
         "ioc-header-unconfigured",
         "tab-mixed-content",
-        "ioc-header-section-placement"
+        "ioc-header-section-placement",
+        "ioc-auto-back-page",
+        "ioc-auto-back-legacy-root"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2213,7 +2215,8 @@
     "percent-raw": "个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。",
     "#/properties/schemaVersion=\"6.93\"": "语义数值格式、设备精度及相对变化基期边界；作者版本6.93。",
     "#/properties/schemaVersion=\"6.94\"": "柱状图、折线图系列与表格字段列可显式声明展示单位。",
-    "#/properties/schemaVersion=\"6.95\"": "表格单元格 selection.writes 可指定目标筛选的 level，复用统一筛选状态、页头回显和逐层查询绑定。"
+    "#/properties/schemaVersion=\"6.95\"": "表格单元格 selection.writes 可指定目标筛选的 level，复用统一筛选状态、页头回显和逐层查询绑定。",
+    "#/properties/schemaVersion=\"6.96\"": "IOC 页头 back:\"auto\" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2885,7 +2888,9 @@
       "module": "table",
       "title": "查询默认排序的首屏方向",
       "roots": [],
-      "headings": ["查询默认排序的首屏方向"],
+      "headings": [
+        "查询默认排序的首屏方向"
+      ],
       "dependencies": []
     },
     "table.headerDefaults": {

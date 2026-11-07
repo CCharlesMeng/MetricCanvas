@@ -4,6 +4,8 @@
 
 多数据源表格的链接、筛选联动与详情入口优先定位当前实际行，同一 `rowKey` 可用于多条阶段明细关联补充数据；旧行回调仍只通过唯一有效行键重新定位。无需修改 Schema 或查询粒度。见[当前行定位与补充数据关联](docs/page-metadata/components/table.md#table-row-action-identity)，合成入口 `/pages/table-multi-source-navigation`。
 
+6.96：IOC 页头 `props.back:"auto"` 按有效下钻来源显示并返回来源 URL，刷新及同页换参数保留来源，跨页独立进入和新标签页不复用；已有 `back:true` 保持。见[IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头636)，入口 `/pages/ioc-auto-back-source`。
+
 6.95：表格列 `selection.writes` 可用 `level` 显式选择目标维度筛选的组织层级；复用页头 Region 状态、候选校验和查询绑定。省略保持原默认层级行为。见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，入口 `/pages/ioc-header-controls`。
 
 6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示连续两个 ASCII 短横线 `--`，图表与百分比同样不加空格、百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。

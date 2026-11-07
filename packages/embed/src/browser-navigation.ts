@@ -1,3 +1,4 @@
+import {preserveNavigationEntry} from '@metriccanvas/engine/ui/navigation';
 import type { RuntimeNavigation } from '@metriccanvas/engine/ui';
 
 /** Preserve where accepted keys lived; new keys belong to the active hash route, when present. */
@@ -26,7 +27,7 @@ export function browserNavigation(navigation: RuntimeNavigation | undefined, bro
     ...navigation,
     replaceSearch: navigation?.replaceSearch ?? (search => {
       const next = browserSearchURL(browser.location.href, search);
-      if (next.href !== browser.location.href) browser.history.replaceState(browser.history.state, '', next.href);
+      if (next.href !== browser.location.href) preserveNavigationEntry(()=>browser.history.replaceState(browser.history.state, '', next.href),browser);
     })
   };
 }

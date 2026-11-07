@@ -17,3 +17,6 @@ export type {DisplayInputsSource,DisplayInputsSnapshot,DataPeriodFact} from '@me
 
 export { createAiSummaryTaskSession, aiSummaryInputKey } from './ai-summary';
 export type { AiSummaryGenerate, AiSummaryContextInfo, AiSummaryDataSource } from './ai-summary';
+
+export { createBrowserDrillReturn, preserveNavigationEntry } from './browser-drill-return';
+export type { BrowserDrillReturn, DrillReturnContext, DrillReturnBrowser } from './browser-drill-return';

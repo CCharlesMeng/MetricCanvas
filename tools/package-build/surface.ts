@@ -31,6 +31,7 @@ export const artifacts: Record<string, { manifest: string; entries: Record<strin
       './widgets': 'packages/engine/widgets/src/index.ts',
       './ui': 'packages/engine/runtime-ui/src/index.ts',
       './ui/types': 'packages/engine/runtime-ui/src/types.ts',
+      './ui/navigation': 'packages/engine/runtime-ui/src/browser-drill-return.ts',
       './ui/composition': 'packages/engine/runtime-ui/src/composition.ts',
       './dqe': 'packages/engine/data-gateway/src/index.ts',
       './ui/ai-summary/yunbao-assistant': 'packages/engine/runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts'

@@ -1,6 +1,19 @@
 {
   "invariants": [
     {
+      "id": "ioc-header-auto-back",
+      "description": "自动返回仅由有效下钻来源启用，6.96增加auto取值",
+      "valid": [
+        "ioc-auto-back-page",
+        "ioc-auto-back-legacy-root"
+      ],
+      "invalid": [
+        "ioc-auto-back-version",
+        "ioc-auto-back-legacy",
+        "ioc-auto-back-unknown"
+      ]
+    },
+    {
       "id": "ioc-header-controls",
       "description": "页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读",
       "valid": [

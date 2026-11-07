@@ -213,6 +213,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-auto-back-legacy-root.json",
+      "target": "product-contracts/page/conformance/valid/ioc-auto-back-legacy-root.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-auto-back-page.json",
+      "target": "product-contracts/page/conformance/valid/ioc-auto-back-page.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-header-business.json",
       "target": "product-contracts/page/conformance/valid/ioc-header-business.json",
       "scope": "exact product contract"
@@ -1008,6 +1018,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-component-ioc-auto-back-legacy-root.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-auto-back-legacy-root.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-ioc-header-business.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-business.json",
       "scope": "exact product contract"
@@ -1240,6 +1255,21 @@
     {
       "source": "product:page/conformance/parameter-extraction.json",
       "target": "product-contracts/page/conformance/parameter-extraction.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-auto-back-version.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-auto-back-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-auto-back-legacy.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-auto-back-legacy.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-auto-back-unknown.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-auto-back-unknown.json",
       "scope": "exact product contract"
     },
     {
@@ -4033,6 +4063,21 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/ioc-auto-back-version.json",
+      "target": "references/page-metadata/errors/ioc-auto-back-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-auto-back-legacy.json",
+      "target": "references/page-metadata/errors/ioc-auto-back-legacy.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-auto-back-unknown.json",
+      "target": "references/page-metadata/errors/ioc-auto-back-unknown.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/ioc-controls-root-filter.json",
       "target": "references/page-metadata/errors/ioc-controls-root-filter.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6643,6 +6688,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/ioc-auto-back-page.json",
+      "target": "references/page-metadata/examples/ioc-auto-back-page.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/ioc-auto-back-legacy-root.json",
+      "target": "references/page-metadata/examples/ioc-auto-back-legacy-root.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/page.md",
       "target": "references/page-metadata/page.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7769,11 +7824,11 @@
     }
   ],
   "counts": {
-    "product": 1521,
+    "product": 1532,
     "authoring": 32,
     "modules": 36,
     "topics": 275,
-    "nodes": 2565,
+    "nodes": 2569,
     "tools": 9,
     "components": 20
   },

@@ -9,9 +9,11 @@ export interface BrowserReturn {
 export function headerBackAction(
   model: Pick<ResolvedIocHeader, 'back' | 'legacyBack'>,
   onback: (() => void) | undefined,
-  browser: BrowserReturn | undefined
+  browser: BrowserReturn | undefined,
+  returnContext?: {entryId:string;back?:()=>void}
 ): (() => void) | undefined {
   if (!model.back) return undefined;
+  if (model.back === 'auto') return returnContext?.entryId ? returnContext.back ?? onback : undefined;
   if (onback) return onback;
   if (model.legacyBack || !browser) return undefined;
   const canGoBack = browser.navigation?.canGoBack ?? browser.history.length > 1;

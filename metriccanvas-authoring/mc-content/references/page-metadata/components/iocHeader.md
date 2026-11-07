@@ -38,7 +38,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 完整合成验收入口 `/pages/ioc-header-controls`，声明与操作见场景目录 `pages/capabilities/ioc-header/controls/README.md`。真实 Operation Map 接口与 DQE 数据由集成环境另验。
 
 
-页面协议 6.95。结构真源为本册[schema.json](../schema.json)，SHA256 `017029aa28e8b6b5afb86bbf3ab729b710d6f193995e7a0c668b32c9bc289a27`。字段表自动生成；可选不等于有默认值。
+页面协议 6.96。结构真源为本册[schema.json](../schema.json)，SHA256 `83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -391,11 +391,35 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/bac
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6261636b2f616e794f662f30"></a>
+
+### `@iocHeaderComponent.props.back · anyOf[0]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 独立分支（不合并required） | const=true | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| true | 用于选择@iocHeaderComponent.props.back分支；同分支其它约束同时成立。 |
+| true | 用于选择@iocHeaderComponent.props.back · anyOf[0]分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6261636b2f616e794f662f31"></a>
+
+### `@iocHeaderComponent.props.back · anyOf[1]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | const="auto" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "auto" | 由当前组件既有自动规则选择。 |
 
 <a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726561644f6e6c79"></a>
 
@@ -636,5 +660,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 
 - `#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/0`：[合法完整页面](../examples/ioc-component-availability-page.json)，JSON Pointer `#/sections/0/components/0/props/identity/facts/0/value`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1`：[合法完整页面](../examples/ioc-component-availability-page.json)，JSON Pointer `#/sections/0/components/0/props/identity/facts/1/value`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0`：[合法完整页面](../examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/components/0/props/back`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1`：[合法完整页面](../examples/ioc-auto-back-page.json)，JSON Pointer `#/sections/0/components/0/props/back`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。

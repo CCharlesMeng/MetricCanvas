@@ -46,6 +46,10 @@ IOC 业务页的公共 `region` 输入只允许页头中的一个组织树：`di
 
 `back:true` 声明返回意图，运行时默认调用当前窗口的 `history.back()`，无需集成应用提供路由或 `returnContext`。浏览器挂载后优先用 `window.navigation.canGoBack` 判断可否后退；不支持该 API 时回退到 `history.length>1`。无浏览器环境或判断不可后退时隐藏默认按钮。历史长度包含前进记录，旧浏览器的长度回退不能保证存在前一条记录，此时按原生行为不跳转。集成应用可选提供 `navigation.back` 覆盖默认行为，提供函数即显示按钮，`returnContext` 只用于可选来源信息及无障碍标签。未声明 back 时不显示；只读允许返回，静态导出不包含返回按钮。旧工具栏兼容路径仍需自定义返回函数，不新增默认行为。返回不维护第二套导航栈，不承诺分页、排序、滚动等完整视图恢复。合成场景 `/pages/ioc-default-back-source` → `/pages/ioc-default-back-target` 验证浏览器返回、刷新与自定义覆盖。可选actions、有限枚举/单选、条件启用、V2候选、最新期上限和全页操作分别保留B2–B6规划，6.36不接受这些尚未交付字段。
 
+6.96 新增 `props.back:"auto"`：同标签页受控跨页下钻具有有效来源且集成应用提供返回处理时，IOC 页头显示返回，点击回到进入详情前的来源 URL。直接打开、收藏夹或新标签页打开没有来源时隐藏；不能仅凭 `history.length`、通用返回函数或 URL 的 `from` 判定。详情页刷新、筛选更新、同页手改查询参数保留来源；改到另一页面后再直接进入详情，不复用旧来源。嵌套下钻返回直接来源。`back:true` 与省略的行为保持，来源 URL 之外的分页、排序、Tab、滚动不保证恢复；静态导出不含按钮。来源识别和记录归集成应用，运行时消费有效 `navigation.returnContext.entryId` 与来源返回动作（优先 `returnContext.back`，兼容既有 `navigation.back`），两者缺一时隐藏自动返回。集成应用应在来源失效后更新导航输入。
+
+Playground 与 Platform 使用 `createBrowserDrillReturn`，将来源关联浏览历史条目，不按目标 pageId 缓存；同页参数变化从连续的同页条目承接。该默认集成依赖 Navigation API 的 `entries/getState/updateCurrentEntry`，历史信息不可用时隐藏自动返回；其他集成应用可提供等价的有效来源契约。`preserveNavigationEntry` 保留筛选 `replaceState` 前后的条目状态。演示 `/pages/ioc-auto-back-source?region=north` → `/pages/ioc-auto-back-detail?project=1`，合成数据，无真实 DQE。
+
 共用筛选协调对write/writeMany/控件/action/地图/URL恢复执行整组类型与边界校验；非法组整次拒绝。依赖变化一次清理所有后代，自动清空进入待确认门禁；用户显式选择或清空才解除。非空维度初值须经当前候选验证；loading/error/unavailable或不合法候选只暂停消费它的查询及下游，无关查询继续。候选重试读取当前依赖；成功和失败都检查代次，缓存按本实例、filterId、层级、完整规范化依赖隔离。只读拦截全部用户写入口，初始化/restore仍校验，静态隐藏不意味着停止查询。门禁同时约束目标表导出和整页静态准备。
 
 验收直接加载 `ioc-header-overview-demo`、`ioc-header-dense-filter-demo`、`ioc-header-detail-demo`、`ioc-header-month-set-demo`；查询使用本地DQE仿真条件回显，明确是合成验收。真实DQE、CloudIOC权限、Relay、门户和业务字段均需单独验证。
@@ -105,7 +109,7 @@ inline+compact 保持整页吸顶。位置切换使用同一个控件实例；�
 新声明采用 `iocHeader.props.components`，支持引用普通筛选的 `filterControl` 和拥有标准 Region 的 `regionFilter`；旧 `filterIds` 保留读取，两者互斥。Region 由子控件显式引入，查询范围和筛选状态不变。完整声明及边界见[页头子控件](components/iocHeader.md#页头子控件691)，合成场景 `/pages/ioc-header-controls`。
 
 
-页面协议 6.95。结构真源为本册[schema.json](schema.json)，SHA256 `017029aa28e8b6b5afb86bbf3ab729b710d6f193995e7a0c668b32c9bc289a27`。字段表自动生成；可选不等于有默认值。
+页面协议 6.96。结构真源为本册[schema.json](schema.json)，SHA256 `83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -127,7 +131,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58","6.59","6.60","6.61","6.62","6.63","6.64","6.65","6.66","6.67","6.68","6.69","6.70","6.71","6.72","6.73","6.74","6.75","6.76","6.77","6.78","6.79","6.80","6.81","6.82","6.83","6.84","6.85","6.86","6.87","6.88","6.89","6.90","6.91","6.92","6.93","6.94","6.95"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46","6.47","6.48","6.49","6.50","6.51","6.52","6.53","6.54","6.55","6.56","6.57","6.58","6.59","6.60","6.61","6.62","6.63","6.64","6.65","6.66","6.67","6.68","6.69","6.70","6.71","6.72","6.73","6.74","6.75","6.76","6.77","6.78","6.79","6.80","6.81","6.82","6.83","6.84","6.85","6.86","6.87","6.88","6.89","6.90","6.91","6.92","6.93","6.94","6.95","6.96"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 / 6.96 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -222,6 +226,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.93" | 语义数值格式、设备精度及相对变化基期边界；作者版本6.93。 |
 | "6.94" | 柱状图、折线图系列与表格字段列可显式声明展示单位。 |
 | "6.95" | 表格单元格 selection.writes 可指定目标筛选的 level，复用统一筛选状态、页头回显和逐层查询绑定。 |
+| "6.96" | IOC 页头 back:"auto" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -702,11 +707,35 @@ Schema位置：`#/properties/iocHeader/properties/back`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6261636b2f616e794f662f30"></a>
+
+### `$.iocHeader.back · anyOf[0]`
+
+Schema位置：`#/properties/iocHeader/properties/back/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 独立分支（不合并required） | const=true | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| true | 用于选择$.iocHeader.back分支；同分支其它约束同时成立。 |
+| true | 用于选择$.iocHeader.back · anyOf[0]分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6261636b2f616e794f662f31"></a>
+
+### `$.iocHeader.back · anyOf[1]`
+
+Schema位置：`#/properties/iocHeader/properties/back/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | const="auto" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "auto" | 由当前组件既有自动规则选择。 |
 
 <a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f726561644f6e6c79"></a>
 
@@ -1557,6 +1586,8 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - [ioc-header-unconfigured](examples/ioc-header-unconfigured.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-mixed-content](examples/tab-mixed-content.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-header-section-placement](examples/ioc-header-section-placement.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-auto-back-page](examples/ioc-auto-back-page.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-auto-back-legacy-root](examples/ioc-auto-back-legacy-root.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
@@ -1564,6 +1595,8 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/definitions/dashboardToolbar/anyOf/1`：[合法完整页面](examples/component-keyValuePanel.json)，JSON Pointer `#/dashboardToolbar`。
 - `#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/0`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/iocHeader/identity/facts/0/value`。
 - `#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/iocHeader/identity/facts/1/value`。
+- `#/properties/iocHeader/properties/back/anyOf/0`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/iocHeader/back`。
+- `#/properties/iocHeader/properties/back/anyOf/1`：[合法完整页面](examples/ioc-auto-back-legacy-root.json)，JSON Pointer `#/iocHeader/back`。
 - `#/properties/iocHeader/properties/components/items/oneOf/0`：[语义拒绝反例](errors/ioc-controls-root-filter.json)：旧根级 iocHeader 仅兼容历史属性；新增子控件必须位于首 section 的页头组件中。（规则 `ioc-header-controls`）。此项不计入合法示例覆盖。
 - `#/properties/iocHeader/properties/components/items/oneOf/1`：[语义拒绝反例](errors/ioc-controls-root-region.json)：旧根级 iocHeader 仅兼容历史属性；新增子控件必须位于首 section 的页头组件中。（规则 `ioc-header-controls`）。此项不计入合法示例覆盖。
 - `#/properties/params/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params`。
