@@ -37,7 +37,7 @@
 
 | 用户需求／选择条件 | 查阅与包内示例 | Playground 对照 |
 |---|---|---|
-| 按同一业务键补列：不同查询提供同一对象的不同指标，要求全局排序与分页 | 新建读 `data.pagedJoin.pagination`，历史结构读 `data.pagedJoin`；新建默认query模式10/10，记录需真实记录id，后操作成员覆盖，不支持时列明缺口；[组合查询源](page-metadata/examples/paged-join-page.json)。固定业务排名另看[排名示例](page-metadata/examples/paged-join-fixed-rank-page.json)。 | `multi-query-table` |
+| 按同一业务键补列：不同查询提供同一对象的不同指标，要求全局排序与分页 | 新建读 `data.pagedJoin.pagination`，历史结构读 `data.pagedJoin`；新建默认query模式10/10，记录需真实记录id，后操作成员覆盖，不支持时列明缺口；筛选不对称、关联报错或成员未请求时先按[多源查询定位](multi-source-query-repair.md)检查；[组合查询源](page-metadata/examples/paged-join-page.json)。固定业务排名另看[排名示例](page-metadata/examples/paged-join-fixed-rank-page.json)。 | `multi-query-table` |
 | 多来源逐行合并：合同、商务等记录统一列后混排，保留各来源记录 | [多来源表格](multi-source-table.md)、`data.pagedUnion`；[分页合并源](page-metadata/examples/paged-union-page.json)。 | `multi-source-table` |
 | 查询结果级联：先查对象集合或 TopN，再用其维度值查询下游指标 | [查询结果绑定](page-metadata/queries-and-bindings.md)的 resultBindings；[级联与回填](page-metadata/examples/query-cascade-page.json)。明确上游集合与完整性。 | `business-sdt-cascade-example` |
 | 查询分页／排序驱动级联：下游只跟随上游当前查询窗口，可先用 where 筛行 | [窗口级联](page-metadata/examples/query-result-page-window-page.json)；需完整输入时对照[结果筛行](page-metadata/examples/query-result-where-page.json)。使用查询分页；本地分页／排序不改变绑定输入。当前窗口、TopN 与全量分别核对。 | `query-result-where-page` |
@@ -66,6 +66,8 @@
 | 观察到的问题 | 首先核对 | 后续入口／对照 |
 |---|---|---|
 | JSON、版本或字段引用报错 | validate-page 回执的 type/path/message 与声明两端 | [校验与错误](page-metadata/validation.md)、[旧页升级](page-upgrade.md) |
+| 选季度仍传 month，或年／季／月的请求粒度不符合预期 | 当前已应用期间、实际消费的查询分支、periodPolicy 与自定义时间字段；页头类型不能证明查询粒度 | [期间选择定位与修复](period-selection-repair.md)；精确主题 `query.period-policy` |
+| 联合查询／left join 校验失败，B 不支持账期，补列未请求或关联后缺行 | 组合类型、成员筛选矩阵、主表行粒度、行键与关联键、首个失败请求；区分结构约束与真实字段查询能力 | [多源查询定位与修复](multi-source-query-repair.md)；`data.pagedJoin.pagination`、`data.pagedJoin.records` |
 | 查询未执行、被拒绝或空结果 | 执行入口、生效条件、输入集合、真实响应；区分请求失败与成功空结果 | [数据分析](data-analysis.md)，再选对应查询／级联逻辑 |
 | 缺行、重复行、排序／分页／导出不一致 | 行粒度、稳定键、totalCount、完整结果与当前窗口 | 上方对象查询、pagedJoin、pagedUnion 或窗口级联；不要从 UI 当前页推断总集合 |
 | 数值、百分比或空值显示不对 | queryField、字段类型、原始值、单位／刻度与格式 | `fields.core`、`fields.format`；[查询容错](page-metadata/examples/query-numeric-tolerance.json)；Playground `query-numeric-tolerance` |
