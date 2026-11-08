@@ -16,7 +16,7 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
     return result;
   } catch (cause) {
     if (cause instanceof SourceRangeError) throw new ExportViewError(cause.code, cause.message);
-    if (cause instanceof Error && cause.name==='TimeoutError') throw new ExportViewError('EXPORT_TIMEOUT','导出准备超过 60 秒');
+    if (cause instanceof Error && cause.name==='TimeoutError') throw new ExportViewError('EXPORT_TIMEOUT','导出准备超过 5 分钟');
     if (!signal.aborted && !(cause instanceof ExportViewError)) throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
     throw cause;
   } finally { if (!sharedProgram) program.dispose(); }

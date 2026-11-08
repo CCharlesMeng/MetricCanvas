@@ -19,7 +19,7 @@ export async function prepareTableExport(input: {
   const queries = structuredClone(new Map(input.queries));
   const state = { ...input.state, filters: structuredClone(new Map(input.state.filters)), tables: JSON.parse(JSON.stringify(input.state.tables)), headerFilters: JSON.parse(JSON.stringify(input.state.headerFilters)) };
   const { signal } = input.controller;
-  const timer = setTimeout(() => input.controller.abort(new ExportViewError('EXPORT_TIMEOUT', '导出准备超过 60 秒')), EXPORT_PREPARATION_TIMEOUT_MS);
+  const timer = setTimeout(() => input.controller.abort(new ExportViewError('EXPORT_TIMEOUT', '导出准备超过 5 分钟')), EXPORT_PREPARATION_TIMEOUT_MS);
   try {
     const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
     signal.throwIfAborted();

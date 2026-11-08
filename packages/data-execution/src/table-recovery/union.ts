@@ -1,12 +1,12 @@
 import type { Row } from '@metriccanvas/page/internal';
 import { unionRow, type UnionPlan } from '../paged-union/plan';
 import type { QueryRunner } from '../query-runner';
-import { EXPORT_MAX_ROWS } from '../source-program/range-policy';
+import { EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from '../source-program/range-policy';
 import { recoveryContext, recoveryRows, recoveryView, warn } from './read';
 
 /** Complete normalization precedes deduplication, global sorting, counting and paging. */
 export async function recoverUnion(plan: UnionPlan, runner: QueryRunner, scope: string, signal: AbortSignal, complete: boolean) {
-  const context = recoveryContext(plan.page.id, plan.id, signal);
+  const context = recoveryContext(plan.page.id, plan.id, signal, complete ? EXPORT_PREPARATION_TIMEOUT_MS : undefined);
   context.maxScan = complete ? EXPORT_MAX_ROWS : 100_000;
   const rows: Row[] = [];
   for (const member of [...plan.members].sort((left, right) => left.id < right.id ? -1 : 1)) {

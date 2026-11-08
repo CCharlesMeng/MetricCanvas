@@ -166,7 +166,7 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 | 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/capabilities/filters/report-date-filter-example.json) |
 | 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business/report/sdt/business-sdt-cascade-example.json) |
 | 从其他页面通过 URL 打开指定 Tab（6.33） | [Tab 初值](docs/page-metadata/components/tabContainer.md#url-初始化页签633)、[链接传参](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签) | [来源页](pages/capabilities/navigation/tab-url-source.json)、[目标页](pages/capabilities/navigation/tab-url-initialization.json) |
-| 配置每张表的独立搜索与完整Excel导出 | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
+| 配置每张表的独立搜索与完整Excel导出（准备预算5分钟） | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
 | 配置 IOC 公共页头（6.36） | [IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632) | [普通](pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json)、[密集](pages/capabilities/ioc-header/scenarios/ioc-header-dense-filter-demo.json)、[详情](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json) |
 | 配置 PDF / PNG 导出按钮（6.31） | [报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631) | [导出图片](pages/capabilities/export/report-png-export.json)、[单张长图](pages/capabilities/export/report-png-long-export.json) |
 | 配置 Report 工具带内置 PDF 下载与按钮文字（6.28） | [报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628) | [内置PDF下载页面](pages/capabilities/export/report-pdf-export.json) |

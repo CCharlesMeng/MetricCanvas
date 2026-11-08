@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import ExcelJS from 'exceljs';
 import { parsePage } from '@metriccanvas/page';
 import type { EffectiveQuery, TableComponent } from '@metriccanvas/page/internal';
@@ -89,6 +89,40 @@ it('cancels preparation even when a gateway ignores the abort signal', async () 
     controller, state: { currentYear: 2026, filters: new Map(), tables: {}, headerFilters: {} }, gateway: { fetchData: () => new Promise(() => {}) } });
   controller.abort(new Error('cancelled'));
   await expect(promise).rejects.toThrow('cancelled');
+});
+
+it.each([
+  { delay: 61_000, deadline: 61_000, timesOut: false },
+  { delay: 300_001, deadline: 300_000, timesOut: true }
+])('allows export preparation until five minutes ($delay ms response)', async ({ delay, deadline, timesOut }) => {
+  vi.useFakeTimers();
+  vi.spyOn(AbortSignal, 'timeout').mockImplementation(milliseconds => {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(new DOMException('Timed out', 'TimeoutError')), milliseconds);
+    return controller.signal;
+  });
+  try {
+    const input = JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/table-toolbar-page.json', import.meta.url), 'utf8'));
+    input.dataSources.records.fields.name.queryField = 'name';
+    input.dataSources.records.fields.value.queryField = 'value';
+    input.dataSources.records.source = { type: 'query', resultScope: 'complete', query: { language: 'dqe', body: { dsl_list: [{ output_dims: ['name'], output_metrics: ['value'] }] } } };
+    const parsed = parsePage(input); if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+    const settled = vi.fn();
+    const promise = prepareTableExport({ page: parsed.page, component: parsed.page.sections[0].components[0] as TableComponent,
+      queries: new Map(), controller: new AbortController(),
+      state: { currentYear: 2026, filters: new Map(), tables: {}, headerFilters: {} },
+      gateway: { fetchData: () => new Promise(resolve => setTimeout(() => resolve({ rows: [{ name: '客户', value: 1 }], totalCount: 1 }), delay)) }
+    }).then(data => { settled(); return { data, error: undefined }; }, error => { settled(); return { data: undefined, error }; });
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(settled).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(deadline - 60_000);
+    const result = await promise;
+    if (timesOut) expect(result.error).toMatchObject({ code: 'EXPORT_TIMEOUT', message: '导出准备超过 5 分钟' });
+    else expect(result.data?.main?.snapshot.rows).toEqual([{ name: '客户', value: 1 }]);
+  } finally {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  }
 });
 
 it('exports generated row numbers across all sorted matches with a merged header', async () => {

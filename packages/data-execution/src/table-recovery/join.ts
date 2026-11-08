@@ -7,6 +7,7 @@ import { memberQuery, restrictKeys } from '../paged-join/member-query';
 import { memberKey } from '../paged-join/member-diagnostics';
 import { filterRecordTimes, recordReadOrder } from '../paged-join/record-rows';
 import { ordinalRows } from '../paged-join/rows';
+import { EXPORT_PREPARATION_TIMEOUT_MS } from '../source-program/range-policy';
 import { recoveryContext, recoveryRows, recoveryView, warn, withTableRecovery, type RecoveryContext } from './read';
 
 export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, allowPartial = false) {
@@ -17,7 +18,7 @@ export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, sc
 }
 export async function recoverJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false) {
   const records = plan.source.source.records;
-  const context = recoveryContext(plan.page.id, plan.sourceId, signal, records?.timeoutMs, records?.maxBytes);
+  const context = recoveryContext(plan.page.id, plan.sourceId, signal, records?.timeoutMs ?? (complete ? EXPORT_PREPARATION_TIMEOUT_MS : undefined), records?.maxBytes);
   const domainId = plan.source.source.domainMember;
   const maxRows = records ? records.maxRows ?? 100_000 : (plan.source.source.fallback?.maxRows ?? 1000);
   const raw = await recoveryRows(recordReadOrder(plan, domainId, memberQuery(plan, domainId)), runner, scope, context, plan.source.source.members[domainId].source, maxRows);

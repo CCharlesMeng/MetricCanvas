@@ -1,7 +1,7 @@
 import { mount, unmount, tick } from 'svelte';
 import type { EffectiveQuery } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../../runtime/src';
-import { prepareExportSnapshots, ExportViewError, EXPORT_PREPARATION_TIMEOUT_MS } from '../../runtime/src/export-snapshots';
+import { prepareExportSnapshots, ExportViewError } from '../../runtime/src/export-snapshots';
 import ExportView from './ExportView.svelte';
 import type { ExportRenderState } from './export-render-state';
 
@@ -13,7 +13,7 @@ interface ReportView {target:HTMLElement;signal:AbortSignal}
 export async function withReportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery>;gateway:RuntimeDataGateway;sourceRoot:HTMLElement;controller:AbortController;scale?:number;program?:import('@metriccanvas/data-execution/runtime').SourceProgram}, consume:(view:ReportView)=>Promise<T>):Promise<T> {
   const {state,controller,sourceRoot}=input;
   const signal=controller.signal;
-  const timer=setTimeout(()=>controller.abort(new ExportViewError('EXPORT_TIMEOUT','导出准备超过 60 秒')),EXPORT_PREPARATION_TIMEOUT_MS);
+  const timer=setTimeout(()=>controller.abort(new ExportViewError('EXPORT_TIMEOUT','导出准备超过 60 秒')),60_000);
   const content=sourceRoot.querySelector<HTMLElement>('.page-content')??sourceRoot;
   const contentWidth=content.getBoundingClientRect().width;
   const runtimeWidth=sourceRoot.getBoundingClientRect().width;

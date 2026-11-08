@@ -75,7 +75,8 @@ it('times out the whole job even when a candidate adapter ignores abort',async()
  vi.useFakeTimers();
  try{
   const job=prepareHierarchyExport({page,component:table,gateway,state:state(choose(filters,'O101')),params:new Map(),queries:new Map(),controller});
-  const rejected=expect(job).rejects.toMatchObject({code:'EXPORT_TIMEOUT'});
-  await vi.advanceTimersByTimeAsync(60001);await rejected;expect(controller.signal.aborted).toBe(true);
+  const rejected=expect(job).rejects.toMatchObject({code:'EXPORT_TIMEOUT',message:'父子导出准备超过 5 分钟'});
+  await vi.advanceTimersByTimeAsync(299999);expect(controller.signal.aborted).toBe(false);
+  await vi.advanceTimersByTimeAsync(1);await rejected;expect(controller.signal.aborted).toBe(true);
  }finally{vi.useRealTimers();}
 });
