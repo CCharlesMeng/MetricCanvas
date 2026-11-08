@@ -103,13 +103,15 @@
   .compact .tab-list {
     box-sizing: border-box;
     width: auto;
-    height: 28px;
+    /* Include the 28px buttons, track border and native horizontal scrollbar. */
+    min-height: 29px;
     flex: none;
     flex-wrap: nowrap;
     gap: 4px;
     padding: 0;
     margin: 14px 18px 0;
     overflow-x: auto;
+    overflow-y: hidden;
   }
   .analysis-stack .tab-list {
     flex: none;
@@ -117,8 +119,10 @@
     gap: 0;
     padding: 0;
     margin: 0 0 16px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 0;
+    box-shadow: inset 0 -2px #f0f0f0;
     overflow-x: auto;
+    overflow-y: hidden;
   }
   button {
     flex-shrink: 0;
@@ -138,7 +142,7 @@
   }
   .analysis-stack button {
     padding: 10px 24px;
-    margin-bottom: -2px;
+    margin-bottom: 0;
     font-size: 16px;
     font-weight: 400;
     line-height: 24px;

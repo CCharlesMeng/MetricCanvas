@@ -116,7 +116,7 @@
   .overflow-panel{position:absolute;top:calc(100% + 10px);right:0;box-sizing:border-box;width:min(760px,calc(100cqi - 48px));max-width:calc(100cqi - 48px);display:flex;flex-wrap:wrap;gap:16px;padding:16px;background:#fff;border:1px solid var(--mc-color-border,#e4e4e7);border-radius:8px;box-shadow:0 12px 32px rgb(15 23 42 / .16);}
   .overflow-panel .filter{--mc-filter-bar-flex:0 1 auto;--mc-filter-bar-wrap:wrap;}
   header.inline.compact{position:sticky;z-index:66;top:0;display:flex;width:100%;height:56px;min-height:56px;gap:0;padding:0 24px;border-bottom:1px solid #e8e8e8;}
-  .inline.compact .identity{flex:none;margin-right:24px;}.inline.compact .filter-region{flex:1;overflow-x:auto;}.inline.compact .filters{flex:0 0 auto;flex-wrap:nowrap;gap:12px;}
+  .inline.compact .identity{flex:none;margin-right:24px;}.inline.compact .filter-region{flex:1;overflow-x:auto;overflow-y:hidden;}.inline.compact .filters{flex:0 0 auto;flex-wrap:nowrap;gap:12px;}
   .inline.compact h1{font-size:18px;font-weight:600;line-height:24px;}
   @container mc-runtime (max-width: 1050px){header.inline{grid-template-columns:minmax(0,1fr);gap:12px;padding:18px 20px;}.inline .filter-region{align-items:flex-start;}.inline h1{white-space:normal;}header.inline.compact{height:auto;min-height:56px;flex-wrap:wrap;gap:8px;}}
 
