@@ -5,6 +5,7 @@
 
 <script lang="ts">
   import ColumnCandidateOptions from './ColumnCandidateOptions.svelte';
+  import SelectAllOptions from './SelectAllOptions.svelte';
   import { visibleAfterPaint } from '../../shared/visible-after-paint';
   import TableWarnings from './TableWarnings.svelte';
   import { tableDataWarnings } from './warnings';
@@ -240,12 +241,38 @@
     return value?.mode === 'select' ? value.values : [];
   }
 
-  function toggleFilterValue(field: string, option: string | number) {
-    const current = selectedValues(field);
+  function allFilterSelected(field: string): boolean {
+    const value = view.headerFilters[field];
+    return value?.mode === 'select' && value.all === true;
+  }
+
+  function toggleFilterValue(column: TableColumn, option: string | number) {
+    const field = columnField(column);
+    const current = allFilterSelected(field) ? completeFilterValues(column) : selectedValues(field);
+    if (!current) return;
     const next = current.includes(option)
       ? current.filter((value) => value !== option)
       : [...current, option];
-    onheaderfilter?.(field, next.length > 0 ? { mode: 'select', values: next } : null);
+    setFilterValues(field, next, isCompleteFilterSelection(column, next));
+  }
+
+  function completeFilterValues(column: TableColumn): readonly (string | number)[] | undefined {
+    if (column.enumValues) return column.enumValues.map(option => option.value);
+    const field = columnField(column);
+    if (!columnCandidates) return !filterOptionsStatus[field] || filterOptionsStatus[field] === 'ready' ? filterOptions[field] ?? [] : undefined;
+    const snapshot = columnCandidates[field];
+    if (!snapshot || !['ready', 'empty'].includes(snapshot.status) || snapshot.search || snapshot.totalCount !== snapshot.candidates.length) return undefined;
+    return snapshot.candidates.map(candidate => candidate.value);
+  }
+
+  function isCompleteFilterSelection(column: TableColumn, values: readonly (string | number)[]): boolean {
+    if (column.filterable?.mode !== 'select' || !column.filterable.showSelectAll || !values.length) return false;
+    const options = completeFilterValues(column);
+    return !!options?.length && options.every(value => values.includes(value));
+  }
+
+  function setFilterValues(field: string, values: (string | number)[], all = false) {
+    onheaderfilter?.(field, all ? { mode: 'select', values, all: true } : values.length > 0 ? { mode: 'select', values } : null);
   }
 
   function dateRangeOf(field: string): { from: string; to: string } {
@@ -459,23 +486,34 @@
                           {#if column.filterable.mode === 'select'}
                             {#if view?.allowEmptyFilter}<button type="button" onclick={()=>onheaderfilter?.(columnField(column),{mode:'isNull'})}>为空</button>{/if}
                             {#if column.enumValues}
+                              {#if column.filterable.showSelectAll}
+                              <SelectAllOptions values={column.enumValues.map(option => option.value)} selected={selectedValues(columnField(column))} all={allFilterSelected(columnField(column))}
+                                onchange={(values, all) => setFilterValues(columnField(column), values, all)} />
+                              {/if}
                               {#each column.enumValues as option (JSON.stringify([typeof option.value,option.value]))}
                                 <label class="option">
-                                  <input type="checkbox" checked={selectedValues(columnField(column)).includes(option.value)} onchange={()=>toggleFilterValue(columnField(column),option.value)} />
+                                  <input type="checkbox" checked={selectedValues(columnField(column)).includes(option.value)} onchange={()=>toggleFilterValue(column,option.value)} />
                                   <span>{option.label}</span>
                                 </label>
                               {/each}
                             {:else if columnCandidates}
                               <ColumnCandidateOptions field={columnField(column)} snapshot={columnCandidates[columnField(column)]}
-                                selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(columnField(column), value)}
+                                showSelectAll={column.filterable.showSelectAll} all={allFilterSelected(columnField(column))} selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(column, value)}
+                                onselectall={(values, all) => setFilterValues(columnField(column), values, all)}
                                 onsearch={oncandidatesearch} onmore={oncandidatemore} onretry={oncandidateretry} />
                             {:else}
+                            {#if column.filterable.showSelectAll}
+                            <SelectAllOptions values={filterOptions[columnField(column)] ?? []} selected={selectedValues(columnField(column))} all={allFilterSelected(columnField(column))}
+                              disabled={!allFilterSelected(columnField(column)) && !!filterOptionsStatus[columnField(column)] && !['ready', 'empty'].includes(filterOptionsStatus[columnField(column)])}
+                              onchange={(values, all) => setFilterValues(columnField(column), values, all)} />
+                            {/if}
                             {#each filterOptions[columnField(column)] ?? [] as option (option)}
                               <label class="option">
                                 <input
                                   type="checkbox"
-                                  checked={selectedValues(columnField(column)).includes(option)}
-                                  onchange={() => toggleFilterValue(columnField(column), option)}
+                                  checked={allFilterSelected(columnField(column)) || selectedValues(columnField(column)).includes(option)}
+                                  disabled={allFilterSelected(columnField(column)) && !completeFilterValues(column)}
+                                  onchange={() => toggleFilterValue(column, option)}
                                 />
                                 <span>{option}</span>
                               </label>
@@ -513,15 +551,6 @@
                               <input type="text" inputmode="decimal" aria-label="数值上限" placeholder="上限" value={range.to} onchange={e=>emitNumberRange(columnField(column),range.from,e.currentTarget.value)} />
                             </div>
                             <span class="hint">原始单位：{rangeUnit(column)}</span>
-                          {/if}
-                          {#if hasActiveFilter(columnField(column))}
-                            <button
-                              type="button"
-                              class="clear"
-                              onclick={() => onheaderfilter?.(columnField(column), null)}
-                            >
-                              清除筛选
-                            </button>
                           {/if}
                         </div>
                       </details>
@@ -1180,16 +1209,6 @@
   .sep {
     color: #a1a1aa;
   }
-  .clear {
-    margin-top: 4px;
-    border: 0;
-    border-top: 1px solid #f4f4f5;
-    background: transparent;
-    padding: 8px;
-    color: #2563eb;
-    font-size: 13px;
-    cursor: pointer;
-  }
   .pager {
     display: flex;
     align-items: center;
@@ -1748,11 +1767,13 @@
   .table-widget.os-theme .option input:hover , .table-widget.os-theme :global(.candidate-option input:hover) { border-color: #191919; }
   .table-widget.os-theme .option input:checked , .table-widget.os-theme :global(.candidate-option input:checked) { border-color: #1476ff; background: #1476ff; position: relative; }
   .table-widget.os-theme .option input:checked::after , .table-widget.os-theme :global(.candidate-option input:checked::after) { content: ''; position: absolute; width: 7px; height: 4px; left: 3px; top: 3px; border-left: 1px solid #fff; border-bottom: 1px solid #fff; transform: rotate(-45deg); }
+  .table-widget.os-theme :global(.candidate-option input:indeterminate) { border-color: #1476ff; background: #1476ff; position: relative; }
+  .table-widget.os-theme :global(.candidate-option input:indeterminate::after) { content: ''; position: absolute; width: 8px; height: 1px; left: 3px; top: 6px; background: #fff; }
+  .table-widget.os-theme :global(.candidate-option input:disabled) { opacity: .5; cursor: not-allowed; }
   .table-widget.os-theme .option input:focus-visible , .table-widget.os-theme :global(.candidate-option input:focus-visible) { outline: 2px solid #191919; outline-offset: 2px; }
   .table-widget.os-theme .range { min-width: 0; padding: 8px 0; }
   .table-widget.os-theme .range input { box-sizing: border-box; min-width: 0; width: 0; flex: 1; height: 32px; padding: 0 8px; border: 1px solid #c2c2c2; border-radius: 6px; color: #191919; font: inherit; }
   .table-widget.os-theme .range input:hover, .table-widget.os-theme .range input:focus { border-color: #191919; outline: none; }
-  .table-widget.os-theme .clear { color: #191919; border-top-color: #f0f0f0; }
   .table-widget.os-theme .page-size-select { margin-left: 16px; }
   .table-widget.os-theme .empty-row { height: auto; padding: 0; color: #191919; text-align: center; }
   .table-widget.os-theme .empty-state { box-sizing: border-box; display: flex; min-height: 60px; padding: 60px 0; align-items: center; justify-content: center; text-align: center; }

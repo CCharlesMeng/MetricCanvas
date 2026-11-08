@@ -28,6 +28,8 @@ inline 与明确完整且无查询窗口的 query 按表格实例本地筛选，
 
 ## 表头参数初值与全选语义（6.85）
 
+本节为旧配置兼容规则；新全选入口使用下节的 showSelectAll。
+
 select 叶子列声明 `filterable: {"mode":"select","initialParam":"is-valid","allBehavior":"unrestricted"}`。`initialParam` 引用现有 `params.query.dimensions` 字符串维度参数，与 `defaultValues` 互斥。可选参数无输入及保存值时不限；保存的 `dim_value_list` 提供缺省初值；必需参数缺失沿用参数诊断。多值 URL 使用重复键 `?is-valid=是&is-valid=否`。空值、重复、错误类型和字典外输入拒绝，不回退保存值；不得把 JSON 数组字符串当多值编码。
 
 参数只供页面实例首次初始化，TableSession 唯一持有之后的已提交选择。初始请求直接包含条件，用户改选“否”或清空后，刷新数据、翻页、Tab、候选更新及导出都保持当前选择。显式恢复视图整体优先，包括空 predicates；恢复仍校验新声明的类型、字典和全选规则。列隐藏后重显不恢复初值；组织父子表的完整重置按当前有效列恢复本实例基线。普通详情浮层仍按现行只读表格约束禁止表头筛选，本能力不开放该位置；也不会重新读取外层 URL 或借用来源表会话。
@@ -37,6 +39,26 @@ select 叶子列声明 `filterable: {"mode":"select","initialParam":"is-valid","
 字段必须为静态 main 字符串维度；远程字段沿显式 projection 定位成员及 queryField，并核对参数 dim_name。同一输入不得通过固定 paramBindings、DQE 原位引用或隐藏页级 filterBindings 永久约束同一目标；独立业务、权限和时间条件仍按交集生效。远程所有权、待定门控、单成员分页和 records 限制沿用上节，不逐列覆盖初值。声明了 initialParam 即使当前无值也保留快照保护；无视图证明的普通 initial/执行回执不复用，Node 单次取数不写回无视图信息的已筛选普通 initial。共享层不读取 window.location。
 
 入口 `/pages/table-header-filter-param-source` 提供有效意见数（是）、决策总次数（是、否）、直接打开与西区查询分页。内联页 `/pages/table-header-filter-defaults?is-valid=是` 用四条合成记录比较两种全选行为；HTTP 仿真页 `/pages/table-header-filter-defaults-query?region-input=西区` 观察初始请求与查询分页。完整操作和证据边界见 pages/capabilities/table/README.md。两个真实业务原件缺失，本示例不是业务页迁移或真实 DQE 证明。
+
+<a id="table-header-select-all"></a>
+
+## 列头全选入口（6.98）
+
+在 select 列声明 `filterable: {"mode":"select","showSelectAll":true}` 才展示“全选”。省略或 false 不展示；该属性不用于日期/数值范围。固定 `enumValues` 和从表格完整匹配结果取得的动态候选均支持。新页面只需配置 `showSelectAll`，不需要配置 `allBehavior`，动态候选也不需要补写枚举。
+
+```json
+{"field":"status","title":"是否有效","filterable":{"mode":"select","showSelectAll":true}}
+```
+
+列头弹层不提供“清除筛选”按钮。选项通过取消勾选清空；日期和数值范围通过清空端点恢复。
+
+点击全选后该列不限，控件保持全选勾选；在完整候选已知时逐项选满也采用同一行为。取消单项后按剩余原始值筛选；取消全选或逐项取消勾选可清空选择并恢复该列不限。操作一次提交并回到第一页，翻页、排序、刷新及 Tab 切换保留用户选择。运行时用独立的全选意图保留显示状态，不把当前值集合写成 IN 条件；查询、筛选候选与导出都消费已提交视图。相同数据与其他条件下，全选和该列未过滤返回相同记录，包括 null 和枚举外值；页面业务条件、权限、搜索和其他列条件继续生效。显示名不进入查询，初值仍沿既有 defaultValues/initialParam 规则。
+
+动态候选 ready/empty、无搜索词且已加载数等于准确 totalCount 时可首次全选；尚有分页时先“加载更多”，不把当前页或搜索结果当全部。候选为空也可全选恢复含空值的记录。搜索时隐藏全选；已全选时可直接取消全选，取消单项则须先取得完整、无搜索的候选，未完整时单项暂不可改，以免漏掉未加载值。加载/失败/不可用不提供可用全选。失配值可在部分选择时逐项取消；取消全选显式清空本列所有选择。
+
+旧 `allBehavior` 从 6.85 起已存在，保留读取、校验和执行规则，已有页面无需改写；它不控制入口是否显示。新 `showSelectAll:true` 的用户全选操作固定为不限，不受旧 allBehavior 值影响。省略新开关的旧页面继续按原筛选声明运行。
+
+完整内联合成示例 `/pages/table-header-select-all` 对照静态/动态候选、true/false/省略、空值、其他列、Tab 与 Excel；无需外部数据服务。该例不代表真实 DQE 或 Relay 验收。
 
 ## 前端列枚举（6.80）
 
@@ -316,13 +338,13 @@ Excel 原文单元格明确写入文本，不再猜测为日期或数值；合�
 
 ## 独立查询置顶行（6.60）
 
-props.pinnedTop 指定独立命名槽，列 pinnedTop 的 field、secondaryField、badgeField 以现有 FieldBinding 绑定该槽。例：data:{main:"regions",china:"summary"}、props.pinnedTop:{data:"china"}、列 {field:"actual",pinnedTop:{field:{data:"china",field:"summary-actual"}}}；data 是槽名，不是数据源 id。
+props.pinnedTop 指定独立命名槽；列 pinnedTop 的 field/secondaryField/badgeField 用 FieldBinding 绑定该槽。data 是槽名而非数据源 id，完整声明见下方示例入口。
 
-置顶槽须为普通 query、source.resultScope:"complete"，完整返回零或一行，无 limit/offset、不依赖本表明细。列只绑定指定置顶槽，类型、角色、币种和单位与对应明细一致。其他槽按既有 rowKey 对齐，置顶槽不要求 rowKey，也不增加单 main 表格的行键要求；普通字段不能反向以置顶槽对齐。
+置顶槽须为普通 query，声明 source.resultScope:"complete"，完整返回零或一行；禁止 limit/offset 和依赖本表明细。置顶列仅绑定该槽，类型、角色、币种、单位须与明细一致。其余槽沿用 rowKey 对齐；置顶槽及单 main 表不新增行键要求，普通字段不得反向对齐置顶槽。
 
-每页在表头后显示一次汇总，不吸顶、不占明细页大小、totalCount 或序号；序号和展开格为空。格式优先级：置顶绑定显式 format、同列明细最终 format、置顶字段 defaultFormat。未绑定格留空，次字段及徽标不继承明细；沿用列宽、对齐、固定列和样式，不继承选择、导航、详情、展开或 mergeBy 动作。
+每页表头后仅显示一次汇总，不吸顶、不占明细页大小或 totalCount，序号/展开格留空。格式优先级：置顶绑定显式 format > 明细最终 format > 置顶字段 defaultFormat。未绑定格留空，次字段/徽标不继承明细。沿用列宽、对齐、固定列及样式，不继承选择、导航、详情、展开或 mergeBy。
 
-汇总仅消费自身查询显式绑定的共同条件，地区、表内搜索、列头条件和分页不隐式传入。示例时间、产品绑定两源，地区只绑定明细；两源始终保留用户权限，不得通过省略筛选扩大权限。值和标签由指标表区域取数返回，前端不从明细补算。
+汇总只消费其查询显式绑定的共同条件，不隐式接收地区、表内搜索、列头条件或分页。例中时间/产品绑定两源，地区仅绑定明细。两源均受用户权限约束，省略筛选不得扩大权限。值/标签由指标表区域查询返回，不从明细补算。
 
 汇总加载不阻塞明细；零行不生成汇总；失败、总数不符或多行保留明细并诊断，不复用旧值。共同条件变化使旧汇总失效，迟到响应不回写。明细零行时可仅显示成功汇总，明细 totalCount 仍为零。
 
@@ -332,7 +354,7 @@ Excel 在表头后写一次无序号汇总，再写全部匹配明细。汇总�
 
 ## 多查询置顶行与固定文字（6.79）
 
-可通过 `props.pinnedTop.additionalData:["commercial","contract"]` 加入额外的独立完整查询槽，列级字段绑定可引用主置顶槽或其中任一槽。所有槽必须引用不同的普通 complete query，均不得依赖明细或带窗口；它们各自最多返回一行。主置顶槽零行时不生成该行；额外槽合法零行时仅对应格子缺失；任一槽加载、失败或行数异常时暂不生成置顶行，明细继续渲染，完整 Excel 在汇总失败或未就绪时拒绝。额外槽同样不参加明细对齐、排序、搜索、计数或分页。
+`props.pinnedTop.additionalData:["commercial","contract"]` 声明额外独立完整查询槽，列可绑定主槽或任一额外槽。各槽须引用不同的普通 complete query，不依赖明细、不带窗口，最多一行。主槽零行则不生成置顶行；额外槽零行则对应格缺失。任一槽加载、失败或行数异常时隐藏置顶行，明细继续显示；汇总失败/未就绪时拒绝完整 Excel。额外槽不参与明细对齐、排序、搜索、计数或分页。
 
 叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。既有单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。
 
@@ -396,7 +418,7 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 6.94 起字段列可声明 `unit`，例如 `{"field":"duration","unit":"天"}`。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
 
-页面协议 6.97。结构真源为本册[schema.json](../schema.json)，SHA256 `95bb8a2388e939242ca948a0446eb67e6f86ee326348db48cf54143eb691bce0`。字段表自动生成；可选不等于有默认值。
+页面协议 6.98。结构真源为本册[schema.json](../schema.json)，SHA256 `e4a41d115dac6fba173b2e4c87363f7392be34412ac1629689e90a6b9951e105`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1644,6 +1666,16 @@ Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properti
 |---|---|
 | "select" | 下拉候选选择。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f302f70726f706572746965732f73686f7753656c656374416c6c"></a>
+
+### `@tableColumn.filterable · anyOf[0].showSelectAll`
+
+Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 6.98：true 展示全选，默认不展示；静态及动态候选全选后该列不限，包含空值，旧 allBehavior 兼容保留。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f66696c74657261626c652f616e794f662f302f70726f706572746965732f64656661756c7456616c756573"></a>
 
 ### `@tableColumn.filterable · anyOf[0].defaultValues`
@@ -1702,7 +1734,7 @@ Schema位置：`#/definitions/tableColumn/properties/filterable/anyOf/0/properti
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["values","unrestricted"] | Schema未设默认；装配/运行时默认见语义说明 | 缺省 values 保留集合；unrestricted 要求枚举，全选省略条件。 |
+| "string" | 本分支可选 | enum=["values","unrestricted"] | Schema未设默认；装配/运行时默认见语义说明 | 6.85兼容字段：保留旧集合/不限规则；新全选入口只配置 showSelectAll。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -3804,6 +3836,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-multiple-pinned-page](../examples/table-multiple-pinned-page.json)：完整合法页面；查询仅为静态契约证据。
 - [table-header-filter-defaults](../examples/table-header-filter-defaults.json)：完整合法页面；查询仅为静态契约证据。
 - [table-header-filter-defaults-query](../examples/table-header-filter-defaults-query.json)：完整合法页面；查询仅为静态契约证据。
+- [table-header-select-all](../examples/table-header-select-all.json)：完整合法页面；查询仅为静态契约证据。
+- [table-header-select-all-query](../examples/table-header-select-all-query.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

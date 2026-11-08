@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 97,
-  "current": "6.97",
+  "minor": 98,
+  "current": "6.98",
   "capabilities": {
     "ioc-header-auto-back": {
       "minor": 96,
@@ -11,6 +11,11 @@
     "period-aggregation": {
       "minor": 97,
       "description": "近一年按业务维度分组并逐字段求和或取月均值平均",
+      "legacyReadable": false
+    },
+    "table-show-select-all": {
+      "minor": 98,
+      "description": "表头显式配置全选入口，静态和动态候选全选后该列不限",
       "legacyReadable": false
     },
     "table-selection-level": {
@@ -932,6 +937,7 @@
     "6.94",
     "6.95",
     "6.96",
-    "6.97"
+    "6.97",
+    "6.98"
   ]
 }

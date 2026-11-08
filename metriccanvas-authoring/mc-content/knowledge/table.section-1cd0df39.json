@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.97",
+  "schemaVersion": "6.98",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-1cd0df39"
@@ -329,7 +329,9 @@
         "references/page-metadata/examples/period-comparison-query-page.json",
         "references/page-metadata/examples/table-multiple-pinned-page.json",
         "references/page-metadata/examples/table-header-filter-defaults.json",
-        "references/page-metadata/examples/table-header-filter-defaults-query.json"
+        "references/page-metadata/examples/table-header-filter-defaults-query.json",
+        "references/page-metadata/examples/table-header-select-all.json",
+        "references/page-metadata/examples/table-header-select-all-query.json"
       ]
     }
   ],

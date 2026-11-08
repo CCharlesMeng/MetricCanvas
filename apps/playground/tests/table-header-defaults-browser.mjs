@@ -22,7 +22,8 @@ const menu=(target,column)=>target.getByRole('columnheader',{name:column,exact:t
 async function clear(target,column){
   const control=menu(target,column);
   await control.locator('summary').click();
-  await control.getByRole('button',{name:'清除筛选',exact:true}).click();
+  const checked=control.locator('input[type=checkbox]:checked');
+  while(await checked.count())await checked.first().uncheck();
   await control.locator('summary').click();
 }
 async function exportRows(target,filename){

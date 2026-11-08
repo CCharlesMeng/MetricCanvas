@@ -150,6 +150,19 @@
       ]
     },
     {
+      "id": "table-show-select-all",
+      "description": "全选入口显式开关及静态动态候选不限意图",
+      "valid": [
+        "table-header-select-all",
+        "table-header-select-all-query"
+      ],
+      "invalid": [
+        "table-select-all-old-version",
+        "table-select-all-wrong-type",
+        "table-select-all-range-mode"
+      ]
+    },
+    {
       "id": "table-header-param-initialization",
       "description": "字符串维度参数一次初始化及显式全选语义",
       "valid": [

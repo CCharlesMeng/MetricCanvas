@@ -1,0 +1,421 @@
+{
+  "schemaVersion": "6.98",
+  "id": "table-header-select-all",
+  "layout": "dashboard",
+  "meta": {
+    "title": "列头全选开关（内联合成数据）",
+    "description": "showSelectAll 显式控制入口；静态和动态候选全选后该列不限，保留业务范围、其他列条件与空值。"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "area": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "A",
+            "status": "是",
+            "area": "东区"
+          },
+          {
+            "id": "B",
+            "status": "否",
+            "area": "东区"
+          },
+          {
+            "id": "C",
+            "status": "待定",
+            "area": "西区"
+          },
+          {
+            "id": "D",
+            "status": null,
+            "area": "东区"
+          }
+        ]
+      }
+    },
+    "null-records": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "area": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "E",
+            "status": null,
+            "area": "东区"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "examples",
+      "components": [
+        {
+          "id": "static-all",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "静态候选：显示全选",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "是否有效",
+                "filterable": {
+                  "mode": "select",
+                  "defaultValues": [
+                    "是"
+                  ],
+                  "showSelectAll": true
+                },
+                "enumValues": [
+                  {
+                    "value": "是",
+                    "label": "是"
+                  },
+                  {
+                    "value": "否",
+                    "label": "否"
+                  }
+                ]
+              },
+              {
+                "field": "area",
+                "title": "区域",
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "static-all"
+              }
+            }
+          }
+        },
+        {
+          "id": "dynamic-all",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "动态候选：显示全选",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "是否有效",
+                "filterable": {
+                  "mode": "select",
+                  "defaultValues": [
+                    "是"
+                  ],
+                  "showSelectAll": true
+                }
+              },
+              {
+                "field": "area",
+                "title": "区域",
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "dynamic-all"
+              }
+            }
+          }
+        },
+        {
+          "id": "omitted-all",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "省略开关：不显示全选",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "是否有效",
+                "filterable": {
+                  "mode": "select",
+                  "defaultValues": [
+                    "是"
+                  ]
+                },
+                "enumValues": [
+                  {
+                    "value": "是",
+                    "label": "是"
+                  },
+                  {
+                    "value": "否",
+                    "label": "否"
+                  }
+                ]
+              },
+              {
+                "field": "area",
+                "title": "区域",
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "omitted-all"
+              }
+            }
+          }
+        },
+        {
+          "id": "disabled-all",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "false：不显示全选",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "是否有效",
+                "filterable": {
+                  "mode": "select",
+                  "defaultValues": [
+                    "是"
+                  ],
+                  "showSelectAll": false
+                }
+              },
+              {
+                "field": "area",
+                "title": "区域",
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "disabled-all"
+              }
+            }
+          }
+        },
+        {
+          "id": "selection-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "tabs": [
+              {
+                "id": "details",
+                "label": "参数明细",
+                "component": {
+                  "id": "tab-all",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "records"
+                  },
+                  "props": {
+                    "title": "Tab 内动态全选",
+                    "rowKey": "id",
+                    "columns": [
+                      {
+                        "field": "id",
+                        "title": "编号"
+                      },
+                      {
+                        "field": "status",
+                        "title": "是否有效",
+                        "filterable": {
+                          "mode": "select",
+                          "defaultValues": [
+                            "是"
+                          ],
+                          "showSelectAll": true
+                        }
+                      },
+                      {
+                        "field": "area",
+                        "title": "区域",
+                        "filterable": {
+                          "mode": "select"
+                        }
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "local",
+                      "pageSize": 2
+                    },
+                    "toolbar": {
+                      "export": {
+                        "format": "xlsx",
+                        "filename": "tab-all"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "id": "other",
+                "label": "其他面板",
+                "component": {
+                  "id": "other-text",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": "切回参数明细，保留全选。"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "null-only-all",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "null-records"
+          },
+          "props": {
+            "title": "仅空值：全选仍不限",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "是否有效",
+                "filterable": {
+                  "mode": "select",
+                  "defaultValues": [
+                    "是"
+                  ],
+                  "showSelectAll": true
+                }
+              },
+              {
+                "field": "area",
+                "title": "区域",
+                "filterable": {
+                  "mode": "select"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "null-only-all"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

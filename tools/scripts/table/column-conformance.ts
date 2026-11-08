@@ -1,6 +1,10 @@
 import type { InvariantDefinition } from '../page-conformance-vectors';
 /** Contract vectors exercise the same complete page used in Playground. */
-export const columnInvariants: InvariantDefinition[] = [{id:'table-header-param-initialization',description:'字符串维度参数一次初始化及显式全选语义',valid:['table-header-filter-defaults','table-header-filter-defaults-query','table-header-filter-param-source'],cases:[
+export const columnInvariants: InvariantDefinition[] = [{id:'table-show-select-all',description:'全选入口显式开关及静态动态候选不限意图',valid:['table-header-select-all','table-header-select-all-query'],cases:[
+    {case:'table-select-all-old-version',base:'table-header-select-all',expect:/由 6.98 引入/,mutate:d=>{d.schemaVersion='6.97';}},
+    {case:'table-select-all-wrong-type',base:'table-header-select-all',expect:/boolean/,mutate:d=>{d.sections[0].components[0].props.columns[1].filterable.showSelectAll='yes';}},
+    {case:'table-select-all-range-mode',base:'table-header-select-all',expect:/showSelectAll/,mutate:d=>{d.sections[0].components[0].props.columns[1].filterable={mode:'numberRange',showSelectAll:true};}}
+  ]},{id:'table-header-param-initialization',description:'字符串维度参数一次初始化及显式全选语义',valid:['table-header-filter-defaults','table-header-filter-defaults-query','table-header-filter-param-source'],cases:[
     {case:'table-header-param-old-version',base:'table-header-filter-defaults-query',expect:/由 6.85 引入/,mutate:d=>{d.schemaVersion='6.84';}},
     {case:'table-header-param-unknown',base:'table-header-filter-defaults-query',expect:/引用 params.query.dimensions/,mutate:d=>{d.sections[1].components[0].props.columns[2].filterable.initialParam='missing';}},
     {case:'table-header-param-conflicting-default',base:'table-header-filter-defaults-query',expect:/互斥/,mutate:d=>{d.sections[1].components[0].props.columns[2].filterable.defaultValues=['东区'];}},

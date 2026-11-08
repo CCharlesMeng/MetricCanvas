@@ -37,6 +37,7 @@ import { filterTableRowsByHeaders as evaluate } from '@metriccanvas/data-executi
 import { normalizeHeaderDraft } from './controller';
 export function filterTableRowsByHeaders(rows: readonly Row[], filters: import('@metriccanvas/page/internal').TableHeaderFilters | Readonly<Record<string, TableHeaderFilterValue>>): Row[] {
     const normalized = Object.fromEntries(Object.entries(filters).flatMap(([field, value]) => {
+        if (value.mode === 'select' && 'all' in value && value.all) return [];
         if (value.mode !== 'numberRange' || typeof value.from === 'number' || typeof value.to === 'number' || (value.from === undefined && value.to === undefined))
             return [[field, value]];
         const applied = normalizeHeaderDraft(value as TableHeaderFilterValue);

@@ -16,6 +16,7 @@ import { shouldApplyTableHeaderFilter, type TableHeaderFilterValue, type TableVi
 export function normalizeHeaderDraft(value: TableHeaderFilterValue): TableHeaderFilters[string] | undefined {
     if (!shouldApplyTableHeaderFilter(value))
         return undefined;
+    if (value.mode === 'select' && value.all) return undefined;
     if (value.mode !== 'numberRange')
         return value;
     const from = value.from.trim() ? Number(value.from) : undefined, to = value.to.trim() ? Number(value.to) : undefined;
@@ -43,8 +44,15 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     const pendingDefaults = new Set<string>();
     const candidates = new Map<string, ReturnType<typeof createColumnCandidatesSession>>();
     const notices = new Map<string,string>();
+    // The query can be unrestricted while the control still shows the user's explicit all-selection.
+    function isAllSelection(value:TableHeaderFilterValue):boolean {
+      return value.mode==='select'&&value.all===true;
+    }
     function operate(table:TableComponent,run:()=>void){
-      try{run();notices.delete(table.id);headers.delete(table.id);}
+      try{
+        run();notices.delete(table.id);
+        headers.set(table.id,Object.fromEntries(Object.entries(headers.get(table.id)??{}).filter(([,value])=>isAllSelection(value))));
+      }
       catch(cause){notices.set(table.id,cause instanceof Error?cause.message:"该操作暂不可用");headers.delete(table.id);}
       changed();
     }
@@ -257,7 +265,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 operate(table,()=>stream()?.setQueryHeaderFilters(table.data.main, applied,field));
             else {
                 local(table).setHeaders(applied);
-                if (value?.mode === 'select') delete draft[field];
+                if (value?.mode === 'select' && !isAllSelection(value)) delete draft[field];
             }
             changed();
         },

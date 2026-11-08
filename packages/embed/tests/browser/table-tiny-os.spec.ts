@@ -103,12 +103,15 @@ test('number and date filters keep submitted state and popovers clear without cl
   await menu.getByLabel('数值下限').press('Tab');
   await expect(widget.locator('tbody tr')).toHaveCount(2);
   await expect(amount.locator('summary')).toHaveClass(/active/);
-  await menu.getByRole('button', { name: '清除筛选' }).click();
+  await expect(menu.getByRole('button', { name: '清除筛选' })).toHaveCount(0);
+  await menu.getByLabel('数值下限').fill('');
+  await menu.getByLabel('数值下限').press('Tab');
   await expect(widget.locator('tbody tr')).toHaveCount(5);
   await page.keyboard.press('Escape');
   await expect(menu).toBeHidden();
   const date = widget.locator('th[data-column-field="created"]');
   await date.locator('summary').click();
+  await expect(date.getByRole('button', { name: '清除筛选' })).toHaveCount(0);
   const future = '2099-01-01';
   await date.locator('input[type=date]').first().fill(future);
   await date.locator('input[type=date]').first().press('Tab');

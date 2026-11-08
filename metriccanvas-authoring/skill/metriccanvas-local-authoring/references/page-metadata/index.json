@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.97",
-  "schemaSha256": "95bb8a2388e939242ca948a0446eb67e6f86ee326348db48cf54143eb691bce0",
+  "schemaVersion": "6.98",
+  "schemaSha256": "e4a41d115dac6fba173b2e4c87363f7392be34412ac1629689e90a6b9951e105",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -710,7 +710,9 @@
         "period-comparison-query-page",
         "table-multiple-pinned-page",
         "table-header-filter-defaults",
-        "table-header-filter-defaults-query"
+        "table-header-filter-defaults-query",
+        "table-header-select-all",
+        "table-header-select-all-query"
       ],
       "rules": [
         "table-row-key",
@@ -1299,7 +1301,8 @@
         "6.94",
         "6.95",
         "6.96",
-        "6.97"
+        "6.97",
+        "6.98"
       ]
     },
     {
@@ -13926,6 +13929,12 @@
       "const": "select"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll",
+      "path": "@tableColumn.filterable · anyOf[0].showSelectAll",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues",
       "path": "@tableColumn.filterable · anyOf[0].defaultValues",
       "required": "本分支可选",
@@ -21870,5 +21879,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "9943750a7368765630d5c7d798d90df38224aa81b4095f28de60e9f86b4a9557"
+  "semanticSourceDigest": "180be6acf453a1fd6e5295f09c2c22e273aa1ec7fe3e8716a8c4b70842815242"
 }

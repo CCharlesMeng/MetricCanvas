@@ -1,5 +1,9 @@
 # MetricCanvas 页面元数据规范
 
+表格列头弹层移除“清除筛选”按钮；取消勾选或清空日期/数值范围即可清空该列条件，无需新增配置。
+
+6.98：列头 `filterable.showSelectAll:true` 显式展示“全选”，省略或 false 不展示。静态和动态候选全选后该列不限，包含空值并保留其他条件；新配置无需 allBehavior，旧字段兼容保留。见[列头全选](docs/page-metadata/components/table.md#table-header-select-all)，合成入口 `/pages/table-header-select-all`。
+
 6.97：普通指标查询可用 `query.periodAggregation` 声明近一年按业务维度分组，每个数值字段统一配置 `field + aggregate: sum | avg`。统一数据执行层读取完整月度结果后聚合，表格和 Chart 共用输出；首版使用完整结果的本地分页。见[期间字段聚合](docs/page-metadata/queries-and-bindings.md#period-aggregation)，合成入口 `/pages/sdt-period-aggregation`。
 
 普通期间时间绑定默认跟随年／季／月，近一年按月，与旧 `dashboardToolbar` 或新旧 `iocHeader` 的位置无关；固定粒度复用 `periodPolicy`，自定义日期字段仍按原格式传入范围。无需新增字段或提升旧页 Schema 版本。见[期间查询策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)，入口 `/pages/period-query-defaults-legacy`。
@@ -78,7 +82,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.88**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.98**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 

@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.97",
+  "currentWriter": "6.98",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
@@ -1065,6 +1065,70 @@
           "id": "conditional-presentation",
           "minor": 35,
           "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-header-select-all.json",
+      "requiredVersion": "6.98",
+      "capabilities": [
+        {
+          "id": "table-show-select-all",
+          "minor": 98,
+          "description": "表头显式配置全选入口，静态和动态候选全选后该列不限"
+        },
+        {
+          "id": "table-select-default-values",
+          "minor": 82,
+          "description": "表格 select 列头筛选固定默认选中值"
+        },
+        {
+          "id": "table-column-enum-values",
+          "minor": 80,
+          "description": "表格列前端枚举展示及静态筛选"
+        },
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-header-select-all-query.json",
+      "requiredVersion": "6.98",
+      "capabilities": [
+        {
+          "id": "table-show-select-all",
+          "minor": 98,
+          "description": "表头显式配置全选入口，静态和动态候选全选后该列不限"
+        },
+        {
+          "id": "paged-join",
+          "minor": 22,
+          "description": "多查询组合表格与数值表头范围"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

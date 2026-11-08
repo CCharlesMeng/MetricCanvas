@@ -5,7 +5,7 @@
 完整规则和限制见[条件显隐](../conditions.md)，演示见page-visibility-region-linkage。
 
 
-页面协议 6.97。结构真源为本册[schema.json](../schema.json)，SHA256 `95bb8a2388e939242ca948a0446eb67e6f86ee326348db48cf54143eb691bce0`。字段表自动生成；可选不等于有默认值。
+页面协议 6.98。结构真源为本册[schema.json](../schema.json)，SHA256 `e4a41d115dac6fba173b2e4c87363f7392be34412ac1629689e90a6b9951e105`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

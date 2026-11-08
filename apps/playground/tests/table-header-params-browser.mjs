@@ -16,7 +16,7 @@ page.on('request',request=>{if(request.method()==='POST'&&request.url().includes
 const table=title=>page.locator('.table-widget').filter({has:page.getByRole('heading',{name:title,exact:true})});
 const menu=(target,column)=>target.getByRole('columnheader',{name:column,exact:true}).locator('details.filter');
 async function open(target,column){const control=menu(target,column);await control.locator('summary').click();return control;}
-async function clear(target,column){const control=await open(target,column);await control.getByRole('button',{name:'清除筛选',exact:true}).click();await control.locator('summary').click();}
+async function clear(target,column){const control=await open(target,column);const checked=control.locator('input[type=checkbox]:checked');while(await checked.count())await checked.first().uncheck();await control.locator('summary').click();}
 async function exportRows(target,filename){
  const pending=page.waitForEvent('download');await target.getByRole('button',{name:'导出',exact:true}).click();
  const download=await pending,local=path.join(output,filename);await download.saveAs(local);

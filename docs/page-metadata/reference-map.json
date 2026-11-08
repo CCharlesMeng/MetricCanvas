@@ -858,7 +858,9 @@
         "period-comparison-query-page",
         "table-multiple-pinned-page",
         "table-header-filter-defaults",
-        "table-header-filter-defaults-query"
+        "table-header-filter-defaults-query",
+        "table-header-select-all",
+        "table-header-select-all-query"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -1859,12 +1861,13 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/note": "页头说明；可用于只读原因，纯文本。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/layout": "6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/initialParam": "6.85：字符串维度参数初值；与 defaultValues 互斥，只初始化会话。",
-    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior": "缺省 values 保留集合；unrestricted 要求枚举，全选省略条件。",
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/allBehavior": "6.85兼容字段：保留旧集合/不限规则；新全选入口只配置 showSelectAll。",
     "#/definitions/dimensionFilter/properties/candidates": "6.90：从页面数据源完整结果读取候选，与固定 options 互斥。",
     "#/definitions/dimensionFilter/properties/candidates/properties/dataSource": "候选来源的页面数据源 ID，支持 inline/query，不能消费自身筛选。",
     "#/definitions/dimensionFilter/properties/candidates/properties/valueField": "稳定值引用的已声明标量输出字段 ID；完整读取后去重。",
     "#/definitions/dimensionFilter/properties/candidates/properties/labelField": "可选显示名输出字段 ID，省略时显示稳定值。",
-    "#/definitions/dimensionFilter/properties/candidates/properties/parentField": "tree 必填的父节点值输出字段 ID；根节点为空，父子节点独立选择。"
+    "#/definitions/dimensionFilter/properties/candidates/properties/parentField": "tree 必填的父节点值输出字段 ID；根节点为空，父子节点独立选择。",
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll": "6.98：true 展示全选，默认不展示；静态及动态候选全选后该列不限，包含空值，旧 allBehavior 兼容保留。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2223,7 +2226,8 @@
     "#/properties/schemaVersion=\"6.95\"": "表格单元格 selection.writes 可指定目标筛选的 level，复用统一筛选状态、页头回显和逐层查询绑定。",
     "#/properties/schemaVersion=\"6.96\"": "IOC 页头 back:\"auto\" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。",
     "avg": "有效月值的算术平均，零参与、空值与缺月不补零",
-    "#/properties/schemaVersion=\"6.97\"": "近一年业务分组及逐字段求和/平均"
+    "#/properties/schemaVersion=\"6.97\"": "近一年业务分组及逐字段求和/平均",
+    "#/properties/schemaVersion=\"6.98\"": "显式列头全选入口；静态和动态候选全选后该列不限。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3034,6 +3038,17 @@
         "期间字段聚合（6.97）"
       ],
       "dependencies": []
+    },
+    "table.selectAll": {
+      "module": "table",
+      "title": "显式全选入口与不限语义",
+      "roots": [
+        "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll"
+      ],
+      "dependencies": [],
+      "headings": [
+        "列头全选入口（6.98）"
+      ]
     }
   },
   "authoringSemanticHeadings": {
@@ -3196,6 +3211,7 @@
       "查询默认排序的首屏方向",
       "列头筛选默认值（6.82）",
       "表头参数初值与全选语义（6.85）",
+      "列头全选入口（6.98）",
       "前端列枚举（6.80）",
       "决策意见明细合成预览",
       "列条件显隐（6.62）",
