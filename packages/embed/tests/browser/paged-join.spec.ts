@@ -45,12 +45,12 @@ test('global sort, cross-source ranges, committed drafts and full frozen export 
  await expect(main.locator('tbody tr')).toHaveCount(1);await expect(main.getByRole('cell',{name:'上海代表处',exact:true})).toBeVisible();await expect(probe.locator('tbody tr')).toHaveCount(8);
  // Loading retains the popover instead of remounting a closed header.
  if(await rateHeader.locator('details').getAttribute('open')===null)await rateHeader.locator('summary').click();
- await rateHeader.getByRole('button',{name:'清除筛选'}).click();await expect(main.locator('tbody tr')).toHaveCount(3);
+ await rateHeader.getByRole('textbox',{name:'数值下限'}).fill('');await rateHeader.getByRole('textbox',{name:'数值下限'}).press('Tab');await expect(main.locator('tbody tr')).toHaveCount(3);
  await amountHeader.locator('summary').click();await amountHeader.getByRole('textbox',{name:'数值下限'}).fill('-');await amountHeader.getByRole('textbox',{name:'数值下限'}).press('Tab');await expect(main.locator('tbody tr')).toHaveCount(3);
  // Export uses committed 150M despite the invalid draft.
  const download=page.waitForEvent('download');await main.getByRole('button',{name:'导出',exact:true}).click();
  const workbook=new ExcelJS.Workbook();await workbook.xlsx.readFile((await(await download).path())!);expect(workbook.worksheets[0].rowCount).toBe(4);
- await amountHeader.locator('summary').click();await amountHeader.getByRole('button',{name:'清除筛选'}).click();
+ await amountHeader.locator('summary').click();await amountHeader.getByRole('textbox',{name:'数值下限'}).fill('');await amountHeader.getByRole('textbox',{name:'数值下限'}).press('Tab');
  await main.getByRole('searchbox').fill('天津');await main.getByRole('searchbox').press('Enter');await expect(main.getByRole('cell',{name:'天津代表处',exact:true})).toBeVisible();await expect(main.locator('tbody tr')).toHaveCount(1);await expect(probe.locator('tbody tr')).toHaveCount(8);
  await main.getByRole('button',{name:'清空表格搜索'}).click();await expect(main.locator('tbody tr')).toHaveCount(3);
  const all=page.waitForEvent('download');await main.getByRole('button',{name:'导出',exact:true}).click();const full=new ExcelJS.Workbook();await full.xlsx.readFile((await(await all).path())!);expect(full.worksheets[0].rowCount).toBe(9);
@@ -79,7 +79,7 @@ test('business amount rank follows each office while both table views remain ind
  const book=new ExcelJS.Workbook();await book.xlsx.readFile((await(await download).path())!);
  expect(book.worksheets[0].getRow(1).getCell(1).value).toBe('预签金额排名');
  expect([book.worksheets[0].getRow(2).getCell(1).value,book.worksheets[0].getRow(3).getCell(1).value]).toEqual([1,4]);
- await header.locator('summary').click();await header.getByRole('button',{name:'清除筛选'}).click();
+ await header.locator('summary').click();await header.getByRole('textbox',{name:'数值下限'}).fill('');await header.getByRole('textbox',{name:'数值下限'}).press('Tab');
  await fixed.getByRole('searchbox').fill('天津');await fixed.getByRole('searchbox').press('Enter');
  await expect(fixed.locator('tbody tr')).toHaveCount(1);expect((await ranks()).map(value=>value.trim())).toEqual(['8']);
  await page.screenshot({path:testInfo.outputPath('paged-join-fixed-rank.png'),fullPage:true});
