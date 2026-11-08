@@ -218,7 +218,8 @@
       "definitions": [
         "pageQuery",
         "dqeQuery",
-        "queryResultWhere"
+        "queryResultWhere",
+        "periodAggregation"
       ],
       "keywords": [
         "queries-and-bindings",
@@ -251,7 +252,8 @@
         "period-query-columns-demo",
         "period-query-branches",
         "period-comparison-demo",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "sdt-period-aggregation"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -265,13 +267,16 @@
         "packages/page/src/dqe-object.ts",
         "packages/page/src/validate-object-query.ts",
         "packages/page/src/object-query-params.ts",
-        "packages/page/src/query-output-measures.ts"
+        "packages/page/src/query-output-measures.ts",
+        "packages/page/src/period-aggregation.ts",
+        "packages/page/src/period-aggregation-validation.ts"
       ],
       "rules": [
         "query-field-mapping",
         "filter-binding",
         "time-extensions",
-        "query-dimension-measures"
+        "query-dimension-measures",
+        "period-aggregation"
       ]
     },
     "compute.md": {
@@ -2216,7 +2221,9 @@
     "#/properties/schemaVersion=\"6.93\"": "语义数值格式、设备精度及相对变化基期边界；作者版本6.93。",
     "#/properties/schemaVersion=\"6.94\"": "柱状图、折线图系列与表格字段列可显式声明展示单位。",
     "#/properties/schemaVersion=\"6.95\"": "表格单元格 selection.writes 可指定目标筛选的 level，复用统一筛选状态、页头回显和逐层查询绑定。",
-    "#/properties/schemaVersion=\"6.96\"": "IOC 页头 back:\"auto\" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。"
+    "#/properties/schemaVersion=\"6.96\"": "IOC 页头 back:\"auto\" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。",
+    "avg": "有效月值的算术平均，零参与、空值与缺月不补零",
+    "#/properties/schemaVersion=\"6.97\"": "近一年业务分组及逐字段求和/平均"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2482,7 +2489,8 @@
         "#/definitions/dqeQuery"
       ],
       "headings": [
-        "查询独立期间策略"
+        "查询独立期间策略",
+        "期间字段聚合（6.97）"
       ],
       "dependencies": []
     },
@@ -3056,6 +3064,7 @@
       "查询标量的原文展示证据（6.60）"
     ],
     "queries-and-bindings.md": [
+      "期间字段聚合（6.97）",
       "查询独立期间策略",
       "查阅方式",
       "查询结果绑定 6.14",

@@ -1,5 +1,38 @@
 # 查询定义与显式绑定
 
+<a id="period-aggregation"></a>
+
+## 期间字段聚合（6.97）
+
+普通指标查询在 `dataSources.<id>.source.query` 增加可选 `periodAggregation`，与 `body/filterBindings` 同层。`filterId` 引用同一查询已绑定、required 的 `display: period` 筛选器；目前 cases 只开放 `last12Months`。未配置保持原行为；选其他期间沿用原查询；近一年使用已应用的前十二个完整月窗口，导出不按当前时钟重新锚定。
+
+```json
+{
+  "periodAggregation": {
+    "filterId": "period",
+    "cases": {
+      "last12Months": {
+        "groupBy": ["rep-office"],
+        "aggregations": [
+          {"field": "decision-count", "aggregate": "sum"},
+          {"field": "avg-decision-time", "aggregate": "avg"}
+        ]
+      }
+    }
+  }
+}
+```
+
+所有引用均为本页面数据源字段 ID。groupBy 逐项引用查询维度，空数组表示整体汇总；aggregations 为非空数组，每项统一使用 field/aggregate。每个外部查询输出字段必须被明确归入分组或聚合；不允许未知字段、重复字段、维度当度量、明细数组或遗漏字段。compute 产出在聚合后计算，不重复配置聚合方式。金额只聚合同一字段的原币种值。
+
+sum 累加有效月值，avg 对有效月值取算术平均。0 参与，null 与缺月不补零、不计入分母，全空为 null；没有任何月度记录的业务对象不生成一行。月均值平均不等于逐笔加权平均；比率若要求全年分子/分母口径，应独立查询真实年度结果，不能自动改成平均比率。显式配置由作者确认跨月口径，不根据字段名、数值或单位猜测。
+
+统一数据执行层按冻结窗口执行十二次完整单月指标查询，保留原指标、维度和业务维度条件，仅用既有 DQE 月度语法，不发送 periodAggregation。每月以业务分组键最多返回一行，重复键、空/无效键、查询失败或 totalCount 与行数不一致均拒绝聚合；没有 totalCount 时依赖显式 complete 结果契约。取得全部月值后聚合，再执行数值阈值、排序、搜索、分页与导出。最多10000条月度输入，整轮60秒预算，取消及过期回执沿用统一执行规则；失败不返回部分年度值。
+
+首版要求 `source.resultScope: complete`；表格使用 local/none 分页，可与 Chart 共用同一数据源。查询不带 limit/offset、静态指标阈值或 initial；不能作为 pagedJoin/pagedUnion 成员，不能叠加 timeModes/queryModes、periodComparison、window、自定义时间字段或固定非月粒度。既有 filterBindings/periodPolicy 继续管理期间和查询精度，不新增聚合专用筛选器、列或系列属性。持久化 initial/seeds 不作为聚合证明，切换条件重新执行；同一会话缓存按生效查询和聚合配置区分。
+
+完整合成示例 `/pages/sdt-period-aggregation`，来源为商务 SDT 报告代表处效率的既有字段，数据为预览 Adapter 返回的独立月度合成回执；表格、Chart、列候选和完整导出共用聚合结果。真实 DQE 的月度指标口径、组合能力及完整返回仍须实际接入核验。
+
 <a id="查询独立期间策略"></a>
 
 ## 查询独立期间策略
@@ -321,7 +354,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
 
 
-页面协议 6.96。结构真源为本册[schema.json](schema.json)，SHA256 `83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8`。字段表自动生成；可选不等于有默认值。
+页面协议 6.97。结构真源为本册[schema.json](schema.json)，SHA256 `95bb8a2388e939242ca948a0446eb67e6f86ee326348db48cf54143eb691bce0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -368,6 +401,131 @@ Schema位置：`#/definitions/dqeQuery/properties/language`。
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "dqe" | 用于选择@dqeQuery.language分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706572696f644167677265676174696f6e"></a>
+
+### `@dqeQuery.periodAggregation`
+
+Schema位置：`#/definitions/dqeQuery/properties/periodAggregation`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 按期间启用逐字段求和或月均值平均；仅支持完整普通指标查询，不改变其他期间的查询 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706572696f644167677265676174696f6e2f616c6c4f662f30"></a>
+
+### `@dqeQuery.periodAggregation · allOf[0]`
+
+Schema位置：`#/definitions/dqeQuery/properties/periodAggregation/allOf/0`。目标：[#/definitions/periodAggregation](queries-and-bindings.md#schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/periodAggregation | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e"></a>
+
+### `@periodAggregation`
+
+Schema位置：`#/definitions/periodAggregation`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["filterId","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f66696c7465724964"></a>
+
+### `@periodAggregation.filterId`
+
+Schema位置：`#/definitions/periodAggregation/properties/filterId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，queryModes要求固定必选单选，metricByFilter要求required单选枚举。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f6361736573"></a>
+
+### `@periodAggregation.cases`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | required=["last12Months"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f63617365732f70726f706572746965732f6c61737431324d6f6e746873"></a>
+
+### `@periodAggregation.cases.last12Months`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases/properties/last12Months`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | required=["groupBy","aggregations"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 所选期间为近一年时，按业务维度聚合已应用的十二个完整月 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f63617365732f70726f706572746965732f6c61737431324d6f6e7468732f70726f706572746965732f67726f75704279"></a>
+
+### `@periodAggregation.cases.last12Months.groupBy`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/groupBy`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 折叠分组的维度字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f63617365732f70726f706572746965732f6c61737431324d6f6e7468732f70726f706572746965732f67726f757042792f6974656d73"></a>
+
+### `@periodAggregation.cases.last12Months.groupBy[]`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/groupBy/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f63617365732f70726f706572746965732f6c61737431324d6f6e7468732f70726f706572746965732f6167677265676174696f6e73"></a>
+
+### `@periodAggregation.cases.last12Months.aggregations`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 逐字段的显式跨月聚合规则，必须覆盖全部查询数值度量且不得重复 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f63617365732f70726f706572746965732f6c61737431324d6f6e7468732f70726f706572746965732f6167677265676174696f6e732f6974656d73"></a>
+
+### `@periodAggregation.cases.last12Months.aggregations[]`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["field","aggregate"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f63617365732f70726f706572746965732f6c61737431324d6f6e7468732f70726f706572746965732f6167677265676174696f6e732f6974656d732f70726f706572746965732f6669656c64"></a>
+
+### `@periodAggregation.cases.last12Months.aggregations[].field`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations/items/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f644167677265676174696f6e2f70726f706572746965732f63617365732f70726f706572746965732f6c61737431324d6f6e7468732f70726f706572746965732f6167677265676174696f6e732f6974656d732f70726f706572746965732f616767726567617465"></a>
+
+### `@periodAggregation.cases.last12Months.aggregations[].aggregate`
+
+Schema位置：`#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations/items/properties/aggregate`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["sum","avg"] | Schema未设默认；装配/运行时默认见语义说明 | sum 累加有效月值，avg 对有效月值取算术平均；空值及缺月不补零 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "sum" | 按声明可加度量求和。 |
+| "avg" | 有效月值的算术平均，零参与、空值与缺月不补零 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e6773"></a>
 
@@ -2682,6 +2840,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - `filter-binding`：筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段。反例：[level-query-fields-on-flat-filter](errors/level-query-fields-on-flat-filter.json)、[level-query-fields-missing-level](errors/level-query-fields-missing-level.json)、[level-query-fields-undeclared-level](errors/level-query-fields-undeclared-level.json)、[hierarchy-filter-flat-query-field](errors/hierarchy-filter-flat-query-field.json)、[time-point-target-not-time-point](errors/time-point-target-not-time-point.json)、[boolean-target-not-boolean](errors/boolean-target-not-boolean.json)、[number-range-target-not-number-range](errors/number-range-target-not-number-range.json)、[time-point-initial-param-not-times](errors/time-point-initial-param-not-times.json)、[time-point-initial-param-precision](errors/time-point-initial-param-precision.json)、[time-point-initial-param-range](errors/time-point-initial-param-range.json)、[time-point-initial-param-and-default](errors/time-point-initial-param-and-default.json)、[time-point-initial-param-without-query-target](errors/time-point-initial-param-without-query-target.json)、[unknown-filter-binding](errors/unknown-filter-binding.json)、[filter-binding-time-target-not-time-range](errors/filter-binding-time-target-not-time-range.json)、[filter-binding-dimension-target-not-dimension](errors/filter-binding-dimension-target-not-dimension.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `query-dimension-measures`：6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度。反例：[dimension-measure-version](errors/dimension-measure-version.json)、[dimension-measure-legacy](errors/dimension-measure-legacy.json)、[dimension-measure-time-qualified-version](errors/dimension-measure-time-qualified-version.json)、[dimension-measure-nonnumeric](errors/dimension-measure-nonnumeric.json)、[dimension-number-not-series](errors/dimension-number-not-series.json)、[dimension-measure-not-collapsible](errors/dimension-measure-not-collapsible.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `period-aggregation`：近一年按业务维度逐字段求和/取月均值平均，完整输入及版本约束。反例：[period-aggregation-old-version](errors/period-aggregation-old-version.json)、[period-aggregation-unknown-field](errors/period-aggregation-unknown-field.json)、[period-aggregation-duplicate-field](errors/period-aggregation-duplicate-field.json)、[period-aggregation-incomplete-source](errors/period-aggregation-incomplete-source.json)、[period-aggregation-unknown-method](errors/period-aggregation-unknown-method.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2705,6 +2864,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - [period-query-branches](examples/period-query-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [sdt-period-aggregation](examples/sdt-period-aggregation.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -2717,6 +2877,8 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - 源码/验证定位：`packages/page/src/validate-object-query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/object-query-params.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query-output-measures.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/period-aggregation.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/period-aggregation-validation.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 

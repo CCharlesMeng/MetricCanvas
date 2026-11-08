@@ -36,6 +36,7 @@ import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
 import { normalizeReportExportScales } from './report-export';
 import { periodComparisonErrors } from './period-comparison-validation';
+import { periodAggregationErrors } from './period-aggregation-validation';
 import { crossSourceComputeErrors } from './validate-compute-dependencies';
 import { queryParamReferenceErrors } from './query-param-references';
 import { isObjectDqeItem, objectOutputFields } from './dqe-object';
@@ -187,7 +188,7 @@ export function parsePage(
 
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
-  const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page)];
+  const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
   const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...tableHeaderInputErrors(page,options.textValues?.values),...filterGroupErrors(page),...sourceCandidateErrors(page)];
   try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant, options.evaluation),...navigationErrors(variant),...urlInputErrors(variant));}

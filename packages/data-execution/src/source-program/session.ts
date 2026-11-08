@@ -357,7 +357,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search);
           const protectedConditions = requiresQueryContext(source.source.query, page.filters)||overridesSource(id,request.conditions);
           // Captured views may be reused; their old predicates cannot authorize a different range.
-          let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { body:fresh().body,filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: fresh().fieldMappings } : {}) } : fresh();
+          let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { body:fresh().body,filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: fresh().fieldMappings,periodAggregation:fresh().periodAggregation } : {}) } : fresh();
           bindQueryResultValues(query, values);
           queries.set(id, query);
           return query;
@@ -370,7 +370,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
         function finishQueryRead(id: string, source: QueryDataSource, view: TableQueryView, snapshot: DataSnapshot): void {
           // Embedded initials cannot identify a query branch or its raw response mapping.
-          if ((snapshot.status === 'ready' || snapshot.status === 'empty') && !source.source.query.queryModes) {
+          if ((snapshot.status === 'ready' || snapshot.status === 'empty') && !source.source.query.queryModes && !source.source.query.periodAggregation) {
             try {
               const rows = queryRowsFromPageRows(snapshot.status === 'ready' ? snapshot.rows : [], source.fields);
               // Keep inconsistent live rows visible without persisting an invalid first-page initial.

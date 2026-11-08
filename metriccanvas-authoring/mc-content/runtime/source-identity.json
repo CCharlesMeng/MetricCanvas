@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f2432f241c76ca7c32a775a8460e84306f5216f0a2778ada59ce51842cc1a3fb",
+  "sha256": "eedd2d57fd1bfa228f7cfb7863ded67ac835c1309b65787fc24382fe0f3917b6",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -156,11 +156,11 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "d8d060b59e12aa82a96ff9d75fde3b8e32eb3cf383f0e2c316bcac337fa6d190"
+      "sha256": "bbc2ccbbb81d9c343e46f7592d335edaa2dbb3e79a539865a984c6d199120f01"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "de7e3bedf25b2b091ff320c4696041c9e27a9d4cfc8a355d7383584b69216312"
+      "sha256": "c4149cb235df109e68d131d43fc71987c6ab87e5ac7d2db87b43f478733ff354"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1620,7 +1620,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "17ec274371b7b2056cc17e0ac1ce45ef680f9dbd8d9417f8078f27ca82a1d784"
+      "sha256": "6a6714c3a02cca256b0594b160ac125b06d5b943130b4494dca4687bbad5caba"
     },
     {
       "file": "packages/page/src/ioc-header-controls.ts",
@@ -1715,6 +1715,14 @@
       "sha256": "c42b19f88a44ee781db3455ee911623408e9f6ea8dcd93ec48560833af67861b"
     },
     {
+      "file": "packages/page/src/period-aggregation-validation.ts",
+      "sha256": "df8534dc55ba98863b21bb1c9d3a89ae335e763678ef95944a5001c88e2d2574"
+    },
+    {
+      "file": "packages/page/src/period-aggregation.ts",
+      "sha256": "e44de9a29763a32b483d43890fef24776294228c1a7b9b44456318df2f7a4aa9"
+    },
+    {
       "file": "packages/page/src/period-capability.ts",
       "sha256": "2780afd4e456e02cbeb2a66b1d71b2fc494f2d042ef2da5fd34173a1236ef4fc"
     },
@@ -1796,7 +1804,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "8ac7ed589eef793ccd19cd37e19c053d5412b117259bfd82b40e418af0b0643c"
+      "sha256": "1608393a7103986c5f7d4be7737b2de8b68c09397a8af97c8a8170f57a38d01c"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -1912,7 +1920,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "be00ad94a33a01dee4fd0b3299a51501246bc1cbd81512b413dfea96fec86cbf"
+      "sha256": "7bb522dd762b35e7210cd5708fea7fea2471ffb520cdb2c5faa4aa1f1a92ffee"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -1941,6 +1949,10 @@
     {
       "file": "packages/page/src/schema/paged-union.ts",
       "sha256": "001bdc5022dcf47e5ad1cbb7f2149b0f944bfc4b63ef3dfdef4715de3884a9d3"
+    },
+    {
+      "file": "packages/page/src/schema/period-aggregation.ts",
+      "sha256": "d805e3c92414c88fcf9427705ac117582dc551c4c6cf4329396a88302dc2c351"
     },
     {
       "file": "packages/page/src/schema/presentation.ts",
@@ -2056,7 +2068,7 @@
     },
     {
       "file": "packages/page/src/time-mode.ts",
-      "sha256": "ab2357dd8d2e3fa573dd2f9afd101ee49e72f292cbf546e471f49f1f57ce20b8"
+      "sha256": "9ac63846a6550b1ce62bea4bc2e3f16bd9c4bc57bc6dac65cb2cf9450a7cdd18"
     },
     {
       "file": "packages/page/src/time-param.ts",
@@ -2112,11 +2124,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "169453a2970f8b88ebb2d0feec4173aed0d5f519d2891ca27a0e3e02fd0117ac"
+      "sha256": "01a1717a11878b4285201979b91d898e70482eab6f423de07f784c89d518c3c9"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "b6ad4eafaf54825318b11c272d2f254d1e75127abfbcaeecf6df173fb3b8d3ec"
+      "sha256": "5fda38119983f0922b56b3c14898c7900bc12a7ed9f758c53d09f2f61f20d3d3"
     },
     {
       "file": "pages/README.md",
@@ -2324,7 +2336,7 @@
     },
     {
       "file": "pages/capabilities/data/README.md",
-      "sha256": "e75790032216d0588c7682a124b1311bf0d44b7195d9de9a934dba245465b094"
+      "sha256": "5418efc0995bdc0f9550da04781d07146977656bc1ee88476c940eb0eb1153bb"
     },
     {
       "file": "pages/capabilities/data/authoring-percent-coverage.json",
@@ -2353,6 +2365,10 @@
     {
       "file": "pages/capabilities/data/period-comparison/period-comparison-query-page.json",
       "sha256": "587b0a48e8b4825b306b5be6a539a050ca1481b0c4ab1ae6943cfb195f7c9f25"
+    },
+    {
+      "file": "pages/capabilities/data/sdt-period-aggregation.json",
+      "sha256": "7d478ab89a860629626eb74466973816b998d24d7d22caa11c5c9429837b61a4"
     },
     {
       "file": "pages/capabilities/data/semantic-numeric-display.json",
@@ -3520,11 +3536,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "6dbc1feade9c08db7ab5ae638f57a6249e412972fd5520a874d89cdf569a33ea"
+      "sha256": "0d5a0f9449fa8d89e98d71b1b728447d3a668c8233184c55c15845c28610f165"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "0d15eeb9af9a359792bd196fc510a6deb83d66bda3de2e72192e33de8a4719d7"
+      "sha256": "13a15aaa0dfc9166e6edb3b208b0e6d8d86d936ce6a98fe28524ce1e36d34f28"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

@@ -828,6 +828,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/sdt-period-aggregation.json",
+      "target": "product-contracts/page/conformance/valid/sdt-period-aggregation.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/period-query-defaults-legacy.json",
       "target": "product-contracts/page/conformance/valid/period-query-defaults-legacy.json",
       "scope": "exact product contract"
@@ -1270,6 +1275,31 @@
     {
       "source": "product:page/conformance/invalid/ioc-auto-back-unknown.json",
       "target": "product-contracts/page/conformance/invalid/ioc-auto-back-unknown.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/period-aggregation-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/period-aggregation-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/period-aggregation-unknown-field.json",
+      "target": "product-contracts/page/conformance/invalid/period-aggregation-unknown-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/period-aggregation-duplicate-field.json",
+      "target": "product-contracts/page/conformance/invalid/period-aggregation-duplicate-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/period-aggregation-incomplete-source.json",
+      "target": "product-contracts/page/conformance/invalid/period-aggregation-incomplete-source.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/period-aggregation-unknown-method.json",
+      "target": "product-contracts/page/conformance/invalid/period-aggregation-unknown-method.json",
       "scope": "exact product contract"
     },
     {
@@ -4075,6 +4105,31 @@
     {
       "source": "product:page/reference/errors/ioc-auto-back-unknown.json",
       "target": "references/page-metadata/errors/ioc-auto-back-unknown.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/period-aggregation-old-version.json",
+      "target": "references/page-metadata/errors/period-aggregation-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/period-aggregation-unknown-field.json",
+      "target": "references/page-metadata/errors/period-aggregation-unknown-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/period-aggregation-duplicate-field.json",
+      "target": "references/page-metadata/errors/period-aggregation-duplicate-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/period-aggregation-incomplete-source.json",
+      "target": "references/page-metadata/errors/period-aggregation-incomplete-source.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/period-aggregation-unknown-method.json",
+      "target": "references/page-metadata/errors/period-aggregation-unknown-method.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -6903,6 +6958,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/sdt-period-aggregation.json",
+      "target": "references/page-metadata/examples/sdt-period-aggregation.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/queries-and-bindings.md",
       "target": "references/page-metadata/queries-and-bindings.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7824,11 +7884,11 @@
     }
   ],
   "counts": {
-    "product": 1532,
+    "product": 1544,
     "authoring": 32,
     "modules": 36,
-    "topics": 275,
-    "nodes": 2569,
+    "topics": 276,
+    "nodes": 2581,
     "tools": 9,
     "components": 20
   },

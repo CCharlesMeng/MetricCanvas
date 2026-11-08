@@ -37,5 +37,5 @@ export function hasTimeConstraints(query:DqeQueryDefinition,declarations:readonl
 
 /** Query receipts must prove both the selected branch and constrained input context. */
 export function requiresQueryContext(query:DqeQueryDefinition,declarations:readonly import('./filter').FilterDeclaration[]=[]):boolean {
- return hasPeriodComparison(query)||hasQuerySelection(query)||hasTimeConstraints(query,declarations);
+ return !!query.periodAggregation||hasPeriodComparison(query)||hasQuerySelection(query)||hasTimeConstraints(query,declarations);
 }

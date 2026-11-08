@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.96",
-  "schemaSha256": "83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8",
+  "schemaVersion": "6.97",
+  "schemaSha256": "95bb8a2388e939242ca948a0446eb67e6f86ee326348db48cf54143eb691bce0",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -182,7 +182,8 @@
       "definitions": [
         "pageQuery",
         "dqeQuery",
-        "queryResultWhere"
+        "queryResultWhere",
+        "periodAggregation"
       ],
       "keywords": [
         "queries-and-bindings",
@@ -215,13 +216,15 @@
         "period-query-columns-demo",
         "period-query-branches",
         "period-comparison-demo",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "sdt-period-aggregation"
       ],
       "rules": [
         "query-field-mapping",
         "filter-binding",
         "time-extensions",
-        "query-dimension-measures"
+        "query-dimension-measures",
+        "period-aggregation"
       ]
     },
     "compute.md": {
@@ -1295,7 +1298,8 @@
         "6.93",
         "6.94",
         "6.95",
-        "6.96"
+        "6.96",
+        "6.97"
       ]
     },
     {
@@ -4532,6 +4536,83 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dqe"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/periodAggregation",
+      "path": "@dqeQuery.periodAggregation",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/periodAggregation/allOf/0",
+      "path": "@dqeQuery.periodAggregation · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/periodAggregation"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation",
+      "path": "@periodAggregation",
+      "required": "类型/分支",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/filterId",
+      "path": "@periodAggregation.filterId",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases",
+      "path": "@periodAggregation.cases",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases/properties/last12Months",
+      "path": "@periodAggregation.cases.last12Months",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/groupBy",
+      "path": "@periodAggregation.cases.last12Months.groupBy",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/groupBy/items",
+      "path": "@periodAggregation.cases.last12Months.groupBy[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations",
+      "path": "@periodAggregation.cases.last12Months.aggregations",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations/items",
+      "path": "@periodAggregation.cases.last12Months.aggregations[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations/items/properties/field",
+      "path": "@periodAggregation.cases.last12Months.aggregations[].field",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/periodAggregation/properties/cases/properties/last12Months/properties/aggregations/items/properties/aggregate",
+      "path": "@periodAggregation.cases.last12Months.aggregations[].aggregate",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "sum",
+        "avg"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/resultBindings",
@@ -20630,7 +20711,7 @@
     {
       "schemaPointer": "#/definitions/periodSelection/anyOf/1",
       "module": "filters.md",
-      "file": "examples/period-filter-last12-months-page.json",
+      "file": "examples/sdt-period-aggregation.json",
       "pointer": "#/filters/0/default"
     },
     {
@@ -21789,5 +21870,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "eae8708d6dc72de6173ea2ff7ff4327cfc9abb2d23a00984b26dfe440dfce995"
+  "semanticSourceDigest": "9943750a7368765630d5c7d798d90df38224aa81b4095f28de60e9f86b4a9557"
 }

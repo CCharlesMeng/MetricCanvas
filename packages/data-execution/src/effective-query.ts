@@ -10,6 +10,7 @@ import { preservedQueryError } from './query-error';
 import {filterOverrideTargets,overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { rawSnapshot } from './snapshots';
 import { iocHeaderQuery } from './ioc-header-query';
+import { appliedPeriodAggregation, executePeriodAggregation } from './period-aggregation';
 
 export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
 
@@ -66,6 +67,7 @@ export function composeEffectiveQuery(
   // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。
   return {
     language: query.language,
+    ...(appliedPeriodAggregation(query, values) ? {periodAggregation: appliedPeriodAggregation(query, values)} : {}),
     ...(emptyBooleanMembership(bindings,values)?{matchNone:true as const}:{}),
     body: bindingOwnedDqeBody(query),
     fieldMappings: dataSource.fields,
@@ -171,6 +173,7 @@ export async function executeQuery(
   try {
     const combined = intersectQueryFilters(query);
     if (!combined) return { status: 'empty', totalCount: 0 };
+    if (combined.periodAggregation) return await executePeriodAggregation(combined, (monthly, bounded) => executeQuery(monthly, gateway, diagnosticContext, bounded), signal);
     const result = await gateway.fetchData(combined, diagnosticContext, signal);
     if (result.warnings?.length) console.warn('[MetricCanvas][QUERY_VALUE_FALLBACK] 查询标量异常；保留可用数据', { ...diagnosticContext, warnings: result.warnings });
     if (query.pagination && result.totalCount === undefined && query.resultPolicy !== 'display') {

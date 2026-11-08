@@ -1,0 +1,35 @@
+{
+  "case": "period-aggregation-unknown-method",
+  "invariant": "period-aggregation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"sum\",\"avg\"]",
+      "paths": [
+        "/dataSources/rep-office-efficiency/source/query/periodAggregation/cases/last12Months/aggregations/0/aggregate"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rep-office-efficiency": {
+        "source": {
+          "query": {
+            "periodAggregation": {
+              "cases": {
+                "last12Months": {
+                  "aggregations": [
+                    {
+                      "aggregate": "max"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

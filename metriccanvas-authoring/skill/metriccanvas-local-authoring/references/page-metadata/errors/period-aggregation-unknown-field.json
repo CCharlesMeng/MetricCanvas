@@ -1,0 +1,48 @@
+{
+  "case": "period-aggregation-unknown-field",
+  "invariant": "period-aggregation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "聚合必须引用当前查询的数值度量字段",
+      "paths": [
+        "/dataSources/rep-office-efficiency/source/query/periodAggregation/cases/last12Months/aggregations/0/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间聚合必须明确处理全部查询输出字段:decision-count",
+      "paths": [
+        "/dataSources/rep-office-efficiency/source/query/periodAggregation/cases/last12Months"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rep-office-efficiency": {
+        "source": {
+          "query": {
+            "periodAggregation": {
+              "cases": {
+                "last12Months": {
+                  "groupBy": [
+                    "rep-office"
+                  ],
+                  "aggregations": [
+                    {
+                      "…": "共2个键"
+                    },
+                    {
+                      "…": "共2个键"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

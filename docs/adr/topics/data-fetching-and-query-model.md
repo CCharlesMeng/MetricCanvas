@@ -1,5 +1,7 @@
 # 数据获取与查询模型
 
+**近一年字段聚合（Schema 6.97）：** 普通指标查询可显式声明 `periodAggregation` 的业务分组及逐字段 sum/avg。统一数据执行层复用已定义的完整月度查询，取得十二个月结果后执行受控跨月聚合；这是既有“不自动折叠已返回数据”规则的显式授权扩展，不根据字段名或页面角色推断可加性。首版限 complete 普通查询及本地分页，不恢复独立计算数据集或任意 SQL。声明、限制和验收见[期间字段聚合](../../page-metadata/queries-and-bindings.md#period-aggregation)。
+
 **表头参数初始化（[ADR-0130](../0130-table-header-parameters-seed-session-view.md)）：** 6.85 的 initialParam 仅声明实例初值，TableSession 拥有用户当前选择；allBehavior 显式区分全选值集合与不限。共享执行先归一化再检查组合成员，恢复空视图与清空不补初值，导出冻结当前视图。参数、视图和 DQE HTTP 形状不变；缺少视图证明的远程快照继续拒用。此条扩充0128，保持0108/0125约束。
 
 

@@ -1,0 +1,32 @@
+{
+  "case": "period-aggregation-incomplete-source",
+  "invariant": "period-aggregation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间聚合需要 resultScope: complete 的完整月度结果",
+      "paths": [
+        "/dataSources/rep-office-efficiency/source/query/periodAggregation"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rep-office-efficiency": {
+        "source": {
+          "query": {
+            "periodAggregation": {
+              "filterId": "period",
+              "cases": {
+                "last12Months": {
+                  "…": "共2个键"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/period-aggregation-incomplete-source.json"
+}

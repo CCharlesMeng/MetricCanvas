@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.96",
+  "schemaVersion": "6.97",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.overview"
@@ -9,9 +9,23 @@
       "module": "queries-and-bindings",
       "reference": "references/page-metadata/queries-and-bindings.md",
       "blocks": [
-        "# 查询定义与显式绑定\n\n<a id=\"查询独立期间策略\"></a>"
+        "# 查询定义与显式绑定\n\n<a id=\"period-aggregation\"></a>"
       ],
       "rules": [
+        {
+          "id": "period-aggregation",
+          "description": "近一年按业务维度逐字段求和/取月均值平均，完整输入及版本约束",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "period-aggregation-old-version",
+            "period-aggregation-unknown-field",
+            "period-aggregation-duplicate-field",
+            "period-aggregation-incomplete-source",
+            "period-aggregation-unknown-method"
+          ]
+        },
         {
           "id": "query-dimension-measures",
           "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
@@ -119,7 +133,8 @@
         "references/page-metadata/examples/period-query-columns-demo.json",
         "references/page-metadata/examples/period-query-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
-        "references/page-metadata/examples/period-comparison-query-page.json"
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json"
       ]
     }
   ],

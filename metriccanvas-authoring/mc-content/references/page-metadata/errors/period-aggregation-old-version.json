@@ -1,0 +1,32 @@
+{
+  "case": "period-aggregation-old-version",
+  "invariant": "period-aggregation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "近一年按业务维度分组并逐字段求和或取月均值平均 由 6.97 引入，文档声明的是 6.96",
+      "paths": [
+        "/dataSources/rep-office-efficiency/source/query/periodAggregation"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rep-office-efficiency": {
+        "source": {
+          "query": {
+            "periodAggregation": {
+              "filterId": "period",
+              "cases": {
+                "last12Months": {
+                  "…": "共2个键"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

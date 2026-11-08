@@ -79,6 +79,7 @@ export * from './field-selection';
 export * from './time-mode';
 export * from './period-facts';
 export * from './period-comparison';
+export type { PeriodAggregation, PeriodAggregationCase } from './period-aggregation';
 
 export * from './condition';
 export type { Condition, ConditionScalar } from './schema/condition';

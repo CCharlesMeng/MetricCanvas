@@ -1,0 +1,37 @@
+{
+  "case": "period-aggregation-duplicate-field",
+  "invariant": "period-aggregation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "聚合字段不能重复或同时作为分组字段",
+      "paths": [
+        "/dataSources/rep-office-efficiency/source/query/periodAggregation/cases/last12Months/aggregations/2/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rep-office-efficiency": {
+        "source": {
+          "query": {
+            "periodAggregation": {
+              "cases": {
+                "last12Months": {
+                  "aggregations": [
+                    "…",
+                    "…",
+                    {
+                      "field": "decision-count"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/period-aggregation-duplicate-field.json"
+}

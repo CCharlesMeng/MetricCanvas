@@ -14,6 +14,20 @@
       ]
     },
     {
+      "id": "period-aggregation",
+      "description": "近一年按业务维度逐字段求和/取月均值平均，完整输入及版本约束",
+      "valid": [
+        "sdt-period-aggregation"
+      ],
+      "invalid": [
+        "period-aggregation-old-version",
+        "period-aggregation-unknown-field",
+        "period-aggregation-duplicate-field",
+        "period-aggregation-incomplete-source",
+        "period-aggregation-unknown-method"
+      ]
+    },
+    {
       "id": "ioc-header-controls",
       "description": "页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读",
       "valid": [

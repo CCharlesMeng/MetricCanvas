@@ -1,5 +1,13 @@
 # 数据计算场景
 
+## 近一年字段聚合（6.97）
+
+启动 `pnpm dev:playground` 后打开 `/pages/sdt-period-aggregation`，无需 URL 参数或 DQE 服务。页面查询字段取自商务 SDT 报告的代表处效率；预览 Adapter 提供逐月合成回执，不实现年度聚合。默认近一年：甲决策次数120、月均时长平均6.5天；乙60次、0天；丙两项均为 `--`。每页2条，第二页可见丙；Chart 仍消费完整3组结果。点击次数列排序后按年度次数排序，导出包含全部3组原值，而非当前2行。
+
+切换“月”后只执行普通单月查询，甲10次、时长为月份数字；切回“近一年”恢复120与6.5。`?state=missing` 在每年2月缺少乙记录，乙为55次、0天，平均分母不补缺月；`?state=error|truncated|duplicate` 分别提供失败、总数不一致、同月重复键，均拒绝输出部分年度值。表格保留表头，诊断在控制台；完整导出同样失败。
+
+浏览器验收脚本 `apps/playground/tests/period-aggregation-browser.mjs`，默认服务端口5276，可用 `PLAYGROUND_BASE_URL` 覆盖。脚本覆盖表格、Chart tooltip、切换、分页、Excel 原值和截断错误。取消、空值、字段引用及版本由定向测试覆盖。该场景不证明真实 DQE 月度口径、Relay 或部署。
+
 ## 金额单位与舍入（6.88）
 
 启动 `pnpm dev:playground` 后打开 `/pages/operation-money-formats`，无需 URL 参数、DQE 或凭据，全部为 inline 合成数据。首 section 首组件为 iocHeader。默认人民币：卡片与图表标签显示 2.5亿，选择表格显示 2.5亿；切换美元后三者显示 250M，切回恢复。金额字段相互独立，数字相同只用于格式对照，不表示汇率。

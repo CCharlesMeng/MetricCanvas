@@ -38,7 +38,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 完整合成验收入口 `/pages/ioc-header-controls`，声明与操作见场景目录 `pages/capabilities/ioc-header/controls/README.md`。真实 Operation Map 接口与 DQE 数据由集成环境另验。
 
 
-页面协议 6.96。结构真源为本册[schema.json](../schema.json)，SHA256 `83ab2b7fe72324f48ac22b8dd4125df57b4f6fba94d30b6da428ed1738e40ee8`。字段表自动生成；可选不等于有默认值。
+页面协议 6.97。结构真源为本册[schema.json](../schema.json)，SHA256 `95bb8a2388e939242ca948a0446eb67e6f86ee326348db48cf54143eb691bce0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

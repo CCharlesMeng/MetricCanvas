@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createPeriodAggregationPreview} from '../../../../../fixtures/period-aggregation';
   import {createIocHeaderControlsPreview} from "../../../../../fixtures/ioc-header-controls";
   import {createSourceCandidatesPreview} from '../../../../../fixtures/source-candidates';
   import {createRegionURLGateway} from '../../../../../fixtures/region-url';
@@ -115,14 +116,16 @@
   });
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    const state = page.url.searchParams.get('state') ?? 'ready';
+    if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
     if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
-    if(input==='source-candidates')return createSourceCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
-    if(input==='global-benchmark')return createGlobalBenchmarkPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
+    if(input==='source-candidates')return createSourceCandidatesPreview(state).dataGateway;
+    if(input==='global-benchmark')return createGlobalBenchmarkPreview(state).dataGateway;
     if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
     if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready').dataGateway;
-    if(input==='full-query-candidates')return createFullQueryCandidatesPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
+    if(input==='full-query-candidates')return createFullQueryCandidatesPreview(state).dataGateway;
   }
 
   function previewDataGateway(pageId: string): DataGateway {

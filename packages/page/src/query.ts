@@ -155,6 +155,7 @@ export interface DqeQueryModeCase extends DqeQueryCase {
 }
 
 export interface DqeQueryDefinition {
+  periodAggregation?: import('./period-aggregation').PeriodAggregation;
   resultBindings?: QueryResultBinding[];
   language: 'dqe';
   body?: DqeRequestBody;
@@ -192,6 +193,8 @@ export function isDqeQueryDefinition(
 
 /** 统一运行时交给数据网关的一次确定性 DQE 执行请求(生效查询的 dqe 分支)。 */
 export interface DqeEffectiveQuery {
+  /** Internal whole-period plan; consumed before sending monthly DQE requests. */
+  periodAggregation?: import('./period-aggregation').PeriodAggregationCase;
   language: 'dqe';
   /** Internal execution proof of an explicitly empty authorized membership, never a cleared control. */
   matchNone?: true;

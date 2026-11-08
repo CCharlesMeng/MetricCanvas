@@ -1,4 +1,5 @@
 import { QUERY_PERIODS } from '../period-query';
+import { periodAggregationZ } from './period-aggregation';
 import { pagedUnionDataSourceZ } from './paged-union';
 import { pagedJoinDataSourceZ } from './paged-join';
 import { MAX_QUERY_RESULT_VALUES } from '../query-result-limits';
@@ -111,6 +112,7 @@ const queryCasesZ = z.object({
 export const dqeQueryZ = z
   .object({
     language: z.literal('dqe'),
+    periodAggregation: periodAggregationZ.optional().describe('按期间启用逐字段求和或月均值平均；仅支持完整普通指标查询，不改变其他期间的查询'),
     resultBindings: z.array(z.object({
       source: idZ, field: fieldNameZ, target: z.literal('dimension'),
       queryField: z.string().min(1), maxValues: z.int().min(1).max(MAX_QUERY_RESULT_VALUES), where: queryResultWhereZ.optional()

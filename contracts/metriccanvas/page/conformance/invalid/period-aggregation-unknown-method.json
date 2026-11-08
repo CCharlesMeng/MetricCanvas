@@ -1,0 +1,224 @@
+{
+  "case": "period-aggregation-unknown-method",
+  "invariant": "period-aggregation",
+  "input": {
+    "schemaVersion": "6.97",
+    "id": "sdt-period-aggregation",
+    "layout": "dashboard",
+    "meta": {
+      "title": "代表处SDT近一年聚合（合成数据）",
+      "description": "沿用商务SDT报告字段；近一年决策次数求和、月均时长取算术平均。DQE合成回执，不代表真实服务验真。"
+    },
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "period",
+        "label": "统计期间",
+        "required": true,
+        "default": {
+          "mode": "last12Months"
+        },
+        "periodModes": [
+          "month",
+          "last12Months"
+        ]
+      }
+    ],
+    "dataSources": {
+      "rep-office-efficiency": {
+        "fields": {
+          "rep-office": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "avg-decision-time": {
+            "type": "number",
+            "role": "measure",
+            "label": "商审SDT平均决策时长",
+            "defaultFormat": "number-2",
+            "unit": "天",
+            "queryField": "商审SDT平均决策时长"
+          },
+          "decision-count": {
+            "type": "number",
+            "role": "measure",
+            "label": "商审审批人决策次数",
+            "defaultFormat": "number",
+            "unit": "次",
+            "queryField": "商审审批人决策次数"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_metrics": [
+                    "商审SDT平均决策时长",
+                    "商审审批人决策次数"
+                  ],
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "filter": {
+                    "time": {
+                      "is_aggregate": true
+                    },
+                    "dims": [
+                      {
+                        "dim_name": "阶段名称",
+                        "dim_value_list": [
+                          "代表处SDT"
+                        ]
+                      }
+                    ],
+                    "metrics": []
+                  },
+                  "order": {
+                    "order_by_field": "商审SDT平均决策时长",
+                    "type": "DESC"
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "period": {
+                "target": "time",
+                "periodPolicy": {
+                  "kind": "fixed",
+                  "period": "month"
+                }
+              }
+            },
+            "periodAggregation": {
+              "filterId": "period",
+              "cases": {
+                "last12Months": {
+                  "groupBy": [
+                    "rep-office"
+                  ],
+                  "aggregations": [
+                    {
+                      "field": "decision-count",
+                      "aggregate": "max"
+                    },
+                    {
+                      "field": "avg-decision-time",
+                      "aggregate": "avg"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "resultScope": "complete"
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "efficiency",
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "代表处SDT近一年聚合（合成数据）"
+              },
+              "filterIds": [
+                "period"
+              ]
+            }
+          },
+          {
+            "id": "efficiency-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "rep-office-efficiency"
+            },
+            "props": {
+              "title": "代表处决策次数与时长",
+              "rowKey": "rep-office",
+              "columns": [
+                {
+                  "field": "rep-office",
+                  "title": "代表处",
+                  "filterable": {
+                    "mode": "select"
+                  }
+                },
+                {
+                  "field": "decision-count",
+                  "title": "决策次数",
+                  "sortable": true
+                },
+                {
+                  "field": "avg-decision-time",
+                  "title": "月均决策时长",
+                  "sortable": true
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "代表处SDT期间聚合"
+                }
+              }
+            }
+          },
+          {
+            "id": "efficiency-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "rep-office-efficiency"
+            },
+            "props": {
+              "categoryField": "rep-office",
+              "dualAxis": true,
+              "series": [
+                {
+                  "field": "decision-count",
+                  "label": "决策次数",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "field": "avg-decision-time",
+                  "label": "月均决策时长的平均值",
+                  "kind": "line",
+                  "axis": "secondary"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/rep-office-efficiency/source/query/periodAggregation/cases/last12Months/aggregations/0/aggregate",
+      "message": "取值不在允许范围:[\"sum\",\"avg\"]"
+    }
+  ]
+}
