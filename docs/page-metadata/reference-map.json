@@ -2489,8 +2489,7 @@
         "#/definitions/dqeQuery"
       ],
       "headings": [
-        "查询独立期间策略",
-        "期间字段聚合（6.97）"
+        "查询独立期间策略"
       ],
       "dependencies": []
     },
@@ -2702,8 +2701,7 @@
         "DQE 直接输出的数值作为度量（6.56）"
       ],
       "dependencies": [
-        "fields.core",
-        "query.core"
+        "fields.core"
       ]
     },
     "chart.values": {
@@ -3022,6 +3020,18 @@
       "roots": [],
       "headings": [
         "十二行可视高度"
+      ],
+      "dependencies": []
+    },
+    "query.periodAggregation": {
+      "module": "queries-and-bindings",
+      "title": "近一年逐字段求和与月均值平均",
+      "roots": [
+        "#/definitions/dqeQuery/properties/periodAggregation",
+        "#/definitions/periodAggregation"
+      ],
+      "headings": [
+        "期间字段聚合（6.97）"
       ],
       "dependencies": []
     }

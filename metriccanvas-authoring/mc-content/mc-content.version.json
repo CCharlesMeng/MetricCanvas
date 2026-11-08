@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-d5b353e9f551ed92",
-  "contentSha256": "d5b353e9f551ed921ca1ad2fc8e1833ddb415b7fc88e255ab2b7f55a9e23a736",
+  "contentVersion": "1-bf1ef8223a881436",
+  "contentSha256": "bf1ef8223a88143671b2b073f50dce7ca49cca458cf465e46dbd474ecc001a87",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -1665,7 +1665,7 @@
     },
     {
       "file": "index.json",
-      "sha256": "4b49549f12170c8f7cc1cf4b92622170d891a668f41168bc9d48b0769aa9f30e"
+      "sha256": "fd991989b8d7012f1dfb96a0df65b1a42cdbfdf3a24140553dfa20844859aa37"
     },
     {
       "file": "knowledge/actions-and-navigation.overview.json",
@@ -2061,7 +2061,7 @@
     },
     {
       "file": "knowledge/fields.output-measures.json",
-      "sha256": "8367b68da14746dbb6ddf11efeae148e1b4001af168d10ee7d4e38dce2f7d9cf"
+      "sha256": "8931344fcd702db23402d5d21012d7f73759af891a6f0101c29591c9a075d21c"
     },
     {
       "file": "knowledge/fields.overview.json",
@@ -2457,11 +2457,11 @@
     },
     {
       "file": "knowledge/query.core.json",
-      "sha256": "a417f964bacb96d2052ce236b600d62b38dd72160f64f6c7b378e4f1c6196893"
+      "sha256": "3dc9eb7d6e8658682038644fce3eae3029ccd0ccf9d3a4083dd2ab4ba9fa8f70"
     },
     {
       "file": "knowledge/query.modes.json",
-      "sha256": "da09bbcde53b54c18ec2292bf7326141bade64a4c58a5dfdd69c491ea21d5c7c"
+      "sha256": "3b1efb10afccc1066ddf9c22ac5baf84b0238ecc2f7350ae49ecff9ab00d0394"
     },
     {
       "file": "knowledge/query.period-comparison-page.json",
@@ -2474,6 +2474,10 @@
     {
       "file": "knowledge/query.period-policy.json",
       "sha256": "673af5ac34768673e612da8688edb916460d8d8e9d889898120cc4f0c8297267"
+    },
+    {
+      "file": "knowledge/query.periodAggregation.json",
+      "sha256": "770d6a990a2baa0574cb00afd74e6f78da36a36d615fbc8fa3d46afa0f5d3c1f"
     },
     {
       "file": "knowledge/query.time-contract.json",
@@ -5905,7 +5909,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "5a9cc0ac75249586267b213c2a6f789aa907c87a7fb2bc186186db435f171776"
+      "sha256": "c518642432ee6de86b9db7cc6989ed246e10a2ec980982f2b9406e76b92ac3ea"
     },
     {
       "file": "references/page-metadata/actions-and-navigation.md",
@@ -9041,7 +9045,7 @@
     },
     {
       "file": "runtime/coverage.json",
-      "sha256": "1cf99090676c3bf18502ab28eb6f02fded4af7bc4079fea1a2264d785e6432a0"
+      "sha256": "16e9ef6d7f93e36bb5aba6ef104b27c69540fca85a6e071e0029cfa97ff41788"
     },
     {
       "file": "runtime/delivery.md",
@@ -9085,7 +9089,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "8daa4380f15e1a7a511f82bd24a719418d6f010bf63d9504331ccfa2bd97c04f"
+      "sha256": "b38e2fc80c7789e469a1f75fdc904cc80a77c2307610e8f92aaff4d853374d15"
     },
     {
       "file": "runtime/tool-behavior.md",
