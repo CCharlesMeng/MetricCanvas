@@ -39,7 +39,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。
 
 
-页面协议 6.101。结构真源为本册[schema.json](schema.json)，SHA256 `a91ae519668e0836803bd845c2ca071e3bdf7a871de98d0be7c28b64a2ca0c96`。字段表自动生成；可选不等于有默认值。
+页面协议 6.103。结构真源为本册[schema.json](schema.json)，SHA256 `61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -989,7 +989,7 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 - `#/definitions/condition/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/filters/0/visibleWhen`。
 - `#/definitions/condition/anyOf/3`：[合法完整页面](examples/page-visibility-inputs.json)，JSON Pointer `#/sections/1/visibleWhen`。
 - `#/definitions/condition/anyOf/4`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/visibleWhen`。
-- `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/period-query-columns-demo.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/visibleWhen/value`。
+- `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/filter-binding-when.json)，JSON Pointer `#/dataSources/offices/source/query/filterBindings/site/when/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/4/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/2`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/visibleWhen/value`。
 - `#/definitions/condition/anyOf/5`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/series/2/visibleWhen/all/0`。

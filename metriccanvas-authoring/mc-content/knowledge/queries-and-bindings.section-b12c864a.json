@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.103",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.section-b12c864a"
@@ -9,7 +9,7 @@
       "module": "queries-and-bindings",
       "reference": "references/page-metadata/queries-and-bindings.md",
       "blocks": [
-        "# 查询定义与显式绑定\n\n<a id=\"period-aggregation\"></a>",
+        "# 查询定义与显式绑定\n\n<a id=\"filter-binding-when\"></a>",
         "## 期间字段聚合（6.97）\n\n普通指标查询在 `dataSources.<id>.source.query` 增加可选 `periodAggregation`，与 `body/filterBindings` 同层。`filterId` 引用同一查询已绑定、required 的 `display: period` 筛选器；目前 cases 只开放 `last12Months`。未配置保持原行为；选其他期间沿用原查询；近一年使用已应用的前十二个完整月窗口，导出不按当前时钟重新锚定。\n\n```json\n{\n  \"periodAggregation\": {\n    \"filterId\": \"period\",\n    \"cases\": {\n      \"last12Months\": {\n        \"groupBy\": [\"rep-office\"],\n        \"aggregations\": [\n          {\"field\": \"decision-count\", \"aggregate\": \"sum\"},\n          {\"field\": \"avg-decision-time\", \"aggregate\": \"avg\"}\n        ]\n      }\n    }\n  }\n}\n```\n\n所有引用均为本页面数据源字段 ID。groupBy 逐项引用查询维度，空数组表示整体汇总；aggregations 为非空数组，每项统一使用 field/aggregate。每个外部查询输出字段必须被明确归入分组或聚合；不允许未知字段、重复字段、维度当度量、明细数组或遗漏字段。compute 产出在聚合后计算，不重复配置聚合方式。金额只聚合同一字段的原币种值。\n\nsum 累加有效月值，avg 对有效月值取算术平均。0 参与，null 与缺月不补零、不计入分母，全空为 null；没有任何月度记录的业务对象不生成一行。月均值平均不等于逐笔加权平均；比率若要求全年分子/分母口径，应独立查询真实年度结果，不能自动改成平均比率。显式配置由作者确认跨月口径，不根据字段名、数值或单位猜测。\n\n统一数据执行层按冻结窗口执行十二次完整单月指标查询，保留原指标、维度和业务维度条件，仅用既有 DQE 月度语法，不发送 periodAggregation。每月以业务分组键最多返回一行，重复键、空/无效键、查询失败或 totalCount 与行数不一致均拒绝聚合；没有 totalCount 时依赖显式 complete 结果契约。取得全部月值后聚合，再执行数值阈值、排序、搜索、分页与导出。最多10000条月度输入，整轮60秒预算，取消及过期回执沿用统一执行规则；失败不返回部分年度值。\n\n首版要求 `source.resultScope: complete`；表格使用 local/none 分页，可与 Chart 共用同一数据源。查询不带 limit/offset、静态指标阈值或 initial；不能作为 pagedJoin/pagedUnion 成员，不能叠加 timeModes/queryModes、periodComparison、window、自定义时间字段或固定非月粒度。既有 filterBindings/periodPolicy 继续管理期间和查询精度，不新增聚合专用筛选器、列或系列属性。持久化 initial/seeds 不作为聚合证明，切换条件重新执行；同一会话缓存按生效查询和聚合配置区分。\n\n完整合成示例 `/pages/sdt-period-aggregation`，来源为商务 SDT 报告代表处效率的既有字段，数据为预览 Adapter 返回的独立月度合成回执；表格、Chart、列候选和完整导出共用聚合结果。真实 DQE 的月度指标口径、组合能力及完整返回仍须实际接入核验。\n\n<a id=\"查询独立期间策略\"></a>"
       ],
       "rules": [
@@ -115,6 +115,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/filter-binding-when.json",
         "references/page-metadata/examples/dimension-params-page.json",
         "references/page-metadata/examples/hierarchy-binding-page.json",
         "references/page-metadata/examples/non-dimension-bindings-page.json",
@@ -135,7 +136,8 @@
         "references/page-metadata/examples/period-query-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/sdt-period-aggregation.json"
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/object-period-query.json"
       ]
     }
   ],

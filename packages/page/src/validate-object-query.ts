@@ -1,4 +1,4 @@
-import { dqeRecord, isObjectDqeItem, objectOutputFields } from './dqe-object';
+import { dqeRecord, isObjectDqeItem, isObjectPeriodBinding, objectBindingFields, objectOutputFields } from './dqe-object';
 import type { DqeQueryDefinition, JsonObject } from './query';
 import type { TypedError } from './errors';
 
@@ -8,9 +8,16 @@ export function objectQueryErrors(query: DqeQueryDefinition, path: string): Type
   if (!isObjectDqeItem(item)) return metricShapeErrors(query,item,path);
   const errors = objectShapeErrors(item, `${path}/body/dsl_list/0`);
   for (const [id, binding] of Object.entries(query.filterBindings ?? {})) {
-    if (binding.target === 'time' && (!binding.queryField || !binding.valueFormat)) errors.push(issue(`${path}/filterBindings/${id}`, 'object 时间绑定必须显式声明 queryField 和 valueFormat'));
+    if (binding.target === 'time' && !isObjectPeriodBinding(binding) && (!binding.queryField || !binding.valueFormat)) errors.push(issue(`${path}/filterBindings/${id}`, 'object 时间绑定必须显式声明 queryField 和 valueFormat'));
   }
+  errors.push(...objectPeriodOwnershipErrors(query, path));
   return errors;
+}
+function objectPeriodOwnershipErrors(query: DqeQueryDefinition, path: string): TypedError[] {
+  const bindings = Object.entries(query.filterBindings ?? {});
+  if (!bindings.some(([,binding]) => isObjectPeriodBinding(binding))) return [];
+  return bindings.filter(([,binding]) => !isObjectPeriodBinding(binding) && objectBindingFields(binding).some(field => ['周期类型','账期'].includes(field)))
+    .map(([id]) => issue(`${path}/filterBindings/${id}`, '标准对象期间绑定已拥有周期类型与账期，不能再绑定同名字段'));
 }
 function objectShapeErrors(item: JsonObject, path: string): TypedError[] {
   const errors: TypedError[] = [];

@@ -1,5 +1,23 @@
 # 查询定义与显式绑定
 
+<a id="filter-binding-when"></a>
+
+## 维度查询绑定生效条件（6.100）
+
+`filterBindings` 的 `target:"dimension"` 分支可声明可选 `when`，复用现有条件语法，但只允许读取同页筛选器，不接受权限、事实或行引用。普通 `queryField` 和层级 `levelQueryFields` 均支持；普通查询、`timeModes` 和 `queryModes` 的各 case 规则相同。
+
+```json
+{"site":{"target":"dimension","queryField":"国内或海外","when":{"filter":"region","part":"level","op":"eq","value":"geo"}}}
+```
+
+此处 `site` 的存储值与 URL 始终保留。Region 处于 geo 层级时，查询应用站点选择；进入具体地区部/代表处层级时，只暂停这个绑定的谓词，其他地区、时间、客户分类、权限和固定查询条件照常生效。返回 geo 层级后重新应用保留的选择。控件需要同步隐藏时，在其 `visibleWhen` 显式使用同一条件；仅隐藏控件仍不影响查询。
+
+省略 `when` 时沿用既有绑定行为。条件拒绝时不生成该绑定的谓词，不清空或重置筛选；条件错误或等待时拒绝查询，不按“无条件”扩大范围。条件最多4层、64叶子，引用、筛选部分、层级/期间枚举和比较类型在创作期校验。该能力不用于权限授权；数据网关仍负责权限约束。时间、布尔及数值范围绑定不接受 `when`。
+
+条件读取的筛选器也纳入查询依赖，无需额外生成虚假的 DQE 绑定；其变化刷新对应查询。屏幕、表头候选、完整读取和导出共用同一查询合成入口；旧初始行和捕获查询不能覆盖新生效条件，会按当前或导出冻结的筛选上下文重新合成。页面查询定义不因显隐或求值发生修改。
+
+完整合成验收 `/pages/filter-binding-when` 演示全球切换、国内/海外地区部及代表处、返回全球恢复选择、空结果和错误；真实业务页 `/pages/governance-compliance` 的四个站点绑定使用相同声明。业务 DQE 和权限需要真实接入验收。
+
 <a id="period-aggregation"></a>
 
 ## 期间字段聚合（6.97）
@@ -41,7 +59,7 @@ sum 累加有效月值，avg 对有效月值取算术平均。0 参与，null �
 
 6.67 起，指标查询的时间绑定可显式声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期并限制数据能力写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","quarter","year"]}}`。显式策略优先；不支持时拒绝查询，不回退。月度趋势、月账期明细等固定粒度查询应显式声明 fixed 策略，选择季度时仍读取对应三个月。
 
-显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 display=period 的范围与时间点绑定保持原有精度和编码。
+显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象账期策略见下文“标准对象账期”。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 display=period 的范围与时间点绑定保持原有精度和编码。
 
 固定日/月/季/年分别编码 YYYY-MM-DD、YYYY-MM、YYYY-Qn、YYYY。固定季/年扩大到窗口涉及的完整自然季/年，预览标记扩大。选年固定月取十二个月；选月固定日取完整自然月，不计算年度得分。按选择时，年用 year、月用 month，近一年用 month 和已应用的前十二个完整月窗口，请求及导出不重新取当前时间。6.86 起季度用 quarter：2026-Q3 发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3"}`，只允许 Q1—Q4，跨年编码一致。显式 supportedPeriods 未声明 quarter 时拒绝；固定日/月策略仍可覆盖整季。
 
@@ -263,13 +281,33 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 对象条件使用 `filter.fields:[{field_name,value_list,operator}]`。静态原始条件保持；显式页面绑定接管其目标字段的默认条件，清空可选筛选后不恢复该字段的静态默认条件；未绑定字段保持。表头筛选、搜索继续以 AND 收窄，日期表头使用同字段已声明的时间格式。维度、层级、布尔、数值区间及查询结果绑定消费现有页面状态；对象数值区间直接落在字段条件，不发送 `filter.metrics`。`operator:'='` 的多值列表按集合等值语义编码，其真实后端行为须验真。原始未知运算符保留给上游，不能由页面端清洗删除。
 
-时间范围仍使用 `target:time`，对象分支必须增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：
+## 标准对象账期（6.101）
+
+当 `query_type:"object"` 的 `target:"time"` 绑定消费 `display:"period"`，且未声明 `queryField/valueFormat/window/periodComparison` 时，采用标准账期；页面只声明 `{"period":{"target":"time"}}`。不根据对象类型名称、输出列或静态样例推断是否绑定；没有期间绑定的对象查询不自动添加时间条件。
+
+| 已应用选择 | 周期类型（operator 为 =） | 账期（operator 为 =） |
+| --- | --- | --- |
+| 2026 年 10 月 | monthly | 202610 |
+| 2026 年 | yearly | 2026 |
+| 2026 年第四季度 | quarterly | 2026Q4 |
+
+条件都进入 `filter.fields`，使用 `field_name/value_list/operator`；周期类型和账期以 AND 组合。对象季度码没有连字符，与指标 `filter.time` 的 `2026-Q4` 区分。等值单期只生成一条账期条件；近一年按已应用的十二个完整月发送 monthly，并使用 `账期 >= YYYYMM`、`账期 <= YYYYMM`。多期不发送多值等值列表，也不展开到日边界。
+
+复用 `periodPolicy`：`{kind:"fixed",period:"month"}` 使选年查询 monthly 与 202601—202612 闭区间，选季查询所含三个月；`{kind:"selection",supportedPeriods:["month"]}` 在选年或季时拒绝查询。固定季/年沿既有完整自然期间扩展规则。对象账期不支持 day；需要日范围、window 或期间比较时显式声明真实日期字段及格式，不自动套用标准账期。
+
+默认绑定成对接管“周期类型”和“账期”的原始默认条件，切换时替换两者，保留无关业务条件。其他页面绑定与查询结果绑定不得再次拥有这两个字段；表头筛选仍以 AND 收窄。屏幕、重查、列候选和完整读取/导出共用同一生效查询。没有粒度证明的旧 initial/seeds 不复用；请求和导出使用已应用选择，不重新读取当前时间。
+
+自定义能力沿用现有协议：明确指定 `queryField + valueFormat` 继续按日期范围处理，即使字段名为“账期”也不静默改义；完全自组装时在 body 的 `filter.fields` 编写条件，并省略对应自动期间绑定，或用 queryModes 各 case 声明独立查询与绑定。手写未知运算符及业务条件保留，不为自定义请求补默认账期。已有显式账期日期绑定须经业务确认后改为最小期间绑定，新能力下限为 6.101，旧页的显式字段语义保持。
+
+合成入口 `/pages/object-period-query` 回显默认、固定月、自定义审批日期及手写条件四种实际编码；无需真实 DQE。页面、操作和证据边界见 `pages/capabilities/query/README.md`。
+
+自定义时间范围仍使用 `target:time`，对象分支显式增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：
 
 ```json
 {"period":{"target":"time","queryField":"特价审批通过时间","valueFormat":"datetime"}}
 ```
 
-`iso` 保留页面日期/月；`compact` 去掉连字符；`datetime` 明确采用源日历、秒精度和闭区间，起点补 `00:00:00`、终点补 `23:59:59`，月范围扩为对应月首日至月末日，不进行时区转换。不同精度/时区必须由可信接入适配，不能猜测。普通指标查询的 time 绑定保持原规则，不接受对象字段或格式。
+`iso` 保留页面日期/月；`compact` 去掉连字符；`datetime` 明确采用源日历、秒精度和闭区间，起点补 `00:00:00`、终点补 `23:59:59`，月范围扩为对应月首日至月末日，不进行时区转换。不同精度/时区必须由可信接入适配，不能猜测。指标查询的统计时间槽保持原规则；显式字段时间范围另见下文“指定时间字段的范围下推”。
 
 固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。
 

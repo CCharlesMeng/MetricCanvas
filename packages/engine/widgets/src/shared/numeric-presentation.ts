@@ -1,4 +1,4 @@
-import type { ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { ValueFormat } from '@metriccanvas/page/internal';
 
 export function decimalText(value: number, digits = 0, grouped = true): string {
   const text = new Intl.NumberFormat('en-US', {
@@ -74,7 +74,7 @@ function minutesPresentation(value: number): string {
   return `${decimalText(value / 10000, 2)}万分钟`;
 }
 
-export function adaptiveNumericText(value: number, format: ValueFormatPreset, unit = '', mobile = false): string | undefined {
+export function adaptiveNumericText(value: number, format: ValueFormat, unit = '', mobile = false): string | undefined {
   switch (format) {
     case 'cny-adaptive': return cnyPresentation(value, mobile);
     case 'usd-adaptive': return usdPresentation(value);
@@ -90,6 +90,6 @@ export function adaptiveNumericText(value: number, format: ValueFormatPreset, un
   }
 }
 
-export function formatIncludesUnit(format: ValueFormatPreset | undefined): boolean {
-  return /^(?:(?:cny|usd)-adaptive(?:-trimmed(?:-no-yuan)?|-km)?|(?:count|resource|bytes|minutes|messages)-adaptive)$/.test(format ?? '') || format === 'billing-hours';
+export function formatIncludesUnit(format: ValueFormat | undefined): boolean {
+  return /^(?:(?:cny|usd)-adaptive(?:-trimmed(?:-no-yuan)?|-km)?|(?:count|resource|bytes|minutes|messages)-adaptive)$/.test(typeof format === 'string' ? format : '') || format === 'billing-hours';
 }

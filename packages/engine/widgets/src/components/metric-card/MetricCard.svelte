@@ -6,18 +6,20 @@
   import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
   import { fieldUnitText, formatChangeValue, formatFieldValue, isPercentFormat } from '../../shared/field-presentation';
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
+  import LoadingSpinner from '../../shared/LoadingSpinner.svelte';
   import ProgressRing from './ProgressRing.svelte';
 
   interface Props {
     /** 已解析的 main/compare/target 命名槽。 */
     data: MetricDataSlots;
     props: MetricCardProps;
+    loading?: boolean;
     /** 只由声明了 link 的非空值触发。 */
     onlink?: (row: Row, event: MouseEvent) => void;
     linkHref?: (row: Row) => string | undefined;
   }
 
-  let { data, props, onlink, linkHref }: Props = $props();
+  let { data, props, loading = false, onlink, linkHref }: Props = $props();
 
   function fieldText(field: FieldBinding, unit?: string): string {
     const resolved = resolveField(field, data);
@@ -47,9 +49,9 @@
 
 {#snippet metricValue(row: MetricCardProps['rows'][number])}
   {#if row.context}<span class="row-context">{row.context}</span>{/if}
-  <span class="row-value">{fieldText(row.valueField, row.unit)}</span>
+  <span class="row-value">{#if loading}<LoadingSpinner />{:else}{fieldText(row.valueField, row.unit)}{/if}</span>
   {@const unit = hasDisplayValue(fieldValue(row.valueField, data)) ? fieldUnitText(row.unit, resolveField(row.valueField, data).format) : undefined}
-  {#if unit}<span class="unit">{unit}</span>{/if}
+  {#if !loading && unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
 
 {#snippet metricRows(rows: MetricCardProps['rows'])}
@@ -58,7 +60,7 @@
       {@const rawValue = fieldValue(row.valueField, data)}
       <div class="metric-row">
         <span class="row-label">{row.label}</span>
-        {#if row.link === true && rawValue != null && linkHref}
+        {#if !loading && row.link === true && rawValue != null && linkHref}
           <a
             href={linkHref?.(fieldRow(row.valueField, data) ?? {})}
             role={linkHref?.(fieldRow(row.valueField, data) ?? {}) ? undefined : 'button'}
@@ -88,7 +90,7 @@
               <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
                 <span class="change-label">{change.label}</span>
                 <span class="change-value">
-                  {#if props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(format)}
+                  {#if !loading && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(format)}
                     <span
                       class:up={direction === 'positive'}
                       class:down={direction === 'negative'}
@@ -96,7 +98,7 @@
                       aria-hidden="true"
                     >{direction === 'positive' ? '↑' : '↓'}</span>
                   {/if}
-                  <span>{changeText(change.field, change.tone)}{#if hasDisplayValue(raw) && fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>
+                  {#if loading}<LoadingSpinner />{:else}<span>{changeText(change.field, change.tone)}{#if hasDisplayValue(raw) && fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>{/if}
                 </span>
               </span>
             {/each}
@@ -115,12 +117,12 @@
     {:else}
       <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
         <div class="metric-row">
-          <span class="row-label">年累计</span><span class="row-value">{DEFAULT_NULL_TEXT}</span>
-          <span class="change"><span class="change-label">同比</span>{DEFAULT_NULL_TEXT}</span>
+          <span class="row-label">年累计</span><span class="row-value">{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="change"><span class="change-label">同比</span>{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
         </div>
         <div class="metric-row">
-          <span class="row-label">本月</span><span class="row-value">{DEFAULT_NULL_TEXT}</span>
-          <span class="change"><span class="change-label">环比</span>{DEFAULT_NULL_TEXT}</span>
+          <span class="row-label">本月</span><span class="row-value">{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="change"><span class="change-label">环比</span>{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
         </div>
       </div>
     {/if}
@@ -145,7 +147,7 @@
     {/if}
     {#if props.progress}
       <div class="progress-slot">
-        <ProgressRing value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
+        <ProgressRing {loading} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
       </div>
     {/if}
   {:else}
@@ -155,6 +157,7 @@
       {#if props.progress}
         <div class="progress-slot">
           <ProgressRing
+            {loading}
             format={progressFormat}
             value={progressValue}
             missingText={progressMissingText}

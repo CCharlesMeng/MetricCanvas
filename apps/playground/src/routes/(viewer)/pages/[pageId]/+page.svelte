@@ -1,5 +1,6 @@
 <script lang="ts">
   import {createFinalizationPreview} from '../../../../../fixtures/finalization';
+  import {createMonthlyReportPreview} from '../../../../../fixtures/report-monthly';
   import {createPeriodAggregationPreview} from '../../../../../fixtures/period-aggregation';
   import {createIocHeaderControlsPreview} from "../../../../../fixtures/ioc-header-controls";
   import {createSourceCandidatesPreview} from '../../../../../fixtures/source-candidates';
@@ -36,6 +37,7 @@
   import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
   import {pageExternalInputs,rejectionPreviewRowCount,rejectionPreviewDelay} from '../../../../../fixtures/preview-inputs';
+  import {createFilterBindingWhenPreview} from '../../../../../fixtures/filter-binding-when';
   import {browser} from '$app/environment';
   const framed = browser && window.self !== window.top;
   import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
@@ -118,7 +120,8 @@
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
     const state = page.url.searchParams.get('state') ?? 'ready';
-    if(input==='finalization')return createFinalizationPreview(state).dataGateway;
+    if(input==='report-monthly')return createMonthlyReportPreview();
+    if(input==='binding-when')return createFilterBindingWhenPreview(state).dataGateway;
     if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
     if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
     if(input==='source-candidates')return createSourceCandidatesPreview(state).dataGateway;
@@ -134,6 +137,7 @@
     const tableGateway=queryTableGateway(pageExternalInputs(pageId));
     if(tableGateway)return tableGateway;
     switch (pageExternalInputs(pageId)) {
+      case 'finalization': return createFinalizationPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
       case 'key-office': return createKeyOfficeGateway();
       case 'key-office-priority': return createKeyOfficePriorityGateway();
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;

@@ -36,7 +36,8 @@
     semanticHtmlFieldPresentation
   } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import { projectTableRows, tableRowColumn, alignedCellText, alignedFieldValue } from './rows';
+  import OverflowCellText from './OverflowCellText.svelte';
+  import { projectTableRows, tableRowColumn, alignedCellText, alignedCellArrow, alignedFieldValue } from './rows';
   import { mergeSpans, tableRowTier } from './presentation';
   import { buildTableColumnLayout, shouldWrapTableHeaders } from './columns';
   import type {
@@ -585,6 +586,13 @@
                 {@const rawValue = alignedFieldValue(column.field, data, row)}
                 {@const hasValue = hasDisplayValue(rawValue)}
                 {@const color = tableValueColor(rawValue, column, resolved.format)}
+                {@const trendArrow = alignedCellArrow(column, data, row)}
+                {#snippet arrowGlyph()}
+                  <span class="cell-trend-arrow" aria-label={trendArrow === '↑' ? '上箭头' : '下箭头'}>{trendArrow}</span>
+                {/snippet}
+                {#snippet primaryValue()}
+                  {#if trendArrow && column.arrowRule?.position !== 'after'}{@render arrowGlyph()}{' '}{/if}{alignedCellText(column.field, data, row, column.enumValues, column.unit)}{#if trendArrow && column.arrowRule?.position === 'after'}{' '}{@render arrowGlyph()}{/if}
+                {/snippet}
                 {@const semanticPresentation = semanticHtmlFieldPresentation(
                   resolved,
                   rawValue,
@@ -602,6 +610,7 @@
                 {/snippet}
                 {@const actionGate=row.kind === 'pinnedTop' ? {eligible:false,enabled:false} : interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
                 <td
+                  class:overflow-text={interactive && !staticExport && !column.selection && !column.link && typeof rawValue === 'string' && resolved.definition?.type === 'string' && semanticPresentation === undefined}
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   class:emphasized={column.emphasis === 'strong'}
@@ -635,7 +644,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                          <span class="cell-primary-value">{@render primaryValue()}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -664,7 +673,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                          <span class="cell-primary-value">{@render primaryValue()}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -677,7 +686,7 @@
                         class="rate-bar"
                         style={`width: ${rateBarWidth(bodyColumn, rawValue)}%;`}
                       ></span>
-                      <span class="cell-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                      <span class="cell-value">{@render primaryValue()}</span>
                     </span>
                     {@render supplementaryFields()}
                     </div>
@@ -691,7 +700,16 @@
                           inline
                         />
                       {:else}
-                        <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                        <span class="cell-primary-value">
+                          {#if typeof rawValue === 'string' && resolved.definition?.type === 'string'}
+                            <OverflowCellText
+                              text={alignedCellText(column.field, data, row, column.enumValues, column.unit)}
+                              enabled={interactive && !staticExport}
+                            />
+                          {:else}
+                            {@render primaryValue()}
+                          {/if}
+                        </span>
                       {/if}
                       {@render supplementaryFields()}
                     </div>
@@ -705,19 +723,18 @@
               <div id={`${expansion!.id}-${encodeURIComponent(expansion!.key(row.main)!)}`} role="region" aria-label="子表格" class="row-expansion-content">{@render expandedRow(row.main)}</div>
             </td></tr>
           {/if}
-        {:else}
+        {/each}
+        {#if data.main.snapshot.rows.length === 0}
           <tr>
             <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
-              {#if data.main.sourceStatus !== 'error'}
-                {#if props.variant === 'reportCompact'}
-                  <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
-                {:else}
-                  <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
-                {/if}
+              {#if props.variant === 'reportCompact'}
+                <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
+              {:else}
+                <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
               {/if}
             </td>
           </tr>
-        {/each}
+        {/if}
       </tbody>
     </table>
   </div>
@@ -1697,6 +1714,18 @@
   .table-widget.os-theme tbody .cell-stack, .table-widget.os-theme tbody .cell-primary-value, .table-widget.os-theme tbody .link-cell {
     line-height: 21px;
     overflow-wrap: break-word;
+  }
+  /* Constrain the value inside the declared column instead of widening the table. */
+  .table-widget tbody td.overflow-text .cell-stack {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .table-widget tbody td.overflow-text .cell-primary-value {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
   .table-widget.os-theme tbody td.positive { color: var(--mc-color-positive, #52c41a); }
   .table-widget.os-theme tbody td.negative { color: var(--mc-color-negative, #f5222d); }

@@ -11,7 +11,7 @@ test('keeps header candidates usable when a comparison supplement fails', async 
   await expect(customers.locator('summary')).toBeVisible();
   await customers.locator('summary').click();
   await expect(customers.getByRole('checkbox')).toHaveCount(23);
-  await expect(page.locator('.table-widget').getByText('暂无数据', { exact: true })).toHaveCount(0);
+  await expect(page.locator('.table-widget').getByText('暂无数据', { exact: true })).toBeVisible();
   await expect(customers.getByRole('checkbox', { name: 'C000023', exact: true })).toBeVisible();
   await customers.getByRole('checkbox', { name: 'C000023', exact: true }).click();
   await expect(page.getByRole('button', { name: '重试', exact: true })).toHaveCount(0);

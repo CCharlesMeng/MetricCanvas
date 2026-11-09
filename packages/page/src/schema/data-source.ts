@@ -1,4 +1,5 @@
 import { QUERY_PERIODS } from '../period-query';
+import {conditionZ} from './condition';
 import { periodAggregationZ } from './period-aggregation';
 import { pagedUnionDataSourceZ } from './paged-union';
 import { pagedJoinDataSourceZ } from './paged-join';
@@ -56,27 +57,29 @@ export const queryResultWhereZ: z.ZodType<QueryResultWhere> = z.lazy(() => z.uni
   z.object({ field: fieldNameZ, op: z.enum(['isNull', 'isNotNull']) }).strict()
 ])).meta({ id: 'queryResultWhere' });
 
+const bindingWhenZ=conditionZ.optional().describe('只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为');
 function filterBindingsSchema(includePeriodPolicy:boolean){return z
       .record(
         idZ,
         z
           .union([
             z
-              .object({ target: z.literal('dimension'), queryField: z.string().min(1) })
+              .object({ target: z.literal('dimension'), queryField: z.string().min(1), when: bindingWhenZ })
               .strict(),
             // 层级维度筛选器逐级声明谓词字段(ADR-0084);层级 id 为键。
             z
               .object({
                 target: z.literal('dimension'),
+                when: bindingWhenZ,
                 levelQueryFields: z
                   .record(idZ, z.string().min(1))
                   .meta({ minProperties: 2 })
               })
               .strict(),
-            z.object({ target: z.literal('time'), periodComparison: z.object({kind:z.enum(['current','previousPeriod','previousYear']),fact:idZ.optional()}).strict().optional(), window: timeWindowZ.optional(), queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional(), ...(includePeriodPolicy?{periodPolicy: z.union([
+            z.object({ target: z.literal('time'), periodComparison: z.object({kind:z.enum(['current','previousPeriod','previousYear']),fact:idZ.optional()}).strict().optional(), window: timeWindowZ.optional(), queryField: z.string().min(1).describe('显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期').optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional(), ...(includePeriodPolicy?{periodPolicy: z.union([
               z.object({kind:z.literal('fixed'),period:z.enum(QUERY_PERIODS).describe('固定消费期间的查询粒度；季/年允许扩大到完整自然季/年')}).strict(),
               z.object({kind:z.literal('selection'),supportedPeriods:z.array(z.enum(QUERY_PERIODS)).min(1).meta({uniqueItems:true}).describe('作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退')}).strict()
-            ]).describe('独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为').optional()}: {}) }).strict(),
+            ]).describe('独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择；对象查询生成周期类型与账期，单期等值、多期闭区间，仅支持年季月；自定义字段与非期间绑定保留原行为').optional()}: {}) }).strict(),
             // 非维度筛选器的三支谓词(ADR-0085)。
             z
               .object({

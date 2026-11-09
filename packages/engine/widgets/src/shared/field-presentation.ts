@@ -1,4 +1,4 @@
-import type { FieldValue, ResolvedField, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { FieldValue, ResolvedField, ValueFormat } from '@metriccanvas/page/internal';
 import { finiteNumber, formatValue, isSignedNumberFormat } from './value-format';
 import { formatIncludesUnit } from './numeric-presentation';
 
@@ -12,12 +12,12 @@ export function resolvedUnit(field: ResolvedField): string | undefined {
   return field.definition && 'unit' in field.definition ? field.definition.unit : undefined;
 }
 
-export function fieldUnitText(unit: string | undefined, format: ValueFormatPreset | undefined): string | undefined {
+export function fieldUnitText(unit: string | undefined, format: ValueFormat | undefined): string | undefined {
   return formatIncludesUnit(format) || (isPercentFormat(format) && (unit === '%' || unit === '％')) ? undefined : unit;
 }
 
-export function isPercentFormat(format: ValueFormatPreset | undefined): boolean {
-  return format?.startsWith('percent-') === true;
+export function isPercentFormat(format: ValueFormat | undefined): boolean {
+  return typeof format === 'string' && format.startsWith('percent-');
 }
 
 export function formatChangeValue(value: FieldValue | undefined, field: ResolvedField, positiveTone = false): string {

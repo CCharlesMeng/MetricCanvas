@@ -301,4 +301,4 @@ const dataGateway = createDqeGateway({
 
 Platform 的 `readConfig()` 与独立入口运行配置可提供同形的 finalizationSource；createInjectedDqeGateway 在实例初始化读取定义，凭据仍在每次HTTP请求时现读。身份切换沿既有会话失效流程重新初始化。Node取数入口支持 DqeGatewayConfig.finalizationSource；CLI由部署环境的 `METRICCANVAS_FINALIZATION_SOURCE` JSON 提供，不从页面读取端点或凭据。
 
-引擎先查询并解析Schema默认值，再应用既有导航输入或有效执行快照。即使传入明确期间也不跳过定稿查询。无配置、查询失败或查不到名称均回退当前日期，正常指标查询继续按自己的权限执行。完整声明、期间适配与下钻窗口见[定稿日期默认值](page-metadata/filters.md#定稿日期默认值6101)。
+引擎先查询并解析Schema默认值，再应用既有导航输入或有效执行快照。即使传入明确期间也不跳过定稿查询。无配置、查询失败或查不到名称均回退当前日期，正常指标查询继续按自己的权限执行。完整声明、期间适配与下钻窗口见[定稿日期默认值](page-metadata/filters.md#定稿日期默认值6103)。

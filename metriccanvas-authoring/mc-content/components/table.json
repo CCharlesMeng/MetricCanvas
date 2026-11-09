@@ -25,8 +25,50 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.101",
+  "currentWriter": "6.103",
   "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/table-trend-arrows.json",
+      "requiredVersion": "6.99",
+      "capabilities": [
+        {
+          "id": "table-trend-arrows",
+          "minor": 99,
+          "description": "表格列独立声明固定或正负映射箭头规则"
+        },
+        {
+          "id": "chart-table-display-unit",
+          "minor": 94,
+          "description": "柱线系列与表格列显式展示单位"
+        },
+        {
+          "id": "table-column-enum-values",
+          "minor": 80,
+          "description": "表格列前端枚举展示及静态筛选"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "signed-number-formats",
+          "minor": 17,
+          "description": "带符号普通数值格式，按展示精度统一零值方向"
+        },
+        {
+          "id": "explicit-value-colors",
+          "minor": 16,
+          "description": "数字展示位置显式声明固定颜色或正负颜色映射"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
     {
       "file": "references/page-metadata/examples/query-dashboard.json",
       "requiredVersion": "6.1",

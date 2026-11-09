@@ -19,6 +19,7 @@ import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './table/validate-expansion';
 import { sourceCandidateErrors } from './source-candidates';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
+import {queryBindingWhenErrors} from './query-binding-when';
 import { metricBeforeErrors } from './metric-before';
 import { metricCardShapeErrors } from './metric-card';
 import {ordinaryQuery} from './time-mode';
@@ -188,7 +189,7 @@ export function parsePage(
 
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
-  const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page)];
+  const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page),...queryBindingWhenErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
   const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...tableHeaderInputErrors(page,options.textValues?.values),...filterGroupErrors(page),...sourceCandidateErrors(page)];
   try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant, options.evaluation),...navigationErrors(variant),...urlInputErrors(variant));}
@@ -1665,6 +1666,13 @@ function componentErrors(
   }
 
   function checkTable(component: Extract<Component, { type: 'table' }>): void {
+    function checkTrendArrowColumn(column: Exclude<TableColumnNode, { kind: 'group' }>, path: string): void {
+      if (column.arrowRule === undefined) return;
+      const resolved = resolveBinding(page, component, column.field);
+      if (!('error' in resolved) && !['number', 'money'].includes(resolved.field.type)) {
+        errors.push(schemaError(`${path}/arrowRule`, 'arrowRule 只支持 number 或 money 字段'));
+      }
+    }
     function checkNumberRangeColumn(column: Exclude<TableColumnNode, { kind: 'group' }>, path: string): void {
       if (column.filterable?.mode !== 'numberRange') return;
       const resolved = resolveBinding(page, component, column.field);
@@ -1676,6 +1684,7 @@ function componentErrors(
         if (column.kind === 'group') visit(column.children, `${path}/${index}/children`);
         else {
           checkNumberRangeColumn(column, `${path}/${index}`);
+          checkTrendArrowColumn(column, `${path}/${index}`);
           if (column.colorRule) checkColor(column.field, `${path}/${index}`,
             column.visual === 'signed' || column.dangerValues !== undefined);
           if ((column.openDetail || column.navigate) && (!column.link || column.selection || (column.openDetail && column.navigate))) errors.push(schemaError(`${path}/${index}`, '列动作要求 link，且 navigate/openDetail/selection 不得冲突'));

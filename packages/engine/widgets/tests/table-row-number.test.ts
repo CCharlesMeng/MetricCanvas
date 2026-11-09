@@ -19,14 +19,18 @@ it('static export numbers the expanded row set from one regardless of the captur
   const code = bundled.outputFiles[0]!.text.replace(/(['"])(svelte(?:\/[^'"]+)?)\1/g, (_match,_quote,specifier:string) => JSON.stringify(pathToFileURL(require.resolve(specifier)).href));
   const {default:Table} = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`) as {default:Component<any>};
   const props = {
-    data:{main:{fields:{name:{type:'string',role:'dimension'}},snapshot:{status:'ready',rows:[{name:'A'},{name:'B'}]}}},
+    data:{main:{fields:{name:{type:'string',role:'dimension'}},snapshot:{status:'ready',rows:[{name:'审批意见'.repeat(40)},{name:'B'}]}}},
     props:{columns:[{field:'name'}],rowNumber:{},pagination:{mode:'local',pageSize:10}},
     view:{pageIndex:2,sort:[],headerFilters:{}},pagination:{pageSize:10,totalCount:25}
   };
   const interactive = render(Table,{props});
   expect(interactive.body).toMatch(/data-row-number[^>]*>21<\/td>/);
+  expect(interactive.body).toContain('role="tooltip"');
+  expect(interactive.body).not.toContain('更多');
   const exported = render(Table,{props,context:new Map([[Symbol.for('table-row-number-static-test'),true]])});
   expect(exported.body).toMatch(/data-row-number[^>]*>1<\/td>/);
   expect(exported.body).toMatch(/data-row-number[^>]*>2<\/td>/);
+  expect(exported.body).toContain('审批意见'.repeat(40));
+  expect(exported.body).not.toContain('role="tooltip"');
   expect(exported.body).not.toMatch(/data-row-number[^>]*>21<\/td>/);
 });

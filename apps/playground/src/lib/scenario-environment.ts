@@ -1,5 +1,7 @@
 import {createFinalizationPreview} from '../../fixtures/finalization';
+import {createObjectPeriodPreview} from '../../fixtures/object-period-query';
 import {createIocHeaderControlsPreview} from '../../fixtures/ioc-header-controls';
+import {createFilterBindingWhenPreview} from '../../fixtures/filter-binding-when';
 import {createPeriodAggregationPreview} from '../../fixtures/period-aggregation';
 import {createSourceCandidatesPreview} from '../../fixtures/source-candidates';
 import {createRegionURLGateway} from '../../fixtures/region-url';
@@ -49,8 +51,8 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
-  if (kind === 'finalization') return createFinalizationPreview(state);
-  if(kind==='period-aggregation')return createPeriodAggregationPreview(state);
+  const period=periodQueryPreview(kind,state);
+  if(period)return period;
   if(kind==='header-controls')return createIocHeaderControlsPreview();
   if(kind==='source-candidates')return createSourceCandidatesPreview(state);
   if(kind==='global-benchmark')return createGlobalBenchmarkPreview(state);
@@ -63,5 +65,13 @@ function tablePreview(kind:string|undefined,state:string){
   if(kind==='period-comparison')return createPeriodComparisonPreview(state);
   if(kind==='query-join')return createPagedJoinPreview();
   if(kind==='full-query-candidates')return createFullQueryCandidatesPreview(state);
+  return undefined;
+}
+
+function periodQueryPreview(kind:string|undefined,state:string){
+  if (kind === 'finalization') return createFinalizationPreview(state);
+  if(kind==='object-period')return createObjectPeriodPreview(state);
+  if(kind==='binding-when')return createFilterBindingWhenPreview(state);
+  if(kind==='period-aggregation')return createPeriodAggregationPreview(state);
   return undefined;
 }

@@ -56,6 +56,5 @@ for(const state of ['empty','error'] as const)test(`first load completes with ${
  await expect.poll(()=>items.length).toBe(5);
  const table=page.locator('[data-component$="/region-dept-norms-table"]');
  await expect(table.getByText('正在加载…',{exact:true})).toHaveCount(0);
- if(state==='empty')await expect(table.getByText('暂无数据',{exact:true})).toBeVisible();
- else await expect(table.getByText('暂无数据',{exact:true})).toHaveCount(0);
+ await expect(table.getByText('暂无数据',{exact:true})).toBeVisible();
 });

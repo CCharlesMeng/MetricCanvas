@@ -3,6 +3,23 @@ import type { DqeQueryDefinition, DqeFilterBinding, DqeRequestBody, JsonObject, 
 export type ObjectTimeFormat = 'iso' | 'compact' | 'datetime';
 export interface ObjectTimeTarget { queryField?: string; valueFormat?: ObjectTimeFormat }
 
+/** A period binding owns the standard object ledger; explicit field bindings stay custom. */
+export function isObjectPeriodBinding(binding: DqeFilterBinding): boolean {
+  return binding.target === 'time' && !binding.queryField && !binding.valueFormat && !binding.window && !binding.periodComparison;
+}
+
+/** Object ledger codes differ from metric filter.time, especially YYYYQn quarters. */
+export function setObjectPeriod(item: JsonObject, period: import('./period-query').QueryPeriod, from: string, to: string): void {
+  const kinds = { month: 'monthly', quarter: 'quarterly', year: 'yearly' };
+  if (period === 'day') throw Object.assign(new Error('对象账期仅支持年、季、月；日范围请显式声明时间字段'), {code:'DQE_QUERY_REJECTED'});
+  setObjectFieldValues(item, '周期类型', [kinds[period]]);
+  const start = from.replaceAll('-', ''), end = to.replaceAll('-', '');
+  if (start === end) { setObjectFieldValues(item, '账期', [start]); return; }
+  setObjectFieldValues(item, '账期', [start], '>=');
+  const filter = dqeRecord(item.filter);
+  item.filter = {...filter, fields: [...filter.fields as JsonValue[], {field_name:'账期',value_list:[end],operator:'<='}]};
+}
+
 export function isObjectDqeItem(item: unknown): item is JsonObject & { query_type: 'object' } {
   return !!item && typeof item === 'object' && 'query_type' in item && item.query_type === 'object';
 }
@@ -62,7 +79,8 @@ export function bindingOwnedDqeBody(query: DqeQueryDefinition): DqeRequestBody {
   const filter=dqeRecord(item.filter),fields=Array.isArray(filter.fields)?filter.fields:[];
   return {dsl_list:[{...item,filter:{...filter,fields:fields.filter(field=>!owned.has(String(dqeRecord(field).field_name)))}}]};
 }
-function objectBindingFields(binding: DqeFilterBinding): string[] {
+export function objectBindingFields(binding: DqeFilterBinding): string[] {
+  if(isObjectPeriodBinding(binding))return ['周期类型','账期'];
   if(binding.target==='dimension')return 'queryField' in binding?[binding.queryField]:Object.values(binding.levelQueryFields);
   if(binding.target==='numberRange')return binding.metricByFilter?Object.values(binding.metricByFilter.cases):binding.metric?[binding.metric]:[];
   return binding.queryField?[binding.queryField]:[];

@@ -1,0 +1,116 @@
+{
+  "case": "table-arrow-old",
+  "invariant": "table-trend-arrows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98",
+      "paths": [
+        "/sections/0/components/0/props/columns/1/children/0/arrowRule",
+        "/sections/0/components/0/props/columns/1/children/1/arrowRule",
+        "/sections/0/components/0/props/columns/2/arrowRule",
+        "/sections/0/components/0/props/columns/3/arrowRule",
+        "/sections/0/components/0/props/columns/4/arrowRule",
+        "/sections/0/components/0/props/columns/6/arrowRule",
+        "/sections/1/components/0/props/columns/1/arrowRule",
+        "/sections/1/components/1/props/columns/1/arrowRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "children": [
+                    {
+                      "arrowRule": {
+                        "mode": "sign",
+                        "positive": "up",
+                        "negative": "down"
+                      }
+                    },
+                    {
+                      "arrowRule": {
+                        "mode": "sign",
+                        "positive": "down",
+                        "negative": "up",
+                        "position": "after"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "arrowRule": {
+                    "mode": "fixed",
+                    "arrow": "down",
+                    "position": "after"
+                  }
+                },
+                {
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "none",
+                    "negative": "down",
+                    "position": "before"
+                  }
+                },
+                {
+                  "arrowRule": {
+                    "mode": "fixed",
+                    "arrow": "none"
+                  }
+                },
+                "…",
+                {
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "up",
+                    "negative": "down"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "down",
+                    "negative": "up",
+                    "position": "before"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "arrowRule": {
+                    "mode": "fixed",
+                    "arrow": "up"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

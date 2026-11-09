@@ -1,0 +1,222 @@
+{
+  "schemaVersion": "6.98",
+  "id": "table-long-text",
+  "layout": "dashboard",
+  "meta": {
+    "title": "审批意见溢出提示（内联合成数据）",
+    "description": "按列宽单行省略，溢出时hover通过tooltip查看全文；无需外部数据服务。"
+  },
+  "dataSources": {
+    "opinions": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "opinion": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批意见",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "长意见",
+            "opinion": "经审核，该项目商务条款总体符合审批要求。请业务部门在合同签署前补充客户信用评估、付款保障措施和履约风险说明，并由法务部门复核责任边界。对涉及分期付款的部分，应明确每期付款条件、验收标准和逾期处理方式，确保合同执行过程可追溯。最终审批结论：同意按上述要求完善后实施。"
+          },
+          {
+            "id": "短意见",
+            "opinion": "同意，按流程执行。"
+          },
+          {
+            "id": "空意见",
+            "opinion": null
+          },
+          {
+            "id": "80字边界",
+            "opinion": "意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意"
+          },
+          {
+            "id": "81字边界",
+            "opinion": "意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意意末"
+          },
+          {
+            "id": "组合字符",
+            "opinion": "👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻👩🏽‍💻"
+          },
+          {
+            "id": "多行意见",
+            "opinion": "第一条：保留原有换行。\n第二条：经审核，该项目商务条款总体符合审批要求。请业务部门在合同签署前补充客户信用评估、付款保障措施和履约风险说明，并由法务部门复核责任边界。对涉及分期付款的部分，应明确每期付款条件、验收标准和逾期处理方式，确保合同执行过程可追溯。最终审批结论：同意按上述要求完善后实施。\n末条：按此执行。"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "审批意见溢出提示",
+              "description": {
+                "text": "内联合成数据：短文本、空值、不同长度、Emoji及换行；悬停被省略的文本查看全文。",
+                "presentation": "inline"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "container": "card",
+      "components": [
+        {
+          "id": "default",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "opinions"
+          },
+          "props": {
+            "title": "default · 审批意见",
+            "fit": "container",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "审批意见全文"
+              }
+            },
+            "columns": [
+              {
+                "field": "id",
+                "title": "场景",
+                "width": 150
+              },
+              {
+                "field": "opinion",
+                "title": "审批意见",
+                "width": 650,
+                "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "embedded",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "opinions"
+          },
+          "props": {
+            "title": "embedded · 审批意见",
+            "variant": "embedded",
+            "fit": "container",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "审批意见全文"
+              }
+            },
+            "columns": [
+              {
+                "field": "id",
+                "title": "场景",
+                "width": 150
+              },
+              {
+                "field": "opinion",
+                "title": "审批意见",
+                "width": 650,
+                "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "forecast-matrix",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "opinions"
+          },
+          "props": {
+            "title": "forecastMatrix · 审批意见",
+            "variant": "forecastMatrix",
+            "fit": "container",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "审批意见全文"
+              }
+            },
+            "columns": [
+              {
+                "field": "id",
+                "title": "场景",
+                "width": 150
+              },
+              {
+                "field": "opinion",
+                "title": "审批意见",
+                "width": 650,
+                "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "report-compact",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "opinions"
+          },
+          "props": {
+            "title": "reportCompact · 审批意见",
+            "variant": "reportCompact",
+            "fit": "container",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "审批意见全文"
+              }
+            },
+            "columns": [
+              {
+                "field": "id",
+                "title": "场景",
+                "width": 150
+              },
+              {
+                "field": "opinion",
+                "title": "审批意见",
+                "width": 650,
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

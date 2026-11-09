@@ -17,6 +17,7 @@
 | 普通指标需要跟随年／季／月选择，但绑定显式写了 `periodPolicy:{kind:"fixed",period:"month"}` | 显式 fixed 优先于引擎默认。对这些查询移除该策略，保留普通 `{target:"time"}` 绑定；月趋势、月账期明细等仍需固定粒度的查询保留策略。 |
 | 普通指标已是 `{target:"time"}`，选季仍传 month | 先核对实际加载的文件、已应用 selection、查询分支及运行时版本。当前规则会覆盖查询体的旧 `filter.time.period`；旧原始 month 本身不等于显式 fixed。页面与运行时证据齐全后再定位执行链，交由产品维护流程修引擎。 |
 | 显式 `kind:"selection"` 的 supportedPeriods 不含 quarter | 保留能力拒绝，先确认服务是否支持季度。依据已验证的数据能力调整声明；服务不支持时交付缺口，不以 month 替代季度请求。 |
+| 6.101 对象查询应按标准账期消费年／季／月 | 使用 `{target:"time"}`；引擎生成周期类型与账期，单期等值，多期闭区间。固定粒度或受限粒度复用 periodPolicy，仅支持年季月。 |
 | 自定义账期或日期使用 `queryField + valueFormat` | 保留字段和格式，按所选期间传起止边界；对象查询不改成 `filter.time.period`，也不叠加 periodPolicy。 |
 | 查询使用 `periodComparison`、`timeModes` 或 `window` | 沿用对应比较或窗口契约；其月／日编码不能仅因页头选季就判错。按[查询定义](page-metadata/queries-and-bindings.md)进入相应分支。 |
 
@@ -40,6 +41,7 @@
 
 - 跟随选择的普通指标：`filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3"}`。
 - 明确固定月的趋势：保留 `period:"month"`，覆盖 `2026-07` 至 `2026-09`。
+- 标准对象期间：第四季度发送 `周期类型 = quarterly` 与 `账期 = 2026Q4`；近一年按 monthly 与 YYYYMM 闭区间。只在 6.101 及以上使用，不把旧字段日期绑定静默改义。
 - 自定义账期为 compact 日期的对象查询：保留 `filter.fields` 中 `账期 >= 20260701`、`账期 <= 20260930`；其他格式按原声明编码。
 
 对所有受影响的普通查询核对同一选择；切换年、月及近一年时按期间参考检查请求，固定月与自定义字段的例外保持。可对照 Playground `quarter-query-period`、`period-query-defaults-legacy`，但目标页面自己的 execute 才是本次修复的传参证据。

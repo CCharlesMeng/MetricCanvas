@@ -8,6 +8,8 @@ dashboard 的筛选器由统一工具栏呈现，reportHeader 禁止配置 filte
 
 filterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封面上方独立工具带；宽容器右对齐，窄容器换行。控件使用运行时筛选状态，不拥有查询。6.15 起 filterIds 仅决定控件位置，不自动创建或覆盖 asOf。期间文字使用 asOf.value: {filter: 筛选器id, format: "period"} 显式引用当前已应用值；字面量保持静态，param 引用保持打开时的参数值。6.13/6.14 继续按旧的期间派生规则读取。导出保留捕获时已经解析的静态文字。
 
+完整合成场景 `/pages/report-monthly-complete` 将月份工具带、动态标题、四个指标卡、六个月趋势、区域图表与明细放在同一 Report 中，并用 `exportButtons` 下载当前月份的 PDF。运行 `pnpm dev:playground` 即可体验，无需 DQE 服务；操作和数据边界见页面目录 `pages/capabilities/filters/README.md`。
+
 ## 导出按钮（6.31）
 
 统一声明 `exportButtons` 数组，按数组顺序显示按钮。一项显示一个按钮，两项显示两个按钮；每种格式最多一项。不声明即不显示。只允许Report顶层页头，不能与旧 `pdfExport` / `pngExport` 混用。
@@ -55,7 +57,7 @@ PNG内部按有界块截图、Worker持续行流式编码，结果始终是一�
 后台导出需要浏览器支持Worker、ImageBitmap和OffscreenCanvas，宿主CSP允许`worker-src blob:`。这些属于引擎运行环境，不新增页面字段。线程调度与资源清理由引擎负责。
 
 
-页面协议 6.101。结构真源为本册[schema.json](../schema.json)，SHA256 `a91ae519668e0836803bd845c2ca071e3bdf7a871de98d0be7c28b64a2ca0c96`。字段表自动生成；可选不等于有默认值。
+页面协议 6.103。结构真源为本册[schema.json](../schema.json)，SHA256 `61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

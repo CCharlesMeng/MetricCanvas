@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.103",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-c3af0b3e"
@@ -9,10 +9,23 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示 dimension/metric 行集，支持核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分字段列与kind:group递归列组；children保持层级。query分页使用服务总条数；排序/表头筛选不得绕过查询分页限制。selection优先于link；主/次/徽标字段独立声明，不拼接字符串。派生行样式由rowKindField决定，不从文案识别合计。",
+        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。",
         "## Excel 导出（6.21）\n\nExcel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序，通过同一数据网关准备该表全部匹配行及其依赖。单表结果最多10,000行，准备最多5分钟；网关、服务端及显式声明的单批查询超时独立生效。超限、结果总数变化、分页提前结束或缺少完整性证明均明确失败，不下载部分结果。不同表的导出分别隔离，可取消；页面更新或销毁会中止。\n\n工作簿保持声明的列顺序、多级表头及按 `rowKey` 对齐的数据槽。次字段和徽标字段展开为独立列；数值保留原始数值类型，百分数沿用页面的百分数值口径。Excel 无法直接表达的万／亿缩放和自适应格式采用冻结的展示文本数值格式，底层值仍可计算；此类格式不会随用户在 Excel 中编辑值自动重新计算。语义 HTML 转为可读文本，链接、选择控件与图形装饰不进入单元格。空结果也可导出表头。\n\n普通表格、各表格变体、Tab 内表格复用该能力；详情表格在其完整查询作用域内本地搜索并导出。报告静态导出隐藏工具区，保留已提交搜索限定的行集。真实 DQE 的文本搜索编码仍需由集成应用按当前服务协议提供和验收。\n\n表头 dateRange 日期选择同样默认禁止未来日期；日历上限为今天，手工提交未来日期保留已应用筛选，不触发重查。上限在聚焦和提交时按本地日期更新。"
       ],
       "rules": [
+        {
+          "id": "table-trend-arrows",
+          "description": "表格箭头",
+          "valid": [
+            "table-trend-arrows"
+          ],
+          "invalid": [
+            "table-arrow-old",
+            "table-arrow-text",
+            "table-arrow-type",
+            "table-arrow-position"
+          ]
+        },
         {
           "id": "table-header-filter-defaults",
           "description": "select 原始值默认筛选、字段类型与版本下限",
@@ -304,6 +317,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
         "references/page-metadata/examples/reference-export-column-actions.json",

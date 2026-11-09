@@ -1,5 +1,5 @@
 /** Shared scalar binding resolution and trusted presentation defaults; no I/O. */
-import { fieldName, staticFieldBinding, type FieldBinding, type ResolvedFieldDefinition, type ValueFormatPreset } from './field';
+import { fieldName, staticFieldBinding, type FieldBinding, type ResolvedFieldDefinition, type ValueFormat } from './field';
 import { semanticValueFormat } from './semantic-format';
 
 export type FieldResolutionSlots = Record<string, { fields: Record<string, ResolvedFieldDefinition> } | undefined>;
@@ -9,7 +9,7 @@ export interface ResolvedField {
   field: string;
   definition?: ResolvedFieldDefinition;
   /** 当前组件绑定最终生效的展示格式。 */
-  format?: ValueFormatPreset;
+  format?: ValueFormat;
   missingText?: string;
 }
 

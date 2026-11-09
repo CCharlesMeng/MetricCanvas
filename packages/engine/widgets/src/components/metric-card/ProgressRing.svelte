@@ -1,19 +1,21 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import type { ValueFormatPreset } from '@metriccanvas/page/internal';
+  import type { ValueFormat } from '@metriccanvas/page/internal';
   import { formatValue, hasDisplayValue } from '../../shared/value-format';
+  import LoadingSpinner from '../../shared/LoadingSpinner.svelte';
   import EChart from '../../shared/EChart.svelte';
   import { normalizeProgressValue, progressRingOption } from './ring-options';
 
   interface Props {
     value: number | undefined;
+    loading?: boolean;
     missingText?: string;
     ringPercent?: number;
     label?: string;
-    format?: ValueFormatPreset;
+    format?: ValueFormat;
   }
 
-  let { value, ringPercent, label = '完成率', missingText, format = 'percent-adaptive' }: Props = $props();
+  let { value, loading = false, ringPercent, label = '完成率', missingText, format = 'percent-adaptive' }: Props = $props();
   const text = $derived(formatValue(value, format, missingText));
   const display = $derived(text.endsWith('%') || !hasDisplayValue(value) ? text : `${text}%`);
   const normalized = $derived(value === undefined || !Number.isFinite(value) ? undefined : normalizeProgressValue(value));
@@ -21,11 +23,11 @@
   const option = $derived(progressRingOption(normalized ?? 0, visibleTrackPercent));
 </script>
 
-<div class="progress-ring" aria-label={`${label} ${display}`}>
+<div class="progress-ring" aria-label={loading ? `${label} 正在加载` : `${label} ${display}`}>
   <div class="chart" aria-hidden="true">
     <EChart {option} updateMode="merge" />
   </div>
-  <div class="number"><span class="value">{display.endsWith('%') ? display.slice(0, -1) : display}</span>{#if display.endsWith('%')}<span class="percent">%</span>{/if}</div>
+  <div class="number">{#if loading}<LoadingSpinner />{:else}<span class="value">{display.endsWith('%') ? display.slice(0, -1) : display}</span>{#if display.endsWith('%')}<span class="percent">%</span>{/if}{/if}</div>
   <span class="label">{label}</span>
 </div>
 

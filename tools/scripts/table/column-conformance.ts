@@ -1,6 +1,11 @@
 import type { InvariantDefinition } from '../page-conformance-vectors';
 /** Contract vectors exercise the same complete page used in Playground. */
-export const columnInvariants: InvariantDefinition[] = [{id:'table-show-select-all',description:'全选入口显式开关及静态动态候选不限意图',valid:['table-header-select-all','table-header-select-all-query'],cases:[
+export const columnInvariants: InvariantDefinition[] = [{id:'table-trend-arrows',description:'表格箭头',valid:['table-trend-arrows'],cases:[
+    {case:'table-arrow-old',base:'table-trend-arrows',expect:/由 6.99 引入/,mutate:d=>{d.schemaVersion='6.98';}},
+    {case:'table-arrow-text',base:'table-trend-arrows',expect:/只支持 number 或 money/,mutate:d=>{d.sections[0].components[0].props.columns[0].arrowRule={mode:'sign',positive:'down',negative:'up'};}},
+    {case:'table-arrow-type',base:'table-trend-arrows',expect:/object/,mutate:d=>{d.sections[0].components[0].props.columns[1].children[0].arrowRule='yes';}},
+    {case:'table-arrow-position',base:'table-trend-arrows',expect:/允许范围/,mutate:d=>{d.sections[0].components[0].props.columns[1].children[0].arrowRule.position='left';}}
+  ]},{id:'table-show-select-all',description:'全选入口显式开关及静态动态候选不限意图',valid:['table-header-select-all','table-header-select-all-query'],cases:[
     {case:'table-select-all-old-version',base:'table-header-select-all',expect:/由 6.98 引入/,mutate:d=>{d.schemaVersion='6.97';}},
     {case:'table-select-all-wrong-type',base:'table-header-select-all',expect:/boolean/,mutate:d=>{d.sections[0].components[0].props.columns[1].filterable.showSelectAll='yes';}},
     {case:'table-select-all-range-mode',base:'table-header-select-all',expect:/showSelectAll/,mutate:d=>{d.sections[0].components[0].props.columns[1].filterable={mode:'numberRange',showSelectAll:true};}}

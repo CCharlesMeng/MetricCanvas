@@ -2,14 +2,14 @@
 name: metriccanvas-local-authoring
 description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.39.0"
+  version: "1.43.0"
 ---
 
 # 本地页面创作
 
 直接编辑用户指定文件。知识与脚本只用本 Skill 目录；用户页面、设计源、指标说明和数据契约可在项目内。无需其他 Skill、仓库源码、在线 MCP 或 npm 安装，脚本需要 Node.js 22+。
 
-已有页面在编辑前先运行 `node "<skill-dir>/scripts/upgrade-page.mjs" "<page-file>"`。`unchanged` 继续原任务；`ready` 按[旧页面继续开发](references/page-upgrade.md)保留原件、升级并接回工作文件；`blocked` 先按该说明校验原页，原版有效且本次能力已支持时保留原版本继续局部开发，否则处理明确缺口。旧版本不必由用户手动改成最新版，也不因可迁移的版本报错中止原任务。
+已有页面在编辑前先运行 `node "<skill-dir>/scripts/upgrade-page.mjs" "<page-file>"`。`unchanged` 继续原任务；`ready` 按[旧页面继续开发](references/page-upgrade.md)保留原件、升级并接回工作文件；`blocked` 按该说明处理语义缺口。新增特性先完成其中的“新增特性的版本闭环”，由 Skill 自动升级到安装包当前协议并复验，不把版本选择交给用户；仅原版有效且本次能力已支持时才保留旧版本局部开发。新建页面也从版本命令取当前版本。
 
 ## 选择任务路径
 
@@ -48,11 +48,11 @@ node "<skill-dir>/scripts/read-knowledge.mjs" show --topic table.width
 
 新增口径、查询或换源时，按[数据识别与接数](references/data-analysis.md)核对查询边界、后端分页、业务标识及执行证据。缺执行环境时交未执行候选；演示使用 inline 并说明性质。已有可信字段的局部呈现修改沿用当前数据。
 
-数值格式或字段绑定变化时，按[数值与绑定检查](references/authoring-presentation.md)核对本次范围和实际回执；仅改标题、列宽等任务沿用既有数值声明。
+数值格式、字段绑定或展示单位变化时，先按[数值与绑定检查](references/authoring-presentation.md)选择实际声明位置，再核对本次范围和实际回执；仅改标题、列宽等任务沿用既有数值声明。
 
 局部任务改最小对象；整页生成先总结原始需求覆盖，再组织章节、组件、数据源与交互。验收期望来自原始输入，不从生成结果反推。明确要求运行时 SSE 才用 aiSummary。业务数值、百分刻度、完整性、initial、日期与交互按[本地创作与验收](references/local-workflow.md)命中的章节核对。
 
-每次完整生成后、校验前按[尝试快照](references/local-workflow.md)冻结原始字节，保留失败样本；随后完整校验：
+新增特性后先按[版本闭环](references/page-upgrade.md)核对最终 schemaVersion，再按[尝试快照](references/local-workflow.md)冻结原始字节，保留失败样本；每次完整生成后或局部修改完成后均完整校验：
 
 ```sh
 node "<skill-dir>/scripts/validate-page.mjs" --expected-layout dashboard "<page-file>"
@@ -64,6 +64,6 @@ expected-layout 来自有效用户确认；Report 使用 report。局部修改�
 
 ## 交付与分发
 
-报告文件位置、校验结果和缺口；新建/整页修改补充形态依据、范式与需求覆盖。纯数据识别只交所需匹配与缺口。本地文件不等于线上保存或发布。
+先按[本地流程](references/local-workflow.md)的“临时产物生命周期”收口：验证完成后清理本轮临时产物，失败或未验证完成时保留最小恢复现场。报告最终文件位置、校验结果和缺口；仅报告实际保留的恢复材料。新建/整页修改补充形态依据、范式与需求覆盖。纯数据识别只交所需匹配与缺口。本地文件不等于线上保存或发布。
 
 安装与回退复制完整目录，含 references、assets、scripts，知识与校验器同版替换。流程由作者维护，知识及脚本从产品真源生成，安装副本只消费。仅维护/升级时读[知识维护](references/maintenance.md)。

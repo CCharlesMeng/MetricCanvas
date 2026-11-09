@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.103",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.overview"
@@ -9,7 +9,7 @@
       "module": "queries-and-bindings",
       "reference": "references/page-metadata/queries-and-bindings.md",
       "blocks": [
-        "# 查询定义与显式绑定\n\n<a id=\"period-aggregation\"></a>"
+        "# 查询定义与显式绑定\n\n<a id=\"filter-binding-when\"></a>"
       ],
       "rules": [
         {
@@ -114,6 +114,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/filter-binding-when.json",
         "references/page-metadata/examples/dimension-params-page.json",
         "references/page-metadata/examples/hierarchy-binding-page.json",
         "references/page-metadata/examples/non-dimension-bindings-page.json",
@@ -134,7 +135,8 @@
         "references/page-metadata/examples/period-query-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/sdt-period-aggregation.json"
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/object-period-query.json"
       ]
     }
   ],

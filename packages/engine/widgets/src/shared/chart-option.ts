@@ -1,5 +1,5 @@
 import { appendDisplayUnit } from './display-unit';
-import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { FieldValue, ValueFormat } from '@metriccanvas/page/internal';
 import { formatValue } from './value-format';
 
 /**
@@ -25,11 +25,11 @@ export const CHART_PALETTE = [
 ] as const;
 
 /** 柱、线与混合图的数值入口：显式格式优先，缺省最多两位小数。 */
-export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string, unit?: string, displayUnit?: string): string {
+export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormat, missingText?: string, unit?: string, displayUnit?: string): string {
   return appendDisplayUnit(formatValue(value, format ?? 'number-2', missingText, { unit }), value, displayUnit, format);
 }
 
-type AxisFormat = ValueFormatPreset | { format?: ValueFormatPreset; unit?: string } | undefined;
+type AxisFormat = ValueFormat | { format?: ValueFormat; unit?: string } | undefined;
 
 /** 双轴:第二个及之后的指标走右轴;单轴时只留左轴 */
 export function dualOrSingleAxis(
@@ -50,9 +50,9 @@ export function alignedSecondaryAxis<T extends object>(axis: T) {
 }
 
 /** Percent scales remain compatible when a semantic field shares an axis with a fixed-format constant. */
-function sharedAxisField(fields: Array<{ format?: ValueFormatPreset; unit?: string }>) {
+function sharedAxisField(fields: Array<{ format?: ValueFormat; unit?: string }>) {
   const first = fields[0];
-  if (fields.length && fields.every(field => field.format?.startsWith('percent-'))) {
+  if (fields.length && fields.every(field => typeof field.format === 'string' && field.format.startsWith('percent-'))) {
     return { format: fields.every(field => field.format === first?.format) ? first?.format : 'percent-adaptive' as const };
   }
   return fields.every(field => field.format === first?.format && field.unit === first?.unit) ? first : undefined;
@@ -62,7 +62,7 @@ function sharedAxisField(fields: Array<{ format?: ValueFormatPreset; unit?: stri
 export function formattedValueAxis(group: AxisFormat[], hideAxis = false) {
   // One axis has one scale. Mixed formats use basic two-decimal ticks rather than choosing
   // the first series' unit for unrelated values on that axis.
-  const fields = group.map(item => typeof item === 'object' ? item : { format: item });
+  const fields = group.map(item => typeof item === 'object' && !('type' in item) ? item : { format: item });
   const field = sharedAxisField(fields);
   return {
     type: 'value' as const,

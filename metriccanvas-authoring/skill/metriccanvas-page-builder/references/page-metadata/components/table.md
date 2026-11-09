@@ -1,10 +1,10 @@
 # 明细表 table
 
-展示 dimension/metric 行集，支持核对、排序、筛选、单元格联动和多级表头。
-
-columns区分字段列与kind:group递归列组；children保持层级。query分页使用服务总条数；排序/表头筛选不得绕过查询分页限制。selection优先于link；主/次/徽标字段独立声明，不拼接字符串。派生行样式由rowKindField决定，不从文案识别合计。
+columns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。
 
 ## 查询默认排序的首屏方向
+
+查询分页使用服务总条数；排序和表头筛选遵守查询分页限制。
 
 普通 query 数据源在 `source.query.body.dsl_list[0].order` 声明 `order_by_field` 和 `type: "asc" | "desc"` 时，表格首次显示对应列的排序方向。运行时将查询字段名通过 `queryField` 映射为页面字段 id；模式查询先选择当前已应用分支及其字段映射。未知、歧义或非法排序不生成虚假的列头方向，查询错误仍由原执行入口报告。
 
@@ -113,6 +113,8 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 
 ## 单元格点击与筛选联动
 
+`selection` 优先于 `link`；主、次、徽标字段独立声明，不拼接字符串。
+
 交互态的 `selection` 选择列和 `link: true` 链接列均以下划线提示可点击，覆盖普通、`forecastMatrix`、`embedded` 和 `reportCompact` 变体；普通数据列不加下划线。选择列不额外添加蓝色背景，选中后保持普通文字颜色，不加蓝色边框；显式业务颜色照常生效，键盘焦点框跟随文字颜色。静态导出不呈现点击控件。
 
 当主字段原始值为 `null`、`undefined` 或非有限数字时，单元格呈现默认 `—` 或绑定的 `missingText`，不生成选择按钮、导航链接或详情入口，也不显示下划线或进入键盘焦点顺序。按原始值判定，不比较展示文案；真实的 `0`、`false`、空字符串或恰好等于缺省文案的文本不因此禁用。次字段或徽标有值不能使缺失的主字段恢复可点击。该规则覆盖全部表格变体，保留现有动作资格与启用条件。可观察示例：`table-missing-cell-actions`，使用内联合成数据，无需 DQE。
@@ -155,6 +157,18 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 
 层级选择示例：`ioc-header-controls` 使用应用级合成候选与查询网关，点击地区部或代表处后，页头、查询结果和 URL 同步；同码地区部与代表处验证层级隔离，内联入口始终保留全部行。该场景不证明真实 Operation Map 或 DQE 接入。
 
+## 单元格溢出省略与悬浮提示
+
+交互表格的普通 `string` 字段主值按实际列宽单行展示，超出宽度时以 `…` 省略。鼠标悬停在被截断的文本上，tooltip 展示完整原文；没有发生溢出时不弹提示。取消固定字符数阈值，不提供“更多”或点击展开。键盘聚焦文本同样显示提示，Esc、移出或表格滚动关闭；鼠标可以移入提示查看、选择或滚动长文本。
+
+提示使用白底深色文字，在单元格右侧垂直居中显示；靠近窗口边缘时向内收齐到视口右边界，不翻转到单元格左侧。保留原文换行，按纯文本展示，不执行 HTML；进入浏览器顶层避免表格滚动容器裁剪，宽高限制在视口内，长内容可在提示中滚动。文本变化或组件销毁时关闭旧提示。
+
+该行为由引擎统一处理，不按字段名称识别审批意见，也不增加页面声明。普通、`embedded`、`forecastMatrix`、`reportCompact`、详情与行内子表采用相同规则。已有选择、导航和详情入口保留原有点击行为，受控语义 HTML、数值、次字段与徽标不参与本次省略。
+
+省略只改变屏幕呈现，不截断页面数据源或查询结果，排序、筛选、搜索和 Excel 继续消费完整值。PDF/PNG 等静态导出直接展示全文且没有 tooltip。
+
+可观察入口：`/pages/table-long-text`，使用内联合成审批意见，覆盖四种外观、短文本、空值、不同长度、组合 Emoji 和多行原文。操作及启动方式见 `pages/capabilities/table/README.md`，不代表真实 DQE/Relay 验收。
+
 ## 十二行可视高度
 
 所有表格（含普通、`forecastMatrix`、`embedded`、`reportCompact`、Tab、详情及行内子表）默认最多显示十二行数据的高度，不足十二行时按实际内容收缩；更多数据在表格内部纵向滚动，表头保持可见，分页条留在滚动区外。多级表头与独立置顶汇总行单独计高，不占十二行数据名额；按实际渲染行高计算，长文本换行和窗口宽度变化后重新测量。展开子表在父表的可视区域内滚动，不继续撑高父表。
@@ -164,6 +178,8 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 入口 `/pages/table-twelve-row-viewport` 使用内联合成数据，覆盖四种外观、三层表头、长内容、二十条分页和十条短表。启动、操作及可观察结果见 pages/capabilities/table/README.md；不涉及真实 DQE/Relay。
 
 ## 渲染外观与变体
+
+展示维度与度量行集；派生行样式由 `rowKindField` 决定，不从文案识别合计。
 
 普通 Table、`variant: "forecastMatrix"` 与 `variant: "embedded"` 的网格采用 TinyVue OS 浅色样式：默认单层表头 40px、14px 字号与 21px 文字行高、灰色表头和短列分隔线；表体基础高度 48px、上下 12px 与左右 16px 内边距，长内容可撑高。多级粘性表头与固定列按实际渲染尺寸定位。固定列总宽超过表内可视宽度时，临时取消横向固定，所有列通过表内滚动访问；空间恢复后自动恢复固定。排序、筛选、搜索、分页和导出范围沿用已有契约。
 
@@ -185,6 +201,8 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 ```
 
 搜索字段必须是 `main` 数据槽中的文本标量字段，1—64项且不得重复。按 Enter 或搜索按钮提交，清空可恢复集合；提交时重置页码并保留排序与列头筛选。关键词只属于当前表格的实例状态，多个字段按任一字段包含匹配，采用不区分大小写的字面量包含语义，`%`、`_` 不作为通配符。草稿不参与导出。
+
+表格没有可展示明细行时统一显示“暂无数据”，覆盖搜索无匹配、筛选空结果、查询失败后的空表及各表格变体；加载中仍显示“正在加载…”。保留表头、搜索框与当前关键词，清空搜索可恢复原查询。独立置顶汇总行不计入明细行数：只有汇总时，汇总与“暂无数据”同时保留。错误分类与诊断继续沿控制台和 `data-error` 事件传递，空提示不将失败状态改写为成功，也不改变导出完整性约束。无需新增页面字段。可观察场景 `/pages/region-auth-norms-detail` 的“决策意见明细”和 `/pages/table-pinned-summary`。
 
 内联页面数据源及显式完整查询结果先搜索再排序和本地分页。其他查询源的搜索进入生效查询，由数据网关在上游执行；该表必须独占查询页面数据源，避免改动其他消费者的结果。共享查询定义的组合源属于单独的 `pagedJoin` 设计，不由本字段暗中引入。DQE 网关须配置经过核验的搜索编码器；未配置时报 `DQE_CONFIG_ERROR`，不会筛当前页或自动拉全表冒充查询搜索。
 
@@ -271,7 +289,7 @@ query输入引用隐藏、非层级dimension/timePoint/timeRange声明，必须�
 
 ## 列筛选候选值
 
-主数据或比较期补查失败时保留用户配置的表格内容，不注入未配置的按钮或失败说明，失败状态也不显示“暂无数据”，具体错误沿用控制台及 data-error 事件：表头筛选、静态 enumValues 和显式候选请求仍可操作，失败结果不展示为成功数据行。按需组合查询的列候选仍由所属成员独立读取；若候选本身依赖失败的业务输入、完整组合结果或无权限，则继续显示候选失败/不可用，不从残缺行集或过期数据补选项。可观察场景 `/pages/period-comparison-query-page?state=error`：去年同期失败时展开客户表头仍可获得当期23个候选；`?state=retry` 可通过已配置的客户表头筛选触发新查询，恢复完整比较结果。候选和主查询的完整性边界不变。
+主数据或比较期补查失败时保留用户配置的表格内容，不注入未配置的按钮或失败说明，失败后没有可展示明细行时也显示“暂无数据”，具体错误沿用控制台及 data-error 事件：表头筛选、静态 enumValues 和显式候选请求仍可操作，失败结果不展示为成功数据行。按需组合查询的列候选仍由所属成员独立读取；若候选本身依赖失败的业务输入、完整组合结果或无权限，则继续显示候选失败/不可用，不从残缺行集或过期数据补选项。可观察场景 `/pages/period-comparison-query-page?state=error`：去年同期失败时展开客户表头仍可获得当期23个候选；`?state=retry` 可通过已配置的客户表头筛选触发新查询，恢复完整比较结果。候选和主查询的完整性边界不变。
 
 6.76 的 `pagedJoin.pagination.mode:"query"` 使用单成员操作规则：后提交列所属成员覆盖其他成员的表格排序与过滤，界面勾选与排序标记同步清除，第一页重新查询。预先不可执行的操作只显示局部能力原因，保留有效页，不触发完整扫描。显式“为空”映射到 `isNull`；缺匹配和字段null均属空，目前后端完整为空能力未确认时明确不可用。
 
@@ -356,7 +374,7 @@ Excel 在表头后写一次无序号汇总，再写全部匹配明细。汇总�
 
 `props.pinnedTop.additionalData:["commercial","contract"]` 声明额外独立完整查询槽，列可绑定主槽或任一额外槽。各槽须引用不同的普通 complete query，不依赖明细、不带窗口，最多一行。主槽零行则不生成置顶行；额外槽零行则对应格缺失。任一槽加载、失败或行数异常时隐藏置顶行，明细继续显示；汇总失败/未就绪时拒绝完整 Excel。额外槽不参与明细对齐、排序、搜索、计数或分页。
 
-叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。既有单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。
+叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。
 
 
 <a id="source-navigation"></a>
@@ -411,14 +429,47 @@ Excel 默认使用“父表汇总”“子表明细”两个数据工作表；�
 
 ## 期间比较的查询分页（6.78）
 
-表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败不注入未配置的按钮或失败说明，失败状态也不显示“暂无数据”；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
+表格 data.main 指向带逐行 compute 的按需 pagedJoin，pagination 写 `{"mode":"query"}`；页大小和补列批次在组合源配置。当前期原始投影列按后端能力排序、筛选，比较计算列只绑定字段和 percent/points 格式，不声明全局 sortable/filterable。页码变化重新选页并按本页键补查，表格不自行调度查询或计算。比较期失败不注入未配置的按钮或失败说明，失败后没有可展示明细行时也显示“暂无数据”；完整导出逐页完成全部主查询对象的补查与计算，超限或失败不给部分文件。该分支不因计算而改变 totalCount，不提供页内伪全局筛选。示例 `/pages/period-comparison-query-page`。
 
 ## 自定义展示单位
 
 6.94 起字段列可声明 `unit`，例如 `{"field":"duration","unit":"天"}`。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
+<a id="table-trend-arrows"></a>
 
-页面协议 6.101。结构真源为本册[schema.json](../schema.json)，SHA256 `a91ae519668e0836803bd845c2ca071e3bdf7a871de98d0be7c28b64a2ca0c96`。字段表自动生成；可选不等于有默认值。
+## 列级上下箭头（6.99）
+
+表格字段列用 `arrowRule` 声明箭头规则，与同级 `colorRule` 独立。只允许绑定 `number` / `money`，支持列组、置顶汇总及展开子表；次字段和徽标不继承规则。省略不显示箭头，旧页面保持原样。
+
+```json
+{"type":"table","id":"changes","layout":{"span":12},"data":{"main":"sample"},"props":{"columns":[{"title":"时长变化","field":{"data":"main","field":"durationChange","format":"number-1-signed"},"unit":"天","arrowRule":{"mode":"sign","positive":"down","negative":"up"},"colorRule":{"mode":"sign","positive":"red","negative":"green"}}]}}
+```
+
+sample 需要含数值字段 durationChange。这个例子正值显示红色 `↓ +2.5 天`，负值显示绿色 `↑ -1.2 天`。箭头不由正负号或颜色固定决定，必须使用作者声明的映射。
+
+| 规则 | 声明 | 行为 |
+| --- | --- | --- |
+| 按正负映射 | `{"mode":"sign","positive":"down","negative":"up"}` | 正值 ↓、负值 ↑；可反向或两侧使用相同箭头 |
+| 单侧显示 | `{"mode":"sign","positive":"none","negative":"down"}` | 正值无箭头，负值 ↓ |
+| 固定箭头 | `{"mode":"fixed","arrow":"up"}` | 所有有效数字（含零和负值）显示 ↑ |
+| 显式隐藏 | `{"mode":"fixed","arrow":"none"}` | 不显示箭头 |
+
+`arrowRule.position` 可选 `before` / `after`，省略默认 `before`，两种 mode 均适用。默认显示 `↓ +2.5 天`；声明 `"position":"after"` 显示 `+2.5 天 ↓`。位置只影响箭头与主数值（含单位）的顺序，不改变映射和颜色，隐藏箭头时不保留多余间隔。置顶汇总、列组及子表复用列规则。
+
+箭头值仅接受 `up` / `down` / `none`。sign 模式必须同时声明 positive 和 negative；fixed 模式必须声明 arrow；不允许混用两种模式的属性或传布尔值。表格列不接受 `showTrendArrows` 布尔开关；指标卡的同名开关保持原协议。
+
+sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色一致，包含有效零，但缺失始终无箭头。按正负选择分支时复用现有格式精度：普通带符号数值、`points-1-signed`、`yoy-p-signed` 按舍入结果判断，例如 `number-1-signed` 的 ±0.04 落入零分支，±0.05 分别落入正负分支；其他格式（含 `percent-2-signed`）沿原值正负判断。fixed 不按舍入后的正负切换。枚举标签、非数字和异常回退原文不加箭头。
+
+`colorRule` 或旧 `visual:"signed"` 继续决定文字和箭头颜色，固定颜色不改变箭头规则；`colorRule` 与旧染色声明仍互斥。不增加符号，不比较其他字段或阈值，不改查询、计算和排序。PNG/PDF 与屏幕共用呈现；Excel 使用相同规则在数字格式中按 position 前置或后置箭头，保留原数值类型。
+
+完整 inline 合成场景 `/pages/table-trend-arrows` 覆盖正向、反向、单侧、固定与隐藏规则，包含单位、颜色、零/缺失、舍入边界、紧凑表格和进度条。无需 URL 参数或 DQE，不代表真实 DQE/Relay 验收。
+
+## 时间列转换（6.102）
+
+字段绑定可声明 `format:{"type":"time","pattern":"YYYY-MM-DD HH:mm:ss"}`，按固定 UTC+8 转换；支持常见日期时间字符串和秒/毫秒时间戳，无时区输入按 UTC。页面与 Excel/PDF/PNG 共用格式，Excel 为文本，原始数据和交互保持。输入、格式串及失败规则见[时间格式串](../field-bindings-and-formats.md#time-format)。合成入口 `/pages/table-time-format`。
+
+
+页面协议 6.103。结构真源为本册[schema.json](../schema.json)，SHA256 `61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2709,6 +2760,162 @@ Schema位置：`#/definitions/tableColumn/properties/colorRule/allOf/0`。目标
 |---|---|---|---|---|
 | 引用 #/definitions/colorRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6172726f7752756c65"></a>
+
+### `@tableColumn.arrowRule`
+
+Schema位置：`#/definitions/tableColumn/properties/arrowRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 主数值的显式箭头规则，与颜色独立；省略不显示箭头 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6172726f7752756c652f616c6c4f662f30"></a>
+
+### `@tableColumn.arrowRule · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/arrowRule/allOf/0`。目标：[#/definitions/arrowRule](../components/table.md#schema-232f646566696e6974696f6e732f6172726f7752756c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/arrowRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c65"></a>
+
+### `@arrowRule`
+
+Schema位置：`#/definitions/arrowRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f30"></a>
+
+### `@arrowRule · oneOf[0]`
+
+Schema位置：`#/definitions/arrowRule/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode","arrow"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f302f70726f706572746965732f6d6f6465"></a>
+
+### `@arrowRule · oneOf[0].mode`
+
+Schema位置：`#/definitions/arrowRule/oneOf/0/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="fixed" | Schema未设默认；装配/运行时默认见语义说明 | 固定箭头模式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "fixed" | 固定箭头。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f302f70726f706572746965732f6172726f77"></a>
+
+### `@arrowRule · oneOf[0].arrow`
+
+Schema位置：`#/definitions/arrowRule/oneOf/0/properties/arrow`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["up","down","none"] | Schema未设默认；装配/运行时默认见语义说明 | 固定箭头，可为up、down或none。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "up" | 显示上箭头。 |
+| "down" | 显示下箭头。 |
+| "none" | 不显示箭头。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f302f70726f706572746965732f706f736974696f6e"></a>
+
+### `@arrowRule · oneOf[0].position`
+
+Schema位置：`#/definitions/arrowRule/oneOf/0/properties/position`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["before","after"] | Schema未设默认；装配/运行时默认见语义说明 | 箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "before" | 箭头放在数值与单位之前（默认）。 |
+| "after" | 箭头放在数值与单位之后。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f31"></a>
+
+### `@arrowRule · oneOf[1]`
+
+Schema位置：`#/definitions/arrowRule/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode","positive","negative"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f312f70726f706572746965732f6d6f6465"></a>
+
+### `@arrowRule · oneOf[1].mode`
+
+Schema位置：`#/definitions/arrowRule/oneOf/1/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="sign" | Schema未设默认；装配/运行时默认见语义说明 | 按数值正负选择箭头映射。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "sign" | 按正负映射箭头。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f312f70726f706572746965732f706f736974697665"></a>
+
+### `@arrowRule · oneOf[1].positive`
+
+Schema位置：`#/definitions/arrowRule/oneOf/1/properties/positive`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["up","down","none"] | Schema未设默认；装配/运行时默认见语义说明 | 正值使用的箭头，支持up/down/none。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "up" | 显示上箭头。 |
+| "down" | 显示下箭头。 |
+| "none" | 不显示箭头。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f312f70726f706572746965732f6e65676174697665"></a>
+
+### `@arrowRule · oneOf[1].negative`
+
+Schema位置：`#/definitions/arrowRule/oneOf/1/properties/negative`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["up","down","none"] | Schema未设默认；装配/运行时默认见语义说明 | 负值使用的箭头，支持up/down/none。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "up" | 显示上箭头。 |
+| "down" | 显示下箭头。 |
+| "none" | 不显示箭头。 |
+
+<a id="schema-232f646566696e6974696f6e732f6172726f7752756c652f6f6e654f662f312f70726f706572746965732f706f736974696f6e"></a>
+
+### `@arrowRule · oneOf[1].position`
+
+Schema位置：`#/definitions/arrowRule/oneOf/1/properties/position`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["before","after"] | Schema未设默认；装配/运行时默认见语义说明 | 箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "before" | 箭头放在数值与单位之前（默认）。 |
+| "after" | 箭头放在数值与单位之后。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e4e6f64652f616e794f662f31"></a>
 
 ### `@tableColumnNode · anyOf[1]`
@@ -3781,6 +3988,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 
 ## 语义规则与反例（生成）
 
+- `table-trend-arrows`：表格箭头。反例：[table-arrow-old](../errors/table-arrow-old.json)、[table-arrow-text](../errors/table-arrow-text.json)、[table-arrow-type](../errors/table-arrow-type.json)、[table-arrow-position](../errors/table-arrow-position.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-key`：多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey。反例：[table-multi-slot-without-row-key](../errors/table-multi-slot-without-row-key.json)、[table-row-key-missing-in-slot](../errors/table-row-key-missing-in-slot.json)、[table-row-key-not-dimension](../errors/table-row-key-not-dimension.json)、[table-row-key-type-inconsistent](../errors/table-row-key-type-inconsistent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-kind-field`：表格行类别字段必须存在且由该数据源的折叠算子写入。反例：[table-row-kind-field-unknown](../errors/table-row-kind-field-unknown.json)、[table-row-kind-field-not-written](../errors/table-row-kind-field-not-written.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-merge-by-column`：mergeBy 必须是表格已声明的列字段。反例：[table-merge-by-not-column](../errors/table-merge-by-not-column.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -3810,6 +4018,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [reportCompact](../examples/component-table-reportCompact.json)：独立完整页面，保留必要语义依赖。
 - [embedded](../examples/component-table-embedded.json)：独立完整页面，保留必要语义依赖。
 - [forecastMatrix](../examples/component-table-forecastMatrix.json)：独立完整页面，保留必要语义依赖。
+- [table-trend-arrows](../examples/table-trend-arrows.json)：完整合法页面；查询仅为静态契约证据。
 - [query-dashboard](../examples/query-dashboard.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-column-actions](../examples/reference-export-column-actions.json)：完整合法页面；查询仅为静态契约证据。
@@ -3878,7 +4087,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/chart-table-unit.json)，JSON Pointer `#/sections/0/components/5/props/columns/1/children/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/chart-table-unit.json)，JSON Pointer `#/sections/0/components/5/props/columns/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/enumValues/0/value`。
-- `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/enumValues/0/value`。
+- `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1`：[合法完整页面](../examples/table-trend-arrows.json)，JSON Pointer `#/sections/0/components/0/props/columns/6/enumValues/0/value`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/city`。
 - `#/definitions/tableColumn/properties/filterable/anyOf/0`：[合法完整页面](../examples/unified-overflow-header.json)，JSON Pointer `#/sections/0/components/0/props/columns/16/filterable`。
@@ -3896,6 +4105,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/paged-union-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/record-id`。
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/route-label`。
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/from`。
+- `#/definitions/arrowRule/oneOf/0`：[合法完整页面](../examples/table-trend-arrows.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/arrowRule`。
+- `#/definitions/arrowRule/oneOf/1`：[合法完整页面](../examples/table-trend-arrows.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/children/0/arrowRule`。
 - `#/definitions/tableColumnNode/anyOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/columns/0`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/0`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/pagination`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/6/props/pagination`。

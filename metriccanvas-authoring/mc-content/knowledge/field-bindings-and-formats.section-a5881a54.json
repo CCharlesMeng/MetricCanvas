@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "6.103",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "field-bindings-and-formats.section-a5881a54"
+  ],
+  "semantics": [
+    {
+      "module": "field-bindings-and-formats",
+      "reference": "references/page-metadata/field-bindings-and-formats.md",
+      "blocks": [
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "## 时间格式串与固定 UTC+8（6.102）\n\n组件字段绑定的 `format` 继续接受原有字符串预设，新增结构 `{\"type\":\"time\",\"pattern\":\"YYYY-MM-DD HH:mm:ss\"}`。不增加表格列级字段，不配置其它时区。仅显式采用此对象的绑定转换；旧 `date`、`date-month-day` 与文本行为保持。`defaultFormat` 和参数/筛选文本引用继续使用原有字符串预设。\n\n```json\n{\"title\":\"创建时间\",\"field\":{\"data\":\"main\",\"field\":\"createdAt\",\"format\":{\"type\":\"time\",\"pattern\":\"YYYY-MM-DD HH:mm:ss\"}}}\n```\n\n按固定 UTC+8 换算后再格式化，不依赖运行机器时区，也不采用历史夏令时。`2026-11-09T18:30:00Z` 显示为 `2026-11-10 02:30:00`。`pattern` 为1—100字符，支持区分大小写的 `YYYY`、`MM`、`DD`、`HH`、`mm`、`ss`，以及连字符、斜杠、冒号、点、空格、T、年月日时分秒；至少一个有效 token。示例：`YYYY-MM-DD`、`YYYY/MM/DD HH:mm`、`HH:mm:ss`、`YYYY年MM月DD日`。不执行脚本或任意格式表达式。\n\n输入支持以下明确结构，不调用浏览器的宽松日期字符串解析：\n\n- ISO 日期时间，含 `Z`、`±HH:mm`、`±HHmm` 或无时区；秒可省略，小数秒支持1—9位并截取毫秒。明确偏移按实际时刻换算，不重复加八小时。\n- 年在前的日期：`YYYY-MM-DD`、`YYYY/MM/DD`、`YYYY.MM.DD`、`YYYY年MM月DD日`（分隔形式的月日允许单数位），以及 `YYYYMMDD`；后接空格或 T 及 `HH:mm[:ss]` / `HHmm[ss]`，紧凑的 `YYYYMMDDHHmm[ss]` 也支持。空格后缀 UTC/GMT 表示 UTC。\n- 10位 Unix 秒或13位 Unix 毫秒时间戳，支持数值或数字字符串、负值及最多3位小数；零也有效。8位数字只按紧凑日历日期解释，11/12位及微秒/纳秒时间戳不猜测单位。\n\n**无时区输入统一解释为 UTC**；纯日期按 UTC 零点解释。需要表示本地时刻时，来源须携带 `+08:00`，例如 `2026-11-10T02:30:00+08:00`。字段可保持来源已有的 string/number/datetime 类型；查询标量失配保留的原文证据也可在此展示格式下解析，但不提升为有效业务值。\n\n严格检查日历、时分秒和偏移（最大±14:00）；错误日期、歧义日/月顺序、越界年份及无法识别的输入保留原文，表格沿用格式不兼容诊断。空值沿用 `missingText`，默认 `--`。不重写结果快照、查询、排序、筛选、行键或导航。\n\n表格、PDF/PNG 和 Excel 共用格式化逻辑；Excel 将转换结果写为文本，空值沿用原有空单元格/缺失文案规则，避免宿主再次解释时区。枚举名称仍优先于普通格式；原始值和交互编码保持。\n\n完整合成入口 `/pages/table-time-format` 展示原始值、UTC+8 时间与日期、跨年、非法值和空值，并提供 Excel；不依赖后端，也不代表真实 DQE/Relay 验收。\n\n<a id=\"numeric-value-display\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "adaptive-money-trimmed",
+          "description": "6.88 新金额格式与静态货币匹配，旧格式保持",
+          "valid": [
+            "operation-money-formats"
+          ],
+          "invalid": [
+            "adaptive-money-before-6.88",
+            "adaptive-money-default-currency",
+            "adaptive-money-binding-currency",
+            "adaptive-money-nondefault-currency"
+          ]
+        },
+        {
+          "id": "currency-selection",
+          "description": "6.38金额范围和静态货币字段选择",
+          "valid": [
+            "currency-selection-page"
+          ],
+          "invalid": [
+            "currency-before-6.38",
+            "currency-case-missing",
+            "currency-metric-mismatch",
+            "currency-negative-default",
+            "currency-equal-default",
+            "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "signed-number-family-capability",
+          "description": "两位小数与千分位带符号数值格式由6.18引入",
+          "valid": [
+            "signed-number-family-page"
+          ],
+          "invalid": [
+            "signed-number-two-decimal-before-6.18",
+            "signed-number-grouped-before-6.18",
+            "signed-number-family-param-before-6.18"
+          ]
+        },
+        {
+          "id": "signed-number-format-capability",
+          "description": "带符号普通数值格式由6.17引入",
+          "valid": [
+            "signed-number-page"
+          ],
+          "invalid": [
+            "signed-number-binding-before-6.17",
+            "signed-number-default-before-6.17",
+            "signed-number-param-before-6.17"
+          ]
+        },
+        {
+          "id": "explicit-color-local",
+          "description": "显式颜色只绑定数字且不与旧染色声明冲突",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "color-rule-legacy-conflict",
+            "color-rule-nonnumeric",
+            "color-rule-tone-conflict"
+          ]
+        },
+        {
+          "id": "chart-value-label-exclusive",
+          "description": "常驻数值标签不与旧标签重复启用",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "value-label-bar-conflict",
+            "value-label-line-conflict"
+          ]
+        },
+        {
+          "id": "presentation-capability",
+          "description": "颜色与图表标签声明由6.16引入",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "presentation-before-6.16"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/yoy-p-format-demo.json",
+        "references/page-metadata/examples/million-formats-page.json",
+        "references/page-metadata/examples/compute-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/explicit-presentation-page.json",
+        "references/page-metadata/examples/signed-number-page.json",
+        "references/page-metadata/examples/signed-number-family-page.json",
+        "references/page-metadata/examples/currency-selection-page.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json",
+        "references/page-metadata/examples/authoring-percent-coverage.json",
+        "references/page-metadata/examples/operation-money-formats.json",
+        "references/page-metadata/examples/semantic-numeric-display.json",
+        "references/page-metadata/examples/table-time-format.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

@@ -303,9 +303,11 @@ TimeRangeParamValue
 TimeRangePrecision
 TimeRangePreset
 TimeRangeValue
+TimeValueFormat
 TimeWindow
 TypedError
 UnionKeysOperator
+ValueFormat
 ValueFormatPreset
 VersionPolicy
 WriteFilterAction
@@ -437,6 +439,7 @@ isInlineDataSource
 isLevelDimensionBinding
 isNavigationHref
 isObjectDqeItem
+isObjectPeriodBinding
 isPagedJoinDataSource
 isPagedJoinQuery
 isPeriodSelection
@@ -470,6 +473,7 @@ normalizeQueryTime
 normalizeTableSelectValues
 normalizeTableSelectView
 numberRangeIssue
+objectBindingFields
 objectDateBoundary
 objectOutputFields
 ordinaryQuery
@@ -545,6 +549,7 @@ selectedTab
 selectionAssignments
 semanticValueFormat
 setObjectFieldValues
+setObjectPeriod
 setObjectTimeRange
 setRowCellFallbacks
 snapshotCellFallbacks

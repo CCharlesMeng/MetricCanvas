@@ -233,6 +233,7 @@
         "filter.fields"
       ],
       "examples": [
+        "filter-binding-when",
         "dimension-params-page",
         "hierarchy-binding-page",
         "non-dimension-bindings-page",
@@ -253,7 +254,8 @@
         "period-query-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "sdt-period-aggregation"
+        "sdt-period-aggregation",
+        "object-period-query"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -484,7 +486,8 @@
         "period-comparison-demo",
         "authoring-percent-coverage",
         "operation-money-formats",
-        "semantic-numeric-display"
+        "semantic-numeric-display",
+        "table-time-format"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -829,6 +832,7 @@
         "tableComponent",
         "tableColumnNode",
         "tableColumn",
+        "arrowRule",
         "tableColumnGroup",
         "rowExpansionTable",
         "tableRowExpansion"
@@ -838,6 +842,7 @@
         "明细表 table"
       ],
       "examples": [
+        "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
         "reference-export-column-actions",
@@ -876,6 +881,7 @@
         "packages/page/src/table/header-defaults.ts"
       ],
       "rules": [
+        "table-trend-arrows",
         "table-row-key",
         "table-row-kind-field",
         "table-merge-by-column",
@@ -1873,6 +1879,15 @@
     "#/definitions/dimensionFilter/properties/candidates/properties/labelField": "可选显示名输出字段 ID，省略时显示稳定值。",
     "#/definitions/dimensionFilter/properties/candidates/properties/parentField": "tree 必填的父节点值输出字段 ID；根节点为空，父子节点独立选择。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll": "6.98：true 展示全选，默认不展示；静态及动态候选全选后该列不限，包含空值，旧 allBehavior 兼容保留。",
+    "arrowRule": "表格主数值的显式箭头规则，省略不显示，与颜色独立。",
+    "arrow": "固定箭头，可为up、down或none。",
+    "#/definitions/arrowRule/oneOf/0/properties/mode": "固定箭头模式。",
+    "#/definitions/arrowRule/oneOf/1/properties/mode": "按数值正负选择箭头映射。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive": "正值使用的箭头，支持up/down/none。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative": "负值使用的箭头，支持up/down/none。",
+    "#/definitions/arrowRule/oneOf/0/properties/position": "箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。",
+    "#/definitions/arrowRule/oneOf/1/properties/position": "箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。",
+    "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/pattern": "时间格式串；固定 UTC+8。",
     "finalizationName": "按名称查询默认日期；失败用当前日期，用户可改。"
   },
   "enumNotes": {
@@ -2234,10 +2249,27 @@
     "avg": "有效月值的算术平均，零参与、空值与缺月不补零",
     "#/properties/schemaVersion=\"6.97\"": "近一年业务分组及逐字段求和/平均",
     "#/properties/schemaVersion=\"6.98\"": "显式列头全选入口；静态和动态候选全选后该列不限。",
-    "#/properties/schemaVersion=\"6.99\"": "同主版本读取兼容；具体能力由各自引入版本及声明共同约束。",
-    "#/properties/schemaVersion=\"6.100\"": "同主版本读取兼容；具体能力由各自引入版本及声明共同约束。",
-    "#/properties/schemaVersion=\"6.101\"": "定稿名称默认日期；每页引擎查询、日级适配及失败回退当前日期。",
-    "#/definitions/periodSelection/anyOf/2/properties/mode=\"last12Months\"": "定稿日期所在月及之前共十二个完整月，保留已应用窗口。"
+    "#/definitions/arrowRule/oneOf/0/properties/mode=\"fixed\"": "固定箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/mode=\"sign\"": "按正负映射箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/arrow=\"up\"": "显示上箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/arrow=\"down\"": "显示下箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/arrow=\"none\"": "不显示箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive=\"up\"": "显示上箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive=\"down\"": "显示下箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive=\"none\"": "不显示箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative=\"up\"": "显示上箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative=\"down\"": "显示下箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative=\"none\"": "不显示箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/position=\"before\"": "箭头放在数值与单位之前（默认）。",
+    "#/definitions/arrowRule/oneOf/0/properties/position=\"after\"": "箭头放在数值与单位之后。",
+    "#/definitions/arrowRule/oneOf/1/properties/position=\"before\"": "箭头放在数值与单位之前（默认）。",
+    "#/definitions/arrowRule/oneOf/1/properties/position=\"after\"": "箭头放在数值与单位之后。",
+    "#/properties/schemaVersion=\"6.99\"": "表格数字列通过 arrowRule 声明固定或按正负映射的箭头；省略不显示。",
+    "#/properties/schemaVersion=\"6.100\"": "维度查询绑定可按筛选条件暂停谓词并保留选择状态。",
+    "#/properties/schemaVersion=\"6.101\"": "对象期间默认生成周期类型与账期，单期等值、多期闭区间，并保留自定义字段与手写查询。",
+    "#/properties/schemaVersion=\"6.102\"": "字段绑定支持时间格式串及固定 UTC+8 转换。",
+    "#/definitions/periodSelection/anyOf/2/properties/mode=\"last12Months\"": "定稿日期所在月及之前共十二个完整月，保留已应用窗口。",
+    "#/properties/schemaVersion=\"6.103\"": "定稿名称默认日期；每页引擎查询、日级适配及失败回退当前日期。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2529,7 +2561,9 @@
         "#/definitions/tableColumn/properties/width",
         "#/definitions/tableColumn/properties/fixed"
       ],
-      "headings": [],
+      "headings": [
+        "单元格溢出省略与悬浮提示"
+      ],
       "dependencies": []
     },
     "table.search": {
@@ -3059,6 +3093,53 @@
         "列头全选入口（6.98）"
       ]
     },
+    "table.trendArrows": {
+      "module": "table",
+      "title": "表格上下箭头",
+      "roots": [
+        "#/definitions/tableColumn/properties/arrowRule",
+        "#/definitions/tableColumn/properties/colorRule",
+        "#/definitions/tableColumn/properties/unit"
+      ],
+      "headings": [
+        "列级上下箭头（6.99）"
+      ],
+      "dependencies": []
+    },
+    "query.bindingWhen": {
+      "module": "queries-and-bindings",
+      "title": "维度查询绑定生效条件",
+      "roots": [
+        "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
+        "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when"
+      ],
+      "headings": [
+        "维度查询绑定生效条件（6.100）"
+      ],
+      "dependencies": []
+    },
+    "query.objectPeriod": {
+      "module": "queries-and-bindings",
+      "title": "对象账期默认与自定义查询",
+      "roots": [
+        "#/definitions/dqeQuery/properties/filterBindings"
+      ],
+      "headings": [
+        "标准对象账期（6.101）"
+      ],
+      "dependencies": []
+    },
+    "fields.time": {
+      "module": "field-bindings-and-formats",
+      "title": "时间格式串与 UTC+8 转换",
+      "roots": [
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1"
+      ],
+      "headings": [
+        "时间格式串与固定 UTC+8（6.102）"
+      ],
+      "dependencies": []
+    },
     "filters.finalization": {
       "module": "filters",
       "title": "定稿名称与页面默认日期",
@@ -3066,7 +3147,7 @@
         "#/definitions/periodSelection/anyOf/2"
       ],
       "headings": [
-        "定稿日期默认值（6.101）"
+        "定稿日期默认值（6.103）"
       ],
       "dependencies": []
     }
@@ -3109,6 +3190,7 @@
       "查询标量的原文展示证据（6.60）"
     ],
     "queries-and-bindings.md": [
+      "维度查询绑定生效条件（6.100）",
       "期间字段聚合（6.97）",
       "查询独立期间策略",
       "查阅方式",
@@ -3119,6 +3201,7 @@
       "6.39 静态时间查询模式",
       "6.50 固定单选查询分支",
       "6.55 DQE 对象查询",
+      "标准对象账期（6.101）",
       "指定时间字段的范围下推（6.68）",
       "查询时间精度与执行前校验",
       "自动同比环比查询（6.77）",
@@ -3154,7 +3237,7 @@
       "布尔候选依赖与条件启用（6.75）",
       "期间筛选驱动同比环比（6.77）",
       "页面数据源候选（6.90）",
-      "定稿日期默认值（6.101）"
+      "定稿日期默认值（6.103）"
     ],
     "sections-and-layout.md": [
       "Report 与 Dashboard 标题",
@@ -3164,6 +3247,7 @@
       "查阅方式"
     ],
     "field-bindings-and-formats.md": [
+      "时间格式串与固定 UTC+8（6.102）",
       "整数与缺失值的统一显示",
       "统一语义格式（6.93）",
       "百分比创作与覆盖边界",
@@ -3238,6 +3322,7 @@
       "列条件显隐（6.62）",
       "当前行定位与补充数据关联",
       "单元格点击与筛选联动",
+      "单元格溢出省略与悬浮提示",
       "十二行可视高度",
       "渲染外观与变体",
       "表格工具栏与搜索（6.21）",
@@ -3258,7 +3343,9 @@
       "完整父子 Excel（6.70）",
       "组合源数据异常提示与导出",
       "期间比较的查询分页（6.78）",
-      "自定义展示单位"
+      "自定义展示单位",
+      "列级上下箭头（6.99）",
+      "时间列转换（6.102）"
     ],
     "components/mapChart.md": [
       "查阅方式",

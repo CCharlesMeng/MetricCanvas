@@ -2,7 +2,7 @@ import { headerDeclarations } from './header-binding';
 import { comparisonCapabilityPaths,comparisonJoinCapabilityPaths } from './period-comparison-validation';
 import { periodCapabilityPaths, quarterQueryCapabilityPaths } from './period-capability';
 import { columnConditionPaths, columnEnumPaths, columnDefaultPaths, columnPropertyPaths, columnSelectionLevelPaths } from './table/columns';
-import { isObjectDqeItem } from './dqe-object';
+import { isObjectDqeItem, dqeRecord } from './dqe-object';
 import {chartOptionScopes} from './chart-option';
 import type { TypedError } from './errors';
 import {declaredNavigationTargets} from './navigate';
@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 101;
+const CURRENT_MINOR = 103;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -53,8 +53,19 @@ function hasPinnedText(columns: unknown): boolean {
     return has(record(value?.pinnedTop), 'text') || hasPinnedText(value?.children);
   });
 }
+function bindingWhenUsed(query:Record<string,unknown>|undefined):boolean {
+  if(!query)return false;
+  const cases=record(query.queryModes)??record(query.timeModes);
+  const leaves=cases?Object.values(record(cases.cases)??{}):[query];
+  return leaves.some(leaf=>Object.values(record(record(leaf)?.filterBindings)??{}).some(binding=>has(record(binding),'when')));
+}
 
 export const pageCapabilities = {
+  'object-period-binding': {minor:101,legacyReadable:false,description:'对象查询默认按周期类型和账期消费期间，保留显式字段自定义',usedAt:document=>dataSourcePaths(document,data=>usesObjectPeriodBinding(record(data.source)?.query)).map(path=>path+'/source/query')},
+  'query-binding-when': {minor:100,legacyReadable:false,description:'维度查询绑定通过筛选条件暂停谓词，保留原筛选状态',usedAt:document=>dataSourcePaths(document,data=>bindingWhenUsed(record(record(data.source)?.query))).map(path=>path+'/source/query')},
+  'table-trend-arrows': { minor:99, legacyReadable:false, description:'表格列独立声明固定或正负映射箭头规则', usedAt:document=>columnPropertyPaths(document, 'arrowRule') },
+
+  'time-value-format': {minor:102,legacyReadable:false,description:'时间格式串按固定UTC+8统一展示与导出',usedAt:timeFormatPaths},
   'ioc-header-auto-back': {minor:96,legacyReadable:false,description:'IOC 详情页按有效下钻来源自动返回',usedAt:document=>headerDeclarations(document).filter(header=>header.props.back==='auto').map(header=>`${header.path}/back`)},
   'period-aggregation': {minor:97,legacyReadable:false,description:'近一年按业务维度分组并逐字段求和或取月均值平均',usedAt:document=>dataSourcePaths(document,data=>has(record(record(data.source)?.query),'periodAggregation')).map(path=>path+'/source/query/periodAggregation')},
   'table-show-select-all': {minor:98,legacyReadable:false,description:'表头显式配置全选入口，静态和动态候选全选后该列不限',usedAt:document=>columnDefaultPaths(document,['showSelectAll'])},
@@ -242,7 +253,7 @@ export const pageCapabilities = {
   'field-selection':{minor:38,description:'静态货币字段选择',usedAt:document=>{const opaque=chartOptionScopes(document);return componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter'),opaque).length>0);}},
   'filter-hint':{minor:37,description:'筛选说明文本',usedAt:document=>filterPaths(document,f=>has(f,'hint'))},
   'ioc-header': { minor:36, description:'页级 IOC 身份、筛选归属与实际首行折叠', usedAt: document => has(record(document), 'iocHeader') ? ['/iocHeader'] : [] },
-  'finalization-default': {minor:101,legacyReadable:false,description:'按定稿名称查询日级日期并初始化时间筛选，失败回退当前日期',usedAt:document => filterPaths(document, filter => has(record(filter.default),'finalizationName')).map(path=>`${path}/default/finalizationName`)},
+  'finalization-default': {minor:103,legacyReadable:false,description:'按定稿名称查询日级日期并初始化时间筛选，失败回退当前日期',usedAt:document => filterPaths(document, filter => has(record(filter.default),'finalizationName')).map(path=>`${path}/default/finalizationName`)},
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
   'chart-local-filter': {
     minor: 29, description: 'Dashboard 图表左上角独立筛选与自定义选项',
@@ -1278,6 +1289,17 @@ function usesObjectQuery(source: unknown): boolean {
   return leaves.some(leaf=>{const items=record(record(leaf)?.body)?.dsl_list;return Array.isArray(items)&&items.some(isObjectDqeItem);});
 }
 
+function usesObjectPeriodBinding(value: unknown): boolean {
+  const query=dqeRecord(value),selection=dqeRecord(query.queryModes);
+  if(selection.cases)return Object.values(dqeRecord(selection.cases)).some(usesObjectPeriodBinding);
+  const items=dqeRecord(query.body).dsl_list;
+  if(!Array.isArray(items)||!isObjectDqeItem(items[0]))return false;
+  return Object.values(dqeRecord(query.filterBindings)).some(value=>{
+    const binding=dqeRecord(value);
+    return binding.target==='time'&&!binding.queryField&&!binding.valueFormat;
+  });
+}
+
 function chartConstantCapability(component: unknown): boolean {
   const c = record(component);
   if (!c || !['barChart', 'lineChart', 'pieChart', 'mapChart', 'gauge'].includes(String(c.type))) return false;
@@ -1321,4 +1343,12 @@ function hasEmptyBooleanMembership(query:Json|undefined):boolean {
 
 function chartFieldUnitUsed(series: unknown): boolean {
   return Array.isArray(series) && series.some(value => {const source=record(value);return has(source,'field') && has(source,'unit');});
+}
+
+function timeFormatPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    paths.push(...findPaths(component.props, node => record(node.format)?.type === 'time').map(own => `${path}/props${own}/format`));
+  });
+  return paths;
 }

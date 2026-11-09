@@ -101,9 +101,11 @@
         "6.98",
         "6.99",
         "6.100",
-        "6.101"
+        "6.101",
+        "6.102",
+        "6.103"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 / 6.96 / 6.97 / 6.98 / 6.99 / 6.100 / 6.101"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 / 6.96 / 6.97 / 6.98 / 6.99 / 6.100 / 6.101 / 6.102 / 6.103"
     },
     "id": {
       "type": "string",
@@ -3016,6 +3018,14 @@
                   "queryField": {
                     "type": "string",
                     "minLength": 1
+                  },
+                  "when": {
+                    "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/condition"
+                      }
+                    ]
                   }
                 },
                 "required": [
@@ -3030,6 +3040,14 @@
                   "target": {
                     "type": "string",
                     "const": "dimension"
+                  },
+                  "when": {
+                    "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/condition"
+                      }
+                    ]
                   },
                   "levelQueryFields": {
                     "type": "object",
@@ -3087,7 +3105,8 @@
                   },
                   "queryField": {
                     "type": "string",
-                    "minLength": 1
+                    "minLength": 1,
+                    "description": "显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期"
                   },
                   "valueFormat": {
                     "type": "string",
@@ -3153,7 +3172,7 @@
                         "additionalProperties": false
                       }
                     ],
-                    "description": "独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为"
+                    "description": "独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择；对象查询生成周期类型与账期，单期等值、多期闭区间，仅支持年季月；自定义字段与非期间绑定保留原行为"
                   }
                 },
                 "required": [
@@ -3320,6 +3339,14 @@
                             "queryField": {
                               "type": "string",
                               "minLength": 1
+                            },
+                            "when": {
+                              "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+                              "allOf": [
+                                {
+                                  "$ref": "#/definitions/condition"
+                                }
+                              ]
                             }
                           },
                           "required": [
@@ -3334,6 +3361,14 @@
                             "target": {
                               "type": "string",
                               "const": "dimension"
+                            },
+                            "when": {
+                              "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+                              "allOf": [
+                                {
+                                  "$ref": "#/definitions/condition"
+                                }
+                              ]
                             },
                             "levelQueryFields": {
                               "type": "object",
@@ -3391,7 +3426,8 @@
                             },
                             "queryField": {
                               "type": "string",
-                              "minLength": 1
+                              "minLength": 1,
+                              "description": "显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期"
                             },
                             "valueFormat": {
                               "type": "string",
@@ -3582,6 +3618,14 @@
                             "queryField": {
                               "type": "string",
                               "minLength": 1
+                            },
+                            "when": {
+                              "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+                              "allOf": [
+                                {
+                                  "$ref": "#/definitions/condition"
+                                }
+                              ]
                             }
                           },
                           "required": [
@@ -3596,6 +3640,14 @@
                             "target": {
                               "type": "string",
                               "const": "dimension"
+                            },
+                            "when": {
+                              "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+                              "allOf": [
+                                {
+                                  "$ref": "#/definitions/condition"
+                                }
+                              ]
                             },
                             "levelQueryFields": {
                               "type": "object",
@@ -3653,7 +3705,8 @@
                             },
                             "queryField": {
                               "type": "string",
-                              "minLength": 1
+                              "minLength": 1,
+                              "description": "显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期"
                             },
                             "valueFormat": {
                               "type": "string",
@@ -3719,7 +3772,7 @@
                                   "additionalProperties": false
                                 }
                               ],
-                              "description": "独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为"
+                              "description": "独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择；对象查询生成周期类型与账期，单期等值、多期闭区间，仅支持年季月；自定义字段与非期间绑定保留原行为"
                             }
                           },
                           "required": [
@@ -4195,6 +4248,498 @@
           "required": [
             "kind",
             "unit"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "condition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "all": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/condition"
+              }
+            }
+          },
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "any": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/condition"
+              }
+            }
+          },
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "not": {
+              "$ref": "#/definitions/condition"
+            }
+          },
+          "required": [
+            "not"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "permission": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "permission"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to",
+                "mode"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "ne"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to",
+                "mode"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "in",
+                "notIn",
+                "containsAny",
+                "containsAll"
+              ]
+            },
+            "values": {
+              "minItems": 1,
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to",
+                "mode"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to",
+                "mode"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "isNull",
+                "isNotNull",
+                "isEmpty",
+                "isNotEmpty"
+              ]
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "ne"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "fact",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "in",
+                "notIn",
+                "containsAny",
+                "containsAll"
+              ]
+            },
+            "values": {
+              "minItems": 1,
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "fact",
+            "op",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "fact",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "isNull",
+                "isNotNull",
+                "isEmpty",
+                "isNotEmpty"
+              ]
+            }
+          },
+          "required": [
+            "fact",
+            "op"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "ne"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "row",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "in",
+                "notIn",
+                "containsAny",
+                "containsAll"
+              ]
+            },
+            "values": {
+              "minItems": 1,
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "row",
+            "op",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "row",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "isNull",
+                "isNotNull",
+                "isEmpty",
+                "isNotEmpty"
+              ]
+            }
+          },
+          "required": [
+            "row",
+            "op"
           ],
           "additionalProperties": false
         }
@@ -5671,498 +6216,6 @@
         },
         {
           "$ref": "#/definitions/textValueComposition"
-        }
-      ]
-    },
-    "condition": {
-      "anyOf": [
-        {
-          "type": "object",
-          "properties": {
-            "all": {
-              "minItems": 1,
-              "maxItems": 64,
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/condition"
-              }
-            }
-          },
-          "required": [
-            "all"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "any": {
-              "minItems": 1,
-              "maxItems": 64,
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/condition"
-              }
-            }
-          },
-          "required": [
-            "any"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "not": {
-              "$ref": "#/definitions/condition"
-            }
-          },
-          "required": [
-            "not"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "permission": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "required": [
-            "permission"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "filter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "part": {
-              "type": "string",
-              "enum": [
-                "level",
-                "values",
-                "value",
-                "from",
-                "to",
-                "mode"
-              ]
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "eq",
-                "ne"
-              ]
-            },
-            "value": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "boolean"
-                }
-              ]
-            }
-          },
-          "required": [
-            "filter",
-            "part",
-            "op",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "filter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "part": {
-              "type": "string",
-              "enum": [
-                "level",
-                "values",
-                "value",
-                "from",
-                "to",
-                "mode"
-              ]
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "in",
-                "notIn",
-                "containsAny",
-                "containsAll"
-              ]
-            },
-            "values": {
-              "minItems": 1,
-              "maxItems": 1000,
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "boolean"
-                  }
-                ]
-              }
-            }
-          },
-          "required": [
-            "filter",
-            "part",
-            "op",
-            "values"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "filter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "part": {
-              "type": "string",
-              "enum": [
-                "level",
-                "values",
-                "value",
-                "from",
-                "to",
-                "mode"
-              ]
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "gt",
-                "gte",
-                "lt",
-                "lte"
-              ]
-            },
-            "value": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "filter",
-            "part",
-            "op",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "filter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "part": {
-              "type": "string",
-              "enum": [
-                "level",
-                "values",
-                "value",
-                "from",
-                "to",
-                "mode"
-              ]
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "isNull",
-                "isNotNull",
-                "isEmpty",
-                "isNotEmpty"
-              ]
-            }
-          },
-          "required": [
-            "filter",
-            "part",
-            "op"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "fact": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "eq",
-                "ne"
-              ]
-            },
-            "value": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "boolean"
-                }
-              ]
-            }
-          },
-          "required": [
-            "fact",
-            "op",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "fact": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "in",
-                "notIn",
-                "containsAny",
-                "containsAll"
-              ]
-            },
-            "values": {
-              "minItems": 1,
-              "maxItems": 1000,
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "boolean"
-                  }
-                ]
-              }
-            }
-          },
-          "required": [
-            "fact",
-            "op",
-            "values"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "fact": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "gt",
-                "gte",
-                "lt",
-                "lte"
-              ]
-            },
-            "value": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "fact",
-            "op",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "fact": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "isNull",
-                "isNotNull",
-                "isEmpty",
-                "isNotEmpty"
-              ]
-            }
-          },
-          "required": [
-            "fact",
-            "op"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "row": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "eq",
-                "ne"
-              ]
-            },
-            "value": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "boolean"
-                }
-              ]
-            }
-          },
-          "required": [
-            "row",
-            "op",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "row": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "in",
-                "notIn",
-                "containsAny",
-                "containsAll"
-              ]
-            },
-            "values": {
-              "minItems": 1,
-              "maxItems": 1000,
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "boolean"
-                  }
-                ]
-              }
-            }
-          },
-          "required": [
-            "row",
-            "op",
-            "values"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "row": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "gt",
-                "gte",
-                "lt",
-                "lte"
-              ]
-            },
-            "value": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "row",
-            "op",
-            "value"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "row": {
-              "type": "string",
-              "minLength": 1
-            },
-            "op": {
-              "type": "string",
-              "enum": [
-                "isNull",
-                "isNotNull",
-                "isEmpty",
-                "isNotEmpty"
-              ]
-            }
-          },
-          "required": [
-            "row",
-            "op"
-          ],
-          "additionalProperties": false
         }
       ]
     },
@@ -7778,46 +7831,69 @@
             },
             "format": {
               "description": "只控制当前组件中这一次字段绑定的展示格式",
-              "type": "string",
-              "enum": [
-                "text",
-                "number",
-                "number-1",
-                "number-signed",
-                "number-1-signed",
-                "number-2-signed",
-                "number-grouped-signed",
-                "number-2",
-                "number-grouped",
-                "compact-wan-0",
-                "compact-wan-1",
-                "compact-million-0",
-                "compact-million-1",
-                "compact-million-2",
-                "compact-yi-1",
-                "cny-adaptive",
-                "usd-adaptive",
-                "cny-adaptive-trimmed",
-                "cny-adaptive-trimmed-no-yuan",
-                "usd-adaptive-km",
-                "count-adaptive",
-                "resource-adaptive",
-                "bytes-adaptive",
-                "minutes-adaptive",
-                "messages-adaptive",
-                "billing-hours",
-                "percent-adaptive",
-                "percent-adaptive-signed",
-                "percent-0",
-                "percent-1",
-                "percent-2",
-                "percent-raw",
-                "points-1-signed",
-                "yoy-p-signed",
-                "percent-2-signed",
-                "date",
-                "date-month-day",
-                "period"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "number",
+                    "number-1",
+                    "number-signed",
+                    "number-1-signed",
+                    "number-2-signed",
+                    "number-grouped-signed",
+                    "number-2",
+                    "number-grouped",
+                    "compact-wan-0",
+                    "compact-wan-1",
+                    "compact-million-0",
+                    "compact-million-1",
+                    "compact-million-2",
+                    "compact-yi-1",
+                    "cny-adaptive",
+                    "usd-adaptive",
+                    "cny-adaptive-trimmed",
+                    "cny-adaptive-trimmed-no-yuan",
+                    "usd-adaptive-km",
+                    "count-adaptive",
+                    "resource-adaptive",
+                    "bytes-adaptive",
+                    "minutes-adaptive",
+                    "messages-adaptive",
+                    "billing-hours",
+                    "percent-adaptive",
+                    "percent-adaptive-signed",
+                    "percent-0",
+                    "percent-1",
+                    "percent-2",
+                    "percent-raw",
+                    "points-1-signed",
+                    "yoy-p-signed",
+                    "percent-2-signed",
+                    "date",
+                    "date-month-day",
+                    "period"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "time"
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "pattern": "^(?=.*(?:YYYY|MM|DD|HH|mm|ss))(?:(?:YYYY|MM|DD|HH|mm|ss)|[-/: .T年月日时分秒])+$"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "pattern"
+                  ],
+                  "additionalProperties": false
+                }
               ]
             },
             "match": {
@@ -10526,12 +10602,93 @@
               "$ref": "#/definitions/colorRule"
             }
           ]
+        },
+        "arrowRule": {
+          "description": "主数值的显式箭头规则，与颜色独立；省略不显示箭头",
+          "allOf": [
+            {
+              "$ref": "#/definitions/arrowRule"
+            }
+          ]
         }
       },
       "required": [
         "field"
       ],
       "additionalProperties": false
+    },
+    "arrowRule": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "fixed"
+            },
+            "arrow": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down",
+                "none"
+              ]
+            },
+            "position": {
+              "description": "箭头相对数值的位置，省略为before",
+              "type": "string",
+              "enum": [
+                "before",
+                "after"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "arrow"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "sign"
+            },
+            "positive": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down",
+                "none"
+              ]
+            },
+            "negative": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down",
+                "none"
+              ]
+            },
+            "position": {
+              "description": "箭头相对数值的位置，省略为before",
+              "type": "string",
+              "enum": [
+                "before",
+                "after"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "positive",
+            "negative"
+          ],
+          "additionalProperties": false
+        }
+      ]
     },
     "tableColumnGroup": {
       "type": "object",
@@ -13524,5 +13681,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.101"
+  "$id": "https://metriccanvas/page/v6.103"
 }

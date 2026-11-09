@@ -242,10 +242,10 @@
 {:else if component.type === 'table' && table?.expansion && !exportMode}
   <ExpandableTable {component} data={tableData} binding={table} {snapshot} />
 {:else}
-  <WidgetHost {snapshot} showLoadingIndicator={component.type !== 'table'} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
+  <WidgetHost {snapshot} showLoadingIndicator={component.type !== 'table' && component.type !== 'metricCard'} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
-        <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
+        <MetricCard loading={snapshot.status === 'loading'} data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
       {:else if component.type === 'barChart'}
         <BarChart
           diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }

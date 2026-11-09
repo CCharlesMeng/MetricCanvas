@@ -2,7 +2,7 @@ import { seriesDisplayName, chartLegendVisible } from '../../shared/display-unit
 import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartRoleIndex, chartAxisFormats, explicitChartAxes } from '../../../../runtime/src/chart-series-state';
 import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveComponentValue } from '../../shared/component-value';
-import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { BarChartProps, ValueFormat } from '@metriccanvas/page/internal';
 import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
@@ -212,7 +212,7 @@ function horizontalValueLabels<T extends { axisLabel?: object }>(axis: T) {
     alignMinLabel: 'left' as const, alignMaxLabel: 'right' as const } };
 }
 
-function valueLabelFormatter(format?: ValueFormatPreset, unit?: string, displayUnit?: string) {
+function valueLabelFormatter(format?: ValueFormat, unit?: string, displayUnit?: string) {
   return (params: unknown): string => {
     const value = finiteNumber(formatterValue((params as { value?: unknown })?.value));
     if (value === undefined) return '';

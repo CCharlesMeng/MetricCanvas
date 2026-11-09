@@ -1,0 +1,226 @@
+{
+  "schemaVersion": "6.103",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "query.objectPeriod"
+  ],
+  "semantics": [
+    {
+      "module": "queries-and-bindings",
+      "reference": "references/page-metadata/queries-and-bindings.md",
+      "blocks": [
+        "# 查询定义与显式绑定\n\n<a id=\"filter-binding-when\"></a>",
+        "## 标准对象账期（6.101）\n\n当 `query_type:\"object\"` 的 `target:\"time\"` 绑定消费 `display:\"period\"`，且未声明 `queryField/valueFormat/window/periodComparison` 时，采用标准账期；页面只声明 `{\"period\":{\"target\":\"time\"}}`。不根据对象类型名称、输出列或静态样例推断是否绑定；没有期间绑定的对象查询不自动添加时间条件。\n\n| 已应用选择 | 周期类型（operator 为 =） | 账期（operator 为 =） |\n| --- | --- | --- |\n| 2026 年 10 月 | monthly | 202610 |\n| 2026 年 | yearly | 2026 |\n| 2026 年第四季度 | quarterly | 2026Q4 |\n\n条件都进入 `filter.fields`，使用 `field_name/value_list/operator`；周期类型和账期以 AND 组合。对象季度码没有连字符，与指标 `filter.time` 的 `2026-Q4` 区分。等值单期只生成一条账期条件；近一年按已应用的十二个完整月发送 monthly，并使用 `账期 >= YYYYMM`、`账期 <= YYYYMM`。多期不发送多值等值列表，也不展开到日边界。\n\n复用 `periodPolicy`：`{kind:\"fixed\",period:\"month\"}` 使选年查询 monthly 与 202601—202612 闭区间，选季查询所含三个月；`{kind:\"selection\",supportedPeriods:[\"month\"]}` 在选年或季时拒绝查询。固定季/年沿既有完整自然期间扩展规则。对象账期不支持 day；需要日范围、window 或期间比较时显式声明真实日期字段及格式，不自动套用标准账期。\n\n默认绑定成对接管“周期类型”和“账期”的原始默认条件，切换时替换两者，保留无关业务条件。其他页面绑定与查询结果绑定不得再次拥有这两个字段；表头筛选仍以 AND 收窄。屏幕、重查、列候选和完整读取/导出共用同一生效查询。没有粒度证明的旧 initial/seeds 不复用；请求和导出使用已应用选择，不重新读取当前时间。\n\n自定义能力沿用现有协议：明确指定 `queryField + valueFormat` 继续按日期范围处理，即使字段名为“账期”也不静默改义；完全自组装时在 body 的 `filter.fields` 编写条件，并省略对应自动期间绑定，或用 queryModes 各 case 声明独立查询与绑定。手写未知运算符及业务条件保留，不为自定义请求补默认账期。已有显式账期日期绑定须经业务确认后改为最小期间绑定，新能力下限为 6.101，旧页的显式字段语义保持。\n\n合成入口 `/pages/object-period-query` 回显默认、固定月、自定义审批日期及手写条件四种实际编码；无需真实 DQE。页面、操作和证据边界见 `pages/capabilities/query/README.md`。\n\n自定义时间范围仍使用 `target:time`，对象分支显式增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：\n\n```json\n{\"period\":{\"target\":\"time\",\"queryField\":\"特价审批通过时间\",\"valueFormat\":\"datetime\"}}\n```\n\n`iso` 保留页面日期/月；`compact` 去掉连字符；`datetime` 明确采用源日历、秒精度和闭区间，起点补 `00:00:00`、终点补 `23:59:59`，月范围扩为对应月首日至月末日，不进行时区转换。不同精度/时区必须由可信接入适配，不能猜测。指标查询的统计时间槽保持原规则；显式字段时间范围另见下文“指定时间字段的范围下推”。\n\n固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。\n\n查询分页继续使用 `order.offset/limit`。子表格、关联选页和分页合并不自动追加第二排序键；没有其他排序时子表格才以行键升序作为唯一排序。单字段排序编码为 `order_by_field/type`；显式多字段排序需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索仍需可信 `encodeSearch`；对象列候选使用上文的单字段对象投影或显式 `encodeColumnCandidates`，不能从当前页生成完整候选。\n\n窗口、有限选择、complete 的用途边界及取消、缓存、URL、筛选写入规则与普通 DQE 一致。对象 complete 源经共享范围读取取得完整行集后再计算或关联；显式完整导出使用完整读取入口。分页失败、总数变化或累计行数超出总数时不返回部分对象结果冒充完整结果；不收紧普通指标查询原有兼容规则。导出单表最多 10000 行，结果绑定去重集合最多 1000 值，超限拒绝而不截断。没有真实记录标识时不能从重复投影行推断上游重复翻页，也不能据此删除重复行；稳定分页需真实服务验真。\n\n完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。\n\n<a id=\"metric-field-time\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "period-aggregation",
+          "description": "近一年按业务维度逐字段求和/取月均值平均，完整输入及版本约束",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "period-aggregation-old-version",
+            "period-aggregation-unknown-field",
+            "period-aggregation-duplicate-field",
+            "period-aggregation-incomplete-source",
+            "period-aggregation-unknown-method"
+          ]
+        },
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "filter-binding",
+          "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "map-page",
+            "hierarchy-binding-page"
+          ],
+          "invalid": [
+            "level-query-fields-on-flat-filter",
+            "level-query-fields-missing-level",
+            "level-query-fields-undeclared-level",
+            "hierarchy-filter-flat-query-field",
+            "time-point-target-not-time-point",
+            "boolean-target-not-boolean",
+            "number-range-target-not-number-range",
+            "time-point-initial-param-not-times",
+            "time-point-initial-param-precision",
+            "time-point-initial-param-range",
+            "time-point-initial-param-and-default",
+            "time-point-initial-param-without-query-target",
+            "unknown-filter-binding",
+            "filter-binding-time-target-not-time-range",
+            "filter-binding-dimension-target-not-dimension"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/filter-binding-when.json",
+        "references/page-metadata/examples/dimension-params-page.json",
+        "references/page-metadata/examples/hierarchy-binding-page.json",
+        "references/page-metadata/examples/non-dimension-bindings-page.json",
+        "references/page-metadata/examples/query-cascade-page.json",
+        "references/page-metadata/examples/query-result-where-page.json",
+        "references/page-metadata/examples/query-result-where-branches.json",
+        "references/page-metadata/examples/query-result-page-window-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/time-binding-branches-page.json",
+        "references/page-metadata/examples/query-modes-page.json",
+        "references/page-metadata/examples/query-mode-binding-branches-page.json",
+        "references/page-metadata/examples/object-query-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/period-query-columns-demo.json",
+        "references/page-metadata/examples/period-query-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json",
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/object-period-query.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.103",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery",
+      "path": "@dqeQuery",
+      "module": "queries-and-bindings",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "language"
+        ],
+        "properties": {
+          "language": "#/definitions/dqeQuery/properties/language",
+          "periodAggregation": "#/definitions/dqeQuery/properties/periodAggregation",
+          "resultBindings": "#/definitions/dqeQuery/properties/resultBindings",
+          "body": "#/definitions/dqeQuery/properties/body",
+          "paramBindings": "#/definitions/dqeQuery/properties/paramBindings",
+          "filterBindings": "#/definitions/dqeQuery/properties/filterBindings",
+          "timeModes": "#/definitions/dqeQuery/properties/timeModes",
+          "queryModes": "#/definitions/dqeQuery/properties/queryModes"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings",
+      "path": "@dqeQuery.filterBindings",
+      "module": "queries-and-bindings",
+      "required": "本分支可选",
+      "note": "筛选器id到当前查询目标的显式绑定。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "additionalProperties": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties"
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

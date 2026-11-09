@@ -39,11 +39,12 @@ export function inspectAuthoringPresentation(page: Page, options: PresentationAu
     for (const { binding, path: bindingPath } of scanPresentationBindings(component, pageSchema, path)) {
       const resolved = resolveField(binding, data);
       if (!resolved.definition) continue;
-      const code = formatApplicability(resolved.definition, resolved.format);
+      const format = typeof resolved.format === 'string' ? resolved.format : undefined;
+      const code = formatApplicability(resolved.definition, format);
       const sourceId = Object.entries(references).find(([name]) => name === resolved.data)?.[1];
-      const rawIntent = code === 'PRESENTATION_PERCENT_UNIT_CONFLICT' && resolved.format?.startsWith('number') && options.rawValuePaths?.includes(bindingPath);
+      const rawIntent = code === 'PRESENTATION_PERCENT_UNIT_CONFLICT' && format?.startsWith('number') && options.rawValuePaths?.includes(bindingPath);
       if (code && !rawIntent) findings.push({ code, componentId: component.id, path: bindingPath, sourceId, fieldId: resolved.field,
-        format: resolved.format, evidence: 'declared field unit and effective binding; explicit overrides retained' });
+        format, evidence: 'declared field unit and effective binding; explicit overrides retained' });
     }
   });
   const prior = options.baseline ? inspectAuthoringPresentation(options.baseline, { rawValuePaths: options.rawValuePaths }).findings : [];

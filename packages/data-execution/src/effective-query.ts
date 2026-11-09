@@ -1,4 +1,5 @@
 import {resolvePeriodComparison, type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
+import {evaluateCondition} from '@metriccanvas/page/internal';
 import {bindingOwnedDqeBody, normalizeDisplayQueryRows, restoreCellFallbacks} from '@metriccanvas/page/internal';
 import {resolvePeriodQuery,withPeriodQueryDefaults} from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from './intersect-filters';
@@ -29,9 +30,17 @@ function mappedQueryField(
 function resolveBoundQuery(binding:QueryBinding,values:FilterValues) {
   const dataSource=selectQuerySource(binding.dataSource,values);
   const query=withPeriodQueryDefaults(iocHeaderQuery(dataSource.source.query,binding.page),{filters:binding.filters??binding.page?.filters});
-  const bindings=query.filterBindings??{};
+  const bindings=activeFilterBindings(query.filterBindings??{},binding,values);
   validateOverrideBindings(binding.filters??[],values,bindings);
   return {dataSource,query,bindings};
+}
+function activeFilterBindings(bindings:Record<string,FilterBinding>,context:QueryBinding,values:FilterValues):Record<string,FilterBinding> {
+  return Object.fromEntries(Object.entries(bindings).filter(([,binding])=>{
+    if(binding.target!=='dimension'||!binding.when)return true;
+    const result=evaluateCondition(binding.when,{declarations:context.filters??context.page?.filters??[],filters:values});
+    if(result.status==='error'||result.status==='pending')throw Object.assign(new Error('查询绑定生效条件未就绪或无效'),{code:'DQE_QUERY_REJECTED'});
+    return result.status==='allow';
+  }));
 }
 
 export function composeEffectiveQuery(

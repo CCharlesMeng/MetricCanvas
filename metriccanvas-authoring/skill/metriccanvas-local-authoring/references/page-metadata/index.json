@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.101",
-  "schemaSha256": "a91ae519668e0836803bd845c2ca071e3bdf7a871de98d0be7c28b64a2ca0c96",
+  "schemaVersion": "6.103",
+  "schemaSha256": "61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -197,6 +197,7 @@
         "filter.fields"
       ],
       "examples": [
+        "filter-binding-when",
         "dimension-params-page",
         "hierarchy-binding-page",
         "non-dimension-bindings-page",
@@ -217,7 +218,8 @@
         "period-query-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "sdt-period-aggregation"
+        "sdt-period-aggregation",
+        "object-period-query"
       ],
       "rules": [
         "query-field-mapping",
@@ -398,7 +400,8 @@
         "period-comparison-demo",
         "authoring-percent-coverage",
         "operation-money-formats",
-        "semantic-numeric-display"
+        "semantic-numeric-display",
+        "table-time-format"
       ],
       "rules": [
         "data-slot-known-source",
@@ -679,6 +682,7 @@
         "tableComponent",
         "tableColumnNode",
         "tableColumn",
+        "arrowRule",
         "tableColumnGroup",
         "rowExpansionTable",
         "tableRowExpansion"
@@ -688,6 +692,7 @@
         "明细表 table"
       ],
       "examples": [
+        "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
         "reference-export-column-actions",
@@ -718,6 +723,7 @@
         "table-header-select-all-query"
       ],
       "rules": [
+        "table-trend-arrows",
         "table-row-key",
         "table-row-kind-field",
         "table-merge-by-column",
@@ -1308,7 +1314,9 @@
         "6.98",
         "6.99",
         "6.100",
-        "6.101"
+        "6.101",
+        "6.102",
+        "6.103"
       ]
     },
     {
@@ -5123,6 +5131,606 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[0].when",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when/allOf/0",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[0].when · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition",
+      "path": "@condition",
+      "required": "类型/分支",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0",
+      "path": "@condition · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0/properties/all",
+      "path": "@condition · anyOf[0].all",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0/properties/all/items",
+      "path": "@condition · anyOf[0].all[]",
+      "required": "每个数组项",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1",
+      "path": "@condition · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1/properties/any",
+      "path": "@condition · anyOf[1].any",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1/properties/any/items",
+      "path": "@condition · anyOf[1].any[]",
+      "required": "每个数组项",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/2",
+      "path": "@condition · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/2/properties/not",
+      "path": "@condition · anyOf[2].not",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/3",
+      "path": "@condition · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/3/properties/permission",
+      "path": "@condition · anyOf[3].permission",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4",
+      "path": "@condition · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/filter",
+      "path": "@condition · anyOf[4].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/part",
+      "path": "@condition · anyOf[4].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/op",
+      "path": "@condition · anyOf[4].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value",
+      "path": "@condition · anyOf[4].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
+      "path": "@condition · anyOf[4].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
+      "path": "@condition · anyOf[4].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
+      "path": "@condition · anyOf[4].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5",
+      "path": "@condition · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/filter",
+      "path": "@condition · anyOf[5].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/part",
+      "path": "@condition · anyOf[5].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/op",
+      "path": "@condition · anyOf[5].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values",
+      "path": "@condition · anyOf[5].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items",
+      "path": "@condition · anyOf[5].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[5].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[5].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[5].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6",
+      "path": "@condition · anyOf[6]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/filter",
+      "path": "@condition · anyOf[6].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/part",
+      "path": "@condition · anyOf[6].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/op",
+      "path": "@condition · anyOf[6].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/value",
+      "path": "@condition · anyOf[6].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7",
+      "path": "@condition · anyOf[7]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/filter",
+      "path": "@condition · anyOf[7].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/part",
+      "path": "@condition · anyOf[7].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/op",
+      "path": "@condition · anyOf[7].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8",
+      "path": "@condition · anyOf[8]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/fact",
+      "path": "@condition · anyOf[8].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/op",
+      "path": "@condition · anyOf[8].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value",
+      "path": "@condition · anyOf[8].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
+      "path": "@condition · anyOf[8].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
+      "path": "@condition · anyOf[8].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
+      "path": "@condition · anyOf[8].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9",
+      "path": "@condition · anyOf[9]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/fact",
+      "path": "@condition · anyOf[9].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/op",
+      "path": "@condition · anyOf[9].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values",
+      "path": "@condition · anyOf[9].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items",
+      "path": "@condition · anyOf[9].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[9].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[9].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[9].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10",
+      "path": "@condition · anyOf[10]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/fact",
+      "path": "@condition · anyOf[10].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/op",
+      "path": "@condition · anyOf[10].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/value",
+      "path": "@condition · anyOf[10].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11",
+      "path": "@condition · anyOf[11]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11/properties/fact",
+      "path": "@condition · anyOf[11].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11/properties/op",
+      "path": "@condition · anyOf[11].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12",
+      "path": "@condition · anyOf[12]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/row",
+      "path": "@condition · anyOf[12].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/op",
+      "path": "@condition · anyOf[12].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value",
+      "path": "@condition · anyOf[12].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
+      "path": "@condition · anyOf[12].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
+      "path": "@condition · anyOf[12].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
+      "path": "@condition · anyOf[12].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13",
+      "path": "@condition · anyOf[13]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/row",
+      "path": "@condition · anyOf[13].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/op",
+      "path": "@condition · anyOf[13].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values",
+      "path": "@condition · anyOf[13].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items",
+      "path": "@condition · anyOf[13].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[13].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[13].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[13].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14",
+      "path": "@condition · anyOf[14]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/row",
+      "path": "@condition · anyOf[14].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/op",
+      "path": "@condition · anyOf[14].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/value",
+      "path": "@condition · anyOf[14].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15",
+      "path": "@condition · anyOf[15]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15/properties/row",
+      "path": "@condition · anyOf[15].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15/properties/op",
+      "path": "@condition · anyOf[15].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "path": "@dqeQuery.filterBindings{key} · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -5134,6 +5742,19 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].when",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when/allOf/0",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].when · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields",
@@ -5494,6 +6115,19 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].when",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when/allOf/0",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].when · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1",
       "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -5505,6 +6139,19 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].when",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when/allOf/0",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].when · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields",
@@ -5809,6 +6456,19 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].when",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when/allOf/0",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].when · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1",
       "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -5820,6 +6480,19 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].when",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when/allOf/0",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].when · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields",
@@ -7727,593 +8400,6 @@
       "required": "独立分支（不合并required）",
       "module": "filters.md",
       "ref": "#/definitions/condition"
-    },
-    {
-      "pointer": "#/definitions/condition",
-      "path": "@condition",
-      "required": "类型/分支",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/0",
-      "path": "@condition · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/0/properties/all",
-      "path": "@condition · anyOf[0].all",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/0/properties/all/items",
-      "path": "@condition · anyOf[0].all[]",
-      "required": "每个数组项",
-      "module": "conditions.md",
-      "ref": "#/definitions/condition"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/1",
-      "path": "@condition · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/1/properties/any",
-      "path": "@condition · anyOf[1].any",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/1/properties/any/items",
-      "path": "@condition · anyOf[1].any[]",
-      "required": "每个数组项",
-      "module": "conditions.md",
-      "ref": "#/definitions/condition"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/2",
-      "path": "@condition · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/2/properties/not",
-      "path": "@condition · anyOf[2].not",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "ref": "#/definitions/condition"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/3",
-      "path": "@condition · anyOf[3]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/3/properties/permission",
-      "path": "@condition · anyOf[3].permission",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4",
-      "path": "@condition · anyOf[4]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4/properties/filter",
-      "path": "@condition · anyOf[4].filter",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4/properties/part",
-      "path": "@condition · anyOf[4].part",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "level",
-        "values",
-        "value",
-        "from",
-        "to",
-        "mode"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4/properties/op",
-      "path": "@condition · anyOf[4].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "eq",
-        "ne"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4/properties/value",
-      "path": "@condition · anyOf[4].value",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
-      "path": "@condition · anyOf[4].value · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
-      "path": "@condition · anyOf[4].value · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
-      "path": "@condition · anyOf[4].value · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5",
-      "path": "@condition · anyOf[5]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/filter",
-      "path": "@condition · anyOf[5].filter",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/part",
-      "path": "@condition · anyOf[5].part",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "level",
-        "values",
-        "value",
-        "from",
-        "to",
-        "mode"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/op",
-      "path": "@condition · anyOf[5].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "in",
-        "notIn",
-        "containsAny",
-        "containsAll"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/values",
-      "path": "@condition · anyOf[5].values",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/values/items",
-      "path": "@condition · anyOf[5].values[]",
-      "required": "每个数组项",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
-      "path": "@condition · anyOf[5].values[] · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
-      "path": "@condition · anyOf[5].values[] · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
-      "path": "@condition · anyOf[5].values[] · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/6",
-      "path": "@condition · anyOf[6]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/6/properties/filter",
-      "path": "@condition · anyOf[6].filter",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/6/properties/part",
-      "path": "@condition · anyOf[6].part",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "level",
-        "values",
-        "value",
-        "from",
-        "to",
-        "mode"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/6/properties/op",
-      "path": "@condition · anyOf[6].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "gt",
-        "gte",
-        "lt",
-        "lte"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/6/properties/value",
-      "path": "@condition · anyOf[6].value",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/7",
-      "path": "@condition · anyOf[7]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/7/properties/filter",
-      "path": "@condition · anyOf[7].filter",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/7/properties/part",
-      "path": "@condition · anyOf[7].part",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "level",
-        "values",
-        "value",
-        "from",
-        "to",
-        "mode"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/7/properties/op",
-      "path": "@condition · anyOf[7].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "isNull",
-        "isNotNull",
-        "isEmpty",
-        "isNotEmpty"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/8",
-      "path": "@condition · anyOf[8]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/8/properties/fact",
-      "path": "@condition · anyOf[8].fact",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/8/properties/op",
-      "path": "@condition · anyOf[8].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "eq",
-        "ne"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/8/properties/value",
-      "path": "@condition · anyOf[8].value",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
-      "path": "@condition · anyOf[8].value · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
-      "path": "@condition · anyOf[8].value · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
-      "path": "@condition · anyOf[8].value · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9",
-      "path": "@condition · anyOf[9]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9/properties/fact",
-      "path": "@condition · anyOf[9].fact",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9/properties/op",
-      "path": "@condition · anyOf[9].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "in",
-        "notIn",
-        "containsAny",
-        "containsAll"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9/properties/values",
-      "path": "@condition · anyOf[9].values",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9/properties/values/items",
-      "path": "@condition · anyOf[9].values[]",
-      "required": "每个数组项",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
-      "path": "@condition · anyOf[9].values[] · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
-      "path": "@condition · anyOf[9].values[] · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
-      "path": "@condition · anyOf[9].values[] · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/10",
-      "path": "@condition · anyOf[10]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/10/properties/fact",
-      "path": "@condition · anyOf[10].fact",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/10/properties/op",
-      "path": "@condition · anyOf[10].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "gt",
-        "gte",
-        "lt",
-        "lte"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/10/properties/value",
-      "path": "@condition · anyOf[10].value",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/11",
-      "path": "@condition · anyOf[11]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/11/properties/fact",
-      "path": "@condition · anyOf[11].fact",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/11/properties/op",
-      "path": "@condition · anyOf[11].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "isNull",
-        "isNotNull",
-        "isEmpty",
-        "isNotEmpty"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/12",
-      "path": "@condition · anyOf[12]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/12/properties/row",
-      "path": "@condition · anyOf[12].row",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/12/properties/op",
-      "path": "@condition · anyOf[12].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "eq",
-        "ne"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/12/properties/value",
-      "path": "@condition · anyOf[12].value",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
-      "path": "@condition · anyOf[12].value · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
-      "path": "@condition · anyOf[12].value · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
-      "path": "@condition · anyOf[12].value · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13",
-      "path": "@condition · anyOf[13]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13/properties/row",
-      "path": "@condition · anyOf[13].row",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13/properties/op",
-      "path": "@condition · anyOf[13].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "in",
-        "notIn",
-        "containsAny",
-        "containsAll"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13/properties/values",
-      "path": "@condition · anyOf[13].values",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13/properties/values/items",
-      "path": "@condition · anyOf[13].values[]",
-      "required": "每个数组项",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
-      "path": "@condition · anyOf[13].values[] · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
-      "path": "@condition · anyOf[13].values[] · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
-      "path": "@condition · anyOf[13].values[] · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/14",
-      "path": "@condition · anyOf[14]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/14/properties/row",
-      "path": "@condition · anyOf[14].row",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/14/properties/op",
-      "path": "@condition · anyOf[14].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "gt",
-        "gte",
-        "lt",
-        "lte"
-      ]
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/14/properties/value",
-      "path": "@condition · anyOf[14].value",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/15",
-      "path": "@condition · anyOf[15]",
-      "required": "独立分支（不合并required）",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/15/properties/row",
-      "path": "@condition · anyOf[15].row",
-      "required": "本分支必填",
-      "module": "conditions.md"
-    },
-    {
-      "pointer": "#/definitions/condition/anyOf/15/properties/op",
-      "path": "@condition · anyOf[15].op",
-      "required": "本分支必填",
-      "module": "conditions.md",
-      "enum": [
-        "isNull",
-        "isNotNull",
-        "isEmpty",
-        "isNotEmpty"
-      ]
     },
     {
       "pointer": "#/definitions/dimensionFilter/properties/default",
@@ -10566,6 +10652,12 @@
       "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format",
       "path": "@staticFieldBinding · anyOf[1].format",
       "required": "本分支可选",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "field-bindings-and-formats.md",
       "enum": [
         "text",
@@ -10607,6 +10699,25 @@
         "date-month-day",
         "period"
       ]
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/type",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[1].type",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "const": "time"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/pattern",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[1].pattern",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md"
     },
     {
       "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/match",
@@ -14621,6 +14732,104 @@
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/colorRule"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/arrowRule",
+      "path": "@tableColumn.arrowRule",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/arrowRule/allOf/0",
+      "path": "@tableColumn.arrowRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/arrowRule"
+    },
+    {
+      "pointer": "#/definitions/arrowRule",
+      "path": "@arrowRule",
+      "required": "类型/分支",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0",
+      "path": "@arrowRule · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0/properties/mode",
+      "path": "@arrowRule · oneOf[0].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "fixed"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0/properties/arrow",
+      "path": "@arrowRule · oneOf[0].arrow",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "enum": [
+        "up",
+        "down",
+        "none"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0/properties/position",
+      "path": "@arrowRule · oneOf[0].position",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "before",
+        "after"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1",
+      "path": "@arrowRule · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/mode",
+      "path": "@arrowRule · oneOf[1].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "sign"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/positive",
+      "path": "@arrowRule · oneOf[1].positive",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "enum": [
+        "up",
+        "down",
+        "none"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/negative",
+      "path": "@arrowRule · oneOf[1].negative",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "enum": [
+        "up",
+        "down",
+        "none"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/position",
+      "path": "@arrowRule · oneOf[1].position",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "before",
+        "after"
+      ]
     },
     {
       "pointer": "#/definitions/tableColumnNode/anyOf/1",
@@ -20064,6 +20273,210 @@
       "pointer": "#/dataSources/map-data/source/query/filterBindings/map-region"
     },
     {
+      "schemaPointer": "#/definitions/condition/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/3/components/0/props/rowVisibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/filters/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/3",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-inputs.json",
+      "pointer": "#/sections/1/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4",
+      "module": "conditions.md",
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/filter-binding-when.json",
+      "pointer": "#/dataSources/offices/source/query/filterBindings/site/when/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/4/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/ioc-header-section-placement.json",
+      "pointer": "#/sections/0/visibleWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5",
+      "module": "conditions.md",
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/chart-series-visibility.json",
+      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/7/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/6",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/8"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/7",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8",
+      "module": "conditions.md",
+      "file": "examples/availability-page.json",
+      "pointer": "#/sections/1/components/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/11/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/13/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/availability-page.json",
+      "pointer": "#/sections/1/components/0/visibleWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/14/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/16/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/10",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/17"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/11",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/18"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/22/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/24/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/23/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/25/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/14",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/26"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/15",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/27"
+    },
+    {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "module": "queries-and-bindings.md",
       "file": "examples/ioc-header-page.json",
@@ -20508,210 +20921,6 @@
       "pointer": "#/sections/0/components/0/props/subtitle"
     },
     {
-      "schemaPointer": "#/definitions/condition/anyOf/0",
-      "module": "conditions.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/1",
-      "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/3/components/0/props/rowVisibleWhen"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/2",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/filters/0/visibleWhen"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/3",
-      "module": "conditions.md",
-      "file": "examples/page-visibility-inputs.json",
-      "pointer": "#/sections/1/visibleWhen"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/4",
-      "module": "conditions.md",
-      "file": "examples/ioc-header-section-placement.json",
-      "pointer": "#/sections/0/visibleWhen"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
-      "module": "conditions.md",
-      "file": "examples/period-query-columns-demo.json",
-      "pointer": "#/sections/0/components/0/props/columns/1/visibleWhen/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/4/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
-      "module": "conditions.md",
-      "file": "examples/ioc-header-section-placement.json",
-      "pointer": "#/sections/0/visibleWhen/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/5",
-      "module": "conditions.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
-      "module": "conditions.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/7/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/6",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/8"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/7",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/8",
-      "module": "conditions.md",
-      "file": "examples/availability-page.json",
-      "pointer": "#/sections/1/components/0/visibleWhen"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/11/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/13/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
-      "module": "conditions.md",
-      "file": "examples/availability-page.json",
-      "pointer": "#/sections/1/components/0/visibleWhen/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/9",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/14/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/16/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/10",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/17"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/11",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/18"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/12",
-      "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
-      "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/22/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/24/value"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/13",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/23/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/25/values/0"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/14",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/26"
-    },
-    {
-      "schemaPointer": "#/definitions/condition/anyOf/15",
-      "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/27"
-    },
-    {
       "schemaPointer": "#/properties/filters/items/oneOf/1",
       "module": "page.md",
       "file": "examples/reference-branches-page.json",
@@ -20878,6 +21087,18 @@
       "module": "field-bindings-and-formats.md",
       "file": "examples/inline-report.json",
       "pointer": "#/sections/0/components/1/props/rows/0/valueField"
+    },
+    {
+      "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
+      "module": "field-bindings-and-formats.md",
+      "file": "examples/inline-report.json",
+      "pointer": "#/sections/0/components/1/props/rows/0/valueField/format"
+    },
+    {
+      "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
+      "module": "field-bindings-and-formats.md",
+      "file": "examples/table-time-format.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/field/format"
     },
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
@@ -21170,8 +21391,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1",
       "module": "components/table.md",
-      "file": "examples/table-column-enums.json",
-      "pointer": "#/sections/0/components/0/props/columns/2/enumValues/0/value"
+      "file": "examples/table-trend-arrows.json",
+      "pointer": "#/sections/0/components/0/props/columns/6/enumValues/0/value"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0",
@@ -21274,6 +21495,18 @@
       "module": "components/table.md",
       "file": "examples/paged-union-branches.json",
       "pointer": "#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/from"
+    },
+    {
+      "schemaPointer": "#/definitions/arrowRule/oneOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-trend-arrows.json",
+      "pointer": "#/sections/0/components/0/props/columns/2/arrowRule"
+    },
+    {
+      "schemaPointer": "#/definitions/arrowRule/oneOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-trend-arrows.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/children/0/arrowRule"
     },
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/1",
@@ -21963,5 +22196,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "689df87a05a55fc90b4e2e33dd006f49f617a40bdf48f76f644dbb27e2b85e08"
+  "semanticSourceDigest": "670419132bb2ec06728483d82946910646787c8cbb25a84aca80ed5ecff6acd8"
 }

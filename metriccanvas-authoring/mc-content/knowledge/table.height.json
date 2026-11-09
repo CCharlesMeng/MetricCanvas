@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.103",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.height"
@@ -9,10 +9,23 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n展示 dimension/metric 行集，支持核对、排序、筛选、单元格联动和多级表头。\n\ncolumns区分字段列与kind:group递归列组；children保持层级。query分页使用服务总条数；排序/表头筛选不得绕过查询分页限制。selection优先于link；主/次/徽标字段独立声明，不拼接字符串。派生行样式由rowKindField决定，不从文案识别合计。",
+        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。",
         "## 十二行可视高度\n\n所有表格（含普通、`forecastMatrix`、`embedded`、`reportCompact`、Tab、详情及行内子表）默认最多显示十二行数据的高度，不足十二行时按实际内容收缩；更多数据在表格内部纵向滚动，表头保持可见，分页条留在滚动区外。多级表头与独立置顶汇总行单独计高，不占十二行数据名额；按实际渲染行高计算，长文本换行和窗口宽度变化后重新测量。展开子表在父表的可视区域内滚动，不继续撑高父表。\n\n无需新增页面字段或修改既有 JSON。分页大小和查询窗口保持原语义：每页可返回二十或五十条，十二行只限制可视高度，不截断数据、不额外请求或改变总数。搜索、筛选和翻页后的新行集重新计算高度。PDF/PNG 静态导出展开全部应导出行，Excel 的数据范围保持原有契约。\n\n入口 `/pages/table-twelve-row-viewport` 使用内联合成数据，覆盖四种外观、三层表头、长内容、二十条分页和十条短表。启动、操作及可观察结果见 pages/capabilities/table/README.md；不涉及真实 DQE/Relay。"
       ],
       "rules": [
+        {
+          "id": "table-trend-arrows",
+          "description": "表格箭头",
+          "valid": [
+            "table-trend-arrows"
+          ],
+          "invalid": [
+            "table-arrow-old",
+            "table-arrow-text",
+            "table-arrow-type",
+            "table-arrow-position"
+          ]
+        },
         {
           "id": "table-header-filter-defaults",
           "description": "select 原始值默认筛选、字段类型与版本下限",
@@ -304,6 +317,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
         "references/page-metadata/examples/reference-export-column-actions.json",

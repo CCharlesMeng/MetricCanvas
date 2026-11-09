@@ -1,6 +1,15 @@
 # MetricCanvas 页面元数据规范
 
-6.101：时间筛选 default.finalizationName 按名称查询日级定稿日期，引擎每页独立查询并初始化日/月/季/年/近一年，失败回退当前日期。下钻保留已应用窗口，导航输入不跳过定稿查询。见[定稿日期默认值](docs/page-metadata/filters.md#定稿日期默认值6101)，合成入口 `/pages/finalization-default-time`。
+6.103：时间筛选 default.finalizationName 按名称查询日级定稿日期，引擎每页独立查询并初始化日/月/季/年/近一年，失败回退当前日期。下钻保留已应用窗口，导航输入不跳过定稿查询。见[定稿日期默认值](docs/page-metadata/filters.md#定稿日期默认值6103)，合成入口 `/pages/finalization-default-time`。
+6.102：字段绑定 `format` 支持 `{type:"time",pattern:"YYYY-MM-DD HH:mm:ss"}`，兼容常见时间结构并统一按固定 UTC+8 展示；无时区输入按 UTC，表格显示与导出共用格式，Excel 写为文本。旧格式保持。见[时间格式串](docs/page-metadata/field-bindings-and-formats.md#time-format)，合成入口 `/pages/table-time-format`。
+
+6.101：对象查询的期间绑定可只声明 `{target:"time"}`，引擎统一生成“周期类型＋账期”：年 yearly/年码、季 quarterly/YYYYQn、月 monthly/YYYYMM；单期等值，多期使用闭区间。复用 periodPolicy 表达固定粒度或能力限制；显式日期字段与手写对象条件保留。见[对象账期](docs/page-metadata/queries-and-bindings.md#标准对象账期6101)，合成入口 `/pages/object-period-query`。Schema 字段净增零。
+
+表格普通文本主值按列宽单行省略，溢出时鼠标悬停通过 tooltip 展示完整原文；取消字符数阈值与“更多”点击展开，静态导出保留全文。无需新增 Schema 字段。见[单元格溢出省略与悬浮提示](docs/page-metadata/components/table.md#单元格溢出省略与悬浮提示)，合成入口 `/pages/table-long-text`。
+
+6.100：维度查询绑定可用 `when` 复用筛选条件语法，仅条件允许时下推该绑定的谓词，保留筛选状态、URL 和按钮选择。组件显隐仍独立；旧绑定省略 `when` 保持原行为。见[查询绑定生效条件](docs/page-metadata/queries-and-bindings.md#filter-binding-when)，合成入口 `/pages/filter-binding-when`。
+
+6.99：表格字段列新增 `arrowRule`，与 `colorRule` 一样支持 `fixed` 与 `sign`；可配置上箭头、下箭头或不显示，正负映射可反向，箭头与颜色独立；默认放在数值前，可用 `position:"after"` 放在后面。省略规则不显示箭头。相对已发布协议列级字段净增1，方向/精度判断由引擎复用。见[表格上下箭头](docs/page-metadata/components/table.md#table-trend-arrows)，合成入口 `/pages/table-trend-arrows`。
 
 IOC Header 行内布局取消固定标题列，普通与紧凑页头均自然换行，主体不产生内部滚动条；所有屏幕页头滚出原位置后吸顶，静态导出不吸顶。无需新增 Schema 字段。见[唯一页头](docs/page-metadata/page.md#唯一页头641)，合成验收入口 `/pages/ioc-header-flow-sticky` 与 `/pages/ioc-header-section-sticky`。
 
@@ -60,7 +69,7 @@ IOC Header 认领的客户类型筛选由组件查询规则固定使用 `dim_nam
 IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或代表处，页面无需增加 URL 映射字段。同组参数按 URL 顺序取最后项，旧 value/level 链接继续兼容，普通页面筛选保持原行为。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)，合成入口 `/pages/ioc-region-url-demo`。本更新不新增页面字段或 Schema 能力下限。
 6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
 
-数据加载时先呈现真实组件结构，保留标题、容器、表头及工具栏；首次加载、筛选重查、查询翻页和 Tab 激活均不再用骨架块替换组件。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#加载时保留组件结构)，合成验收入口 `/pages/loading-structure-demo`。无需新增页面字段或升级 Schema。
+数据加载时先呈现真实组件结构，保留标题、容器、表头及工具栏；首次加载、筛选重查、查询翻页和 Tab 激活均不再用骨架块替换组件。指标卡在每个数字位置显示加载动画，覆盖主数值、次级指标、变化值及完成率，合成验收入口 `/pages/metric-card-loading`。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#加载时保留组件结构)，合成验收入口 `/pages/loading-structure-demo`。无需新增页面字段或升级 Schema。
 
 6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。
 
@@ -133,7 +142,7 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 
 工作台标题与组件修改共同进入工作副本，确认保存后持久化；顶部“页面管理”与右侧“页面属性”分开。条件规则默认摘要、按需编辑，组件目录选择自动定位，查询组件形态按现有能力约束显示不可用原因；声明及验收入口见[工作台交互](docs/page-metadata/sections-and-layout.md#工作台中的保存与组件定位)与[条件编辑](docs/page-metadata/conditions.md#工作台中的条件编辑)。不新增页面协议字段。
 
-表格 select 列筛选统一从本表完整匹配结果取候选，保留其他条件并排除自身表头条件，不新增 scope 配置。候选分页和搜索独立于表格；已选值失配时保留。查询失败时保留表头筛选、静态枚举和独立候选入口，不注入未由用户配置的按钮或失败说明，失败状态也不显示“暂无数据”；详细错误沿用控制台诊断；依赖失败结果的候选仍按原规则报错，不用残缺数据推断选项。弹层按内容自适应宽度。语义及远程能力边界见[明细表候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成补查失败场景 `/pages/period-comparison-query-page?state=error`。
+表格 select 列筛选统一从本表完整匹配结果取候选，保留其他条件并排除自身表头条件，不新增 scope 配置。候选分页和搜索独立于表格；已选值失配时保留。查询失败时保留表头筛选、静态枚举和独立候选入口，不注入未由用户配置的按钮或失败说明，失败后没有可展示明细行时也显示“暂无数据”；详细错误沿用控制台诊断；依赖失败结果的候选仍按原规则报错，不用残缺数据推断选项。弹层按内容自适应宽度。语义及远程能力边界见[明细表候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成补查失败场景 `/pages/period-comparison-query-page?state=error`。
 
 ## 文档结构与维护分工
 
@@ -171,7 +180,7 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 |---|---|---|
 | 声明页面结构、布局与组件 | [页面与布局](contracts/metriccanvas/page/reference/page.md)、[组件参考](contracts/metriccanvas/page/reference/components/README.md) | [完整页面示例索引](contracts/metriccanvas/page/reference/examples/README.md) |
 | 打开时指定维度范围与报告期间 | [当前分层参数](PAGE-PARAMETERS.md#当前分层参数新页面) | [分层参数页面](packages/page/fixtures/contract-valid/grouped-params-page.json) |
-| 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/capabilities/filters/report-date-filter-example.json) |
+| 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/capabilities/filters/report-date-filter-example.json)、[完整合成月报](pages/capabilities/filters/report-monthly-complete.json) |
 | 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business/report/sdt/business-sdt-cascade-example.json) |
 | 从其他页面通过 URL 打开指定 Tab（6.33） | [Tab 初值](docs/page-metadata/components/tabContainer.md#url-初始化页签633)、[链接传参](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签) | [来源页](pages/capabilities/navigation/tab-url-source.json)、[目标页](pages/capabilities/navigation/tab-url-initialization.json) |
 | 配置每张表的独立搜索与完整Excel导出（准备预算5分钟） | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |

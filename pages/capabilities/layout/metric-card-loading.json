@@ -1,0 +1,470 @@
+{
+  "schemaVersion": "6.81",
+  "id": "metric-card-loading",
+  "layout": "dashboard",
+  "dataSources": {
+    "gallery": {
+      "fields": {
+        "category": {
+          "label": "类别",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_category"
+        },
+        "name": {
+          "label": "团队",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_name"
+        },
+        "demo-region": {
+          "label": "省份",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_region"
+        },
+        "date": {
+          "label": "日期",
+          "type": "date",
+          "role": "dimension",
+          "queryField": "preview_date"
+        },
+        "description": {
+          "label": "说明",
+          "type": "string",
+          "role": "dimension",
+          "queryField": "preview_description"
+        },
+        "value": {
+          "label": "完成量",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_value",
+          "defaultFormat": "number"
+        },
+        "change": {
+          "label": "较上期",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_change",
+          "defaultFormat": "percent-1"
+        },
+        "progress": {
+          "label": "完成率",
+          "type": "number",
+          "role": "measure",
+          "queryField": "preview_progress",
+          "defaultFormat": "percent-0"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "schema_id": "MC_LOADING_STRUCTURE_DEMO",
+                "output_dims": [
+                  "preview_category",
+                  "preview_name",
+                  "preview_region",
+                  "preview_date",
+                  "preview_description"
+                ],
+                "output_metrics": [
+                  "preview_value",
+                  "preview_change",
+                  "preview_progress"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "metric-loading-variants",
+      "components": [
+        {
+          "id": "metric-loading-0",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "默认指标卡",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "metric-loading-1",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "summary",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true,
+            "variant": "summary"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "metric-loading-2",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "activityProgress",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true,
+            "variant": "activityProgress"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "metric-loading-3",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "compactSummary",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true,
+            "variant": "compactSummary"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "metric-loading-4",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "dualSummary",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true,
+            "variant": "dualSummary"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "metric-loading-5",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "compactStrip",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true,
+            "variant": "compactStrip"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "metric-loading-6",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "compactStack",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true,
+            "variant": "compactStack"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        },
+        {
+          "id": "metric-loading-7",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "primaryDetail",
+            "rows": [
+              {
+                "label": "完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "secondaryTitle": "次级指标",
+            "secondaryRows": [
+              {
+                "label": "目标完成量",
+                "valueField": "value",
+                "unit": "项",
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": "change"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率"
+            },
+            "showTrendArrows": true,
+            "variant": "primaryDetail"
+          },
+          "data": {
+            "main": "gallery"
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "title": "指标卡逐数值加载（合成数据）"
+  }
+}

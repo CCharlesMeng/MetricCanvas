@@ -1,7 +1,7 @@
 import {isFinalizationDefault} from './finalization-default';
 import { iocHeaderDeclaration } from './header-binding';
 import {withPeriodQueryDefaults} from './period-query-defaults';
-import { isObjectDqeItem } from './dqe-object';
+import { isObjectDqeItem, isObjectPeriodBinding } from './dqe-object';
 import {ordinaryQuery} from './time-mode';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import type { Component, Page } from './page';
@@ -148,6 +148,18 @@ function periodModeErrors(filter: RangeFilter, path: string, error: ErrorReporte
 }
 
 function objectDateFilterErrors(binding: TimeBinding, declaration: FilterDeclaration | undefined, path: string, error: ErrorReporter): void {
+  if(isObjectPeriodBinding(binding)) {
+    objectPeriodErrors(binding,declaration,path,error);
+    return;
+  }
   if(binding.periodPolicy) error(path, '对象查询不支持指标期间策略');
   if(binding.window && declaration?.type==='timePoint' && !timeWindowCompatible(declaration.granularity,binding.window)) error(path,'时间窗口单位与筛选器精度不相容');
+}
+
+function objectPeriodErrors(binding: TimeBinding, declaration: FilterDeclaration | undefined, path: string, error: ErrorReporter): void {
+  if(declaration?.type!=='timeRange' || declaration.display!=='period') error(path,'对象账期绑定必须消费 display=period；自定义日期范围须声明 queryField/valueFormat');
+  const policy=binding.periodPolicy;
+  if(!policy)return;
+  const periods=policy.kind==='fixed'?[policy.period]:policy.supportedPeriods;
+  if(periods.includes('day'))error(path,'对象账期策略仅支持 year/quarter/month；日范围须显式绑定时间字段');
 }

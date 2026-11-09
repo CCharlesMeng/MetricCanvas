@@ -132,10 +132,18 @@ test('all component families share a replayable loading review without replacing
     const cell = component.id.startsWith('gallery-composite-')
       ? dashboard.locator('[data-component$="/gallery-composite"] .widget-content').nth(component.id.endsWith('metric') ? 0 : 1)
       : dashboard.locator(`[data-component$="/${component.id}"]`);
-    await expect(cell.locator('.loading-spinner')).toHaveCount(1);
+    if (component.type === 'metricCard') {
+      const rows = [...component.props.rows, ...(component.props.secondaryRows ?? [])];
+      const valueCount = rows.reduce((count, row) => count + 1 + (row.changes?.length ?? 0), 0) + (component.props.progress ? 1 : 0);
+      await expect(cell.locator('.metric-card .loading-spinner')).toHaveCount(valueCount);
+      await expect(cell.locator('.loading-indicator')).toHaveCount(0);
+      await expect(cell.locator('.row-value')).not.toContainText('—');
+    } else {
+      await expect(cell.locator('.loading-spinner')).toHaveCount(1);
+    }
     cells.push(await cell.elementHandle());
   }
-  await expect(dashboard.locator('.loading-spinner')).toHaveCount(17);
+  await expect(dashboard.locator('.loading-spinner')).toHaveCount(19);
   await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(1);
   await expect(page.locator('.skeleton')).toHaveCount(0);
   await page.screenshot({ path: '/tmp/mc-loading-gallery/loading-wide.png', fullPage: true });
@@ -149,7 +157,7 @@ test('all component families share a replayable loading review without replacing
   await page.screenshot({ path: '/tmp/mc-loading-gallery/ready-wide.png', fullPage: true });
   hold();
   await page.getByRole('button', { name: '重新播放全部加载', exact: true }).click();
-  await expect(dashboard.locator('.loading-spinner')).toHaveCount(17);
+  await expect(dashboard.locator('.loading-spinner')).toHaveCount(19);
   await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(1);
   release();
   await expect(page.locator('.loading-spinner')).toHaveCount(0);
@@ -158,3 +166,47 @@ test('all component families share a replayable loading review without replacing
   await page.screenshot({ path: '/tmp/mc-loading-gallery/ready-narrow.png', fullPage: true });
   expect(errors).toEqual([]);
 });
+
+const metricLoadingFixture = JSON.parse(readFileSync(new URL('../../../pages/capabilities/layout/metric-card-loading.json', import.meta.url), 'utf8'));
+
+for (const outcome of ['ready', 'empty', 'error'] as const) {
+  test(`metric values load in place across every variant, then settle to ${outcome}`, async ({ page }) => {
+    let release: () => void = () => {};
+    const pending = new Promise<void>(resolve => { release = resolve; });
+    await page.route('**/dsl/execute', async route => {
+      await pending;
+      const request = route.request().postDataJSON();
+      const results = request.dsl_list.map((item: DemoItem) => outcome === 'empty'
+        ? { code: 'SUCCESS', total_count: 0, data: [] } : simulatedReceipt(item));
+      await route.fulfill(outcome === 'error' ? { status: 500, body: 'Synthetic query failure' }
+        : { json: { retCode: 'CBC.0000', results } });
+    });
+    await page.goto(`/pages/${metricLoadingFixture.id}`);
+    const cards = page.locator('.metric-card');
+    await expect(cards).toHaveCount(8);
+    for (const card of await cards.all()) {
+      await expect(card.locator('.row-value .loading-spinner')).toHaveCount(2);
+      await expect(card.locator('.change-value .loading-spinner')).toHaveCount(2);
+      await expect(card.locator('.progress-ring .number .loading-spinner')).toHaveCount(1);
+      await expect(card.locator('.row-value')).toHaveText(['', '']);
+      await expect(card.locator('.trend-arrow, .unit, .change-unit')).toHaveCount(0);
+    }
+    await expect(page.locator('.loading-indicator')).toHaveCount(0);
+    await page.screenshot({ path: `/tmp/mc-metric-loading/${outcome}-wide.png`, fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `/tmp/mc-metric-loading/${outcome}-narrow.png`, fullPage: true });
+    release();
+    await expect(page.locator('.loading-spinner')).toHaveCount(0);
+    await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+    for (const card of await cards.all()) {
+      if (outcome === 'ready') {
+        await expect(card.locator('.row-value').first()).toContainText('72');
+        await expect(card.locator('.unit')).toHaveCount(2);
+      } else {
+        await expect(card.locator('.row-value').first()).toHaveText('--');
+        await expect(card.locator('.trend-arrow, .unit, .change-unit')).toHaveCount(0);
+      }
+    }
+  });
+}
