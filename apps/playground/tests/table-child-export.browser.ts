@@ -10,9 +10,15 @@ async function exportCounts(page: Page) {
   const download = await pending;
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile((await download.path())!);
-  expect(workbook.worksheets.map(sheet => sheet.name)).toEqual(['父表汇总', '子表明细']);
-  expect(workbook.worksheets[1]!.getCell('A1').value).toBe('地区部');
-  return workbook.worksheets.map(sheet => sheet.rowCount - 1);
+  expect(workbook.worksheets.map(sheet => sheet.name)).toEqual(['父子表格']);
+  const sheet = workbook.worksheets[0]!, counts = [0, 0];
+  expect(sheet.getCell('A1').value).toBe('地区部');
+  sheet.eachRow((row, number) => {
+    if (number === 1) return;
+    if (row.getCell(1).value !== null) counts[0]++;
+    else if (typeof row.getCell(3).value === 'number') counts[1]++;
+  });
+  return counts;
 }
 
 test('exports complete children before expansion and ignores child-local paging and search', async ({ page }) => {

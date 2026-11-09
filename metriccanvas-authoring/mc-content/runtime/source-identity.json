@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "8f62eb038b0de7e14cddd7ba34c4f02175274542413127a4fb927334a1760e1d",
+  "sha256": "7f3f68f52e618cc3e2f20f481442f496f7956ec426285ab6156fd14f3704720d",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "501e0f41d37dae86cdc1b02871a46af9fc49fa58c265b8297a421310de811ae1"
+      "sha256": "077a8ab57f8cae9a08c16e5ae71206dbffa36adc586ac07716275dc94a4dae90"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "03a726fa2268207b8c5229d7003c5abdac191e4b2b29cdfcfbd56d18be414286"
+      "sha256": "ec5af537f7defa379dc5baaecdf6b9ea9975900b621ba959f1a8020251f7b25a"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2148,7 +2148,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "7a8a9fedca9d1861b33a85c24c0b2d35ffdb0537a295ab9f24c6168d22ba4239"
+      "sha256": "2ec373da21404d1ec381a6a26cdf2a43bf34a53dd668ed7ef84622356b97c398"
     },
     {
       "file": "pages/README.md",
@@ -2880,7 +2880,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "6a3883926578cec65c4a46168be83713ef40a16eb3ce36ce3fc4226e90405a62"
+      "sha256": "dc39b980175e1c1f00b9851a9c0196941dfc5085065fd5a2a9b088df4d3e09ff"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2956,7 +2956,7 @@
     },
     {
       "file": "pages/capabilities/table/table-child-keyless.json",
-      "sha256": "5497d47e57b26a4afff5c3bd4f38fd66a19b54a6f48c4174f903ece27fd80456"
+      "sha256": "726998c27d5bb57de7a3131b18784d5fe472be2264a49c1b4296bde1278764fb"
     },
     {
       "file": "pages/capabilities/table/table-column-candidates-query.json",
@@ -3012,7 +3012,7 @@
     },
     {
       "file": "pages/capabilities/table/table-hierarchy-selection.json",
-      "sha256": "1de6994692e2405f4753c65bfe504b57f2701e7afbc0a55f05cb1a7322f4ad49"
+      "sha256": "1ce2fc1797d50bde0cbf0a7ceb7ebf2d188eb0fbc9bfdb1af80a79e27c20a29e"
     },
     {
       "file": "pages/capabilities/table/table-long-text.json",

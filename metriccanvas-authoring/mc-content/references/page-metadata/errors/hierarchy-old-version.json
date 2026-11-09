@@ -18,7 +18,7 @@
     },
     {
       "type": "SCHEMA_ERROR",
-      "message": "完整父子双工作表 Excel 由 6.70 引入，文档声明的是 6.69",
+      "message": "完整父子同工作表缩进 Excel 由 6.70 引入，文档声明的是 6.69",
       "paths": [
         "/sections/0/components/0/props/toolbar/export/rowExpansion"
       ]

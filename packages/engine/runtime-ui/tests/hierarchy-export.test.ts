@@ -11,10 +11,14 @@ it.each([[undefined,4,17],['R01',1,5],['O101',1,1]] as const)('exports complete 
   const selected=choose(filters,value,value==='R01'?'region-dept':'office');
   const tables=await prepareHierarchyExport({page,component:table,gateway:sim.gateway,state:state(selected),params:new Map(),queries:new Map(),controller});
   const bytes=await encodeWorkbookTables(tables,controller.signal),workbook=new ExcelJS.Workbook();await workbook.xlsx.load(bytes.buffer);
-  expect(workbook.worksheets.map(s=>s.name)).toEqual(['父表汇总','子表明细']);
-  expect(workbook.worksheets.map(s=>s.rowCount-1)).toEqual([parentCount,childCount]);
-  expect(workbook.worksheets[1]!.getCell('A1').value).toBe('地区部归属');expect(workbook.worksheets[1]!.getCell('A2').value).toBe('华东');
-  if(value==='O101'){expect(workbook.worksheets[0]!.getCell('B2').value).toBe(1200);expect(workbook.worksheets[1]!.getCell('C2').value).toBe(360);}
+  expect(workbook.worksheets.map(s=>s.name)).toEqual(['父子表格']);
+  const sheet=workbook.worksheets[0]!;
+  expect(sheet.rowCount).toBe(1+parentCount*2+childCount);
+  expect(sheet.getCell('A1').value).toBe('地区部归属');expect(sheet.getCell('A2').value).toBe('华东');
+  expect(sheet.getCell('A3').value).toBeNull();expect(sheet.getCell('B3').value).toBe('代表处');
+  expect(tables[0]!.children).toHaveLength(parentCount);
+  expect(tables[0]!.children!.flatMap(child=>child.data.main!.snapshot.rows)).toHaveLength(childCount);
+  if(value==='O101'){expect(sheet.getCell('B2').value).toBe(1200);expect(sheet.getCell('C4').value).toBe(360);}
  }finally{await sim.close();}
 });
 it('freezes business conditions and parent search while ignoring parent page and child-local state',async()=>{
@@ -24,7 +28,7 @@ it('freezes business conditions and parent search while ignoring parent page and
   const promise=prepareHierarchyExport({page,component:table,gateway:sim.gateway,state:frozen,params:new Map(),queries:new Map(),controller});
   frozen.filters.set('year',{type:'dimension',dimension:'h_year',values:['2025']});
   const tables=await promise;expect(tables[0]!.data.main!.snapshot.rows).toEqual([expect.objectContaining({'region-name':'欧洲',amount:780})]);
-  expect(tables[1]!.data.main!.snapshot.rows).toHaveLength(4);
+  expect(tables[0]!.children![0]!.data.main!.snapshot.rows).toHaveLength(4);
  }finally{await sim.close();}
 });
 it('rejects any failed child query and aborts remaining work instead of returning partial tables',async()=>{
@@ -57,7 +61,20 @@ it('allows an empty child and rejects an incomplete child receipt',async()=>{
   return sim.gateway.fetchData(...args);
  }};
  const run=()=>prepareHierarchyExport({page,component:table,gateway,state:state(new Map(filters)),params:new Map(),queries:new Map(),controller:new AbortController()});
- try{const tables=await run();expect(tables[0]!.data.main!.snapshot.rows).toHaveLength(4);expect(tables[1]!.data.main!.snapshot.rows).toEqual([]);incomplete=true;await expect(run()).rejects.toThrow();}finally{await sim.close();}
+ try{const tables=await run();expect(tables[0]!.data.main!.snapshot.rows).toHaveLength(4);expect(tables[0]!.children!.map(child=>child.data.main!.snapshot.rows)).toEqual([[],[],[],[]]);incomplete=true;await expect(run()).rejects.toThrow();}finally{await sim.close();}
+});
+it('exports only parent headers for zero parent rows, without resolving irrelevant child columns or queries',async()=>{
+ const {page,table,filters}=hierarchyFixture(),sim=await hierarchySim();let childCalls=0;
+ for(const column of table.props.rowExpansion!.table.columns)if(column.kind!=='group')column.visibleWhen={filter:'product',part:'values',op:'containsAny',values:['cloud']};
+ const gateway={...sim.gateway,async fetchData(...args:Parameters<typeof sim.gateway.fetchData>){
+  if(args[0].fieldMappings['row-id'])return {rows:[],totalCount:0};
+  childCalls++;return sim.gateway.fetchData(...args);
+ }};
+ try{
+  const controller=new AbortController(),tables=await prepareHierarchyExport({page,component:table,gateway,state:state(new Map(filters)),params:new Map(),queries:new Map(),controller});
+  const bytes=await encodeWorkbookTables(tables,controller.signal),book=new ExcelJS.Workbook();await book.xlsx.load(bytes.buffer);
+  expect(childCalls).toBe(0);expect(tables[0]!.children).toEqual([]);expect(book.worksheets[0]!.rowCount).toBe(1);
+ }finally{await sim.close();}
 });
 it('keeps the parent page on common changes and resets defaults on a hierarchy identity change',async()=>{
  const {createTableController}=await import('../src/table/controller');

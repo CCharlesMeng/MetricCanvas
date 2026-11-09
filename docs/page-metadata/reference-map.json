@@ -1843,9 +1843,9 @@
     "#/definitions/pagedJoinSource/properties/records/properties/maxBytes": "原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs": "主表/补列表每次分页请求的超时预算（含排队）；每批重置，不限整轮耗时。超时整轮失败且不缓存部分结果。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeFilters": "本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。",
-    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion": "6.70：显式开启完整父子双工作表 Excel；未声明保留旧导出限制。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion": "6.70：显式开启完整父子同工作表缩进 Excel；未声明保留旧导出限制。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion/properties/scope": "首期仅 all，补齐未展开子表并忽略子表局部视图。",
-    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion/properties/parentFields": "非空、去重的父表可见关联字段列，与子字段分槽写入。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion/properties/parentFields": "非空、去重的父表可见关联字段列，值保留在父行，子表通过相邻行块与缩进表达归属。",
     "#/definitions/tableRowExpansion/properties/selection/properties/parentLevel": "层级筛选器的父层级 id。",
     "#/definitions/tableRowExpansion/properties/selection/properties/childLevel": "同一层级筛选器的子层级 id，与父层级不同。",
     "#/definitions/tableRowExpansion/properties/selection/properties/parentLookup": "专属 complete 普通父级定位查询，不依赖候选或子明细携带 parent。",
@@ -2849,7 +2849,7 @@
     },
     "table.hierarchy-export": {
       "module": "table",
-      "title": "完整父子双工作表 Excel",
+      "title": "完整父子同工作表缩进 Excel",
       "roots": [
         "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion"
       ],

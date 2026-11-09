@@ -8,7 +8,7 @@ import { projectTableRows } from '../../../../widgets/src/components/table/rows'
 import { tableDataWarnings } from '../../../../widgets/src/components/table/warnings';
 import { tableWorkbookCell } from './workbook-cell';
 
-export interface WorkbookTable { component: TableComponent; data: NamedDataSlots; name: string }
+export interface WorkbookTable { component: TableComponent; data: NamedDataSlots; name: string; children?: readonly WorkbookTable[] }
 export interface WorkbookSheet {
   sheet: string;
   data: SheetData;
@@ -82,7 +82,8 @@ export function tableWorkbookSheet(table: WorkbookTable, signal: AbortSignal): W
 }
 
 export function warningWorkbookSheet(tables: readonly WorkbookTable[], sheets: readonly WorkbookSheet[]): WorkbookSheet | undefined {
-  const warnings = tables.flatMap(table => tableDataWarnings(table.data).map(warning => [table.name, warning.sourceId, warning.message, warning.count]));
+  const sources = tables.flatMap(table => [table, ...table.children ?? []]);
+  const warnings = sources.flatMap(table => tableDataWarnings(table.data).map(warning => [table.name, warning.sourceId, warning.message, warning.count]));
   if (!warnings.length) return undefined;
   const names = new Set(sheets.map(sheet => sheet.sheet));
   let name = '数据异常说明', suffix = 1;

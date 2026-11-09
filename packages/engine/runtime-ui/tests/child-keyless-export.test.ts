@@ -17,9 +17,13 @@ it('exports every keyless record, including two different rows for the same offi
     state: { filters: initialFilterValues(page.filters ?? []), currentYear: 2026, tables: {}, headerFilters: {} } });
   const bytes = await encodeWorkbookTables(tables, controller.signal), workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(bytes.buffer);
-  expect(workbook.worksheets.map(sheet => sheet.rowCount - 1)).toEqual([4, 18]);
-  const child = workbook.worksheets[1]!;
-  expect([child.getCell('B2').value, child.getCell('B3').value]).toEqual(['上海', '上海']);
-  expect([child.getCell('C2').value, child.getCell('C3').value]).toEqual([360, 999]);
-  expect([child.getCell('A2').value, child.getCell('A3').value]).toEqual(['华东', '华东']);
+  expect(workbook.worksheets.map(sheet => sheet.name)).toEqual(['父子表格']);
+  const sheet = workbook.worksheets[0]!;
+  expect(sheet.rowCount).toBe(27);
+  expect(sheet.getCell('A2').value).toBe('华东');
+  expect([sheet.getCell('B4').value, sheet.getCell('B5').value]).toEqual(['上海', '上海']);
+  expect([sheet.getCell('C4').value, sheet.getCell('C5').value]).toEqual([360, 999]);
+  expect([sheet.getCell('A3').value, sheet.getCell('A4').value, sheet.getCell('A5').value]).toEqual([null, null, null]);
+  expect(sheet.getCell('A10').value).toBe('中国区');
+  expect(tables[0]!.children!.flatMap(child => child.data.main!.snapshot.rows)).toHaveLength(18);
 });

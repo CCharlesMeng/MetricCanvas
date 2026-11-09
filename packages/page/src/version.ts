@@ -120,7 +120,7 @@ export const pageCapabilities = {
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(record(props(c)?.rowExpansion),'selection')).map(p=>p+'/props/rowExpansion/selection') },
   'table-private-selection-input': { minor:70, legacyReadable:false, description:'子表格私有选择输入的明确不适用语义',
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&Object.values(record(record(record(props(c)?.rowExpansion)?.data)?.bindings)??{}).some(v=>record(v)?.source==='selection')).map(p=>p+'/props/rowExpansion/data/bindings') },
-  'table-complete-hierarchy-export': { minor:70, legacyReadable:false, description:'完整父子双工作表 Excel',
+  'table-complete-hierarchy-export': { minor:70, legacyReadable:false, description:'完整父子同工作表缩进 Excel',
     usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(record(record(props(c)?.toolbar)?.export),'rowExpansion')).map(p=>p+'/props/toolbar/export/rowExpansion') },
   'sum-fields-zero': {minor:71,legacyReadable:false,description:'字段求和可按零处理全部缺项，并支持单字段归零',
     usedAt:document=>dataSourcePaths(document,data=>Array.isArray(data.compute)&&data.compute.some(op=>record(op)?.op==='sumFields'&&(record(op)?.onMissing==='zero'||(Array.isArray(record(op)?.fields)&&(record(op)!.fields as unknown[]).length===1))))},

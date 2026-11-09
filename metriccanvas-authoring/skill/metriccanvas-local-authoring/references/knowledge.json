@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "a141c34d22519a45f62c9fd8bd361a977d6d61d9b2bc8beb12e234bca8e563d2"
+      "sha256": "aef8f734b836074e4d38b2b1ad4ff315b1689d30e01322e9ffccf2d053c9e73e"
     },
     {
       "file": "references/map-regions.json",
@@ -111,7 +111,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "fe54a20cac9f172279e98eeca500cb4aa5c657f0c289b0c71bab722fc4189a41"
+      "sha256": "39ee8aafa4a098d246b8e4cbaa688359130bd08f74b7daa28708c94c884978de"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -755,7 +755,7 @@
     },
     {
       "file": "references/page-metadata/errors/hierarchy-old-version.json",
-      "sha256": "a79d882d93f23a4b433519fa9fbc21d75b061b77532393f76548b7a09b123c7f"
+      "sha256": "0ed197b2aed042988be6e7e8f66419929dbbbcd2e1f21549f8cdd0521cd3c74e"
     },
     {
       "file": "references/page-metadata/errors/hierarchy-parent-window.json",
@@ -3039,7 +3039,7 @@
     },
     {
       "file": "references/page-metadata/examples/table-child-keyless.json",
-      "sha256": "a71ebbbcc270eaeba35de2616ae5ce2e9272f19e2d35cf7827de632ad76d7730"
+      "sha256": "62b4914d828f38cdf5e02d1599677003af6dcd12adfe3258a1b5ebe905c41042"
     },
     {
       "file": "references/page-metadata/examples/table-column-enums.json",
@@ -3263,11 +3263,11 @@
     },
     {
       "file": "scripts/analyze-data.mjs",
-      "sha256": "c300271f253f9ae3a046b3ea496d692d93a593c2f68d01b11d4b152d1eeabb8b"
+      "sha256": "d31a8259bf97f40004fd39ff88468eb09d74b557063c2d60de9bdc6d8f85bcd4"
     },
     {
       "file": "scripts/associate-data.mjs",
-      "sha256": "f73047a66c9ed3d8e146fc54ca0c1b4dd444c6dbb6dda04737fa96927e01e584"
+      "sha256": "9435cd1476d0292c81b2ad0d885620cbf7bffd06dda68246d27b6f3d1eac4923"
     },
     {
       "file": "scripts/read-knowledge.mjs",
@@ -3279,11 +3279,11 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "4f75ab35c99ea7e6e8295bf5449cb8bd05d260fe124f090c1205e47a1f5dcf0e"
+      "sha256": "e5a2ca63cffbab6109efcb996e16da7379892b4d74818ad4b88dc13ee6a12847"
     },
     {
       "file": "scripts/validate-page.mjs",
-      "sha256": "004d1c39fc4a0e10446b5423812a7722c49383c919f7531236377b2364b0a478"
+      "sha256": "c98af4f3555b10b034340b3b64d8a1fc491f56533e411ea0588bcbbb3b6a5076"
     }
   ]
 }

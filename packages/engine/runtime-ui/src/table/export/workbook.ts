@@ -1,6 +1,7 @@
 import type { TableComponent } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { tableWorkbookSheet, warningWorkbookSheet, type WorkbookTable } from './workbook-sheet';
+import { hierarchyWorkbookSheet } from './workbook-hierarchy';
 
 export function tableExportFilename(component: TableComponent): string {
   const name = component.props.toolbar?.export?.filename || component.props.title || '表格数据';
@@ -25,7 +26,8 @@ function workbookSheets(tables: readonly WorkbookTable[], signal: AbortSignal) {
     const key = name.toLowerCase();
     if (names.has(key)) throw new Error(`Worksheet name already exists: ${name}`);
     names.add(key);
-    return tableWorkbookSheet({ ...table, name }, signal);
+    const input = { ...table, name };
+    return table.children ? hierarchyWorkbookSheet(input, signal) : tableWorkbookSheet(input, signal);
   });
 }
 

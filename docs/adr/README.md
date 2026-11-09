@@ -139,7 +139,7 @@
 | [0120](./0120-table-scalar-fallback-and-independent-pinned-row.md) | 表格保留异常标量原文并以独立查询呈现置顶汇总 | 现行；用户确认标量原文容错、缺失尾排和独立查询置顶汇总，并授权实施 |
 | [0121](./0121-paged-union-field-projection-and-global-order.md) | 分页合并源显式投影字段并在全部来源上整体排序 | 现行；用户确认逐行保留重复记录、通用配置、整体默认排序、实时查询分页和 Skill 配置引导，并授权实施 |
 | [0122](./0122-table-column-visibility-and-view-reconciliation.md) | 表格列展示条件与已有会话视图调和 | 现行；用户逐轮确认列显隐、搜索、状态清理、作用域与导出；要求文件组织高内聚、低耦合及真源归一 |
-| [0123](./0123-explicit-hierarchy-selection-and-complete-child-export.md) | 层级选择通过显式父级定位驱动父行视图与完整子表导出 | 现行；部分由 [0126](./0126-folded-child-table-session-cache.md) 修订；用户确认层级筛选的父整体口径、显式归属定位、展开会话保留与完整双工作表 Excel，并授权正式实现 |
+| [0123](./0123-explicit-hierarchy-selection-and-complete-child-export.md) | 层级选择通过显式父级定位驱动父行视图与完整子表导出 | 现行；部分由 [0126](./0126-folded-child-table-session-cache.md) 修订；用户确认层级筛选的父整体口径、显式归属定位、展开会话保留与完整父子 Excel；2026-11-09进一步确认同工作表缩进呈现 |
 | [0124](./0124-ioc-region-single-tree.md) | IOC Region 只允许页头中的单个组织树 | 现行；用户要求 IOC Region 只允许 Header 中单个树形下拉，并明确普通维度筛选保留；本次按已确认范围受控迁移，不保留 IOC Region 的旧写法 |
 | [0125](./0125-paged-join-query-pagination-and-member-operations.md) | 组合查询源显式启用按需分页并由最后操作成员决定表格条件 | 现行；部分由 [0127](./0127-query-paged-period-comparison-and-row-computation.md) 修订；用户确认默认10条按需分页、最后操作成员生效及能力不足时拒绝；真实DQE单源分页另验 |
 | [0126](./0126-folded-child-table-session-cache.md) | 已成功的子表查询会话可在父行折叠后恢复 | 现行；用户确认实现同一页面会话内的子表折叠缓存，条件或权限变化失效，失败与取消不缓存 |
