@@ -90,8 +90,12 @@ Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query
 
 完整合成页面 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除` 展示账号、筛选及页签初始化，地址应移除 `unused`；`active=invalid` 展示输入错误并保留原地址。此页面只有合成内联数据；真实宿主路由与服务接入另验。
 
+## 详情标题的当前行取值
 
-页面协议 6.105。结构真源为本册[schema.json](schema.json)，SHA256 `1c7afe28a429e999618ae4484841489e4bebd98134853c9f462e6935456b1a7f`。字段表自动生成；可选不等于有默认值。
+6.106 起，列动作和组件动作的 `openDetail.title` 可声明固定标题或 `{parts:[固定文字,{field:当前行字段,format:可选格式},…]}`。快照与查询详情共用同一取值规则；旧 `titleField` 继续读取，与 `title` 互斥。完整声明、空值与版本边界见[详情组合标题](components/table.md#detail-composed-title)，合成场景 `/pages/partner-health-interactions` 包含组合标题的表格入口与固定标题的图表入口。
+
+
+页面协议 6.106。结构真源为本册[schema.json](schema.json)，SHA256 `be044e5f476c2ab1af613e20522f8ba787befe7225e348e07f9c10263586e48d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -750,6 +754,157 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 |---|---|---|---|---|
 | 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f7469746c65"></a>
+
+### `@componentAction · anyOf[2].openDetail · anyOf[0].title`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `@componentAction · anyOf[2].openDetail · anyOf[0].title · allOf[0]`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/title/allOf/0`。目标：[#/definitions/detailTitle](actions-and-navigation.md#schema-232f646566696e6974696f6e732f64657461696c5469746c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/detailTitle | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c65"></a>
+
+### `@detailTitle`
+
+Schema位置：`#/definitions/detailTitle`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 按顺序拼接固定文字与当前行字段，不执行表达式 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f30"></a>
+
+### `@detailTitle · anyOf[0]`
+
+Schema位置：`#/definitions/detailTitle/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f31"></a>
+
+### `@detailTitle · anyOf[1]`
+
+Schema位置：`#/definitions/detailTitle/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["parts"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f312f70726f706572746965732f7061727473"></a>
+
+### `@detailTitle · anyOf[1].parts`
+
+Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; maxItems=64 | Schema未设默认；装配/运行时默认见语义说明 | 按声明顺序连接的1—64个固定文字或当前行字段片段，不自动添加分隔符 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f312f70726f706572746965732f70617274732f6974656d73"></a>
+
+### `@detailTitle · anyOf[1].parts[]`
+
+Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f312f70726f706572746965732f70617274732f6974656d732f616e794f662f30"></a>
+
+### `@detailTitle · anyOf[1].parts[] · anyOf[0]`
+
+Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f312f70726f706572746965732f70617274732f6974656d732f616e794f662f31"></a>
+
+### `@detailTitle · anyOf[1].parts[] · anyOf[1]`
+
+Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f312f70726f706572746965732f70617274732f6974656d732f616e794f662f312f70726f706572746965732f6669656c64"></a>
+
+### `@detailTitle · anyOf[1].parts[] · anyOf[1].field`
+
+Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f64657461696c5469746c652f616e794f662f312f70726f706572746965732f70617274732f6974656d732f616e794f662f312f70726f706572746965732f666f726d6174"></a>
+
+### `@detailTitle · anyOf[1].parts[] · anyOf[1].format`
+
+Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1/properties/format`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "text" | 普通文本格式，不能执行HTML。 |
+| "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-1" | 保留1位小数。 |
+| "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
+| "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
+| "number-2-signed" | 保留两位小数，正数加正号，舍入后零无符号；方向与展示精度一致；6.18新增。 |
+| "number-grouped-signed" | 沿用number-grouped千分位与默认小数精度，正数加正号，舍入后零无符号；6.18新增。 |
+| "number-2" | 保留2位小数。 |
+| "number-grouped" | 千分位数值展示。 |
+| "compact-wan-0" | 按万缩放，0位小数。 |
+| "compact-wan-1" | 按万缩放，1位小数。 |
+| "compact-million-0" | 按百万缩放，0位小数，附加百万后缀。 |
+| "compact-million-1" | 按百万缩放，1位小数，附加百万后缀。 |
+| "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
+| "compact-yi-1" | 按亿缩放，1位小数。 |
+| "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元按原始绝对值切换美元/K/M，小额取整，1万至100万按K最多1位小数，100万至1亿按K取整，1亿起按M取整。 |
+| "cny-adaptive-trimmed" | 6.88：人民币元/万/亿去尾零；原始绝对值选档、对称舍入，小额带元。 |
+| "cny-adaptive-trimmed-no-yuan" | 6.88：人民币去尾零，小额不带元，其余与 cny-adaptive-trimmed 一致。 |
+| "usd-adaptive-km" | 6.88：美元按原始绝对值分 $/K/M，去尾零、千分位及对称舍入。 |
+| "count-adaptive" | 人数等计数按万缩放：小于1万取整，1万至10万最多1位小数，10万起取整；保留声明单位。 |
+| "resource-adaptive" | 资源量按原单位、万、亿选档，缩放后最多2位小数；同为TB时可显式区别于存储容量。 |
+| "bytes-adaptive" | 从声明的Bytes/KB至YB或bit单位按1024换算，保留bit/byte及每秒维度；最多2位小数。 |
+| "minutes-adaptive" | 分钟按分钟、千分钟、万分钟选档，缩放后最多2位小数。 |
+| "messages-adaptive" | 条数小于1万取整，1万起按万条显示且最多2位小数。 |
+| "billing-hours" | 原始秒数除以3600显示小时，四舍五入至最多2位小数，不改写原值。 |
+| "percent-adaptive" | 百分数刻度按量级选精度，保留微小非零值，绝对值500起显示上升或下降>500%。 |
+| "percent-adaptive-signed" | 自适应百分比的普通正值带+、负值带-、零无符号；绝对值500起显示方向与>500%。 |
+| "percent-0" | 原数值加百分号，0位小数。 |
+| "percent-1" | 原数值加百分号，1位小数。 |
+| "percent-2" | 原数值加百分号，2位小数。 |
+| "percent-raw" | 个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。 |
+| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
+| "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
+| "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
+| "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
+| "date-month-day" | 只展示月日的日期格式。 |
+| "period" | 时间窗口：基准所在完整周期；offset按指定unit移动周期。 |
+
 <a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f7469746c654669656c64"></a>
 
 ### `@componentAction · anyOf[2].openDetail · anyOf[0].titleField`
@@ -874,6 +1029,26 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f7469746c65"></a>
+
+### `@componentAction · anyOf[2].openDetail · anyOf[1].title`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `@componentAction · anyOf[2].openDetail · anyOf[1].title · allOf[0]`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/title/allOf/0`。目标：[#/definitions/detailTitle](actions-and-navigation.md#schema-232f646566696e6974696f6e732f64657461696c5469746c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/detailTitle | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f7469746c654669656c64"></a>
 
@@ -1065,6 +1240,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 
 ## 示例与溯源（生成）
 
+- [partner-health-interactions](examples/partner-health-interactions.json)：完整合法页面；查询仅为静态契约证据。
 - [url-navigation-page](examples/url-navigation-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-detail-bindings](examples/reference-export-detail-bindings.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-url-source](examples/tab-url-source.json)：完整合法页面；查询仅为静态契约证据。
@@ -1084,7 +1260,11 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/project`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/region`。
 - `#/definitions/componentAction/anyOf/2`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/sections/1/components/0/props/actions/0`。
-- `#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/openDetail`。
+- `#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0`：[合法完整页面](examples/partner-health-interactions.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/openDetail`。
+- `#/definitions/detailTitle/anyOf/0`：[合法完整页面](examples/partner-health-interactions.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/openDetail/title`。
+- `#/definitions/detailTitle/anyOf/1`：[合法完整页面](examples/partner-health-interactions.json)，JSON Pointer `#/sections/0/components/1/props/columns/2/openDetail/title`。
+- `#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/0`：[合法完整页面](examples/partner-health-interactions.json)，JSON Pointer `#/sections/0/components/1/props/columns/2/openDetail/title/parts/1`。
+- `#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1`：[合法完整页面](examples/partner-health-interactions.json)，JSON Pointer `#/sections/0/components/1/props/columns/2/openDetail/title/parts/0`。
 - `#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/sections/1/components/0/props/actions/0/openDetail`。
 - `#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/0`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/sections/1/components/0/props/actions/0/openDetail/bindings/detail-customer`。
 - `#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/1`：[合法完整页面](examples/reference-export-detail-bindings.json)，JSON Pointer `#/sections/2/components/0/props/actions/0/openDetail/bindings/detail-customer`。

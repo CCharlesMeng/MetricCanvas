@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.105",
+  "schemaVersion": "6.106",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "actions-and-navigation.section-8e9f2f0d"
@@ -84,6 +84,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/partner-health-interactions.json",
         "references/page-metadata/examples/url-navigation-page.json",
         "references/page-metadata/examples/reference-export-detail-bindings.json",
         "references/page-metadata/examples/tab-url-source.json",

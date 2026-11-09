@@ -1,0 +1,330 @@
+{
+  "schemaVersion": "6.106",
+  "id": "partner-health-interactions",
+  "layout": "dashboard",
+  "meta": {
+    "title": "伙伴健康度交互验收（合成数据）"
+  },
+  "dataSources": {
+    "scores": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部"
+        },
+        "perception-feedback": {
+          "type": "number",
+          "role": "measure",
+          "label": "伙伴声音闭环率得分"
+        },
+        "perception-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "satisfaction-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "contribution-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "risk-score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total-score": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "合成地区部08",
+            "perception-score": 8,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 8
+          },
+          {
+            "region": "合成地区部02",
+            "perception-score": 2,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 2
+          },
+          {
+            "region": "合成地区部12",
+            "perception-score": 12,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 12
+          },
+          {
+            "region": "合成地区部04",
+            "perception-score": 4,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 4
+          },
+          {
+            "region": "合成地区部10",
+            "perception-score": 10,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 10
+          },
+          {
+            "region": "合成地区部06",
+            "perception-score": 6,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 6
+          },
+          {
+            "region": "合成地区部01",
+            "perception-score": 1,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 1
+          },
+          {
+            "region": "合成地区部09",
+            "perception-score": 9,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 9
+          },
+          {
+            "region": "合成地区部03",
+            "perception-score": 3,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 3
+          },
+          {
+            "region": "合成地区部11",
+            "perception-score": 11,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 11
+          },
+          {
+            "region": "合成地区部05",
+            "perception-score": 5,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 5
+          },
+          {
+            "region": "合成地区部07",
+            "perception-score": 7,
+            "satisfaction-score": 10,
+            "contribution-score": 20,
+            "risk-score": -2,
+            "perception-feedback": 7
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "sumFields",
+          "fields": [
+            "perception-score",
+            "satisfaction-score",
+            "contribution-score",
+            "risk-score"
+          ],
+          "output": "total-score",
+          "onMissing": "zero"
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "regional-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "scores"
+          },
+          "props": {
+            "categoryField": {
+              "data": "main",
+              "field": "region"
+            },
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "perception-score"
+                },
+                "role": "actual",
+                "label": "伙伴对华为的感知"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "satisfaction-score"
+                },
+                "role": "actual",
+                "label": "客户对伙伴的满意度"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "contribution-score"
+                },
+                "role": "actual",
+                "label": "伙伴能力与贡献"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "risk-score"
+                },
+                "role": "actual",
+                "label": "风险管控"
+              }
+            ],
+            "stacked": true,
+            "showStackTotalLabels": true,
+            "actions": [
+              {
+                "on": "click",
+                "openDetail": {
+                  "surface": "drawer",
+                  "title": "计算总分明细",
+                  "fields": [
+                    {
+                      "label": "区域",
+                      "field": "region"
+                    },
+                    {
+                      "label": "总分",
+                      "field": "total-score"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "region-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "scores"
+          },
+          "props": {
+            "rowKey": "region",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域",
+                "width": 120
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "total-score",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "title": "伙伴健康度得分",
+                "width": 150,
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "perception-feedback",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "title": "伙伴声音闭环率(5%)",
+                "width": 180,
+                "sortable": true,
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "title": {
+                    "parts": [
+                      {
+                        "field": "region"
+                      },
+                      " · 伙伴声音闭环率(5%) · 当前值 ",
+                      {
+                        "field": "perception-feedback",
+                        "format": "number-1"
+                      },
+                      " · 明细"
+                    ]
+                  },
+                  "view": "details"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "detailViews": [
+    {
+      "id": "details",
+      "mode": "snapshot",
+      "components": [
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "scores"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "total-score",
+                "title": "计算总分"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

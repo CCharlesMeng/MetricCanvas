@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 105,
-  "current": "6.105",
+  "minor": 106,
+  "current": "6.106",
   "capabilities": {
+    "detail-title": {
+      "minor": 106,
+      "description": "详情标题拼接固定文字和当前行的多个字段",
+      "legacyReadable": false
+    },
     "table-child-optional-key": {
       "minor": 105,
       "description": "只读子表可省略行键并保留重复记录，查询显式声明默认排序",
@@ -980,6 +985,7 @@
     "6.102",
     "6.103",
     "6.104",
-    "6.105"
+    "6.105",
+    "6.106"
   ]
 }

@@ -833,6 +833,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/partner-health-interactions.json",
+      "target": "product-contracts/page/conformance/valid/partner-health-interactions.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-child-keyless.json",
       "target": "product-contracts/page/conformance/valid/table-child-keyless.json",
       "scope": "exact product contract"
@@ -7383,6 +7388,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/partner-health-interactions.json",
+      "target": "references/page-metadata/examples/partner-health-interactions.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/url-navigation-page.json",
       "target": "references/page-metadata/examples/url-navigation-page.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8094,11 +8104,11 @@
     }
   ],
   "counts": {
-    "product": 1586,
+    "product": 1588,
     "authoring": 32,
     "modules": 36,
-    "topics": 293,
-    "nodes": 2619,
+    "topics": 296,
+    "nodes": 2636,
     "tools": 9,
     "components": 20
   },

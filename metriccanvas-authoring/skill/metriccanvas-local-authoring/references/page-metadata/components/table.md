@@ -474,8 +474,31 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 
 字段绑定可声明 `format:{"type":"time","pattern":"YYYY-MM-DD HH:mm:ss"}`，按固定 UTC+8 转换；支持常见日期时间字符串和秒/毫秒时间戳，无时区输入按 UTC。页面与 Excel/PDF/PNG 共用格式，Excel 为文本，原始数据和交互保持。输入、格式串及失败规则见[时间格式串](../field-bindings-and-formats.md#time-format)。合成入口 `/pages/table-time-format`。
 
+<a id="detail-composed-title"></a>
 
-页面协议 6.105。结构真源为本册[schema.json](../schema.json)，SHA256 `1c7afe28a429e999618ae4484841489e4bebd98134853c9f462e6935456b1a7f`。字段表自动生成；可选不等于有默认值。
+## 详情组合标题（6.106）
+
+列 `openDetail` 与组件 `actions[].openDetail` 共用 `title`，支持固定字符串或有序片段：
+
+```json
+{
+  "surface": "modal",
+  "title": { "parts": [
+    { "field": "region" }, " · 伙伴声音闭环率 · 当前值 ",
+    { "field": "perception-feedback", "format": "number-1" }, " · 明细"
+  ] },
+  "view": "details"
+}
+```
+
+`parts` 为 1–64 个固定字符串或当前行字段引用，按声明顺序直接拼接，分隔符由作者明确填写。`field` 为入口组件 `main` 数据槽中的页面字段 id，可选 `format` 沿用封闭格式预设；不读取其他数据槽或页面数据源。不执行表达式、HTML 或脚本；缺失值显示 `--`，零值和布尔值保留。该标题针对点击行求值，排序或翻页后仍使用实际点击行；快照与查询详情均适用。
+
+旧 `titleField` 继续兼容；`title` 与 `titleField` 同时声明时报错。两者均省略时沿用组件标题或“详情”。新 `title` 需 6.106，旧版本不能使用新声明。
+
+完整合成场景 `/pages/partner-health-interactions` 从业务页复用得分列和弹窗标题声明，以 `sumFields` 在前端计算总分；本地排序先处理完整计算结果，再分页，点击排序不发起 DQE 查询。业务入口 `/pages/partner-health` 的地区部和代表处表格沿用该本地路径；真实业务数据须由 DQE 提供。
+
+
+页面协议 6.106。结构真源为本册[schema.json](../schema.json)，SHA256 `be044e5f476c2ab1af613e20522f8ba787befe7225e348e07f9c10263586e48d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1908,6 +1931,26 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properti
 |---|---|---|---|---|
 | 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f7469746c65"></a>
+
+### `@tableColumn.openDetail · anyOf[0].title`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `@tableColumn.openDetail · anyOf[0].title · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/title/allOf/0`。目标：[#/definitions/detailTitle](../actions-and-navigation.md#schema-232f646566696e6974696f6e732f64657461696c5469746c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/detailTitle | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f7469746c654669656c64"></a>
 
 ### `@tableColumn.openDetail · anyOf[0].titleField`
@@ -2032,6 +2075,26 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properti
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f7469746c65"></a>
+
+### `@tableColumn.openDetail · anyOf[1].title`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `@tableColumn.openDetail · anyOf[1].title · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/title/allOf/0`。目标：[#/definitions/detailTitle](../actions-and-navigation.md#schema-232f646566696e6974696f6e732f64657461696c5469746c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/detailTitle | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f7469746c654669656c64"></a>
 
@@ -4096,7 +4159,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues/items/anyOf/1`：[合法完整页面](../examples/table-header-filter-defaults.json)，JSON Pointer `#/sections/2/components/0/props/columns/2/filterable/defaultValues/0`。
 - `#/definitions/tableColumn/properties/filterable/anyOf/1`：[合法完整页面](../examples/unified-overflow-header.json)，JSON Pointer `#/sections/0/components/0/props/columns/14/filterable`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/7/components/0/props/columns/0/openDetail`。
-- `#/definitions/tableColumn/properties/openDetail/anyOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/4/components/0/props/columns/0/openDetail`。
+- `#/definitions/tableColumn/properties/openDetail/anyOf/1`：[合法完整页面](../examples/partner-health-interactions.json)，JSON Pointer `#/sections/0/components/1/props/columns/2/openDetail`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/4/components/0/props/columns/0/openDetail/bindings/detail-customer`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/5/components/0/props/columns/0/openDetail/bindings/detail-customer`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/2`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/6/components/0/props/columns/0/openDetail/bindings/detail-customer`。

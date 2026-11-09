@@ -1,5 +1,7 @@
 # 页面示例与验收场景
 
+- [伙伴健康度交互](capabilities/table/README.md#伙伴健康度计算排序与组合标题)：`/pages/partner-health-interactions`，前端计算总分的本地排序、组合弹窗标题及堆叠合计；仅合成内联数据。
+
 - [当前值与前端均值并排柱](capabilities/data/README.md#当前值与前端均值并排柱)：`/pages/sdt-period-aggregation`，每个代表处并排显示当前值与前端统一计算的均值，随期间切换重算；合成数据。
 
 - [金额单位与舍入](capabilities/data/README.md#金额单位与舍入688)：`/pages/operation-money-formats`，人民币 A/B、美元 K/M、旧格式兼容、币种切换及原值导出；内联合成数据。

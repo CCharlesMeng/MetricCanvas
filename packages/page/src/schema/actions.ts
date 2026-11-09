@@ -1,7 +1,19 @@
 import { interactionShape } from './condition';
 import { navigationTargetZ, navigationBindingZ } from './navigation';
 import { z } from 'zod';
-import { fieldReferenceZ, idZ } from './primitives';
+import { fieldNameZ, fieldReferenceZ, idZ, valueFormatPresetZ } from './primitives';
+
+const detailTitleZ = z.union([z.string().min(1), z.object({
+  parts: z.array(z.union([z.string(), z.object({
+    field: fieldNameZ,
+    format: valueFormatPresetZ.optional()
+  }).strict()])).min(1).max(64).meta({description:'按声明顺序连接的1—64个固定文字或当前行字段片段，不自动添加分隔符'})
+}).strict()]).meta({ id: 'detailTitle', description: '按顺序拼接固定文字与当前行字段，不执行表达式' });
+
+const detailTitleShape = {
+  title: detailTitleZ.optional(),
+  titleField: fieldReferenceZ.optional()
+};
 
 /**
  * 组件交互动作。两个分支都以 `on: 'click'` 为固定字面量，不构成可判别的
@@ -35,7 +47,7 @@ export const openDetailActionZ = z
         surface: z.enum(['modal', 'drawer']),
         ...interactionShape,
         /** 标题取被点行的某个字段；省略时用组件标题。 */
-        titleField: fieldReferenceZ.optional(),
+        ...detailTitleShape,
         fields: z
           .array(
             z
@@ -47,7 +59,7 @@ export const openDetailActionZ = z
       .strict(), z.object({
         surface: z.enum(['modal', 'drawer']),
         ...interactionShape,
-        titleField: fieldReferenceZ.optional(),
+        ...detailTitleShape,
         view: idZ,
         bindings: z.record(idZ, navigationBindingZ).optional()
       }).strict()])

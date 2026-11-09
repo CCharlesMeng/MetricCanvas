@@ -519,13 +519,15 @@
       "title": "交互与导航",
       "definitions": [
         "actions",
-        "componentAction"
+        "componentAction",
+        "detailTitle"
       ],
       "keywords": [
         "actions-and-navigation",
         "交互与导航"
       ],
       "examples": [
+        "partner-health-interactions",
         "url-navigation-page",
         "reference-export-detail-bindings",
         "tab-url-source",
@@ -2276,7 +2278,8 @@
     "#/properties/schemaVersion=\"6.103\"": "柱状图字段系列aggregate:avg在前端求均值，原类别并排比较当前值与均值。",
     "#/definitions/barChartSeries/anyOf/0/properties/aggregate=\"avg\"": "以该字段当前全部有效图表输入值求算术均值，各类别展示同一结果。",
     "#/properties/schemaVersion=\"6.105\"": "只读子表可省略行键，查询显式声明默认排序，保留重复记录及完整导出。",
-    "#/properties/schemaVersion=\"6.104\"": "定稿名称默认日期；每页引擎查询、日级适配及失败回退当前日期。"
+    "#/properties/schemaVersion=\"6.104\"": "定稿名称默认日期；每页引擎查询、日级适配及失败回退当前日期。",
+    "6.106": "详情标题按片段组合固定文字与多个当前行字段。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3287,7 +3290,8 @@
       "链接传参与目标页签",
       "6.40 显式跨页传值",
       "IOC Region 默认 URL 输入",
-      "URL 参数清理与地址同步"
+      "URL 参数清理与地址同步",
+      "详情标题的当前行取值"
     ],
     "semantic-html.md": [
       "查阅方式"
@@ -3315,7 +3319,8 @@
       "常量取值（6.59）",
       "数值格式",
       "系列条件显隐（6.89）",
-      "自定义展示单位"
+      "自定义展示单位",
+      "堆叠合计标签"
     ],
     "components/lineChart.md": [
       "双轴刻度与网格线",
@@ -3364,7 +3369,8 @@
       "期间比较的查询分页（6.78）",
       "自定义展示单位",
       "列级上下箭头（6.99）",
-      "时间列转换（6.102）"
+      "时间列转换（6.102）",
+      "详情组合标题（6.106）"
     ],
     "components/mapChart.md": [
       "查阅方式",

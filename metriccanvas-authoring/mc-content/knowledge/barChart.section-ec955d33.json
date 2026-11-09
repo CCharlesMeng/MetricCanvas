@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "6.106",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "barChart.section-ec955d33"
+  ],
+  "semantics": [
+    {
+      "module": "barChart",
+      "reference": "references/page-metadata/components/barChart.md",
+      "blocks": [
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n<a id=\"bar-series-average\"></a>",
+        "## 堆叠合计标签\n\n`stacked: true` 配合 `showStackTotalLabels: true` 在每个类别显示当前系列的数值合计，包含负数扣分。标签锚定可见堆叠的外端，与柱体保持 8 CSS px 间距；正负混合时置于正值柱顶，显示值仍为含扣分的净合计；全负数置于负值外端，横向条形相应置于右侧或左侧。无需声明额外的“总分”系列；未开启时不显示合计。`/pages/partner-health-interactions` 使用前端计算的合成得分，四类得分含负数风险扣分；业务 `/pages/partner-health` 的地区部和代表处图表均开启此配置。"
+      ],
+      "rules": [
+        {
+          "id": "bar-series-average",
+          "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "bar-average-old-version",
+            "bar-average-category-removed",
+            "bar-average-stacked",
+            "bar-average-line"
+          ]
+        },
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "bar-forecast-boundary",
+          "description": "实际 / 预测系列不得跨越采集时间所在月",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "forecast-before-captured-month",
+            "actual-after-captured-month"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/forecast-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/dual-axis-alignment.json",
+        "references/page-metadata/examples/chart-series-visibility.json",
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

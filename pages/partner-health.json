@@ -1,5 +1,5 @@
 {
-    "schemaVersion": "6.91",
+    "schemaVersion": "6.106",
     "id": "partner-health",
     "layout": "dashboard",
     "meta": {
@@ -5256,7 +5256,8 @@
                           "label": "风险管控"
                         }
                       ],
-                      "stacked": true
+                      "stacked": true,
+                      "showStackTotalLabels": true
                     }
                   }
                 ],
@@ -5340,7 +5341,8 @@
                           "label": "风险管控"
                         }
                       ],
-                      "stacked": true
+                      "stacked": true,
+                      "showStackTotalLabels": true
                     }
                   }
                 ]
@@ -5437,7 +5439,7 @@
                                   "link": true,
                                   "openDetail": {
                                     "surface": "modal",
-                                    "titleField": "region",
+                                    "title": {"parts": [{"field": "region"}, " · 伙伴声音闭环率(5%) · 当前值 ", {"field": "perception-feedback", "format": "number-1"}, " · 明细"]},
                                     "view": "voice-closure-detail-view",
                                     "bindings": {
                                       "voice-closure-region": {

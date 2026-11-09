@@ -106,6 +106,7 @@
   import { initializeURLSearch, pageURLSearch, replaceRuntimeSearch } from './url-search';
   import DetailContent from './DetailContent.svelte';
   import { detailViewInput } from '../../runtime/src/detail-view';
+  import { detailTitle } from './detail-title';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
   import {
     filterMapRows,
@@ -1029,9 +1030,7 @@
     const detail = action.openDetail;
     openDetail = {
       surface: detail.surface,
-      title: detail.titleField
-        ? detailValue(row, detail.titleField)
-        : componentTitle(component) ?? '详情',
+      title: detailTitle(detail, row, componentTitle(component) ?? '详情'),
       items: 'fields' in detail ? detail.fields.map((item) => ({
         label: item.label,
         value: detailValue(row, item.field)

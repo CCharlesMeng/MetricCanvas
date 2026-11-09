@@ -142,11 +142,6 @@ export function barOption(
               : value;
           })
         : values;
-      const totalPoints = rows.flatMap((row, rowIndex) => {
-        if (values[rowIndex] === undefined) return [];
-        const value = stackTotals[rowIndex] ?? 0;
-        return [{ name: categories[rowIndex] ?? '', coord: [categories[rowIndex], value], value }];
-      });
       return {
         name: seriesDisplayName(series.label ?? field.label, series.unit),
         type: 'bar' as const,
@@ -177,12 +172,17 @@ export function barOption(
                 label: {
                   show: true,
                   position: 'top' as const,
-                  distance: 5,
+                  distance: 8,
                   color: '#121e3b',
                   fontSize: 12,
                   formatter: valueLabelFormatter(field.format, field.unit, series.unit)
                 },
-                data: totalPoints
+                data: rows.flatMap((row, rowIndex) => {
+                  if (values[rowIndex] === undefined) return [];
+                  const value = stackTotals[rowIndex] ?? 0;
+                  const amounts = props.series.map(series => finiteNumber(resolveComponentValue(series, data, props.emptyBehavior).read(row)) ?? 0);
+                  return [stackTotalPoint(categories[rowIndex] ?? '', value, amounts, props.horizontal)];
+                })
               }
             }
           : {}),
@@ -204,6 +204,16 @@ export function barOption(
       };
     })
   };
+}
+
+/** Anchor outside the visible stack while retaining the net total, including deductions. */
+function stackTotalPoint(category: string, value: number, amounts: number[], horizontal?: boolean) {
+  const positive = amounts.reduce((sum, amount) => sum + Math.max(amount, 0), 0);
+  const negative = amounts.reduce((sum, amount) => sum + Math.min(amount, 0), 0);
+  const end = positive > 0 ? positive : negative;
+  const position = horizontal ? (end < 0 ? 'left' : 'right') : (end < 0 ? 'bottom' : 'top');
+  const label: { position: 'left' | 'right' | 'top' | 'bottom' } = { position };
+  return { name: category, coord: horizontal ? [end, category] : [category, end], value, label };
 }
 
 /** Keep long formatted ticks inside narrow horizontal drawing areas. All data

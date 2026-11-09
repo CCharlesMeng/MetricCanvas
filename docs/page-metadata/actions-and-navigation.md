@@ -90,3 +90,7 @@
 Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query 并替换当前记录；仅改浏览器 history 不能保证 Router 的内部状态同步。集成应用的 Angular 适配器使用 `Router.parseUrl` / `navigateByUrl(...,{replaceUrl:true})` 并保留重复键、路径和 fragment。路由订阅只在页面身份变化时调用 mount/update；清理或页内筛选导致的 query 变化不回灌完整 update。Router 的导航事件、守卫、取消与实际 Operation Map 生命周期由宿主验证，核心引擎不依赖 Angular。
 
 完整合成页面 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除` 展示账号、筛选及页签初始化，地址应移除 `unused`；`active=invalid` 展示输入错误并保留原地址。此页面只有合成内联数据；真实宿主路由与服务接入另验。
+
+## 详情标题的当前行取值
+
+6.106 起，列动作和组件动作的 `openDetail.title` 可声明固定标题或 `{parts:[固定文字,{field:当前行字段,format:可选格式},…]}`。快照与查询详情共用同一取值规则；旧 `titleField` 继续读取，与 `title` 互斥。完整声明、空值与版本边界见[详情组合标题](components/table.md#detail-composed-title)，合成场景 `/pages/partner-health-interactions` 包含组合标题的表格入口与固定标题的图表入口。

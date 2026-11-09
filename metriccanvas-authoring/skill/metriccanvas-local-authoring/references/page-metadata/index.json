@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.105",
-  "schemaSha256": "1c7afe28a429e999618ae4484841489e4bebd98134853c9f462e6935456b1a7f",
+  "schemaVersion": "6.106",
+  "schemaSha256": "be044e5f476c2ab1af613e20522f8ba787befe7225e348e07f9c10263586e48d",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -421,13 +421,15 @@
       "title": "交互与导航",
       "definitions": [
         "actions",
-        "componentAction"
+        "componentAction",
+        "detailTitle"
       ],
       "keywords": [
         "actions-and-navigation",
         "交互与导航"
       ],
       "examples": [
+        "partner-health-interactions",
         "url-navigation-page",
         "reference-export-detail-bindings",
         "tab-url-source",
@@ -1321,7 +1323,8 @@
         "6.102",
         "6.103",
         "6.104",
-        "6.105"
+        "6.105",
+        "6.106"
       ]
     },
     {
@@ -11538,6 +11541,113 @@
       "ref": "#/definitions/condition"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/title",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].title",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/title/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/detailTitle"
+    },
+    {
+      "pointer": "#/definitions/detailTitle",
+      "path": "@detailTitle",
+      "required": "类型/分支",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/0",
+      "path": "@detailTitle · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/1",
+      "path": "@detailTitle · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/1/properties/parts",
+      "path": "@detailTitle · anyOf[1].parts",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/1/properties/parts/items",
+      "path": "@detailTitle · anyOf[1].parts[]",
+      "required": "每个数组项",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/0",
+      "path": "@detailTitle · anyOf[1].parts[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1",
+      "path": "@detailTitle · anyOf[1].parts[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1/properties/field",
+      "path": "@detailTitle · anyOf[1].parts[] · anyOf[1].field",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1/properties/format",
+      "path": "@detailTitle · anyOf[1].parts[] · anyOf[1].format",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-signed",
+        "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "usd-adaptive",
+        "cny-adaptive-trimmed",
+        "cny-adaptive-trimmed-no-yuan",
+        "usd-adaptive-km",
+        "count-adaptive",
+        "resource-adaptive",
+        "bytes-adaptive",
+        "minutes-adaptive",
+        "messages-adaptive",
+        "billing-hours",
+        "percent-adaptive",
+        "percent-adaptive-signed",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-raw",
+        "points-1-signed",
+        "yoy-p-signed",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/titleField",
       "path": "@componentAction · anyOf[2].openDetail · anyOf[0].titleField",
       "required": "本分支可选",
@@ -11616,6 +11726,19 @@
       "required": "独立分支（不合并required）",
       "module": "actions-and-navigation.md",
       "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/title",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].title",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/title/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/detailTitle"
     },
     {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/titleField",
@@ -14228,6 +14351,19 @@
       "ref": "#/definitions/condition"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/title",
+      "path": "@tableColumn.openDetail · anyOf[0].title",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/title/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[0].title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/detailTitle"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/titleField",
       "path": "@tableColumn.openDetail · anyOf[0].titleField",
       "required": "本分支可选",
@@ -14306,6 +14442,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/title",
+      "path": "@tableColumn.openDetail · anyOf[1].title",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/title/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[1].title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/detailTitle"
     },
     {
       "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/titleField",
@@ -21193,8 +21342,32 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0",
       "module": "actions-and-navigation.md",
-      "file": "examples/url-navigation-page.json",
-      "pointer": "#/sections/0/components/0/props/actions/1/openDetail"
+      "file": "examples/partner-health-interactions.json",
+      "pointer": "#/sections/0/components/0/props/actions/0/openDetail"
+    },
+    {
+      "schemaPointer": "#/definitions/detailTitle/anyOf/0",
+      "module": "actions-and-navigation.md",
+      "file": "examples/partner-health-interactions.json",
+      "pointer": "#/sections/0/components/0/props/actions/0/openDetail/title"
+    },
+    {
+      "schemaPointer": "#/definitions/detailTitle/anyOf/1",
+      "module": "actions-and-navigation.md",
+      "file": "examples/partner-health-interactions.json",
+      "pointer": "#/sections/0/components/1/props/columns/2/openDetail/title"
+    },
+    {
+      "schemaPointer": "#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/0",
+      "module": "actions-and-navigation.md",
+      "file": "examples/partner-health-interactions.json",
+      "pointer": "#/sections/0/components/1/props/columns/2/openDetail/title/parts/1"
+    },
+    {
+      "schemaPointer": "#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1",
+      "module": "actions-and-navigation.md",
+      "file": "examples/partner-health-interactions.json",
+      "pointer": "#/sections/0/components/1/props/columns/2/openDetail/title/parts/0"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1",
@@ -21451,8 +21624,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1",
       "module": "components/table.md",
-      "file": "examples/reference-export-column-actions.json",
-      "pointer": "#/sections/4/components/0/props/columns/0/openDetail"
+      "file": "examples/partner-health-interactions.json",
+      "pointer": "#/sections/0/components/1/props/columns/2/openDetail"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/0",
@@ -22208,5 +22381,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "ce02412c10a636205e5530e582669173721f974b45abb1f48db44def3bcd9d23"
+  "semanticSourceDigest": "d1709f97de71ad6927b8066005f71002cdd2b71252843b2b7588777f2bcfd860"
 }

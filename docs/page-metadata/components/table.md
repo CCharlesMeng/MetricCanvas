@@ -473,3 +473,26 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 ## 时间列转换（6.102）
 
 字段绑定可声明 `format:{"type":"time","pattern":"YYYY-MM-DD HH:mm:ss"}`，按固定 UTC+8 转换；支持常见日期时间字符串和秒/毫秒时间戳，无时区输入按 UTC。页面与 Excel/PDF/PNG 共用格式，Excel 为文本，原始数据和交互保持。输入、格式串及失败规则见[时间格式串](../field-bindings-and-formats.md#time-format)。合成入口 `/pages/table-time-format`。
+
+<a id="detail-composed-title"></a>
+
+## 详情组合标题（6.106）
+
+列 `openDetail` 与组件 `actions[].openDetail` 共用 `title`，支持固定字符串或有序片段：
+
+```json
+{
+  "surface": "modal",
+  "title": { "parts": [
+    { "field": "region" }, " · 伙伴声音闭环率 · 当前值 ",
+    { "field": "perception-feedback", "format": "number-1" }, " · 明细"
+  ] },
+  "view": "details"
+}
+```
+
+`parts` 为 1–64 个固定字符串或当前行字段引用，按声明顺序直接拼接，分隔符由作者明确填写。`field` 为入口组件 `main` 数据槽中的页面字段 id，可选 `format` 沿用封闭格式预设；不读取其他数据槽或页面数据源。不执行表达式、HTML 或脚本；缺失值显示 `--`，零值和布尔值保留。该标题针对点击行求值，排序或翻页后仍使用实际点击行；快照与查询详情均适用。
+
+旧 `titleField` 继续兼容；`title` 与 `titleField` 同时声明时报错。两者均省略时沿用组件标题或“详情”。新 `title` 需 6.106，旧版本不能使用新声明。
+
+完整合成场景 `/pages/partner-health-interactions` 从业务页复用得分列和弹窗标题声明，以 `sumFields` 在前端计算总分；本地排序先处理完整计算结果，再分页，点击排序不发起 DQE 查询。业务入口 `/pages/partner-health` 的地区部和代表处表格沿用该本地路径；真实业务数据须由 DQE 提供。

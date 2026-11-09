@@ -2410,6 +2410,17 @@ function mapHierarchyErrors(
   return errors;
 }
 
+function detailTitleErrors(detail: Extract<ComponentAction, {openDetail: unknown}>['openDetail'], path: string, check: BindingCheck): TypedError[] {
+  if (detail.title === undefined) return [];
+  const errors = detail.titleField === undefined ? [] : [schemaError(`${path}/title`, 'title 与 titleField 不得同时声明')];
+  if (typeof detail.title !== 'string') {
+    detail.title.parts.forEach((part, index) => {
+      if (typeof part !== 'string') check(part.field, `${path}/title/parts/${index}/field`);
+    });
+  }
+  return errors;
+}
+
 function actionErrors(
   actions: ComponentAction[] | undefined,
   componentPath: string,
@@ -2449,6 +2460,7 @@ function actionErrors(
     }
     if ('openDetail' in action) {
       // 详情浮层读被点那一行,因此每个字段都要能在组件自己的数据槽里解析。
+      errors.push(...detailTitleErrors(action.openDetail, `${path}/openDetail`, check));
       if (action.openDetail.titleField !== undefined) {
         check(action.openDetail.titleField, `${path}/openDetail/titleField`);
       }
