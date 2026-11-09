@@ -473,6 +473,7 @@
         "数据槽、字段绑定与格式"
       ],
       "examples": [
+        "number-precision-five",
         "yoy-p-format-demo",
         "million-formats-page",
         "compute-page",
@@ -511,6 +512,7 @@
         "presentation-capability",
         "signed-number-format-capability",
         "signed-number-family-capability",
+        "number-precision-five",
         "currency-selection",
         "adaptive-money-trimmed"
       ]
@@ -2279,7 +2281,14 @@
     "#/definitions/barChartSeries/anyOf/0/properties/aggregate=\"avg\"": "以该字段当前全部有效图表输入值求算术均值，各类别展示同一结果。",
     "#/properties/schemaVersion=\"6.105\"": "只读子表可省略行键，查询显式声明默认排序，保留重复记录及完整导出。",
     "#/properties/schemaVersion=\"6.104\"": "定稿名称默认日期；每页引擎查询、日级适配及失败回退当前日期。",
-    "6.106": "详情标题按片段组合固定文字与多个当前行字段。"
+    "6.106": "详情标题按片段组合固定文字与多个当前行字段。",
+    "number-3": "最多保留3位小数并去尾零，无千分位；6.107新增。",
+    "number-3-signed": "最多保留3位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。",
+    "number-4": "最多保留4位小数并去尾零，无千分位；6.107新增。",
+    "number-4-signed": "最多保留4位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。",
+    "number-5": "最多保留5位小数并去尾零，无千分位；6.107新增。",
+    "number-5-signed": "最多保留5位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。",
+    "6.107": "新增普通及带符号的三、四、五位小数格式，最多位数、去尾零、按展示值判断符号方向。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

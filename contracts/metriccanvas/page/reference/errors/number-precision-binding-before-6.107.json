@@ -1,0 +1,34 @@
+{
+  "case": "number-precision-binding-before-6.107",
+  "invariant": "number-precision-five",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "普通数值及带符号数值支持最多三、四、五位小数 由 6.107 引入，文档声明的是 6.106",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "rows": [
+                {
+                  "valueField": {
+                    "format": "number-3-signed"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/number-precision-binding-before-6.107.json"
+}

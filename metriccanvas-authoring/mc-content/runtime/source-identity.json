@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "7f3f68f52e618cc3e2f20f481442f496f7956ec426285ab6156fd14f3704720d",
+  "sha256": "c3bef87a607aabf3d9be795247f1f43f930ba4e5217aa2106fad653cef2962e5",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -128,7 +128,7 @@
     },
     {
       "file": "docs/page-metadata/field-bindings-and-formats.md",
-      "sha256": "d60752ef2612d41789c77e060a1558e2b267a9d55b6d15c93d5aeffdb933e7dc"
+      "sha256": "41215d3730082d599bf089700a9f8d367e3fa7ab27e259adc06ae837a37bf836"
     },
     {
       "file": "docs/page-metadata/fields.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "ec5af537f7defa379dc5baaecdf6b9ea9975900b621ba959f1a8020251f7b25a"
+      "sha256": "f615b5ba3620dd8bf82703f44ecb78bf5bbc573859c6821f38fc912f7857b6e2"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1584,7 +1584,7 @@
     },
     {
       "file": "packages/page/src/field.ts",
-      "sha256": "8a759f5de9ac6d0f37442cc634245e54ceb975d7565a32e031b6924b02619590"
+      "sha256": "58f89e6f11a2d59131ff2f644e54f4f7b34c92ee8e244d584702f82b4e9f50c1"
     },
     {
       "file": "packages/page/src/file-name.ts",
@@ -1696,7 +1696,7 @@
     },
     {
       "file": "packages/page/src/page-param.ts",
-      "sha256": "d6daaf01f3ac1e7a8ff4b5977c7a85b671a6adf58756200423253b2e52814dbc"
+      "sha256": "fde8f2e64e099d030f7eb95abf333ed8b69808ca77cc62554a1cdb62df760cd3"
     },
     {
       "file": "packages/page/src/page.ts",
@@ -2148,11 +2148,11 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "2ec373da21404d1ec381a6a26cdf2a43bf34a53dd668ed7ef84622356b97c398"
+      "sha256": "974075fe25d607be30522bac61c6727e9e30de8157b3dcbe590105ca7abbe0e8"
     },
     {
       "file": "pages/README.md",
-      "sha256": "5a0acc0dc1012b643e5f57a2152672bc00e911a651e0666303fcc5177f091359"
+      "sha256": "9ab19450a5601ab2db2bd3bccc39ab9429c9499b8af4446c6140fdd3ba862681"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2360,7 +2360,7 @@
     },
     {
       "file": "pages/capabilities/data/README.md",
-      "sha256": "476fabe6324526116920d47d60ee9e77fe0bc1f46836f3188963a3e246b1e191"
+      "sha256": "598b5b0c2131bd972615082a74578d6e596eb624adbee7b8cdcc953bab994441"
     },
     {
       "file": "pages/capabilities/data/authoring-percent-coverage.json",
@@ -2369,6 +2369,10 @@
     {
       "file": "pages/capabilities/data/missing-organization-key.json",
       "sha256": "f8ab8b8ea4b53eb138603f4c8e54593e0a75eb5392a050946aab6c8a0633eda0"
+    },
+    {
+      "file": "pages/capabilities/data/number-precision-five.json",
+      "sha256": "7e66165c5a72792692974acb840d53c585b7c0584133cb14409921a01b0da62d"
     },
     {
       "file": "pages/capabilities/data/numeric-value-display.json",
@@ -2716,15 +2720,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "fe3ed72dfe403f6a822583851f480fbed44a0d76d5597ea51c6945ea97465c1a"
+      "sha256": "46b091d0e9f88efb58300c0f07940a2ea4c616a5338235f3be4261a78e3b7f43"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "bfc9746be04908eeab9778704279e0f0d00f790a7d9029a47043b988957b53d1"
+      "sha256": "d598dc9159183fcbd3160a8e312797d5166a585f378c06dfccda3d4c3c0b36fd"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "fca733f231bccce19d0ea9068085f2fad6a73bf867f19dbf7eabef8439dbcdbb"
+      "sha256": "983c6964ecd9533e918218620d5d25c0ec1d88b3119fd9fcc4b5cc23abffe702"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2744,7 +2748,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "7210c22d5edbee3625c07ec951d786e12252f128c3e0acc733b746afcdcdfe43"
+      "sha256": "0d5e8bf92611ad44a7a09169e2f44855bb3283f63ff185d93babc78b73ff3439"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3616,11 +3620,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "0332f04cdd49783c86105f2d0cfb44daffa9fdbea811793e759db68c997f47f2"
+      "sha256": "524977fc2d45229a214eb138e0a628f823d9a1611782d85d8bb33209aba68f79"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "8d194854d49726f4eb5dc101db30360480fee233d529c32dccc10c680b815a55"
+      "sha256": "2ed98b1f13f135211c74344135fd293e902c48346a90420296d85b85b9dfd6da"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

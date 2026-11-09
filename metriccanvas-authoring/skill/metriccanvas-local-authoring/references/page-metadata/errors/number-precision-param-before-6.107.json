@@ -1,0 +1,21 @@
+{
+  "case": "number-precision-param-before-6.107",
+  "invariant": "number-precision-five",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "普通数值及带符号数值支持最多三、四、五位小数 由 6.107 引入，文档声明的是 6.106",
+      "paths": [
+        "/meta/title/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "meta": {
+      "title": {
+        "format": "number-5-signed"
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -841,6 +841,19 @@
       ]
     },
     {
+      "id": "number-precision-five",
+      "description": "三至五位小数及带符号预设由6.107引入",
+      "valid": [
+        "number-precision-five"
+      ],
+      "invalid": [
+        "number-precision-binding-before-6.107",
+        "number-precision-default-before-6.107",
+        "number-precision-param-before-6.107",
+        "number-precision-six-unsupported"
+      ]
+    },
+    {
       "id": "signed-number-family-capability",
       "description": "两位小数与千分位带符号数值格式由6.18引入",
       "valid": [

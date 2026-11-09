@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 106;
+const CURRENT_MINOR = 107;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -61,6 +61,7 @@ function bindingWhenUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'number-precision-five': {minor:107,legacyReadable:false,description:'普通数值及带符号数值支持最多三、四、五位小数',usedAt:document=>namedFormatPaths(document,/^number-[345](?:-signed)?$/)},
   'detail-title': {minor:106,legacyReadable:false,description:'详情标题拼接固定文字和当前行的多个字段',usedAt:detailTitlePaths},
   'table-child-optional-key': {minor:105,legacyReadable:false,description:'只读子表可省略行键并保留重复记录，查询显式声明默认排序',usedAt:document=>componentPaths(document,c=>c.type==='table'&&!!record(record(props(c)?.rowExpansion)?.table)&&!has(record(record(props(c)?.rowExpansion)?.table),'rowKey')).map(path=>path+'/props/rowExpansion/table')},
   'bar-series-average': {minor:103,legacyReadable:false,description:'柱状图字段系列前端求均值，并在每个原类别显示均值柱',usedAt:barSeriesAveragePaths},

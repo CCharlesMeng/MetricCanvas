@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.106",
+  "schemaVersion": "6.107",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-1715fde9"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 显式数字颜色与图表标签（6.16）\n\n表格列从6.99起可独立声明 `arrowRule`，支持与 `colorRule` 对称的固定规则和按正负映射规则：上箭头、下箭头或不显示均由声明决定，不由颜色推导。sign 的零/缺失不显示，fixed 包含有效零但排除缺失；精度判断复用数值方向语义。默认箭头前置，`position:\"after\"` 可后置，屏幕与 Excel 顺序一致。声明与导出见[列级上下箭头](components/table.md#table-trend-arrows)，入口 `/pages/table-trend-arrows`。\n\n表格数字列及指标卡变化项可就地声明 `colorRule`。`{\"mode\":\"fixed\",\"color\":\"green\"}` 对全部有效数字（包括零）固定染色；`{\"mode\":\"sign\",\"positive\":\"red\",\"negative\":\"green\"}` 按原始正负值映射；6.17新增的带符号普通数值格式按展示精度判断，见上节。颜色只接受 `red` / `green`；正负模式的零和所有模式的缺失值保持普通文字颜色。字段绑定必须为 `number` / `money`。同一字段在不同展示位置可使用不同规则，不从数据源或页面继承颜色。\n\n`colorRule` 与表格 `visual: \"signed\"`、`dangerValues` 或指标卡旧 `tone` 同时声明时校验失败。旧页未使用新规则时保留旧染色与箭头行为；使用新规则的指标卡箭头独立按方向显示 ↑ / ↓；6.17新增的带符号普通数值格式按展示精度，其余按原始正负值，颜色不控制方向。\n\n柱状图、折线图和柱线混合图可声明 `categoryLabels: {\"mode\":\"all\",\"rotate\":45}`，全部展示完整类别名称，不自动抽样隐藏或默认缩放到前20个类别。`mode: \"auto\"` 保留原有类别显示策略；`rotate` 范围为 -90—90。横向柱状图作用于类别Y轴。\n\n同类图表可声明 `showValueLabels: true`，逐柱或逐节点常驻显示对应格式化数值，零值显示，缺失不伪造节点。混合图逐系列显示。堆叠柱显示各段值。数字格式服从字段绑定 `format` 优先于 `defaultFormat`，与 tooltip 一致。不得同时开启旧 `showPointLabels` / `showSegmentLabels` / `showStackTotalLabels`，以免重复显示。旧开关继续可读。\n\n常驻数字贴近对应柱端或折线节点；密集场景也不把数字移到远离节点的交错行，不使用全局垂直避让拉开距离。图例和绘图区的空间仍独立预留，不能用移动数字代替图例布局。\n\n表格需要优先在正常尺寸容器内展示全部列时，显式声明 `fit: \"container\"`。列 `width` 在此模式下作为比例权重，表头及内容允许完整换行；保留文字和短数字所需的最小列宽，窄容器允许表格内部横向滚动，不强制均分或无限压缩。普通表格高度可随内容增长，适配不删除列、不以省略号替代正文；embedded 与 forecastMatrix 仍保留其专用呈现约束。`fit: \"content\"` 保留内容及像素列宽优先的行为。\n\n旋转标签与数值标签可以使图表高度增加，数字标签不会通过隐藏重叠标签自动省略。系列图例、坐标轴名称与绘图区的间距由统一运行时根据直接容器计算；页面不声明像素位置。静态导出保留这些标签。"
       ],
       "rules": [
@@ -39,6 +39,19 @@
             "currency-negative-default",
             "currency-equal-default",
             "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "number-precision-five",
+          "description": "三至五位小数及带符号预设由6.107引入",
+          "valid": [
+            "number-precision-five"
+          ],
+          "invalid": [
+            "number-precision-binding-before-6.107",
+            "number-precision-default-before-6.107",
+            "number-precision-param-before-6.107",
+            "number-precision-six-unsupported"
           ]
         },
         {
@@ -173,6 +186,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/number-precision-five.json",
         "references/page-metadata/examples/yoy-p-format-demo.json",
         "references/page-metadata/examples/million-formats-page.json",
         "references/page-metadata/examples/compute-page.json",

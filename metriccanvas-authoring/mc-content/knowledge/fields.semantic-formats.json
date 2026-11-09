@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.106",
+  "schemaVersion": "6.107",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "fields.semantic-formats"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 统一语义格式（6.93）\n\n不增加字段；复用 `format` / `defaultFormat` 和现有类型、币种、单位，补充封闭格式预设。组件显式 `format` 始终优先；新语义预设的 `defaultFormat` 可显式区分单位相同但用途不同的指标，其次才按字段语义选档。money 的 currency 决定 CNY/USD，原始金额保持基本货币单位。数值的百分号单位或百分比来源格式表示 0–100 刻度。人/户/个默认计数，核/卡/台默认资源量，分钟默认套餐时长，条默认消息；Bytes/KB至YB及对应bit或每秒单位默认容量/速率。没有可信单位的普通number沿用既有格式，不猜测。\n\n所有阈值先按原始绝对值选档，再四舍五入，保留负号；小数末尾零舍弃。移动端按宿主视口宽度不超过760px识别，PC/SSR默认使用PC档；窄PC组件仍按PC档。人民币1万至10万仅此一档在移动端和PC有精度差异。\n\n| 类型/格式 | 按原始绝对值选档 |\n|---|---|\n| `cny-adaptive` | <1万：整数元；1万至10万：移动最多1位/PC最多2位小数万；10万至1亿：整数万；1亿至10亿：最多2位小数亿；10亿起：最多1位小数亿 |\n| `usd-adaptive` | <1万：整数美元；1万至100万：最多1位小数K；100万至1亿：整数K；1亿起：整数M。两端一致，不换汇 |\n| `percent-adaptive` / `percent-adaptive-signed` | <10%：最多2位小数，微小非零值增加到首个非零小数位，0.001%保留；10%至100%：最多1位；100%至500%：整数；500%起显示“上升>500%”/“下降>500%”。signed普通正值加+，零无符号；两端一致 |\n| `percent-raw` | 个性化百分比保留原始精度并附加%，99.999显示99.999%，0.001显示0.001%；不乘100 |\n| `count-adaptive` | <1万：整数；1万至10万：最多1位小数万；10万起：整数万，保留声明单位 |\n| `resource-adaptive` | <1万：整数原单位；1万至1亿：最多2位小数万原单位；1亿起：最多2位小数亿原单位 |\n| `bytes-adaptive` | 按声明输入单位做1024级进，Bytes、KB、MB、GB、TB、PB、EB、ZB、YB；基本单位取整，其余最多2位小数。bit和byte不互换，/s不丢失；超过YB仍以YB显示 |\n| `minutes-adaptive` | <1000分钟：整数分钟；1000至10000分钟：最多2位小数千分钟；10000起：最多2位小数万分钟 |\n| `messages-adaptive` | <1万条：整数条；1万起：最多2位小数万条 |\n| `billing-hours` | 明确以秒为原值，除以3600显示最多2位小数小时；即使原始field.unit为秒，展示也为小时。不得对已是小时的值再次使用 |\n\n资源TB和存储TB使用相同基础单位时，通过 `defaultFormat:\"resource-adaptive\"` 显式选择前者；默认TB为存储容量。计费必须显式选择 `billing-hours`，不能仅看到秒就推断为计费。人力精确到个人时，组件写 `format:\"number-grouped\"` 并声明单位“个”；不会缩放为万。资源率明确写 `format:\"percent-2\"` 保持最多两位精度；SLO/SLA可写 `format:\"percent-raw\"`，保留99.999或0.001等原始精度。小于1e-20的自适应百分比保留原始科学计数文本，避免归零。\n\n同比/环比沿已有 `delta` 后 `ratio(scale:100)` 声明：当 ratio 的分子引用前序 delta 输出，分母与该 delta 的减数字段相同时，引擎识别为相对变化；基期缺失、零或负数时返回null并显示 `--`，不依赖 `onZeroDenominator` 伪造零。一般 ratio 相除保留原有正负分母及零处理。比率变化项显示正负号，指标卡默认不显示趋势箭头，表格按显式 `arrowRule` 决定；绝对变化项沿原规则。展示格式和单位缩放不改变计算、筛选、排序、原始行或Excel数值类型；Excel的自适应文字为导出时冻结的显示格式。\n\n完整内联合成入口 `/pages/semantic-numeric-display` 展示上述规则、移动/PC切换、显式例外、增长基期和图表缺失字符；不代表真实DQE或线上发布。"
       ],
       "rules": [
@@ -39,6 +39,19 @@
             "currency-negative-default",
             "currency-equal-default",
             "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "number-precision-five",
+          "description": "三至五位小数及带符号预设由6.107引入",
+          "valid": [
+            "number-precision-five"
+          ],
+          "invalid": [
+            "number-precision-binding-before-6.107",
+            "number-precision-default-before-6.107",
+            "number-precision-param-before-6.107",
+            "number-precision-six-unsupported"
           ]
         },
         {
@@ -173,6 +186,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/number-precision-five.json",
         "references/page-metadata/examples/yoy-p-format-demo.json",
         "references/page-metadata/examples/million-formats-page.json",
         "references/page-metadata/examples/compute-page.json",
@@ -208,7 +222,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.106",
+        "$id": "https://metriccanvas/page/v6.107",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

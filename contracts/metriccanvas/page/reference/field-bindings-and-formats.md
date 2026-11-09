@@ -2,7 +2,7 @@
 
 data槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。
 
-组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。
+组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
 
@@ -86,7 +86,14 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 | `number` | `number-signed` | 6.17 | `+1.234` | `0` |
 | `number-1` | `number-1-signed` | 6.17 | `+1.2` | `0` |
 | `number-2` | `number-2-signed` | 6.18 | `+1.23` | `0` |
+| `number-3` | `number-3-signed` | 6.107 | `+1.235` | `0` |
+| `number-4` | `number-4-signed` | 6.107 | `+1.2346` | `0` |
+| `number-5` | `number-5-signed` | 6.107 | `+1.23457` | `0` |
 | `number-grouped` | `number-grouped-signed` | 6.18 | `+1,234.568` | `0` |
+
+6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、不加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式行为保持。
+
+例如 `number-5-signed` 的 `1.234567` 显示 `+1.23457`，`1.2` 显示 `+1.2`，`±0.000004` 均显示 `0`，`±0.000005` 分别显示 `+0.00001`、`-0.00001`。三、四位格式以各自展示精度判断零。合成场景 `/pages/number-precision-five` 对照六种预设、表格字段默认、指标卡颜色与箭头、图表标签；操作见页面所在目录的 README.md。
 
 `number-2-signed` 的 `±0.004` 均显示 `0`，`±0.005` 分别显示 `+0.01`、`-0.01`。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略，`±0.0004` 均显示 `0`，`±0.0005` 分别显示 `+0.001`、`-0.001`。所有带符号普通数值格式共用零值的符号、正负颜色及变化箭头规则。
 
@@ -259,7 +266,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 `/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。
 
 
-页面协议 6.106。结构真源为本册[schema.json](schema.json)，SHA256 `be044e5f476c2ab1af613e20522f8ba787befe7225e348e07f9c10263586e48d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.107。结构真源为本册[schema.json](schema.json)，SHA256 `699345cfdaa487f26bb52793af7e69220159e8a785100da38043e759247033a9`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -401,7 +408,7 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 独立分支（不合并required） | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "string" | 独立分支（不合并required） | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -411,8 +418,14 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
 | "number-2-signed" | 保留两位小数，正数加正号，舍入后零无符号；方向与展示精度一致；6.18新增。 |
+| "number-3-signed" | 最多保留3位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。 |
+| "number-4-signed" | 最多保留4位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。 |
+| "number-5-signed" | 最多保留5位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。 |
 | "number-grouped-signed" | 沿用number-grouped千分位与默认小数精度，正数加正号，舍入后零无符号；6.18新增。 |
 | "number-2" | 保留2位小数。 |
+| "number-3" | 最多保留3位小数并去尾零，无千分位；6.107新增。 |
+| "number-4" | 最多保留4位小数并去尾零，无千分位；6.107新增。 |
+| "number-5" | 最多保留5位小数并去尾零，无千分位；6.107新增。 |
 | "number-grouped" | 千分位数值展示。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
 | "compact-wan-1" | 按万缩放，1位小数。 |
@@ -817,11 +830,13 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-family-capability`：两位小数与千分位带符号数值格式由6.18引入。反例：[signed-number-two-decimal-before-6.18](errors/signed-number-two-decimal-before-6.18.json)、[signed-number-grouped-before-6.18](errors/signed-number-grouped-before-6.18.json)、[signed-number-family-param-before-6.18](errors/signed-number-family-param-before-6.18.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `number-precision-five`：三至五位小数及带符号预设由6.107引入。反例：[number-precision-binding-before-6.107](errors/number-precision-binding-before-6.107.json)、[number-precision-default-before-6.107](errors/number-precision-default-before-6.107.json)、[number-precision-param-before-6.107](errors/number-precision-param-before-6.107.json)、[number-precision-six-unsupported](errors/number-precision-six-unsupported.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `adaptive-money-trimmed`：6.88 新金额格式与静态货币匹配，旧格式保持。反例：[adaptive-money-before-6.88](errors/adaptive-money-before-6.88.json)、[adaptive-money-default-currency](errors/adaptive-money-default-currency.json)、[adaptive-money-binding-currency](errors/adaptive-money-binding-currency.json)、[adaptive-money-nondefault-currency](errors/adaptive-money-nondefault-currency.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
+- [number-precision-five](examples/number-precision-five.json)：完整合法页面；查询仅为静态契约证据。
 - [yoy-p-format-demo](examples/yoy-p-format-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [million-formats-page](examples/million-formats-page.json)：完整合法页面；查询仅为静态契约证据。
 - [compute-page](examples/compute-page.json)：完整合法页面；查询仅为静态契约证据。
@@ -857,6 +872,6 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1`：[合法完整页面](examples/table-time-format.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/field/format`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
-- `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/yoy-p-format-demo.json)，JSON Pointer `#/sections/0/components/1/props/columns/2/colorRule`。
+- `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/number-precision-five.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
 - `#/definitions/fieldReference/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/2/props/actions/0/field`。
 - `#/definitions/fieldReference/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/actions/0/field`。

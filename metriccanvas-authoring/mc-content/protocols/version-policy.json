@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 106,
-  "current": "6.106",
+  "minor": 107,
+  "current": "6.107",
   "capabilities": {
+    "number-precision-five": {
+      "minor": 107,
+      "description": "普通数值及带符号数值支持最多三、四、五位小数",
+      "legacyReadable": false
+    },
     "detail-title": {
       "minor": 106,
       "description": "详情标题拼接固定文字和当前行的多个字段",
@@ -986,6 +991,7 @@
     "6.103",
     "6.104",
     "6.105",
-    "6.106"
+    "6.106",
+    "6.107"
   ]
 }

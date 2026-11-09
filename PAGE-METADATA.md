@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.107：新增 `number-3/4/5` 与 `number-3/4/5-signed`，最多保留对应小数位并去尾零，不加千分位；带符号格式按舍入后的展示结果统一正负号、颜色及箭头，舍入零为中性。复用 format/defaultFormat，无新增字段。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
+
 按需组合查询分页允许可空字段排序，补列和完整导出沿用选页成员返回的顺序及空值位置，不再要求排序字段声明 `nullable:false`。Schema 字段净增0；关联键、窗口和准确总数校验保持。见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?nulls=first` 与 `?nulls=last`。
 
 6.106：详情动作 `openDetail.title` 支持固定文字和多个当前行字段按 `parts` 顺序拼接，旧 `titleField` 保持兼容且与新字段互斥。见[详情组合标题](docs/page-metadata/components/table.md#detail-composed-title)，合成入口 `/pages/partner-health-interactions` 同时展示前端得分排序和堆叠合计。Schema 净增一个可选字段，不新增排序或图表开关。
@@ -107,7 +109,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.98**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.107**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 

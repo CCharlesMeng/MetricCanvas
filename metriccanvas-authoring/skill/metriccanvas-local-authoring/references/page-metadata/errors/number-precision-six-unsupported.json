@@ -1,0 +1,286 @@
+{
+  "case": "number-precision-six-unsupported",
+  "invariant": "number-precision-five",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 data(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/props/rows/0/valueField/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 rows(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be string",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"text\",\"number\",\"number-1\",\"number-signed\",\"number-1-signed\",\"number-2-signed\",\"number-3-signed\",\"number-4-signed\",\"number-5-signed\",\"number-grouped-signed\",\"number-2\",\"number-3\",\"number-4\",\"number-5\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"usd-adaptive\",\"cny-adaptive-trimmed\",\"cny-adaptive-trimmed-no-yuan\",\"usd-adaptive-km\",\"count-adaptive\",\"resource-adaptive\",\"bytes-adaptive\",\"minutes-adaptive\",\"messages-adaptive\",\"billing-hours\",\"percent-adaptive\",\"percent-adaptive-signed\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-raw\",\"points-1-signed\",\"yoy-p-signed\",\"percent-2-signed\",\"date\",\"date-month-day\",\"period\"]",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/format"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be object",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/format"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/format",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/1/props",
+        "/sections/0/components/1/props",
+        "/sections/0/components/1/props"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 byFilter",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/byFilter"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 field(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 format(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/format"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 categoryField",
+      "paths": [
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 series",
+      "paths": [
+        "/sections/0/components/1/props/series",
+        "/sections/0/components/1/props/series"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 xField",
+      "paths": [
+        "/sections/0/components/1/props/xField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 valueField",
+      "paths": [
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 value",
+      "paths": [
+        "/sections/0/components/1/props/value",
+        "/sections/0/components/1/props/value",
+        "/sections/0/components/1/props/value"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 columns",
+      "paths": [
+        "/sections/0/components/1/props/columns",
+        "/sections/0/components/1/props/columns"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 nameField",
+      "paths": [
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 map",
+      "paths": [
+        "/sections/0/components/1/props/map",
+        "/sections/0/components/1/props/map"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 tabs",
+      "paths": [
+        "/sections/0/components/1/props/tabs"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 components",
+      "paths": [
+        "/sections/0/components/1/props/components"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 items",
+      "paths": [
+        "/sections/0/components/1/props/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 field",
+      "paths": [
+        "/sections/0/components/1/props/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 label",
+      "paths": [
+        "/sections/0/components/1/props/label"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 action",
+      "paths": [
+        "/sections/0/components/1/props/action"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 title(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/title",
+        "/sections/0/components/1/props/title"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 filterId",
+      "paths": [
+        "/sections/0/components/1/props/filterId"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/sections/0/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "id": "gmv-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "overview"
+            },
+            "props": {
+              "title": "GMV",
+              "rows": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

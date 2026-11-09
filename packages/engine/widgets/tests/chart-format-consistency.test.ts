@@ -51,7 +51,7 @@ describe('chart numeric display consistency', () => {
   it('inherits field format and lets the binding override it across all numeric surfaces', () => {
     const formatted = structuredClone(data);
     formatted.main.fields.value = { type: 'number', role: 'measure', defaultFormat: 'compact-wan-1' };
-    for (const [format, expected] of [[undefined, '1.2万'], ['number-1', '12345.7'], ['number', '12345.6789']] as const) {
+    for (const [format, expected] of [[undefined, '1.2万'], ['number-1', '12345.7'], ['number', '12345.6789'], ['number-3', '12345.679'], ['number-4', '12345.6789'], ['number-5', '12345.6789'], ['number-3-signed', '+12345.679'], ['number-4-signed', '+12345.6789'], ['number-5-signed', '+12345.6789']] as const) {
       for (const option of options(formatted, format)) {
         expect(option.yAxis.axisLabel.formatter(12345.6789)).toBe(expected);
         expect(option.series[0]!.tooltip.valueFormatter(12345.6789)).toBe(expected);

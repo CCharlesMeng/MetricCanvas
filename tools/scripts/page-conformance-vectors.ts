@@ -484,6 +484,19 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'number-precision-five', description: '三至五位小数及带符号预设由6.107引入',
+    valid: ['number-precision-five'], cases: [
+      { case: 'number-precision-binding-before-6.107', base: 'inline-report', expect: /由 6.107 引入/,
+        mutate: d => { d.schemaVersion = '6.106'; firstComponent(d,0,1).props.rows[0].valueField.format = 'number-3-signed'; } },
+      { case: 'number-precision-default-before-6.107', base: 'inline-report', expect: /由 6.107 引入/,
+        mutate: d => { d.schemaVersion = '6.106'; d.dataSources.overview.fields.gmv.defaultFormat = 'number-4'; } },
+      { case: 'number-precision-param-before-6.107', base: 'inline-report', expect: /由 6.107 引入/,
+        mutate: d => { d.schemaVersion = '6.106'; d.params = [{id:'target',type:'number',required:true,default:3}]; d.meta = {title:{param:'target',format:'number-5-signed'}}; } },
+      { case: 'number-precision-six-unsupported', base: 'inline-report', expect: /format/,
+        mutate: d => { firstComponent(d,0,1).props.rows[0].valueField.format = 'number-6-signed'; } }
+    ]
+  },
+  {
     id: 'signed-number-family-capability', description: '两位小数与千分位带符号数值格式由6.18引入',
     valid: ['signed-number-family-page'], cases: [
       { case: 'signed-number-two-decimal-before-6.18', base: 'inline-report', expect: /由 6.18 引入/,

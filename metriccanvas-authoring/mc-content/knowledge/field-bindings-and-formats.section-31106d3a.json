@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.106",
+  "schemaVersion": "6.107",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-31106d3a"
@@ -9,8 +9,8 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
-        "## 带符号普通数值（6.17起）\n\n全部 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则：\n\n| 原格式 | 带符号格式 | 版本下限 | 正数示例 | 零值示例 |\n|---|---|---|---|---|\n| `number` | `number-signed` | 6.17 | `+1.234` | `0` |\n| `number-1` | `number-1-signed` | 6.17 | `+1.2` | `0` |\n| `number-2` | `number-2-signed` | 6.18 | `+1.23` | `0` |\n| `number-grouped` | `number-grouped-signed` | 6.18 | `+1,234.568` | `0` |\n\n`number-2-signed` 的 `±0.004` 均显示 `0`，`±0.005` 分别显示 `+0.01`、`-0.01`。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略，`±0.0004` 均显示 `0`，`±0.0005` 分别显示 `+0.001`、`-0.001`。所有带符号普通数值格式共用零值的符号、正负颜色及变化箭头规则。\n\n`number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。\n\n```json\n{ \"data\": \"main\", \"field\": \"avg-decision-time-change\", \"format\": \"number-1-signed\" }\n```\n\n表格数字列与指标卡变化项采用以上格式时，`colorRule.mode: \"sign\"` 的颜色及变化箭头与展示精度一致：舍入后零为普通文字且无箭头；显示非零才按正负映射颜色和方向。字段 `defaultFormat` 继承后遵循相同规则，显式绑定 `format` 仍优先。`fixed` 颜色继续按声明包含有效零。既有格式（包括 `percent-2-signed`）继续按原始值判断方向。仅影响展示，不修改查询、原始数据、计算或排序；6.16 可读但不能声明这些新格式。"
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "## 带符号普通数值（6.17起）\n\n全部 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则：\n\n| 原格式 | 带符号格式 | 版本下限 | 正数示例 | 零值示例 |\n|---|---|---|---|---|\n| `number` | `number-signed` | 6.17 | `+1.234` | `0` |\n| `number-1` | `number-1-signed` | 6.17 | `+1.2` | `0` |\n| `number-2` | `number-2-signed` | 6.18 | `+1.23` | `0` |\n| `number-3` | `number-3-signed` | 6.107 | `+1.235` | `0` |\n| `number-4` | `number-4-signed` | 6.107 | `+1.2346` | `0` |\n| `number-5` | `number-5-signed` | 6.107 | `+1.23457` | `0` |\n| `number-grouped` | `number-grouped-signed` | 6.18 | `+1,234.568` | `0` |\n\n6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、不加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式行为保持。\n\n例如 `number-5-signed` 的 `1.234567` 显示 `+1.23457`，`1.2` 显示 `+1.2`，`±0.000004` 均显示 `0`，`±0.000005` 分别显示 `+0.00001`、`-0.00001`。三、四位格式以各自展示精度判断零。合成场景 `/pages/number-precision-five` 对照六种预设、表格字段默认、指标卡颜色与箭头、图表标签；操作见页面所在目录的 README.md。\n\n`number-2-signed` 的 `±0.004` 均显示 `0`，`±0.005` 分别显示 `+0.01`、`-0.01`。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略，`±0.0004` 均显示 `0`，`±0.0005` 分别显示 `+0.001`、`-0.001`。所有带符号普通数值格式共用零值的符号、正负颜色及变化箭头规则。\n\n`number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。\n\n```json\n{ \"data\": \"main\", \"field\": \"avg-decision-time-change\", \"format\": \"number-1-signed\" }\n```\n\n表格数字列与指标卡变化项采用以上格式时，`colorRule.mode: \"sign\"` 的颜色及变化箭头与展示精度一致：舍入后零为普通文字且无箭头；显示非零才按正负映射颜色和方向。字段 `defaultFormat` 继承后遵循相同规则，显式绑定 `format` 仍优先。`fixed` 颜色继续按声明包含有效零。既有格式（包括 `percent-2-signed`）继续按原始值判断方向。仅影响展示，不修改查询、原始数据、计算或排序；6.16 可读但不能声明这些新格式。"
       ],
       "rules": [
         {
@@ -39,6 +39,19 @@
             "currency-negative-default",
             "currency-equal-default",
             "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "number-precision-five",
+          "description": "三至五位小数及带符号预设由6.107引入",
+          "valid": [
+            "number-precision-five"
+          ],
+          "invalid": [
+            "number-precision-binding-before-6.107",
+            "number-precision-default-before-6.107",
+            "number-precision-param-before-6.107",
+            "number-precision-six-unsupported"
           ]
         },
         {
@@ -173,6 +186,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/number-precision-five.json",
         "references/page-metadata/examples/yoy-p-format-demo.json",
         "references/page-metadata/examples/million-formats-page.json",
         "references/page-metadata/examples/compute-page.json",

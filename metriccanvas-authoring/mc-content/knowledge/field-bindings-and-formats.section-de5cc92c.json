@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.106",
+  "schemaVersion": "6.107",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-de5cc92c"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 图表系列与表格列展示单位（6.94）\n\n柱/线/混合图用 `series[].unit`：图例为“审批时长（天）”，标签及提示为“12.5 天”；非空单位使单系列也显示图例。表格字段列 `unit` 作用于主数值与置顶汇总，支持列组及展开子表；次字段、徽标、枚举、异常回退原文不追加。饼图沿用 `legend.columns[].unit`。\n\n```json\n{\"type\":\"barChart\",\"id\":\"duration-chart\",\"layout\":{\"span\":6},\"data\":{\"main\":\"sample\"},\"props\":{\"categoryField\":\"category\",\"series\":[{\"field\":{\"data\":\"main\",\"field\":\"duration\",\"format\":\"number-1\"},\"label\":\"审批时长\",\"unit\":\"天\"}],\"showValueLabels\":true}}\n```\n\n```json\n{\"type\":\"table\",\"id\":\"duration-table\",\"layout\":{\"span\":12},\"data\":{\"main\":\"sample\"},\"props\":{\"columns\":[{\"field\":{\"data\":\"main\",\"field\":\"duration\",\"format\":\"number-1\"},\"title\":\"审批时长\",\"unit\":\"天\"}]}}\n```\n\n以上声明要求 `sample` 含有类别与数值字段。单位是组件局部展示声明，不从结果字段契约 `unit` 自动追加，不改变查询、数值、计算、排序、筛选或货币语义；币种字段选择保留显式局部单位。未声明时保留原呈现。空字符串表示不追加；有效零与负值追加，缺失与非数字保留原文。数值轴保留原格式，不逐刻度追加本单位。\n\n`format` 独立负责精度及缩放。`compact-wan-1` 与 `unit:\"万元\"` 将原值125000显示为“12.5 万元”，运行时合并预设“万”与显式“万元”的重叠后缀；`percent-1` 与 `unit:\"%\"` 保持“25%”。格式已完整包含指定单位时不再追加，其他单位在格式化结果后以一个空格连接，不猜测业务换算。Excel 保留基本单位数值，通过单元格数字格式展示捕获的单位文本；PNG/PDF沿运行时呈现。\n\n`/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。"
       ],
       "rules": [
@@ -39,6 +39,19 @@
             "currency-negative-default",
             "currency-equal-default",
             "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "number-precision-five",
+          "description": "三至五位小数及带符号预设由6.107引入",
+          "valid": [
+            "number-precision-five"
+          ],
+          "invalid": [
+            "number-precision-binding-before-6.107",
+            "number-precision-default-before-6.107",
+            "number-precision-param-before-6.107",
+            "number-precision-six-unsupported"
           ]
         },
         {
@@ -173,6 +186,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/number-precision-five.json",
         "references/page-metadata/examples/yoy-p-format-demo.json",
         "references/page-metadata/examples/million-formats-page.json",
         "references/page-metadata/examples/compute-page.json",

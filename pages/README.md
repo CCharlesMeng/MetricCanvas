@@ -1,5 +1,7 @@
 # 页面示例与验收场景
 
+- [最多五位小数](capabilities/data/README.md#最多五位小数6107)：`/pages/number-precision-five`，三至五位普通及带符号格式、舍入零和颜色箭头；内联合成数据。
+
 - [伙伴健康度交互](capabilities/table/README.md#伙伴健康度计算排序与组合标题)：`/pages/partner-health-interactions`，前端计算总分的本地排序、组合弹窗标题及堆叠合计；仅合成内联数据。
 
 - [当前值与前端均值并排柱](capabilities/data/README.md#当前值与前端均值并排柱)：`/pages/sdt-period-aggregation`，每个代表处并排显示当前值与前端统一计算的均值，随期间切换重算；合成数据。

@@ -1,0 +1,25 @@
+{
+  "case": "number-precision-default-before-6.107",
+  "invariant": "number-precision-five",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "普通数值及带符号数值支持最多三、四、五位小数 由 6.107 引入，文档声明的是 6.106",
+      "paths": [
+        "/dataSources/overview/fields/gmv/defaultFormat"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "defaultFormat": "number-4"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/number-precision-default-before-6.107.json"
+}

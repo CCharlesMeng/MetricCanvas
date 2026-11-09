@@ -833,6 +833,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/number-precision-five.json",
+      "target": "product-contracts/page/conformance/valid/number-precision-five.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/partner-health-interactions.json",
       "target": "product-contracts/page/conformance/valid/partner-health-interactions.json",
       "scope": "exact product contract"
@@ -2775,6 +2780,26 @@
     {
       "source": "product:page/conformance/invalid/table-search-options-unmapped.json",
       "target": "product-contracts/page/conformance/invalid/table-search-options-unmapped.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/number-precision-binding-before-6.107.json",
+      "target": "product-contracts/page/conformance/invalid/number-precision-binding-before-6.107.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/number-precision-default-before-6.107.json",
+      "target": "product-contracts/page/conformance/invalid/number-precision-default-before-6.107.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/number-precision-param-before-6.107.json",
+      "target": "product-contracts/page/conformance/invalid/number-precision-param-before-6.107.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/number-precision-six-unsupported.json",
+      "target": "product-contracts/page/conformance/invalid/number-precision-six-unsupported.json",
       "scope": "exact product contract"
     },
     {
@@ -5663,6 +5688,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/number-precision-binding-before-6.107.json",
+      "target": "references/page-metadata/errors/number-precision-binding-before-6.107.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/number-precision-default-before-6.107.json",
+      "target": "references/page-metadata/errors/number-precision-default-before-6.107.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/number-precision-param-before-6.107.json",
+      "target": "references/page-metadata/errors/number-precision-param-before-6.107.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/number-precision-six-unsupported.json",
+      "target": "references/page-metadata/errors/number-precision-six-unsupported.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/signed-number-two-decimal-before-6.18.json",
       "target": "references/page-metadata/errors/signed-number-two-decimal-before-6.18.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7328,6 +7373,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/number-precision-five.json",
+      "target": "references/page-metadata/examples/number-precision-five.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/yoy-p-format-demo.json",
       "target": "references/page-metadata/examples/yoy-p-format-demo.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8104,7 +8154,7 @@
     }
   ],
   "counts": {
-    "product": 1588,
+    "product": 1598,
     "authoring": 32,
     "modules": 36,
     "topics": 296,

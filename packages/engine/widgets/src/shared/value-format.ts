@@ -58,18 +58,12 @@ function formatNumericValue(numeric: number, format: ValueFormatPreset, context:
 }
 
 function formatStandardNumber(numeric: number, format: ValueFormatPreset): string {
+  if (isSignedNumberFormat(format)) return signedNumberPresentation(numeric, format).text;
+  const precision = /^number-([1-5])$/.exec(format);
+  if (precision) return formatNumber(numeric, Number(precision[1]));
   switch (format) {
     case 'number':
       return String(numeric);
-    case 'number-1':
-      return formatNumber(numeric, 1);
-    case 'number-signed':
-    case 'number-1-signed':
-    case 'number-2-signed':
-    case 'number-grouped-signed':
-      return signedNumberPresentation(numeric, format).text;
-    case 'number-2':
-      return formatNumber(numeric, 2);
     case 'number-grouped':
       return formatNumber(numeric, undefined, true);
     case 'cny-adaptive-trimmed':
@@ -113,6 +107,9 @@ function signedNumberPresentation(value: number, format: SignedNumberFormat) {
     case 'number-signed': magnitude = String(Math.abs(value)); break;
     case 'number-1-signed': magnitude = formatNumber(Math.abs(value), 1); break;
     case 'number-2-signed': magnitude = formatNumber(Math.abs(value), 2); break;
+    case 'number-3-signed': magnitude = formatNumber(Math.abs(value), 3); break;
+    case 'number-4-signed': magnitude = formatNumber(Math.abs(value), 4); break;
+    case 'number-5-signed': magnitude = formatNumber(Math.abs(value), 5); break;
     case 'number-grouped-signed': magnitude = formatNumber(Math.abs(value), undefined, true); break;
   }
   const polarity: ValuePolarity = Number(magnitude.replaceAll(',', '')) === 0 ? 'neutral' : value > 0 ? 'positive' : 'negative';

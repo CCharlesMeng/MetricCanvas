@@ -8,6 +8,8 @@ import report from '../../../pages/business/report/sdt/business-sdt-cascade-exam
 const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-valid/inline-report.json', 'utf8'));
 
 it.each([
+  ['number-3', 107], ['number-4', 107], ['number-5', 107],
+  ['number-3-signed', 107], ['number-4-signed', 107], ['number-5-signed', 107],
   ['number-signed', 17], ['number-1-signed', 17],
   ['number-2-signed', 18], ['number-grouped-signed', 18], ['yoy-p-signed', 87]
 ] as const)('%s requires 6.%s at bindings, defaults and text references', (format, minor) => {
@@ -63,4 +65,11 @@ it('configures exactly the eight comparison bindings without changing their sour
   for (const source of Object.values(report.dataSources)) for (const field of Object.values(source.fields)) {
     if ('defaultFormat' in field) expect(field.defaultFormat).not.toMatch(/signed$/);
   }
+});
+
+it.each(['number-6', 'number-6-signed', 'number-3-signed-extra'])('rejects unsupported precision %s at the binding', format => {
+  const raw = document();
+  raw.schemaVersion = '6.107';
+  raw.sections[0].components[1].props.rows[0].valueField.format = format;
+  expect(validate(raw)).toContainEqual(expect.objectContaining({ path: '/sections/0/components/1/props/rows/0/valueField/format' }));
 });

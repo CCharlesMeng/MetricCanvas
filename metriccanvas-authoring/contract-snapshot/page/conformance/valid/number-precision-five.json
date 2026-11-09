@@ -1,0 +1,494 @@
+{
+  "schemaVersion": "6.107",
+  "id": "number-precision-five",
+  "layout": "dashboard",
+  "meta": {
+    "title": "最多五位小数（合成数据）"
+  },
+  "dataSources": {
+    "samples": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "场景"
+        },
+        "plain3": {
+          "type": "number",
+          "role": "measure",
+          "label": "number-3",
+          "nullable": true,
+          "defaultFormat": "number-3"
+        },
+        "signed3": {
+          "type": "number",
+          "role": "measure",
+          "label": "number-3-signed",
+          "nullable": true,
+          "defaultFormat": "number-3-signed"
+        },
+        "plain4": {
+          "type": "number",
+          "role": "measure",
+          "label": "number-4",
+          "nullable": true,
+          "defaultFormat": "number-4"
+        },
+        "signed4": {
+          "type": "number",
+          "role": "measure",
+          "label": "number-4-signed",
+          "nullable": true,
+          "defaultFormat": "number-4-signed"
+        },
+        "plain5": {
+          "type": "number",
+          "role": "measure",
+          "label": "number-5",
+          "nullable": true,
+          "defaultFormat": "number-5"
+        },
+        "signed5": {
+          "type": "number",
+          "role": "measure",
+          "label": "number-5-signed",
+          "nullable": true,
+          "defaultFormat": "number-5-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "正数",
+            "plain3": 1234.12345678,
+            "signed3": 1234.12345678,
+            "plain4": 1234.12345678,
+            "signed4": 1234.12345678,
+            "plain5": 1234.12345678,
+            "signed5": 1234.12345678
+          },
+          {
+            "name": "负数",
+            "plain3": -1234.12345678,
+            "signed3": -1234.12345678,
+            "plain4": -1234.12345678,
+            "signed4": -1234.12345678,
+            "plain5": -1234.12345678,
+            "signed5": -1234.12345678
+          },
+          {
+            "name": "去尾零",
+            "plain3": 12.3,
+            "signed3": 12.3,
+            "plain4": 12.3,
+            "signed4": 12.3,
+            "plain5": 12.3,
+            "signed5": 12.3
+          },
+          {
+            "name": "进位",
+            "plain3": 9.999999,
+            "signed3": 9.999999,
+            "plain4": 9.999999,
+            "signed4": 9.999999,
+            "plain5": 9.999999,
+            "signed5": 9.999999
+          },
+          {
+            "name": "三位正边界",
+            "plain3": 0.0005,
+            "signed3": 0.0005,
+            "plain4": 0.0005,
+            "signed4": 0.0005,
+            "plain5": 0.0005,
+            "signed5": 0.0005
+          },
+          {
+            "name": "三位负边界",
+            "plain3": -0.0005,
+            "signed3": -0.0005,
+            "plain4": -0.0005,
+            "signed4": -0.0005,
+            "plain5": -0.0005,
+            "signed5": -0.0005
+          },
+          {
+            "name": "四位正边界",
+            "plain3": 5e-05,
+            "signed3": 5e-05,
+            "plain4": 5e-05,
+            "signed4": 5e-05,
+            "plain5": 5e-05,
+            "signed5": 5e-05
+          },
+          {
+            "name": "四位负边界",
+            "plain3": -5e-05,
+            "signed3": -5e-05,
+            "plain4": -5e-05,
+            "signed4": -5e-05,
+            "plain5": -5e-05,
+            "signed5": -5e-05
+          },
+          {
+            "name": "五位正边界",
+            "plain3": 5e-06,
+            "signed3": 5e-06,
+            "plain4": 5e-06,
+            "signed4": 5e-06,
+            "plain5": 5e-06,
+            "signed5": 5e-06
+          },
+          {
+            "name": "五位负边界",
+            "plain3": -5e-06,
+            "signed3": -5e-06,
+            "plain4": -5e-06,
+            "signed4": -5e-06,
+            "plain5": -5e-06,
+            "signed5": -5e-06
+          },
+          {
+            "name": "正向舍入零",
+            "plain3": 4e-06,
+            "signed3": 4e-06,
+            "plain4": 4e-06,
+            "signed4": 4e-06,
+            "plain5": 4e-06,
+            "signed5": 4e-06
+          },
+          {
+            "name": "负向舍入零",
+            "plain3": -4e-06,
+            "signed3": -4e-06,
+            "plain4": -4e-06,
+            "signed4": -4e-06,
+            "plain5": -4e-06,
+            "signed5": -4e-06
+          },
+          {
+            "name": "零",
+            "plain3": 0,
+            "signed3": 0,
+            "plain4": 0,
+            "signed4": 0,
+            "plain5": 0,
+            "signed5": 0
+          },
+          {
+            "name": "缺失",
+            "plain3": null,
+            "signed3": null,
+            "plain4": null,
+            "signed4": null,
+            "plain5": null,
+            "signed5": null
+          }
+        ]
+      }
+    },
+    "metrics": {
+      "fields": {
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "数值"
+        },
+        "delta30": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-3-signed"
+        },
+        "delta31": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-3-signed"
+        },
+        "delta32": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-3-signed"
+        },
+        "delta40": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-4-signed"
+        },
+        "delta41": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-4-signed"
+        },
+        "delta42": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-4-signed"
+        },
+        "delta50": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-5-signed"
+        },
+        "delta51": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-5-signed"
+        },
+        "delta52": {
+          "type": "number",
+          "role": "measure",
+          "defaultFormat": "number-5-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "value": 1.2345678,
+            "delta30": 0.0005,
+            "delta31": -0.0005,
+            "delta32": 0.0004,
+            "delta40": 5e-05,
+            "delta41": -5e-05,
+            "delta42": 4e-05,
+            "delta50": 5e-06,
+            "delta51": -5e-06,
+            "delta52": 4.000000000000001e-06
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "precision",
+      "components": [
+        {
+          "id": "precision-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "name"
+              },
+              {
+                "title": "最多3位",
+                "field": {
+                  "data": "main",
+                  "field": "plain3",
+                  "format": "number-3"
+                }
+              },
+              {
+                "title": "最多3位带符号",
+                "field": "signed3",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              },
+              {
+                "title": "最多4位",
+                "field": {
+                  "data": "main",
+                  "field": "plain4",
+                  "format": "number-4"
+                }
+              },
+              {
+                "title": "最多4位带符号",
+                "field": "signed4",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              },
+              {
+                "title": "最多5位",
+                "field": {
+                  "data": "main",
+                  "field": "plain5",
+                  "format": "number-5"
+                }
+              },
+              {
+                "title": "最多5位带符号",
+                "field": "signed5",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 20
+            }
+          }
+        },
+        {
+          "id": "precision-metrics",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "metrics"
+          },
+          "props": {
+            "title": "舍入方向与箭头",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "最多3位",
+                "valueField": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-3"
+                },
+                "changes": [
+                  {
+                    "label": "正数",
+                    "field": "delta30",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "负数",
+                    "field": "delta31",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "舍入零",
+                    "field": "delta32",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "最多4位",
+                "valueField": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-4"
+                },
+                "changes": [
+                  {
+                    "label": "正数",
+                    "field": "delta40",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "负数",
+                    "field": "delta41",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "舍入零",
+                    "field": "delta42",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "最多5位",
+                "valueField": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-5"
+                },
+                "changes": [
+                  {
+                    "label": "正数",
+                    "field": "delta50",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "负数",
+                    "field": "delta51",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "舍入零",
+                    "field": "delta52",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "precision-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "title": "五位小数图表",
+            "categoryField": "name",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "signed5",
+                  "format": "number-5-signed"
+                },
+                "label": "最多五位带符号"
+              }
+            ],
+            "showValueLabels": true
+          }
+        }
+      ]
+    }
+  ]
+}
