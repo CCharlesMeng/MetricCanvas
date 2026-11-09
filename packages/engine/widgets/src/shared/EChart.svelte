@@ -25,10 +25,10 @@
      */
     container?: HTMLDivElement;
     /**
-     * 数据项点击,上抛数据行下标与数据项名(组件据此映射回 Row)。
+     * 数据项点击,上抛数据行下标、数据项名与系列下标(组件据此映射回 Row)。
      * 地图点击可能来自 geo 组件(无 dataIndex),此时靠 name 定位区域
      */
-    onitemclick?: (dataIndex: number, name?: string) => void;
+    onitemclick?: (dataIndex: number, name?: string, seriesIndex?: number) => void;
   }
 
   let {
@@ -77,7 +77,7 @@
     stage = 'init';
     if (!instance) {
       instance = echarts.init(el, undefined, staticExport ? { devicePixelRatio: exportScale } : undefined);
-      instance.on('click', params => onitemclick?.(params.dataIndex, typeof params.name === 'string' ? params.name : undefined));
+      instance.on('click', params => onitemclick?.(params.dataIndex, typeof params.name === 'string' ? params.name : undefined, params.seriesIndex));
     }
     stage = 'apply';
     instance.setOption(final, { notMerge: staticExport || updateMode === 'replace' });

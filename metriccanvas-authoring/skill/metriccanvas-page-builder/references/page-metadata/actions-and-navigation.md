@@ -92,7 +92,7 @@ Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query
 完整合成页面 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除` 展示账号、筛选及页签初始化，地址应移除 `unused`；`active=invalid` 展示输入错误并保留原地址。此页面只有合成内联数据；真实宿主路由与服务接入另验。
 
 
-页面协议 6.102。结构真源为本册[schema.json](schema.json)，SHA256 `29de7663317d08e78d1f8c2c6da8e680fb343a966a7217365d1c76aab80fd2bc`。字段表自动生成；可选不等于有默认值。
+页面协议 6.103。结构真源为本册[schema.json](schema.json)，SHA256 `28af5ce4844813f1e0d6ddf655c7a77c2fa0b9b582450785aa52bc4a6dfcedcc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

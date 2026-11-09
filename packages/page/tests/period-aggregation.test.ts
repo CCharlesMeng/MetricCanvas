@@ -49,6 +49,7 @@ it('requires the period control, complete monthly source and no unproved initial
 });
 it('gates the new capability at 6.97 while old pages without it remain readable', () => {
   const document = example(); document.schemaVersion = '6.96';
+  delete document.sections[0].components.at(-1).props.series[1].aggregate;
   expect(parsePage(document).errors.some(error => error.message.includes('6.97'))).toBe(true);
   delete document.dataSources['rep-office-efficiency'].source.query.periodAggregation;
   expect(parsePage(document).ok).toBe(true);

@@ -16,6 +16,7 @@ import { chartConstantInputErrors, chartConstantErrors } from './chart-value-val
 import { valueSourceBinding, type ComponentValueSource } from './component-value';
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
+import { checkBarAverage } from './bar-average';
 import { rowExpansionErrors } from './table/validate-expansion';
 import { sourceCandidateErrors } from './source-candidates';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
@@ -1587,6 +1588,7 @@ function componentErrors(
 
   function checkBarChart(component: Extract<Component, { type: 'barChart' }>): void {
     checkBarLabels();
+    checkBarAverage(component.props, `${componentPath}/props`, errors);
     function checkBarLabels(): void {
       if (component.props.showValueLabels && (component.props.showSegmentLabels || component.props.showStackTotalLabels)) errors.push(schemaError(`${componentPath}/props/showValueLabels`, 'showValueLabels 不得与旧柱状图标签同时启用'));
     }

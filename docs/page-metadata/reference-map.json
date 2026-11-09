@@ -748,16 +748,19 @@
         "chart-constant-branches",
         "dual-axis-alignment",
         "chart-series-visibility",
-        "chart-table-unit"
+        "chart-table-unit",
+        "sdt-period-aggregation"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
         "packages/embed/tests/browser/embed.spec.ts",
-        "packages/page/src/query-output-measures.ts"
+        "packages/page/src/query-output-measures.ts",
+        "packages/page/src/bar-average.ts"
       ],
       "rules": [
         "bar-forecast-boundary",
-        "query-dimension-measures"
+        "query-dimension-measures",
+        "bar-series-average"
       ]
     },
     "components/lineChart.md": {
@@ -2261,7 +2264,9 @@
     "#/properties/schemaVersion=\"6.99\"": "表格数字列通过 arrowRule 声明固定或按正负映射的箭头；省略不显示。",
     "#/properties/schemaVersion=\"6.100\"": "维度查询绑定可按筛选条件暂停谓词并保留选择状态。",
     "#/properties/schemaVersion=\"6.101\"": "对象期间默认生成周期类型与账期，单期等值、多期闭区间，并保留自定义字段与手写查询。",
-    "#/properties/schemaVersion=\"6.102\"": "字段绑定支持时间格式串及固定 UTC+8 转换。"
+    "#/properties/schemaVersion=\"6.102\"": "字段绑定支持时间格式串及固定 UTC+8 转换。",
+    "#/properties/schemaVersion=\"6.103\"": "柱状图字段系列aggregate:avg在前端求均值，原类别并排比较当前值与均值。",
+    "#/definitions/barChartSeries/anyOf/0/properties/aggregate=\"avg\"": "以该字段当前全部有效图表输入值求算术均值，各类别展示同一结果。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3132,6 +3137,17 @@
         "时间格式串与固定 UTC+8（6.102）"
       ],
       "dependencies": []
+    },
+    "chart.series-average": {
+      "module": "barChart",
+      "title": "前端均值柱系列",
+      "roots": [
+        "#/definitions/barChartSeries/anyOf/0/properties/aggregate"
+      ],
+      "headings": [
+        "前端均值柱系列（6.103）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3271,6 +3287,7 @@
       "查阅方式"
     ],
     "components/barChart.md": [
+      "前端均值柱系列（6.103）",
       "默认柱宽",
       "双轴刻度与网格线",
       "查阅方式",

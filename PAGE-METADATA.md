@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.103：柱状图字段系列可声明 `aggregate: "avg"`，前端对当前图表全部有效字段值求均值，并在每个原类别显示同一均值柱；与普通当前值系列并排比较。见[前端均值柱系列](docs/page-metadata/components/barChart.md#bar-series-average)，合成入口 `/pages/sdt-period-aggregation`。
+
 6.102：字段绑定 `format` 支持 `{type:"time",pattern:"YYYY-MM-DD HH:mm:ss"}`，兼容常见时间结构并统一按固定 UTC+8 展示；无时区输入按 UTC，表格显示与导出共用格式，Excel 写为文本。旧格式保持。见[时间格式串](docs/page-metadata/field-bindings-and-formats.md#time-format)，合成入口 `/pages/table-time-format`。
 
 6.101：对象查询的期间绑定可只声明 `{target:"time"}`，引擎统一生成“周期类型＋账期”：年 yearly/年码、季 quarterly/YYYYQn、月 monthly/YYYYMM；单期等值，多期使用闭区间。复用 periodPolicy 表达固定粒度或能力限制；显式日期字段与手写对象条件保留。见[对象账期](docs/page-metadata/queries-and-bindings.md#标准对象账期6101)，合成入口 `/pages/object-period-query`。Schema 字段净增零。

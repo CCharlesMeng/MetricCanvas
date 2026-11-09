@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVersions, versionErrors, versionPolicy } from '../src/version';
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
+  'bar-series-average':103,
   'object-period-binding':101,
   'query-binding-when':100,
   'table-trend-arrows':99,

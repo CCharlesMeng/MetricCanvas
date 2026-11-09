@@ -1,0 +1,35 @@
+{
+  "case": "bar-average-stacked",
+  "invariant": "bar-series-average",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "前端均值仅支持普通柱系列，不支持折线、堆叠或预测",
+      "paths": [
+        "/sections/0/components/3/props/series/1/aggregate"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          "…",
+          {
+            "props": {
+              "series": [
+                "…",
+                {
+                  "aggregate": "avg"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/bar-average-stacked.json"
+}

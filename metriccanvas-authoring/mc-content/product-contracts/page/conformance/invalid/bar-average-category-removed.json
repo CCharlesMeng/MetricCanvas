@@ -1,0 +1,1097 @@
+{
+  "case": "bar-average-category-removed",
+  "invariant": "bar-series-average",
+  "input": {
+    "schemaVersion": "6.103",
+    "id": "sdt-period-aggregation",
+    "layout": "dashboard",
+    "meta": {
+      "title": "代表处SDT近一年聚合（合成数据）",
+      "description": "沿用商务SDT报告字段；近一年决策次数求和、月均时长取算术平均。DQE合成回执，不代表真实服务验真。"
+    },
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "period",
+        "label": "统计期间",
+        "required": true,
+        "default": {
+          "mode": "last12Months"
+        },
+        "periodModes": [
+          "month",
+          "last12Months"
+        ]
+      }
+    ],
+    "dataSources": {
+      "rep-office-efficiency": {
+        "fields": {
+          "rep-office": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "avg-decision-time": {
+            "type": "number",
+            "role": "measure",
+            "label": "商审SDT平均决策时长",
+            "defaultFormat": "number-2",
+            "unit": "天",
+            "queryField": "商审SDT平均决策时长"
+          },
+          "decision-count": {
+            "type": "number",
+            "role": "measure",
+            "label": "商审审批人决策次数",
+            "defaultFormat": "number",
+            "unit": "次",
+            "queryField": "商审审批人决策次数"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_metrics": [
+                    "商审SDT平均决策时长",
+                    "商审审批人决策次数"
+                  ],
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "filter": {
+                    "time": {
+                      "is_aggregate": true
+                    },
+                    "dims": [
+                      {
+                        "dim_name": "阶段名称",
+                        "dim_value_list": [
+                          "代表处SDT"
+                        ]
+                      }
+                    ],
+                    "metrics": []
+                  },
+                  "order": {
+                    "order_by_field": "商审SDT平均决策时长",
+                    "type": "DESC"
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "period": {
+                "target": "time",
+                "periodPolicy": {
+                  "kind": "fixed",
+                  "period": "month"
+                }
+              }
+            },
+            "periodAggregation": {
+              "filterId": "period",
+              "cases": {
+                "last12Months": {
+                  "groupBy": [
+                    "rep-office"
+                  ],
+                  "aggregations": [
+                    {
+                      "field": "decision-count",
+                      "aggregate": "sum"
+                    },
+                    {
+                      "field": "avg-decision-time",
+                      "aggregate": "avg"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "resultScope": "complete"
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "efficiency",
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "代表处SDT近一年聚合（合成数据）"
+              },
+              "filterIds": [
+                "period"
+              ]
+            }
+          },
+          {
+            "id": "efficiency-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "rep-office-efficiency"
+            },
+            "props": {
+              "title": "代表处决策次数与时长",
+              "rowKey": "rep-office",
+              "columns": [
+                {
+                  "field": "rep-office",
+                  "title": "代表处",
+                  "filterable": {
+                    "mode": "select"
+                  }
+                },
+                {
+                  "field": "decision-count",
+                  "title": "决策次数",
+                  "sortable": true
+                },
+                {
+                  "field": "avg-decision-time",
+                  "title": "月均决策时长",
+                  "sortable": true
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "代表处SDT期间聚合"
+                }
+              }
+            }
+          },
+          {
+            "id": "efficiency-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "rep-office-efficiency"
+            },
+            "props": {
+              "categoryField": "rep-office",
+              "dualAxis": true,
+              "series": [
+                {
+                  "field": "decision-count",
+                  "label": "决策次数",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "field": "avg-decision-time",
+                  "label": "月均决策时长的平均值",
+                  "kind": "line",
+                  "axis": "secondary"
+                }
+              ]
+            }
+          },
+          {
+            "id": "efficiency-average-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "rep-office-efficiency"
+            },
+            "props": {
+              "title": "代表处决策次数：当前值与均值",
+              "categoryField": "rep-office",
+              "showValueLabels": true,
+              "categoryLabels": {
+                "mode": "all",
+                "rotate": 45
+              },
+              "series": [
+                {
+                  "field": "decision-count",
+                  "label": "当前值",
+                  "unit": "次"
+                },
+                {
+                  "field": "decision-count",
+                  "label": "均值",
+                  "aggregate": "avg",
+                  "unit": "次"
+                }
+              ],
+              "averageCategory": "均值"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series/1/aggregate",
+      "message": "存在未定义字段 aggregate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series/1/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series/1/aggregate",
+      "message": "存在未定义字段 aggregate(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series/1/field",
+      "message": "must NOT be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series/1",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/components",
+      "message": "缺少必填字段 components"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/filterId",
+      "message": "缺少必填字段 filterId"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/showValueLabels",
+      "message": "存在未定义字段 showValueLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/categoryLabels",
+      "message": "存在未定义字段 categoryLabels(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series",
+      "message": "存在未定义字段 series(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/averageCategory",
+      "message": "存在未定义字段 averageCategory(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

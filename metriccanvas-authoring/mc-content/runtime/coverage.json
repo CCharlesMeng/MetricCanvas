@@ -1333,6 +1333,26 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/invalid/bar-average-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/bar-average-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/bar-average-category-removed.json",
+      "target": "product-contracts/page/conformance/invalid/bar-average-category-removed.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/bar-average-stacked.json",
+      "target": "product-contracts/page/conformance/invalid/bar-average-stacked.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/bar-average-line.json",
+      "target": "product-contracts/page/conformance/invalid/bar-average-line.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/invalid/ioc-controls-root-filter.json",
       "target": "product-contracts/page/conformance/invalid/ioc-controls-root-filter.json",
       "scope": "exact product contract"
@@ -4195,6 +4215,26 @@
     {
       "source": "product:page/reference/errors/period-aggregation-unknown-method.json",
       "target": "references/page-metadata/errors/period-aggregation-unknown-method.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-average-old-version.json",
+      "target": "references/page-metadata/errors/bar-average-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-average-category-removed.json",
+      "target": "references/page-metadata/errors/bar-average-category-removed.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-average-stacked.json",
+      "target": "references/page-metadata/errors/bar-average-stacked.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-average-line.json",
+      "target": "references/page-metadata/errors/bar-average-line.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -8014,11 +8054,11 @@
     }
   ],
   "counts": {
-    "product": 1570,
+    "product": 1578,
     "authoring": 32,
     "modules": 36,
-    "topics": 289,
-    "nodes": 2610,
+    "topics": 291,
+    "nodes": 2611,
     "tools": 9,
     "components": 20
   },

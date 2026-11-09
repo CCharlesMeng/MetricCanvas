@@ -37,6 +37,12 @@
       .map((row) => formatValue(row[category.field], category.format, category.missingText))
       .filter(Boolean)
   );
+  function handleItemClick(dataIndex: number, _name?: string, seriesIndex = 0): void {
+    const series = props.series[barSeriesOrder(props)[seriesIndex]];
+    if (series && 'aggregate' in series && series.aggregate === 'avg') return;
+    const row = data.main.snapshot.rows[dataIndex];
+    if (row) onbarclick?.({ row });
+  }
 </script>
 
 <div
@@ -62,9 +68,7 @@
     cartesian
     expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}
     bind:container={chartContainer}
-    onitemclick={onbarclick
-      ? (dataIndex) => onbarclick({ row: data.main.snapshot.rows[dataIndex] })
-      : undefined}
+    onitemclick={handleItemClick}
   />
 </div>
 

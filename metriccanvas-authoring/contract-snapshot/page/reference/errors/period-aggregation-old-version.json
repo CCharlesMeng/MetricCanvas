@@ -4,6 +4,13 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "柱状图字段系列前端求均值，并在每个原类别显示均值柱 由 6.103 引入，文档声明的是 6.96",
+      "paths": [
+        "/sections/0/components/3/props/series/1/aggregate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "近一年按业务维度分组并逐字段求和或取月均值平均 由 6.97 引入，文档声明的是 6.96",
       "paths": [
         "/dataSources/rep-office-efficiency/source/query/periodAggregation"
@@ -11,6 +18,25 @@
     }
   ],
   "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          "…",
+          {
+            "props": {
+              "series": [
+                "…",
+                {
+                  "aggregate": "avg"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
     "dataSources": {
       "rep-office-efficiency": {
         "source": {
