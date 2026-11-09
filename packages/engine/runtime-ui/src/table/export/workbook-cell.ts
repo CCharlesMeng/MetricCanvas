@@ -1,5 +1,5 @@
 import { appendDisplayUnit } from '../../../../widgets/src/shared/display-unit';
-import type { FieldDefinition, TableColumn, ValueFormat } from '@metriccanvas/page/internal';
+import type { FieldDefinition, FieldValue, TableColumn, TimeValueFormat, ValueFormat } from '@metriccanvas/page/internal';
 import type { Cell, CellObject } from 'write-excel-file/universal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { resolveField } from '../../../../widgets/src/shared/component-data';
@@ -52,7 +52,7 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   if (!hasDisplayValue(value)) return resolved.missingText === undefined ? missingText : formatValue(value, resolved.format, resolved.missingText);
   const label = tableEnumLabel(value, column.enumValues);
   if (label !== undefined) return { value: label, type: String };
-  if (typeof resolved.format === 'object') return { value: formatTableCell(value, resolved.format), type: String };
+  if (typeof resolved.format === 'object') return timeCell(value, resolved.format, alignedCellArrow(column, data, row), column.arrowRule?.position === 'after');
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
   }
@@ -61,4 +61,10 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   const format = cell.format ?? 'General';
   const arrowFormat = column.arrowRule?.position === 'after' ? `${format}" ${arrow}"` : `"${arrow} "${format}`;
   return typeof value === 'number' && arrow ? { ...cell, format: arrowFormat } : cell;
+}
+
+/** Time exports are text, so authored arrows join the same text instead of a numeric format. */
+function timeCell(value: FieldValue, format: TimeValueFormat, arrow: string, after: boolean): CellObject {
+  const text = formatTableCell(value, format);
+  return { value: !arrow ? text : after ? `${text} ${arrow}` : `${arrow} ${text}`, type: String };
 }

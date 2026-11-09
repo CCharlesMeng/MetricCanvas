@@ -3,7 +3,7 @@ import ExcelJS from 'exceljs';
 import document from '../../../../pages/capabilities/table/table-time-format.json';
 import { parsePage } from '@metriccanvas/page';
 import { setRowCellFallbacks } from '@metriccanvas/page/internal';
-import { alignedCellText, projectTableRows } from '../../widgets/src/components/table/rows';
+import { alignedCellArrow, alignedCellText, projectTableRows } from '../../widgets/src/components/table/rows';
 import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
 import { encodeTableWorkbook } from '../src/table/export/workbook';
 
@@ -38,4 +38,28 @@ it('shares table presentation with Excel, including query scalar fallback eviden
     expect(workbook.worksheets[0].getCell(2, index + 1).value).toBe(expected);
   }
   expect(rows).toEqual(before);
+});
+
+it('preserves authored arrows on numeric timestamps in text exports', async () => {
+  const parsed = parsePage(document);
+  if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  const table = parsed.page.sections[0].components[0];
+  if (table.type !== 'table') throw Error('fixture');
+  const time = table.props.columns[1];
+  if (time.kind === 'group') throw Error('column');
+  const data: NamedDataSlots = { main: {
+    fields: { id: { type: 'string', role: 'dimension' }, createdAt: { type: 'number', role: 'dimension' } },
+    snapshot: { status: 'ready', rows: [{ id: 'n', createdAt: 1794249000000 }] }
+  } };
+  for (const position of ['before', 'after'] as const) {
+    const column = { ...time, arrowRule: { mode: 'fixed', arrow: 'up', position } } as const;
+    const props = { ...table.props, columns: [column] };
+    const row = projectTableRows(data, props)[0]!;
+    expect(alignedCellText(column.field, data, row)).toBe('2026-11-10 02:30:00');
+    expect(alignedCellArrow(column, data, row)).toBe('↑');
+    const workbook = new ExcelJS.Workbook();
+    const bytes = await encodeTableWorkbook({ ...table, props }, data, new AbortController().signal);
+    await workbook.xlsx.load(bytes.buffer);
+    expect(workbook.worksheets[0].getCell(2, 1).value).toBe(position === 'after' ? '2026-11-10 02:30:00 ↑' : '↑ 2026-11-10 02:30:00');
+  }
 });
