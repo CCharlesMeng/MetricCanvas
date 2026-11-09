@@ -3,7 +3,7 @@ import type { FieldDefinition, TableColumn, ValueFormatPreset } from '@metriccan
 import type { Cell, CellObject } from 'write-excel-file/universal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { resolveField } from '../../../../widgets/src/shared/component-data';
-import { alignedFallback, alignedFieldValue, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
+import { alignedFallback, alignedFieldValue, alignedCellArrow, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
 import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/components/table/cell-presentation';
 import { tableEnumLabel } from '../../../../widgets/src/components/table/enum-values';
 import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation';
@@ -54,5 +54,9 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
   }
-  return valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved), column.unit);
+  const cell = valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved), column.unit);
+  const arrow = alignedCellArrow(column, data, row);
+  const format = cell.format ?? 'General';
+  const arrowFormat = column.arrowRule?.position === 'after' ? `${format}" ${arrow}"` : `"${arrow} "${format}`;
+  return typeof value === 'number' && arrow ? { ...cell, format: arrowFormat } : cell;
 }

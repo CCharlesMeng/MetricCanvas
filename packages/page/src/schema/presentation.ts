@@ -9,6 +9,14 @@ export const colorRuleZ = z.discriminatedUnion('mode', [
 ]).meta({ id: 'colorRule' });
 export type ColorRule = z.infer<typeof colorRuleZ>;
 
+const valueArrowZ = z.enum(['up', 'down', 'none']);
+const arrowPositionZ = z.enum(['before', 'after']).optional().meta({ description: '箭头相对数值的位置，省略为before' });
+export const arrowRuleZ = z.discriminatedUnion('mode', [
+  z.object({ mode: z.literal('fixed'), arrow: valueArrowZ, position: arrowPositionZ }).strict(),
+  z.object({ mode: z.literal('sign'), positive: valueArrowZ, negative: valueArrowZ, position: arrowPositionZ }).strict()
+]).meta({ id: 'arrowRule' });
+export type ArrowRule = z.infer<typeof arrowRuleZ>;
+
 export const categoryLabelsZ = z.object({
   mode: z.enum(['auto', 'all']),
   rotate: z.number().min(-90).max(90).optional()

@@ -824,6 +824,7 @@
         "tableComponent",
         "tableColumnNode",
         "tableColumn",
+        "arrowRule",
         "tableColumnGroup",
         "rowExpansionTable",
         "tableRowExpansion"
@@ -833,6 +834,7 @@
         "明细表 table"
       ],
       "examples": [
+        "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
         "reference-export-column-actions",
@@ -871,6 +873,7 @@
         "packages/page/src/table/header-defaults.ts"
       ],
       "rules": [
+        "table-trend-arrows",
         "table-row-key",
         "table-row-kind-field",
         "table-merge-by-column",
@@ -1867,7 +1870,15 @@
     "#/definitions/dimensionFilter/properties/candidates/properties/valueField": "稳定值引用的已声明标量输出字段 ID；完整读取后去重。",
     "#/definitions/dimensionFilter/properties/candidates/properties/labelField": "可选显示名输出字段 ID，省略时显示稳定值。",
     "#/definitions/dimensionFilter/properties/candidates/properties/parentField": "tree 必填的父节点值输出字段 ID；根节点为空，父子节点独立选择。",
-    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll": "6.98：true 展示全选，默认不展示；静态及动态候选全选后该列不限，包含空值，旧 allBehavior 兼容保留。"
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll": "6.98：true 展示全选，默认不展示；静态及动态候选全选后该列不限，包含空值，旧 allBehavior 兼容保留。",
+    "arrowRule": "表格主数值的显式箭头规则，省略不显示，与颜色独立。",
+    "arrow": "固定箭头，可为up、down或none。",
+    "#/definitions/arrowRule/oneOf/0/properties/mode": "固定箭头模式。",
+    "#/definitions/arrowRule/oneOf/1/properties/mode": "按数值正负选择箭头映射。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive": "正值使用的箭头，支持up/down/none。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative": "负值使用的箭头，支持up/down/none。",
+    "#/definitions/arrowRule/oneOf/0/properties/position": "箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。",
+    "#/definitions/arrowRule/oneOf/1/properties/position": "箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2227,7 +2238,23 @@
     "#/properties/schemaVersion=\"6.96\"": "IOC 页头 back:\"auto\" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。",
     "avg": "有效月值的算术平均，零参与、空值与缺月不补零",
     "#/properties/schemaVersion=\"6.97\"": "近一年业务分组及逐字段求和/平均",
-    "#/properties/schemaVersion=\"6.98\"": "显式列头全选入口；静态和动态候选全选后该列不限。"
+    "#/properties/schemaVersion=\"6.98\"": "显式列头全选入口；静态和动态候选全选后该列不限。",
+    "#/definitions/arrowRule/oneOf/0/properties/mode=\"fixed\"": "固定箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/mode=\"sign\"": "按正负映射箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/arrow=\"up\"": "显示上箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/arrow=\"down\"": "显示下箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/arrow=\"none\"": "不显示箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive=\"up\"": "显示上箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive=\"down\"": "显示下箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/positive=\"none\"": "不显示箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative=\"up\"": "显示上箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative=\"down\"": "显示下箭头。",
+    "#/definitions/arrowRule/oneOf/1/properties/negative=\"none\"": "不显示箭头。",
+    "#/definitions/arrowRule/oneOf/0/properties/position=\"before\"": "箭头放在数值与单位之前（默认）。",
+    "#/definitions/arrowRule/oneOf/0/properties/position=\"after\"": "箭头放在数值与单位之后。",
+    "#/definitions/arrowRule/oneOf/1/properties/position=\"before\"": "箭头放在数值与单位之前（默认）。",
+    "#/definitions/arrowRule/oneOf/1/properties/position=\"after\"": "箭头放在数值与单位之后。",
+    "#/properties/schemaVersion=\"6.99\"": "表格数字列通过 arrowRule 声明固定或按正负映射的箭头；省略不显示。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3049,6 +3076,19 @@
       "headings": [
         "列头全选入口（6.98）"
       ]
+    },
+    "table.trendArrows": {
+      "module": "table",
+      "title": "表格上下箭头",
+      "roots": [
+        "#/definitions/tableColumn/properties/arrowRule",
+        "#/definitions/tableColumn/properties/colorRule",
+        "#/definitions/tableColumn/properties/unit"
+      ],
+      "headings": [
+        "列级上下箭头（6.99）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3237,7 +3277,8 @@
       "完整父子 Excel（6.70）",
       "组合源数据异常提示与导出",
       "期间比较的查询分页（6.78）",
-      "自定义展示单位"
+      "自定义展示单位",
+      "列级上下箭头（6.99）"
     ],
     "components/mapChart.md": [
       "查阅方式",

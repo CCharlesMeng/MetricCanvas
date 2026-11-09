@@ -15,7 +15,7 @@ import {
 import { actionsZ, openDetailActionZ } from '../actions';
 import { navigationBindingZ, navigationTargetZ, type NavigationTarget } from '../navigation';
 import { componentCatalogRegistry } from '../registry';
-import { colorRuleZ, type ColorRule } from '../presentation';
+import { colorRuleZ, arrowRuleZ, type ColorRule, type ArrowRule } from '../presentation';
 
 /**
  * 表格列是递归形状（分组列的 children 复用 TableColumnNode），zod 的类型推导
@@ -63,6 +63,7 @@ export interface TableColumn {
   emphasis?: 'strong';
   visual?: 'plain' | 'rateBar' | 'signed';
   colorRule?: ColorRule;
+  arrowRule?: ArrowRule;
 }
 
 export interface TableColumnGroup {
@@ -117,7 +118,8 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     align: z.enum(['left', 'right']).optional(),
     emphasis: z.literal('strong').optional(),
     visual: z.enum(['plain', 'rateBar', 'signed']).optional(),
-    colorRule: colorRuleZ.optional()
+    colorRule: colorRuleZ.optional(),
+    arrowRule: arrowRuleZ.optional().meta({ description: '主数值的显式箭头规则，与颜色独立；省略不显示箭头' })
   })
   .strict()
   .meta({ id: 'tableColumn' });

@@ -828,6 +828,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-trend-arrows.json",
+      "target": "product-contracts/page/conformance/valid/table-trend-arrows.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-header-select-all.json",
       "target": "product-contracts/page/conformance/valid/table-header-select-all.json",
       "scope": "exact product contract"
@@ -1510,6 +1515,26 @@
     {
       "source": "product:page/conformance/invalid/pie-table-native-legend.json",
       "target": "product-contracts/page/conformance/invalid/pie-table-native-legend.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-arrow-old.json",
+      "target": "product-contracts/page/conformance/invalid/table-arrow-old.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-arrow-text.json",
+      "target": "product-contracts/page/conformance/invalid/table-arrow-text.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-arrow-type.json",
+      "target": "product-contracts/page/conformance/invalid/table-arrow-type.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-arrow-position.json",
+      "target": "product-contracts/page/conformance/invalid/table-arrow-position.json",
       "scope": "exact product contract"
     },
     {
@@ -4355,6 +4380,26 @@
     {
       "source": "product:page/reference/errors/pie-table-native-legend.json",
       "target": "references/page-metadata/errors/pie-table-native-legend.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-arrow-old.json",
+      "target": "references/page-metadata/errors/table-arrow-old.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-arrow-text.json",
+      "target": "references/page-metadata/errors/table-arrow-text.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-arrow-type.json",
+      "target": "references/page-metadata/errors/table-arrow-type.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-arrow-position.json",
+      "target": "references/page-metadata/errors/table-arrow-position.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -7363,6 +7408,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-trend-arrows.json",
+      "target": "references/page-metadata/examples/table-trend-arrows.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/reference-export-column-actions.json",
       "target": "references/page-metadata/examples/reference-export-column-actions.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7934,11 +7984,11 @@
     }
   ],
   "counts": {
-    "product": 1554,
+    "product": 1564,
     "authoring": 32,
     "modules": 36,
-    "topics": 279,
-    "nodes": 2582,
+    "topics": 281,
+    "nodes": 2594,
     "tools": 9,
     "components": 20
   },

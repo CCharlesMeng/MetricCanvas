@@ -1,0 +1,402 @@
+{
+  "case": "table-arrow-old",
+  "invariant": "table-trend-arrows",
+  "input": {
+    "schemaVersion": "6.98",
+    "id": "table-trend-arrows",
+    "layout": "dashboard",
+    "meta": {
+      "title": "表格单位、颜色与上下箭头 · inline 合成数据"
+    },
+    "dataSources": {
+      "sample": {
+        "fields": {
+          "label": {
+            "type": "string",
+            "role": "dimension",
+            "label": "情况"
+          },
+          "growth": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "cost": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "rate": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "tiny": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true,
+            "defaultFormat": "number-1-signed"
+          },
+          "off": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "legacy": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "enum": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "label": "正值",
+              "growth": 2.5,
+              "cost": 2.5,
+              "rate": 2.5,
+              "tiny": 2.5,
+              "off": 2.5,
+              "legacy": 2.5,
+              "enum": 2.5
+            },
+            {
+              "label": "负值",
+              "growth": -1.2,
+              "cost": -1.2,
+              "rate": -1.2,
+              "tiny": -1.2,
+              "off": -1.2,
+              "legacy": -1.2,
+              "enum": -1.2
+            },
+            {
+              "label": "零",
+              "growth": 0,
+              "cost": 0,
+              "rate": 0,
+              "tiny": 0,
+              "off": 0,
+              "legacy": 0,
+              "enum": 0
+            },
+            {
+              "label": "缺失",
+              "growth": null,
+              "cost": null,
+              "rate": null,
+              "tiny": null,
+              "off": null,
+              "legacy": null,
+              "enum": null
+            },
+            {
+              "label": "舍入为零（正）",
+              "growth": 0.04,
+              "cost": 0.04,
+              "rate": 0.04,
+              "tiny": 0.04,
+              "off": 0.04,
+              "legacy": 0.04,
+              "enum": 0.04
+            },
+            {
+              "label": "舍入为零（负）",
+              "growth": -0.04,
+              "cost": -0.04,
+              "rate": -0.04,
+              "tiny": -0.04,
+              "off": -0.04,
+              "legacy": -0.04,
+              "enum": -0.04
+            },
+            {
+              "label": "舍入非零（正）",
+              "growth": 0.05,
+              "cost": 0.05,
+              "rate": 0.05,
+              "tiny": 0.05,
+              "off": 0.05,
+              "legacy": 0.05,
+              "enum": 0.05
+            },
+            {
+              "label": "舍入非零（负）",
+              "growth": -0.05,
+              "cost": -0.05,
+              "rate": -0.05,
+              "tiny": -0.05,
+              "off": -0.05,
+              "legacy": -0.05,
+              "enum": -0.05
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "title": "正负、零、缺失与精度",
+        "components": [
+          {
+            "id": "trend-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "label",
+                  "title": "情况"
+                },
+                {
+                  "kind": "group",
+                  "id": "changes",
+                  "title": "颜色与方向独立",
+                  "children": [
+                    {
+                      "field": {
+                        "data": "main",
+                        "field": "growth",
+                        "format": "number-1-signed"
+                      },
+                      "title": "收入变化 · 默认前置",
+                      "unit": "万元",
+                      "colorRule": {
+                        "mode": "sign",
+                        "positive": "green",
+                        "negative": "red"
+                      },
+                      "arrowRule": {
+                        "mode": "sign",
+                        "positive": "up",
+                        "negative": "down"
+                      }
+                    },
+                    {
+                      "field": {
+                        "data": "main",
+                        "field": "cost",
+                        "format": "number-1-signed"
+                      },
+                      "title": "耗时变化 · 反向后置",
+                      "unit": "天",
+                      "colorRule": {
+                        "mode": "sign",
+                        "positive": "red",
+                        "negative": "green"
+                      },
+                      "arrowRule": {
+                        "mode": "sign",
+                        "positive": "down",
+                        "negative": "up",
+                        "position": "after"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "rate",
+                    "format": "percent-2-signed"
+                  },
+                  "title": "固定下箭头 · 后置",
+                  "colorRule": {
+                    "mode": "fixed",
+                    "color": "green"
+                  },
+                  "arrowRule": {
+                    "mode": "fixed",
+                    "arrow": "down",
+                    "position": "after"
+                  }
+                },
+                {
+                  "field": "tiny",
+                  "title": "仅负值箭头 · 显式前置",
+                  "unit": "天",
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "none",
+                    "negative": "down",
+                    "position": "before"
+                  }
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "off",
+                    "format": "number-1-signed"
+                  },
+                  "title": "规则显式隐藏",
+                  "unit": "天",
+                  "arrowRule": {
+                    "mode": "fixed",
+                    "arrow": "none"
+                  }
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "legacy",
+                    "format": "number-1-signed"
+                  },
+                  "title": "未声明 · 兼容旧页",
+                  "unit": "天"
+                },
+                {
+                  "field": "enum",
+                  "title": "枚举标签不加箭头",
+                  "enumValues": [
+                    {
+                      "value": 2.5,
+                      "label": "已达标"
+                    }
+                  ],
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "up",
+                    "negative": "down"
+                  }
+                }
+              ],
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "表格箭头"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "variants",
+        "title": "紧凑表格与进度条",
+        "components": [
+          {
+            "id": "compact-trend-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "label",
+                  "title": "情况"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "growth",
+                    "format": "number-1-signed"
+                  },
+                  "title": "变化",
+                  "unit": "天",
+                  "visual": "signed",
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "down",
+                    "negative": "up",
+                    "position": "before"
+                  }
+                }
+              ],
+              "variant": "reportCompact"
+            }
+          },
+          {
+            "id": "rate-trend-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "label",
+                  "title": "情况"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "cost",
+                    "format": "number-1-signed"
+                  },
+                  "title": "进度条变化",
+                  "unit": "天",
+                  "visual": "rateBar",
+                  "arrowRule": {
+                    "mode": "fixed",
+                    "arrow": "up"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/children/0/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/children/1/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/2/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/3/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/4/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/6/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/columns/1/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/1/props/columns/1/arrowRule",
+      "message": "表格列独立声明固定或正负映射箭头规则 由 6.99 引入，文档声明的是 6.98"
+    }
+  ]
+}

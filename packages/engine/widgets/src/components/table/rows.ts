@@ -2,7 +2,8 @@ import { appendDisplayUnit } from '../../shared/display-unit';
 import { tablePinnedSlots, tableLeafColumns, restoreCellFallbacks, rowCellFallback, pinnedSnapshotError, type TableProps, type TableColumn, type FieldBinding, type FieldValue, type Row } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
-import { reportTableFormats, formatTableCell } from './cell-presentation';
+import { reportTableFormats, formatTableCell, compatibleTableFormat } from './cell-presentation';
+import { finiteNumber, valuePolarity } from '../../shared/value-format';
 import {tableEnumLabel} from './enum-values';
 
 export interface AlignedTableRow {
@@ -122,4 +123,18 @@ export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row
   const text = formatTableCell(value, resolved.format, resolved.missingText,
     resolved.definition && 'unit' in resolved.definition ? resolved.definition.unit : undefined);
   return appendDisplayUnit(text, value, unit, resolved.format);
+}
+
+/** Sign selects the authored mapping; fixed arrows include zero like fixed colors. */
+export function alignedCellArrow(column: TableColumn, data: NamedDataSlots, row: AlignedTableRow): string {
+  if (!column.arrowRule || alignedFallback(column.field, data, row)) return '';
+  const resolved = resolveField(column.field, data);
+  const value = alignedFieldValue(column.field, data, row);
+  if (tableEnumLabel(value, column.enumValues) !== undefined) return '';
+  if (resolved.format && value !== undefined && value !== null && !compatibleTableFormat(value, resolved.format)) return '';
+  if (finiteNumber(value) === undefined) return '';
+  const direction = valuePolarity(value, resolved.format);
+  const arrow = column.arrowRule.mode === 'fixed' ? column.arrowRule.arrow
+    : direction === 'neutral' ? 'none' : column.arrowRule[direction];
+  return { up: '↑', down: '↓', none: '' }[arrow];
 }

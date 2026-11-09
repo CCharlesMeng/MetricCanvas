@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.98",
-  "schemaSha256": "e4a41d115dac6fba173b2e4c87363f7392be34412ac1629689e90a6b9951e105",
+  "schemaVersion": "6.99",
+  "schemaSha256": "52e59a4df50f3a9a8c783543924ebda95e1dc6da0f8627b12ae3360722b76c34",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -676,6 +676,7 @@
         "tableComponent",
         "tableColumnNode",
         "tableColumn",
+        "arrowRule",
         "tableColumnGroup",
         "rowExpansionTable",
         "tableRowExpansion"
@@ -685,6 +686,7 @@
         "明细表 table"
       ],
       "examples": [
+        "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
         "reference-export-column-actions",
@@ -715,6 +717,7 @@
         "table-header-select-all-query"
       ],
       "rules": [
+        "table-trend-arrows",
         "table-row-key",
         "table-row-kind-field",
         "table-merge-by-column",
@@ -1302,7 +1305,8 @@
         "6.95",
         "6.96",
         "6.97",
-        "6.98"
+        "6.98",
+        "6.99"
       ]
     },
     {
@@ -14563,6 +14567,104 @@
       "ref": "#/definitions/colorRule"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/arrowRule",
+      "path": "@tableColumn.arrowRule",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/arrowRule/allOf/0",
+      "path": "@tableColumn.arrowRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/arrowRule"
+    },
+    {
+      "pointer": "#/definitions/arrowRule",
+      "path": "@arrowRule",
+      "required": "类型/分支",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0",
+      "path": "@arrowRule · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0/properties/mode",
+      "path": "@arrowRule · oneOf[0].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "fixed"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0/properties/arrow",
+      "path": "@arrowRule · oneOf[0].arrow",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "enum": [
+        "up",
+        "down",
+        "none"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/0/properties/position",
+      "path": "@arrowRule · oneOf[0].position",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "before",
+        "after"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1",
+      "path": "@arrowRule · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/mode",
+      "path": "@arrowRule · oneOf[1].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "sign"
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/positive",
+      "path": "@arrowRule · oneOf[1].positive",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "enum": [
+        "up",
+        "down",
+        "none"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/negative",
+      "path": "@arrowRule · oneOf[1].negative",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "enum": [
+        "up",
+        "down",
+        "none"
+      ]
+    },
+    {
+      "pointer": "#/definitions/arrowRule/oneOf/1/properties/position",
+      "path": "@arrowRule · oneOf[1].position",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "before",
+        "after"
+      ]
+    },
+    {
       "pointer": "#/definitions/tableColumnNode/anyOf/1",
       "path": "@tableColumnNode · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -21086,8 +21188,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1",
       "module": "components/table.md",
-      "file": "examples/table-column-enums.json",
-      "pointer": "#/sections/0/components/0/props/columns/2/enumValues/0/value"
+      "file": "examples/table-trend-arrows.json",
+      "pointer": "#/sections/0/components/0/props/columns/6/enumValues/0/value"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0",
@@ -21190,6 +21292,18 @@
       "module": "components/table.md",
       "file": "examples/paged-union-branches.json",
       "pointer": "#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/from"
+    },
+    {
+      "schemaPointer": "#/definitions/arrowRule/oneOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-trend-arrows.json",
+      "pointer": "#/sections/0/components/0/props/columns/2/arrowRule"
+    },
+    {
+      "schemaPointer": "#/definitions/arrowRule/oneOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-trend-arrows.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/children/0/arrowRule"
     },
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/1",
@@ -21879,5 +21993,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "180be6acf453a1fd6e5295f09c2c22e273aa1ec7fe3e8716a8c4b70842815242"
+  "semanticSourceDigest": "c3f5e139ce0eac6959c4cb21f1eb2f10dba3742d0aca84183d6fcfd05bc7bba8"
 }

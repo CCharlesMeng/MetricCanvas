@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 98,
-  "current": "6.98",
+  "minor": 99,
+  "current": "6.99",
   "capabilities": {
+    "table-trend-arrows": {
+      "minor": 99,
+      "description": "表格列独立声明固定或正负映射箭头规则",
+      "legacyReadable": false
+    },
     "ioc-header-auto-back": {
       "minor": 96,
       "description": "IOC 详情页按有效下钻来源自动返回",
@@ -938,6 +943,7 @@
     "6.95",
     "6.96",
     "6.97",
-    "6.98"
+    "6.98",
+    "6.99"
   ]
 }

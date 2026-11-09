@@ -150,6 +150,19 @@
       ]
     },
     {
+      "id": "table-trend-arrows",
+      "description": "表格箭头",
+      "valid": [
+        "table-trend-arrows"
+      ],
+      "invalid": [
+        "table-arrow-old",
+        "table-arrow-text",
+        "table-arrow-type",
+        "table-arrow-position"
+      ]
+    },
+    {
       "id": "table-show-select-all",
       "description": "全选入口显式开关及静态动态候选不限意图",
       "valid": [

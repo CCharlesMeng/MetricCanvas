@@ -36,7 +36,7 @@
     semanticHtmlFieldPresentation
   } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import { projectTableRows, tableRowColumn, alignedCellText, alignedFieldValue } from './rows';
+  import { projectTableRows, tableRowColumn, alignedCellText, alignedCellArrow, alignedFieldValue } from './rows';
   import { mergeSpans, tableRowTier } from './presentation';
   import { buildTableColumnLayout, shouldWrapTableHeaders } from './columns';
   import type {
@@ -585,6 +585,13 @@
                 {@const rawValue = alignedFieldValue(column.field, data, row)}
                 {@const hasValue = hasDisplayValue(rawValue)}
                 {@const color = tableValueColor(rawValue, column, resolved.format)}
+                {@const trendArrow = alignedCellArrow(column, data, row)}
+                {#snippet arrowGlyph()}
+                  <span class="cell-trend-arrow" aria-label={trendArrow === '↑' ? '上箭头' : '下箭头'}>{trendArrow}</span>
+                {/snippet}
+                {#snippet primaryValue()}
+                  {#if trendArrow && column.arrowRule?.position !== 'after'}{@render arrowGlyph()}{' '}{/if}{alignedCellText(column.field, data, row, column.enumValues, column.unit)}{#if trendArrow && column.arrowRule?.position === 'after'}{' '}{@render arrowGlyph()}{/if}
+                {/snippet}
                 {@const semanticPresentation = semanticHtmlFieldPresentation(
                   resolved,
                   rawValue,
@@ -635,7 +642,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                          <span class="cell-primary-value">{@render primaryValue()}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -664,7 +671,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                          <span class="cell-primary-value">{@render primaryValue()}</span>
                         {/if}
                         {@render supplementaryFields()}
                       </span>
@@ -677,7 +684,7 @@
                         class="rate-bar"
                         style={`width: ${rateBarWidth(bodyColumn, rawValue)}%;`}
                       ></span>
-                      <span class="cell-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                      <span class="cell-value">{@render primaryValue()}</span>
                     </span>
                     {@render supplementaryFields()}
                     </div>
@@ -691,7 +698,7 @@
                           inline
                         />
                       {:else}
-                        <span class="cell-primary-value">{alignedCellText(column.field, data, row, column.enumValues, column.unit)}</span>
+                        <span class="cell-primary-value">{@render primaryValue()}</span>
                       {/if}
                       {@render supplementaryFields()}
                     </div>

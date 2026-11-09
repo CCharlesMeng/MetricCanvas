@@ -1665,6 +1665,13 @@ function componentErrors(
   }
 
   function checkTable(component: Extract<Component, { type: 'table' }>): void {
+    function checkTrendArrowColumn(column: Exclude<TableColumnNode, { kind: 'group' }>, path: string): void {
+      if (column.arrowRule === undefined) return;
+      const resolved = resolveBinding(page, component, column.field);
+      if (!('error' in resolved) && !['number', 'money'].includes(resolved.field.type)) {
+        errors.push(schemaError(`${path}/arrowRule`, 'arrowRule 只支持 number 或 money 字段'));
+      }
+    }
     function checkNumberRangeColumn(column: Exclude<TableColumnNode, { kind: 'group' }>, path: string): void {
       if (column.filterable?.mode !== 'numberRange') return;
       const resolved = resolveBinding(page, component, column.field);
@@ -1676,6 +1683,7 @@ function componentErrors(
         if (column.kind === 'group') visit(column.children, `${path}/${index}/children`);
         else {
           checkNumberRangeColumn(column, `${path}/${index}`);
+          checkTrendArrowColumn(column, `${path}/${index}`);
           if (column.colorRule) checkColor(column.field, `${path}/${index}`,
             column.visual === 'signed' || column.dangerValues !== undefined);
           if ((column.openDetail || column.navigate) && (!column.link || column.selection || (column.openDetail && column.navigate))) errors.push(schemaError(`${path}/${index}`, '列动作要求 link，且 navigate/openDetail/selection 不得冲突'));

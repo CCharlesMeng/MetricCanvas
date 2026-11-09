@@ -1,0 +1,35 @@
+{
+  "case": "table-arrow-text",
+  "invariant": "table-trend-arrows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "arrowRule 只支持 number 或 money 字段",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/arrowRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "down",
+                    "negative": "up"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-arrow-text.json"
+}

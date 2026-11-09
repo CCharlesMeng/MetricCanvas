@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.99：表格字段列新增 `arrowRule`，与 `colorRule` 一样支持 `fixed` 与 `sign`；可配置上箭头、下箭头或不显示，正负映射可反向，箭头与颜色独立；默认放在数值前，可用 `position:"after"` 放在后面。省略规则不显示箭头。相对已发布协议列级字段净增1，方向/精度判断由引擎复用。见[表格上下箭头](docs/page-metadata/components/table.md#table-trend-arrows)，合成入口 `/pages/table-trend-arrows`。
+
 IOC Header 行内布局取消固定标题列，普通与紧凑页头均自然换行，主体不产生内部滚动条；所有屏幕页头滚出原位置后吸顶，静态导出不吸顶。无需新增 Schema 字段。见[唯一页头](docs/page-metadata/page.md#唯一页头641)，合成验收入口 `/pages/ioc-header-flow-sticky` 与 `/pages/ioc-header-section-sticky`。
 
 表格列头弹层移除“清除筛选”按钮；取消勾选或清空日期/数值范围即可清空该列条件，无需新增配置。
