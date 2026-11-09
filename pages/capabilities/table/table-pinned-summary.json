@@ -184,6 +184,17 @@
               "mode": "query"
             },
             "toolbar": {
+              "search": {
+                "options": [
+                  {
+                    "value": "region",
+                    "label": "地区编码",
+                    "field": "region-id",
+                    "placeholder": "输入 region-1 至 region-6；其他编码无匹配"
+                  }
+                ],
+                "defaultValue": "region"
+              },
               "export": {
                 "format": "xlsx",
                 "filename": "地区与中国区"

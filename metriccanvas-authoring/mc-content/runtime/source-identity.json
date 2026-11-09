@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "5ea5186b8464404ff87fd240eacee4cca8d1a92c4052c6e4887383dc4b8de7c5",
+  "sha256": "7638a8524eea7d3d4dfce0b2219d66d6c6805437ec60b512ec77858790d95644",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "1403b9dfba0b52b2c019ce3d60bb291b81640bd660197d72f010b7e8aef1f923"
+      "sha256": "e93ae838aaceaf23e36c1b1c7facb61ecb4bc0572a098ed0172bbae186fa1bdb"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -2148,7 +2148,11 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/README.md",
-      "sha256": "08ce48f48a5489ba169cc9fb3900df08a5fe0c03ec87ea49968a05948c06675a"
+      "sha256": "153476f5dd5db706b27a66540b72f4a467a90e2a150a2e8690194aadb61d5eaa"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/approval/region-auth-norms-detail.json",
+      "sha256": "522fd5a19e78181c6e5498ff11fc3f6e2ca42fb941dc6fa6eb8c21aa5ae963d0"
     },
     {
       "file": "pages/business/dashboard/ioc/approval/region-authorization-norms.json",
@@ -2848,7 +2852,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "ebdb29adf3319ad9233ea18a31385e6fdb16666dd1e31778168f61348c7bb3d5"
+      "sha256": "3c9127d11c06722cc6e24529dde7aaf1dabfc1e6dd8054288c5a63aa0b016ac9"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2992,7 +2996,7 @@
     },
     {
       "file": "pages/capabilities/table/table-pinned-summary.json",
-      "sha256": "4378f0c588cc723f08eff2a0d94b5c50cecdd72f8bb70d031ac0e5f14d7b7fee"
+      "sha256": "4677d89c7e36c6ce2ea3a169715af143e52e611d96265462409923d55950c98d"
     },
     {
       "file": "pages/capabilities/table/table-row-expansion-cache.json",

@@ -1,5 +1,13 @@
 # 代表处指标卡业务页
 
+## 行权规范代表处明细与搜索空结果
+
+入口：`/pages/region-auth-norms-detail`，[页面 JSON](region-auth-norms-detail.json)。旧紧凑工具栏已迁为首分区首组件 `iocHeader`，Schema 采用该结构的最低版本6.81；标题、统计期间与区域筛选、默认值、查询绑定、Tab及下钻保持原稿。
+
+启动 `pnpm dev:dqe`，无必填URL参数；真实业务查询仍需要实际DQE服务。本地浏览器回归 `apps/playground/tests/region-auth-norms-search.browser.ts` 读取本页，拦截业务响应提供合成零匹配回执，并复现搜索编码缺失，验证“决策意见明细”在这两种无可展示行的状态下均显示“暂无数据”、保留表头及关键词、总条数为0，清空搜索恢复原行集。该回归不证明真实业务数据或真实DQE搜索已接通。
+
+本页审批人包含搜索随 `pagedUnion` 下推到商务及合同两个成员，依赖集成应用已核验的 `encodeSearch`。当前共用注入网关未配置该编码器，搜索会产生 `DQE_CONFIG_ERROR`，尚未取得成功的零匹配回执；按照用户确认的统一空表反馈，此时同样显示“暂无数据”，错误仍保留在控制台与data-error事件。真实包含搜索仍需要服务请求协议与回执才能补齐接入。本次复用既有空提示，不新增Schema字段，也不改变查询或字段契约；空表反馈的语义同步到产品文档和本地创作Skill。
+
 行权规范情况入口：`/pages/region-authorization-norms`，[JSON](region-authorization-norms.json)。无必填 URL 参数；沿用页面默认统计期间，Region 空选时立即发起地区部、代表处和三张趋势图的查询，不必先选全球。全球不添加区域谓词，选择地区部或代表处后按对应字段筛选。Playground 使用合成组织候选，业务查询仍走 DQE 网关；可先运行 `pnpm dev:dqe` 和 `pnpm dev:playground`。打开 Region，展开长组织树并缩短窗口时，只滚动候选列表，搜索框固定。自动回归 `apps/playground/tests/authorization-norms.browser.ts` 拦截业务响应，覆盖首屏请求、区域切换、单层滚动及正常/空/失败状态，不代表真实 DQE 或线上部署验收。
 
 - 行权效率：`/pages/rep-office-execution-efficiency`，[JSON](rep-office-execution-efficiency.json)。

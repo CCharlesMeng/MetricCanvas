@@ -1,0 +1,2421 @@
+{
+  "schemaVersion": "6.81",
+  "id": "region-auth-norms-detail",
+  "layout": "dashboard",
+  "meta": {
+    "title": "行权规范-代表处",
+    "description": "行权规范代表处审批人维度明细。由统计期间与区域筛选驱动：region 筛选器为 geo-pc-code 层级维度（geo/region-dept/office），各查询数据源 filterBindings 绑定 region 并经 levelQueryFields 映射 geo_pc_code/地区部/代表处（中文字段名，与 region-authorization-norms 源页一致，匹配 output_dims 维度名以命中数据）下推，供页内 region 筛选器手动选区域（候选值为编码）；代表处下钻入口传代表处名称（页面参数 rep-office-name，dim_name=代表处），各查询数据源 paramBindings 绑定 rep-office-name 并按代表处名称字段下推过滤。region 筛选器与 rep-office-name 参数共用 queryField 代表处，按 schema 契约声明 initialParam=rep-office-name、defaultLevel=office，使筛选器初值来源与参数绑定同一来源（满足「查询与筛选必须引用同一参数初值来源」校验），下钻传入代表处名时 region 筛选器初值定位到该代表处。KPI 卡片绑定真实 DQE 查询（指标：有效商务决策意见占比、有效合同决策意见占比、紧急决策商务比例、紧急决策合同比例、商务申请规范率、合同申请规范率，见 docs/contract-business 契约 ZB0006339/6345/6340/6342/6341/6346），由统计期间筛选驱动。并按决策意见明细、紧急决策商务明细、评审组织人驳回情况统计三个 Tab 切换明细表，支持审批人/项目名称/评审组织人搜索、表头维度筛选、排序与分页。决策意见明细表采用 pagedUnion 多来源合并（参考 pages/capabilities/table/multi-source-table.json：两个独立查询成员按 rowKey/sourceField 合并、异字段投影统一、整体排序与服务端分页），商务成员与合同成员各绑一个真实 DQE 查询，由统计期间筛选驱动。商务成员见契约 ZB0006339 有效商务决策意见占比（依赖 valid_commercial_decision_cnt、ZB0001983 商审审批人决策次数），output_dims 取商务审批人、地区部、代表处、审批人角色，output_metrics 取商审审批人决策次数、有效商务决策意见占比、有效商务决策次数；合同成员见契约 ZB0006345 有效合同决策意见占比（依赖 valid_contract_decision_cnt、ZB0001414 审批人决策次数（合同）），output_dims 取审批人姓名、地区部、代表处、审批人角色，output_metrics 取审批人决策次数（合同）、有效合同决策意见占比、有效合同决策意见次数。两成员投影统一为审批人、区域、代表处、审批人角色、类型（商务成员常量=商务、合同成员常量=合同）、决策总次数、有效意见数、有效意见占比（商务行=商审审批人决策次数/有效商务决策次数/有效商务决策意见占比，合同行=审批人决策次数（合同）/有效合同决策意见次数/有效合同决策意见占比），rowKey 取各成员审批人、sourceField(memberId) 取来源常量。有效意见数作为 output_dims 非指标；有效意见占比由 DQE 侧按分子/分母计算返回。表格类型列枚举固定为合同/商务，表头 select 筛选支持全选（同时显示两类）或单选，决策总次数与有效意见数两列分别按类型列级下钻（navigateBySource 按 biz-type 分流）：决策总次数（分母=商审审批人决策次数）商务行下钻 business-decision-details、合同行下钻 contract-decision-details；有效意见数（分子=有效商务决策次数）商务行下钻 business-decision-details、合同行下钻 contract-decision-details。商务行两个下钻入口均下钻 business-decision-details，经来源页 is-valid 筛选器（是否有效商务决策，options 全部/有效，default=有效）按 filter source 传递：有效意见数下钻默认筛有效，决策总次数下钻同样传递来源页 is-valid 当前值（默认有效，可在来源页切换全部后下钻查看全部记录）。两下钻页主表均为 dws_t_commercial_approver_decision_cnt_metric_detail_global（见 docs/contract-business/ZB0001983 商审审批人决策次数.md），主题表为商务基本信息表 dwd_crm.dwd_t_biz_basic_global（见 docs/contract-business/商务基本信息表.md，取责任人 owner_name、商务类型 biz_type），由 DQE 网关按 biz_id + data_site_type 关联。评审组织人驳回情况统计表（申请规范率明细）采用 pagedUnion 多来源合并（参考 pages/capabilities/table/multi-source-table.json：两个独立查询成员按 rowKey/sourceField 合并、异字段投影统一、整体排序与服务端分页），商务成员与合同成员各绑一个真实 DQE 查询，由统计期间筛选驱动。商务成员见契约 ZB0006341 商务申请规范率（依赖商审驳回次数、ZB0001983 商审审批人决策次数），output_dims 取商务审批人、代表处，output_metrics 取商审审批人决策次数、商审驳回次数、商务申请规范率；合同成员见契约 ZB0006346 合同申请规范率（依赖合同驳回次数、ZB0006074 销售合同评审决策任务数量），output_dims 取审批人姓名、代表处，output_metrics 取销售合同评审决策任务数量、合同驳回次数、合同申请规范率。两成员投影统一为评审组织人、代表处、类型（商务成员常量=商务、合同成员常量=合同）、审批次数、驳回次数、驳回率（商务行=商审审批人决策次数/商审驳回次数/商务申请规范率，合同行=销售合同评审决策任务数量/合同驳回次数/合同申请规范率），rowKey 取各成员审批人、sourceField(memberId) 取来源常量。表格类型列枚举固定为合同/商务，表头 select 筛选支持全选（同时显示两类）或单选，审批次数与驳回次数两列均按类型列级下钻（navigateBySource 按 biz-type 分流）：审批次数商务行下钻 business-approval-count-details、合同行下钻 contract-approval-count；驳回次数商务行下钻 business-rejection-details、合同行下钻 contract-rejection-details。紧急决策商务明细表采用 pagedJoin 多查询组合源（参考 pages/business-rejection-details.json：主表对象查询为业务行域成员、主题表 DQE 查询为补列成员，按商务ID关联、分批完整读取后统一搜索/筛选/排序/分页）。主表为紧急决策商务明细（dws_t_urgent_commercial_decision_app_cnt_metric_detail_global，object_type=Business/Emergency Business Decision Details），对象查询取商务ID、代表处（rep_office_name_cn）、需紧急决策（emergency_switch）、商务审批通过时间（dtime）、站点（站点），由统计期间筛选驱动（mtime 下推商务审批通过时间）；主题表为商务基本信息表（dwd_crm.dwd_t_biz_basic_global，见 docs/contract-business/商务基本信息表.md），DQE 查询取商务ID、商务编号（biz_code）、项目名称（project_name）、责任人（owner_name）、客户名称（cust_company_name）、商务类型（biz_type，0=项目商务框架，1=项目非框架，3=框架-基础PO商务）、创建时间（create_time）、商务生效时间（valid_time）、商务失效时间（expire_time）、生命状态（biz_status）、站点（站点类型），全量更新无时间语义故 notApplicableFilters 声明 mtime。A表 left join B表，两成员按 biz_id + 站点关联（biz_id 为行键，站点作为 DQE 网关侧复合关联条件）；主题表字段可能缺匹配故投影允许 null。rowKey 取自动记录标识 record-id，单槽查询分页表消费。紧急决策合同明细表采用 pagedJoin 多查询组合源（参考 pages/business-rejection-details.json：主表对象查询为业务行域成员、主题表 DQE 查询为补列成员，按合同ID关联、分批完整读取后统一搜索/筛选/排序/分页）。主表为紧急决策合同明细表（dws_t_urgent_decision_contract_cnt_metric_detail_global，无独立 md，按描述建源），对象查询取代表处（rep_office_name_cn）、合同编号（contract_code）、版本号（version_no）、站点（站点），由统计期间筛选驱动（mtime 下推合同审批完成时间）；主题表为合同基本信息表（dwd_crm.dwd_t_customer_all_contract_basic_global），DQE 查询取项目名称（project_name）、合同责任人（owner_name）、合同激活时间（active_time）、实际生效时间（actual_effect_time）、实际失效时间（actual_expire_time）、客户名称（company_name）、站点（站点类型），全量更新无时间语义故 notApplicableFilters 声明 mtime。两成员按合同ID（contract_id）+ 站点关联（合同ID 为行键，站点作为 DQE 网关侧复合关联条件）；主题表字段可能缺匹配故投影允许 null。rowKey 取自动记录标识 record-id，单槽查询分页表消费。"
+  },
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "rep-office-name",
+          "dim_name": "代表处",
+          "required": false,
+          "label": "代表处"
+        },
+        {
+          "id": "is-valid",
+          "dim_name": "是否有效商务决策",
+          "dim_value_list": [
+            "是"
+          ],
+          "required": false,
+          "label": "是否有效商务决策"
+        },
+        {
+          "id": "is-valid-all",
+          "dim_name": "是否有效商务决策",
+          "dim_value_list": [
+            "是",
+            "否"
+          ],
+          "required": false,
+          "label": "是否有效商务决策"
+        }
+      ]
+    }
+  },
+  "filters": [
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "emptyLabel": "区域",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "geo-pc-code",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "office",
+      "initialParam": "rep-office-name",
+      "display": "tree",
+      "treeSelection": "level",
+      "searchable": true
+    }
+  ],
+  "dataSources": {
+    "kpi-summary": {
+      "fields": {
+        "biz-decision-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务决策意见有效占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效商务决策意见占比"
+        },
+        "contract-decision-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同决策意见有效占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效合同决策意见占比"
+        },
+        "biz-urgent-decision-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务紧急决策比例",
+          "defaultFormat": "percent-1",
+          "queryField": "紧急决策商务比例"
+        },
+        "contract-urgent-decision-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同紧急决策比例",
+          "defaultFormat": "percent-1",
+          "queryField": "紧急决策合同比例"
+        },
+        "biz-apply-norm-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务申请规范率",
+          "defaultFormat": "percent-1",
+          "queryField": "商务申请规范率"
+        },
+        "contract-apply-norm-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同申请规范率",
+          "defaultFormat": "percent-1",
+          "queryField": "合同申请规范率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "有效商务决策意见占比",
+                  "有效合同决策意见占比",
+                  "紧急决策商务比例",
+                  "紧急决策合同比例",
+                  "商务申请规范率",
+                  "合同申请规范率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "commercial-decision-valid": {
+      "fields": {
+        "commercial-approver": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人",
+          "queryField": "商务审批人",
+          "nullable": false
+        },
+        "commercial-region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "queryField": "地区部"
+        },
+        "commercial-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "commercial-role": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人角色",
+          "queryField": "审批角色",
+          "nullable": true
+        },
+        "commercial-decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策总次数",
+          "unit": "次",
+          "queryField": "商审审批人决策次数"
+        },
+        "commercial-valid-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "有效意见数",
+          "unit": "个",
+          "queryField": "有效商务决策次数"
+        },
+        "commercial-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "有效意见占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效商务决策意见占比"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "商务审批人",
+                  "地区部",
+                  "审批角色"
+                ],
+                "output_metrics": [
+                  "有效商务决策次数",
+                  "有效商务决策意见占比",
+                  "商审审批人决策次数"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "contract-decision-valid": {
+      "fields": {
+        "contract-approver": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人",
+          "queryField": "审批人名称",
+          "nullable": false
+        },
+        "contract-region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "queryField": "地区部"
+        },
+        "contract-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "contract-role": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人角色",
+          "queryField": "审批角色",
+          "nullable": true
+        },
+        "contract-decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策总次数",
+          "unit": "次",
+          "queryField": "有效合同决策次数"
+        },
+        "contract-valid-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "有效意见数",
+          "unit": "个",
+          "queryField": "有效合同决策意见次数"
+        },
+        "contract-valid-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "有效意见占比",
+          "defaultFormat": "percent-1",
+          "queryField": "有效合同决策意见占比"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "审批人名称",
+                  "地区部",
+                  "审批角色"
+                ],
+                "output_metrics": [
+                  "有效合同决策意见次数",
+                  "有效合同决策次数",
+                  "有效合同决策意见占比"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "decision-valid-detail": {
+      "fields": {
+        "rowKey": {
+          "type": "string",
+          "role": "dimension",
+          "label": "行标识",
+          "nullable": false
+        },
+        "memberId": {
+          "type": "string",
+          "role": "dimension",
+          "label": "来源编码",
+          "nullable": false
+        },
+        "approver-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "approver-role": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人角色"
+        },
+        "biz-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "类型"
+        },
+        "decision-total-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策总次数",
+          "unit": "次"
+        },
+        "valid-opinion-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "有效意见数",
+          "unit": "个"
+        },
+        "valid-opinion-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "有效意见占比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "pagedUnion",
+        "rowKey": "rowKey",
+        "sourceField": "memberId",
+        "members": {
+          "commercial": {
+            "source": "commercial-decision-valid",
+            "rowKeyFields": [
+              "commercial-approver",
+              "commercial-office"
+            ],
+            "projection": {
+              "approver-name": {
+                "field": "commercial-approver"
+              },
+              "region-dept-name": {
+                "field": "commercial-region"
+              },
+              "rep-office-name": {
+                "field": "commercial-office"
+              },
+              "approver-role": {
+                "field": "commercial-role"
+              },
+              "biz-type": {
+                "value": "商务"
+              },
+              "decision-total-count": {
+                "field": "commercial-decision-count"
+              },
+              "valid-opinion-count": {
+                "field": "commercial-valid-count"
+              },
+              "valid-opinion-rate": {
+                "field": "commercial-valid-rate"
+              }
+            }
+          },
+          "contract": {
+            "source": "contract-decision-valid",
+            "rowKeyFields": [
+              "contract-approver",
+              "contract-office"
+            ],
+            "projection": {
+              "approver-name": {
+                "field": "contract-approver"
+              },
+              "region-dept-name": {
+                "field": "contract-region"
+              },
+              "rep-office-name": {
+                "field": "contract-office"
+              },
+              "approver-role": {
+                "field": "contract-role"
+              },
+              "biz-type": {
+                "value": "合同"
+              },
+              "decision-total-count": {
+                "field": "contract-decision-count"
+              },
+              "valid-opinion-count": {
+                "field": "contract-valid-count"
+              },
+              "valid-opinion-rate": {
+                "field": "contract-valid-rate"
+              }
+            }
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "decision-total-count",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "decision-total-count",
+            "valid-opinion-count",
+            "valid-opinion-rate",
+            "approver-name"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 20
+        }
+      }
+    },
+    "urgent-decision-a": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务ID",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "need-urgent-decision": {
+          "type": "string",
+          "role": "dimension",
+          "label": "需紧急决策",
+          "queryField": "紧急决策开关",
+          "nullable": false
+        },
+        "biz-approve-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "商务审批通过时间",
+          "queryField": "账期",
+          "nullable": true
+        },
+        "site": {
+          "type": "string",
+          "role": "dimension",
+          "label": "站点",
+          "queryField": "站点",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business/Emergency Business Decision Details",
+                "output_fields": [
+                  "商务ID",
+                  "代表处",
+                  "紧急决策开关",
+                  "账期",
+                  "站点"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "datetime"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "urgent-decision-b": {
+      "fields": {
+        "biz-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务ID",
+          "queryField": "商务ID",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": true
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "queryField": "客户名称",
+          "nullable": true
+        },
+        "biz-type": {
+          "type": "number",
+          "role": "dimension",
+          "label": "商务类型",
+          "queryField": "商务类型",
+          "nullable": true
+        },
+        "create-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "创建时间",
+          "queryField": "商务创建时间",
+          "nullable": true
+        },
+        "biz-effective-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "商务生效时间",
+          "queryField": "生效时间",
+          "nullable": true
+        },
+        "biz-expire-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "商务失效时间",
+          "queryField": "失效时间",
+          "nullable": true
+        },
+        "life-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生命状态",
+          "queryField": "商务状态",
+          "nullable": true
+        },
+        "site": {
+          "type": "string",
+          "role": "dimension",
+          "label": "站点",
+          "queryField": "站点类型",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business/Basic Business Information",
+                "output_fields": [
+                  "商务创建时间",
+                  "商务类型",
+                  "商务ID",
+                  "项目名称",
+                  "责任人名称",
+                  "客户名称",
+                  "失效时间",
+                  "生效时间",
+                  "商务状态",
+                  "站点类型"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "urgent-decision-detail": {
+      "fields": {
+        "record-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "记录标识",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": false
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "nullable": true
+        },
+        "biz-type": {
+          "type": "number",
+          "role": "dimension",
+          "label": "商务类型",
+          "nullable": true
+        },
+        "need-urgent-decision": {
+          "type": "string",
+          "role": "dimension",
+          "label": "需紧急决策",
+          "nullable": false
+        },
+        "biz-approve-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "商务审批通过时间",
+          "nullable": true
+        },
+        "create-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "创建时间",
+          "nullable": true
+        },
+        "biz-effective-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "商务生效时间",
+          "nullable": true
+        },
+        "biz-expire-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "商务失效时间",
+          "nullable": true
+        },
+        "life-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生命状态",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "record-id",
+        "domainMember": "decision",
+        "members": {
+          "decision": {
+            "source": "urgent-decision-a",
+            "key": {
+              "field": "biz-id",
+              "queryField": "商务ID"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "urgent-decision-b",
+            "key": {
+              "field": "biz-id",
+              "queryField": "商务ID"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "mtime"
+            ]
+          }
+        },
+        "projection": {
+          "rep-office-name": {
+            "member": "decision",
+            "field": "rep-office-name"
+          },
+          "need-urgent-decision": {
+            "member": "decision",
+            "field": "need-urgent-decision"
+          },
+          "biz-approve-time": {
+            "member": "decision",
+            "field": "biz-approve-time"
+          },
+          "project-name": {
+            "member": "basic",
+            "field": "project-name"
+          },
+          "owner-name": {
+            "member": "basic",
+            "field": "owner-name"
+          },
+          "customer-name": {
+            "member": "basic",
+            "field": "customer-name"
+          },
+          "biz-type": {
+            "member": "basic",
+            "field": "biz-type"
+          },
+          "create-time": {
+            "member": "basic",
+            "field": "create-time"
+          },
+          "biz-effective-time": {
+            "member": "basic",
+            "field": "biz-effective-time"
+          },
+          "biz-expire-time": {
+            "member": "basic",
+            "field": "biz-expire-time"
+          },
+          "life-status": {
+            "member": "basic",
+            "field": "life-status"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "biz-approve-time",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "biz-approve-time",
+            "create-time",
+            "biz-effective-time",
+            "biz-expire-time"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 20
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "onMissing": "null",
+        "records": {
+          "batchSize": 500,
+          "maxBytes": 67108864,
+          "timeoutMs": 60000
+        }
+      }
+    },
+    "urgent-contract-a": {
+      "fields": {
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "queryField": "合同ID",
+          "nullable": false
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "contract-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同编号",
+          "queryField": "合同编码",
+          "nullable": false
+        },
+        "version-no": {
+          "type": "string",
+          "role": "dimension",
+          "label": "版本号",
+          "queryField": "版本号",
+          "nullable": false
+        },
+        "approve-complete-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "审批完成时间",
+          "queryField": "审批完成时间",
+          "nullable": true
+        },
+        "stage-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "阶段名称",
+          "queryField": "阶段名称",
+          "nullable": true
+        },
+        "urgent-decision-switch": {
+          "type": "string",
+          "role": "dimension",
+          "label": "紧急决策开关",
+          "queryField": "紧急决策开关",
+          "nullable": true
+        },
+        "site": {
+          "type": "string",
+          "role": "dimension",
+          "label": "站点",
+          "queryField": "站点",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Contract-Urgent_Decision_Contract_Metric_Detail",
+                "output_fields": [
+                  "代表处",
+                  "合同ID",
+                  "合同编码",
+                  "版本号",
+                  "审批完成时间",
+                  "阶段名称",
+                  "紧急决策开关",
+                  "站点"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "datetime"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "urgent-contract-b": {
+      "fields": {
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "queryField": "合同ID",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": true
+        },
+        "contract-owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同责任人",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "contract-activate-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "合同激活时间",
+          "queryField": "合同激活时间",
+          "nullable": true
+        },
+        "actual-effective-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "实际生效时间",
+          "queryField": "实际生效时间",
+          "nullable": true
+        },
+        "actual-expire-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "实际失效时间",
+          "queryField": "实际失效时间",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "queryField": "客户名称",
+          "nullable": true
+        },
+        "site": {
+          "type": "string",
+          "role": "dimension",
+          "label": "站点",
+          "queryField": "站点类型",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Contract/Customer Contract Basic Information",
+                "output_fields": [
+                  "合同ID",
+                  "项目名称",
+                  "责任人名称",
+                  "合同激活时间",
+                  "实际生效时间",
+                  "实际失效时间",
+                  "客户名称",
+                  "站点类型"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "urgent-contract-detail": {
+      "fields": {
+        "record-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "记录标识",
+          "nullable": false
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": false
+        },
+        "contract-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同编号",
+          "nullable": false
+        },
+        "version-no": {
+          "type": "string",
+          "role": "dimension",
+          "label": "版本号",
+          "nullable": false
+        },
+        "approve-complete-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "审批完成时间",
+          "nullable": true
+        },
+        "stage-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "阶段名称",
+          "nullable": true
+        },
+        "urgent-decision-switch": {
+          "type": "string",
+          "role": "dimension",
+          "label": "紧急决策开关",
+          "nullable": true
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": true
+        },
+        "contract-owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同责任人",
+          "nullable": true
+        },
+        "contract-activate-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "合同激活时间",
+          "nullable": true
+        },
+        "actual-effective-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "实际生效时间",
+          "nullable": true
+        },
+        "actual-expire-time": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "实际失效时间",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "record-id",
+        "domainMember": "contract",
+        "members": {
+          "contract": {
+            "source": "urgent-contract-a",
+            "key": {
+              "field": "contract-id",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "urgent-contract-b",
+            "key": {
+              "field": "contract-id",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "mtime",
+              "region"
+            ]
+          }
+        },
+        "projection": {
+          "rep-office-name": {
+            "member": "contract",
+            "field": "rep-office-name"
+          },
+          "contract-code": {
+            "member": "contract",
+            "field": "contract-code"
+          },
+          "version-no": {
+            "member": "contract",
+            "field": "version-no"
+          },
+          "approve-complete-time": {
+            "member": "contract",
+            "field": "approve-complete-time"
+          },
+          "stage-name": {
+            "member": "contract",
+            "field": "stage-name"
+          },
+          "urgent-decision-switch": {
+            "member": "contract",
+            "field": "urgent-decision-switch"
+          },
+          "project-name": {
+            "member": "basic",
+            "field": "project-name"
+          },
+          "contract-owner-name": {
+            "member": "basic",
+            "field": "contract-owner-name"
+          },
+          "contract-activate-time": {
+            "member": "basic",
+            "field": "contract-activate-time"
+          },
+          "actual-effective-time": {
+            "member": "basic",
+            "field": "actual-effective-time"
+          },
+          "actual-expire-time": {
+            "member": "basic",
+            "field": "actual-expire-time"
+          },
+          "customer-name": {
+            "member": "basic",
+            "field": "customer-name"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "contract-activate-time",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "contract-activate-time",
+            "actual-effective-time",
+            "actual-expire-time",
+            "approve-complete-time"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 10
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "onMissing": "null",
+        "records": {
+          "batchSize": 500,
+          "maxRows": 1000,
+          "maxBytes": 67108864,
+          "timeoutMs": 60000
+        }
+      }
+    },
+    "commercial-app-norm": {
+      "fields": {
+        "commercial-approver": {
+          "type": "string",
+          "role": "dimension",
+          "label": "评审组织人",
+          "queryField": "商务审批人",
+          "nullable": false
+        },
+        "commercial-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "commercial-approve-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批次数",
+          "unit": "次",
+          "queryField": "商审审批人决策次数"
+        },
+        "commercial-reject-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "驳回次数",
+          "unit": "次",
+          "queryField": "商审驳回次数"
+        },
+        "commercial-reject-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "驳回率",
+          "defaultFormat": "percent-1",
+          "queryField": "商务申请规范率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "商务审批人"
+                ],
+                "output_metrics": [
+                  "商审驳回次数",
+                  "商审审批人决策次数",
+                  "商务申请规范率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "order_by_field": "商审审批人决策次数",
+                  "type": "desc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "contract-app-norm": {
+      "fields": {
+        "contract-approver": {
+          "type": "string",
+          "role": "dimension",
+          "label": "评审组织人",
+          "queryField": "审批人名称",
+          "nullable": false
+        },
+        "contract-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": false
+        },
+        "contract-approve-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批次数",
+          "unit": "次",
+          "queryField": "销售合同评审决策任务数量"
+        },
+        "contract-reject-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "驳回次数",
+          "unit": "次",
+          "queryField": "合同驳回次数"
+        },
+        "contract-reject-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "驳回率",
+          "defaultFormat": "percent-1",
+          "queryField": "合同申请规范率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "审批人名称"
+                ],
+                "output_metrics": [
+                  "销售合同评审决策任务数量",
+                  "合同申请规范率",
+                  "合同驳回次数"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "order_by_field": "销售合同评审决策任务数量",
+                  "type": "desc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "reviewer-rejection-detail": {
+      "fields": {
+        "rowKey": {
+          "type": "string",
+          "role": "dimension",
+          "label": "行标识",
+          "nullable": false
+        },
+        "memberId": {
+          "type": "string",
+          "role": "dimension",
+          "label": "来源编码",
+          "nullable": false
+        },
+        "reviewer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "评审组织人"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "biz-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "类型"
+        },
+        "approve-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批次数",
+          "unit": "次"
+        },
+        "reject-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "驳回次数",
+          "unit": "次"
+        },
+        "reject-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "驳回率",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "pagedUnion",
+        "rowKey": "rowKey",
+        "sourceField": "memberId",
+        "members": {
+          "commercial": {
+            "source": "commercial-app-norm",
+            "rowKeyFields": [
+              "commercial-approver",
+              "commercial-office"
+            ],
+            "projection": {
+              "reviewer-name": {
+                "field": "commercial-approver"
+              },
+              "rep-office-name": {
+                "field": "commercial-office"
+              },
+              "biz-type": {
+                "value": "商务"
+              },
+              "approve-count": {
+                "field": "commercial-approve-count"
+              },
+              "reject-count": {
+                "field": "commercial-reject-count"
+              },
+              "reject-rate": {
+                "field": "commercial-reject-rate"
+              }
+            }
+          },
+          "contract": {
+            "source": "contract-app-norm",
+            "rowKeyFields": [
+              "contract-approver",
+              "contract-office"
+            ],
+            "projection": {
+              "reviewer-name": {
+                "field": "contract-approver"
+              },
+              "rep-office-name": {
+                "field": "contract-office"
+              },
+              "biz-type": {
+                "value": "合同"
+              },
+              "approve-count": {
+                "field": "contract-approve-count"
+              },
+              "reject-count": {
+                "field": "contract-reject-count"
+              },
+              "reject-rate": {
+                "field": "contract-reject-rate"
+              }
+            }
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "approve-count",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "approve-count",
+            "reject-count",
+            "reject-rate",
+            "reviewer-name"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 20
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "notice",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "行权规范-代表处"
+            },
+            "filterIds": [
+              "mtime",
+              "region"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "density": "compact",
+              "collapse": "none"
+            }
+          }
+        },
+        {
+          "id": "data-scope-notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "注：不含混合云（HCS）的数据",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kpi-cards",
+      "container": "plain",
+      "components": [
+        {
+          "id": "decision-valid-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-summary"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "商务决策意见有效占比",
+                "valueField": {
+                  "data": "main",
+                  "field": "biz-decision-valid-rate"
+                }
+              },
+              {
+                "label": "合同决策意见有效占比",
+                "valueField": {
+                  "data": "main",
+                  "field": "contract-decision-valid-rate"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "urgent-decision-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-summary"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "商务紧急决策比例",
+                "valueField": {
+                  "data": "main",
+                  "field": "biz-urgent-decision-rate"
+                }
+              },
+              {
+                "label": "合同紧急决策比例",
+                "valueField": {
+                  "data": "main",
+                  "field": "contract-urgent-decision-rate"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "apply-norm-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "kpi-summary"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "商务申请规范率",
+                "valueField": {
+                  "data": "main",
+                  "field": "biz-apply-norm-rate"
+                }
+              },
+              {
+                "label": "合同申请规范率",
+                "valueField": {
+                  "data": "main",
+                  "field": "contract-apply-norm-rate"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail-tabs",
+      "container": "card",
+      "components": [
+        {
+          "id": "norms-detail-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "defaultTab": "decision-valid",
+            "tabs": [
+              {
+                "id": "decision-valid",
+                "label": "决策意见明细",
+                "component": {
+                  "id": "decision-valid-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "decision-valid-detail"
+                  },
+                  "props": {
+                    "rowKey": "rowKey",
+                    "title": "决策有效意见明细",
+                    "fit": "content",
+                    "rowNumber": {
+                      "title": "序号",
+                      "width": 60,
+                      "fixed": "left"
+                    },
+                    "toolbar": {
+                      "search": {
+                        "fields": [
+                          "approver-name"
+                        ],
+                        "placeholder": "输入审批人搜索"
+                      },
+                      "export": {
+                        "format": "xlsx",
+                        "filename": "决策意见明细"
+                      }
+                    },
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "columns": [
+                      {
+                        "field": "approver-name",
+                        "title": "审批人",
+                        "width": 150,
+                        "fixed": "left"
+                      },
+                      {
+                        "field": "region-dept-name",
+                        "title": "区域",
+                        "width": 130
+                      },
+                      {
+                        "field": "rep-office-name",
+                        "title": "代表处",
+                        "width": 130
+                      },
+                      {
+                        "field": "approver-role",
+                        "title": "审批人角色",
+                        "width": 130
+                      },
+                      {
+                        "field": "biz-type",
+                        "title": "类型",
+                        "width": 100,
+                        "filterable": {
+                          "mode": "select"
+                        },
+                        "enumValues": [
+                          {
+                            "value": "商务",
+                            "label": "商务"
+                          },
+                          {
+                            "value": "合同",
+                            "label": "合同"
+                          }
+                        ]
+                      },
+                      {
+                        "field": "decision-total-count",
+                        "title": "决策总次数",
+                        "width": 120,
+                        "align": "right",
+                        "sortable": true,
+                        "link": true,
+                        "navigateBySource": {
+                          "field": "biz-type",
+                          "cases": {
+                            "商务": {
+                              "href": "/operationmap/manage-contract-business/business-decision-details",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "approver-name": {
+                                  "source": "row",
+                                  "field": "approver-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                },
+                                "is-valid": {
+                                  "source": "param",
+                                  "id": "is-valid-all"
+                                }
+                              }
+                            },
+                            "合同": {
+                              "href": "/operationmap/manage-contract-business/contract-decision-details",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "approver-name": {
+                                  "source": "row",
+                                  "field": "approver-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "field": "valid-opinion-count",
+                        "title": "有效意见数",
+                        "width": 120,
+                        "align": "right",
+                        "sortable": true,
+                        "link": true,
+                        "navigateBySource": {
+                          "field": "biz-type",
+                          "cases": {
+                            "商务": {
+                              "href": "/operationmap/manage-contract-business/business-decision-details",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "approver-name": {
+                                  "source": "row",
+                                  "field": "approver-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                },
+                                "is-valid": {
+                                  "source": "param",
+                                  "id": "is-valid"
+                                }
+                              }
+                            },
+                            "合同": {
+                              "href": "/operationmap/manage-contract-business/contract-decision-details",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "approver-name": {
+                                  "source": "row",
+                                  "field": "approver-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "field": "valid-opinion-rate",
+                        "title": "有效意见占比",
+                        "width": 130,
+                        "align": "right",
+                        "sortable": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "urgent-decision",
+                "label": "紧急决策明细",
+                "components": [
+                  {
+                    "id": "urgent-decision-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "urgent-decision-detail"
+                    },
+                    "props": {
+                      "rowKey": "record-id",
+                      "title": "紧急决策商务明细",
+                      "fit": "content",
+                      "rowNumber": {
+                        "title": "序号",
+                        "width": 60,
+                        "fixed": "left"
+                      },
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "project-name"
+                          ],
+                          "placeholder": "输入项目名称搜索"
+                        },
+                        "export": {
+                          "format": "xlsx",
+                          "filename": "紧急决策商务明细"
+                        }
+                      },
+                      "pagination": {
+                        "mode": "query"
+                      },
+                      "columns": [
+                        {
+                          "field": "project-name",
+                          "title": "项目名称",
+                          "width": 180,
+                          "fixed": "left"
+                        },
+                        {
+                          "field": "rep-office-name",
+                          "title": "代表处",
+                          "width": 120
+                        },
+                        {
+                          "field": "owner-name",
+                          "title": "责任人",
+                          "width": 100
+                        },
+                        {
+                          "field": "customer-name",
+                          "title": "客户名称",
+                          "width": 140
+                        },
+                        {
+                          "field": "biz-type",
+                          "title": "商务类型",
+                          "width": 100,
+                          "filterable": {
+                            "mode": "select"
+                          },
+                          "enumValues": [
+                            {
+                              "value": 0,
+                              "label": "项目商务框架"
+                            },
+                            {
+                              "value": 1,
+                              "label": "项目非框架"
+                            },
+                            {
+                              "value": 3,
+                              "label": "框架-基础PO商务"
+                            }
+                          ]
+                        },
+                        {
+                          "field": "need-urgent-decision",
+                          "title": "需紧急决策",
+                          "width": 110,
+                          "filterable": {
+                            "mode": "select"
+                          }
+                        },
+                        {
+                          "field": "biz-approve-time",
+                          "title": "商务审批通过时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "create-time",
+                          "title": "创建时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "biz-effective-time",
+                          "title": "商务生效时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "biz-expire-time",
+                          "title": "商务失效时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "life-status",
+                          "title": "生命状态",
+                          "width": 100,
+                          "filterable": {
+                            "mode": "select"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "urgent-contract-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "urgent-contract-detail"
+                    },
+                    "props": {
+                      "rowKey": "record-id",
+                      "title": "紧急决策合同明细",
+                      "fit": "content",
+                      "rowNumber": {
+                        "title": "序号",
+                        "width": 60,
+                        "fixed": "left"
+                      },
+                      "toolbar": {
+                        "search": {
+                          "fields": [
+                            "project-name"
+                          ],
+                          "placeholder": "输入项目名称搜索"
+                        },
+                        "export": {
+                          "format": "xlsx",
+                          "filename": "紧急决策合同明细"
+                        }
+                      },
+                      "pagination": {
+                        "mode": "query"
+                      },
+                      "columns": [
+                        {
+                          "field": "rep-office-name",
+                          "title": "代表处",
+                          "width": 120,
+                          "fixed": "left"
+                        },
+                        {
+                          "field": "contract-code",
+                          "title": "合同编号",
+                          "width": 140,
+                          "fixed": "left"
+                        },
+                        {
+                          "field": "version-no",
+                          "title": "版本号",
+                          "width": 90
+                        },
+                        {
+                          "field": "approve-complete-time",
+                          "title": "审批完成时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "stage-name",
+                          "title": "阶段名称",
+                          "width": 120,
+                          "filterable": {
+                            "mode": "select"
+                          }
+                        },
+                        {
+                          "field": "urgent-decision-switch",
+                          "title": "紧急决策开关",
+                          "width": 110,
+                          "filterable": {
+                            "mode": "select"
+                          }
+                        },
+                        {
+                          "field": "project-name",
+                          "title": "项目名称",
+                          "width": 180
+                        },
+                        {
+                          "field": "contract-owner-name",
+                          "title": "合同责任人",
+                          "width": 110
+                        },
+                        {
+                          "field": "contract-activate-time",
+                          "title": "合同激活时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "actual-effective-time",
+                          "title": "实际生效时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "actual-expire-time",
+                          "title": "实际失效时间",
+                          "width": 160,
+                          "sortable": true
+                        },
+                        {
+                          "field": "customer-name",
+                          "title": "客户名称",
+                          "width": 140
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "apply-norm",
+                "label": "申请规范率明细",
+                "component": {
+                  "id": "reviewer-rejection-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "reviewer-rejection-detail"
+                  },
+                  "props": {
+                    "rowKey": "rowKey",
+                    "title": "评审组织人驳回情况统计",
+                    "fit": "content",
+                    "rowNumber": {
+                      "title": "序号",
+                      "width": 60,
+                      "fixed": "left"
+                    },
+                    "toolbar": {
+                      "search": {
+                        "fields": [
+                          "reviewer-name"
+                        ],
+                        "placeholder": "输入评审组织人搜索"
+                      },
+                      "export": {
+                        "format": "xlsx",
+                        "filename": "评审组织人驳回情况统计"
+                      }
+                    },
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "columns": [
+                      {
+                        "field": "reviewer-name",
+                        "title": "评审组织人",
+                        "width": 160,
+                        "fixed": "left"
+                      },
+                      {
+                        "field": "rep-office-name",
+                        "title": "代表处",
+                        "width": 140
+                      },
+                      {
+                        "field": "biz-type",
+                        "title": "类型",
+                        "width": 100,
+                        "filterable": {
+                          "mode": "select"
+                        },
+                        "enumValues": [
+                          {
+                            "value": "商务",
+                            "label": "商务"
+                          },
+                          {
+                            "value": "合同",
+                            "label": "合同"
+                          }
+                        ]
+                      },
+                      {
+                        "field": "approve-count",
+                        "title": "审批次数",
+                        "width": 130,
+                        "align": "right",
+                        "sortable": true,
+                        "link": true,
+                        "navigateBySource": {
+                          "field": "biz-type",
+                          "cases": {
+                            "商务": {
+                              "href": "/operationmap/manage-contract-business/business-approval-count-details",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "reviewer-name": {
+                                  "source": "row",
+                                  "field": "reviewer-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                }
+                              }
+                            },
+                            "合同": {
+                              "href": "/operationmap/manage-contract-business/contract-approval-count",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "reviewer-name": {
+                                  "source": "row",
+                                  "field": "reviewer-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "field": "reject-count",
+                        "title": "驳回次数",
+                        "width": 130,
+                        "align": "right",
+                        "sortable": true,
+                        "link": true,
+                        "navigateBySource": {
+                          "field": "biz-type",
+                          "cases": {
+                            "商务": {
+                              "href": "/operationmap/manage-contract-business/business-rejection-details",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "reviewer-name": {
+                                  "source": "row",
+                                  "field": "reviewer-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                }
+                              }
+                            },
+                            "合同": {
+                              "href": "/operationmap/manage-contract-business/contract-rejection-details",
+                              "query": {
+                                "mtime": {
+                                  "source": "filter",
+                                  "id": "mtime"
+                                },
+                                "reviewer-name": {
+                                  "source": "row",
+                                  "field": "reviewer-name"
+                                },
+                                "rep-office-name": {
+                                  "source": "row",
+                                  "field": "rep-office-name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "field": "reject-rate",
+                        "title": "驳回率",
+                        "width": 130,
+                        "align": "right",
+                        "sortable": true
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "on": "click",
+                        "navigate": {
+                          "href": "/operationmap/manage-contract-business/business-rejection-details",
+                          "visibleWhen": {
+                            "row": "biz-type",
+                            "op": "eq",
+                            "value": "商务"
+                          },
+                          "query": {
+                            "mtime": {
+                              "source": "filter",
+                              "id": "mtime"
+                            },
+                            "reviewer-name": {
+                              "source": "row",
+                              "field": "reviewer-name"
+                            },
+                            "rep-office-name": {
+                              "source": "row",
+                              "field": "rep-office-name"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "on": "click",
+                        "navigate": {
+                          "href": "/operationmap/manage-contract-business/contract-rejection-details",
+                          "visibleWhen": {
+                            "row": "biz-type",
+                            "op": "eq",
+                            "value": "合同"
+                          },
+                          "query": {
+                            "mtime": {
+                              "source": "filter",
+                              "id": "mtime"
+                            },
+                            "reviewer-name": {
+                              "source": "row",
+                              "field": "reviewer-name"
+                            },
+                            "rep-office-name": {
+                              "source": "row",
+                              "field": "rep-office-name"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

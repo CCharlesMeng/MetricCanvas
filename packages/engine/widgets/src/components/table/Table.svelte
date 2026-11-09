@@ -723,19 +723,18 @@
               <div id={`${expansion!.id}-${encodeURIComponent(expansion!.key(row.main)!)}`} role="region" aria-label="子表格" class="row-expansion-content">{@render expandedRow(row.main)}</div>
             </td></tr>
           {/if}
-        {:else}
+        {/each}
+        {#if data.main.snapshot.rows.length === 0}
           <tr>
             <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
-              {#if data.main.sourceStatus !== 'error'}
-                {#if props.variant === 'reportCompact'}
-                  <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
-                {:else}
-                  <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
-                {/if}
+              {#if props.variant === 'reportCompact'}
+                <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
+              {:else}
+                <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
               {/if}
             </td>
           </tr>
-        {/each}
+        {/if}
       </tbody>
     </table>
   </div>
