@@ -1,4 +1,4 @@
-import { dqeDimensionConditions } from './dqe-object';
+import { dqeDimensionConditions, isObjectDqeItem, isObjectPeriodBinding } from './dqe-object';
 import {ordinaryQuery} from './time-mode';
 import { queryResultWhereErrors } from './query-result-where';
 import type { Page } from './page';
@@ -74,9 +74,10 @@ function orderRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function occupiedDimensionTargets(query: PageQuery): Set<string> {
-  const staticDims = dqeDimensionConditions(ordinaryQuery(query).body.dsl_list[0]);
+  const item=ordinaryQuery(query).body.dsl_list[0], staticDims = dqeDimensionConditions(item);
   return new Set([
     ...Object.values(query.filterBindings ?? {}).flatMap(bindingQueryFields),
+    ...(isObjectDqeItem(item)&&Object.values(query.filterBindings??{}).some(isObjectPeriodBinding)?['周期类型','账期']:[]),
     ...Object.values(query.paramBindings ?? {}).flatMap(binding => binding.target === 'dimension' ? [binding.queryField] : []),
     ...(Array.isArray(staticDims) ? staticDims.flatMap(dim => dim && typeof dim === 'object' && !Array.isArray(dim) && typeof dim.dim_name === 'string' ? [dim.dim_name] : []) : [])
   ]);

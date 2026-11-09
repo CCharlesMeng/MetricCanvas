@@ -59,7 +59,7 @@ sum 累加有效月值，avg 对有效月值取算术平均。0 参与，null �
 
 6.67 起，指标查询的时间绑定可显式声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期并限制数据能力写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","quarter","year"]}}`。显式策略优先；不支持时拒绝查询，不回退。月度趋势、月账期明细等固定粒度查询应显式声明 fixed 策略，选择季度时仍读取对应三个月。
 
-显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 display=period 的范围与时间点绑定保持原有精度和编码。
+显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。6.101 起对象查询也消费此策略，生成标准周期类型与账期条件，仅支持 year/quarter/month；见本页“标准对象账期”。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 display=period 的范围与时间点绑定保持原有精度和编码。
 
 固定日/月/季/年分别编码 YYYY-MM-DD、YYYY-MM、YYYY-Qn、YYYY。固定季/年扩大到窗口涉及的完整自然季/年，预览标记扩大。选年固定月取十二个月；选月固定日取完整自然月，不计算年度得分。按选择时，年用 year、月用 month，近一年用 month 和已应用的前十二个完整月窗口，请求及导出不重新取当前时间。6.86 起季度用 quarter：2026-Q3 发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3"}`，只允许 Q1—Q4，跨年编码一致。显式 supportedPeriods 未声明 quarter 时拒绝；固定日/月策略仍可覆盖整季。
 
@@ -281,13 +281,33 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 对象条件使用 `filter.fields:[{field_name,value_list,operator}]`。静态原始条件保持；显式页面绑定接管其目标字段的默认条件，清空可选筛选后不恢复该字段的静态默认条件；未绑定字段保持。表头筛选、搜索继续以 AND 收窄，日期表头使用同字段已声明的时间格式。维度、层级、布尔、数值区间及查询结果绑定消费现有页面状态；对象数值区间直接落在字段条件，不发送 `filter.metrics`。`operator:'='` 的多值列表按集合等值语义编码，其真实后端行为须验真。原始未知运算符保留给上游，不能由页面端清洗删除。
 
-时间范围仍使用 `target:time`，对象分支必须增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：
+## 标准对象账期（6.101）
+
+当 `query_type:"object"` 的 `target:"time"` 绑定消费 `display:"period"`，且未声明 `queryField/valueFormat/window/periodComparison` 时，采用标准账期；页面只声明 `{"period":{"target":"time"}}`。不根据对象类型名称、输出列或静态样例推断是否绑定；没有期间绑定的对象查询不自动添加时间条件。
+
+| 已应用选择 | 周期类型（operator 为 =） | 账期（operator 为 =） |
+| --- | --- | --- |
+| 2026 年 10 月 | monthly | 202610 |
+| 2026 年 | yearly | 2026 |
+| 2026 年第四季度 | quarterly | 2026Q4 |
+
+条件都进入 `filter.fields`，使用 `field_name/value_list/operator`；周期类型和账期以 AND 组合。对象季度码没有连字符，与指标 `filter.time` 的 `2026-Q4` 区分。等值单期只生成一条账期条件；近一年按已应用的十二个完整月发送 monthly，并使用 `账期 >= YYYYMM`、`账期 <= YYYYMM`。多期不发送多值等值列表，也不展开到日边界。
+
+复用 `periodPolicy`：`{kind:"fixed",period:"month"}` 使选年查询 monthly 与 202601—202612 闭区间，选季查询所含三个月；`{kind:"selection",supportedPeriods:["month"]}` 在选年或季时拒绝查询。固定季/年沿既有完整自然期间扩展规则。对象账期不支持 day；需要日范围、window 或期间比较时显式声明真实日期字段及格式，不自动套用标准账期。
+
+默认绑定成对接管“周期类型”和“账期”的原始默认条件，切换时替换两者，保留无关业务条件。其他页面绑定与查询结果绑定不得再次拥有这两个字段；表头筛选仍以 AND 收窄。屏幕、重查、列候选和完整读取/导出共用同一生效查询。没有粒度证明的旧 initial/seeds 不复用；请求和导出使用已应用选择，不重新读取当前时间。
+
+自定义能力沿用现有协议：明确指定 `queryField + valueFormat` 继续按日期范围处理，即使字段名为“账期”也不静默改义；完全自组装时在 body 的 `filter.fields` 编写条件，并省略对应自动期间绑定，或用 queryModes 各 case 声明独立查询与绑定。手写未知运算符及业务条件保留，不为自定义请求补默认账期。已有显式账期日期绑定须经业务确认后改为最小期间绑定，新能力下限为 6.101，旧页的显式字段语义保持。
+
+合成入口 `/pages/object-period-query` 回显默认、固定月、自定义审批日期及手写条件四种实际编码；无需真实 DQE。页面、操作和证据边界见 `pages/capabilities/query/README.md`。
+
+自定义时间范围仍使用 `target:time`，对象分支显式增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：
 
 ```json
 {"period":{"target":"time","queryField":"特价审批通过时间","valueFormat":"datetime"}}
 ```
 
-`iso` 保留页面日期/月；`compact` 去掉连字符；`datetime` 明确采用源日历、秒精度和闭区间，起点补 `00:00:00`、终点补 `23:59:59`，月范围扩为对应月首日至月末日，不进行时区转换。不同精度/时区必须由可信接入适配，不能猜测。普通指标查询的 time 绑定保持原规则，不接受对象字段或格式。
+`iso` 保留页面日期/月；`compact` 去掉连字符；`datetime` 明确采用源日历、秒精度和闭区间，起点补 `00:00:00`、终点补 `23:59:59`，月范围扩为对应月首日至月末日，不进行时区转换。不同精度/时区必须由可信接入适配，不能猜测。指标查询的统计时间槽保持原规则；显式字段时间范围另见下文“指定时间字段的范围下推”。
 
 固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。
 
@@ -372,7 +392,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
 
 
-页面协议 6.100。结构真源为本册[schema.json](schema.json)，SHA256 `fa4dce7e3921f9a284b1348e5a57298cd8f9d80c75c570b0c0e133180f8c3bec`。字段表自动生成；可选不等于有默认值。
+页面协议 6.101。结构真源为本册[schema.json](schema.json)，SHA256 `ee49a8c513dfb3dc4e2458a1929f9109912623091081da937a4d847d8a8db5d1`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1361,7 +1381,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f76616c7565466f726d6174"></a>
 
@@ -1387,7 +1407,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择；对象查询生成周期类型与账期，单期等值、多期闭区间，仅支持年季月；自定义字段与非期间绑定保留原行为 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f30"></a>
 
@@ -2024,7 +2044,7 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f76616c7565466f726d6174"></a>
 
@@ -2595,7 +2615,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f76616c7565466f726d6174"></a>
 
@@ -2621,7 +2641,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择，与页头位置无关；自定义字段与非期间绑定保留原行为 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择；对象查询生成周期类型与账期，单期等值、多期闭区间，仅支持年季月；自定义字段与非期间绑定保留原行为 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f706572696f64506f6c6963792f616e794f662f30"></a>
 
@@ -3004,6 +3024,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - [period-comparison-demo](examples/period-comparison-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [sdt-period-aggregation](examples/sdt-period-aggregation.json)：完整合法页面；查询仅为静态契约证据。
+- [object-period-query](examples/object-period-query.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

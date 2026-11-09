@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.101：对象查询的期间绑定可只声明 `{target:"time"}`，引擎统一生成“周期类型＋账期”：年 yearly/年码、季 quarterly/YYYYQn、月 monthly/YYYYMM；单期等值，多期使用闭区间。复用 periodPolicy 表达固定粒度或能力限制；显式日期字段与手写对象条件保留。见[对象账期](docs/page-metadata/queries-and-bindings.md#标准对象账期6101)，合成入口 `/pages/object-period-query`。Schema 字段净增零。
+
 表格普通文本主值按列宽单行省略，溢出时鼠标悬停通过 tooltip 展示完整原文；取消字符数阈值与“更多”点击展开，静态导出保留全文。无需新增 Schema 字段。见[单元格溢出省略与悬浮提示](docs/page-metadata/components/table.md#单元格溢出省略与悬浮提示)，合成入口 `/pages/table-long-text`。
 
 6.100：维度查询绑定可用 `when` 复用筛选条件语法，仅条件允许时下推该绑定的谓词，保留筛选状态、URL 和按钮选择。组件显隐仍独立；旧绑定省略 `when` 保持原行为。见[查询绑定生效条件](docs/page-metadata/queries-and-bindings.md#filter-binding-when)，合成入口 `/pages/filter-binding-when`。

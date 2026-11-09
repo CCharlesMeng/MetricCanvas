@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.86",
+  "schemaVersion": "6.101",
   "id": "rep-office-approval-detail",
   "meta": {
     "title": "行权效率-代表处-商务审批明细",
@@ -152,9 +152,7 @@
           },
           "filterBindings": {
             "period": {
-              "target": "time",
-              "queryField": "账期",
-              "valueFormat": "compact"
+              "target": "time"
             },
             "region": {
               "target": "dimension",

@@ -254,7 +254,8 @@
         "period-query-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "sdt-period-aggregation"
+        "sdt-period-aggregation",
+        "object-period-query"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2256,7 +2257,8 @@
     "#/definitions/arrowRule/oneOf/1/properties/position=\"before\"": "箭头放在数值与单位之前（默认）。",
     "#/definitions/arrowRule/oneOf/1/properties/position=\"after\"": "箭头放在数值与单位之后。",
     "#/properties/schemaVersion=\"6.99\"": "表格数字列通过 arrowRule 声明固定或按正负映射的箭头；省略不显示。",
-    "#/properties/schemaVersion=\"6.100\"": "维度查询绑定可按筛选条件暂停谓词并保留选择状态。"
+    "#/properties/schemaVersion=\"6.100\"": "维度查询绑定可按筛选条件暂停谓词并保留选择状态。",
+    "#/properties/schemaVersion=\"6.101\"": "对象期间默认生成周期类型与账期，单期等值、多期闭区间，并保留自定义字段与手写查询。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3103,6 +3105,17 @@
         "维度查询绑定生效条件（6.100）"
       ],
       "dependencies": []
+    },
+    "query.objectPeriod": {
+      "module": "queries-and-bindings",
+      "title": "对象账期默认与自定义查询",
+      "roots": [
+        "#/definitions/dqeQuery/properties/filterBindings"
+      ],
+      "headings": [
+        "标准对象账期（6.101）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3154,6 +3167,7 @@
       "6.39 静态时间查询模式",
       "6.50 固定单选查询分支",
       "6.55 DQE 对象查询",
+      "标准对象账期（6.101）",
       "指定时间字段的范围下推（6.68）",
       "查询时间精度与执行前校验",
       "自动同比环比查询（6.77）",

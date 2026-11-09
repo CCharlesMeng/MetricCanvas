@@ -1,4 +1,4 @@
-import {dqeRecord,isObjectDqeItem} from './dqe-object';
+import {dqeRecord,isObjectDqeItem,isObjectPeriodBinding} from './dqe-object';
 import {queryLeaves} from './query-selection';
 import type {FilterDeclaration} from './filter';
 import type {DqeFilterBinding,DqeQueryDefinition} from './query';
@@ -10,7 +10,6 @@ function ordinaryTimeBinding(binding:DqeFilterBinding):boolean {
 }
 function defaultPeriodIds(query:DqeQueryDefinition,page:PeriodContext):Set<string> {
   const ids=new Set<string>();
-  if(isObjectDqeItem(query.body?.dsl_list[0]))return ids;
   for(const filter of page.filters??[]){
     if(filter.type!=='timeRange'||filter.display!=='period')continue;
     const binding=query.filterBindings?.[filter.id];
@@ -33,5 +32,6 @@ export function withPeriodQueryDefaults(query:DqeQueryDefinition,page:PeriodCont
 
 /** Old embedded rows cannot prove which grain produced them; all static branches participate. */
 export function hasPeriodQueryDefault(query:DqeQueryDefinition,page:PeriodContext):boolean {
-  return queryLeaves(query).some(leaf=>defaultPeriodIds(leaf,page).size>0);
+  return queryLeaves(query).some(leaf=>defaultPeriodIds(leaf,page).size>0 ||
+    isObjectDqeItem(leaf.body?.dsl_list[0])&&Object.values(leaf.filterBindings??{}).some(isObjectPeriodBinding));
 }

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.100",
-  "schemaSha256": "fa4dce7e3921f9a284b1348e5a57298cd8f9d80c75c570b0c0e133180f8c3bec",
+  "schemaVersion": "6.101",
+  "schemaSha256": "ee49a8c513dfb3dc4e2458a1929f9109912623091081da937a4d847d8a8db5d1",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -218,7 +218,8 @@
         "period-query-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "sdt-period-aggregation"
+        "sdt-period-aggregation",
+        "object-period-query"
       ],
       "rules": [
         "query-field-mapping",
@@ -1308,7 +1309,8 @@
         "6.97",
         "6.98",
         "6.99",
-        "6.100"
+        "6.100",
+        "6.101"
       ]
     },
     {
@@ -22073,5 +22075,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "248ade364074ffbabd425b83e7c4acd7e59d510c45ad4ec9e085c48b988b9b19"
+  "semanticSourceDigest": "c9b7c7fa6ec4d9b5c237e7d9728e5a6b250f5bcdf770169b779b936e1816e3b0"
 }

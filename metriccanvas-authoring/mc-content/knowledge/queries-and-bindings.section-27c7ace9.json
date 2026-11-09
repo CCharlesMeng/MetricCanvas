@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.100",
+  "schemaVersion": "6.101",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.section-27c7ace9"
@@ -136,7 +136,8 @@
         "references/page-metadata/examples/period-query-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/sdt-period-aggregation.json"
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/object-period-query.json"
       ]
     }
   ],

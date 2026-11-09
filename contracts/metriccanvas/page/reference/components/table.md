@@ -465,7 +465,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 完整 inline 合成场景 `/pages/table-trend-arrows` 覆盖正向、反向、单侧、固定与隐藏规则，包含单位、颜色、零/缺失、舍入边界、紧凑表格和进度条。无需 URL 参数或 DQE，不代表真实 DQE/Relay 验收。
 
 
-页面协议 6.100。结构真源为本册[schema.json](../schema.json)，SHA256 `fa4dce7e3921f9a284b1348e5a57298cd8f9d80c75c570b0c0e133180f8c3bec`。字段表自动生成；可选不等于有默认值。
+页面协议 6.101。结构真源为本册[schema.json](../schema.json)，SHA256 `ee49a8c513dfb3dc4e2458a1929f9109912623091081da937a4d847d8a8db5d1`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

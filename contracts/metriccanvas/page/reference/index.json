@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.100",
-  "schemaSha256": "fa4dce7e3921f9a284b1348e5a57298cd8f9d80c75c570b0c0e133180f8c3bec",
+  "schemaVersion": "6.101",
+  "schemaSha256": "ee49a8c513dfb3dc4e2458a1929f9109912623091081da937a4d847d8a8db5d1",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -156,7 +156,7 @@
     },
     {
       "file": "packages/page/src/dqe-object.ts",
-      "sha256": "2d7c3bbeff933f4cddbe3891996301f9f3a91cbda96345a1c8ea58d5301b4a22"
+      "sha256": "edbde09dba86e8ee4c9f7a5bd618ce0e57e3fa510726eda88f2b16e70509b0af"
     },
     {
       "file": "packages/page/src/field-resolution.ts",
@@ -252,7 +252,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "4695bd6daf58b84d95af43e6a41676131a81ae0d22e4e74e8f79e40df3298f3a"
+      "sha256": "61a5773face2fe2801d0fbd4895cc49c49c8e7f1e978ebc4867ef33bbcd616e9"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -344,7 +344,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "7673dcf654f95ed3e75769a8cf63e827c397341631134d7366cbc81f064d37c8"
+      "sha256": "77da0c27d9dfe60155910904acdf9368b45b95d2d896775cf3d75e57e33a67fc"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -440,7 +440,7 @@
     },
     {
       "file": "packages/page/src/validate-object-query.ts",
-      "sha256": "b3cda256ba4ba8a30437d9ae930bae7ae05ed2c1cc6a7560ca7dfd5973d15c4f"
+      "sha256": "f1c766604d38fc2edbb3e3261daf1f2639919b34c5ef43fab13ce7459622a1d6"
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
@@ -452,7 +452,7 @@
     },
     {
       "file": "packages/page/src/validate-query-results.ts",
-      "sha256": "370ae12f0981e2b6aef1c7e9220613450ed744a6f616d46d626a03d9f2b7bbb3"
+      "sha256": "23d7916fbbff133863bf9efd7f538e00ec9e2b7f1131166bb07ef55f13028e75"
     },
     {
       "file": "packages/page/src/validate.ts",
@@ -726,7 +726,8 @@
         "period-query-branches",
         "period-comparison-demo",
         "period-comparison-query-page",
-        "sdt-period-aggregation"
+        "sdt-period-aggregation",
+        "object-period-query"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2036,7 +2037,8 @@
         "6.97",
         "6.98",
         "6.99",
-        "6.100"
+        "6.100",
+        "6.101"
       ]
     },
     {

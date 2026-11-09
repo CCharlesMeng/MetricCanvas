@@ -1,4 +1,4 @@
-import { dqeRecord, objectDateBoundary, isObjectDqeItem, setObjectFieldValues, setObjectTimeRange, dqeDefaultSort, type EffectiveQuery, type JsonObject } from '@metriccanvas/page/internal';
+import { dqeRecord, objectDateBoundary, isObjectDqeItem, setObjectFieldValues, setObjectTimeRange, setObjectPeriod, dqeDefaultSort, type EffectiveQuery, type JsonObject } from '@metriccanvas/page/internal';
 import { EmptyTableQuery } from './table-filters';
 
 type Sort = NonNullable<EffectiveQuery['sort']>;
@@ -38,7 +38,11 @@ export function encodeObjectSort(item: JsonObject, sort: Sort, encoder?: ObjectS
   return { ...item, order };
 }
 function applyBinding(item: JsonObject, predicate: EffectiveQuery['filterValues'][number]): void {
-  if (predicate.target === 'time') { setObjectTimeRange(item, predicate, predicate.value.from, predicate.value.to); return; }
+  if (predicate.target === 'time') {
+    if (predicate.period && !predicate.queryField && !predicate.valueFormat) setObjectPeriod(item, predicate.period, predicate.value.from, predicate.value.to);
+    else setObjectTimeRange(item, predicate, predicate.value.from, predicate.value.to);
+    return;
+  }
   const name = predicate.target === 'metricRange' ? predicate.metric : predicate.queryField;
   if (predicate.target === 'dimension') { setObjectFieldValues(item, name, predicate.values); return; }
   removeField(item, name);

@@ -1,0 +1,316 @@
+{
+  "schemaVersion": "6.101",
+  "id": "object-period-query",
+  "layout": "dashboard",
+  "meta": {
+    "title": "对象账期默认与自定义查询（合成）"
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "date",
+      "required": true,
+      "default": {
+        "mode": "month",
+        "value": "2026-10"
+      }
+    }
+  ],
+  "dataSources": {
+    "auto": {
+      "fields": {
+        "request": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "请求条件"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Period Query Echo",
+                "output_fields": [
+                  "请求条件"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "业务状态",
+                      "value_list": [
+                        "有效"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "fixed": {
+      "fields": {
+        "request": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "请求条件"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Period Query Echo",
+                "output_fields": [
+                  "请求条件"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "业务状态",
+                      "value_list": [
+                        "有效"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "fixed",
+                "period": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "custom": {
+      "fields": {
+        "request": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "请求条件"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Period Query Echo",
+                "output_fields": [
+                  "请求条件"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "业务状态",
+                      "value_list": [
+                        "有效"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "queryField": "审批完成时间",
+              "valueFormat": "datetime"
+            }
+          }
+        }
+      }
+    },
+    "manual": {
+      "fields": {
+        "request": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "请求条件"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Demo/Period Query Echo",
+                "output_fields": [
+                  "请求条件"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "业务状态",
+                      "value_list": [
+                        "有效"
+                      ],
+                      "operator": "="
+                    },
+                    {
+                      "field_name": "自定义期间",
+                      "value_list": [
+                        "FY2026"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "对象账期默认与自定义查询",
+              "description": {
+                "text": "合成请求回显；不连接真实 DQE"
+              }
+            },
+            "filterIds": [
+              "period"
+            ]
+          }
+        },
+        {
+          "id": "auto-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "auto"
+          },
+          "props": {
+            "title": "默认账期",
+            "columns": [
+              {
+                "field": "request",
+                "title": "实际 DQE filter.fields"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "fixed-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "fixed"
+          },
+          "props": {
+            "title": "固定月账期",
+            "columns": [
+              {
+                "field": "request",
+                "title": "实际 DQE filter.fields"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "custom-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "custom"
+          },
+          "props": {
+            "title": "自定义审批日期",
+            "columns": [
+              {
+                "field": "request",
+                "title": "实际 DQE filter.fields"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "manual-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "manual"
+          },
+          "props": {
+            "title": "手写对象条件",
+            "columns": [
+              {
+                "field": "request",
+                "title": "实际 DQE filter.fields"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

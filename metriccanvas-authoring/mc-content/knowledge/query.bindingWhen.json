@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.100",
+  "schemaVersion": "6.101",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "query.bindingWhen"
@@ -136,7 +136,8 @@
         "references/page-metadata/examples/period-query-branches.json",
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/sdt-period-aggregation.json"
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/object-period-query.json"
       ]
     }
   ],
@@ -157,7 +158,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.100",
+        "$id": "https://metriccanvas/page/v6.101",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

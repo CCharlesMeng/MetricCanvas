@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 100,
-  "current": "6.100",
+  "minor": 101,
+  "current": "6.101",
   "capabilities": {
+    "object-period-binding": {
+      "minor": 101,
+      "description": "对象查询默认按周期类型和账期消费期间，保留显式字段自定义",
+      "legacyReadable": false
+    },
     "query-binding-when": {
       "minor": 100,
       "description": "维度查询绑定通过筛选条件暂停谓词，保留原筛选状态",
@@ -950,6 +955,7 @@
     "6.97",
     "6.98",
     "6.99",
-    "6.100"
+    "6.100",
+    "6.101"
   ]
 }

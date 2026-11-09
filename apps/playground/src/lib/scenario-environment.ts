@@ -1,3 +1,4 @@
+import {createObjectPeriodPreview} from '../../fixtures/object-period-query';
 import {createIocHeaderControlsPreview} from '../../fixtures/ioc-header-controls';
 import {createFilterBindingWhenPreview} from '../../fixtures/filter-binding-when';
 import {createPeriodAggregationPreview} from '../../fixtures/period-aggregation';
@@ -49,6 +50,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if(kind==='object-period')return createObjectPeriodPreview(state);
   if(kind==='binding-when')return createFilterBindingWhenPreview(state);
   if(kind==='period-aggregation')return createPeriodAggregationPreview(state);
   if(kind==='header-controls')return createIocHeaderControlsPreview();
