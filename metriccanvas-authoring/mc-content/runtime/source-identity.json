@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "fe61309659324f7c1be3285c4adcbbc47dc81acf8cb9dd382944f1b2bb0b41f7",
+  "sha256": "5ea5186b8464404ff87fd240eacee4cca8d1a92c4052c6e4887383dc4b8de7c5",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -80,7 +80,7 @@
     },
     {
       "file": "docs/page-metadata/components/metricCard.md",
-      "sha256": "3c4b32f1f597fc246969dfd5d1263cdceb8368055af4ab3596b06ed1bafcf693"
+      "sha256": "d32df438d68b1cdc40d3b858bb7e8063dd4ac366dc59d8c6a396bc4f1e25bdf9"
     },
     {
       "file": "docs/page-metadata/components/pieChart.md",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "bf45595e0dba2a2a2dc6b0dc62e6769d40bbeac5368b4b335add006d8f2081e2"
+      "sha256": "2463e2aed0beb273528c88763bb2a6263cde9a5f8eacfea8041e311227e97d0f"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -2652,7 +2652,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "e1e99b898f7ca9e4d3e464223c9ed0df7f896f2257ef51be6b6fb1ce322f31b3"
+      "sha256": "8fef31ca30fbeb85ddd91432df9f49e66024bdb6499b484ef0cb25cba99b22ed"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -2701,6 +2701,10 @@
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
       "sha256": "8bc3d7eb126ab301f8330f7b923a103557da6fcad245a0cfaa39541ed8696c0a"
+    },
+    {
+      "file": "pages/capabilities/layout/metric-card-loading.json",
+      "sha256": "939727e76fb2bd3cc2a92c1a84f4c4a692c3d1ebe8e2065a1f01492a016bcde1"
     },
     {
       "file": "pages/capabilities/layout/metric-card-primary-detail.json",
