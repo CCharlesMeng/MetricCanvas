@@ -49,8 +49,11 @@ export interface DqeRequestBody {
  * 互斥,层级筛选器必须逐级声明,缺级在校验期就拒绝。
  */
 export type DqeDimensionFilterBinding =
-  | { target: 'dimension'; queryField: string }
-  | { target: 'dimension'; levelQueryFields: Record<string, string> };
+  ({ target: 'dimension'; queryField: string }
+  | { target: 'dimension'; levelQueryFields: Record<string, string> }) & {
+    /** Filter-only condition; suspends this predicate without clearing its stored choice. */
+    when?: import('./schema/condition').Condition;
+  };
 
 /**
  * 非维度筛选器的绑定目标(ADR-0085)。三类各自的谓词形状不同,因此各是一支,

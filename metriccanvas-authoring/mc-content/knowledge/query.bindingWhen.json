@@ -1,0 +1,310 @@
+{
+  "schemaVersion": "6.100",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "query.bindingWhen"
+  ],
+  "semantics": [
+    {
+      "module": "queries-and-bindings",
+      "reference": "references/page-metadata/queries-and-bindings.md",
+      "blocks": [
+        "# 查询定义与显式绑定\n\n<a id=\"filter-binding-when\"></a>",
+        "## 维度查询绑定生效条件（6.100）\n\n`filterBindings` 的 `target:\"dimension\"` 分支可声明可选 `when`，复用现有条件语法，但只允许读取同页筛选器，不接受权限、事实或行引用。普通 `queryField` 和层级 `levelQueryFields` 均支持；普通查询、`timeModes` 和 `queryModes` 的各 case 规则相同。\n\n```json\n{\"site\":{\"target\":\"dimension\",\"queryField\":\"国内或海外\",\"when\":{\"filter\":\"region\",\"part\":\"level\",\"op\":\"eq\",\"value\":\"geo\"}}}\n```\n\n此处 `site` 的存储值与 URL 始终保留。Region 处于 geo 层级时，查询应用站点选择；进入具体地区部/代表处层级时，只暂停这个绑定的谓词，其他地区、时间、客户分类、权限和固定查询条件照常生效。返回 geo 层级后重新应用保留的选择。控件需要同步隐藏时，在其 `visibleWhen` 显式使用同一条件；仅隐藏控件仍不影响查询。\n\n省略 `when` 时沿用既有绑定行为。条件拒绝时不生成该绑定的谓词，不清空或重置筛选；条件错误或等待时拒绝查询，不按“无条件”扩大范围。条件最多4层、64叶子，引用、筛选部分、层级/期间枚举和比较类型在创作期校验。该能力不用于权限授权；数据网关仍负责权限约束。时间、布尔及数值范围绑定不接受 `when`。\n\n条件读取的筛选器也纳入查询依赖，无需额外生成虚假的 DQE 绑定；其变化刷新对应查询。屏幕、表头候选、完整读取和导出共用同一查询合成入口；旧初始行和捕获查询不能覆盖新生效条件，会按当前或导出冻结的筛选上下文重新合成。页面查询定义不因显隐或求值发生修改。\n\n完整合成验收 `/pages/filter-binding-when` 演示全球切换、国内/海外地区部及代表处、返回全球恢复选择、空结果和错误；真实业务页 `/pages/governance-compliance` 的四个站点绑定使用相同声明。业务 DQE 和权限需要真实接入验收。\n\n<a id=\"period-aggregation\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "period-aggregation",
+          "description": "近一年按业务维度逐字段求和/取月均值平均，完整输入及版本约束",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "period-aggregation-old-version",
+            "period-aggregation-unknown-field",
+            "period-aggregation-duplicate-field",
+            "period-aggregation-incomplete-source",
+            "period-aggregation-unknown-method"
+          ]
+        },
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "filter-binding",
+          "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "map-page",
+            "hierarchy-binding-page"
+          ],
+          "invalid": [
+            "level-query-fields-on-flat-filter",
+            "level-query-fields-missing-level",
+            "level-query-fields-undeclared-level",
+            "hierarchy-filter-flat-query-field",
+            "time-point-target-not-time-point",
+            "boolean-target-not-boolean",
+            "number-range-target-not-number-range",
+            "time-point-initial-param-not-times",
+            "time-point-initial-param-precision",
+            "time-point-initial-param-range",
+            "time-point-initial-param-and-default",
+            "time-point-initial-param-without-query-target",
+            "unknown-filter-binding",
+            "filter-binding-time-target-not-time-range",
+            "filter-binding-dimension-target-not-dimension"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/filter-binding-when.json",
+        "references/page-metadata/examples/dimension-params-page.json",
+        "references/page-metadata/examples/hierarchy-binding-page.json",
+        "references/page-metadata/examples/non-dimension-bindings-page.json",
+        "references/page-metadata/examples/query-cascade-page.json",
+        "references/page-metadata/examples/query-result-where-page.json",
+        "references/page-metadata/examples/query-result-where-branches.json",
+        "references/page-metadata/examples/query-result-page-window-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/time-binding-branches-page.json",
+        "references/page-metadata/examples/query-modes-page.json",
+        "references/page-metadata/examples/query-mode-binding-branches-page.json",
+        "references/page-metadata/examples/object-query-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/period-query-columns-demo.json",
+        "references/page-metadata/examples/period-query-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json",
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.100",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery",
+      "path": "@dqeQuery",
+      "module": "queries-and-bindings",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "language"
+        ],
+        "properties": {
+          "language": "#/definitions/dqeQuery/properties/language",
+          "periodAggregation": "#/definitions/dqeQuery/properties/periodAggregation",
+          "resultBindings": "#/definitions/dqeQuery/properties/resultBindings",
+          "body": "#/definitions/dqeQuery/properties/body",
+          "paramBindings": "#/definitions/dqeQuery/properties/paramBindings",
+          "filterBindings": "#/definitions/dqeQuery/properties/filterBindings",
+          "timeModes": "#/definitions/dqeQuery/properties/timeModes",
+          "queryModes": "#/definitions/dqeQuery/properties/queryModes"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings",
+      "path": "@dqeQuery.filterBindings",
+      "module": "queries-and-bindings",
+      "required": "本分支可选",
+      "note": "筛选器id到当前查询目标的显式绑定。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "additionalProperties": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties"
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties",
+      "path": "@dqeQuery.filterBindings{key}",
+      "module": "queries-and-bindings",
+      "required": "动态键的值",
+      "enums": {},
+      "facts": {
+        "anyOf": [
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0",
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3",
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/4",
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5"
+        ]
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[0]",
+      "module": "queries-and-bindings",
+      "required": "独立分支（不合并required）",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "target",
+          "queryField"
+        ],
+        "properties": {
+          "target": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/target",
+          "queryField": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/queryField",
+          "when": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[0].when",
+      "module": "queries-and-bindings",
+      "required": "本分支可选",
+      "note": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+      "enums": {},
+      "facts": {
+        "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+        "allOf": [
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when/allOf/0"
+        ]
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1]",
+      "module": "queries-and-bindings",
+      "required": "独立分支（不合并required）",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "target",
+          "levelQueryFields"
+        ],
+        "properties": {
+          "target": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/target",
+          "when": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
+          "levelQueryFields": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].when",
+      "module": "queries-and-bindings",
+      "required": "本分支可选",
+      "note": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+      "enums": {},
+      "facts": {
+        "description": "只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为",
+        "allOf": [
+          "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when/allOf/0"
+        ]
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

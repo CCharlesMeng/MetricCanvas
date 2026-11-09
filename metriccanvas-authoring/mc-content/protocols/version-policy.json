@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 99,
-  "current": "6.99",
+  "minor": 100,
+  "current": "6.100",
   "capabilities": {
+    "query-binding-when": {
+      "minor": 100,
+      "description": "维度查询绑定通过筛选条件暂停谓词，保留原筛选状态",
+      "legacyReadable": false
+    },
     "table-trend-arrows": {
       "minor": 99,
       "description": "表格列独立声明固定或正负映射箭头规则",
@@ -944,6 +949,7 @@
     "6.96",
     "6.97",
     "6.98",
-    "6.99"
+    "6.99",
+    "6.100"
   ]
 }

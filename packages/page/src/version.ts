@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 99;
+const CURRENT_MINOR = 100;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -53,8 +53,15 @@ function hasPinnedText(columns: unknown): boolean {
     return has(record(value?.pinnedTop), 'text') || hasPinnedText(value?.children);
   });
 }
+function bindingWhenUsed(query:Record<string,unknown>|undefined):boolean {
+  if(!query)return false;
+  const cases=record(query.queryModes)??record(query.timeModes);
+  const leaves=cases?Object.values(record(cases.cases)??{}):[query];
+  return leaves.some(leaf=>Object.values(record(record(leaf)?.filterBindings)??{}).some(binding=>has(record(binding),'when')));
+}
 
 export const pageCapabilities = {
+  'query-binding-when': {minor:100,legacyReadable:false,description:'维度查询绑定通过筛选条件暂停谓词，保留原筛选状态',usedAt:document=>dataSourcePaths(document,data=>bindingWhenUsed(record(record(data.source)?.query))).map(path=>path+'/source/query')},
   'table-trend-arrows': { minor:99, legacyReadable:false, description:'表格列独立声明固定或正负映射箭头规则', usedAt:document=>columnPropertyPaths(document, 'arrowRule') },
   'ioc-header-auto-back': {minor:96,legacyReadable:false,description:'IOC 详情页按有效下钻来源自动返回',usedAt:document=>headerDeclarations(document).filter(header=>header.props.back==='auto').map(header=>`${header.path}/back`)},
   'period-aggregation': {minor:97,legacyReadable:false,description:'近一年按业务维度分组并逐字段求和或取月均值平均',usedAt:document=>dataSourcePaths(document,data=>has(record(record(data.source)?.query),'periodAggregation')).map(path=>path+'/source/query/periodAggregation')},

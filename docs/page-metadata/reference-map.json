@@ -233,6 +233,7 @@
         "filter.fields"
       ],
       "examples": [
+        "filter-binding-when",
         "dimension-params-page",
         "hierarchy-binding-page",
         "non-dimension-bindings-page",
@@ -2254,7 +2255,8 @@
     "#/definitions/arrowRule/oneOf/0/properties/position=\"after\"": "箭头放在数值与单位之后。",
     "#/definitions/arrowRule/oneOf/1/properties/position=\"before\"": "箭头放在数值与单位之前（默认）。",
     "#/definitions/arrowRule/oneOf/1/properties/position=\"after\"": "箭头放在数值与单位之后。",
-    "#/properties/schemaVersion=\"6.99\"": "表格数字列通过 arrowRule 声明固定或按正负映射的箭头；省略不显示。"
+    "#/properties/schemaVersion=\"6.99\"": "表格数字列通过 arrowRule 声明固定或按正负映射的箭头；省略不显示。",
+    "#/properties/schemaVersion=\"6.100\"": "维度查询绑定可按筛选条件暂停谓词并保留选择状态。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3089,6 +3091,18 @@
         "列级上下箭头（6.99）"
       ],
       "dependencies": []
+    },
+    "query.bindingWhen": {
+      "module": "queries-and-bindings",
+      "title": "维度查询绑定生效条件",
+      "roots": [
+        "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
+        "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when"
+      ],
+      "headings": [
+        "维度查询绑定生效条件（6.100）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3129,6 +3143,7 @@
       "查询标量的原文展示证据（6.60）"
     ],
     "queries-and-bindings.md": [
+      "维度查询绑定生效条件（6.100）",
       "期间字段聚合（6.97）",
       "查询独立期间策略",
       "查阅方式",

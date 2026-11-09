@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.99",
+  "schemaVersion": "6.100",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.section-8044e7e5"
@@ -9,7 +9,7 @@
       "module": "queries-and-bindings",
       "reference": "references/page-metadata/queries-and-bindings.md",
       "blocks": [
-        "# 查询定义与显式绑定\n\n<a id=\"period-aggregation\"></a>",
+        "# 查询定义与显式绑定\n\n<a id=\"filter-binding-when\"></a>",
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。"
       ],
       "rules": [
@@ -115,6 +115,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/filter-binding-when.json",
         "references/page-metadata/examples/dimension-params-page.json",
         "references/page-metadata/examples/hierarchy-binding-page.json",
         "references/page-metadata/examples/non-dimension-bindings-page.json",

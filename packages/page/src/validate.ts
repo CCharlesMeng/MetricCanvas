@@ -19,6 +19,7 @@ import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './table/validate-expansion';
 import { sourceCandidateErrors } from './source-candidates';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
+import {queryBindingWhenErrors} from './query-binding-when';
 import { metricBeforeErrors } from './metric-before';
 import { metricCardShapeErrors } from './metric-card';
 import {ordinaryQuery} from './time-mode';
@@ -188,7 +189,7 @@ export function parsePage(
 
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
-  const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page)];
+  const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page),...queryBindingWhenErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
   const errors:TypedError[]=[...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...tableHeaderInputErrors(page,options.textValues?.values),...filterGroupErrors(page),...sourceCandidateErrors(page)];
   try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant, options.evaluation),...navigationErrors(variant),...urlInputErrors(variant));}

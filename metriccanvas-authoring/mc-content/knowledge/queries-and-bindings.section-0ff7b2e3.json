@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.99",
+  "schemaVersion": "6.100",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.section-0ff7b2e3"
@@ -9,7 +9,7 @@
       "module": "queries-and-bindings",
       "reference": "references/page-metadata/queries-and-bindings.md",
       "blocks": [
-        "# 查询定义与显式绑定\n\n<a id=\"period-aggregation\"></a>",
+        "# 查询定义与显式绑定\n\n<a id=\"filter-binding-when\"></a>",
         "## 查询独立期间策略\n\n普通 `display:\"period\"` 指标时间绑定省略策略时：年 year、季 quarter、月及近一年 month，近一年为此前十二个完整月份。旧 dashboardToolbar、新旧页头及独立控件一致；queryModes 各分支独立处理，未绑定不订阅。只需 `{target:\"time\"}`，查询体旧 period 被覆盖，is_aggregate 保留；固定 start/end/param/window 冲突仍报错。\n\n6.67 起，指标查询的时间绑定可显式声明 `periodPolicy`，消费 `display:\"period\"` 筛选器的已应用选择。固定粒度写 `{target:\"time\",periodPolicy:{kind:\"fixed\",period:\"month\"}}`；按所选周期并限制数据能力写 `{target:\"time\",periodPolicy:{kind:\"selection\",supportedPeriods:[\"month\",\"quarter\",\"year\"]}}`。显式策略优先；不支持时拒绝查询，不回退。月度趋势、月账期明细等固定粒度查询应显式声明 fixed 策略，选择季度时仍读取对应三个月。\n\n显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象查询暂不消费此策略。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 display=period 的范围与时间点绑定保持原有精度和编码。\n\n固定日/月/季/年分别编码 YYYY-MM-DD、YYYY-MM、YYYY-Qn、YYYY。固定季/年扩大到窗口涉及的完整自然季/年，预览标记扩大。选年固定月取十二个月；选月固定日取完整自然月，不计算年度得分。按选择时，年用 year、月用 month，近一年用 month 和已应用的前十二个完整月窗口，请求及导出不重新取当前时间。6.86 起季度用 quarter：2026-Q3 发送 `filter.time:{period:\"quarter\",start:\"2026-Q3\",end:\"2026-Q3\"}`，只允许 Q1—Q4，跨年编码一致。显式 supportedPeriods 未声明 quarter 时拒绝；固定日/月策略仍可覆盖整季。\n\n工作台逐查询预览粒度与期间。新绑定按原查询的一致 period 预选固定策略，缺失或分支不一致时要求选择。已有未声明策略的绑定显示“沿用默认规则”；选择显式策略才转换该查询全部分支，保留指标、维度、fieldMappings 和 is_aggregate。编辑先校验再应用，失败保留原稿；不自动求和、平均、切换指标或路线。\n\n屏幕、列候选、完整导出共用生效查询。受影响查询及依赖的旧 initial/seeds 无粒度证明，重新取数；捕获视图可复用，时间谓词按冻结选择重算。失败不回退，原文及 selection 不变，Schema 字段和版本净增为零。\n\n验收：`quarter-query-period`（季度）、`period-query-defaults-legacy`（旧工具栏、固定月、自定义字段）、`period-query-columns-demo`（固定日/月与列显隐）。均为合成传输，操作及真实服务边界见页面目录 README。\n\n6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。\n\n当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。6.68起普通DQE可同时声明queryField和valueFormat，将时间范围绑定到指定维度字段。页面字段id、筛选器dimension和DQE字段属于不同空间。\n\n未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。\n\n6.13 的 filterBindings `{target:\"time\",window:...}` 引用 timePoint，窗口使用明确的 period/yearToDate/monthToDate/lastN 等声明，保留查询 period/is_aggregate。没有 window 的 time 目标仍引用 timeRange。查询时间只能有一个筛选来源；窗口精度不隐式转换，绑定不得与固定起止/参数引用并存。"
       ],
       "rules": [
@@ -115,6 +115,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/filter-binding-when.json",
         "references/page-metadata/examples/dimension-params-page.json",
         "references/page-metadata/examples/hierarchy-binding-page.json",
         "references/page-metadata/examples/non-dimension-bindings-page.json",

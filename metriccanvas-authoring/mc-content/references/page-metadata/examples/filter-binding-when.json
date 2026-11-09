@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "6.100",
+  "id": "filter-binding-when",
+  "layout": "dashboard",
+  "meta": {
+    "title": "按钮显隐与查询生效条件",
+    "description": "本地合成数据。全球可切换中国区/海外；下钻后保留选择但暂停站点条件。"
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo_geo",
+      "label": "区域",
+      "display": "tree",
+      "treeSelection": "level",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "demo_geo",
+          "label": "全球"
+        },
+        {
+          "id": "dept",
+          "dimension": "demo_dept",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "demo_office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "geo"
+    },
+    {
+      "id": "site",
+      "type": "dimension",
+      "dimension": "demo_site",
+      "label": "站点",
+      "default": [
+        "国内"
+      ]
+    }
+  ],
+  "dataSources": {
+    "offices": {
+      "fields": {
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "office"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "office"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "site": {
+              "target": "dimension",
+              "queryField": "site",
+              "when": {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "geo"
+              }
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo",
+                "dept": "dept",
+                "office": "office"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "trend",
+      "container": "card",
+      "components": [
+        {
+          "id": "site-buttons",
+          "type": "filterGroup",
+          "layout": {
+            "span": 12
+          },
+          "visibleWhen": {
+            "filter": "region",
+            "part": "level",
+            "op": "eq",
+            "value": "geo"
+          },
+          "props": {
+            "filterId": "site",
+            "options": [
+              {
+                "label": "中国区",
+                "value": "国内"
+              },
+              {
+                "label": "海外",
+                "value": "海外"
+              }
+            ]
+          }
+        },
+        {
+          "id": "offices-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "title": "代表处金额（合成数据）",
+            "categoryField": "office",
+            "series": [
+              {
+                "field": "amount",
+                "label": "金额"
+              }
+            ]
+          }
+        },
+        {
+          "id": "offices-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "office",
+                "title": "代表处"
+              },
+              {
+                "field": "amount",
+                "title": "金额",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "筛选生效条件"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

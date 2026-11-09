@@ -1,4 +1,5 @@
 import {queryLeaves,querySelection,selectQuery,type QuerySelectorValue} from './query-selection';
+import {bindingConditionFilterIds} from './query-binding-when';
 import type {FilterDeclaration,NumberRangeFilterDeclaration,NumberRangeValue} from './filter';
 import type {DqeQueryDefinition} from './query';
 
@@ -31,7 +32,7 @@ export function queryFilterIds(query:Pick<DqeQueryDefinition,'filterBindings'|'t
  const definition={language:'dqe' as const,...query};
  const leaves=selection&&values?appliedQueryLeaves(definition,values):queryLeaves(definition);
  const bindings=leaves.flatMap(leaf=>Object.entries(leaf.filterBindings??{}));
- return [...new Set([...(selection?[selection.filterId]:[]),...bindings.flatMap(([id,binding])=>binding.target==='numberRange'&&binding.metricByFilter?[id,binding.metricByFilter.filterId]:[id])])];
+ return [...new Set([...(selection?[selection.filterId]:[]),...bindings.flatMap(([id,binding])=>[...(binding.target==='numberRange'&&binding.metricByFilter?[id,binding.metricByFilter.filterId]:[id]),...bindingConditionFilterIds(binding)])])];
 }
 /** Invalid selectors still participate in validation, without guessing a branch's inputs. */
 function appliedQueryLeaves(query:DqeQueryDefinition,values:ReadonlyMap<string,QuerySelectorValue>){

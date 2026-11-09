@@ -828,6 +828,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/filter-binding-when.json",
+      "target": "product-contracts/page/conformance/valid/filter-binding-when.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-trend-arrows.json",
       "target": "product-contracts/page/conformance/valid/table-trend-arrows.json",
       "scope": "exact product contract"
@@ -6978,6 +6983,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/filter-binding-when.json",
+      "target": "references/page-metadata/examples/filter-binding-when.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/hierarchy-binding-page.json",
       "target": "references/page-metadata/examples/hierarchy-binding-page.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7984,11 +7994,11 @@
     }
   ],
   "counts": {
-    "product": 1564,
+    "product": 1566,
     "authoring": 32,
     "modules": 36,
-    "topics": 281,
-    "nodes": 2594,
+    "topics": 283,
+    "nodes": 2606,
     "tools": 9,
     "components": 20
   },

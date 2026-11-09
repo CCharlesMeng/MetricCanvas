@@ -35,6 +35,7 @@
   import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
   import {pageExternalInputs,rejectionPreviewRowCount,rejectionPreviewDelay} from '../../../../../fixtures/preview-inputs';
+  import {createFilterBindingWhenPreview} from '../../../../../fixtures/filter-binding-when';
   import {browser} from '$app/environment';
   const framed = browser && window.self !== window.top;
   import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
@@ -117,6 +118,7 @@
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
     const state = page.url.searchParams.get('state') ?? 'ready';
+    if(input==='binding-when')return createFilterBindingWhenPreview(state).dataGateway;
     if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
     if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
     if(input==='source-candidates')return createSourceCandidatesPreview(state).dataGateway;

@@ -2,6 +2,17 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 按钮显隐与查询生效条件
+
+入口 `/pages/filter-binding-when`；启动 `pnpm dev:playground`，使用页面专属本地合成 Adapter，无需 DQE 服务。
+
+1. 全球层级默认“中国区”，图表和表格显示北京；切换“海外”后显示巴黎。
+2. 在区域树选择海外地区部或巴黎代表处，按钮隐藏。即便此前选的是“中国区”，仍显示巴黎，查询只使用具体区域。
+3. 选择全球节点返回 geo 层级，按钮恢复之前选择。刷新 URL 亦恢复筛选与层级。表格下载沿用当前范围。
+4. 用 `?state=empty`、`?state=error` 分别观察空结果与合成查询失败；控制器不因空态或错误被删除。
+
+示例复用维度绑定 `when` 和组件 `visibleWhen` 的同一筛选条件。全局选择保留在状态和 URL 中；查询是否应用该谓词只由绑定条件决定。本地数据不代表真实 DQE 或权限接入。
+
 ## Report 时间选择、查询与标题联动
 
 入口：`/pages/report-date-filter-example`；[页面 JSON](report-date-filter-example.json)。
