@@ -61,6 +61,9 @@ onchange={range=>{const value=rangeInBaseUnits(declaration,range,unit?.scale??1)
      上下限的所指由 placeholder 承担,不依赖外置标签。 */
   .filter {
     display: flex;
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
     align-items: center;
     gap: 8px;
     font-size: var(--mc-filter-font-size, 13px);

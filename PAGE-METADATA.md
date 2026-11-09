@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+IOC Header 行内布局取消固定标题列，普通与紧凑页头均自然换行，主体不产生内部滚动条；所有屏幕页头滚出原位置后吸顶，静态导出不吸顶。无需新增 Schema 字段。见[唯一页头](docs/page-metadata/page.md#唯一页头641)，合成验收入口 `/pages/ioc-header-flow-sticky` 与 `/pages/ioc-header-section-sticky`。
+
 表格列头弹层移除“清除筛选”按钮；取消勾选或清空日期/数值范围即可清空该列条件，无需新增配置。
 
 6.98：列头 `filterable.showSelectAll:true` 显式展示“全选”，省略或 false 不展示。静态和动态候选全选后该列不限，包含空值并保留其他条件；新配置无需 allBehavior，旧字段兼容保留。见[列头全选](docs/page-metadata/components/table.md#table-header-select-all)，合成入口 `/pages/table-header-select-all`。

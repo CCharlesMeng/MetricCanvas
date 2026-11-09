@@ -14,7 +14,7 @@
   $effect(() => {
     if (note && !staticView) console.warn('[MetricCanvas][IOC_HEADER_NOTICE]', note);
   });
-  const flow=$derived(model.layout==='inline' && model.density==='normal' && model.collapse==='none');
+  const flow=$derived(model.layout==='inline' && model.collapse!=='firstRow');
   const uid = $props.id();
   const displayedIds=$derived(staticView?[...filterIds,...overflowIds]:filterIds);
   const showBack=$derived(!staticView && !!backAction);
@@ -102,12 +102,13 @@
   button:focus-visible{outline:2px solid #1476ff;outline-offset:2px;}
   .filter{--mc-filter-bar-padding:0;--mc-filter-bar-margin:0;--mc-filter-bar-border:0;--mc-filter-bar-background:transparent;--mc-filter-bar-gap:0;--mc-filter-label-display:inline;}
 
-  header.inline{display:grid;grid-template-columns:minmax(204px,max-content) minmax(0,1fr);align-items:center;gap:40px;min-height:80px;background:var(--mc-color-surface,#fff);}
-  .inline .identity{margin-bottom:0;}.inline h1{font-weight:var(--mc-page-title-font-weight,500);white-space:nowrap;color:var(--mc-page-title-color,#191919);margin:0;}
-  .inline .filter-region{align-items:center;}.inline .filters{gap:16px;align-items:center;}
+  header.inline{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;min-height:80px;background:var(--mc-color-surface,#fff);}
+  .inline .identity,.inline .heading{display:contents;}
+  .inline h1{font-weight:var(--mc-page-title-font-weight,500);white-space:normal;color:var(--mc-page-title-color,#191919);margin:0 24px 0 0;max-width:calc(100% - 24px);}
+  .inline .code,.inline .description,.inline dl{flex-basis:100%;}
+  .inline .filter-region{flex:1 1 240px;flex-wrap:wrap;align-items:center;}.inline .filters{gap:16px;align-items:center;}
   .inline .filter{--mc-filter-label-display:none;}
-  .inline.identityless>.filter-region{grid-column:1 / -1;}
-  .filter-overflow{position:relative;z-index:70;flex:none;}
+  .filter-overflow{position:relative;z-index:70;flex:none;margin-left:auto;}
   .filter-overflow summary{display:inline-flex;box-sizing:border-box;height:var(--mc-filter-control-height,34px);align-items:center;gap:6px;padding:0 12px;color:#191919;background:#fff;border:1px solid var(--mc-filter-control-border-color,#c2c2c2);border-radius:var(--mc-filter-control-radius,6px);cursor:pointer;font-size:var(--mc-filter-font-size,14px);list-style:none;white-space:nowrap;}
   .filter-overflow summary::-webkit-details-marker{display:none;}
   .filter-overflow summary:focus-visible{outline:2px solid var(--mc-color-primary,#08359e);outline-offset:2px;}
@@ -115,18 +116,11 @@
   .overflow-arrow{color:#8c8c8c;}.filter-overflow[open] .overflow-arrow{transform:rotate(180deg);}
   .overflow-panel{position:absolute;top:calc(100% + 10px);right:0;box-sizing:border-box;width:min(760px,calc(100cqi - 48px));max-width:calc(100cqi - 48px);display:flex;flex-wrap:wrap;gap:16px;padding:16px;background:#fff;border:1px solid var(--mc-color-border,#e4e4e7);border-radius:8px;box-shadow:0 12px 32px rgb(15 23 42 / .16);}
   .overflow-panel .filter{--mc-filter-bar-flex:0 1 auto;--mc-filter-bar-wrap:wrap;}
-  header.inline.compact{position:sticky;z-index:66;top:0;display:flex;width:100%;height:56px;min-height:56px;gap:0;padding:0 24px;border-bottom:1px solid #e8e8e8;}
-  .inline.compact .identity{flex:none;margin-right:24px;}.inline.compact .filter-region{flex:1;overflow-x:auto;overflow-y:hidden;}.inline.compact .filters{flex:0 0 auto;flex-wrap:nowrap;gap:12px;}
+  header.inline.compact{width:100%;min-height:56px;padding:12px 24px;border-bottom:1px solid #e8e8e8;}
+  .inline.compact .filters{gap:12px;}
   .inline.compact h1{font-size:18px;font-weight:600;line-height:24px;}
-  @container mc-runtime (max-width: 1050px){header.inline{grid-template-columns:minmax(0,1fr);gap:12px;padding:18px 20px;}.inline .filter-region{align-items:flex-start;}.inline h1{white-space:normal;}header.inline.compact{height:auto;min-height:56px;flex-wrap:wrap;gap:8px;}}
+  @container mc-runtime (max-width: 1050px){header.inline{padding:18px 20px;}header.inline.compact{padding:12px 20px;}}
 
-  header.static-view.inline.compact{position:static;height:auto;flex-wrap:wrap;}
-  .static-view.inline.compact .filter-region{overflow:visible;flex-basis:100%;}
-  .static-view.inline.compact .filters{flex:1;flex-wrap:wrap;}
-
-  header.flow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;}
-  .flow .identity,.flow .heading,.flow .filter-region,.flow .filters{display:contents;}
+  .flow .filter-region,.flow .filters{display:contents;}
   .flow .back{font-size:20px;width:20px;min-height:32px;padding:0;}
-  .flow h1{margin:0 24px 0 0;white-space:normal;}
-  .flow .code,.flow .description,.flow dl{flex-basis:100%;}
 </style>

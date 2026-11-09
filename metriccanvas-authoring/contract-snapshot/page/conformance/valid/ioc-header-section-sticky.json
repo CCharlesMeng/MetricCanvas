@@ -34,6 +34,30 @@
       "type": "boolean",
       "label": "显示首分区",
       "default": true
+    },
+    {
+      "id": "flag-1",
+      "type": "boolean",
+      "label": "仅看重点项目",
+      "default": false
+    },
+    {
+      "id": "flag-2",
+      "type": "boolean",
+      "label": "仅看本年新增",
+      "default": false
+    },
+    {
+      "id": "flag-3",
+      "type": "boolean",
+      "label": "仅看已完成项目",
+      "default": false
+    },
+    {
+      "id": "flag-4",
+      "type": "boolean",
+      "label": "仅看已签约项目",
+      "default": false
     }
   ],
   "sections": [
@@ -65,7 +89,11 @@
               }
             },
             "filterIds": [
-              "team"
+              "team",
+              "flag-1",
+              "flag-2",
+              "flag-3",
+              "flag-4"
             ],
             "back": true,
             "presentation": {

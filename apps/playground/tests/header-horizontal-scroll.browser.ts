@@ -47,7 +47,7 @@ test('Tab title strips keep full button height and horizontal navigation', async
   }
 });
 
-test('compact IOC header scrolls horizontally and keeps selection popovers usable', async ({ page }) => {
+test('compact IOC header wraps without scrollbars and keeps selection popovers usable', async ({ page }) => {
   const filters = Array.from({ length: 10 }, (_, index) => ({
     id: `filter-${index}`, type: 'dimension', dimension: `dimension-${index}`, label: `业务筛选 ${index}`,
     selection: { mode: 'single' }, default: ['A'], options: [{ value: 'A', label: '选项甲' }, { value: 'B', label: '选项乙' }]
@@ -56,15 +56,17 @@ test('compact IOC header scrolls horizontally and keeps selection popovers usabl
     identity: { title: '经营概览' }, filterIds: filters.map(filter => filter.id),
     presentation: { layout: 'inline', density: 'compact', collapse: 'none' }
   } }], filters);
-  const header = page.locator('[data-ioc-header]'), strip = header.locator('.filter-region');
+  const header = page.locator('[data-ioc-header]');
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
-    await horizontalOnly(strip);
+    expect(await header.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+    expect(await header.evaluate(element => Array.from(element.querySelectorAll('[data-ioc-filter]')).every(control => control.getBoundingClientRect().right <= element.getBoundingClientRect().right))).toBe(true);
     const last = header.locator('[data-filter-id="filter-9"]');
     await last.getByRole('button', { name: '业务筛选 9', exact: true }).click();
     await expect(last.getByRole('option', { name: '选项乙', exact: true })).toBeVisible();
     await last.getByRole('option', { name: '选项乙', exact: true }).click();
     await expect(last.getByRole('button', { name: '业务筛选 9', exact: true })).toContainText('选项乙');
-    await horizontalOnly(strip);
+    expect(await header.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+    expect(await header.evaluate(element => Array.from(element.querySelectorAll('[data-ioc-filter]')).every(control => control.getBoundingClientRect().right <= element.getBoundingClientRect().right))).toBe(true);
   }
 });

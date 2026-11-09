@@ -66,7 +66,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 
 ## 唯一页头（6.41）
 
-新页面统一声明首分区首组件 `type:"iocHeader"`，布局形态不决定业务身份；本节属性均指组件 `props`。旧根级写法仅兼容读取。`presentation.layout` 为 `stacked`（缺省）或 `inline`；前者保留身份与筛选上下排，后者承接旧 Dashboard 标题与筛选同行。`presentation.collapse` 为 `none`、按实际首行测量的 `firstRow` 或按数量收纳的 `overflow`：不超过五项全部常驻，密集时搜索回正文，其余前四项常驻、剩余进“更多筛选”。`density:"compact"` 不执行数量收纳；搭配 inline 时为 56px 紧凑吸顶行；窄容器内筛选行自行横向滚动，说明换行，不撑开页面。
+新页面统一声明首分区首组件 `type:"iocHeader"`，布局形态不决定业务身份；本节属性均指组件 `props`。旧根级写法仅兼容读取。`presentation.layout` 为 `stacked`（缺省）或 `inline`；前者保留身份与筛选上下排，后者将标题与筛选自然顺排，不再保留固定标题列。`presentation.collapse` 为 `none`、按实际首行测量的 `firstRow` 或按数量收纳的 `overflow`：不超过五项全部常驻，密集时搜索回正文，其余前四项常驻、剩余进“更多筛选”。`density:"compact"` 不执行数量收纳；搭配 inline 时最小高度为 56px，控件不足一行时自然换行并增高。页头主体不建立横向或纵向滚动区域；候选弹层继续沿用共享控件的列表与视口约束。
 
 页头组件自身统一提供 **16px 底部外间距**，适用于普通行内、上下排、紧凑及静态呈现。该间距位于页头外框与后续正文之间，不是页头内部padding；不需页面JSON声明。旧工具栏适配与导出正文不再叠加另一份页头间距。未渲染页头时没有此占位。当前可观察入口为 `ioc-header-demo`、`ioc-header-standard` 与旧紧凑入口 `ioc-opportunity-analysis`。
 
@@ -77,7 +77,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 实际页面复用既有 `ioc-project-overview`、`ioc-opportunity-list`、`ioc-opportunity-analysis`：分别验证普通、更多筛选及紧凑呈现。`dashboard-period-filter` 使用同一页头且仅保留一个年份入口。旧文档回归使用完整兼容夹具，不再新增演示入口。筛选声明见[筛选模块](filters.md)。
 
 
-普通行内页头（`layout:"inline"`、`density:"normal"`、`collapse:"none"`）按小箭头 `<`、标题、可选灰色标签、筛选依次进入同一个换行流；窄容器不固定两栏。标准/密集/详情合成页不自动添加说明、编码或期间事实。compact、firstRow、overflow和stacked继续各自原有呈现。返回沿用浏览器默认行为与集成应用可选覆盖。完整场景见 `ioc-header-standard`、`ioc-header-dense`、`ioc-header-detail` 与 `/ioc-header-review`。
+所有行内页头（包括 compact、firstRow 与 overflow）按返回、标题、可选标签、筛选自然顺排，不为重点国代等可选控件保留空位；窄容器按内容换行。firstRow 保留筛选首行测量与展开收起，overflow 保留更多筛选，stacked 保留上下排。标准/密集/详情合成页不自动添加说明、编码或期间事实。返回沿用浏览器默认行为与集成应用可选覆盖。完整场景见 `ioc-header-flow-sticky`、`ioc-header-section-sticky`、`ioc-header-dense-filter-demo` 与 `/ioc-header-review`。本次仅统一运行时布局与吸顶行为，不新增 Schema 字段或迁移开关。
 
 MC 内容投影与本地创作知识由同一产品参考生成。完整性诊断场景为 `mc-content-layout-demo`；内容身份、页面版本与实际部署身份分别核对。旧文件的可读性、能力下限、可迁移性和人工语义处理项分别返回，不能仅提升 schemaVersion 绕过迁移。
 
@@ -96,13 +96,13 @@ IOC Header 使用普通组件外壳 `id/type/layout/props`，限定在 `sections
 
 默认布局在整个首分区之后、其他分区之前放页内导航；首分区含正文时该正文也在导航之前。定制 sectionsContent 保持一次整体调用和原签名，新文档按声明分区交付，导航在整次回调之前；旧文档回调仍接收原正文，不注入虚拟兼容分区。
 
-inline+compact 保持整页吸顶。位置切换使用同一个控件实例；父级隐藏、自身隐藏或布局卸载清理浮动层与弹层。恢复保留页级状态，不保证局部展开或焦点恢复。导出采用冻结输入和同一组件路径；条件隐藏不导出，分组/Tab按既有展开规则，去掉返回和吸顶交互。
+所有屏幕页头默认吸顶，不依赖 inline、stacked 或 compact。页头随页面滚动到可见区域顶部后，固定在视口顶部；嵌套滚动时固定在该滚动容器的可见顶部，滚回原位置后恢复文档流。位置切换使用同一个控件实例；父级隐藏、自身隐藏或布局卸载清理浮动层与弹层。恢复保留页级状态，不保证局部展开或焦点恢复。导出采用冻结输入和同一组件路径；条件隐藏不导出，分组/Tab按既有展开规则，去掉返回和吸顶交互。
 
 旧根级页头通过内部常显兼容分区呈现，不插入可能隐藏的旧首分区，不写回原始修订。旧默认/显式 Dashboard 工具栏保留普通 Region URL 规则及不导出页头的历史行为；显示工具栏不意味着开启 IOC 模式。6.80及之前的隐式 Dashboard 缺省保持；规范化读取保留必要的旧版本边界，6.81无声明时不生成页头。
 
 显式升级将合法旧根级 IOC 物化为常显首分区的新组件，并删除旧根字段，id确定且避冲突，重复升级不插入第二份。旧隐藏工具栏可移除。普通旧工具栏的 Region、legacyBack、导出语义不能自动等价转为正式 IOC；工具返回迁移错误且不写目标文件，原件仍可读，按迁移手册人工处理。不猜组织树、候选、返回上下文或查询映射。
 
-可观察页面：`ioc-header-section-placement`（混排/显隐/动态文字）、`ioc-header-section-groups`（分组）、`ioc-header-section-sticky`（紧凑吸顶）。均为静态合成示例，不证明真实DQE或集成应用接线。
+可观察页面：`ioc-header-section-placement`（混排/显隐/动态文字）、`ioc-header-section-groups`（分组）、`ioc-header-flow-sticky`（无重点国代的普通页头顺排与吸顶）、`ioc-header-section-sticky`（紧凑多控件换行、无内部滚动条与吸顶）。均为静态合成示例，不证明真实DQE或集成应用接线。
 
 ### 页头组合控件（6.91）
 

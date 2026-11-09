@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "9897502571dee516fcb2da00da239aa4eefb65a4a9e34b03e51eabcccf21592b",
+  "sha256": "7e5228f18d7cc8079b1aa766669ee58c0a2a274ac9011b5f6790a4dd5b9c6714",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "fb590f3eb7993f042df09715e0dba52561886ac856e2869fb14d565c550c775a"
+      "sha256": "3106e37c7a8817bb64bdee90f96f70525d0e27a81a87a62dd488f633bbef855a"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -2612,7 +2612,11 @@
     },
     {
       "file": "pages/capabilities/ioc-header/section-component/README.md",
-      "sha256": "3d9c174335f9b3949961c31400d03758631138316d319e3dcffeb8fdc167bf32"
+      "sha256": "658231a9173eb9c7969db8c34fb95d904f59fb7ad8466a625829f850dae864dd"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/section-component/ioc-header-flow-sticky.json",
+      "sha256": "34d136370107b35ce58925f99a9f3201f2d15ee6950562c06fa1f266241cc10d"
     },
     {
       "file": "pages/capabilities/ioc-header/section-component/ioc-header-section-groups.json",
@@ -2624,7 +2628,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/section-component/ioc-header-section-sticky.json",
-      "sha256": "74893148bf504d9cd56816798d9013340dc87a9a260f94ae531952507a755731"
+      "sha256": "fcc5c5de191d824d145b165af2001e06965bf335f77c1361bc4e833019176c82"
     },
     {
       "file": "pages/capabilities/ioc-header/selection/README.md",

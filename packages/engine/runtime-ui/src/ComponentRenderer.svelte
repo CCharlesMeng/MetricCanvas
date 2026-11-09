@@ -171,7 +171,7 @@
 {#if rendersWithoutWidgetHost(component)}
   {#if component.type === 'iocHeader'}
     {@const binding=iocHeader??{model:resolvedIocHeader(component.props),filterIds:component.props.filterIds??[],controls:emptyIocControls}}
-    <IocHeaderFrame sticky={!exportMode&&binding.model.layout==='inline'&&binding.model.density==='compact'}>
+    <IocHeaderFrame sticky={!exportMode}>
       <IocHeader {...binding} staticView={exportMode}/>
     </IocHeaderFrame>
   {:else if component.type === 'filterGroup'}
