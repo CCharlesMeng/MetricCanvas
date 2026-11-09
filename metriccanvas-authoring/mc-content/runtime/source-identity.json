@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "a251df0a4fb06c4684f3ad5175f4fc61fb000dd6e3c7562f92036992836ba8d2",
+  "sha256": "9113fed0c52ed7c677c98fe37e5965e7bb19678aa9a03474e0f72e7bea41ab21",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -96,7 +96,7 @@
     },
     {
       "file": "docs/page-metadata/components/reportHeader.md",
-      "sha256": "69fab1f9a03c931d7ca1c3b2bd4562dcb24a04aa4575952184e1e4266250dc61"
+      "sha256": "8c14043eb57b58ed2f90f8a1259925fc9d39ff0c98df594a6e5567033d0d929b"
     },
     {
       "file": "docs/page-metadata/components/tabContainer.md",
@@ -2140,7 +2140,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "90e66c0e3675e7f65e900245e3bb45df97cc27ed8d3be9e1a8b0ffc1d6f9f238"
+      "sha256": "f1d7f4536c06c2d9cf882341f86e658cbde8de1669459dd4a9bacf370127383b"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2416,7 +2416,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "d7d5726c3ba3250faee82131f6f4fc41739fe5a9a91a54afb3b8fa1845426aa3"
+      "sha256": "1c0caeaa18bf1866d86afd9bdf821bf7cc0cf3207eb390b68ac24c8ff162bc1d"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",
@@ -2497,6 +2497,10 @@
     {
       "file": "pages/capabilities/filters/report-date-filter-example.json",
       "sha256": "c993c55dd6d5284896ae4030766478d0060b9da8310cac3e908b74698fb43674"
+    },
+    {
+      "file": "pages/capabilities/filters/report-monthly-complete.json",
+      "sha256": "5ba82812a7e7bc39f0146add2cc9c6331bb7ca673feae4da6b46f9226a1cd0eb"
     },
     {
       "file": "pages/capabilities/ioc-header/business/README.md",

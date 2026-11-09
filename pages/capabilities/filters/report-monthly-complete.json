@@ -1,0 +1,834 @@
+{
+  "schemaVersion": "6.102",
+  "id": "report-monthly-complete",
+  "layout": "report",
+  "meta": {
+    "title": "经营分析月报",
+    "description": "完整Report时间筛选案例；合成月度经营数据，无IOC页头。"
+  },
+  "filters": [
+    {
+      "id": "report-month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "报告月份",
+      "required": true,
+      "default": "2026-10",
+      "min": "2026-01"
+    }
+  ],
+  "dataSources": {
+    "report-summary": {
+      "fields": {
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "label": "营业收入",
+          "queryField": "营业收入",
+          "defaultFormat": "number-grouped",
+          "unit": "万元"
+        },
+        "orders": {
+          "type": "number",
+          "role": "measure",
+          "label": "订单数",
+          "queryField": "订单数",
+          "defaultFormat": "number-grouped",
+          "unit": "单"
+        },
+        "profit": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利额",
+          "queryField": "毛利额",
+          "defaultFormat": "number-1",
+          "unit": "万元"
+        },
+        "target": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入目标",
+          "queryField": "收入目标",
+          "defaultFormat": "number-1",
+          "unit": "万元"
+        },
+        "margin": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利率",
+          "queryField": "毛利率",
+          "defaultFormat": "percent-1"
+        },
+        "achievement": {
+          "type": "number",
+          "role": "measure",
+          "label": "目标完成率",
+          "queryField": "目标完成率",
+          "defaultFormat": "percent-1"
+        },
+        "revenueChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入环比",
+          "queryField": "收入环比",
+          "defaultFormat": "percent-2-signed"
+        },
+        "ordersChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "订单环比",
+          "queryField": "订单环比",
+          "defaultFormat": "percent-2-signed"
+        },
+        "marginChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利率变化",
+          "queryField": "毛利率变化",
+          "defaultFormat": "number-1-signed"
+        },
+        "achievementChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "完成率变化",
+          "queryField": "完成率变化",
+          "defaultFormat": "number-1-signed"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "营业收入",
+                  "订单数",
+                  "毛利额",
+                  "收入目标",
+                  "毛利率",
+                  "目标完成率",
+                  "收入环比",
+                  "订单环比",
+                  "毛利率变化",
+                  "完成率变化"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-11-05T00:00:00+08:00",
+          "rows": [
+            {
+              "营业收入": 1186,
+              "订单数": 4380,
+              "毛利额": 261.6,
+              "收入目标": 1240,
+              "毛利率": 22.1,
+              "目标完成率": 95.6,
+              "收入环比": 3.6,
+              "订单环比": 2.5,
+              "毛利率变化": 0.2,
+              "完成率变化": 1.4
+            }
+          ],
+          "totalCount": 1
+        }
+      }
+    },
+    "report-trend": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份",
+          "queryField": "月份"
+        },
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "label": "营业收入",
+          "queryField": "营业收入",
+          "defaultFormat": "number-grouped",
+          "unit": "万元"
+        },
+        "orders": {
+          "type": "number",
+          "role": "measure",
+          "label": "订单数",
+          "queryField": "订单数",
+          "defaultFormat": "number-grouped",
+          "unit": "单"
+        },
+        "margin": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利率",
+          "queryField": "毛利率",
+          "defaultFormat": "percent-1"
+        },
+        "achievement": {
+          "type": "number",
+          "role": "measure",
+          "label": "目标完成率",
+          "queryField": "目标完成率",
+          "defaultFormat": "percent-1"
+        },
+        "profit": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利额",
+          "queryField": "毛利额",
+          "defaultFormat": "number-1",
+          "unit": "万元"
+        },
+        "target": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入目标",
+          "queryField": "收入目标",
+          "defaultFormat": "number-1",
+          "unit": "万元"
+        },
+        "revenueChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入环比",
+          "queryField": "收入环比",
+          "defaultFormat": "percent-2-signed"
+        },
+        "ordersChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "订单环比",
+          "queryField": "订单环比",
+          "defaultFormat": "percent-2-signed"
+        },
+        "marginChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利率变化",
+          "queryField": "毛利率变化",
+          "defaultFormat": "number-1-signed"
+        },
+        "achievementChange": {
+          "type": "number",
+          "role": "measure",
+          "label": "完成率变化",
+          "queryField": "完成率变化",
+          "defaultFormat": "number-1-signed"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "月份"
+                ],
+                "output_metrics": [
+                  "营业收入",
+                  "订单数",
+                  "毛利率",
+                  "目标完成率",
+                  "毛利额",
+                  "收入目标",
+                  "收入环比",
+                  "订单环比",
+                  "毛利率变化",
+                  "完成率变化"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "lastN",
+                "unit": "month",
+                "n": 6
+              }
+            }
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-11-05T00:00:00+08:00",
+          "rows": [
+            {
+              "月份": "2026-05",
+              "营业收入": 978.5,
+              "订单数": 3834,
+              "毛利率": 21.3,
+              "目标完成率": 87.7,
+              "毛利额": 208,
+              "收入目标": 1116,
+              "收入环比": 4.4,
+              "订单环比": 3,
+              "毛利率变化": 0.2,
+              "完成率变化": 1.8
+            },
+            {
+              "月份": "2026-06",
+              "营业收入": 1019.9,
+              "订单数": 3942,
+              "毛利率": 21.5,
+              "目标完成率": 89.4,
+              "毛利额": 218.9,
+              "收入目标": 1140.8,
+              "收入环比": 4.2,
+              "订单环比": 2.8,
+              "毛利率变化": 0.2,
+              "完成率变化": 1.7
+            },
+            {
+              "月份": "2026-07",
+              "营业收入": 1061.4,
+              "订单数": 4052,
+              "毛利率": 21.6,
+              "目标完成率": 91.1,
+              "毛利额": 228.8,
+              "收入目标": 1165.6,
+              "收入环比": 4.1,
+              "订单环比": 2.8,
+              "毛利率变化": 0.1,
+              "完成率变化": 1.7
+            },
+            {
+              "月份": "2026-08",
+              "营业收入": 1103,
+              "订单数": 4162,
+              "毛利率": 21.7,
+              "目标完成率": 92.7,
+              "毛利额": 239.9,
+              "收入目标": 1190.4,
+              "收入环比": 3.9,
+              "订单环比": 2.7,
+              "毛利率变化": 0.1,
+              "完成率变化": 1.6
+            },
+            {
+              "月份": "2026-09",
+              "营业收入": 1144.6,
+              "订单数": 4272,
+              "毛利率": 21.9,
+              "目标完成率": 94.2,
+              "毛利额": 250.1,
+              "收入目标": 1215.2,
+              "收入环比": 3.8,
+              "订单环比": 2.6,
+              "毛利率变化": 0.2,
+              "完成率变化": 1.5
+            },
+            {
+              "月份": "2026-10",
+              "营业收入": 1186,
+              "订单数": 4380,
+              "毛利率": 22.1,
+              "目标完成率": 95.6,
+              "毛利额": 261.6,
+              "收入目标": 1240,
+              "收入环比": 3.6,
+              "订单环比": 2.5,
+              "毛利率变化": 0.2,
+              "完成率变化": 1.4
+            }
+          ],
+          "totalCount": 6
+        }
+      }
+    },
+    "report-regions": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "queryField": "区域"
+        },
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "label": "营业收入",
+          "queryField": "营业收入",
+          "defaultFormat": "number-grouped",
+          "unit": "万元"
+        },
+        "target": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入目标",
+          "queryField": "收入目标",
+          "defaultFormat": "number-1",
+          "unit": "万元"
+        },
+        "achievement": {
+          "type": "number",
+          "role": "measure",
+          "label": "目标完成率",
+          "queryField": "目标完成率",
+          "defaultFormat": "percent-1"
+        },
+        "orders": {
+          "type": "number",
+          "role": "measure",
+          "label": "订单数",
+          "queryField": "订单数",
+          "defaultFormat": "number-grouped",
+          "unit": "单"
+        },
+        "profit": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利额",
+          "queryField": "毛利额",
+          "defaultFormat": "number-1",
+          "unit": "万元"
+        },
+        "margin": {
+          "type": "number",
+          "role": "measure",
+          "label": "毛利率",
+          "queryField": "毛利率",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "营业收入",
+                  "收入目标",
+                  "目标完成率",
+                  "订单数",
+                  "毛利额",
+                  "毛利率"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-11-05T00:00:00+08:00",
+          "rows": [
+            {
+              "区域": "华东",
+              "营业收入": 384,
+              "收入目标": 400,
+              "目标完成率": 96,
+              "订单数": 1380,
+              "毛利额": 92.2,
+              "毛利率": 24
+            },
+            {
+              "区域": "华南",
+              "营业收入": 312,
+              "收入目标": 320,
+              "目标完成率": 97.5,
+              "订单数": 1170,
+              "毛利额": 68.6,
+              "毛利率": 22
+            },
+            {
+              "区域": "华北",
+              "营业收入": 278,
+              "收入目标": 290,
+              "目标完成率": 95.9,
+              "订单数": 1010,
+              "毛利额": 58.4,
+              "毛利率": 21
+            },
+            {
+              "区域": "西部",
+              "营业收入": 212,
+              "收入目标": 230,
+              "目标完成率": 92.2,
+              "订单数": 820,
+              "毛利额": 42.4,
+              "毛利率": 20
+            }
+          ],
+          "totalCount": 4
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "cover",
+      "container": "plain",
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "filter": "report-month",
+                  "format": "period"
+                },
+                " 经营分析月报"
+              ]
+            },
+            "filterIds": [
+              "report-month"
+            ],
+            "badge": "合成示例",
+            "exportButtons": [
+              {
+                "format": "pdf",
+                "label": "下载 PDF",
+                "scale": 2
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "overview",
+      "title": "经营总览",
+      "container": "plain",
+      "components": [
+        {
+          "id": "kpi-revenue",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "primaryDetail",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "营业收入",
+                "valueField": "revenue",
+                "changes": [
+                  {
+                    "label": "环比上月",
+                    "field": "revenueChange",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                ],
+                "unit": "万元"
+              }
+            ]
+          },
+          "data": {
+            "main": "report-summary"
+          }
+        },
+        {
+          "id": "kpi-orders",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "primaryDetail",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "成交订单",
+                "valueField": "orders",
+                "changes": [
+                  {
+                    "label": "环比上月",
+                    "field": "ordersChange",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                ],
+                "unit": "单"
+              }
+            ]
+          },
+          "data": {
+            "main": "report-summary"
+          }
+        },
+        {
+          "id": "kpi-margin",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "primaryDetail",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "毛利率",
+                "valueField": "margin",
+                "changes": [
+                  {
+                    "label": "环比上月",
+                    "field": "marginChange",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    },
+                    "unit": "个百分点"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": {
+            "main": "report-summary"
+          }
+        },
+        {
+          "id": "kpi-achievement",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "primaryDetail",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "目标完成率",
+                "valueField": "achievement",
+                "changes": [
+                  {
+                    "label": "环比上月",
+                    "field": "achievementChange",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    },
+                    "unit": "个百分点"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": {
+            "main": "report-summary"
+          }
+        }
+      ]
+    },
+    {
+      "id": "performance",
+      "title": "趋势与区域表现",
+      "container": "plain",
+      "components": [
+        {
+          "id": "trend-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 7
+          },
+          "props": {
+            "title": "近六个月收入趋势",
+            "components": [
+              {
+                "id": "revenue-trend",
+                "type": "lineChart",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "xField": "month",
+                  "series": [
+                    {
+                      "field": "revenue",
+                      "label": "营业收入（万元）"
+                    }
+                  ],
+                  "smooth": true,
+                  "areaGradient": true,
+                  "showPointLabels": false,
+                  "categoryLabels": {
+                    "mode": "auto"
+                  }
+                },
+                "data": {
+                  "main": "report-trend"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "regional-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 5
+          },
+          "props": {
+            "title": "区域收入分布",
+            "components": [
+              {
+                "id": "regional-chart",
+                "type": "barChart",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "categoryField": "region",
+                  "series": [
+                    {
+                      "field": "revenue",
+                      "label": "营业收入（万元）"
+                    }
+                  ],
+                  "horizontal": true,
+                  "rounded": true,
+                  "showValueLabels": true
+                },
+                "data": {
+                  "main": "report-regions"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "regional-detail",
+      "container": "plain",
+      "components": [
+        {
+          "id": "regional-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "区域经营明细",
+            "fit": "content",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域",
+                "width": 120,
+                "fixed": "left"
+              },
+              {
+                "field": "revenue",
+                "title": "营业收入（万元）",
+                "align": "right",
+                "width": 130
+              },
+              {
+                "field": "target",
+                "title": "收入目标（万元）",
+                "align": "right",
+                "width": 130
+              },
+              {
+                "field": "achievement",
+                "title": "目标完成率",
+                "align": "right",
+                "width": 130
+              },
+              {
+                "field": "orders",
+                "title": "订单数",
+                "align": "right",
+                "width": 130
+              },
+              {
+                "field": "profit",
+                "title": "毛利额（万元）",
+                "align": "right",
+                "width": 130
+              },
+              {
+                "field": "margin",
+                "title": "毛利率",
+                "align": "right",
+                "width": 130
+              }
+            ]
+          },
+          "data": {
+            "main": "report-regions"
+          }
+        }
+      ]
+    }
+  ]
+}

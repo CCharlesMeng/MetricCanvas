@@ -639,3 +639,5 @@ Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/
 URL 参数清理与宿主地址同步：[初始化与清理场景](capabilities/navigation/README.md#url-参数清理与地址同步)，入口 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除`，Angular 接入示例见 `packages/embed/examples/angular-navigation.ts`。
 
 - [下钻详情页自动返回](capabilities/navigation/README.md#下钻详情页自动返回)：清单下钻、刷新、同页换参数、跨页失效及新标签页独立进入的合成演示。
+
+完整月报场景 `/pages/report-monthly-complete`：Report 月份切换联动标题、四个指标卡、趋势、区域图和明细，并下载当前月份 PDF。`pnpm dev:playground` 使用专属本地合成数据网关，无需 DQE；操作和预期见[筛选场景说明](capabilities/filters/README.md#完整经营分析月报合成演示)。

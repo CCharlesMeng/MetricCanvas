@@ -2,6 +2,7 @@ const zeroTotalPages = new Set(['query-zero-total-demo', 'query-zero-total-hiera
 const unionPages = new Set(['multi-source-table', 'multi-source-composite-key', 'multi-source-generated-key']);
 const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capabilities/ioc-header/business/*.json')).map(path => path.split('/').pop()!.slice(0, -5)));
 const exactInputs = new Map([
+  ['report-monthly-complete','report-monthly'],
   ['object-period-query','object-period'],
   ['filter-binding-when','binding-when'],
   ['sdt-period-aggregation','period-aggregation'],

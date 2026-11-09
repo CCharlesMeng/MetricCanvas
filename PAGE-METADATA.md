@@ -179,7 +179,7 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 |---|---|---|
 | 声明页面结构、布局与组件 | [页面与布局](contracts/metriccanvas/page/reference/page.md)、[组件参考](contracts/metriccanvas/page/reference/components/README.md) | [完整页面示例索引](contracts/metriccanvas/page/reference/examples/README.md) |
 | 打开时指定维度范围与报告期间 | [当前分层参数](PAGE-PARAMETERS.md#当前分层参数新页面) | [分层参数页面](packages/page/fixtures/contract-valid/grouped-params-page.json) |
-| 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/capabilities/filters/report-date-filter-example.json) |
+| 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/capabilities/filters/report-date-filter-example.json)、[完整合成月报](pages/capabilities/filters/report-monthly-complete.json) |
 | 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business/report/sdt/business-sdt-cascade-example.json) |
 | 从其他页面通过 URL 打开指定 Tab（6.33） | [Tab 初值](docs/page-metadata/components/tabContainer.md#url-初始化页签633)、[链接传参](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签) | [来源页](pages/capabilities/navigation/tab-url-source.json)、[目标页](pages/capabilities/navigation/tab-url-initialization.json) |
 | 配置每张表的独立搜索与完整Excel导出（准备预算5分钟） | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
