@@ -422,7 +422,7 @@ DQE 数据网关单次 HTTP 请求默认超时为120秒，可信接入配置可�
 
 7.4 `metricCard` → [模块参考](contracts/metriccanvas/page/reference/components/metricCard.md)。
 
-6.65 新增 `variant: "primaryDetail"`：`rows` 恰好一个主指标，`secondaryRows` 为零到多行14px次级指标（指标名＋带下划线的指标值，每行上方8px）；同一栅格视觉行内卡面随最高内容等高，窄屏逐卡自然高度。字段和点击行为复用原有协议，见[指标卡语义](docs/page-metadata/components/metricCard.md)与[主次指标示例](pages/capabilities/layout/metric-card-primary-detail.json)。
+6.65 新增 `variant: "primaryDetail"`：`rows` 恰好一个主指标，`secondaryRows` 为零到多行14px次级指标（指标名＋指标值，每行上方8px）；仅显式配置 `row.link: true` 及合法跳转或明细动作的非空数值和单位显示下划线，普通文本和缺失值不显示。同一栅格视觉行内卡面随最高内容等高，窄屏逐卡自然高度。字段和点击行为复用原有协议，见[指标卡语义](docs/page-metadata/components/metricCard.md)与[主次指标示例](pages/capabilities/layout/metric-card-primary-detail.json)。
 
 单面板 `compactStack` 与 `primaryDetail` 混排时，卡面同样按所在视觉行等高；保留各自的内部排版，只在短卡底部留白。无需高度字段或修改 variant；次级面板及进度环的既有布局保持，见上述示例的 `mixed-variants` 分区。
 

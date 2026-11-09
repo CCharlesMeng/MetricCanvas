@@ -42,9 +42,10 @@ describe('主指标与多行次级指标', () => {
     expect(validate(page)).toContainEqual({ type: 'SCHEMA_ERROR', path: '/sections/0/components/1/props/secondaryRows/0/valueField', message: '字段 unknown 不在数据槽 main 的数据源 metrics 中' });
   });
 
-  it('下划线不赋予点击行为；link仍然要求声明动作', () => {
+  it('指标值链接必须显式声明动作', () => {
     const page = example();
     const props = page.sections[1].components[1].props;
+    props.secondaryRows = [props.secondaryRows[0]];
     delete props.actions;
     expect(validate(page).some(error => error.path.endsWith('/secondaryRows/0/link'))).toBe(true);
     props.secondaryRows[0].link = false;

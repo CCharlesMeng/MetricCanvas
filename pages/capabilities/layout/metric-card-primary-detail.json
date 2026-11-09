@@ -357,6 +357,26 @@
                 },
                 "unit": "万元",
                 "link": true
+              },
+              {
+                "label": "零值（可点击查看明细）",
+                "valueField": {
+                  "field": "zero",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "unit": "万元",
+                "link": true
+              },
+              {
+                "label": "暂无数据（已配置链接）",
+                "valueField": {
+                  "field": "missing",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "unit": "万元",
+                "link": true
               }
             ],
             "actions": [

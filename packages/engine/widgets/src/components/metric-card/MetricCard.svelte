@@ -250,6 +250,9 @@
     font-size: 14px;
     font-weight: 400;
     line-height: 17px;
+  }
+  .primary-detail > .metric-panel .value-link .row-value,
+  .primary-detail > .metric-panel .value-link .unit {
     text-decoration-line: underline;
   }
   .metric-content {
