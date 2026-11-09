@@ -39,7 +39,9 @@ const barSeriesShape = {
   stackOrder: z.number().int().optional()
 };
 export const barChartSeriesZ = z.union([
-  fieldSeriesSourceZ.extend(barSeriesShape).strict(),
+  fieldSeriesSourceZ.extend({ ...barSeriesShape,
+    aggregate: z.literal('avg').optional().meta({ description: '对当前图表全部有效字段值求算术平均，并在每个类别显示同一均值柱；0参与、空值跳过' })
+  }).strict(),
   constantSeriesSourceZ.extend(barSeriesShape).strict()
 ]).meta({ id: 'barChartSeries' });
 

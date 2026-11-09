@@ -5,7 +5,7 @@ import {capabilityFloorErrors} from '../src/version';
 import {extractPageParams} from '../src/extract-page-params';
 function page() {
   const value = JSON.parse(readFileSync(new URL('../fixtures/contract-valid/dashboard-period-filter.json', import.meta.url), 'utf8'));
-  value.schemaVersion = '6.103'; value.filters[0].default = {mode: 'month', finalizationName: '经营数据'};
+  value.schemaVersion = '6.104'; value.filters[0].default = {mode: 'month', finalizationName: '经营数据'};
   return value;
 }
 describe('finalization default contract', () => {

@@ -2,7 +2,7 @@
   "case": "period-aggregation-duplicate-field",
   "invariant": "period-aggregation",
   "input": {
-    "schemaVersion": "6.97",
+    "schemaVersion": "6.103",
     "id": "sdt-period-aggregation",
     "layout": "dashboard",
     "meta": {
@@ -210,6 +210,38 @@
                   "label": "月均决策时长的平均值",
                   "kind": "line",
                   "axis": "secondary"
+                }
+              ]
+            }
+          },
+          {
+            "id": "efficiency-average-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "rep-office-efficiency"
+            },
+            "props": {
+              "title": "代表处决策次数：当前值与均值",
+              "categoryField": "rep-office",
+              "showValueLabels": true,
+              "categoryLabels": {
+                "mode": "all",
+                "rotate": 45
+              },
+              "series": [
+                {
+                  "field": "decision-count",
+                  "label": "当前值",
+                  "unit": "次"
+                },
+                {
+                  "field": "decision-count",
+                  "label": "均值",
+                  "aggregate": "avg",
+                  "unit": "次"
                 }
               ]
             }

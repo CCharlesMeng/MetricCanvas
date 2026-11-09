@@ -37,7 +37,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "c8142a5f15c65dbc205d1703511f7e484c1c59e9cc0cf1a7d853cdbaeecd13e9",
+      "contentSha256": "d0ffaad5965cb3d0371f519895c5fdd5be2bb8b8d6628cf84e222cbbc6b135cb",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -57,7 +57,7 @@
         "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
       }
     },
-    "contentSha256": "c8142a5f15c65dbc205d1703511f7e484c1c59e9cc0cf1a7d853cdbaeecd13e9",
+    "contentSha256": "d0ffaad5965cb3d0371f519895c5fdd5be2bb8b8d6628cf84e222cbbc6b135cb",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -112,7 +112,7 @@
     ],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "c8142a5f15c65dbc205d1703511f7e484c1c59e9cc0cf1a7d853cdbaeecd13e9",
+      "contentSha256": "d0ffaad5965cb3d0371f519895c5fdd5be2bb8b8d6628cf84e222cbbc6b135cb",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -137,7 +137,7 @@
         "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
       }
     },
-    "contentSha256": "c8142a5f15c65dbc205d1703511f7e484c1c59e9cc0cf1a7d853cdbaeecd13e9",
+    "contentSha256": "d0ffaad5965cb3d0371f519895c5fdd5be2bb8b8d6628cf84e222cbbc6b135cb",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -160,7 +160,7 @@
   },
   "oldSchema": {
     "declaredVersion": "6.0",
-    "targetVersion": "6.103",
+    "targetVersion": "6.104",
     "readableVersions": [
       "5.0",
       "5.1",
@@ -260,7 +260,8 @@
       "6.100",
       "6.101",
       "6.102",
-      "6.103"
+      "6.103",
+      "6.104"
     ],
     "readable": false,
     "requiredVersion": "6.0",
@@ -269,7 +270,7 @@
       {
         "type": "SCHEMA_ERROR",
         "path": "/schemaVersion",
-        "message": "不支持的文档格式版本 6.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 / 6.96 / 6.97 / 6.98 / 6.99 / 6.100 / 6.101 / 6.102 / 6.103，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+        "message": "不支持的文档格式版本 6.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 / 6.96 / 6.97 / 6.98 / 6.99 / 6.100 / 6.101 / 6.102 / 6.103 / 6.104，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
       }
     ],
     "fieldUses": [],
@@ -291,7 +292,7 @@
         {
           "rule": "version",
           "path": "/schemaVersion",
-          "message": "6.0 → 6.103；已检查能力下限、已知语义断点及完整目标协议"
+          "message": "6.0 → 6.104；已检查能力下限、已知语义断点及完整目标协议"
         }
       ],
       "warnings": [
@@ -304,7 +305,7 @@
   },
   "futureSchema": {
     "declaredVersion": "999.0",
-    "targetVersion": "6.103",
+    "targetVersion": "6.104",
     "readableVersions": [
       "5.0",
       "5.1",
@@ -404,7 +405,8 @@
       "6.100",
       "6.101",
       "6.102",
-      "6.103"
+      "6.103",
+      "6.104"
     ],
     "readable": false,
     "requiredVersion": "6.0",
@@ -413,7 +415,7 @@
       {
         "type": "SCHEMA_ERROR",
         "path": "/schemaVersion",
-        "message": "不支持的文档格式版本 999.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 / 6.96 / 6.97 / 6.98 / 6.99 / 6.100 / 6.101 / 6.102 / 6.103，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+        "message": "不支持的文档格式版本 999.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52 / 6.53 / 6.54 / 6.55 / 6.56 / 6.57 / 6.58 / 6.59 / 6.60 / 6.61 / 6.62 / 6.63 / 6.64 / 6.65 / 6.66 / 6.67 / 6.68 / 6.69 / 6.70 / 6.71 / 6.72 / 6.73 / 6.74 / 6.75 / 6.76 / 6.77 / 6.78 / 6.79 / 6.80 / 6.81 / 6.82 / 6.83 / 6.84 / 6.85 / 6.86 / 6.87 / 6.88 / 6.89 / 6.90 / 6.91 / 6.92 / 6.93 / 6.94 / 6.95 / 6.96 / 6.97 / 6.98 / 6.99 / 6.100 / 6.101 / 6.102 / 6.103 / 6.104，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
       }
     ],
     "fieldUses": [],
@@ -427,7 +429,7 @@
         {
           "type": "SCHEMA_ERROR",
           "path": "/schemaVersion",
-          "message": "没有 999.0 到 6.103 的迁移规则；支持 5.0—5.4 和 6.0—6.103"
+          "message": "没有 999.0 到 6.104 的迁移规则；支持 5.0—5.4 和 6.0—6.104"
         }
       ]
     },
@@ -436,16 +438,16 @@
   },
   "evaluation": {
     "testedContent": {
-      "contentVersion": "1-c8142a5f15c65dbc",
-      "contentSha256": "c8142a5f15c65dbc205d1703511f7e484c1c59e9cc0cf1a7d853cdbaeecd13e9",
+      "contentVersion": "1-d0ffaad5965cb3d0",
+      "contentSha256": "d0ffaad5965cb3d0371f519895c5fdd5be2bb8b8d6628cf84e222cbbc6b135cb",
       "alignedWith": {
         "productContractVersion": "1.0.0-rc.4",
         "productManifest": "contract-snapshot/manifest.json",
-        "productManifestSha256": "7d586ca8e9f384c375c31f6c4518dc7c2dfa48bcb7a0f5ff3dce6a0150bd7e93",
+        "productManifestSha256": "c7988539267e35170334f09a3415d4b1224e0698a9f01ff172a8adc07902bfcf",
         "authoringContractVersion": "0.3.1",
         "authoringManifest": "contracts/manifest.json",
-        "authoringManifestSha256": "b6ceb52a694cfcd345f0a7c75a6a58e9d09eea318bed00850f94641267abc65d",
-        "pageSchemaVersion": "6.103",
+        "authoringManifestSha256": "f835b2f4a87ce084772f89e3c13580cb79825fd1d2a31d9fd4e44ceeaa4be76d",
+        "pageSchemaVersion": "6.104",
         "platformProtocolVersion": "2.0"
       }
     },
@@ -492,7 +494,7 @@
           "gaps": [],
           "inspectionSpec": {
             "formatVersion": 1,
-            "contentSha256": "c8142a5f15c65dbc205d1703511f7e484c1c59e9cc0cf1a7d853cdbaeecd13e9",
+            "contentSha256": "d0ffaad5965cb3d0371f519895c5fdd5be2bb8b8d6628cf84e222cbbc6b135cb",
             "templateRef": {
               "scene": "business-report",
               "variant": "standard",
@@ -512,7 +514,7 @@
               "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
             }
           },
-          "contentSha256": "c8142a5f15c65dbc205d1703511f7e484c1c59e9cc0cf1a7d853cdbaeecd13e9",
+          "contentSha256": "d0ffaad5965cb3d0371f519895c5fdd5be2bb8b8d6628cf84e222cbbc6b135cb",
           "deploymentAlignment": "not_run",
           "checkedVersionFields": [],
           "deploymentEvidence": {
@@ -541,11 +543,11 @@
     "truncated": false
   },
   "coverageCounts": {
-    "product": 1576,
+    "product": 1584,
     "authoring": 32,
     "modules": 36,
-    "topics": 291,
-    "nodes": 2618,
+    "topics": 293,
+    "nodes": 2619,
     "tools": 9,
     "components": 20
   }

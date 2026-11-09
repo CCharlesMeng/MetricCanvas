@@ -1,0 +1,42 @@
+{
+  "case": "bar-average-line",
+  "invariant": "bar-series-average",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "前端均值仅支持普通柱系列，不支持折线、堆叠或预测",
+      "paths": [
+        "/sections/0/components/3/props/series/1/aggregate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "显式系列必须声明 primary 或 secondary 轴",
+      "paths": [
+        "/sections/0/components/3/props/series/0/axis"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          "…",
+          {
+            "props": {
+              "series": [
+                {},
+                {
+                  "aggregate": "avg"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

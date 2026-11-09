@@ -17,7 +17,7 @@ function gateway(rows: Record<string, string | null>[] = [{name: '经营数据',
 }
 function document(): PageDocument {
   const value = JSON.parse(readFileSync(new URL('../../page/fixtures/contract-valid/dashboard-period-filter.json', import.meta.url), 'utf8'));
-  value.schemaVersion = '6.103'; value.filters[0].default = filters[0]!.default;
+  value.schemaVersion = '6.104'; value.filters[0].default = filters[0]!.default;
   return value;
 }
 afterEach(() => {vi.useRealTimers(); vi.restoreAllMocks();});

@@ -28,6 +28,19 @@
       ]
     },
     {
+      "id": "bar-series-average",
+      "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
+      "valid": [
+        "sdt-period-aggregation"
+      ],
+      "invalid": [
+        "bar-average-old-version",
+        "bar-average-category-removed",
+        "bar-average-stacked",
+        "bar-average-line"
+      ]
+    },
+    {
       "id": "ioc-header-controls",
       "description": "页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读",
       "valid": [

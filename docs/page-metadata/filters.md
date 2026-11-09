@@ -277,9 +277,9 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。
 
-## 定稿日期默认值（6.103）
+## 定稿日期默认值（6.104）
 
-页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。名称是非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.103，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
+页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。名称是非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.104，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
 
 ```json
 {

@@ -259,7 +259,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 `/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。
 
 
-页面协议 6.103。结构真源为本册[schema.json](schema.json)，SHA256 `61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.104。结构真源为本册[schema.json](schema.json)，SHA256 `88e1446a55f24a34e97227210bd881e6beea4b8cd0c57c317a9c171c99639c84`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

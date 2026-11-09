@@ -2,6 +2,35 @@
 
 比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。
 
+<a id="bar-series-average"></a>
+
+## 前端均值柱系列（6.103）
+
+字段柱系列可声明 `aggregate: "avg"`，对该字段在当前图表全部输入行中的有效值求算术平均，并在每个原类别展示相同均值。同一图表用两个系列并排比较当前值和均值，均值系列的标签、单位、颜色、格式与显隐沿用既有系列属性。完整组件示例：
+
+```json
+{
+  "id": "office-average",
+  "type": "barChart",
+  "layout": { "span": 12 },
+  "data": { "main": "rep-office-efficiency" },
+  "props": {
+    "categoryField": "rep-office",
+    "showValueLabels": true,
+    "series": [
+      { "field": "decision-count", "label": "当前值", "unit": "次" },
+      { "field": "decision-count", "label": "均值", "aggregate": "avg", "unit": "次" }
+    ]
+  }
+}
+```
+
+0及负数参与，空值与非有限值不计入分母；全空均值为空，空行集不制造类别。使用原始值计算后再格式化。每个均值系列只计算自己绑定的字段，不混合不同字段或单位；省略 aggregate 的系列逐行展示当前值。均值仅支持字段柱系列，不支持常量、折线、堆叠或预测。混合图内普通折线仍按原类别和数值展示。
+
+计算范围是当前快照全部图表输入行，包括缩放窗口以外的类别；不依赖表格当前页或图例隐藏状态。期间或查询筛选刷新输入后重算。每个均值柱对应原类别，原类别当前值缺失时仍可显示有效的整体均值。均值系列不写入页面数据源、表格或表格导出；均值柱不触发原始业务行的点击联动或下钻，当前值柱保留原交互。PNG/PDF共用相同计算。
+
+算术平均不是按决策次数加权的平均，也不是公司整体指标的查询口径。完整合成场景 `/pages/sdt-period-aggregation` 的底部图：甲的两根柱为120和90，乙为60和90，丙当前值为空、均值为90；切月后甲10和7.5，乙5和7.5。横轴不增加“均值”类别。
+
 每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。
 
 6.56 起，DQE 通过 `output_dims` 返回的现成计数或金额也可显式声明为数值度量，再绑定 `series[].field`；图表直接使用每行数值，不重新聚合。声明见[结果字段角色](../fields.md#dqe-output-measures)，柱图、明细与零值/缺失对照见 `stored-count-measures` 示例。
@@ -81,7 +110,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 6.94 起系列可声明 `unit`，图例名称、数值标签与悬浮提示共用。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
 
-页面协议 6.103。结构真源为本册[schema.json](../schema.json)，SHA256 `61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.104。结构真源为本册[schema.json](../schema.json)，SHA256 `88e1446a55f24a34e97227210bd881e6beea4b8cd0c57c317a9c171c99639c84`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -432,6 +461,20 @@ Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/stackOrder`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "integer" | 本分支可选 | minimum=-9007199254740991; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 堆叠序列的受控顺序。 |
+
+<a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f302f70726f706572746965732f616767726567617465"></a>
+
+### `@barChartSeries · anyOf[0].aggregate`
+
+Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/aggregate`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="avg" | Schema未设默认；装配/运行时默认见语义说明 | 对当前图表全部有效字段值求算术平均，并在每个类别显示同一均值柱；0参与、空值跳过 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "avg" | 以该字段当前全部有效图表输入值求算术均值，各类别展示同一结果。 |
 
 <a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f31"></a>
 
@@ -798,6 +841,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 
 - `bar-forecast-boundary`：实际 / 预测系列不得跨越采集时间所在月。反例：[forecast-before-captured-month](../errors/forecast-before-captured-month.json)、[actual-after-captured-month](../errors/actual-after-captured-month.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `query-dimension-measures`：6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度。反例：[dimension-measure-version](../errors/dimension-measure-version.json)、[dimension-measure-legacy](../errors/dimension-measure-legacy.json)、[dimension-measure-time-qualified-version](../errors/dimension-measure-time-qualified-version.json)、[dimension-measure-nonnumeric](../errors/dimension-measure-nonnumeric.json)、[dimension-number-not-series](../errors/dimension-number-not-series.json)、[dimension-measure-not-collapsible](../errors/dimension-measure-not-collapsible.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `bar-series-average`：同一图表的当前值和前端均值字段系列，保留原类别及版本边界。反例：[bar-average-old-version](../errors/bar-average-old-version.json)、[bar-average-category-removed](../errors/bar-average-category-removed.json)、[bar-average-stacked](../errors/bar-average-stacked.json)、[bar-average-line](../errors/bar-average-line.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -810,6 +854,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - [dual-axis-alignment](../examples/dual-axis-alignment.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-series-visibility](../examples/chart-series-visibility.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-table-unit](../examples/chart-table-unit.json)：完整合法页面；查询仅为静态契约证据。
+- [sdt-period-aggregation](../examples/sdt-period-aggregation.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-barChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

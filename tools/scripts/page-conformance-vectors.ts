@@ -1,5 +1,6 @@
 import {columnInvariants} from './table/column-conformance';
 import {periodAggregationInvariant} from './period-aggregation-conformance';
+import {barAverageInvariant} from './bar-average-conformance';
 /**
  * 页面校验 conformance 向量的定义（ADR-0062）。
  *
@@ -62,6 +63,7 @@ export const invariants: InvariantDefinition[] = [
     {case:'ioc-auto-back-unknown',base:'ioc-auto-back-page',expect:/must/,mutate:d=>{firstComponent(d).props.back='history';}}
   ]},
   periodAggregationInvariant,
+  barAverageInvariant,
   {id:'ioc-header-controls',description:'页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读',valid:['ioc-header-controls'],cases:[
     {case:'ioc-controls-root-filter',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[0]]};d.sections[0].components.shift();}},
     {case:'ioc-controls-root-region',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[1]]};d.sections[0].components.shift();}},

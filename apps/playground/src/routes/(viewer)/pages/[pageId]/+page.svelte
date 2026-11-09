@@ -118,11 +118,17 @@
     void loadPage(pageId);
   });
 
+  function periodQueryGateway(input: ReturnType<typeof pageExternalInputs>, state: string): DataGateway | undefined {
+    if(input==='finalization')return createFinalizationPreview(state).dataGateway;
+    if(input==='binding-when')return createFilterBindingWhenPreview(state).dataGateway;
+    if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
+  }
+
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
     const state = page.url.searchParams.get('state') ?? 'ready';
     if(input==='report-monthly')return createMonthlyReportPreview();
-    if(input==='binding-when')return createFilterBindingWhenPreview(state).dataGateway;
-    if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
+    const period=periodQueryGateway(input,state);
+    if(period)return period;
     if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
     if(input==='source-candidates')return createSourceCandidatesPreview(state).dataGateway;
     if(input==='global-benchmark')return createGlobalBenchmarkPreview(state).dataGateway;
@@ -137,7 +143,6 @@
     const tableGateway=queryTableGateway(pageExternalInputs(pageId));
     if(tableGateway)return tableGateway;
     switch (pageExternalInputs(pageId)) {
-      case 'finalization': return createFinalizationPreview(page.url.searchParams.get('state') ?? 'ready').dataGateway;
       case 'key-office': return createKeyOfficeGateway();
       case 'key-office-priority': return createKeyOfficePriorityGateway();
       case 'table-recovery': return createTableRecoveryPreview(page.url.searchParams.get('recoveryState') ?? 'mixed').dataGateway;

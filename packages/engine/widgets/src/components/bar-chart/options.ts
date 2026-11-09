@@ -1,6 +1,7 @@
 import { seriesDisplayName, chartLegendVisible } from '../../shared/display-unit';
 import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartRoleIndex, chartAxisFormats, explicitChartAxes } from '../../../../runtime/src/chart-series-state';
 import { chartSeriesColor } from '../../shared/chart-series-presentation';
+import { resolveBarSeriesValue } from './series-value';
 import { resolveComponentValue } from '../../shared/component-value';
 import type { BarChartProps, ValueFormat } from '@metriccanvas/page/internal';
 import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
@@ -43,7 +44,7 @@ export function barOption(
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
   const valueAxis = dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, false,
-    chartAxisFormats(props, props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior))));
+    chartAxisFormats(props, props.series.map(series => resolveBarSeriesValue(series, data, props.emptyBehavior))));
   const horizontalAxis = Array.isArray(valueAxis)
     ? valueAxis.map(horizontalValueLabels)
     : horizontalValueLabels(valueAxis);
@@ -63,7 +64,7 @@ export function barOption(
     }, 0)
   );
   const legendData = props.series.map((series) => {
-    const field = resolveComponentValue(series, data, props.emptyBehavior);
+    const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
     return seriesDisplayName(series.label ?? field.label, series.unit);
   });
   return {
@@ -92,7 +93,7 @@ export function barOption(
     yAxis: props.horizontal ? categoryAxis : valueAxis,
     series: seriesEntries.map((entry) => {
       const { series, originalIndex, roleIndex } = entry;
-      const field = resolveComponentValue(series, data, props.emptyBehavior);
+      const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
       const roleColor =
         roleIndex === undefined
           ? undefined
@@ -257,7 +258,7 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
   const category = resolveField(props.categoryField, data);
   const axis = (name: 'primary' | 'secondary') => {
     const fields = props.series.filter(series => (series.axis ?? 'primary') === name)
-      .map(series => resolveComponentValue(series, data, props.emptyBehavior));
+      .map(series => resolveBarSeriesValue(series, data, props.emptyBehavior));
     const field = fields[0];
     return { ...formattedValueAxis(fields),
       name: fieldUnitText(field?.unit, field?.format) };
@@ -268,7 +269,7 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
     xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)), ...categoryLabelOption(props.categoryLabels, props.showValueLabels) },
     yAxis: props.dualAxis ? [axis('primary'), alignedSecondaryAxis(axis('secondary'))] : axis('primary'),
     series: props.series.map((series, index) => {
-      const field = resolveComponentValue(series, data, props.emptyBehavior);
+      const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
       return {
         type: series.kind ?? 'bar', name: seriesDisplayName(series.label ?? field.label, series.unit),
         yAxisIndex: chartSeriesAxis(props, index),

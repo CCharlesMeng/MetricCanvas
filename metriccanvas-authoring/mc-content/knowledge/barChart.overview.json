@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.103",
+  "schemaVersion": "6.104",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "barChart.overview"
@@ -9,9 +9,22 @@
       "module": "barChart",
       "reference": "references/page-metadata/components/barChart.md",
       "blocks": [
-        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。\n\n6.56 起，DQE 通过 `output_dims` 返回的现成计数或金额也可显式声明为数值度量，再绑定 `series[].field`；图表直接使用每行数值，不重新聚合。声明见[结果字段角色](../fields.md#dqe-output-measures)，柱图、明细与零值/缺失对照见 `stored-count-measures` 示例。"
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n<a id=\"bar-series-average\"></a>"
       ],
       "rules": [
+        {
+          "id": "bar-series-average",
+          "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "bar-average-old-version",
+            "bar-average-category-removed",
+            "bar-average-stacked",
+            "bar-average-line"
+          ]
+        },
         {
           "id": "query-dimension-measures",
           "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
@@ -46,7 +59,8 @@
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/dual-axis-alignment.json",
         "references/page-metadata/examples/chart-series-visibility.json",
-        "references/page-metadata/examples/chart-table-unit.json"
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json"
       ]
     }
   ],

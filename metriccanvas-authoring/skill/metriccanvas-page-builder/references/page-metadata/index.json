@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.103",
-  "schemaSha256": "61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3",
+  "schemaVersion": "6.104",
+  "schemaSha256": "88e1446a55f24a34e97227210bd881e6beea4b8cd0c57c317a9c171c99639c84",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -147,6 +147,10 @@
       "sha256": "b1f63e4bab9950e66d6ddb0132d09b29ccb873a3d46a9fbcdb267cd207245323"
     },
     {
+      "file": "packages/page/src/bar-average.ts",
+      "sha256": "17947116ab71841a63e03fee8572b07e3001f5028e1b15c4a34cbf0ab3fdfafd"
+    },
+    {
       "file": "packages/page/src/chart-option.ts",
       "sha256": "a8886733d5fe8f4ab57c59506e55bb41ed8bd8f10b580725f2300a5702853c46"
     },
@@ -284,7 +288,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "cd59a6b33ffa93556ce0dcb8f5acae29d7884c9ad14eb12628bc861be62eea57"
+      "sha256": "11045df6d6e4bcf0a5139c8857c41461b689af747ebd0c7bcf0e6ca004f07b10"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -464,7 +468,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "01b4f6f4c44d92aa9a8978eb78967702e9c1c0be6afb12ef717ee07f2e4bb6b1"
+      "sha256": "712ce54194120234cb0e2b8c65afc744dd83ce102e336f8882a2629154c3c88e"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -476,7 +480,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "13a15aaa0dfc9166e6edb3b208b0e6d8d86d936ce6a98fe28524ce1e36d34f28"
+      "sha256": "8d194854d49726f4eb5dc101db30360480fee233d529c32dccc10c680b815a55"
     }
   ],
   "modules": {
@@ -1233,16 +1237,19 @@
         "chart-constant-branches",
         "dual-axis-alignment",
         "chart-series-visibility",
-        "chart-table-unit"
+        "chart-table-unit",
+        "sdt-period-aggregation"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
         "packages/embed/tests/browser/embed.spec.ts",
-        "packages/page/src/query-output-measures.ts"
+        "packages/page/src/query-output-measures.ts",
+        "packages/page/src/bar-average.ts"
       ],
       "rules": [
         "bar-forecast-boundary",
-        "query-dimension-measures"
+        "query-dimension-measures",
+        "bar-series-average"
       ]
     },
     "components/lineChart.md": {
@@ -2054,7 +2061,8 @@
         "6.100",
         "6.101",
         "6.102",
-        "6.103"
+        "6.103",
+        "6.104"
       ]
     },
     {
@@ -12778,6 +12786,13 @@
       "path": "@barChartSeries · anyOf[0].stackOrder",
       "required": "本分支可选",
       "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/aggregate",
+      "path": "@barChartSeries · anyOf[0].aggregate",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "const": "avg"
     },
     {
       "pointer": "#/definitions/barChartSeries/anyOf/1",

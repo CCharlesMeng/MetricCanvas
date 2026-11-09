@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.103",
+  "schemaVersion": "6.104",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "barChart.section-d18f7294"
@@ -9,10 +9,23 @@
       "module": "barChart",
       "reference": "references/page-metadata/components/barChart.md",
       "blocks": [
-        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。\n\n6.56 起，DQE 通过 `output_dims` 返回的现成计数或金额也可显式声明为数值度量，再绑定 `series[].field`；图表直接使用每行数值，不重新聚合。声明见[结果字段角色](../fields.md#dqe-output-measures)，柱图、明细与零值/缺失对照见 `stored-count-measures` 示例。",
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n<a id=\"bar-series-average\"></a>",
         "## 默认柱宽\n\n独立查询提供的整体均值可通过 `joinAggregate.keys: []` 关联为主行集的一列，再用普通 bar 系列展示；不需要给每个代表处保存重复常量。完整语义见[独立单行指标关联](../compute.md#独立单行指标关联683)，场景 `/pages/chart-global-benchmark` 为两根分组柱与两条折线。均值源自行绑定期间及站点，省略区域绑定可保持全局范围。\n\n所有内置柱系列的默认宽度统一为 **16 CSS px**，包括普通、分组、堆叠、横向条形、`reportForecast` 以及混合图中的柱系列；横向图的16px表示条形厚度。折线系列不设置柱宽。宽度不随容器或类别数量自动放大。\n\n这是公共呈现默认值，不新增页面字段或协议版本。已有高级 `props.echartsOption.series[].barWidth` 显式配置仍按高级扩展规则覆盖默认值；普通页面无需为16px添加高级配置。\n\n可观察场景：`/pages/bar-width-defaults`，使用内联合成数据，覆盖上述变体及显式32px覆盖的对照。"
       ],
       "rules": [
+        {
+          "id": "bar-series-average",
+          "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "bar-average-old-version",
+            "bar-average-category-removed",
+            "bar-average-stacked",
+            "bar-average-line"
+          ]
+        },
         {
           "id": "query-dimension-measures",
           "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
@@ -47,7 +60,8 @@
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/dual-axis-alignment.json",
         "references/page-metadata/examples/chart-series-visibility.json",
-        "references/page-metadata/examples/chart-table-unit.json"
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json"
       ]
     }
   ],

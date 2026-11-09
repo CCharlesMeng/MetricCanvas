@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.103",
-  "schemaSha256": "61539ad1a5b91f661d7b7ab484b9ce1d8dbc9d01f0306ecffff7c5a34b3b15b3",
+  "schemaVersion": "6.104",
+  "schemaSha256": "88e1446a55f24a34e97227210bd881e6beea4b8cd0c57c317a9c171c99639c84",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -618,11 +618,13 @@
         "chart-constant-branches",
         "dual-axis-alignment",
         "chart-series-visibility",
-        "chart-table-unit"
+        "chart-table-unit",
+        "sdt-period-aggregation"
       ],
       "rules": [
         "bar-forecast-boundary",
-        "query-dimension-measures"
+        "query-dimension-measures",
+        "bar-series-average"
       ]
     },
     "components/lineChart.md": {
@@ -1316,7 +1318,8 @@
         "6.100",
         "6.101",
         "6.102",
-        "6.103"
+        "6.103",
+        "6.104"
       ]
     },
     {
@@ -12042,6 +12045,13 @@
       "module": "components/barChart.md"
     },
     {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/aggregate",
+      "path": "@barChartSeries · anyOf[0].aggregate",
+      "required": "本分支可选",
+      "module": "components/barChart.md",
+      "const": "avg"
+    },
+    {
       "pointer": "#/definitions/barChartSeries/anyOf/1",
       "path": "@barChartSeries · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -22196,5 +22206,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "670419132bb2ec06728483d82946910646787c8cbb25a84aca80ed5ecff6acd8"
+  "semanticSourceDigest": "7687799d590a7a317a11a2dbfec3b3c899169ccca344b4c57f8e293473ecaec7"
 }
