@@ -374,7 +374,7 @@ Excel 在表头后写一次无序号汇总，再写全部匹配明细。汇总�
 
 `props.pinnedTop.additionalData:["commercial","contract"]` 声明额外独立完整查询槽，列可绑定主槽或任一额外槽。各槽须引用不同的普通 complete query，不依赖明细、不带窗口，最多一行。主槽零行则不生成置顶行；额外槽零行则对应格缺失。任一槽加载、失败或行数异常时隐藏置顶行，明细继续显示；汇总失败/未就绪时拒绝完整 Excel。额外槽不参与明细对齐、排序、搜索、计数或分页。
 
-叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。既有单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。
+叶子列可用 `pinnedTop:{"text":"合计"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。
 
 
 <a id="source-navigation"></a>
@@ -464,8 +464,12 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 
 完整 inline 合成场景 `/pages/table-trend-arrows` 覆盖正向、反向、单侧、固定与隐藏规则，包含单位、颜色、零/缺失、舍入边界、紧凑表格和进度条。无需 URL 参数或 DQE，不代表真实 DQE/Relay 验收。
 
+## 时间列转换（6.102）
 
-页面协议 6.101。结构真源为本册[schema.json](../schema.json)，SHA256 `ee49a8c513dfb3dc4e2458a1929f9109912623091081da937a4d847d8a8db5d1`。字段表自动生成；可选不等于有默认值。
+字段绑定可声明 `format:{"type":"time","pattern":"YYYY-MM-DD HH:mm:ss"}`，按固定 UTC+8 转换；支持常见日期时间字符串和秒/毫秒时间戳，无时区输入按 UTC。页面与 Excel/PDF/PNG 共用格式，Excel 为文本，原始数据和交互保持。输入、格式串及失败规则见[时间格式串](../field-bindings-and-formats.md#time-format)。合成入口 `/pages/table-time-format`。
+
+
+页面协议 6.102。结构真源为本册[schema.json](../schema.json)，SHA256 `29de7663317d08e78d1f8c2c6da8e680fb343a966a7217365d1c76aab80fd2bc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

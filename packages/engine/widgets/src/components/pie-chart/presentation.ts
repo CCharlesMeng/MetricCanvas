@@ -1,5 +1,5 @@
 import { resolveComponentValue, type ResolvedComponentValue } from '../../shared/component-value';
-import type { CategoryBreakdownProps, FieldValue, PieChartProps, ResolvedFieldDefinition, Row } from '@metriccanvas/page/internal';
+import type { CategoryBreakdownProps, FieldValue, PieChartProps, ResolvedFieldDefinition, Row, ValueFormat } from '@metriccanvas/page/internal';
 import { resolveField, type MainDataSlots, type ResolvedField } from '../../shared/component-data';
 import { categoryDomain } from '../../shared/chart-palette';
 import { finiteNumber, formatValue } from '../../shared/value-format';
@@ -45,6 +45,7 @@ interface ProjectedColumn {
   label: string;
   definition: ResolvedFieldDefinition;
   missingText?: string;
+  format?: ValueFormat;
   read(row: Row): FieldValue | undefined;
 }
 
@@ -52,7 +53,7 @@ function projectedDefinition(resolved: ResolvedField, role: 'dimension' | 'measu
   if (resolved.definition?.role === 'detail') throw new Error('饼图图例只能展示标量字段');
   return {
     ...(resolved.definition ?? { type: role === 'dimension' ? 'string' : 'number', role }),
-    defaultFormat: resolved.format
+    defaultFormat: typeof resolved.format === 'string' ? resolved.format : undefined
   };
 }
 
@@ -60,7 +61,7 @@ function projectColumn(column: LegendColumn, data: MainDataSlots, value: Resolve
   if ('field' in column) {
     const resolved = resolveField(column.field, data);
     return {
-      label: column.label, missingText: resolved.missingText,
+      label: column.label, missingText: resolved.missingText, format: resolved.format,
       definition: projectedDefinition(resolved, 'measure'),
       read: row => row[resolved.field]
     };
@@ -91,12 +92,12 @@ export function pieLegendData(data: MainDataSlots, props: PieChartProps) {
     })) }
   } };
   const legendProps: CategoryBreakdownProps = {
-    categoryField: { data: 'main', field: '__category', missingText: category.missingText },
+    categoryField: { data: 'main', field: '__category', missingText: category.missingText, format: category.format },
     categoryLabel: props.legend?.categoryLabel ?? false,
     swatches: true,
     columns: columns.map((column, index) => ({
       label: column.label,
-      field: { data: 'main', field: `__value_${index}`, missingText: column.missingText, format: column.definition.role === 'detail' ? undefined : column.definition.defaultFormat }
+      field: { data: 'main', field: `__value_${index}`, missingText: column.missingText, format: column.format ?? (column.definition.role === 'detail' ? undefined : column.definition.defaultFormat) }
     }))
   };
   const columnPresentation = props.legend?.columns.map(({ unit, align }) => ({ unit, align }));

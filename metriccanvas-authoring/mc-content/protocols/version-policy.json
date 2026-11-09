@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 101,
-  "current": "6.101",
+  "minor": 102,
+  "current": "6.102",
   "capabilities": {
     "object-period-binding": {
       "minor": 101,
@@ -16,6 +16,11 @@
     "table-trend-arrows": {
       "minor": 99,
       "description": "表格列独立声明固定或正负映射箭头规则",
+      "legacyReadable": false
+    },
+    "time-value-format": {
+      "minor": 102,
+      "description": "时间格式串按固定UTC+8统一展示与导出",
       "legacyReadable": false
     },
     "ioc-header-auto-back": {
@@ -956,6 +961,7 @@
     "6.98",
     "6.99",
     "6.100",
-    "6.101"
+    "6.101",
+    "6.102"
   ]
 }

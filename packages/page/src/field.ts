@@ -66,9 +66,11 @@ export const valueFormatPresets = [
 ] as const;
 
 export type ValueFormatPreset = (typeof valueFormatPresets)[number];
+export interface TimeValueFormat { type: 'time'; pattern: string }
+export type ValueFormat = ValueFormatPreset | TimeValueFormat;
 
 /** 金额格式的静态货币语义；展示、选择投影与校验共用。 */
-export function moneyFormatCurrency(format: ValueFormatPreset | undefined): 'CNY' | 'USD' | undefined {
+export function moneyFormatCurrency(format: ValueFormat | undefined): 'CNY' | 'USD' | undefined {
   switch (format) {
     case 'cny-adaptive':
     case 'cny-adaptive-trimmed':
@@ -79,7 +81,7 @@ export function moneyFormatCurrency(format: ValueFormatPreset | undefined): 'CNY
   }
 }
 
-export function moneyFormatMatchesCurrency(format: ValueFormatPreset | undefined, currency: 'CNY' | 'USD'): boolean {
+export function moneyFormatMatchesCurrency(format: ValueFormat | undefined, currency: 'CNY' | 'USD'): boolean {
   const expected = moneyFormatCurrency(format);
   return expected === undefined || expected === currency;
 }
@@ -201,7 +203,7 @@ export type StaticFieldBinding =
   | {
       data: string;
       field: string;
-      format?: ValueFormatPreset;
+      format?: ValueFormat;
       missingText?: string;
       match?: { field: string; equals: ScalarFieldValue };
     };

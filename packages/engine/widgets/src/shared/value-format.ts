@@ -1,11 +1,12 @@
-import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { FieldValue, ValueFormat, ValueFormatPreset } from '@metriccanvas/page/internal';
 import { formatPeriod } from '@metriccanvas/page/internal';
+import { formatTime } from './time-format';
 import { formatAdaptiveMoney } from './adaptive-money-format';
 import { adaptiveNumericText } from './numeric-presentation';
 import { mobilePresentation } from './presentation-environment';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
-type SignedNumberFormat = Extract<ValueFormatPreset, `number${string}-signed`>;
+type SignedNumberFormat = Extract<ValueFormat, `number${string}-signed`>;
 
 export const DEFAULT_NULL_TEXT = '--';
 export interface ValueFormatContext { unit?: string; mobile?: boolean }
@@ -21,12 +22,13 @@ export function hasDisplayValue(value: FieldValue | undefined): value is NonNull
  */
 export function formatValue(
   value: FieldValue | undefined,
-  format?: ValueFormatPreset,
+  format?: ValueFormat,
   missingText = DEFAULT_NULL_TEXT,
   context: ValueFormatContext = {}
 ): string {
   if (!hasDisplayValue(value)) return missingValueText(missingText);
   if (!format || format === 'text') return String(value);
+  if (typeof format === 'object') return formatTime(value, format);
   if (format === 'period') return formatPeriod(String(value));
   if (format === 'date') return formatDate(value);
   if (format === 'date-month-day') {
@@ -81,7 +83,7 @@ function formatStandardNumber(numeric: number, format: ValueFormatPreset): strin
 /** 新增 signed 数值格式按展示精度判断方向；其它格式仍按原始值。 */
 export function valuePolarity(
   value: FieldValue | undefined,
-  format?: ValueFormatPreset
+  format?: ValueFormat
 ): ValuePolarity {
   const numeric = finiteNumber(value);
   if (numeric === undefined || numeric === 0) return 'neutral';
@@ -99,9 +101,9 @@ function yoyPresentation(value: number) {
 }
 
 export function isSignedNumberFormat(
-  format: ValueFormatPreset | undefined
+  format: ValueFormat | undefined
 ): format is SignedNumberFormat {
-  return format?.startsWith('number') === true && format.endsWith('-signed');
+  return typeof format === 'string' && format.startsWith('number') && format.endsWith('-signed');
 }
 
 /** 文本与方向共用同一次舍入，负零及舍入到零均无符号。 */

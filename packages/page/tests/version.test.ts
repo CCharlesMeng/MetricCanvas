@@ -5,6 +5,8 @@ const introducedAt: Record<string, number> = {
   'object-period-binding':101,
   'query-binding-when':100,
   'table-trend-arrows':99,
+
+  'time-value-format':102,
   'table-show-select-all':98,
   'period-aggregation':97,
   'ioc-header-auto-back':96,

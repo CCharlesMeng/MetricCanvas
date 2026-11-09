@@ -1,6 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import type { ValueFormatPreset } from '@metriccanvas/page/internal';
+  import type { ValueFormat } from '@metriccanvas/page/internal';
   import {
     parseSemanticHtml,
     semanticDataPresentation,
@@ -21,7 +21,7 @@
     source: string;
     inline?: boolean;
     toneWeight?: 'emphasized' | 'regular';
-    format?: ValueFormatPreset;
+    format?: ValueFormat;
     visual?: 'signed';
   } = $props();
   const parsed = $derived(parseSemanticHtml(source));

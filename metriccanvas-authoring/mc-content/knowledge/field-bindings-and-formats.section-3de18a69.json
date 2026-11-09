@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.102",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-3de18a69"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"numeric-value-display\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 整数与缺失值的统一显示\n\n系统缺失占位符统一为 `--`：两个相邻的 ASCII 短横线（U+002D），不含空格。表格、指标卡、进度环、仪表、图表画布及悬浮提示使用同一文案，百分比缺失也只显示 `--`，不追加百分号或数值单位。旧 `—`、`–`、`-`、`- -`、`--%`、`- -%` 占位符在缺失时归一；其他显式业务 `missingText` 保留。真实字符串不改写。null、undefined 和非有限数值是缺失；0、false 仍为真实值。空结果的“暂无数据”状态保持。\n\n所有数值预设在原精度、千分位及单位换算后，舍弃小数末尾零；若小数部分全为零，就省略小数点。例如 `number-2` 的 50 显示 `50`，`percent-1/2` 的 50 均显示 `50%`，`compact-wan-1` 的 10000 显示 `1万`。舍入后成为整数也遵循此规则；非整数按声明精度四舍五入后舍弃小数末尾零，如 `number-2` 的 12.5 显示 `12.5`。带符号、金额、百分点与图表默认格式共用这一规则，仅改变展示文本，不改变原值、计算、排序或导出数值类型。\n\n完整合成场景 `/pages/numeric-value-display` 覆盖表格、指标卡、缺失进度环、整数百分比、真实零、负数、单位缩放和自定义缺失文案；图表标签、提示和坐标轴在 `/pages/chart-number-format` 对照。"
       ],
       "rules": [
@@ -186,7 +186,8 @@
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/authoring-percent-coverage.json",
         "references/page-metadata/examples/operation-money-formats.json",
-        "references/page-metadata/examples/semantic-numeric-display.json"
+        "references/page-metadata/examples/semantic-numeric-display.json",
+        "references/page-metadata/examples/table-time-format.json"
       ]
     }
   ],

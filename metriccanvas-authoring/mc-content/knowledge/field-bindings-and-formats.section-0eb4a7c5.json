@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.102",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-0eb4a7c5"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"numeric-value-display\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2控制小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 金额去尾零与美元KM（6.88）\n\n新增三种显式格式；`cny-adaptive` 和 `usd-adaptive` 从6.93起遵循上面的统一语义规则；本节三个显式个性化格式保留自身精度和单位。基础金额仍为元或美元，不执行汇率换算。按币种选择两个静态 money 字段，不能仅给同一个数值换符号。万元/K 预缩放数据须在进入货币金额字段前还原基本单位，不能重复缩放。\n\n| 格式 | 币种 | 规则 |\n|---|---|---|\n| `cny-adaptive-trimmed-no-yuan` | CNY | 人民币 A：小额无“元”，万/亿带单位 |\n| `cny-adaptive-trimmed` | CNY | 人民币 B：小额带“元”，万/亿带单位 |\n| `usd-adaptive-km` | USD | 美元 $/K/M，符号均在数字后 |\n\n人民币两种格式都按原始绝对值选档：＜1万取整；1万～＜10万除1万，最多1位小数；10万～＜1亿除1万取整；1亿～＜10亿除1亿，最多2位小数；≥10亿除1亿，最多1位小数。两种格式只在万元以下的“元”后缀上不同。\n\n美元按原始绝对值选档：＜1万取整加 `$`；1万～＜100万除1000，最多1位小数加 `K`；100万～＜1亿除1000取整加 `K`；≥1亿除100万取整加 `M`。\n\n数字部分一律去尾零、加千分位。对绝对值四舍五入后恢复负号，正数不加 `+`；原始负零和舍入后的零不带负号。舍入不重新选档：9,999.6美元显示 `10,000$`，99,999,999元显示 `10,000万`，不是重新提升单位。±105,000元分别显示 `11万`、`-11万`；±1,005,500美元分别显示 `1,006K`、`-1,006K`。这些为明确规范化的业务规则，不复刻旧系统字符串位数和负数 Math.round 的偶然行为。\n\n```json\n{\n  \"valueField\": {\n    \"byFilter\": {\n      \"filterId\": \"currency\",\n      \"cases\": {\n        \"RMB\": { \"data\": \"main\", \"field\": \"amount-cny\", \"format\": \"cny-adaptive-trimmed\" },\n        \"USD\": { \"data\": \"main\", \"field\": \"amount-usd\", \"format\": \"usd-adaptive-km\" }\n      }\n    }\n  }\n}\n```\n\n`amount-cny` 声明 `type:\"money\", role:\"measure\", currency:\"CNY\"`；`amount-usd` 声明相应 USD；currency 筛选为 required 单选封闭枚举。默认格式、直接组件绑定、非默认 byFilter case 和图表常量都检查币种一致性。数值参数也可显式使用这些格式；组件绑定优先于字段 defaultFormat。选择投影抑制重复的独立单位文案；小额无“元”的 A 格式也不额外补“元”。\n\n合成页面 `/pages/operation-money-formats` 同时展示人民币 A/B、美元和旧格式，并以币种筛选驱动指标卡、图表和表格。屏幕及静态呈现消费同一格式函数；XLSX 保留基本单位原数值与币种标题，不把 `2.5亿`、`250M` 当作金额数据写回。此场景只证明本地合成数据、展示及导出，不代表真实 Operation Map、DQE、Relay 或部署验收。完整声明见[合成验收页](examples/operation-money-formats.json)，启动与操作见仓库 pages/capabilities/data/README.md。\n\n<a id=\"display-unit\"></a>"
       ],
       "rules": [
@@ -186,7 +186,8 @@
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/authoring-percent-coverage.json",
         "references/page-metadata/examples/operation-money-formats.json",
-        "references/page-metadata/examples/semantic-numeric-display.json"
+        "references/page-metadata/examples/semantic-numeric-display.json",
+        "references/page-metadata/examples/table-time-format.json"
       ]
     }
   ],

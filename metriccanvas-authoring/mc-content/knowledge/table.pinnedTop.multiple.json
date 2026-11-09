@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.102",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.pinnedTop.multiple"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
         "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。",
-        "## 多查询置顶行与固定文字（6.79）\n\n`props.pinnedTop.additionalData:[\"commercial\",\"contract\"]` 声明额外独立完整查询槽，列可绑定主槽或任一额外槽。各槽须引用不同的普通 complete query，不依赖明细、不带窗口，最多一行。主槽零行则不生成置顶行；额外槽零行则对应格缺失。任一槽加载、失败或行数异常时隐藏置顶行，明细继续显示；汇总失败/未就绪时拒绝完整 Excel。额外槽不参与明细对齐、排序、搜索、计数或分页。\n\n叶子列可用 `pinnedTop:{\"text\":\"合计\"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。既有单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。\n\n\n<a id=\"source-navigation\"></a>"
+        "## 多查询置顶行与固定文字（6.79）\n\n`props.pinnedTop.additionalData:[\"commercial\",\"contract\"]` 声明额外独立完整查询槽，列可绑定主槽或任一额外槽。各槽须引用不同的普通 complete query，不依赖明细、不带窗口，最多一行。主槽零行则不生成置顶行；额外槽零行则对应格缺失。任一槽加载、失败或行数异常时隐藏置顶行，明细继续显示；汇总失败/未就绪时拒绝完整 Excel。额外槽不参与明细对齐、排序、搜索、计数或分页。\n\n叶子列可用 `pinnedTop:{\"text\":\"合计\"}` 声明固定纯文本，与同一单元格的 field/secondaryField/badgeField 分支互斥；不修改数据源或明细值。单槽及字段绑定行为不变。`/pages/business-result-metrics` 演示两张表各自使用三条无组织输出维度的 DQE 汇总查询：四个主指标与商务、合同闭环率分别取数；只有代表处汇总订阅页头区域选择，地区部汇总只订阅时间。页面不新增前端比率计算。该页只含 DQE 查询，无 inline 或 initial；真实聚合、授权及执行须内网验证。组装测试使用合成 HTTP 回执，页面仍使用运行时网关。\n\n\n<a id=\"source-navigation\"></a>"
       ],
       "rules": [
         {
@@ -366,7 +366,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.101",
+        "$id": "https://metriccanvas/page/v6.102",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

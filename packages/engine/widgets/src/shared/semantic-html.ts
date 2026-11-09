@@ -1,4 +1,4 @@
-import { MAX_SEMANTIC_HTML_LENGTH, type ValueFormatPreset } from '@metriccanvas/page/internal';
+import { MAX_SEMANTIC_HTML_LENGTH, type ValueFormat } from '@metriccanvas/page/internal';
 import {
   formatValue,
   valuePolarity,
@@ -61,7 +61,7 @@ const CANONICAL_DATA_ZERO = /^[+-]?0(?:\.0+)?$/u;
 
 export function semanticDataPresentation(
   node: Extract<SemanticHtmlNode, { type: 'data' }>,
-  format?: ValueFormatPreset,
+  format?: ValueFormat,
   visual?: 'signed'
 ): SemanticDataPresentation {
   return {

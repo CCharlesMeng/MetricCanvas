@@ -481,7 +481,8 @@
         "period-comparison-demo",
         "authoring-percent-coverage",
         "operation-money-formats",
-        "semantic-numeric-display"
+        "semantic-numeric-display",
+        "table-time-format"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1880,7 +1881,8 @@
     "#/definitions/arrowRule/oneOf/1/properties/positive": "正值使用的箭头，支持up/down/none。",
     "#/definitions/arrowRule/oneOf/1/properties/negative": "负值使用的箭头，支持up/down/none。",
     "#/definitions/arrowRule/oneOf/0/properties/position": "箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。",
-    "#/definitions/arrowRule/oneOf/1/properties/position": "箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。"
+    "#/definitions/arrowRule/oneOf/1/properties/position": "箭头相对主数值的位置，省略为before；屏幕及Excel保持一致。",
+    "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/pattern": "时间格式串；固定 UTC+8。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2258,7 +2260,8 @@
     "#/definitions/arrowRule/oneOf/1/properties/position=\"after\"": "箭头放在数值与单位之后。",
     "#/properties/schemaVersion=\"6.99\"": "表格数字列通过 arrowRule 声明固定或按正负映射的箭头；省略不显示。",
     "#/properties/schemaVersion=\"6.100\"": "维度查询绑定可按筛选条件暂停谓词并保留选择状态。",
-    "#/properties/schemaVersion=\"6.101\"": "对象期间默认生成周期类型与账期，单期等值、多期闭区间，并保留自定义字段与手写查询。"
+    "#/properties/schemaVersion=\"6.101\"": "对象期间默认生成周期类型与账期，单期等值、多期闭区间，并保留自定义字段与手写查询。",
+    "#/properties/schemaVersion=\"6.102\"": "字段绑定支持时间格式串及固定 UTC+8 转换。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2550,7 +2553,9 @@
         "#/definitions/tableColumn/properties/width",
         "#/definitions/tableColumn/properties/fixed"
       ],
-      "headings": ["单元格溢出省略与悬浮提示"],
+      "headings": [
+        "单元格溢出省略与悬浮提示"
+      ],
       "dependencies": []
     },
     "table.search": {
@@ -3116,6 +3121,17 @@
         "标准对象账期（6.101）"
       ],
       "dependencies": []
+    },
+    "fields.time": {
+      "module": "field-bindings-and-formats",
+      "title": "时间格式串与 UTC+8 转换",
+      "roots": [
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1"
+      ],
+      "headings": [
+        "时间格式串与固定 UTC+8（6.102）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3212,6 +3228,7 @@
       "查阅方式"
     ],
     "field-bindings-and-formats.md": [
+      "时间格式串与固定 UTC+8（6.102）",
       "整数与缺失值的统一显示",
       "统一语义格式（6.93）",
       "百分比创作与覆盖边界",
@@ -3308,7 +3325,8 @@
       "组合源数据异常提示与导出",
       "期间比较的查询分页（6.78）",
       "自定义展示单位",
-      "列级上下箭头（6.99）"
+      "列级上下箭头（6.99）",
+      "时间列转换（6.102）"
     ],
     "components/mapChart.md": [
       "查阅方式",

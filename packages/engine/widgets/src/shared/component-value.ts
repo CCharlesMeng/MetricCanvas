@@ -1,9 +1,9 @@
-import { semanticValueFormat, valueSourceBinding, staticFieldBinding, type ComponentValueSource, type Row, type FieldValue, type ValueFormatPreset } from '@metriccanvas/page/internal';
+import { semanticValueFormat, valueSourceBinding, staticFieldBinding, type ComponentValueSource, type Row, type FieldValue, type ValueFormat } from '@metriccanvas/page/internal';
 import { resolveField, fieldValue, type NamedDataSlots } from './component-data';
 
 export interface ResolvedComponentValue {
   label: string;
-  format?: ValueFormatPreset;
+  format?: ValueFormat;
   missingText?: string;
   unit?: string;
   currency?: 'CNY' | 'USD';

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.101",
-  "schemaSha256": "ee49a8c513dfb3dc4e2458a1929f9109912623091081da937a4d847d8a8db5d1",
+  "schemaVersion": "6.102",
+  "schemaSha256": "29de7663317d08e78d1f8c2c6da8e680fb343a966a7217365d1c76aab80fd2bc",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -397,7 +397,8 @@
         "period-comparison-demo",
         "authoring-percent-coverage",
         "operation-money-formats",
-        "semantic-numeric-display"
+        "semantic-numeric-display",
+        "table-time-format"
       ],
       "rules": [
         "data-slot-known-source",
@@ -1310,7 +1311,8 @@
         "6.98",
         "6.99",
         "6.100",
-        "6.101"
+        "6.101",
+        "6.102"
       ]
     },
     {
@@ -10592,6 +10594,12 @@
       "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format",
       "path": "@staticFieldBinding · anyOf[1].format",
       "required": "本分支可选",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "field-bindings-and-formats.md",
       "enum": [
         "text",
@@ -10633,6 +10641,25 @@
         "date-month-day",
         "period"
       ]
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/type",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[1].type",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "const": "time"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/pattern",
+      "path": "@staticFieldBinding · anyOf[1].format · anyOf[1].pattern",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md"
     },
     {
       "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/match",
@@ -20980,6 +21007,18 @@
       "pointer": "#/sections/0/components/1/props/rows/0/valueField"
     },
     {
+      "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
+      "module": "field-bindings-and-formats.md",
+      "file": "examples/inline-report.json",
+      "pointer": "#/sections/0/components/1/props/rows/0/valueField/format"
+    },
+    {
+      "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
+      "module": "field-bindings-and-formats.md",
+      "file": "examples/table-time-format.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/field/format"
+    },
+    {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
       "file": "examples/time-binding-branches-page.json",
@@ -22075,5 +22114,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "c9b7c7fa6ec4d9b5c237e7d9728e5a6b250f5bcdf770169b779b936e1816e3b0"
+  "semanticSourceDigest": "1cb2137a01cb8a8d2a60d93a0dd3e097d83903a4c4a7d59e639dc62d1951b76e"
 }

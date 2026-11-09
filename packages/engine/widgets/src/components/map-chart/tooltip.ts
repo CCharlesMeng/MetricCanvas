@@ -1,4 +1,4 @@
-import type { Row, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { Row, ValueFormat } from '@metriccanvas/page/internal';
 import { formatChartNumber } from '../../shared/chart-option';
 
 /** 已解析的 tooltip 追加项:标签 + 字段名 + 该绑定最终生效的展示格式。 */
@@ -6,7 +6,7 @@ export interface MapTooltipField {
   label: string;
   field?: string;
   read?: (row?: Row) => import('@metriccanvas/page/internal').FieldValue | undefined;
-  format?: ValueFormatPreset;
+  format?: ValueFormat;
   missingText?: string;
   unit?: string;
 }

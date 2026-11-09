@@ -1,9 +1,11 @@
-import { fieldContractViolations, type FieldBinding, type TableColumn, type FieldValue, type ValueFormatPreset } from '@metriccanvas/page/internal';
+import { fieldContractViolations, type FieldBinding, type TableColumn, type FieldValue, type ValueFormat } from '@metriccanvas/page/internal';
 import { formatValue, finiteNumber, hasDisplayValue } from '../../shared/value-format';
 
 import { resolveField, type NamedDataSlots } from '../../shared/component-data';
+import { timeInstant } from '../../shared/time-format';
 const warned = new WeakMap<object, Set<string>>();
-export function compatibleTableFormat(value: FieldValue, format: ValueFormatPreset): boolean {
+export function compatibleTableFormat(value: FieldValue, format: ValueFormat): boolean {
+  if (typeof format === 'object') return timeInstant(value) !== undefined;
   if (format === 'text' || format === 'period') return true;
   if (format === 'date' || format === 'date-month-day') {
     return !fieldContractViolations(value, { type: 'date', role: 'dimension' }).length ||
@@ -12,7 +14,7 @@ export function compatibleTableFormat(value: FieldValue, format: ValueFormatPres
   return finiteNumber(value) !== undefined;
 }
 /** Format-only mismatch retains the typed value; the current cell displays its original text. */
-export function formatTableCell(value: FieldValue | undefined, format?: ValueFormatPreset, missingText?: string, unit?: string): string {
+export function formatTableCell(value: FieldValue | undefined, format?: ValueFormat, missingText?: string, unit?: string): string {
   if (!hasDisplayValue(value) || !format || compatibleTableFormat(value, format)) return formatValue(value, format, missingText, { unit });
   return String(value);
 }

@@ -1,5 +1,5 @@
 import { appendDisplayUnit } from '../../../../widgets/src/shared/display-unit';
-import type { FieldDefinition, TableColumn, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { FieldDefinition, TableColumn, ValueFormat } from '@metriccanvas/page/internal';
 import type { Cell, CellObject } from 'write-excel-file/universal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { resolveField } from '../../../../widgets/src/shared/component-data';
@@ -10,8 +10,9 @@ import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation'
 import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
 
 /** Numbers retain raw values; scale formats display the frozen presentation. */
-function numberFormat(value: number, format?: ValueFormatPreset, unit?: string, displayUnit?: string): string {
+function numberFormat(value: number, format?: ValueFormat, unit?: string, displayUnit?: string): string {
   if (displayUnit) return `"${appendDisplayUnit(formatValue(value, format, undefined, { unit }), value, displayUnit, format).replaceAll('"', '""')}"`;
+  if (typeof format === 'object') return `"${formatValue(value, format)}"`;
   if (!format || format === 'number') return 'General';
   if (format === 'number-grouped') return '#,##0.###############';
   if (format === 'number-1') return '0.0';
@@ -34,7 +35,7 @@ function dateCell(value: unknown, type: 'date' | 'datetime'): CellObject {
   return { value: date, type: Date, format: type === 'date' ? 'yyyy-mm-dd' : 'yyyy-mm-dd hh:mm:ss' };
 }
 
-function valueCell(value: unknown, type: FieldDefinition['type'] | undefined, format: ValueFormatPreset | undefined, unit?: string, displayUnit?: string): CellObject {
+function valueCell(value: unknown, type: FieldDefinition['type'] | undefined, format: ValueFormat | undefined, unit?: string, displayUnit?: string): CellObject {
   if (typeof value === 'number') return { value, type: Number, format: numberFormat(value, format, unit, displayUnit) };
   if (typeof value === 'boolean') return { value, type: Boolean };
   if (type === 'semanticHtml') return { value: plainText(String(value)), type: String };
@@ -47,10 +48,11 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   const resolved = resolveField(column.field, data);
   const value = alignedFieldValue(column.field, data, row);
   const fallback = alignedFallback(column.field, data, row);
-  if (fallback) return { value: String(fallback.raw), type: String };
+  if (fallback) return { value: typeof resolved.format === 'object' ? formatTableCell(fallback.raw, resolved.format) : String(fallback.raw), type: String };
   if (!hasDisplayValue(value)) return resolved.missingText === undefined ? missingText : formatValue(value, resolved.format, resolved.missingText);
   const label = tableEnumLabel(value, column.enumValues);
   if (label !== undefined) return { value: label, type: String };
+  if (typeof resolved.format === 'object') return { value: formatTableCell(value, resolved.format), type: String };
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
   }

@@ -6,6 +6,32 @@ data槽把组件关联到页面数据源；字段绑定引用该槽中的结果�
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
 
+<a id="time-format"></a>
+
+## 时间格式串与固定 UTC+8（6.102）
+
+组件字段绑定的 `format` 继续接受原有字符串预设，新增结构 `{"type":"time","pattern":"YYYY-MM-DD HH:mm:ss"}`。不增加表格列级字段，不配置其它时区。仅显式采用此对象的绑定转换；旧 `date`、`date-month-day` 与文本行为保持。`defaultFormat` 和参数/筛选文本引用继续使用原有字符串预设。
+
+```json
+{"title":"创建时间","field":{"data":"main","field":"createdAt","format":{"type":"time","pattern":"YYYY-MM-DD HH:mm:ss"}}}
+```
+
+按固定 UTC+8 换算后再格式化，不依赖运行机器时区，也不采用历史夏令时。`2026-11-09T18:30:00Z` 显示为 `2026-11-10 02:30:00`。`pattern` 为1—100字符，支持区分大小写的 `YYYY`、`MM`、`DD`、`HH`、`mm`、`ss`，以及连字符、斜杠、冒号、点、空格、T、年月日时分秒；至少一个有效 token。示例：`YYYY-MM-DD`、`YYYY/MM/DD HH:mm`、`HH:mm:ss`、`YYYY年MM月DD日`。不执行脚本或任意格式表达式。
+
+输入支持以下明确结构，不调用浏览器的宽松日期字符串解析：
+
+- ISO 日期时间，含 `Z`、`±HH:mm`、`±HHmm` 或无时区；秒可省略，小数秒支持1—9位并截取毫秒。明确偏移按实际时刻换算，不重复加八小时。
+- 年在前的日期：`YYYY-MM-DD`、`YYYY/MM/DD`、`YYYY.MM.DD`、`YYYY年MM月DD日`（分隔形式的月日允许单数位），以及 `YYYYMMDD`；后接空格或 T 及 `HH:mm[:ss]` / `HHmm[ss]`，紧凑的 `YYYYMMDDHHmm[ss]` 也支持。空格后缀 UTC/GMT 表示 UTC。
+- 10位 Unix 秒或13位 Unix 毫秒时间戳，支持数值或数字字符串、负值及最多3位小数；零也有效。8位数字只按紧凑日历日期解释，11/12位及微秒/纳秒时间戳不猜测单位。
+
+**无时区输入统一解释为 UTC**；纯日期按 UTC 零点解释。需要表示本地时刻时，来源须携带 `+08:00`，例如 `2026-11-10T02:30:00+08:00`。字段可保持来源已有的 string/number/datetime 类型；查询标量失配保留的原文证据也可在此展示格式下解析，但不提升为有效业务值。
+
+严格检查日历、时分秒和偏移（最大±14:00）；错误日期、歧义日/月顺序、越界年份及无法识别的输入保留原文，表格沿用格式不兼容诊断。空值沿用 `missingText`，默认 `--`。不重写结果快照、查询、排序、筛选、行键或导航。
+
+表格、PDF/PNG 和 Excel 共用格式化逻辑；Excel 将转换结果写为文本，空值沿用原有空单元格/缺失文案规则，避免宿主再次解释时区。枚举名称仍优先于普通格式；原始值和交互编码保持。
+
+完整合成入口 `/pages/table-time-format` 展示原始值、UTC+8 时间与日期、跨年、非法值和空值，并提供 Excel；不依赖后端，也不代表真实 DQE/Relay 验收。
+
 <a id="numeric-value-display"></a>
 
 ## 整数与缺失值的统一显示
@@ -233,7 +259,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 `/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。
 
 
-页面协议 6.101。结构真源为本册[schema.json](schema.json)，SHA256 `ee49a8c513dfb3dc4e2458a1929f9109912623091081da937a4d847d8a8db5d1`。字段表自动生成；可选不等于有默认值。
+页面协议 6.102。结构真源为本册[schema.json](schema.json)，SHA256 `29de7663317d08e78d1f8c2c6da8e680fb343a966a7217365d1c76aab80fd2bc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -365,7 +391,17 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f666f726d61742f616e794f662f30"></a>
+
+### `@staticFieldBinding · anyOf[1].format · anyOf[0]`
+
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -406,7 +442,41 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format`。
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
-| "period" | 日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。 |
+| "period" | 时间窗口：基准所在完整周期；offset按指定unit移动周期。 |
+
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f666f726d61742f616e794f662f31"></a>
+
+### `@staticFieldBinding · anyOf[1].format · anyOf[1]`
+
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["type","pattern"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f666f726d61742f616e794f662f312f70726f706572746965732f74797065"></a>
+
+### `@staticFieldBinding · anyOf[1].format · anyOf[1].type`
+
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/type`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="time" | Schema未设默认；装配/运行时默认见语义说明 | 选择所属结构的类型分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "time" | 用于选择@staticFieldBinding · anyOf[1].format · anyOf[1].type分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f666f726d61742f616e794f662f312f70726f706572746965732f7061747465726e"></a>
+
+### `@staticFieldBinding · anyOf[1].format · anyOf[1].pattern`
+
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/pattern`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | maxLength=100; pattern="^(?=.*(?:YYYY&#124;MM&#124;DD&#124;HH&#124;mm&#124;ss))(?:(?:YYYY&#124;MM&#124;DD&#124;HH&#124;mm&#124;ss)&#124;[-/: .T年月日时分秒])+$" | Schema未设默认；装配/运行时默认见语义说明 | 时间格式串；固定 UTC+8。 |
 
 <a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d61746368"></a>
 
@@ -766,6 +836,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - [authoring-percent-coverage](examples/authoring-percent-coverage.json)：完整合法页面；查询仅为静态契约证据。
 - [operation-money-formats](examples/operation-money-formats.json)：完整合法页面；查询仅为静态契约证据。
 - [semantic-numeric-display](examples/semantic-numeric-display.json)：完整合法页面；查询仅为静态契约证据。
+- [table-time-format](examples/table-time-format.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/primitives.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -782,6 +853,8 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/staticFieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField`。
+- `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField/format`。
+- `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1`：[合法完整页面](examples/table-time-format.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/field/format`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
 - `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/yoy-p-format-demo.json)，JSON Pointer `#/sections/0/components/1/props/columns/2/colorRule`。

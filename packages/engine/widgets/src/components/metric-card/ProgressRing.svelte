@@ -1,6 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import type { ValueFormatPreset } from '@metriccanvas/page/internal';
+  import type { ValueFormat } from '@metriccanvas/page/internal';
   import { formatValue, hasDisplayValue } from '../../shared/value-format';
   import LoadingSpinner from '../../shared/LoadingSpinner.svelte';
   import EChart from '../../shared/EChart.svelte';
@@ -12,7 +12,7 @@
     missingText?: string;
     ringPercent?: number;
     label?: string;
-    format?: ValueFormatPreset;
+    format?: ValueFormat;
   }
 
   let { value, loading = false, ringPercent, label = '完成率', missingText, format = 'percent-adaptive' }: Props = $props();

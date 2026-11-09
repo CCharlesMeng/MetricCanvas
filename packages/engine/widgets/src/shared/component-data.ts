@@ -5,7 +5,7 @@ import {
   type FieldBinding,
   type ResolvedFieldDefinition,
   type Row,
-  type ValueFormatPreset,
+  type ValueFormat,
   type FieldValue
 } from '@metriccanvas/page/internal';
 
@@ -30,7 +30,7 @@ export type NamedDataSlots = Record<string, ComponentDataSlot | undefined>;
 
 export interface SemanticHtmlFieldPresentation {
   source: string;
-  format: ValueFormatPreset | undefined;
+  format: ValueFormat | undefined;
   visual: 'signed' | undefined;
 }
 

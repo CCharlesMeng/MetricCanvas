@@ -1,3 +1,4 @@
+import type { ValueFormat } from '../../packages/page/src/field';
 import { resolveComponentValue } from '../../packages/engine/widgets/src/shared/component-value';
 /** Offline presentation audit. Never executes queries or prints result rows. */
 import { readFileSync } from 'node:fs';
@@ -34,7 +35,7 @@ export function auditPresentation(input: unknown) {
   if (!parsed.ok) return { valid: false, errors: parsed.errors, findings: [], charts: [] };
   const page = parsed.page;
   const findings: Finding[] = [];
-  const charts: Array<{ path: string; componentId: string; formats: Array<string | undefined>; axisChecks: unknown[] }> = [];
+  const charts: Array<{ path: string; componentId: string; formats: Array<ValueFormat | undefined>; axisChecks: unknown[] }> = [];
   for (const [id, source] of Object.entries(page.dataSources)) {
     if (source.source.type === 'query' && source.source.initial) {
       const initial = source.source.initial;

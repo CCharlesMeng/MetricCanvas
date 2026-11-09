@@ -36,6 +36,11 @@ export const fieldValueZ = z
   .meta({ id: 'fieldValue' });
 
 export const valueFormatPresetZ = z.enum(valueFormatPresets);
+export const timeValueFormatZ = z.object({
+  type: z.literal('time'),
+  pattern: z.string().max(100).regex(/^(?=.*(?:YYYY|MM|DD|HH|mm|ss))(?:(?:YYYY|MM|DD|HH|mm|ss)|[-/: .T年月日时分秒])+$/)
+}).strict();
+const fieldValueFormatZ = z.union([valueFormatPresetZ, timeValueFormatZ]);
 
 export const textValueReferenceZ = z
   .object({
@@ -321,7 +326,7 @@ export const staticFieldBindingZ = z
         data: idZ,
         field: fieldNameZ,
         missingText: z.string().min(1).max(100).optional(),
-        format: valueFormatPresetZ.optional().meta({
+        format: fieldValueFormatZ.optional().meta({
           description: '只控制当前组件中这一次字段绑定的展示格式'
         }),
         match: z

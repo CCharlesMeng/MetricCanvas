@@ -1,0 +1,258 @@
+{
+  "schemaVersion": "6.102",
+  "id": "table-time-format",
+  "layout": "dashboard",
+  "meta": {
+    "title": "时间格式与 UTC+8 转换（合成数据）"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "createdAt": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "raw": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "dayAt": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "isoDayAt": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "minuteAt": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "clockAt": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "chineseDayAt": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "1",
+            "createdAt": "2026-11-09T18:30:00Z",
+            "raw": "2026-11-09T18:30:00Z",
+            "dayAt": "2026-11-09T18:30:00Z",
+            "isoDayAt": "2026-11-09T18:30:00Z",
+            "minuteAt": "2026-11-09T18:30:00Z",
+            "clockAt": "2026-11-09T18:30:00Z",
+            "chineseDayAt": "2026-11-09T18:30:00Z"
+          },
+          {
+            "id": "2",
+            "createdAt": "2026-11-10T02:30:00+08:00",
+            "raw": "2026-11-10T02:30:00+08:00",
+            "dayAt": "2026-11-10T02:30:00+08:00",
+            "isoDayAt": "2026-11-10T02:30:00+08:00",
+            "minuteAt": "2026-11-10T02:30:00+08:00",
+            "clockAt": "2026-11-10T02:30:00+08:00",
+            "chineseDayAt": "2026-11-10T02:30:00+08:00"
+          },
+          {
+            "id": "3",
+            "createdAt": "2026-11-09 18:30:00",
+            "raw": "2026-11-09 18:30:00",
+            "dayAt": "2026-11-09 18:30:00",
+            "isoDayAt": "2026-11-09 18:30:00",
+            "minuteAt": "2026-11-09 18:30:00",
+            "clockAt": "2026-11-09 18:30:00",
+            "chineseDayAt": "2026-11-09 18:30:00"
+          },
+          {
+            "id": "4",
+            "createdAt": "2026/11/9 18:30",
+            "raw": "2026/11/9 18:30",
+            "dayAt": "2026/11/9 18:30",
+            "isoDayAt": "2026/11/9 18:30",
+            "minuteAt": "2026/11/9 18:30",
+            "clockAt": "2026/11/9 18:30",
+            "chineseDayAt": "2026/11/9 18:30"
+          },
+          {
+            "id": "5",
+            "createdAt": "20261109183000",
+            "raw": "20261109183000",
+            "dayAt": "20261109183000",
+            "isoDayAt": "20261109183000",
+            "minuteAt": "20261109183000",
+            "clockAt": "20261109183000",
+            "chineseDayAt": "20261109183000"
+          },
+          {
+            "id": "6",
+            "createdAt": "1794249000",
+            "raw": "1794249000",
+            "dayAt": "1794249000",
+            "isoDayAt": "1794249000",
+            "minuteAt": "1794249000",
+            "clockAt": "1794249000",
+            "chineseDayAt": "1794249000"
+          },
+          {
+            "id": "7",
+            "createdAt": "1794249000000",
+            "raw": "1794249000000",
+            "dayAt": "1794249000000",
+            "isoDayAt": "1794249000000",
+            "minuteAt": "1794249000000",
+            "clockAt": "1794249000000",
+            "chineseDayAt": "1794249000000"
+          },
+          {
+            "id": "8",
+            "createdAt": "2026-12-31T18:30:00Z",
+            "raw": "2026-12-31T18:30:00Z",
+            "dayAt": "2026-12-31T18:30:00Z",
+            "isoDayAt": "2026-12-31T18:30:00Z",
+            "minuteAt": "2026-12-31T18:30:00Z",
+            "clockAt": "2026-12-31T18:30:00Z",
+            "chineseDayAt": "2026-12-31T18:30:00Z"
+          },
+          {
+            "id": "9",
+            "createdAt": "2026-02-30T18:30:00Z",
+            "raw": "2026-02-30T18:30:00Z",
+            "dayAt": "2026-02-30T18:30:00Z",
+            "isoDayAt": "2026-02-30T18:30:00Z",
+            "minuteAt": "2026-02-30T18:30:00Z",
+            "clockAt": "2026-02-30T18:30:00Z",
+            "chineseDayAt": "2026-02-30T18:30:00Z"
+          },
+          {
+            "id": "10",
+            "createdAt": null,
+            "raw": null,
+            "dayAt": null,
+            "isoDayAt": null,
+            "minuteAt": null,
+            "clockAt": null,
+            "chineseDayAt": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "container": "card",
+      "components": [
+        {
+          "id": "times",
+          "type": "table",
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "时间转换（无时区输入按 UTC，显示为 UTC+8）",
+            "rowKey": "id",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "time-format"
+              }
+            },
+            "columns": [
+              {
+                "title": "原始值",
+                "field": "raw"
+              },
+              {
+                "title": "UTC+8 时间",
+                "field": {
+                  "data": "main",
+                  "field": "createdAt",
+                  "format": {
+                    "type": "time",
+                    "pattern": "YYYY-MM-DD HH:mm:ss"
+                  }
+                }
+              },
+              {
+                "title": "UTC+8 日期",
+                "field": {
+                  "data": "main",
+                  "field": "dayAt",
+                  "format": {
+                    "type": "time",
+                    "pattern": "YYYY/MM/DD"
+                  }
+                }
+              },
+              {
+                "title": "YYYY-MM-DD",
+                "field": {
+                  "data": "main",
+                  "field": "isoDayAt",
+                  "format": {
+                    "type": "time",
+                    "pattern": "YYYY-MM-DD"
+                  }
+                }
+              },
+              {
+                "title": "YYYY-MM-DD HH:mm",
+                "field": {
+                  "data": "main",
+                  "field": "minuteAt",
+                  "format": {
+                    "type": "time",
+                    "pattern": "YYYY-MM-DD HH:mm"
+                  }
+                }
+              },
+              {
+                "title": "HH:mm:ss",
+                "field": {
+                  "data": "main",
+                  "field": "clockAt",
+                  "format": {
+                    "type": "time",
+                    "pattern": "HH:mm:ss"
+                  }
+                }
+              },
+              {
+                "title": "YYYY年MM月DD日",
+                "field": {
+                  "data": "main",
+                  "field": "chineseDayAt",
+                  "format": {
+                    "type": "time",
+                    "pattern": "YYYY年MM月DD日"
+                  }
+                }
+              }
+            ]
+          },
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    }
+  ]
+}
