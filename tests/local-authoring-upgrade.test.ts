@@ -203,6 +203,39 @@ describe('仓外安装升级工具', () => {
     expect(await readFile(path.join(output, 'keep.txt'), 'utf8')).toBe('保留已有尝试');
   });
 
+  it.each([
+    { name: 'unit', apply: (document: ReturnType<typeof base>) => { document.sections[0].components[1].props.columns[1].unit = '元'; } },
+    { name: 'select-all', apply: (document: ReturnType<typeof base>) => { document.sections[0].components[1].props.columns[0].filterable = { mode: 'select', showSelectAll: true }; } },
+    { name: 'arrows', apply: (document: ReturnType<typeof base>) => { document.sections[0].components[1].props.columns[1].arrowRule = { mode: 'sign', positive: 'up', negative: 'down' }; } }
+  ])('旧页先升级再新增 $name：版本、字段位置、原件及完整校验闭环', async ({ name, apply }) => {
+    const original = base();
+    original.schemaVersion = '6.93';
+    original.layout = original.layoutForm;
+    delete original.layoutForm;
+    expect(parsePage(original).ok).toBe(true);
+    const premature = JSON.parse(JSON.stringify(original));
+    apply(premature);
+    expect(parsePage(premature).ok).toBe(false);
+
+    const source = path.join(folder, 'schema-upgrade-demo.json');
+    const bytes = Buffer.from(JSON.stringify(original, null, 2) + '\n');
+    await writeFile(source, bytes);
+    const output = path.join(folder, `new-feature-${name}`);
+    const migrated = run([source, '--out-dir', output]);
+    expect(migrated.status, migrated.stderr).toBe(0);
+    const receipt = JSON.parse(migrated.stdout);
+    const upgraded = JSON.parse(await readFile(receipt.output, 'utf8'));
+    expect(upgraded.schemaVersion).toBe(versionPolicy.current);
+    apply(upgraded);
+    await writeFile(source, JSON.stringify(upgraded));
+    const validation = spawnSync(process.execPath, [path.join(folder, 'skill/scripts/validate-page.mjs'), source], { cwd: folder, encoding: 'utf8' });
+    expect(validation.status, validation.stdout + validation.stderr).toBe(0);
+    expect(upgraded.dataSources).toEqual(original.dataSources);
+    expect(upgraded.sections[0].components[1].props.columns).toEqual(premature.sections[0].components[1].props.columns);
+    expect(JSON.parse(await readFile(source, 'utf8')).schemaVersion).toBe(versionPolicy.current);
+    expect(await readFile(path.join(output, 'original/schema-upgrade-demo.json'))).toEqual(bytes);
+  });
+
   // Each scenario owns one CLI startup and the unchanged default five-second test budget.
   it('未来版本不产生迁移目录或改写输入', async () => {
     const source = path.join(folder, 'future.json');
