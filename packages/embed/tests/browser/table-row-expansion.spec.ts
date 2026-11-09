@@ -4,12 +4,22 @@ import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
 const fixture = (kind: string) => JSON.parse(readFileSync(pageFilesById(fileURLToPath(new URL('../../../../pages', import.meta.url))).get(`table-row-expansion-${kind}`)!, 'utf8'));
-async function mount(page: Page, kind: string) {
+async function mount(page: Page, kind: string, delayed = false, parentRows = 0) {
+  const document = fixture(kind);
+  if (parentRows) {
+    document.sections[0].components[0].props.pagination = { mode: 'none' };
+    document.dataSources.customers.source.rows = Array.from({ length: parentRows }, (_, index) => ({
+      'customer-id': `C${String(index + 1).padStart(2, '0')}`, 'customer-name': `示例客户${index + 1}`, amount: 100
+    }));
+  }
   await page.goto('/examples/inline.html');
-  await page.evaluate(document => {
+  await page.evaluate(({ document, delayed }) => {
+    const releases: Array<() => void> = [];
+    Object.assign(window, { releaseChildQueries: () => releases.splice(0).forEach(release => release()) });
     const recorded: unknown[] = []; (window as unknown as { rowQueries: unknown[] }).rowQueries = recorded;
     window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', { document, dataGateway: { async fetchData(query) {
       recorded.push(structuredClone(query));
+      if (delayed) await new Promise<void>(resolve => releases.push(resolve));
       const control = window as unknown as { rowFailNext?: boolean };
       if (control.rowFailNext) { control.rowFailNext = false; throw Error("temporary query failure"); }
       const predicate = query.filterValues.find(value => value.target === 'dimension' && value.queryField === 'row_customer');
@@ -20,8 +30,44 @@ async function mount(page: Page, kind: string) {
       const offset = query.pagination?.offset ?? 0, limit = query.pagination?.limit ?? rows.length;
       return { rows: rows.slice(offset, offset + limit), totalCount: rows.length };
     } } });
-  }, fixture(kind));
+  }, { document, delayed });
 }
+
+test('first expansion renders a child response received after the loading view has mounted', async ({ page }) => {
+  await mount(page, 'query', true);
+  const parent = page.locator('article[data-component-type="table"]').first();
+  await parent.getByRole('button', { name: '展开子表格', exact: true }).first().click();
+  const child = parent.getByRole('region', { name: '子表格', exact: true });
+  await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+  await page.evaluate(() => (window as unknown as { releaseChildQueries(): void }).releaseChildQueries());
+  await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
+  await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeInViewport();
+  await child.getByRole('button', { name: '下一页', exact: true }).click();
+  await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+  await page.evaluate(() => (window as unknown as { releaseChildQueries(): void }).releaseChildQueries());
+  await expect(child.getByRole('cell', { name: 'C01-011', exact: true })).toBeVisible();
+  await expect(child.getByRole('cell', { name: 'C01-011', exact: true })).toBeInViewport();
+});
+
+test('expanded children add height to the twelve-parent-row viewport and keep their own pager', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1400 });
+  await mount(page, 'query', true, 13);
+  const parent = page.locator('article[data-component-type="table"]').first();
+  await parent.getByRole('button', { name: '展开子表格', exact: true }).first().click();
+  const child = parent.getByRole('region', { name: '子表格', exact: true });
+  await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+  await page.evaluate(() => (window as unknown as { releaseChildQueries(): void }).releaseChildQueries());
+  await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeInViewport();
+  await expect.poll(() => parent.locator('.table-widget').first().evaluate(widget => {
+    const scroll = widget.querySelector<HTMLElement>('.scroll')!, table = scroll.querySelector('table')!;
+    const parents = Array.from(table.querySelectorAll(':scope > tbody > tr:not(.row-expansion-row)')).slice(0, 12);
+    const expansion = table.querySelector(':scope > tbody > .row-expansion-row')!;
+    const height = table.querySelector('thead')!.getBoundingClientRect().height + expansion.getBoundingClientRect().height +
+      parents.reduce((sum, row) => sum + row.getBoundingClientRect().height, 0);
+    return Math.abs(scroll.clientHeight - height);
+  })).toBeLessThan(2);
+  await expect(child.getByRole('button', { name: '下一页', exact: true })).toBeVisible();
+});
 
 test('clean inline child tables reuse the existing pager and keep independent views', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));

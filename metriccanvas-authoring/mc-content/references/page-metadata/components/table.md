@@ -270,10 +270,14 @@ Excel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序�
 
 `props.rowExpansion` 声明父行下方的一层独立表格；与同列树形表格及弹窗/抽屉详情不同。父表单一main数据槽，显式稳定唯一的string/number维度`rowKey`，不能与`mergeBy`同用；小计与合计不可展开。`mode`为multiple（默认）或single，默认全部收起。只点击首列展开按钮，不覆盖父表既有单元格交互。
 
-子表`table`就地声明独立`rowKey`、`columns`和分页；字段绑定、格式、多级表头、分页控件、每页条数及跳页全部复用现有Table。默认白底、无额外卡片，只含表头、数据、分页；不默认继承或生成标题、期间标签、工具栏、搜索和排序入口。仅声明`title`才显示标题；仅声明`toolbar.search`才显示搜索；仅对应列`sortable:true`才显示排序。内部稳定行键排序不会产生可见排序控件。
+子表`table`就地声明`columns`和分页；6.105 起 `rowKey` 可省略。省略时按返回顺序逐行保留全部记录，不按代表处等业务维度去重，也不要求上游增加记录 ID。显式声明时继续要求该字段为稳定、唯一的 string/number 维度，缺失或重复仍显示不可用。父表的 `props.rowKey` 仍必需，用于定位展开实例；不能一起删除。6.104 及以前的子表声明仍必须写 `rowKey`。
+
+字段绑定、格式、多级表头、分页控件、每页条数及跳页全部复用现有Table。默认白底、无额外卡片，只含表头、数据、分页；不默认继承或生成标题、期间标签、工具栏、搜索和排序入口。仅声明`title`才显示标题；仅声明`toolbar.search`才显示搜索；仅对应列`sortable:true`才显示排序。内部排序不会产生未声明的排序控件。
 
 - `data:{type:"recordList",field:"orders"}`直接绑定父行嵌套明细字段。子表字段从该字段的`items.fields`解析；复用一层、每行最多100项的既有契约。可用none/local分页，缺省为10条本地编号分页。null或不合法明细显示不可用，不伪装为无明细。
 - `data:{type:"query",source:"orders",filters:["detail-customer"],bindings:{"detail-customer":{source:"row",field:"customer-id"}}}`引用专属查询定义。子表必须`pagination:{mode:"query"}`，查询不声明complete，不使用compute、结果绑定或pagedJoin。初始页大小沿用DQE`order.limit`（正整数），offset为0；响应必须提供同一父行与条件下的totalCount。不得在子表另设第二个初始pageSize。
+
+省略查询子表行键时，查询必须显式声明 `order_by_field/type` 默认排序；例如按代表处升序只是排序意图，代表处不因此成为唯一行身份。用户排序清空后恢复查询默认排序。只读子表不生成虚构的全局唯一 ID；实时 offset 分页在排序值重复或数据变化时仍可能跨页重复或遗漏。
 
 query输入引用隐藏、非层级dimension/timePoint/timeRange声明，必须全部显式绑定、被本查询消费，且至少一个输入来自父行维度；row/filter/param语法复用既有受控绑定。输入只写入该展开实例的条件副本，不写全页FilterState，不允许其他查询、正文动作或子表读取。缺值、非法日期等不发请求，不能降为全量查询。
 
@@ -283,9 +287,11 @@ query输入引用隐藏、非层级dimension/timePoint/timeRange声明，必须�
 
 查询子表成功返回后，折叠保留当前页面会话内的子表数据及已提交视图；同一父行、相同条件重开时直接恢复页码、排序、搜索及每页条数，不重复查询。每张父表最多缓存20个已折叠的成功实例，超过时释放最久未使用的实例；成功空结果可缓存，错误、加载中及取消的请求不缓存。recordList仍按父行数据呈现。父表翻页或改变父表搜索/列条件、父行消失/数据变化、筛选/参数/层级状态/显示上下文修订变化、父表重新加载或页面销毁均使相关折叠缓存失效；不同父行缓存隔离，权限变化沿用会话硬失效。折叠时未完成的请求仍取消，迟到响应不可回流。同页纯排序保留仍可见且内容未变的父行实例。翻页失败保留目标页码并允许重试，不把旧页内容放在新页码下。无需新增页面配置。验收入口 `/pages/table-row-expansion-cache` 使用内存仿真Gateway。
 
+父表的十二行可视高度按父行计数，已展开子表属于对应父行的额外内容，不占父行名额。父行不超过十二条时随展开内容自然增高；超过十二条时，前十二条父行及其展开行共同确定可视高度，子表继续独立限制自己的可视行数。首次加载、异步返回及子表翻页均重新测量，不能把已成功返回的子表裁在父表可视区外。`table-row-expansion-cache` 用延迟合成响应展示首次展开与翻页。
+
 首期子表只读，拒绝导航、详情、写筛选、列筛选、递归子表及任意组件插槽。未显式启用下文6.70完整父子 Excel 时，导出范围保留原限制：子表不开放导出字段；声明rowExpansion的父表及包含子表的页面暂不启用相应导出，在校验期给出明确待确认提示，不隐式选择导出范围。
 
-完整样例：`table-row-expansion-inline`（无需DQE，第二张表按需启用搜索/标题/排序与单行展开）、`table-row-expansion-query`（本地DQE Sim，默认与可选列排序、单行展开）。真实DQE搜索编码、性能与身份权限仍需真实接入验收。
+完整样例：`table-row-expansion-inline`（无需DQE，第二张表按需启用搜索/标题/排序与单行展开）、`table-row-expansion-query`（本地DQE Sim，默认与可选列排序、单行展开）。`table-child-keyless` 使用合成网关同时展示查询和内联无行键子表：上海两条记录金额为360、999，完整导出保留4条父记录、18条子记录及逐行父关联列。真实DQE搜索编码、性能与身份权限仍需真实接入验收。
 
 ## 列筛选候选值
 
@@ -469,7 +475,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 字段绑定可声明 `format:{"type":"time","pattern":"YYYY-MM-DD HH:mm:ss"}`，按固定 UTC+8 转换；支持常见日期时间字符串和秒/毫秒时间戳，无时区输入按 UTC。页面与 Excel/PDF/PNG 共用格式，Excel 为文本，原始数据和交互保持。输入、格式串及失败规则见[时间格式串](../field-bindings-and-formats.md#time-format)。合成入口 `/pages/table-time-format`。
 
 
-页面协议 6.104。结构真源为本册[schema.json](../schema.json)，SHA256 `88e1446a55f24a34e97227210bd881e6beea4b8cd0c57c317a9c171c99639c84`。字段表自动生成；可选不等于有默认值。
+页面协议 6.105。结构真源为本册[schema.json](../schema.json)，SHA256 `1c7afe28a429e999618ae4484841489e4bebd98134853c9f462e6935456b1a7f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -3683,7 +3689,7 @@ Schema位置：`#/definitions/rowExpansionTable`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 类型/分支 | required=["rowKey","columns"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 类型/分支 | required=["columns"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f7469746c65"></a>
 
@@ -3767,7 +3773,7 @@ Schema位置：`#/definitions/rowExpansionTable/properties/rowKey`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 多数据槽对齐的维度键，各槽字段类型须一致。 |
+| "string" | 本分支可选 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 多数据槽对齐的维度键，各槽字段类型须一致。 |
 
 <a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f636f6c756d6e73"></a>
 
@@ -4037,6 +4043,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [paged-union-branches](../examples/paged-union-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [table-column-visibility](../examples/table-column-visibility.json)：完整合法页面；查询仅为静态契约证据。
 - [table-hierarchy-selection](../examples/table-hierarchy-selection.json)：完整合法页面；查询仅为静态契约证据。
+- [table-child-keyless](../examples/table-child-keyless.json)：完整合法页面；查询仅为静态契约证据。
 - [table-hierarchy-lookup-param](../examples/table-hierarchy-lookup-param.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-query-page](../examples/paged-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-query-page](../examples/record-join-query-page.json)：完整合法页面；查询仅为静态契约证据。

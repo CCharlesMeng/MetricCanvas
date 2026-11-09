@@ -864,6 +864,7 @@
         "paged-union-branches",
         "table-column-visibility",
         "table-hierarchy-selection",
+        "table-child-keyless",
         "table-hierarchy-lookup-param",
         "paged-join-query-page",
         "record-join-query-page",
@@ -2274,6 +2275,7 @@
     "#/definitions/periodSelection/anyOf/2/properties/mode=\"last12Months\"": "定稿日期所在月及之前共十二个完整月，保留已应用窗口。",
     "#/properties/schemaVersion=\"6.103\"": "柱状图字段系列aggregate:avg在前端求均值，原类别并排比较当前值与均值。",
     "#/definitions/barChartSeries/anyOf/0/properties/aggregate=\"avg\"": "以该字段当前全部有效图表输入值求算术均值，各类别展示同一结果。",
+    "#/properties/schemaVersion=\"6.105\"": "只读子表可省略行键，查询显式声明默认排序，保留重复记录及完整导出。",
     "#/properties/schemaVersion=\"6.104\"": "定稿名称默认日期；每页引擎查询、日级适配及失败回退当前日期。"
   },
   "branchExceptions": {

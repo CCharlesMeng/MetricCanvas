@@ -21,7 +21,7 @@ export interface RowTableInstance {
 }
 const unavailable = (): DataSnapshot => ({ status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: '子表格字段或行键不可用' } });
 function checkedRows(snapshot: DataSnapshot, table: TableComponent): DataSnapshot {
-    if (snapshot.status !== 'ready')
+    if (snapshot.status !== 'ready' || table.props.rowKey === undefined)
         return snapshot;
     const keys = snapshot.rows.map(row => expansionRowKey(row[table.props.rowKey!]));
     return keys.some(key => key === undefined) || new Set(keys).size !== keys.length ? unavailable() : snapshot;

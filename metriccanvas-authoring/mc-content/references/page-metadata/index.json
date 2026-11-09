@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.104",
-  "schemaSha256": "88e1446a55f24a34e97227210bd881e6beea4b8cd0c57c317a9c171c99639c84",
+  "schemaVersion": "6.105",
+  "schemaSha256": "1c7afe28a429e999618ae4484841489e4bebd98134853c9f462e6935456b1a7f",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -713,6 +713,7 @@
         "paged-union-branches",
         "table-column-visibility",
         "table-hierarchy-selection",
+        "table-child-keyless",
         "table-hierarchy-lookup-param",
         "paged-join-query-page",
         "record-join-query-page",
@@ -1319,7 +1320,8 @@
         "6.101",
         "6.102",
         "6.103",
-        "6.104"
+        "6.104",
+        "6.105"
       ]
     },
     {
@@ -15345,7 +15347,7 @@
     {
       "pointer": "#/definitions/rowExpansionTable/properties/rowKey",
       "path": "@rowExpansionTable.rowKey",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "components/table.md"
     },
     {
@@ -22206,5 +22208,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "7687799d590a7a317a11a2dbfec3b3c899169ccca344b4c57f8e293473ecaec7"
+  "semanticSourceDigest": "ce02412c10a636205e5530e582669173721f974b45abb1f48db44def3bcd9d23"
 }

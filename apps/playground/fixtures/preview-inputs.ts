@@ -4,6 +4,7 @@ const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capab
 const exactInputs = new Map([
   ['finalization-default-time','finalization'], ['finalization-default-time-detail','finalization'],
   ['report-monthly-complete','report-monthly'],
+  ['table-child-keyless','child-keyless'],
   ['object-period-query','object-period'],
   ['filter-binding-when','binding-when'],
   ['sdt-period-aggregation','period-aggregation'],

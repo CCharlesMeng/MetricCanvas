@@ -81,7 +81,7 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
                         errors.push(error(`${path}/data/source`, '子表格要求普通分页 query，不能使用 complete、compute、结果绑定或组合查询源'));
                     }
                     if (source?.source.type === 'query') {
-                        errors.push(...childDefaultSortErrors(ordinaryQuery(source.source.query).body.dsl_list[0], `${path}/data/source`));
+                        errors.push(...childDefaultSortErrors(ordinaryQuery(source.source.query).body.dsl_list[0], `${path}/data/source`, expansion.table.rowKey !== undefined));
                     }
                     return source;
                 }
@@ -118,11 +118,11 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
             try {
                 const scope = rowExpansionPage(page, table);
                 const childFields = resolveDataSourceFields(scope.page.dataSources[scope.table.data.main]!);
-                const childKey = childFields[expansion.table.rowKey];
-                if (!childKey || childKey.role !== 'dimension' || !['string', 'number'].includes(childKey.type))
+                const childKey = expansion.table.rowKey === undefined ? undefined : childFields[expansion.table.rowKey];
+                if (expansion.table.rowKey !== undefined && (!childKey || childKey.role !== 'dimension' || !['string', 'number'].includes(childKey.type)))
                     errors.push(error(`${path}/table/rowKey`, '子表格要求稳定的 string/number 维度行键'));
                 if (expansion.data.type === 'query') {
-                    for (const id of [expansion.table.rowKey, ...rowExpansionColumns(expansion.table.columns).filter(column => column.sortable).map(column => fieldName(column.field))]) {
+                    for (const id of [expansion.table.rowKey, ...rowExpansionColumns(expansion.table.columns).filter(column => column.sortable).map(column => fieldName(column.field))].filter((id):id is string=>id!==undefined)) {
                         if (!scope.page.dataSources[scope.table.data.main]?.fields[id] || !hasQueryFieldMapping(scope.page.dataSources[scope.table.data.main]!.fields[id]!))
                             errors.push(error(`${path}/table/columns`, '查询子表格行键与排序字段必须具有 queryField 映射'));
                     }
@@ -141,8 +141,11 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
     }
     return errors;
 }
-function childDefaultSortErrors(item: import('../query').JsonObject, path: string): TypedError[] {
-    try { dqeDefaultSort(item); return []; }
+function childDefaultSortErrors(item: import('../query').JsonObject, path: string, hasRowKey: boolean): TypedError[] {
+    try {
+        const sort = dqeDefaultSort(item);
+        return !hasRowKey && !sort.length ? [error(path, '省略子表行键时必须显式声明查询默认排序 order_by_field/type')] : [];
+    }
     catch { return [error(path, '子表格默认排序须使用 order_by_field/type 单字段格式')]; }
 }
 

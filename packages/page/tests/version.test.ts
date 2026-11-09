@@ -3,6 +3,7 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
   'finalization-default':104,
+  'table-child-optional-key': 105,
   'bar-series-average':103,
   'object-period-binding':101,
   'query-binding-when':100,

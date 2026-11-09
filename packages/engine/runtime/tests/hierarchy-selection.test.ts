@@ -121,11 +121,12 @@ it('moves a selected child to a newly located parent while preserving manual col
 it('keeps a 6.44 numeric-keyed query-paginated parent working without lookup requests',async()=>{
  const {parsePage}=await import('@metriccanvas/page');const {document}=hierarchyFixture(),sim=await hierarchySim();
  document.schemaVersion='6.44';delete document.iocHeader;delete document.dataSources['office-region-lookup'];document.filters=document.filters.filter((f:{id:string})=>f.id==='detail-region');
- const props=document.sections[0].components[0].props;delete props.rowExpansion.selection;delete props.toolbar.export;props.pagination={mode:'query'};
+ document.sections[0].components=document.sections[0].components.filter((component:{type:string})=>component.type!=='iocHeader');
+ const props=document.sections[0].components.find((component:{type:string})=>component.type==='table').props;delete props.rowExpansion.selection;delete props.toolbar.export;props.pagination={mode:'query'};
  props.rowExpansion.data.filters=['detail-region'];delete props.rowExpansion.data.bindings['detail-office'];
  const source=document.dataSources['region-summary'].source;delete source.resultScope;source.query.filterBindings={};source.query.body.dsl_list[0].order={offset:0,limit:2};
  delete document.dataSources['office-detail'].source.query.filterBindings.year;delete document.dataSources['office-detail'].source.query.filterBindings.product;delete document.dataSources['office-detail'].source.query.filterBindings['detail-office'];
- const parsed=parsePage(document);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));const page=parsed.page,table=page.sections[0]!.components[0] as import('@metriccanvas/page/internal').TableComponent;
+ const parsed=parsePage(document);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));const page=parsed.page,table=page.sections[0]!.components.find((component):component is import('@metriccanvas/page/internal').TableComponent=>component.type==='table')!;
  const calls:string[]=[];const gateway={...sim.gateway,fetchData:((q,c,s)=>{calls.push(c!.dataSourceIds![0]);return sim.gateway.fetchData(q,c,s);}) as typeof sim.gateway.fetchData};
  const stream=orchestrate(page,gateway),stop=stream.subscribe(()=>{}),control=createRowExpansionController(page,table,gateway,new Map(),new Map(),()=>{});
  try{

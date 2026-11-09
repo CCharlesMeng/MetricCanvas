@@ -54,13 +54,16 @@ export function expansionRowKey(value: unknown): string | undefined {
         : typeof value === 'number' && Number.isFinite(value) ? `n:${value}` : undefined;
 }
 /** Preserve the declared ordering; use the row key only when no ordering is supplied. */
-export function stableRowQuery(query: EffectiveQuery, rowKey: string): EffectiveQuery {
-    const field = query.fieldMappings[rowKey];
-    if (!field || !hasQueryFieldMapping(field))
+export function stableRowQuery(query: EffectiveQuery, rowKey?: string): EffectiveQuery {
+    const field = rowKey === undefined ? undefined : query.fieldMappings[rowKey];
+    if (rowKey !== undefined && (!field || !hasQueryFieldMapping(field)))
         throw new Error('子表格行键没有查询映射');
     const defaults = query.sort ? [] : dqeDefaultSort(query.body.dsl_list[0]);
     const sort = [...(query.sort ?? defaults)];
-    if (!sort.length)
+    if (rowKey === undefined && !sort.length) sort.push(...dqeDefaultSort(query.body.dsl_list[0]));
+    if (!sort.length) {
+        if (!field || !hasQueryFieldMapping(field)) throw new Error('省略子表行键时必须声明查询默认排序');
         sort.push({ queryField: field.queryField, direction: 'asc' });
+    }
     return { ...query, sort };
 }

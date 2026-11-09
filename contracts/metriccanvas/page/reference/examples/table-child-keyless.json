@@ -1,0 +1,504 @@
+{
+  "schemaVersion": "6.105",
+  "id": "table-child-keyless",
+  "layout": "dashboard",
+  "meta": {
+    "title": "无行键子表：重复记录与完整导出",
+    "description": "合成网关：子表省略rowKey，保留上海两条不同金额记录；完整导出4条父记录、18条子记录。"
+  },
+  "dataSources": {
+    "region-summary": {
+      "fields": {
+        "row-id": {
+          "type": "number",
+          "role": "dimension",
+          "queryField": "h_row_id"
+        },
+        "region-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "h_region"
+        },
+        "region-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "h_region_name"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "h_parent_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "h_row_id",
+                  "h_region",
+                  "h_region_name"
+                ],
+                "output_metrics": [
+                  "h_parent_amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "year": {
+              "target": "dimension",
+              "queryField": "h_year"
+            },
+            "product": {
+              "target": "dimension",
+              "queryField": "h_product"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "office-region-lookup": {
+      "fields": {
+        "located-region-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "h_parent"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "h_parent"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "lookup-office": {
+              "target": "dimension",
+              "queryField": "h_office"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "office-detail": {
+      "fields": {
+        "office-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "h_office"
+        },
+        "office-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "h_office_name"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "h_child_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "h_office",
+                  "h_office_name"
+                ],
+                "output_metrics": [
+                  "h_child_amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 2,
+                  "order_by_field": "h_office",
+                  "type": "asc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "detail-region": {
+              "target": "dimension",
+              "queryField": "h_region"
+            },
+            "detail-office": {
+              "target": "dimension",
+              "queryField": "h_office"
+            },
+            "year": {
+              "target": "dimension",
+              "queryField": "h_year"
+            },
+            "product": {
+              "target": "dimension",
+              "queryField": "h_product"
+            }
+          }
+        }
+      }
+    },
+    "inline-parent": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "details": {
+          "type": "recordList",
+          "role": "detail",
+          "items": {
+            "fields": {
+              "office": {
+                "type": "string",
+                "role": "dimension"
+              },
+              "amount": {
+                "type": "number",
+                "role": "measure"
+              }
+            }
+          }
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "local-parent",
+            "name": "内联示例",
+            "details": [
+              {
+                "office": "甲代表处",
+                "amount": 10
+              },
+              {
+                "office": "甲代表处",
+                "amount": 20
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "h_region",
+      "label": "地区范围",
+      "display": "tree",
+      "treeSelection": "level",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "region-dept",
+          "dimension": "h_region",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "h_office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept",
+      "default": []
+    },
+    {
+      "id": "year",
+      "type": "dimension",
+      "dimension": "h_year",
+      "label": "年度",
+      "display": "select",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "2026",
+          "label": "2026"
+        },
+        {
+          "value": "2025",
+          "label": "2025"
+        }
+      ],
+      "default": [
+        "2026"
+      ]
+    },
+    {
+      "id": "product",
+      "type": "dimension",
+      "dimension": "h_product",
+      "label": "产品",
+      "display": "select",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "all",
+          "label": "全部产品"
+        },
+        {
+          "value": "cloud",
+          "label": "云服务"
+        }
+      ],
+      "default": [
+        "all"
+      ]
+    },
+    {
+      "id": "lookup-office",
+      "type": "dimension",
+      "dimension": "h_office",
+      "visible": false
+    },
+    {
+      "id": "detail-region",
+      "type": "dimension",
+      "dimension": "h_region",
+      "visible": false
+    },
+    {
+      "id": "detail-office",
+      "type": "dimension",
+      "dimension": "h_office",
+      "visible": false
+    }
+  ],
+  "sections": [
+    {
+      "id": "hierarchy",
+      "components": [
+        {
+          "id": "keyless-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterIds": [
+              "year",
+              "region",
+              "product"
+            ],
+            "identity": {
+              "title": "无行键子表：重复记录与完整导出",
+              "description": {
+                "text": "上海代表处保留360、999两条记录。查询子表显式按代表处编码升序；下方内联子表同样不声明行键。",
+                "presentation": "inline"
+              }
+            }
+          }
+        },
+        {
+          "id": "keyless-query-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-summary"
+          },
+          "props": {
+            "title": "查询子表：同一代表处保留多条记录",
+            "rowKey": "row-id",
+            "columns": [
+              {
+                "field": "region-name",
+                "title": "地区部",
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "amount",
+                "title": "整体金额",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2,
+              "numbered": true
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "region-name"
+                ]
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "无行键子表完整导出",
+                "rowExpansion": {
+                  "scope": "all",
+                  "parentFields": [
+                    "region-name"
+                  ]
+                }
+              }
+            },
+            "rowExpansion": {
+              "mode": "multiple",
+              "selection": {
+                "filter": "region",
+                "parentLevel": "region-dept",
+                "parentField": "region-id",
+                "childLevel": "office",
+                "parentLookup": {
+                  "source": "office-region-lookup",
+                  "field": "located-region-id",
+                  "filters": [
+                    "lookup-office"
+                  ],
+                  "bindings": {
+                    "lookup-office": {
+                      "source": "filter",
+                      "id": "region"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "type": "query",
+                "source": "office-detail",
+                "filters": [
+                  "detail-region",
+                  "detail-office"
+                ],
+                "bindings": {
+                  "detail-region": {
+                    "source": "row",
+                    "field": "region-id"
+                  },
+                  "detail-office": {
+                    "source": "selection"
+                  }
+                }
+              },
+              "table": {
+                "title": "代表处明细",
+                "columns": [
+                  {
+                    "field": "office-name",
+                    "title": "代表处",
+                    "sortable": true
+                  },
+                  {
+                    "field": "amount",
+                    "title": "金额",
+                    "sortable": true
+                  }
+                ],
+                "pagination": {
+                  "mode": "query"
+                },
+                "toolbar": {
+                  "search": {
+                    "fields": [
+                      "office-name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "inline-keyless",
+      "container": "card",
+      "components": [
+        {
+          "id": "keyless-inline-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "inline-parent"
+          },
+          "props": {
+            "title": "内联子表：两条相同代表处",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "name",
+                "title": "父行"
+              }
+            ],
+            "rowExpansion": {
+              "data": {
+                "type": "recordList",
+                "field": "details"
+              },
+              "table": {
+                "columns": [
+                  {
+                    "field": "office",
+                    "title": "代表处"
+                  },
+                  {
+                    "field": "amount",
+                    "title": "金额"
+                  }
+                ],
+                "pagination": {
+                  "mode": "local",
+                  "pageSize": 10
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

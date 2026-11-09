@@ -3,9 +3,9 @@ export function measureTableViewport(root: HTMLElement, table: HTMLTableElement,
   const bodyRows = Array.from(table.querySelectorAll<HTMLTableRowElement>(
     ':scope > tbody > tr:not(.row-expansion-row):not([data-pinned-top])'
   ));
-  const rows = bodyRows.slice(0, 12);
+  const rows = rowsWithExpansions(bodyRows.slice(0, 12));
   const fixedRows = Array.from(table.querySelectorAll<HTMLElement>(':scope > thead, :scope > tbody > tr[data-pinned-top]'));
-  if (bodyRows.length <= 12 && !table.querySelector(':scope > tbody > .row-expansion-row')) {
+  if (bodyRows.length <= 12) {
     root.style.removeProperty('--table-viewport-max-height');
     return [...fixedRows, ...rows];
   }
@@ -14,6 +14,14 @@ export function measureTableViewport(root: HTMLElement, table: HTMLTableElement,
   const chrome = scroll.offsetHeight - scroll.clientHeight;
   root.style.setProperty('--table-viewport-max-height', `${height + chrome}px`);
   return [...fixedRows, ...rows];
+}
+
+/** Expanded content belongs to its parent row and keeps its own inner row limit. */
+function rowsWithExpansions(rows: HTMLTableRowElement[]): Element[] {
+  return rows.flatMap(row => {
+    const expansion = row.nextElementSibling;
+    return expansion?.classList.contains('row-expansion-row') ? [row, expansion] : [row];
+  });
 }
 
 export function reconcileResizeTargets(observer: ResizeObserver, observed: Set<Element>, targets: Set<Element>): void {

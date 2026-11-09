@@ -6,7 +6,7 @@ const endpoint='/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 test('ordinary header consumes its real page, period anchor and queries; narrow layout',async({page},info)=>{
   const requests:any[]=[];page.on('request',request=>{if(request.url().includes(endpoint)&&request.method()==='POST')requests.push(...request.postDataJSON().dsl_list);});
   await page.goto('/pages/ioc-header-overview-demo');const header=page.locator('[data-ioc-header]'),period=header.locator('[data-period-filter]');
-  await expect(header.getByRole('heading',{name:'项目概览'})).toBeVisible();await expect(page.locator('[data-filter-id="region"]')).toHaveCount(1);await expect(page.getByText('合成 · 2026-09 至 2026-09',{exact:true})).toBeVisible();
+  await expect(header.getByRole('heading',{name:'项目概览'})).toBeVisible();await expect(page.locator('[data-filter-id="region"]')).toHaveCount(1);await expect(page.getByText('合成 · 2026-09 至 2026-09；geo_pc_code=R05',{exact:true})).toBeVisible();
   await period.getByRole('button',{name:'季',exact:true}).click();await expect(period.getByRole('combobox')).toHaveValue('2026 年 Q3');
   await period.getByRole('button',{name:'年',exact:true}).click();await period.getByRole('button',{name:'月',exact:true}).click();await expect(period.getByRole('combobox')).toHaveValue('2026-09');
   await period.getByRole('button',{name:'近一年',exact:true}).click();await expect(header.locator('[data-ioc-fact="period"]')).toContainText('2025-10 至 2026-09');
@@ -20,7 +20,7 @@ test('dense measured collapse, candidate retry, recursive gate and export safety
   const requests:any[]=[];page.on('request',request=>{if(request.url().includes(endpoint)&&request.method()==='POST')requests.push(...request.postDataJSON().dsl_list);});
   await page.setViewportSize({width:1024,height:900});await page.goto('/pages/ioc-header-dense-filter-demo');
   const header=page.locator('[data-ioc-header]');await expect(header.getByRole('button',{name:'展开筛选'})).toBeVisible();
-  await expect(page.getByText('合成 · 2026-09 至 2026-09；mtime=202609',{exact:true})).toBeVisible();
+  await expect(page.getByText('合成 · 2026-09 至 2026-09；geo_pc_code=R05；mtime=202609',{exact:true})).toBeVisible();
   const before=requests.length;await header.getByRole('button',{name:'展开筛选'}).click();await header.getByRole('button',{name:'收起筛选'}).click();expect(requests.length).toBe(before);
   expect(await header.locator('[data-ioc-filter][inert]').count()).toBeGreaterThan(0);
   await header.getByRole('button',{name:'展开筛选'}).click();

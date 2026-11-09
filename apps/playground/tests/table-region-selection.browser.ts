@@ -16,6 +16,7 @@ test('table selection uses Header Region state, levels and existing query bindin
   const results=page.locator('[data-component="main/results"]');
   const region=page.locator('[data-filter-id="region"]');
   const year=page.locator('[data-filter-id="stat-year"]');
+  await expect(region.locator('button[aria-haspopup]').first()).toContainText('全球');
   await expect(results).toContainText('全球（当前范围不限）');
   await entry.getByRole('button',{name:'上海代表处',exact:true}).click();
   await expect(region).toContainText('上海代表处');
@@ -46,7 +47,16 @@ test('table selection uses Header Region state, levels and existing query bindin
   await expect.poll(async()=>(await calls(page)).at(-1)).toContainEqual({target:'dimension',queryField:'地区部',values:['SAME']});
   await openSelection(region);await region.getByRole('button',{name:'清空区域',exact:true}).click();await closeSelection(region);
   await expect(results).toContainText('全球（当前范围不限）');
+  await expect(region.locator('button[aria-haspopup]').first()).not.toContainText('全球');
   await expect(entry.locator('button[aria-pressed="true"]')).toHaveCount(0);
   await expect(year.getByRole('combobox')).toHaveValue('2026 年');
   expect(new URL(page.url()).searchParams.has('keep')).toBe(false);
+});
+
+test('an explicit Region URL takes priority over the default global node',async({page})=>{
+  await page.goto('/pages/ioc-header-controls?rep-office='+encodeURIComponent('上海代表处'));
+  const region=page.locator('[data-filter-id="region"]');
+  await expect(region.locator('button[aria-haspopup]').first()).toContainText('上海代表处');
+  await expect(page.locator('[data-component="main/results"]')).toContainText('上海代表处');
+  expect(new URL(page.url()).searchParams.get('rep-office')).toBe('上海代表处');
 });

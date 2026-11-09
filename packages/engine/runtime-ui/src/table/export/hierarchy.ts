@@ -48,10 +48,10 @@ async function collectChildren(page:Page,parent:TableComponent,rows:Row[],gatewa
     const filters=rowExpansionFilters(page,parent,row,context,selection);
     const next=tableColumnPresentation(scope.page,scope.table,{declarations:page.filters??[],filters,displaySnapshot:context.displaySnapshot,filterRevision:context.filterRevision});
     if(JSON.stringify(next.component.props.columns)!==JSON.stringify(model.component.props.columns))throw new ExportViewError('EXPORT_NOT_READY','父实例的子表有效列不一致');
-    const program=createSourceProgram(scope.page,{gateway:{...gateway,fetchData:(query,diagnostics,signal)=>gateway.fetchData(stableRowQuery(query,scope.table.props.rowKey!),diagnostics,signal)}});
+    const program=createSourceProgram(scope.page,{gateway:{...gateway,fetchData:(query,diagnostics,signal)=>gateway.fetchData(stableRowQuery(query,scope.table.props.rowKey),diagnostics,signal)}});
     try{
       const data=await prepareTableExport({page:scope.page,component:next.component,gateway,program,queries:new Map(),state:{...context,filters,tables:{},headerFilters:{},currentYear:new Date().getFullYear()},controller});
-      assertKeys(data.main?.snapshot.rows??[],scope.table.props.rowKey!);
+      if(scope.table.props.rowKey!==undefined)assertKeys(data.main?.snapshot.rows??[],scope.table.props.rowKey);
       return {row,data};
     }finally{program.dispose();}
   },controller);

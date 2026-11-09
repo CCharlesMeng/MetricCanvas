@@ -29,7 +29,7 @@
 
 `filterControl.props.filterId` 引用现有静态可见的页级 `filters` 声明，时间及其他业务筛选行为不变。`regionFilter` 内置公共筛选 `region`，页面不再声明 `filters.region`；不得通过另一控件重复认领。子控件 id 在全页面组件间唯一。`components` 至少一项，与旧 `filterIds` 互斥；旧 `filterIds` 及完整 Region 声明仍兼容读取，旧页面无需改写。
 
-RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `geo` / `region-dept` / `office`，对应候选路由 `geo-pc-code` / `region-dept-code` / `rep-office-code`。默认只确定 geo 层级，不默认选中“全球”。应用级 `withOperationMapRegion(dataGateway, adapter)` 安装一次候选接线，页面不配置接口地址、凭据、候选请求映射或额外同步开关。其他组织值沿用当前中文业务值约定；Adapter 将“全球”节点及其父引用规范为 `value:"全球"`，label 仅用于显示。缺失、拒绝及非法候选沿用原门禁，不能回退到越权候选。
+RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `geo` / `region-dept` / `office`，对应候选路由 `geo-pc-code` / `region-dept-code` / `rep-office-code`。IOC 页头的 Region 在页面实例初始化且没有 URL 输入、显式 default 或恢复状态时，等待完整合法候选树，优先选中可用的 `value:"全球"` 节点，否则选中返回顺序中的第一个可用节点，并使用该节点自己的层级与维度。禁用节点不能成为默认项；候选未就绪、为空、拒绝或失败时不制造候选或选择。只初始化一次，用户清空后、业务条件刷新或候选重载均不补回；旧 `filterIds` 声明沿用同一规则，显式 `default:[]` 可保持初始不选。普通维度筛选不受影响。应用级 `withOperationMapRegion(dataGateway, adapter)` 安装一次候选接线，页面不配置接口地址、凭据、候选请求映射或额外同步开关。其他组织值沿用当前中文业务值约定；Adapter 将“全球”节点及其父引用规范为 `value:"全球"`，label 仅用于显示。缺失、拒绝及非法候选沿用原门禁，不能回退到越权候选。
 
 解析时只在运行投影展开标准筛选，源文档保留简写。统一筛选状态、URL、候选加载、查询 `filterBindings.region`、初始化和现有选择回写继续复用。未绑定 region 的查询不会新增组织谓词；绑定的查询仍显式声明自己的 `levelQueryFields`。此能力不引入实时跨应用同步机制。应用级代码示例见集成应用契约的 Operation Map Region 接入章节。
 

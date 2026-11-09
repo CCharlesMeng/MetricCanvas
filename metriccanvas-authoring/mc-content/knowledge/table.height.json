@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.104",
+  "schemaVersion": "6.105",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.height"
@@ -336,6 +336,7 @@
         "references/page-metadata/examples/paged-union-branches.json",
         "references/page-metadata/examples/table-column-visibility.json",
         "references/page-metadata/examples/table-hierarchy-selection.json",
+        "references/page-metadata/examples/table-child-keyless.json",
         "references/page-metadata/examples/table-hierarchy-lookup-param.json",
         "references/page-metadata/examples/paged-join-query-page.json",
         "references/page-metadata/examples/record-join-query-page.json",

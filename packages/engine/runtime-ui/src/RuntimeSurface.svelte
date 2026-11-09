@@ -21,6 +21,7 @@
   import {filterInputIssue} from '../../runtime/src/navigation-inputs';
   import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
   import { candidateScopeKey } from '../../runtime/src/dimension-values';
+  import { createIocRegionDefault } from './ioc-region-default';
   import { createTableController } from './table/controller';
   import { createExportController } from './export-controller';
   import { type TableHeaderFilters, type TableQueryView, hasQueryFieldMapping } from '@metriccanvas/page/internal';
@@ -553,6 +554,7 @@
       emit?.({type:'invalid',errors:pageState.errors});return;
     }
     filterState = state;
+    const regionDefault = createIocRegionDefault(loaded, search, new Map([...fromDeclarations, ...fromURL]), !!bootstrap);
 
     function receiveCandidates(next:DimensionValuesSnapshots) {
         for (const declaration of declarations) {
@@ -566,12 +568,18 @@
             state.candidate(declaration.id,receipt.status==='ready'&&!allowed?.length?'empty':receipt.status,allowed);
           }
         }
+        const region = declarations.find(declaration => declaration.id === 'region');
+        if (region?.type === 'dimension') {
+          const value = regionDefault.take(next, cascadeContext(region, declarations, filterValues, filterCandidateContext()));
+          if (value) state.commit({ type: 'initialize', values: new Map([...filterValues, ['region', value]]) });
+        }
     }
 
     let primed = false;
     disposers.push(
       state.subscribe((values) => {
         const previous = filterValues;
+        regionDefault.cancel(primed, changedFilters(previous, values).has('region'));
         filterValues = values;filterRevision=state.revision;candidateClock=state.clock();
         blockedFilters = [...state.blocked()];confirmationFilters=[...state.confirmation()];
         if (blockedFilters.length) {

@@ -162,7 +162,7 @@ const rowNumberZ = z.object({
 const rowTableZ = z.object({
   title: textValueZ.optional(),
   rowNumber: rowNumberZ.optional(),
-  rowKey: fieldNameZ,
+  rowKey: fieldNameZ.optional(),
   columns: z.array(tableColumnNodeZ).min(1),
   fit: z.enum(['content', 'container']).optional(),
   pagination: paginationZ.optional(),

@@ -1,0 +1,42 @@
+import { expect, test, type Page } from '@playwright/test';
+import { createRequire } from 'node:module';
+import { chooseTree, closeSelection, openSelection } from '../../../packages/embed/tests/browser/selection-actions';
+
+const ExcelJS: typeof import('../../../packages/engine/node_modules/exceljs') = createRequire(import.meta.url)('../../../packages/engine/node_modules/exceljs');
+
+async function exportCounts(page: Page) {
+  const pending = page.waitForEvent('download');
+  await page.getByRole('button', { name: '导出', exact: true }).click();
+  const download = await pending;
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile((await download.path())!);
+  expect(workbook.worksheets.map(sheet => sheet.name)).toEqual(['父表汇总', '子表明细']);
+  expect(workbook.worksheets[1]!.getCell('A1').value).toBe('地区部');
+  return workbook.worksheets.map(sheet => sheet.rowCount - 1);
+}
+
+test('exports complete children before expansion and ignores child-local paging and search', async ({ page }) => {
+  await page.goto('/pages/table-hierarchy-selection');
+  await expect(page.getByRole('cell', { name: '华东', exact: true })).toBeVisible();
+  expect(await exportCounts(page)).toEqual([4, 17]);
+  await page.getByRole('button', { name: '展开子表格', exact: true }).first().click();
+  const child = page.getByRole('region', { name: '子表格', exact: true });
+  await expect(child.getByRole('cell', { name: '上海', exact: true })).toBeVisible();
+  await child.getByRole('button', { name: '下一页', exact: true }).click();
+  await expect(child.getByRole('cell', { name: '浙江', exact: true })).toBeVisible();
+  expect(await exportCounts(page)).toEqual([4, 17]);
+  await child.getByRole('searchbox').fill('上海');
+  await child.getByRole('searchbox').press('Enter');
+  await expect(child.getByRole('cell', { name: '上海', exact: true })).toBeVisible();
+  expect(await exportCounts(page)).toEqual([4, 17]);
+  const region = page.locator('[data-filter-id="region"]');
+  await chooseTree(region, '上海');
+  await closeSelection(region);
+  await expect(page.getByRole('cell', { name: '上海', exact: true })).toBeVisible();
+  expect(await exportCounts(page)).toEqual([1, 1]);
+  await openSelection(region);
+  await region.getByRole('button', { name: '清空地区范围', exact: true }).click();
+  await closeSelection(region);
+  await expect(page.getByRole('cell', { name: '中国区', exact: true })).toBeVisible();
+  expect(await exportCounts(page)).toEqual([4, 17]);
+});

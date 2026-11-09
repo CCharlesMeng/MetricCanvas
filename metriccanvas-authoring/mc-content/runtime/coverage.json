@@ -833,6 +833,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-child-keyless.json",
+      "target": "product-contracts/page/conformance/valid/table-child-keyless.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/finalization-default-time.json",
       "target": "product-contracts/page/conformance/valid/finalization-default-time.json",
       "scope": "exact product contract"
@@ -7578,6 +7583,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-child-keyless.json",
+      "target": "references/page-metadata/examples/table-child-keyless.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/table-hierarchy-lookup-param.json",
       "target": "references/page-metadata/examples/table-hierarchy-lookup-param.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8084,7 +8094,7 @@
     }
   ],
   "counts": {
-    "product": 1584,
+    "product": 1586,
     "authoring": 32,
     "modules": 36,
     "topics": 293,

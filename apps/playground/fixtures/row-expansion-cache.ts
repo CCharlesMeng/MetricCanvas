@@ -8,6 +8,8 @@ export function createRowCachePreview():{dataGateway:DataGateway}{
     if(!parent)throw Error('示例子查询缺少父行条件');
     const offset=query.pagination?.offset??0,limit=query.pagination?.limit??10;
     if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('metriccanvas:row-cache-query',{detail:{parent,offset,limit}}));
+    await new Promise(resolve=>setTimeout(resolve,120));
+    signal?.throwIfAborted();
     const rows=Array.from({length:25},(_,index)=>({'customer-id':parent,'order-id':`${parent}-${String(index+1).padStart(3,'0')}`,product:`示例产品${index+1}`,amount:index+1}));
     return {rows:rows.slice(offset,offset+limit),totalCount:rows.length};
   }}};

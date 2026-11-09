@@ -1,13 +1,14 @@
 import {readFileSync} from 'node:fs';
 import {parsePage} from '@metriccanvas/page';
-import type {TableComponent} from '@metriccanvas/page/internal';
+import {flattenPageComponents,type TableComponent} from '@metriccanvas/page/internal';
 import {initialFilterValues,type FilterValues} from '../src/filter-state';
 import {createDqeGateway} from '../../data-gateway/src/dqe';
 import {createDqeSimServer,DQE_EXECUTE_PATH} from '../../../../tools/dqe-sim/src/server';
 export function hierarchyFixture(){
   const document=JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-hierarchy-selection.json',import.meta.url),'utf8'));
   const parsed=parsePage(document);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
-  const page=parsed.page,table=page.sections[0]!.components[0] as TableComponent;
+  const page=parsed.page,table=flattenPageComponents(page).find((component):component is TableComponent=>component.type==='table');
+  if(!table)throw Error('fixture table');
   return {document,page,table,filters:initialFilterValues(page.filters??[])};
 }
 export function choose(filters:FilterValues,value?:string,level='office'){

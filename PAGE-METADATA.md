@@ -1,5 +1,9 @@
 # MetricCanvas 页面元数据规范
 
+6.105：只读子表可省略 rowKey，按返回顺序保留重复记录；查询子表须沿用 order_by_field/type 显式声明默认排序，父表行键仍必需，显式子表行键继续严格校验。完整导出保留每条记录及父关联，无新增 Schema 字段。见[父子表格](docs/page-metadata/components/table.md#row-expansion)，合成入口 `/pages/table-child-keyless`。
+
+IOC Header Region 初始化优先选择合法候选中的“全球”，否则选择第一可用项；URL、显式默认值和恢复状态优先，用户清空后不补回。父子表首次展开与延迟回执的高度计算包含展开行，避免成功数据被裁出父表可视区。见 Region 与表格组件文档。
+
 6.104：时间筛选 default.finalizationName 按名称查询日级定稿日期，引擎每页独立查询并初始化日/月/季/年/近一年，失败回退当前日期。下钻保留已应用窗口，导航输入不跳过定稿查询。见[定稿日期默认值](docs/page-metadata/filters.md#定稿日期默认值6104)，合成入口 `/pages/finalization-default-time`。
 6.103：柱状图字段系列可声明 `aggregate: "avg"`，前端对当前图表全部有效字段值求均值，并在每个原类别显示同一均值柱；与普通当前值系列并排比较。见[前端均值柱系列](docs/page-metadata/components/barChart.md#bar-series-average)，合成入口 `/pages/sdt-period-aggregation`。
 

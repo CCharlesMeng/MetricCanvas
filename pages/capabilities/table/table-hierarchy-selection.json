@@ -1,17 +1,10 @@
 {
-  "schemaVersion": "6.70",
+  "schemaVersion": "6.81",
   "id": "table-hierarchy-selection",
   "layout": "dashboard",
   "meta": {
-    "title": "层级筛选联动父子表格",
+    "title": "父子表格与完整 Excel 导出（合成数据）",
     "description": "合成 DQE Sim：完整地区部指标、独立归属定位与按需代表处明细。父指标始终为地区部整体。"
-  },
-  "iocHeader": {
-    "filterIds": [
-      "region",
-      "year",
-      "product"
-    ]
   },
   "dataSources": {
     "region-summary": {
@@ -199,7 +192,8 @@
           "label": "代表处"
         }
       ],
-      "defaultLevel": "region-dept"
+      "defaultLevel": "region-dept",
+      "default": []
     },
     {
       "id": "year",
@@ -272,6 +266,27 @@
     {
       "id": "hierarchy",
       "components": [
+        {
+          "id": "export-demo-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterIds": [
+              "year",
+              "region",
+              "product"
+            ],
+            "identity": {
+              "title": "父子表格与完整 Excel 导出（合成数据）",
+              "description": {
+                "text": "无需展开即可导出两个工作表。清空地区范围后：父表4行、子表17行；选择上海后：父表1行、子表1行。",
+                "presentation": "inline"
+              }
+            }
+          }
+        },
         {
           "id": "region-office-table",
           "type": "table",
