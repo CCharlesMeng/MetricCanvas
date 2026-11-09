@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+按需组合查询分页允许可空字段排序，补列和完整导出沿用选页成员返回的顺序及空值位置，不再要求排序字段声明 `nullable:false`。Schema 字段净增0；关联键、窗口和准确总数校验保持。见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?nulls=first` 与 `?nulls=last`。
+
 6.106：详情动作 `openDetail.title` 支持固定文字和多个当前行字段按 `parts` 顺序拼接，旧 `titleField` 保持兼容且与新字段互斥。见[详情组合标题](docs/page-metadata/components/table.md#detail-composed-title)，合成入口 `/pages/partner-health-interactions` 同时展示前端得分排序和堆叠合计。Schema 净增一个可选字段，不新增排序或图表开关。
 
 6.105：只读子表可省略 rowKey，按返回顺序保留重复记录；查询子表须沿用 order_by_field/type 显式声明默认排序，父表行键仍必需，显式子表行键继续严格校验。完整导出保留每条记录及父关联，无新增 Schema 字段。见[父子表格](docs/page-metadata/components/table.md#row-expansion)，合成入口 `/pages/table-child-keyless`。

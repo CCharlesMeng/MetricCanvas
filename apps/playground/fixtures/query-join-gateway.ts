@@ -1,14 +1,14 @@
-import type {EffectiveQuery,Row} from '@metriccanvas/page/internal';
+import {dqeDefaultSort,type EffectiveQuery,type Row} from '@metriccanvas/page/internal';
 import type {DataGateway} from '../../../packages/data-execution/src';
 import {sortTableRows,filterTableRows,localColumnCandidates} from '../../../packages/data-execution/src/runtime';
 
 /** All data is synthetic. The request log demonstrates source windows, not real DQE support. */
-export function createPagedJoinPreview(count=80,supplementKey='ready'){
+export function createPagedJoinPreview(count=80,supplementKey='ready',nulls='none'){
   const calls:EffectiveQuery[]=[];
   function matching(query:EffectiveQuery){
     let rows:Row[]=Array.from({length:count},(_,index)=>({
       'project-id':`P${String(index+1).padStart(6,'0')}`,'project-name':`测试项目${index+1}`,
-      'approval-count':count-index,'project-status':index%2?'已关闭':'进行中','contract-amount':(index+1)*1000
+      'approval-count':count-index,'project-status':index%2?'已关闭':'进行中','contract-amount':nulls!=='none'&&index%11===0?null:(index+1)*1000
     }));
     const field=(name:string)=>Object.entries(query.fieldMappings).find(([,value])=>'queryField' in value&&value.queryField===name)?.[0]??'';
     for(const predicate of [...query.filterValues,...(query.tableFilters??[])]){
@@ -18,7 +18,8 @@ export function createPagedJoinPreview(count=80,supplementKey='ready'){
         ...(predicate.to===undefined?[]:[{field:field(predicate.metric),op:'lte' as const,value:predicate.to}])
       ]);
     }
-    return sortTableRows(rows,(query.sort??[]).map(rule=>({field:field(rule.queryField),direction:rule.direction})));
+    const sort=(query.sort??dqeDefaultSort(query.body.dsl_list[0])).map(rule=>({field:field(rule.queryField),direction:rule.direction}));
+    return previewSort(rows,sort,nulls);
   }
   const dataGateway:DataGateway={
     async fetchData(query){
@@ -32,6 +33,13 @@ export function createPagedJoinPreview(count=80,supplementKey='ready'){
     async fetchColumnCandidates(request){return localColumnCandidates(matching(request.query),request.field,{pageIndex:0,pageSize:request.limit,sort:[],predicates:[]},request.search,request.offset,request.limit);}
   };
   return {dataGateway,calls};
+}
+
+/** Simulate a backend whose null placement is independent of the local sorter. */
+function previewSort(rows:Row[],sort:Parameters<typeof sortTableRows>[1],nulls:string):Row[]{
+  const ordered=sortTableRows(rows,sort),field=sort[0]?.field;
+  if(nulls!=='first'||!field)return ordered;
+  return [...ordered.filter(row=>row[field]===null),...ordered.filter(row=>row[field]!==null)];
 }
 
 /** Faults belong to the synthetic page gateway, never to product execution. */

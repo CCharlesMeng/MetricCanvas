@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "多查询按需分页",
-    "description": "80个合成项目，一键一行，支持按页补列和补充来源空关联编号告警；后操作查询源覆盖其他源的表格排序与过滤。"
+    "description": "80个合成项目，一键一行，支持按页补列和补充来源空关联编号告警；nulls=first/last演示可空合同金额沿用后端顺序；后操作查询源覆盖其他源的表格排序与过滤。"
   },
   "dataSources": {
     "project-approvals": {
@@ -77,7 +77,7 @@
           "type": "number",
           "role": "measure",
           "label": "合同金额",
-          "nullable": false,
+          "nullable": true,
           "queryField": "合同金额"
         }
       },

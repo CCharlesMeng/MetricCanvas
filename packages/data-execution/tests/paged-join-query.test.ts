@@ -21,13 +21,12 @@ async function read(page:Page,gateway:DataGateway,patch:Partial<TableQueryView>=
 }
 function rows(snapshot:DataSnapshot){if(snapshot.status!=='ready')throw Error(JSON.stringify(snapshot));return snapshot.rows;}
 describe('query-paged join',()=>{
-  it('preflights the selected source default sort when a filter has no explicit table sort',async()=>{
+  it('rejects an unmapped source default sort when a filter has no explicit table sort',async()=>{
     const page=parsed(),member=page.dataSources['project-information'];
     if(member.source.type!=='query')throw Error('query');
-    member.fields['contract-amount'].nullable=true;
-    member.source.query.body!.dsl_list[0].order={order_by_field:'合同金额',type:'asc'};
+    member.source.query.body!.dsl_list[0].order={order_by_field:'未声明字段',type:'asc'};
     const preview=createPagedJoinPreview();
-    expect(await read(page,preview.dataGateway,{sort:[],predicates:[{field:'project-status',op:'in',values:['已关闭']}]})).toMatchObject({status:'error',error:{code:'DQE_QUERY_REJECTED'}});
+    expect(await read(page,preview.dataGateway,{sort:[],predicates:[{field:'project-status',op:'in',values:['已关闭']}]})).toMatchObject({status:'error',error:{code:'DQE_QUERY_REJECTED',message:'排序字段缺少结果字段映射，暂不支持查询分页'}});
     expect(preview.calls).toHaveLength(0);
   });
   it('encodes limit, offset, sort and page keys at the native DQE request boundary',async()=>{

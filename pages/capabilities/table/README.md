@@ -464,6 +464,10 @@
 
 同一完整页面 `/pages/paged-join-on-demand?supplementKey=empty` 注入第11条空关联编号：主表仍10行、总数80，显示来源与忽略1条的告警；下一页仍从P000011开始，只有当前页编码参与补列，不启动完整读取。`?supplementKey=all-empty` 显示10条主行且补列为空，告警计数10；`?supplementKey=truncated` 保留截断错误，`?supplementKey=failure` 保留权限错误。去掉参数恢复正常页并清除告警。完整导出按页取得80条并附异常说明，不把缺项文件冒充完整原始结果。数据和故障均来自 query-join-gateway.ts，不证明真实DQE。
 
+### 可空排序字段沿用后端顺序
+
+入口 `/pages/paged-join-on-demand?nulls=first`、`?nulls=last`，启动方式同上。合同金额字段声明 `nullable:true`，合成源将P000001、P000012等每隔11条的金额置空。点击“合同金额”升序或降序，first场景的8条空值始终排前，last场景始终排后；翻页应保持后端顺序、每页10条和总数80，补列不重新排序。完整导出与屏幕使用同一排序视图。去掉参数恢复无空值数据。浏览器回归直接读取本页，执行回归同时覆盖省略nullable、默认查询排序、逐页读取及导出；关联键、准确总数、截断、权限和“为空”筛选的既有限制继续验证。此场景仅证明引擎保留合成后端顺序，不证明真实DQE的稳定排序、计数或空值行为。
+
 ## 父行展开缓存
 
 `/pages/table-row-expansion-cache`（`table-row-expansion-cache.json`）：启动 `pnpm dev:playground` 后直接打开，无参数、无需外部DQE，使用专属内存仿真Gateway。

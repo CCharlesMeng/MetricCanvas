@@ -39,7 +39,7 @@ function queryPagePlan(plan:PagedJoinPlan):PagedJoinPlan{
 function validateQueryPageSort(definition:QueryDataSource,sort:readonly {queryField?:string}[]):void{
   for(const rule of sort){
     const field=Object.values(definition.fields).find(field=>hasQueryFieldMapping(field)&&field.queryField===rule.queryField);
-    if(!field||field.nullable!==false)throw pagedJoinUnavailable('该排序字段的后端空值顺序尚未确认，暂不支持查询分页');
+    if(!field)throw pagedJoinUnavailable('排序字段缺少结果字段映射，暂不支持查询分页');
   }
 }
 
