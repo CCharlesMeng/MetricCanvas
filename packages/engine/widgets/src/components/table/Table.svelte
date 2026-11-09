@@ -1718,7 +1718,6 @@
   }
   /* Constrain the value inside the declared column instead of widening the table. */
   .table-widget tbody td.overflow-text .cell-stack {
-    display: flex;
     width: 100%;
     min-width: 0;
     max-width: 100%;

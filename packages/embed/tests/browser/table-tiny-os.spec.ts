@@ -223,7 +223,8 @@ test('fixed offsets refresh after same-sized data windows redistribute automatic
   const first = widget.locator('th[data-column-field="name"]');
   const second = widget.locator('th[data-column-field="value"]');
   const oldWidth = await first.evaluate(e => e.getBoundingClientRect().width);
-  document.dataSources.records.source.rows.forEach((row: { name: string }) => row.name = '非常长的客户名称用于改变自动列宽分配' + row.name);
+  // Plain text now ellipsizes; numeric content still exercises automatic width redistribution.
+  document.dataSources.records.source.rows.forEach((row: { value: number }) => row.value = 1234567890123456);
   await page.evaluate(document => window.runtime.update({ document }), document);
   await expect.poll(() => first.evaluate(e => e.getBoundingClientRect().width)).not.toBe(oldWidth);
   await expect.poll(async () => {
