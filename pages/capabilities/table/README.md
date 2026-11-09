@@ -55,7 +55,7 @@
 4. 点击第 13 页，显示序号 241—256，共 16 行。页码跳转输入框也可以直接输入 13 并按 Enter。首次深页读取需要扫描有序前缀；本预览仅保留最多 8 份页结果缓存，不提供跨请求事务快照。
 5. 打开 `/pages/decision-opinion-details?sourceFailure=contract`，模拟合同来源失败；整表为空，控制台输出查询诊断，不呈现商务半份结果。表头候选也通过实际来源加载，参与来源失败时如实失败；去掉该参数恢复。单一类型查询不会执行未参与的来源，该行为由回归测试覆盖。
 
-JSON 使用现有 `query` 协议，默认排序来自查询 `order_by_field/type`；初始列头沿现有协议不额外显示默认方向，副标题说明默认顺序。这里没有新增通用 `pagedUnion` 或 `props.defaultSort` 协议；这些继续由[实施计划](../../../docs/plan/2026-10-23-paged-union-table.md)承接。页面 JSON 单独交给其他宿主不会自带此适配器。导出和搜索未开放，本地模拟与浏览器验证不证明真实 DQE 的排序、计数或生产接入能力。
+本页使用 `query` 协议，默认排序来自查询 `order_by_field/type`，初始列头按[查询默认排序规则](../../../docs/page-metadata/components/table.md#查询默认排序的首屏方向)回显方向。通用多来源合并使用已实现的 [`pagedUnion`](../../../docs/page-metadata/data-sources.md#paged-union)，可运行入口见[多来源字段映射与整体排序](#多来源字段映射与整体排序)；表格组件没有 `props.defaultSort` 属性。页面 JSON 单独交给其他集成应用不会自带本页专用适配器。导出和搜索未开放，本地模拟与浏览器验证不证明真实 DQE 的排序、计数或生产接入能力。
 
 ## 跨页导航目标｜销售明细
 

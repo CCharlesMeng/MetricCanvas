@@ -1,8 +1,8 @@
 # 计划总览
 
-更新：2026-10-30。先按下表选择任务；**plan只保留未完成工作**，已完成实施记录和被替代的分稿移到证据或归档。这里的完成状态区分方案、本仓实现、本地验收与真实集成，不按文档日期或旧勾选推断生产完成。
+更新：2026-11-09。先按下表选择任务；**plan只保留未完成工作**，已完成记录和被替代的分稿退出执行入口，必要历史依据使用固定提交链接。这里的完成状态区分方案、本仓实现、本地验收与真实集成，不按文档日期或旧勾选推断生产完成。编写页面优先使用[现行文档导航](../README.md)，计划中的提案不作为字段契约。
 
-## 当前未完成工作
+## 当前执行与接入待办
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
@@ -21,7 +21,8 @@
 | 表格列条件显隐 | 本仓实现与本地验收完成；Git交付、真实接入另验 | [主计划](2026-10-26-table-column-visibility.md)、[实施与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/table-column-visibility/result.md)：Schema 6.62，统一列投影/会话调和与 table 职责目录，3091 测试、Chrome及冻结导出通过；历史大文件和超限债务单列 |
 | Playground 目录与数据联动改进 | P0–P5 首轮实施及本地关键链路验收完成；下载回执等专项保留；Git 交付按授权跳过 CI | [整体改进计划](2026-10-24-playground-information-architecture.md)、[实施结果](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/playground-information-architecture/result.md)：19 类组件目录、六阶段数据主线、21 个场景、当前文档试改；旧页面地址保留 |
 | MC 内容包完整性与 Schema 同步构建 | MC 补全已交付；Relay 实施待验 | [接续交接](2026-10-24-layout-standards/relay-delivery-handoff.md) → [接入实施任务书](2026-10-24-layout-standards/relay-integration-execution.md)；[完整性主计划](2026-10-24-layout-standards/mc-content-completeness-plan.md)：当前包与配套公共源码已复验，完整 authoring 分发回读修复随本轮交付，Git/CI 以交付回执为准；Relay 通道、权限及部署另验 |
-| 表格默认排序与决策意见明细合并分页 | 6.61 pagedUnion、整体默认排序与本地验收完成；真实接入待验 | [实施主计划](2026-10-23-paged-union-table.md)、[页面入口](../../pages/capabilities/table/README.md#决策意见明细)、[合成样例](paged-union-table/example-input.json)：现行实现见 [验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/paged-union/acceptance.md)；整体默认排序归合并源，导出隔离超时用例复验通过，真实 DQE/Relay 另验 |
+| 多来源整体排序与分页接入 | pagedUnion 已实现；真实 DQE/Relay 待验 | 配置使用[分页合并源](../page-metadata/data-sources.md#paged-union)与[可运行示例](../../pages/capabilities/table/README.md#多来源字段映射与整体排序)；仍需验证真实来源的比较语义、null 位置、稳定有序分页、匹配计数、搜索、候选及权限。早期组件默认排序提案未实现，旧计划退出执行入口 |
+| 表格 TinyVue OS 完整状态验收 | 基础网格已实现；完整状态像素验收未闭合 | [剩余验收范围](2026-10-20-table-tiny-os-style-audit.md)：官方日期日历、枚举面板及 hover/focus/disabled 须在同环境逐项对照；基础网格截图不能代替全部控件状态 |
 | DQE object 查询 | 本仓实现及本地验收完成，真实接入待验 | [实施计划](2026-10-23-dqe-object-query.md)：对象字段、页面交互、完整结果、关联及 local-authoring 已完成；[本地验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/dqe-object-query/result.md)，真实 DQE 分页/排序/候选另验 |
 | Report AI 总结重启 | 本仓实现与本地验收完成，真实云宝接入待验 | [主计划](2026-10-22-report-ai-summary.md)：双模式、区域范围、应用会话缓存、单文件云宝 mock；真实内网接入另验 |
 | TypeScript / Python 圈复杂度治理 | 平均<5已本地验收，最新main上六文件关闭15个超限；TS/JS115及Python63项存量保留，交付及远端CI以最终SHA回执为准 | [2026-11-04审核与验收](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-11-04-audit/README.md)、[交付回执与剩余函数](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/code-complexity/2026-11-04-audit/delivery/README.md)、[规则与门禁](../agents/code-complexity.md)；历史259条对照保留于旧记录 |
@@ -69,6 +70,9 @@
 
 ## 历史分稿与本次整理
 
+- IOC 选择控件、搭建画布 C、Dashboard 期间筛选与表格 TinyVue OS 的历史过程件已退出 `plan/`；现行说明分别见[筛选](../page-metadata/filters.md)、[页面搭建](../page-metadata/sections-and-layout.md#页面搭建中的移动与删除)、[表格外观](../page-metadata/components/table.md#渲染外观与变体)。真实服务接入仍按对应待办验收。
+- 必要历史记录使用清理前固定版本：[选择控件](https://github.com/CCharlesMeng/MetricCanvas/tree/5dba4d40a0474f47bdf55cb2d0998bfbdb86ae2e/docs/plan/ioc-header-selection)、[搭建画布 C](https://github.com/CCharlesMeng/MetricCanvas/tree/5dba4d40a0474f47bdf55cb2d0998bfbdb86ae2e/docs/plan/platform-canvas-c)、[期间筛选](https://github.com/CCharlesMeng/MetricCanvas/tree/5dba4d40a0474f47bdf55cb2d0998bfbdb86ae2e/docs/plan/dashboard-period-filter)、[表格视觉验收](https://github.com/CCharlesMeng/MetricCanvas/tree/5dba4d40a0474f47bdf55cb2d0998bfbdb86ae2e/docs/plan/table-tiny-os)。
+- 历史报告还记录了选择控件的主题 token 字面量债务，以及选择控件、搭建画布 C 因缺少明确命名规范而未完成的 C1 规范检视。这些结论保留在固定记录中，后续按当前源码复核；移出过程件不代表这些问题已关闭。
 - [本次六份方案的历史快照](../archive/report-dashboard-design-2026-10-12/README.md)：已被统一主计划替代，不再作为执行入口。
 - [旧IOC阶段计划](../archive/ioc-planning-2026-09/README.md)：旧五页推进顺序被四页主计划替代，未完成缺口仍保留。
 - [整理记录与移动表](../archive/plan-cleanup-2026-10-12/README.md)：可追溯原路径；归档不代表相关产品能力全部完成。

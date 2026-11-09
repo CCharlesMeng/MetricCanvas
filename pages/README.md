@@ -499,7 +499,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ### IOC页头选择控件
 
-`/pages/ioc-header-selection`：6.43协议，沿用对象selection；本地合成候选与查询夹具。区域树单选替换稳定代码，行业父子独立，业务仅叶子，多标签固定单行横向滚动，模型关闭搜索，存量路径树父选后代。支持名称/代码/路径搜索；搜索与展开不改URL/查询。证据见`docs/plan/ioc-header-selection/`；真实DQE/Relay未运行。
+`/pages/ioc-header-selection`：6.43协议，沿用对象selection；本地合成候选与查询夹具。区域树单选替换稳定代码，行业父子独立，业务仅叶子，多标签固定单行横向滚动，模型关闭搜索，存量路径树父选后代。支持名称/代码/路径搜索；搜索与展开不改URL/查询。协议见[筛选说明](../docs/page-metadata/filters.md)，历史验收见[固定版本](https://github.com/CCharlesMeng/MetricCanvas/tree/5dba4d40a0474f47bdf55cb2d0998bfbdb86ae2e/docs/plan/ioc-header-selection)；真实DQE/Relay未运行。
 
 ## 行内子表格（6.44）
 - `/pages/table-row-expansion-inline`：内联合成数据，无需DQE。第一张父表展开北辰和远山，子表默认无标题/搜索/排序控件，白底并复用现有页码、每页条数与跳页。北辰翻到第2页显示C01-011，远山保持C02-001；折叠重开回第1页。父表第2页的海川为空明细。第二张表显式启用标题、搜索和列排序，搜索C01-025命中未加载页；single模式展开另一父行时关闭前一行。
