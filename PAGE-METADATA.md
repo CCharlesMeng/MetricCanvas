@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.101：时间筛选 default.finalizationName 按名称查询日级定稿日期，引擎每页独立查询并初始化日/月/季/年/近一年，失败回退当前日期。下钻保留已应用窗口，导航输入不跳过定稿查询。见[定稿日期默认值](docs/page-metadata/filters.md#定稿日期默认值6101)，合成入口 `/pages/finalization-default-time`。
+
 IOC Header 行内布局取消固定标题列，普通与紧凑页头均自然换行，主体不产生内部滚动条；所有屏幕页头滚出原位置后吸顶，静态导出不吸顶。无需新增 Schema 字段。见[唯一页头](docs/page-metadata/page.md#唯一页头641)，合成验收入口 `/pages/ioc-header-flow-sticky` 与 `/pages/ioc-header-section-sticky`。
 
 表格列头弹层移除“清除筛选”按钮；取消勾选或清空日期/数值范围即可清空该列条件，无需新增配置。

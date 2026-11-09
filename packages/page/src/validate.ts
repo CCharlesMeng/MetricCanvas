@@ -615,7 +615,7 @@ function filterDeclarationErrors(
       const issue = validateTimePointValue(filter.min, filter.granularity);
       if (issue) errors.push(schemaError(`${path}/min`, issue));
     }
-    if (filter.default !== undefined) {
+    if (typeof filter.default === 'string') {
       const issue = validateTimePointValue(filter.default, filter.granularity, filter.min, filter.disableFuture, undefined, evaluation);
       if (issue) errors.push(schemaError(`${path}/default`, issue));
     }

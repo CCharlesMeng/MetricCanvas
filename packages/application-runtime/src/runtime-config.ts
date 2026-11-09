@@ -20,6 +20,7 @@ export interface InjectedRuntimeConfig {
   workspaceId: string;
   /** 列候选完整读取上限，默认1000；超过默认值须显式配置。 */
   columnCandidatesMaxRows?: number;
+  finalizationSource?: import('@metriccanvas/engine').FinalizationSourceDefinition;
 }
 
 const DQE_REQUIRED_FIELDS = [
@@ -71,8 +72,8 @@ export function readRuntimeConfig(source: RuntimeConfigSource = globalConfigSour
     ...(cftk ? { cftk } : {}) };
 }
 
-function candidateRuntimeConfig(source: Partial<InjectedRuntimeConfig>): Pick<InjectedRuntimeConfig, 'columnCandidatesMaxRows'> {
-  return source.columnCandidatesMaxRows === undefined ? {} : { columnCandidatesMaxRows: source.columnCandidatesMaxRows };
+function candidateRuntimeConfig(source: Partial<InjectedRuntimeConfig>): Pick<InjectedRuntimeConfig, 'columnCandidatesMaxRows'|'finalizationSource'> {
+  return {...(source.columnCandidatesMaxRows === undefined ? {} : {columnCandidatesMaxRows:source.columnCandidatesMaxRows}), ...(source.finalizationSource === undefined ? {} : {finalizationSource:source.finalizationSource})};
 }
 
 /** Page asset reads do not require a DQE endpoint. */
@@ -136,8 +137,9 @@ export function createInjectedDqeGateway(
   fetchImpl: typeof fetch = fetch,
   devDetail?: DqeDevDetail,
   source: RuntimeConfigSource = globalConfigSource
-): DataGateway & DimensionValuesGateway {
+): import('@metriccanvas/engine').RuntimeDataGateway & DimensionValuesGateway {
   return createDqeGateway({
+    get finalizationSource() { return source()?.finalizationSource; },
     get columnCandidates() { return { mode: 'fullQuery' as const, maxRows: source()?.columnCandidatesMaxRows }; },
     devDetail,
     fetchImpl: (async (_input, init) => {

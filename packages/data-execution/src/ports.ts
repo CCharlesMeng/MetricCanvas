@@ -93,7 +93,9 @@ export interface DimensionValuesGateway {
 /**
  * 应用壳注入统一运行时的数据网关形状:主查询执行必备,候选值能力可选。
  */
-export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway & FilterCandidatesGateway>;
+export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway & FilterCandidatesGateway> & {
+  finalizationSource?: import('./finalization').FinalizationSourceDefinition;
+};
 
 /** Optional complete filter candidates, owned by the injected Adapter. No HTTP or identity secrets. */
 export interface FilterCandidate extends DimensionValueCandidate {

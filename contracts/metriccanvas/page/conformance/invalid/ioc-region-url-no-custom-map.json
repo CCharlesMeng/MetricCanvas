@@ -220,7 +220,17 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/filters/0/default",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
       "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be object"
     },
     {
       "type": "SCHEMA_ERROR",
@@ -276,6 +286,16 @@
       "type": "SCHEMA_ERROR",
       "path": "/filters/0/default",
       "message": "must be string"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/default",
+      "message": "must match a schema in anyOf"
     },
     {
       "type": "SCHEMA_ERROR",

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.98",
+  "schemaVersion": "6.101",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.period"
@@ -333,7 +333,10 @@
         "references/page-metadata/examples/authoring-evaluation-context.json",
         "references/page-metadata/examples/key-office-priority-demo.json",
         "references/page-metadata/examples/key-office-priority-target.json",
-        "references/page-metadata/examples/filter-source-candidates.json"
+        "references/page-metadata/examples/filter-source-candidates.json",
+        "references/page-metadata/examples/finalization-default-time.json",
+        "references/page-metadata/examples/finalization-default-time-detail.json",
+        "references/page-metadata/examples/finalization-date-defaults.json"
       ]
     }
   ],
@@ -354,7 +357,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.98",
+        "$id": "https://metriccanvas/page/v6.101",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -413,41 +416,6 @@
           "visible": "#/definitions/timeRangeFilter/properties/visible",
           "visibleWhen": "#/definitions/timeRangeFilter/properties/visibleWhen",
           "default": "#/definitions/timeRangeFilter/properties/default"
-        },
-        "additionalProperties": false
-      }
-    },
-    {
-      "pointer": "#/definitions/timePointFilter",
-      "path": "@timePointFilter",
-      "module": "filters",
-      "required": "类型/分支",
-      "enums": {},
-      "facts": {
-        "type": "object",
-        "required": [
-          "id",
-          "type",
-          "granularity"
-        ],
-        "properties": {
-          "hint": "#/definitions/timePointFilter/properties/hint",
-          "clearOnChangeOf": "#/definitions/timePointFilter/properties/clearOnChangeOf",
-          "id": "#/definitions/timePointFilter/properties/id",
-          "urlParams": "#/definitions/timePointFilter/properties/urlParams",
-          "type": "#/definitions/timePointFilter/properties/type",
-          "label": "#/definitions/timePointFilter/properties/label",
-          "visible": "#/definitions/timePointFilter/properties/visible",
-          "min": "#/definitions/timePointFilter/properties/min",
-          "max": "#/definitions/timePointFilter/properties/max",
-          "blockedRanges": "#/definitions/timePointFilter/properties/blockedRanges",
-          "availability": "#/definitions/timePointFilter/properties/availability",
-          "visibleWhen": "#/definitions/timePointFilter/properties/visibleWhen",
-          "granularity": "#/definitions/timePointFilter/properties/granularity",
-          "disableFuture": "#/definitions/timePointFilter/properties/disableFuture",
-          "required": "#/definitions/timePointFilter/properties/required",
-          "default": "#/definitions/timePointFilter/properties/default",
-          "initialParam": "#/definitions/timePointFilter/properties/initialParam"
         },
         "additionalProperties": false
       }

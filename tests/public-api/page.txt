@@ -113,6 +113,7 @@ FilterHierarchyLevel
 FilterInteractionExtension
 FilterTextValueReference
 FilterTextValueUsage
+FinalizationDefault
 GaugeComponent
 GaugeProps
 GrandTotalOperator
@@ -325,6 +326,7 @@ barForecastBoundaryIssues
 bindingOwnedDqeBody
 bindingQueryField
 bindingQueryFields
+calendarDateClock
 calendarEndpoint
 candidateDependencies
 canonicalizeJson
@@ -393,6 +395,8 @@ filterOverrideTargets
 filterQueryResultRows
 filterTextValueErrors
 filterURLKeys
+finalizationDate
+finalizationName
 flattenPageComponents
 formatPeriod
 formatPeriodFact
@@ -426,6 +430,7 @@ isDataComponent
 isDqeQueryDefinition
 isExtensibleChart
 isFilterTextValueReference
+isFinalizationDefault
 isFirstQueryWindow
 isFoldingOperator
 isInlineDataSource
@@ -447,6 +452,7 @@ isUnrestrictedIocRegion
 isValueFormatPreset
 isoWeekLabel
 isoWeekRange
+localCalendarDate
 mainColumnField
 mapIocHeader
 matchesFieldValue

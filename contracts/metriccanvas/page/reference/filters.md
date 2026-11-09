@@ -277,8 +277,37 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。
 
+## 定稿日期默认值（6.101）
 
-页面协议 6.98。结构真源为本册[schema.json](schema.json)，SHA256 `e4a41d115dac6fba173b2e4c87363f7392be34412ac1629689e90a6b9951e105`。字段表自动生成；可选不等于有默认值。
+页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。名称是非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.101，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
+
+```json
+{
+  "id": "statistics-period",
+  "type": "timeRange",
+  "display": "period",
+  "precision": "month",
+  "required": true,
+  "default": {"mode": "month", "finalizationName": "经营数据"}
+}
+```
+
+自然期间的 mode 可为 year、quarter、month、last12Months；与固定 value 互斥。timePoint 的日/月精度及普通 timeRange 使用 `default:{"finalizationName":"经营数据"}`，按 granularity/precision 初始化为单日或单月。default 与 initialParam、availability.initial 继续互斥；本能力不隐含 availability.max，上限、禁选范围及未来限制独立生效。
+
+每个页面实例直接读取 Schema，并通过已有数据网关执行一次定稿 DQE 查询；有导航输入时仍执行。返回整组数据后按名称选取日期，同页所有声明共用结果，不逐指标重复查询。查询无需绑定页面时间，避免初始化循环。无配置、超时、上游失败、名称缺失、非法日期、同名不同日期、结果不完整均使用本次实例初始化时的当前日期；相同重复记录可去重。日期必须为真实 YYYY-MM-DD 公历日期，不按 UTC 时间戳换日。结果上限为少于10000行，达到上限视为完整性无法保证。
+
+日期 2026-10-18 映射为：日 2026-10-18、月 2026-10、季度 2026-Q4、年 2026。年季月保留完整自然期间，不裁剪到18日。配置定稿名称的近一年包含基准日期所在月，得到2025-11至2026-10的十二个完整月份。未配置定稿名称的旧近一年仍排除当前月。
+
+引擎先完成默认日期解析，再沿用既有导航/URL输入与有效执行快照的应用流程；这些输入不决定是否查询定稿。用户后续修改筛选、切Tab或刷新指标时不重查定稿，也不被迟到结果覆盖。选择近一年使用当前时间上下文的月份，精确起止与锚点保存到已应用状态，查询、导出和恢复不重新按系统时钟计算。实际时间仍供给既有未来限制。定稿日期越界时尝试当前日期；当前日期也不满足显式约束时报告初始化错误，不截断成别的日期。
+
+所有相关指标通过已有 filterBindings 消费同一主时间筛选；趋势、累计、同比和环比继续使用自己的查询时间规则，不自动写入 periodComparison.fact。IOC Header 只引用筛选器。下钻传递用户当前已应用的期间；跨页传递近一年时显式绑定 value、from、to 三个分量，目标恢复同一窗口，不重新计算。独立打开下钻页时使用目标页自身的 Schema 默认值。
+
+缓存限于单页实例：并发消费者共用一次查询，刷新数据复用当前期间，完整重载重新查询；页面销毁与权限会话更换取消在途请求并清理实例状态，不做跨页面TTL或后台更新。缺少条件证明的预取initial不能复用；可信执行快照仍按现有流程应用。一次性服务端取数与浏览器使用相同的定稿查询和日期适配模块。
+
+合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
+
+
+页面协议 6.101。结构真源为本册[schema.json](schema.json)，SHA256 `a91ae519668e0836803bd845c2ca071e3bdf7a871de98d0be7c28b64a2ca0c96`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1709,6 +1738,63 @@ Schema位置：`#/definitions/periodSelection/anyOf/1/properties/mode`。
 |---|---|
 | "last12Months" | 用于选择@periodSelection · anyOf[1].mode分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f32"></a>
+
+### `@periodSelection · anyOf[2]`
+
+Schema位置：`#/definitions/periodSelection/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode","finalizationName"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f322f70726f706572746965732f6d6f6465"></a>
+
+### `@periodSelection · anyOf[2].mode`
+
+Schema位置：`#/definitions/periodSelection/anyOf/2/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["year","quarter","month","last12Months"] | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "year" | 年粒度。 |
+| "quarter" | 季度粒度。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "last12Months" | 定稿日期所在月及之前共十二个完整月，保留已应用窗口。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f322f70726f706572746965732f66696e616c697a6174696f6e4e616d65"></a>
+
+### `@periodSelection · anyOf[2].finalizationName`
+
+Schema位置：`#/definitions/periodSelection/anyOf/2/properties/finalizationName`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 按名称查询默认日期；失败用当前日期，用户可改。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64656661756c742f616e794f662f34"></a>
+
+### `@timeRangeFilter.default · anyOf[4]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/default/anyOf/4`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["finalizationName"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64656661756c742f616e794f662f342f70726f706572746965732f66696e616c697a6174696f6e4e616d65"></a>
+
+### `@timeRangeFilter.default · anyOf[4].finalizationName`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/default/anyOf/4/properties/finalizationName`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 按名称查询默认日期；失败用当前日期，用户可改。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c746572"></a>
 
 ### `@timePointFilter`
@@ -2040,7 +2126,37 @@ Schema位置：`#/definitions/timePointFilter/properties/default`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 作者声明的初始默认；不是运行时随状态变化重新应用的值。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 作者声明的初始默认；不是运行时随状态变化重新应用的值。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f64656661756c742f616e794f662f30"></a>
+
+### `@timePointFilter.default · anyOf[0]`
+
+Schema位置：`#/definitions/timePointFilter/properties/default/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f64656661756c742f616e794f662f31"></a>
+
+### `@timePointFilter.default · anyOf[1]`
+
+Schema位置：`#/definitions/timePointFilter/properties/default/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["finalizationName"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f64656661756c742f616e794f662f312f70726f706572746965732f66696e616c697a6174696f6e4e616d65"></a>
+
+### `@timePointFilter.default · anyOf[1].finalizationName`
+
+Schema位置：`#/definitions/timePointFilter/properties/default/anyOf/1/properties/finalizationName`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 按名称查询默认日期；失败用当前日期，用户可改。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f696e697469616c506172616d"></a>
 
@@ -2966,6 +3082,9 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [key-office-priority-demo](examples/key-office-priority-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [key-office-priority-target](examples/key-office-priority-target.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-source-candidates](examples/filter-source-candidates.json)：完整合法页面；查询仅为静态契约证据。
+- [finalization-default-time](examples/finalization-default-time.json)：完整合法页面；查询仅为静态契约证据。
+- [finalization-default-time-detail](examples/finalization-default-time-detail.json)：完整合法页面；查询仅为静态契约证据。
+- [finalization-date-defaults](examples/finalization-date-defaults.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -2983,6 +3102,8 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - 源码/验证定位：`packages/page/src/time-extension-validation.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/filter-url.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/source-candidates.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/finalization-default.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/data-execution/src/finalization.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
@@ -2997,3 +3118,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `#/definitions/timeRangeFilter/properties/default/anyOf/3`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/filters/0/default`。
 - `#/definitions/periodSelection/anyOf/0`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/filters/0/default`。
 - `#/definitions/periodSelection/anyOf/1`：[合法完整页面](examples/sdt-period-aggregation.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/periodSelection/anyOf/2`：[合法完整页面](examples/finalization-default-time.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/4`：[合法完整页面](examples/finalization-date-defaults.json)，JSON Pointer `#/filters/2/default`。
+- `#/definitions/timePointFilter/properties/default/anyOf/0`：[合法完整页面](examples/ioc-header-incentives.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/timePointFilter/properties/default/anyOf/1`：[合法完整页面](examples/finalization-date-defaults.json)，JSON Pointer `#/filters/0/default`。

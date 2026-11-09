@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createFinalizationPreview} from '../../../../../fixtures/finalization';
   import {createPeriodAggregationPreview} from '../../../../../fixtures/period-aggregation';
   import {createIocHeaderControlsPreview} from "../../../../../fixtures/ioc-header-controls";
   import {createSourceCandidatesPreview} from '../../../../../fixtures/source-candidates';
@@ -117,6 +118,7 @@
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
     const state = page.url.searchParams.get('state') ?? 'ready';
+    if(input==='finalization')return createFinalizationPreview(state).dataGateway;
     if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
     if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
     if(input==='source-candidates')return createSourceCandidatesPreview(state).dataGateway;

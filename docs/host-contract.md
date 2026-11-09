@@ -280,3 +280,25 @@ const handle = mount('#dashboard', { document: pageDocument, dataGateway });
 `operationMap` 为集成应用已存在的桥接对象，不是引擎新增的全局变量。Adapter 接收标准 `FilterCandidatesRequest`，只路由 `filterId:"region"` 及 `geo-pc-code` / `region-dept-code` / `rep-office-code`；返回带 `level`、中文业务 `value`、显示 `label` 和 `parent` 的完整候选树，或现有 denied/unconfigured/unavailable 状态。请求取消须传到上游；成功回执在提交前再次核对取消。“全球”节点及父引用由封装统一规范，其他值不从 label 猜测。其他筛选及业务查询继续使用原数据网关。
 
 页面只写 `{ "id":"region-control", "type":"regionFilter" }`，不再复制 Region 定义；业务 `filterBindings.region` 仍保留原字段映射。现有 `initialSearch`、URL 和选择事件接线不变，不新增实时同步或默认全球选择。尚未安装 Adapter 的页面沿用既有候选能力缺失诊断；封装不会制造候选或跨权限回退。合成验收 `/pages/ioc-header-controls`，真实接口须在集成应用验证。
+
+## 定稿日期查询
+
+页面配置 `filters[].default.finalizationName` 后，引擎通过数据网关执行固定的统一截止表查询；查询定义只配置一次，每页实例独立执行一次。集成应用提供经确认的 DQE 请求体及外部字段映射，端点与身份沿用已有网关。
+
+```ts
+const dataGateway = createDqeGateway({
+  endpoint,
+  finalizationSource: {
+    body: verifiedFinalizationQueryBody,
+    nameField: '定稿名称',
+    dateField: '截止日期',
+    timeoutMs: 5000
+  }
+});
+```
+
+`body` 是标准 `{dsl_list:[固定查询项]}`，应返回完整记录组，不能依赖待初始化的页面筛选或带分页窗口。字段名以实际结果为准；网关映射后的name为字符串、date为YYYY-MM-DD。引擎查询独立超时默认5秒，超时会取消这次请求，保留页面的当前日期回退。自定义 RuntimeDataGateway 可以直接提供同名 `finalizationSource` 配置，继续实现 fetchData；无需新增查询方法。embed 通过既有 dataGateway 输入接入。
+
+Platform 的 `readConfig()` 与独立入口运行配置可提供同形的 finalizationSource；createInjectedDqeGateway 在实例初始化读取定义，凭据仍在每次HTTP请求时现读。身份切换沿既有会话失效流程重新初始化。Node取数入口支持 DqeGatewayConfig.finalizationSource；CLI由部署环境的 `METRICCANVAS_FINALIZATION_SOURCE` JSON 提供，不从页面读取端点或凭据。
+
+引擎先查询并解析Schema默认值，再应用既有导航输入或有效执行快照。即使传入明确期间也不跳过定稿查询。无配置、查询失败或查不到名称均回退当前日期，正常指标查询继续按自己的权限执行。完整声明、期间适配与下钻窗口见[定稿日期默认值](page-metadata/filters.md#定稿日期默认值6101)。

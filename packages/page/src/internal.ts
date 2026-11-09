@@ -112,3 +112,5 @@ export { normalizeTableSelectView, normalizeTableSelectValues } from './table/se
 export { tableHeaderParamReferences, tableHeaderInputErrors } from './table/header-params';
 
 export {iocHeaderFilterIds,standardIocRegionFilter} from './ioc-header-controls';
+
+export * from './finalization-default';

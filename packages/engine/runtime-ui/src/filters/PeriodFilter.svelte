@@ -4,14 +4,15 @@
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
   import { timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
-  let {label,precision='date',value,readOnly=false,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
+  let {label,precision='date',value,readOnly=false,anchorLast12=false,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;anchorLast12?:boolean;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
   let error=$state('');
   function commit(range:PeriodRange){error=timeAvailabilityIssue({id:'period',type:'timeRange',min,max,blockedRanges:[...blockedRanges]},{type:'timeRange',...range})??'';if(!error)onchange(range);}
   const allModes=[{id:'year',label:'年'},{id:'quarter',label:'季'},{id:'month',label:'月'},{id:'last12Months',label:'近一年'}] as const;
   const modes=$derived(periodModes ? periodModes.map(id=>allModes.find(item=>item.id===id)!) : allModes);
-  const mode=$derived(value?.selection.mode ?? periodModes?.[0] ?? 'month');
+  const mode=$derived(value?.selection?.mode ?? periodModes?.[0] ?? 'month');
   let anchor=$state(untrack(()=>anchorOf(value?.selection)));
   function anchorOf(selection?:AppliedPeriodSelection):string {
+    if (selection?.mode==='last12Months' && selection.anchor) return selection.anchor;
     if (!selection || selection.mode==='last12Months') {const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;}
     if(selection.mode==='month')return selection.value;
     if(selection.mode==='quarter')return `${selection.value.slice(0,4)}-${String((Number(selection.value.slice(6))-1)*3+1).padStart(2,'0')}`;
@@ -30,10 +31,10 @@
     }
   });
   function select(next:PeriodMode) {
-    const selection=next==='last12Months'?{mode:next} as const:{mode:next,value:next==='year'?anchor.slice(0,4):next==='quarter'?`${anchor.slice(0,4)}-Q${Math.ceil(Number(anchor.slice(5,7))/3)}`:anchor};
+    const selection=next==='last12Months'?{mode:next,...(anchorLast12?{anchor}:{})} as const:{mode:next,value:next==='year'?anchor.slice(0,4):next==='quarter'?`${anchor.slice(0,4)}-Q${Math.ceil(Number(anchor.slice(5,7))/3)}`:anchor};
     commit(resolvePeriodSelection(selection,new Date(),precision));
   }
-  const selected=$derived(value?.selection.mode==='last12Months'?undefined:value?.selection.value);
+  const selected=$derived(value?.selection?.mode==='last12Months'?undefined:value?.selection.value);
   const text=$derived(mode==='last12Months'?value?periodRangeLabel(value):DEFAULT_NULL_TEXT:selected?.replace('-Q',' 年 Q')+(mode==='year'?' 年':''));
 </script>
 <div class="period-filter" data-period-filter>

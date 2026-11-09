@@ -112,7 +112,8 @@ export function urlInputErrors(page: Page): TypedError[] {
 export function declaredNavigationTargets(page: Page): NavigationTarget[] {
   const result: NavigationTarget[]=[];
   walkPageComponents(page,component=>{
-    if(component.type==='text')result.push(...(Array.isArray(component.props?.links)?component.props.links:[]));
+    if(component.type==='button' && 'navigate' in component.props.action)result.push(component.props.action.navigate);
+    else if(component.type==='text')result.push(...(Array.isArray(component.props?.links)?component.props.links:[]));
     else if(component.props&&'actions' in component.props)for(const action of Array.isArray(component.props.actions)?component.props.actions:[])if('navigate' in action)result.push(action.navigate);
     if(component.type==='table')visit(component.props?.columns??[]);
   });

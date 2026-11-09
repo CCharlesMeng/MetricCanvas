@@ -1,3 +1,5 @@
+export type PlatformJsonValue = string | number | boolean | null | PlatformJsonValue[] | {[key:string]:PlatformJsonValue};
+
 /** Portable portal contract. No package, framework or build-plugin dependencies. */
 export interface PlatformRuntimeConfig {
   dqeEndpoint: string;
@@ -8,6 +10,8 @@ export interface PlatformRuntimeConfig {
   cftk?: string;
   /** 列候选原始结果扫描上限；默认1000，批次默认200。 */
   columnCandidatesMaxRows?: number;
+  /** Fixed query definition consumed by the engine for per-page default dates. */
+  finalizationSource?: {body:{dsl_list:[{[key:string]:PlatformJsonValue}]};nameField:string;dateField:string;timeoutMs?:number};
 }
 export interface PlatformEvent {
   code: 'ready' | 'login-required' | 'session-invalidated';

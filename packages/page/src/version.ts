@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 98;
+const CURRENT_MINOR = 101;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -242,6 +242,7 @@ export const pageCapabilities = {
   'field-selection':{minor:38,description:'静态货币字段选择',usedAt:document=>{const opaque=chartOptionScopes(document);return componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter'),opaque).length>0);}},
   'filter-hint':{minor:37,description:'筛选说明文本',usedAt:document=>filterPaths(document,f=>has(f,'hint'))},
   'ioc-header': { minor:36, description:'页级 IOC 身份、筛选归属与实际首行折叠', usedAt: document => has(record(document), 'iocHeader') ? ['/iocHeader'] : [] },
+  'finalization-default': {minor:101,legacyReadable:false,description:'按定稿名称查询日级日期并初始化时间筛选，失败回退当前日期',usedAt:document => filterPaths(document, filter => has(record(filter.default),'finalizationName')).map(path=>`${path}/default/finalizationName`)},
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
   'chart-local-filter': {
     minor: 29, description: 'Dashboard 图表左上角独立筛选与自定义选项',

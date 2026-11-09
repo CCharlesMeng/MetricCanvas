@@ -1,3 +1,4 @@
+import {createFinalizationPreview} from '../../fixtures/finalization';
 import {createIocHeaderControlsPreview} from '../../fixtures/ioc-header-controls';
 import {createPeriodAggregationPreview} from '../../fixtures/period-aggregation';
 import {createSourceCandidatesPreview} from '../../fixtures/source-candidates';
@@ -48,6 +49,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if (kind === 'finalization') return createFinalizationPreview(state);
   if(kind==='period-aggregation')return createPeriodAggregationPreview(state);
   if(kind==='header-controls')return createIocHeaderControlsPreview();
   if(kind==='source-candidates')return createSourceCandidatesPreview(state);

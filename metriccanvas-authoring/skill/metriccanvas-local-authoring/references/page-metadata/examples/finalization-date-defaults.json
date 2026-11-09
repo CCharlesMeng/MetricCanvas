@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "6.101",
+  "id": "finalization-date-defaults",
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "timepoint-date",
+      "type": "timePoint",
+      "label": "timePoint date",
+      "default": {
+        "finalizationName": "经营数据"
+      },
+      "granularity": "date"
+    },
+    {
+      "id": "timepoint-month",
+      "type": "timePoint",
+      "label": "timePoint month",
+      "default": {
+        "finalizationName": "经营数据"
+      },
+      "granularity": "month"
+    },
+    {
+      "id": "timerange-date",
+      "type": "timeRange",
+      "label": "timeRange date",
+      "default": {
+        "finalizationName": "经营数据"
+      },
+      "precision": "date"
+    },
+    {
+      "id": "timerange-month",
+      "type": "timeRange",
+      "label": "timeRange month",
+      "default": {
+        "finalizationName": "经营数据"
+      },
+      "precision": "month"
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "explanation",
+      "components": [
+        {
+          "id": "note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "日/月单点与普通范围定稿默认值协议夹具。运行需集成应用配置定稿查询；未配置回退当前日期。"
+          }
+        }
+      ]
+    }
+  ]
+}

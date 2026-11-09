@@ -296,3 +296,13 @@
 入口 `/pages/ioc-customer-query-field?customer-category=战略`，完整页面 `ioc-customer-query-field.json` 使用首分区首个 `iocHeader` 组件，复用重点国代合成网关。启动 `pnpm dev:playground` 后直接打开。此回归页故意把客户类型绑定写成旧名 `客户类型`；组件查询规则仍固定传 `客户级别`，表格应显示上海、广州两行，XLSX 完整导出相同。改选卓越显示南京、深圳，清空选择恢复四行；勾选重点国代继续与客户条件共同生效。未认领的普通筛选沿用页面显式字段，不能按显示文案推断客户语义。
 
 客户类型约定标识为 `customer-category`、`customer-type`、`na-type`；规则仅作用于页头认领且已绑定的平面维度筛选，不自动订阅数据源。该页为合成数据，仅证明统一运行时和查询投影，不证明真实 DQE、权限或部署。
+
+## 定稿日期默认期间
+
+入口：`/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`。启动 `pnpm dev:playground` 后直接访问；使用确定性合成网关，不需要 DQE Sim。
+
+页面主时间筛选声明 `default:{mode:"month",finalizationName:"经营数据"}`。合成截止日期为2026-10-18，首次选择10月；明细显示实际查询期间和“定稿查询1次”。修改月份、切换年季或近一年后计数仍为1。近一年包含当前时间上下文所在月，并查询十二个完整月份。点击“查看同期间下钻页”后目标页保留已应用模式及起止；直接打开目标页使用自身定稿默认值。页头使用首section首组件iocHeader。
+
+`?state=error` 模拟请求失败，missing无记录、invalid非法日期、conflict同名不同日期、timeout超时；各入口均回退执行环境当前日期所在月。URL明确传入例如 `?period-filter=month%3A2026-08` 时，定稿查询仍执行一次，再由既有导航流程应用8月。
+
+浏览器自动验收：`pnpm --filter playground exec playwright test tests/finalization-default.browser.ts`。场景仅证明协议与引擎，不证明真实截止表、DQE、Relay或生产权限接入。

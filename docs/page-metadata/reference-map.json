@@ -367,7 +367,10 @@
         "authoring-evaluation-context",
         "key-office-priority-demo",
         "key-office-priority-target",
-        "filter-source-candidates"
+        "filter-source-candidates",
+        "finalization-default-time",
+        "finalization-default-time-detail",
+        "finalization-date-defaults"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -386,7 +389,9 @@
         "packages/page/src/period-facts.ts",
         "packages/page/src/time-extension-validation.ts",
         "packages/page/src/filter-url.ts",
-        "packages/page/src/source-candidates.ts"
+        "packages/page/src/source-candidates.ts",
+        "packages/page/src/finalization-default.ts",
+        "packages/data-execution/src/finalization.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -1867,7 +1872,8 @@
     "#/definitions/dimensionFilter/properties/candidates/properties/valueField": "稳定值引用的已声明标量输出字段 ID；完整读取后去重。",
     "#/definitions/dimensionFilter/properties/candidates/properties/labelField": "可选显示名输出字段 ID，省略时显示稳定值。",
     "#/definitions/dimensionFilter/properties/candidates/properties/parentField": "tree 必填的父节点值输出字段 ID；根节点为空，父子节点独立选择。",
-    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll": "6.98：true 展示全选，默认不展示；静态及动态候选全选后该列不限，包含空值，旧 allBehavior 兼容保留。"
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSelectAll": "6.98：true 展示全选，默认不展示；静态及动态候选全选后该列不限，包含空值，旧 allBehavior 兼容保留。",
+    "finalizationName": "按名称查询默认日期；失败用当前日期，用户可改。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2227,7 +2233,11 @@
     "#/properties/schemaVersion=\"6.96\"": "IOC 页头 back:\"auto\" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。",
     "avg": "有效月值的算术平均，零参与、空值与缺月不补零",
     "#/properties/schemaVersion=\"6.97\"": "近一年业务分组及逐字段求和/平均",
-    "#/properties/schemaVersion=\"6.98\"": "显式列头全选入口；静态和动态候选全选后该列不限。"
+    "#/properties/schemaVersion=\"6.98\"": "显式列头全选入口；静态和动态候选全选后该列不限。",
+    "#/properties/schemaVersion=\"6.99\"": "同主版本读取兼容；具体能力由各自引入版本及声明共同约束。",
+    "#/properties/schemaVersion=\"6.100\"": "同主版本读取兼容；具体能力由各自引入版本及声明共同约束。",
+    "#/properties/schemaVersion=\"6.101\"": "定稿名称默认日期；每页引擎查询、日级适配及失败回退当前日期。",
+    "#/definitions/periodSelection/anyOf/2/properties/mode=\"last12Months\"": "定稿日期所在月及之前共十二个完整月，保留已应用窗口。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2614,8 +2624,7 @@
       "module": "filters",
       "title": "Dashboard 期间选择（6.27）",
       "roots": [
-        "#/definitions/timeRangeFilter",
-        "#/definitions/timePointFilter"
+        "#/definitions/timeRangeFilter"
       ],
       "headings": [
         "Dashboard 期间选择（6.27）"
@@ -3049,6 +3058,17 @@
       "headings": [
         "列头全选入口（6.98）"
       ]
+    },
+    "filters.finalization": {
+      "module": "filters",
+      "title": "定稿名称与页面默认日期",
+      "roots": [
+        "#/definitions/periodSelection/anyOf/2"
+      ],
+      "headings": [
+        "定稿日期默认值（6.101）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3133,7 +3153,8 @@
       "布尔筛选覆盖（6.84）",
       "布尔候选依赖与条件启用（6.75）",
       "期间筛选驱动同比环比（6.77）",
-      "页面数据源候选（6.90）"
+      "页面数据源候选（6.90）",
+      "定稿日期默认值（6.101）"
     ],
     "sections-and-layout.md": [
       "Report 与 Dashboard 标题",

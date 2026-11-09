@@ -3,6 +3,7 @@
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>
 <script lang="ts">
+  import {finalizationName} from '@metriccanvas/page/internal';
   import {getContext} from 'svelte';
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
   const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
@@ -144,7 +145,7 @@
     {#if declaration.type === 'timeRange' && declaration.display === 'modes'}
       <ModeTimeRangeFilter {declaration} value={timeRangeValue(declaration.id)} readOnly={readOnly||!!limits.reason} max={limits.max} blockedRanges={limits.blockedRanges} snapshot={timeContext.snapshot} revision={timeContext.revision} onchange={next=>ontimerange(declaration.id,next)}/>
     {:else if declaration.type === 'timeRange' && declaration.display === 'period'}
-      <PeriodFilter periodModes={declaration.periodModes} min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges} label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'} value={timeRangeValue(declaration.id) as PeriodRange | null} readOnly={readOnly||!!limits.reason} onchange={next=>ontimerange(declaration.id,next)}/>
+      <PeriodFilter anchorLast12={!!finalizationName(declaration)} periodModes={declaration.periodModes} min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges} label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'} value={timeRangeValue(declaration.id) as PeriodRange | null} readOnly={readOnly||!!limits.reason} onchange={next=>ontimerange(declaration.id,next)}/>
     {:else if readOnly && declaration.type === 'boolean'}
       <label class="readonly-boolean">
         <input type="checkbox" checked={booleanValue(declaration.id)} disabled />

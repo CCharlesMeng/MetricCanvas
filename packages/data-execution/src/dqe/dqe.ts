@@ -100,6 +100,8 @@ export function createInMemoryDqeDiagnostics(limit = 100): InMemoryDqeDiagnostic
 }
 
 export interface DqeGatewayConfig {
+  /** Shared fixed query for page finalization defaults; executed by the engine once per page instance. */
+  finalizationSource?: import('../finalization').FinalizationSourceDefinition;
   /** Explicit fallback for services without original-result DISTINCT; retains all query outputs. */
   columnCandidates?: import('./full-query-candidates').FullQueryCandidatesConfig;
   /** Deployment-verified multi-field object ordering; single-field uses native order_by_field. */
@@ -168,7 +170,7 @@ export class DqeGatewayError extends Error {
  */
 export function createDqeGateway(
   config: DqeGatewayConfig = {}
-): DataGateway & DimensionValuesGateway & FilterCandidatesGateway {
+): DataGateway & DimensionValuesGateway & FilterCandidatesGateway & Pick<import('../ports').RuntimeDataGateway, 'finalizationSource'> {
   const {
     endpoint = DEFAULT_DQE_ENDPOINT,
     headers = {},
@@ -524,7 +526,7 @@ export function createDqeGateway(
       return fetchDimensionValuesOnce(dimension, options?.signal, options?.constraints);
     }
   };
-  return gateway;
+  return Object.defineProperty(gateway, 'finalizationSource', {enumerable:true, get:()=>config.finalizationSource});
 }
 
 /**

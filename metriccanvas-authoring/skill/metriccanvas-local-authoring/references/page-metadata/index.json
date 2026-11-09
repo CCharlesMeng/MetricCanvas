@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.98",
-  "schemaSha256": "e4a41d115dac6fba173b2e4c87363f7392be34412ac1629689e90a6b9951e105",
+  "schemaVersion": "6.101",
+  "schemaSha256": "a91ae519668e0836803bd845c2ca071e3bdf7a871de98d0be7c28b64a2ca0c96",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -309,7 +309,10 @@
         "authoring-evaluation-context",
         "key-office-priority-demo",
         "key-office-priority-target",
-        "filter-source-candidates"
+        "filter-source-candidates",
+        "finalization-default-time",
+        "finalization-default-time-detail",
+        "finalization-date-defaults"
       ],
       "rules": [
         "filter-id-unique",
@@ -1302,7 +1305,10 @@
         "6.95",
         "6.96",
         "6.97",
-        "6.98"
+        "6.98",
+        "6.99",
+        "6.100",
+        "6.101"
       ]
     },
     {
@@ -9059,6 +9065,42 @@
       "const": "last12Months"
     },
     {
+      "pointer": "#/definitions/periodSelection/anyOf/2",
+      "path": "@periodSelection · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/2/properties/mode",
+      "path": "@periodSelection · anyOf[2].mode",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
+      ]
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/2/properties/finalizationName",
+      "path": "@periodSelection · anyOf[2].finalizationName",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/4",
+      "path": "@timeRangeFilter.default · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/4/properties/finalizationName",
+      "path": "@timeRangeFilter.default · anyOf[4].finalizationName",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
       "pointer": "#/properties/filters/items/oneOf/2",
       "path": "$.filters[] · oneOf[2]",
       "required": "独立分支（不合并required）",
@@ -9265,6 +9307,24 @@
       "pointer": "#/definitions/timePointFilter/properties/default",
       "path": "@timePointFilter.default",
       "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/default/anyOf/0",
+      "path": "@timePointFilter.default · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/default/anyOf/1",
+      "path": "@timePointFilter.default · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/default/anyOf/1/properties/finalizationName",
+      "path": "@timePointFilter.default · anyOf[1].finalizationName",
+      "required": "本分支必填",
       "module": "filters.md"
     },
     {
@@ -20724,10 +20784,34 @@
       "pointer": "#/filters/0/default"
     },
     {
+      "schemaPointer": "#/definitions/periodSelection/anyOf/2",
+      "module": "filters.md",
+      "file": "examples/finalization-default-time.json",
+      "pointer": "#/filters/0/default"
+    },
+    {
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/4",
+      "module": "filters.md",
+      "file": "examples/finalization-date-defaults.json",
+      "pointer": "#/filters/2/default"
+    },
+    {
       "schemaPointer": "#/properties/filters/items/oneOf/2",
       "module": "page.md",
       "file": "examples/availability-page.json",
       "pointer": "#/filters/0"
+    },
+    {
+      "schemaPointer": "#/definitions/timePointFilter/properties/default/anyOf/0",
+      "module": "filters.md",
+      "file": "examples/ioc-header-incentives.json",
+      "pointer": "#/filters/0/default"
+    },
+    {
+      "schemaPointer": "#/definitions/timePointFilter/properties/default/anyOf/1",
+      "module": "filters.md",
+      "file": "examples/finalization-date-defaults.json",
+      "pointer": "#/filters/0/default"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/3",
@@ -21879,5 +21963,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "180be6acf453a1fd6e5295f09c2c22e273aa1ec7fe3e8716a8c4b70842815242"
+  "semanticSourceDigest": "689df87a05a55fc90b4e2e33dd006f49f617a40bdf48f76f644dbb27e2b85e08"
 }

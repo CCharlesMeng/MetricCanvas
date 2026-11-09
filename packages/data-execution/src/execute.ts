@@ -1,3 +1,4 @@
+import {resolveFinalizationDates} from './finalization';
 import {requiresQueryContext,hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import { resolvePageParams, type PageDocument } from '@metriccanvas/page';
 import { createSourceProgram, type SourceUpdate } from './source-program/session';
@@ -17,7 +18,8 @@ export function createPageDataExecutor(config: { gateway: RuntimeDataGateway;dis
     const output = structuredClone(resolved.document);
     for(const source of Object.values(output.dataSources))if(source.source.type==='query'&&(requiresQueryContext(source.source.query,page.filters)||hasPeriodQueryDefault(source.source.query,page)))delete source.source.initial;
     const now=config.now??new Date(),displayInputs=structuredClone(config.displayInputs?.()),filterRevision=config.filterRevision?.()??0;
-    const conditions=initialFilterValues(page.filters ?? [],now,displayInputs,filterRevision);
+    const dates=await resolveFinalizationDates(page,config.gateway,now);
+    const conditions=initialFilterValues(page.filters ?? [],now,displayInputs,filterRevision,dates);
     const {initialization,filtered}=prepareTableExecution(page,output,{declarations:page.filters??[],filters:conditions,displaySnapshot:displayInputs,filterRevision});
     const program = createSourceProgram(page, {...config,now,displayInputs:()=>displayInputs,filterRevision:()=>filterRevision??0});
     try {

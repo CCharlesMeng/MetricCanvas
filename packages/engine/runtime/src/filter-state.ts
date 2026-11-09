@@ -486,7 +486,9 @@ function readPeriodFilter(declaration: Extract<FilterDeclaration, { type: 'timeR
   if (!isPeriodSelection(selection)) return;
   if (selection.mode !== 'last12Months' && selection.value === undefined) return;
   try {
-    const value = { type: 'timeRange' as const, ...resolvePeriodSelection(selection, now, declaration.precision === 'month' ? 'month' : 'date') };
+    const range = explicitPeriodRange(selection, read, now, declaration.precision === 'month' ? 'month' : 'date');
+    if (!range) return;
+    const value = { type: 'timeRange' as const, ...range };
     if (!timeFilterBoundaryError(declaration, value, now)) return value;
   } catch { /* An invalid URL value does not replace a declared value. */ }
 }
@@ -506,7 +508,7 @@ export function filterSearch(values: FilterValues, declarations: readonly Filter
       appendDimensionURL(query, keys, value);
     } else if(value.type==='timeRange'&&value.mode){query.set(`${id}.mode`,value.mode);query.set(keys.from!,value.from);query.set(keys.to!,value.to);
     } else if (value.type === 'timeRange' && value.selection && declaration?.type === 'timeRange' && declaration.display === 'period') {
-      put('value',value.selection.mode === 'last12Months' ? 'last12Months' : `${value.selection.mode}:${value.selection.value}`);
+      appendPeriodURL(value, put);
     } else if (value.type === 'timeRange' || value.type === 'numberRange') {
       put('from',value.from); put('to',value.to);
     } else if (value.type === 'search') put('value',value.query);
@@ -610,4 +612,18 @@ function propagateBlockedFilters(blocked:ReadonlySet<string>,declarations:readon
     result.add(declaration.id);queue.push(declaration.id);
   }
   return result;
+}
+
+function explicitPeriodRange(selection:import('@metriccanvas/page/internal').PeriodSelection,read:ReadURLPart,now:Date,precision:'month'|'date') {
+  const from=read('from'),to=read('to');
+  if(selection.mode!=='last12Months'||from===null&&to===null)return resolvePeriodSelection(selection,now,precision);
+  if(!from||!to)return;
+  const resolved=resolvePeriodSelection({mode:'last12Months',anchor:to.slice(0,7)},now,precision);
+  if(resolved.from===from&&resolved.to===to)return resolved;
+}
+
+function appendPeriodURL(value:Extract<FilterValue,{type:'timeRange'}>,put:(part:string,item:string)=>void):void {
+  const selection=value.selection!;
+  put('value',selection.mode==='last12Months'?'last12Months':`${selection.mode}:${selection.value}`);
+  if(selection.mode==='last12Months'&&selection.anchor){put('from',value.from);put('to',value.to);}
 }

@@ -4,6 +4,7 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import {resolveFinalizationDates} from '@metriccanvas/data-execution/runtime';
   import { hierarchyLevelOf } from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
@@ -397,6 +398,25 @@
     stream = null;
   }
 
+  function localFilterInitializationIssue(
+    optionsById: ReadonlyMap<string,readonly string[]>, values: Map<string,FilterValue>,
+    bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined, strict: boolean
+  ): TypedError | undefined {
+    for (const [id, options] of optionsById) {
+      const value = values.get(id);
+      if (value && !singleOptionSelected(value, options)) {
+        if (strict) return {type:'SCHEMA_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'};
+        values.delete(id);
+      }
+      if (bootstrap && !singleOptionSelected(bootstrap.filters.get(id), options))
+        return {type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'};
+    }
+  }
+
+  function singleOptionSelected(value: FilterValue | undefined, options: readonly string[]): boolean {
+    return value?.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
+  }
+
   async function run(
     raw: unknown,
     gatewayOverride: RuntimeDataGateway | undefined,
@@ -498,6 +518,13 @@
     candidateSession=nextCandidateSession;activeGateway=nextCandidateSession.gateway;
     disposers.push(()=>{nextCandidateSession.dispose();if(candidateSession===nextCandidateSession)candidateSession=undefined;});
 
+    const finalizationController = new AbortController();
+    disposers.push(() => finalizationController.abort());
+    let finalizationDates: ReadonlyMap<string,string>;
+    try { finalizationDates = await resolveFinalizationDates(loaded, activeGateway, candidateClock, finalizationController.signal); }
+    catch { return; }
+    if (session !== mySession) return;
+
     declarationPage=loaded;
     const capabilities = derivePageCapabilities(loaded);
     const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
@@ -510,18 +537,14 @@
       ? parseFilterSearch(search,declarations,candidateClock,usesIocRegion(loaded))
       : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const localOptions = filterGroupOptions(loaded);
-    for (const [id, options] of localOptions) {
-      const value = fromURL.get(id);
-      if (value && (value.type !== 'dimension' || value.values.length !== 1 || !options.includes(value.values[0]!))) {if(loaded.strictURLInputs===true){pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'}]};emit?.({type:'invalid',errors:pageState.errors});return;}fromURL.delete(id);}
-      const supplied = bootstrap?.filters.get(id);
-      if (bootstrap && (!supplied || supplied.type !== 'dimension' || supplied.values.length !== 1 || !options.includes(supplied.values[0]!))) {
-        pageState = { phase: 'invalid', errors: [{type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'}] };
-        emit?.({type:'invalid',errors:pageState.errors});
-        return;
-      }
+    const localIssue = localFilterInitializationIssue(localOptions, fromURL, bootstrap, loaded.strictURLInputs === true);
+    if (localIssue) {
+      pageState = {phase:'invalid', errors:[localIssue]};
+      emit?.({type:'invalid', errors:[localIssue]});
+      return;
     }
     let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0,finalizationDates);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     let state:ReturnType<typeof createFilterState>;
     try {
       state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
@@ -608,7 +631,7 @@
       const key=canonicalizeJson([next?.periods??{},next?.timeZone??null]);if(key===periodKey)return;periodKey=key;
       // Invalidate authorizing receipts before publishing a new fact context.
       for(const declaration of declarations)if(declaration.type==='dimension'&&declaration.candidateWindow)state.candidate(declaration.id,'loading');
-      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision);}catch{defaults=new Map();}
+      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision,finalizationDates);}catch{defaults=new Map();}
       const seeded=new Map(filterValues);
       for(const id of pendingInitial){if(filterValues.has(id)){pendingInitial.delete(id);continue;}const value=defaults.get(id);if(value){seeded.set(id,value);pendingInitial.delete(id);}}
       if(seeded.size!==filterValues.size)state.commit({type:'initialize',values:seeded});

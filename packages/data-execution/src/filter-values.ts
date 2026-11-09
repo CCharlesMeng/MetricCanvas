@@ -1,3 +1,5 @@
+import {finalizationFilterValue} from './finalization-filter-value';
+import {isFinalizationDefault} from '@metriccanvas/page/internal';
 import {isoWeekRange} from '@metriccanvas/page/internal';
 import {initialModeRange,availabilityInitial,type DisplayInputsSnapshot,type TimeMode} from '@metriccanvas/page/internal';
 import { numberRangeIssue, dimensionSelectionIssue } from '@metriccanvas/page/internal';
@@ -66,15 +68,15 @@ export type FilterValues = ReadonlyMap<string, FilterValue>;
 export function initialFilterValues(
   declarations: FilterDeclaration[],
   now: Date = new Date(),
-  displayInputs?:DisplayInputsSnapshot,filterRevision?:number
+  displayInputs?:DisplayInputsSnapshot,filterRevision?:number,finalizationDates?:ReadonlyMap<string,string>
 ): Map<string, FilterValue> {
   const values = new Map<string, FilterValue>();
   for (const decl of declarations) {
-    const initial=availabilityInitial(decl,displayInputs,filterRevision);
-    if((decl.type==='timeRange'||decl.type==='timePoint')&&decl.availability?.initial&&!initial)continue;
-    const prepared:FilterDeclaration=initial&&decl.type==='timePoint'?{...decl,default:initial}:initial&&decl.type==='timeRange'?decl.display==='modes'?{...decl,modes:decl.modes?.map(item=>item.id===decl.defaultMode?{...item,default:item.id==='isoWeek'?isoWeekRange(initial):{from:initial,to:initial}}:item)}:{...decl,default:{from:initial,to:initial}}:decl;
-    const value = initialValue(prepared, now);
+    const prepared = availabilityDeclaration(decl, displayInputs, filterRevision);
+    if (!prepared) continue;
+    let value = finalizationFilterValue(prepared, now, finalizationDates) ?? initialValue(prepared, now);
     if (value && (value.type === 'timePoint' || value.type === 'timeRange')) {
+      if (timeFilterBoundaryError(decl, value, now) && isFinalizationDefault(decl.default)) value = finalizationFilterValue(decl, now) ?? value;
       const issue = timeFilterBoundaryError(decl, value, now);
       if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
     }
@@ -83,48 +85,61 @@ export function initialFilterValues(
   return values;
 }
 
+function availabilityDeclaration(decl: FilterDeclaration, displayInputs?: DisplayInputsSnapshot, revision?: number): FilterDeclaration | undefined {
+  const initial = availabilityInitial(decl, displayInputs, revision);
+  if (decl.type !== 'timeRange' && decl.type !== 'timePoint') return decl;
+  if (decl.availability?.initial && !initial) return;
+  if (!initial) return decl;
+  if (decl.type === 'timePoint') return {...decl, default: initial};
+  if (decl.display !== 'modes') return {...decl, default: {from: initial, to: initial}};
+  const modes = decl.modes?.map(item => item.id === decl.defaultMode ? {...item, default: item.id === 'isoWeek' ? isoWeekRange(initial) : {from: initial, to: initial}} : item);
+  return {...decl, modes};
+}
+
 function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefined {
-  if (decl.type === 'dimension') {
-    if(decl.default && dimensionSelectionIssue(decl,decl.default))throw new Error('筛选初值不符合已声明选择规则');
-    if (!decl.default || decl.default.length === 0) return undefined;
-    const level = hierarchyLevelOf(decl);
-    return {
-      type: 'dimension',
-      dimension: dimensionOfLevel(decl, level?.id),
-      values: [...decl.default],
-      ...(level ? { level: level.id } : {})
-    };
+  switch (decl.type) {
+    case 'dimension': return dimensionInitial(decl);
+    case 'timeRange': return rangeInitial(decl, now);
+    case 'timePoint': return pointInitial(decl, now);
+    case 'boolean': return decl.default ? {type: 'boolean', value: true} : undefined;
+    case 'numberRange': return checkedNumberInitial(decl);
+    case 'search': return decl.default?.trim() ? {type: 'search', query: decl.default} : undefined;
   }
-  if (decl.type === 'timeRange') {
-    if(decl.display==='modes')return {type:'timeRange',...initialModeRange(decl,decl.defaultMode!,now)};
-    if (!decl.default) return undefined;
-    if (isPeriodSelection(decl.default)) return {type:'timeRange',...resolvePeriodSelection(decl.default,now,decl.precision === 'month' ? 'month' : 'date')};
-    const precision = decl.precision ?? 'date';
-    if (typeof decl.default === 'string') {
-      const range = resolvePreset(decl.default, now, precision === "month" ? "date" : precision);
-      return { type: 'timeRange', from: precision === 'month' ? range.from.slice(0,7) : range.from, to: precision === 'month' ? range.to.slice(0,7) : range.to };
-    }
-    if (isRelativeTimeExpression(decl.default)) {
-      const range = resolveRelativeTime(decl.default, now, precision);
-      return { type: 'timeRange', from: range.from, to: range.to };
-    }
-    return { type: 'timeRange', from: decl.default.from, to: decl.default.to };
+}
+
+function dimensionInitial(decl: Extract<FilterDeclaration, {type: 'dimension'}>): FilterValue | undefined {
+  if (decl.default && dimensionSelectionIssue(decl, decl.default)) throw new Error('筛选初值不符合已声明选择规则');
+  if (!decl.default?.length) return;
+  const level = hierarchyLevelOf(decl);
+  return {type: 'dimension', dimension: dimensionOfLevel(decl, level?.id), values: [...decl.default], ...(level ? {level: level.id} : {})};
+}
+
+function rangeInitial(decl: Extract<FilterDeclaration, {type: 'timeRange'}>, now: Date): FilterValue | undefined {
+  if (decl.display === 'modes') return {type: 'timeRange', ...initialModeRange(decl, decl.defaultMode!, now)};
+  if (!decl.default || isFinalizationDefault(decl.default)) return;
+  if (isPeriodSelection(decl.default)) return {type: 'timeRange', ...resolvePeriodSelection(decl.default, now, decl.precision === 'month' ? 'month' : 'date')};
+  return {type: 'timeRange', ...defaultRange(decl.default, decl.precision ?? 'date', now)};
+}
+
+function defaultRange(value: import('@metriccanvas/page/internal').TimeRangePreset | import('@metriccanvas/page/internal').TimeRangeValue | import('@metriccanvas/page/internal').RelativeTimeExpression, precision: import('@metriccanvas/page/internal').TimeRangePrecision, now: Date) {
+  if (typeof value === 'string') {
+    const range = resolvePreset(value, now, precision === 'month' ? 'date' : precision);
+    return precision === 'month' ? {from: range.from.slice(0, 7), to: range.to.slice(0, 7)} : range;
   }
-  if (decl.type === 'timePoint') {
-    if (!decl.default) return undefined;
-    const issue = validateTimePointValue(decl.default, decl.granularity, decl.min, decl.disableFuture !== false, now);
-    if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
-    return { type: 'timePoint', granularity: decl.granularity, value: decl.default };
-  }
-  if (decl.type === 'boolean') {
-    return decl.default ? { type: 'boolean', value: true } : undefined;
-  }
-  if (decl.type === 'numberRange') {
-    if(decl.default&&numberRangeIssue(decl,decl.default))throw new Error('数值范围默认值不符合声明');
-    return numberRangeInitial(decl.default);
-  }
-  if (!decl.default || decl.default.trim() === '') return undefined;
-  return { type: 'search', query: decl.default };
+  if (isRelativeTimeExpression(value)) return resolveRelativeTime(value, now, precision);
+  return {from: value.from, to: value.to};
+}
+
+function pointInitial(decl: Extract<FilterDeclaration, {type: 'timePoint'}>, now: Date): FilterValue | undefined {
+  if (typeof decl.default !== 'string') return;
+  const issue = validateTimePointValue(decl.default, decl.granularity, decl.min, decl.disableFuture !== false, now);
+  if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
+  return {type: 'timePoint', granularity: decl.granularity, value: decl.default};
+}
+
+function checkedNumberInitial(decl: Extract<FilterDeclaration, {type: 'numberRange'}>): FilterValue | undefined {
+  if (decl.default && numberRangeIssue(decl, decl.default)) throw new Error('数值范围默认值不符合声明');
+  return numberRangeInitial(decl.default);
 }
 
 function numberRangeInitial(value: NumberRangeValue | undefined): NumberRangeFilterValue | undefined {

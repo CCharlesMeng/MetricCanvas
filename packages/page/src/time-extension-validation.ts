@@ -1,3 +1,4 @@
+import {isFinalizationDefault} from './finalization-default';
 import { headerDeclarations } from './header-binding';
 import type { IocHeaderDeclaration } from './schema/ioc-header';
 import {queryBudgetErrors,timeQueryErrors} from './query-selection-validation';
@@ -11,6 +12,7 @@ export function timeExtensionErrors(page:Page):TypedError[]{
   const path=`/filters/${i}`;
   if(filter.type==='dimension'&&filter.candidateWindow&&(filter.options||filter.hierarchy))fail(path,'月份窗口仅用于动态平面年月维度');
   if(filter.type!=='timeRange'&&filter.type!=='timePoint')continue;
+  finalizationDeclarationErrors(filter,path,fail);
   if(filter.availability?.initial&&(filter.default!==undefined||filter.initialParam))fail(path,'availability.initial与default/initialParam互斥');
   if(filter.type==='timeRange'){
    if(filter.display==='modes'){
@@ -40,4 +42,11 @@ function headerFactErrors(page:Page):TypedError[] {
   if(!expected.includes(fact.value.part))errors.push({type:'SCHEMA_ERROR',path:path+'/identity/facts',message:'期间事实part与kind不匹配'});
  }
  return errors;
+}
+
+function finalizationDeclarationErrors(filter:Extract<import('./filter').FilterDeclaration,{type:'timeRange'|'timePoint'}>,path:string,fail:(path:string,message:string)=>void):void {
+  if(!isFinalizationDefault(filter.default))return;
+  if(filter.initialParam)fail(`${path}/default`,'定稿默认值与initialParam互斥');
+  if(filter.type==='timeRange'&&(filter.display==='modes'||filter.precision==='datetime'))fail(`${path}/default`,'定稿默认值仅支持自然期间及日/月范围');
+  if(filter.type==='timeRange'&&filter.display!=='period'&&isFinalizationDefault(filter.default)&&'mode' in filter.default)fail(`${path}/default/mode`,'期间模式只用于display:period');
 }

@@ -12,7 +12,8 @@ function gatewayConfig(): DqeGatewayConfig {
   const configured = process.env.METRICCANVAS_DQE_TIMEOUT_MS;
   const timeoutMs = configured === undefined ? undefined : Number(configured);
   if (timeoutMs !== undefined && (!Number.isFinite(timeoutMs) || timeoutMs <= 0)) throw new Error('Invalid timeout configuration');
-  return { endpoint, headers, ...(timeoutMs === undefined ? {} : { timeoutMs }) };
+  const finalizationSource = process.env.METRICCANVAS_FINALIZATION_SOURCE;
+  return { endpoint, headers, finalizationSource: finalizationSource === undefined ? undefined : JSON.parse(finalizationSource), ...(timeoutMs === undefined ? {} : { timeoutMs }) };
 }
 
 try {

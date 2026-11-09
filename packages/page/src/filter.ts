@@ -1,3 +1,4 @@
+import type { FinalizationDefault } from './finalization-default';
 import { evaluationTimeValue, type TemporalEvaluation } from './temporal-evaluation';
 import type { PeriodMode, PeriodSelection } from './period-filter';
 import type { TextValue } from './page-param';
@@ -108,7 +109,7 @@ export interface TimeRangeFilterDeclaration extends FilterInteractionExtension {
   visible?: boolean;
   visibleWhen?: import('./schema/condition').Condition;
   /** 初始范围:相对预设、结构化相对时间或绝对范围;缺省为不筛选 */
-  default?: TimeRangePreset | TimeRangeValue | RelativeTimeExpression | PeriodSelection;
+  default?: TimeRangePreset | TimeRangeValue | RelativeTimeExpression | PeriodSelection | FinalizationDefault;
 }
 
 export type TimeRangePrecision = 'month' | 'date' | 'datetime';
@@ -166,7 +167,7 @@ export interface TimePointFilterDeclaration extends FilterInteractionExtension {
   disableFuture?: boolean;
   required?: boolean;
   /** month 为 YYYY-MM,date 为 YYYY-MM-DD */
-  default?: string;
+  default?: string | FinalizationDefault;
   /** 只在实例化时读取参数；与default互斥。引用的 times 参数必须是单点。 */
   initialParam?: string;
 }

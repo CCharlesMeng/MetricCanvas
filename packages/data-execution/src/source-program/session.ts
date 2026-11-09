@@ -1,3 +1,4 @@
+import {finalizationName} from '@metriccanvas/page/internal';
 import { sourceCandidatesGateway } from '../source-candidates';
 import {hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import {flattenPageComponents,hasHeaderDefaults,tableDefaultsRemote,normalizeTableSelectView} from '@metriccanvas/page/internal';
@@ -116,6 +117,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     return !!reuse && !!filter && (filter.type === 'timeRange' || filter.type === 'timePoint') && requiresTimeValidation(filter);
   }
   function dynamicPeriodDefault(filter: NonNullable<Page['filters']>[number] | undefined): boolean {
+    if (filter && finalizationName(filter)) return true;
     return filter?.type === 'timeRange' && filter.display === 'period' && !!filter.default && typeof filter.default === 'object' && 'mode' in filter.default && (filter.default.mode === 'last12Months' || !('value' in filter.default) || !filter.default.value);
   }
   const program = {

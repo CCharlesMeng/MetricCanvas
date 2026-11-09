@@ -32,3 +32,5 @@ export type { ColumnCandidatesRead } from './source-program/column-candidates';
 export { createCandidateValidator } from './candidate-validation';
 
 export { sourceCandidatesGateway, projectSourceCandidates } from './source-candidates';
+
+export {resolveFinalizationDates,type FinalizationSourceDefinition} from './finalization';

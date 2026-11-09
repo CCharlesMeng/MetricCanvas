@@ -34,7 +34,7 @@ export function initialFilterTextValues(declarations: readonly FilterDeclaration
       if (filter.default === true) values.set(filter.id, true);
     } else if (filter.type === 'dimension') {
       if (filter.default?.length) values.set(filter.id, filter.default);
-    } else if (filter.type === 'timePoint' && filter.default !== undefined) {
+    } else if (filter.type === 'timePoint' && typeof filter.default === 'string') {
       values.set(filter.id, filter.default);
     } else if (filter.type === 'search' && filter.default?.trim()) {
       values.set(filter.id, filter.default);

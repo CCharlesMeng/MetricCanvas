@@ -1,3 +1,4 @@
+import {isFinalizationDefault} from './finalization-default';
 import { iocHeaderDeclaration } from './header-binding';
 import {withPeriodQueryDefaults} from './period-query-defaults';
 import { isObjectDqeItem } from './dqe-object';
@@ -64,7 +65,7 @@ function headerFilterErrors(header: ReportHeader, path: string, invalidPlacement
 function dateDeclarationErrors(page: Page, filter: DateFilter, path: string, error: ErrorReporter): void {
   if (filter.type === 'timeRange') periodDeclarationErrors(page, filter, path, error);
   if (filter.required && filter.default === undefined && !filter.initialParam && !filter.availability?.initial && !(filter.type === 'timeRange' && filter.display === 'modes')) error(path, '必需日期筛选器需要 default 或 initialParam 初值');
-  if (filter.type === 'timeRange' && filter.display !== 'period' && filter.precision === 'month' && filter.default !== undefined &&
+  if (filter.type === 'timeRange' && filter.display !== 'period' && filter.precision === 'month' && filter.default !== undefined && !isFinalizationDefault(filter.default) &&
     (typeof filter.default === 'string' || !('from' in filter.default))) error(`${path}/default`, '月份范围使用显式 YYYY-MM 起止值');
 }
 

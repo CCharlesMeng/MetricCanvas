@@ -8,3 +8,5 @@ export type {
 export type { ColumnCandidate, ColumnCandidatesPage, ColumnCandidatesQuery } from './ports';
 
 export {withOperationMapRegion,type OperationMapRegionAdapter} from './operation-map-region';
+
+export type {FinalizationSourceDefinition} from './finalization';

@@ -111,6 +111,9 @@
         "/filters/0/default",
         "/filters/0/default",
         "/filters/0/default",
+        "/filters/0/default",
+        "/filters/0/default",
+        "/filters/0/default",
         "/filters/0/default"
       ]
     },
@@ -118,6 +121,7 @@
       "type": "SCHEMA_ERROR",
       "message": "must match a schema in anyOf",
       "paths": [
+        "/filters/0/default",
         "/filters/0/default",
         "/filters/0/default"
       ]

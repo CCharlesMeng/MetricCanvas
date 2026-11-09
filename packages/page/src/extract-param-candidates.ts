@@ -97,7 +97,7 @@ function initialFilterValue(source: PageDocument, filter: DateFilter, granularit
   const period = absoluteFilterPeriod(filter, granularity);
   if (period) return { start: period.from, end: period.to };
   if (existing?.type === 'timeRange' && typeof existing.value === 'object' && !Array.isArray(existing.value)) return existing.value;
-  if (filter.type === 'timePoint') return { start: filter.default, end: filter.default };
+  if (filter.type === 'timePoint') return typeof filter.default === 'string' ? { start: filter.default, end: filter.default } : undefined;
   return filter.default && typeof filter.default === 'object' && 'from' in filter.default ? { start: filter.default.from, end: filter.default.to } : undefined;
 }
 

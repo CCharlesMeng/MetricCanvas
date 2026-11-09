@@ -1,0 +1,164 @@
+{
+  "schemaVersion": "6.101",
+  "id": "finalization-default-time",
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "period-filter",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "date",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month",
+        "finalizationName": "经营数据"
+      }
+    }
+  ],
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "entry": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "entry"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "entry"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period-filter": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "定稿日期默认期间"
+            },
+            "filterIds": [
+              "period-filter"
+            ],
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail",
+      "container": "plain",
+      "title": "经营明细",
+      "components": [
+        {
+          "id": "sales-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "经营明细",
+            "columns": [
+              {
+                "field": "entry",
+                "title": "生效查询范围",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "title": "金额",
+                "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "open-detail",
+          "type": "button",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "label": "查看同期间下钻页",
+            "action": {
+              "on": "click",
+              "navigate": {
+                "href": "/pages/finalization-default-time-detail",
+                "validateTargetInputs": true,
+                "query": {
+                  "period-filter": {
+                    "source": "filter",
+                    "id": "period-filter",
+                    "part": "value"
+                  },
+                  "period-filter.from": {
+                    "source": "filter",
+                    "id": "period-filter",
+                    "part": "from"
+                  },
+                  "period-filter.to": {
+                    "source": "filter",
+                    "id": "period-filter",
+                    "part": "to"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "title": "定稿日期默认期间",
+    "description": "合成验收：引擎按定稿名称查询默认日期；支持正常、缺失、冲突、失败、超时与下钻。"
+  }
+}

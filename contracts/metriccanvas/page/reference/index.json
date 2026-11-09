@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.98",
-  "schemaSha256": "e4a41d115dac6fba173b2e4c87363f7392be34412ac1629689e90a6b9951e105",
+  "schemaVersion": "6.101",
+  "schemaSha256": "a91ae519668e0836803bd845c2ca071e3bdf7a871de98d0be7c28b64a2ca0c96",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -33,6 +33,10 @@
     {
       "file": "metriccanvas-authoring/tool/metriccanvas_authoring/data/field_presentation.py",
       "sha256": "d200f5d0dbe6768020db555e687217b9ffa01d296fceffec0b7496e8db37073d"
+    },
+    {
+      "file": "packages/data-execution/src/finalization.ts",
+      "sha256": "8bd803618b0fc203b9defcd5cb417af932e3838773099e9b006774e78f27ec9f"
     },
     {
       "file": "packages/data-execution/src/operation-map-region.ts",
@@ -176,11 +180,15 @@
     },
     {
       "file": "packages/page/src/filter-text-value.ts",
-      "sha256": "0677ae512e8447a5dbc3a347bef5b970ed598d3e12ec855487bebbe4d822768a"
+      "sha256": "4ef135db158f1cb301bb1eb2f8134abe26ecd491e903b179fb20b4e49d614bb6"
     },
     {
       "file": "packages/page/src/filter-url.ts",
       "sha256": "284d8785f61a682ed1066240508f9a06d19740f29cf89839471b3a44e4b90951"
+    },
+    {
+      "file": "packages/page/src/finalization-default.ts",
+      "sha256": "a49fbfac47b50ec8806e95e75fb0f6c537e1cd01075510ee02dfe5e4a6cf70a9"
     },
     {
       "file": "packages/page/src/header-binding.ts",
@@ -204,7 +212,7 @@
     },
     {
       "file": "packages/page/src/navigate.ts",
-      "sha256": "6d0b18f646f30e63d1e2ecc55d1a87b993ff08b8fe5c817d65583486af12d74f"
+      "sha256": "f65c4469d04ea7a122bf9745086057159c9de37e02f0faa867f5a777baae88a2"
     },
     {
       "file": "packages/page/src/object-query-params.ts",
@@ -232,7 +240,7 @@
     },
     {
       "file": "packages/page/src/period-filter.ts",
-      "sha256": "a15566b374aae4e536a3a2d9504195b098e0beb2f9e70ddde9663b388465de42"
+      "sha256": "88f97bf1088003794de544a94658c15e04319bf7cd0205bdbe5c930a2a8f97c9"
     },
     {
       "file": "packages/page/src/presentation-policy.ts",
@@ -252,7 +260,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "4695bd6daf58b84d95af43e6a41676131a81ae0d22e4e74e8f79e40df3298f3a"
+      "sha256": "82a75d91592b0df7cd2cf7afc8ca2e0bb964cf1ade3392dc0ceaa6a205a8c8ba"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -348,7 +356,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "40e6c30f5b69676e7ca82353f93cda2081d89f32807a94d3813a07953d67b378"
+      "sha256": "e3e516aea40900226f2744c5c91f24473f89d42662444721b191c5b9c281a746"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
@@ -404,7 +412,7 @@
     },
     {
       "file": "packages/page/src/time-extension-validation.ts",
-      "sha256": "2bd9c6a88be33a04a574181f0b09db7faf115c5a5fa514a6430f04325e198bf2"
+      "sha256": "953a7940139c0dc925ed89f3905ba6e6aa5af50c03c121a83f008b26d9f443ed"
     },
     {
       "file": "packages/page/src/time-filter-boundary.ts",
@@ -456,7 +464,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "01a1717a11878b4285201979b91d898e70482eab6f423de07f784c89d518c3c9"
+      "sha256": "6fbba7e3a8965dce8c195909e99a2215075246f2226894588a6a9bb0fd006995"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -839,7 +847,10 @@
         "authoring-evaluation-context",
         "key-office-priority-demo",
         "key-office-priority-target",
-        "filter-source-candidates"
+        "filter-source-candidates",
+        "finalization-default-time",
+        "finalization-default-time-detail",
+        "finalization-date-defaults"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -858,7 +869,9 @@
         "packages/page/src/period-facts.ts",
         "packages/page/src/time-extension-validation.ts",
         "packages/page/src/filter-url.ts",
-        "packages/page/src/source-candidates.ts"
+        "packages/page/src/source-candidates.ts",
+        "packages/page/src/finalization-default.ts",
+        "packages/data-execution/src/finalization.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -2030,7 +2043,10 @@
         "6.95",
         "6.96",
         "6.97",
-        "6.98"
+        "6.98",
+        "6.99",
+        "6.100",
+        "6.101"
       ]
     },
     {
@@ -9787,6 +9803,42 @@
       "const": "last12Months"
     },
     {
+      "pointer": "#/definitions/periodSelection/anyOf/2",
+      "path": "@periodSelection · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/2/properties/mode",
+      "path": "@periodSelection · anyOf[2].mode",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
+      ]
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/2/properties/finalizationName",
+      "path": "@periodSelection · anyOf[2].finalizationName",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/4",
+      "path": "@timeRangeFilter.default · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/4/properties/finalizationName",
+      "path": "@timeRangeFilter.default · anyOf[4].finalizationName",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
       "pointer": "#/properties/filters/items/oneOf/2",
       "path": "$.filters[] · oneOf[2]",
       "required": "独立分支（不合并required）",
@@ -9993,6 +10045,24 @@
       "pointer": "#/definitions/timePointFilter/properties/default",
       "path": "@timePointFilter.default",
       "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/default/anyOf/0",
+      "path": "@timePointFilter.default · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/default/anyOf/1",
+      "path": "@timePointFilter.default · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/default/anyOf/1/properties/finalizationName",
+      "path": "@timePointFilter.default · anyOf[1].finalizationName",
+      "required": "本分支必填",
       "module": "filters.md"
     },
     {
@@ -21523,10 +21593,34 @@
       "pointer": "#/filters/0/default"
     },
     {
+      "schemaPointer": "#/definitions/periodSelection/anyOf/2",
+      "module": "filters.md",
+      "file": "examples/finalization-default-time.json",
+      "pointer": "#/filters/0/default"
+    },
+    {
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/4",
+      "module": "filters.md",
+      "file": "examples/finalization-date-defaults.json",
+      "pointer": "#/filters/2/default"
+    },
+    {
       "schemaPointer": "#/properties/filters/items/oneOf/2",
       "module": "page.md",
       "file": "examples/availability-page.json",
       "pointer": "#/filters/0"
+    },
+    {
+      "schemaPointer": "#/definitions/timePointFilter/properties/default/anyOf/0",
+      "module": "filters.md",
+      "file": "examples/ioc-header-incentives.json",
+      "pointer": "#/filters/0/default"
+    },
+    {
+      "schemaPointer": "#/definitions/timePointFilter/properties/default/anyOf/1",
+      "module": "filters.md",
+      "file": "examples/finalization-date-defaults.json",
+      "pointer": "#/filters/0/default"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/3",

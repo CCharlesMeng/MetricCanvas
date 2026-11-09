@@ -57,3 +57,5 @@ export type { DisplayInputs, DisplaySnapshot } from './display-inputs';
 export {isDisplayInputs} from './display-inputs';
 
 export {withOperationMapRegion,type OperationMapRegionAdapter} from '@metriccanvas/data-execution';
+
+export type {FinalizationSourceDefinition} from '@metriccanvas/data-execution';
