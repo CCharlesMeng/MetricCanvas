@@ -1,4 +1,5 @@
-import {conditionDepth,conditionLeaves,conditionTestTypeError,declaredFilterSample} from './condition';
+import {declaredFilterSample} from './filter-condition-sample';
+import {conditionDepth,conditionLeaves,conditionTestTypeError} from './condition';
 import type {Condition} from './schema/condition';
 import type {DqeFilterBinding,DqeQueryDefinition} from './query';
 import type {Page} from './page';

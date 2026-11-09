@@ -1,8 +1,9 @@
+import {declaredFilterSample} from './filter-condition-sample';
 import {sourceFilterIds} from './data-source-references';
 import {expandedColumnFilterIds} from './table/condition-scope';
 import {visitTableColumns} from './table/columns';
 import {queryFilterIds} from './amount-filter';
-import { declaredFilterSample, conditionDepth, conditionLeaves, conditionTestTypeError, type ConditionValue } from './condition';
+import { conditionDepth, conditionLeaves, conditionTestTypeError, type ConditionValue } from './condition';
 import type { Condition } from './schema/condition';
 import type { Page, Component } from './page';
 import { resolveDataSourceFields } from './data-source';
