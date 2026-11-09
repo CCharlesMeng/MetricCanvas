@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+表格普通文本主值按列宽单行省略，溢出时鼠标悬停通过 tooltip 展示完整原文；取消字符数阈值与“更多”点击展开，静态导出保留全文。无需新增 Schema 字段。见[单元格溢出省略与悬浮提示](docs/page-metadata/components/table.md#单元格溢出省略与悬浮提示)，合成入口 `/pages/table-long-text`。
+
 6.100：维度查询绑定可用 `when` 复用筛选条件语法，仅条件允许时下推该绑定的谓词，保留筛选状态、URL 和按钮选择。组件显隐仍独立；旧绑定省略 `when` 保持原行为。见[查询绑定生效条件](docs/page-metadata/queries-and-bindings.md#filter-binding-when)，合成入口 `/pages/filter-binding-when`。
 
 6.99：表格字段列新增 `arrowRule`，与 `colorRule` 一样支持 `fixed` 与 `sign`；可配置上箭头、下箭头或不显示，正负映射可反向，箭头与颜色独立；默认放在数值前，可用 `position:"after"` 放在后面。省略规则不显示箭头。相对已发布协议列级字段净增1，方向/精度判断由引擎复用。见[表格上下箭头](docs/page-metadata/components/table.md#table-trend-arrows)，合成入口 `/pages/table-trend-arrows`。

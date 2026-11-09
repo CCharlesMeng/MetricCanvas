@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "0d33ed7d662183da91aa2c0e5c1b65e2e9221c1380e53b12ce4322cf66a3716d",
+  "sha256": "9a9c0746044443b1ad2ceafbb90278a4b49b4c81a98a169a2f12ddfceb82f20b",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "e455ecdf547e717078a5710309b9138acd446dba01f1dcb5c8c08703cd05d173"
+      "sha256": "1403b9dfba0b52b2c019ce3d60bb291b81640bd660197d72f010b7e8aef1f923"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "783bbaa386234962b5cc6f2ce12ba434867b611384299d699105c040111659d7"
+      "sha256": "befc4cf3c6691445c17f6fdde7f916f1875fa474e9711fb35a4241cdcac4c4fa"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2840,7 +2840,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "2f631d49e073fe754a3c39e6969e8d46d5cd98d4b1be62f5be7042cd4bda129e"
+      "sha256": "ebdb29adf3319ad9233ea18a31385e6fdb16666dd1e31778168f61348c7bb3d5"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2965,6 +2965,10 @@
     {
       "file": "pages/capabilities/table/table-hierarchy-selection.json",
       "sha256": "ffc03a66a6997dbc3008de7e1c269a053101a562130a40eb6838713bf367f6de"
+    },
+    {
+      "file": "pages/capabilities/table/table-long-text.json",
+      "sha256": "4c346fef244903df2d31d9d90e5ce88b479bb110eca908ce2ad16be7a6471577"
     },
     {
       "file": "pages/capabilities/table/table-missing-cell-actions.json",

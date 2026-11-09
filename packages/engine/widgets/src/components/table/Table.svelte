@@ -36,6 +36,7 @@
     semanticHtmlFieldPresentation
   } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
+  import OverflowCellText from './OverflowCellText.svelte';
   import { projectTableRows, tableRowColumn, alignedCellText, alignedCellArrow, alignedFieldValue } from './rows';
   import { mergeSpans, tableRowTier } from './presentation';
   import { buildTableColumnLayout, shouldWrapTableHeaders } from './columns';
@@ -609,6 +610,7 @@
                 {/snippet}
                 {@const actionGate=row.kind === 'pinnedTop' ? {eligible:false,enabled:false} : interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
                 <td
+                  class:overflow-text={interactive && !staticExport && !column.selection && !column.link && typeof rawValue === 'string' && resolved.definition?.type === 'string' && semanticPresentation === undefined}
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   class:emphasized={column.emphasis === 'strong'}
@@ -698,7 +700,16 @@
                           inline
                         />
                       {:else}
-                        <span class="cell-primary-value">{@render primaryValue()}</span>
+                        <span class="cell-primary-value">
+                          {#if typeof rawValue === 'string' && resolved.definition?.type === 'string'}
+                            <OverflowCellText
+                              text={alignedCellText(column.field, data, row, column.enumValues, column.unit)}
+                              enabled={interactive && !staticExport}
+                            />
+                          {:else}
+                            {@render primaryValue()}
+                          {/if}
+                        </span>
                       {/if}
                       {@render supplementaryFields()}
                     </div>
@@ -1704,6 +1715,19 @@
   .table-widget.os-theme tbody .cell-stack, .table-widget.os-theme tbody .cell-primary-value, .table-widget.os-theme tbody .link-cell {
     line-height: 21px;
     overflow-wrap: break-word;
+  }
+  /* Constrain the value inside the declared column instead of widening the table. */
+  .table-widget tbody td.overflow-text .cell-stack {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .table-widget tbody td.overflow-text .cell-primary-value {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
   .table-widget.os-theme tbody td.positive { color: var(--mc-color-positive, #52c41a); }
   .table-widget.os-theme tbody td.negative { color: var(--mc-color-negative, #f5222d); }

@@ -2548,7 +2548,7 @@
         "#/definitions/tableColumn/properties/width",
         "#/definitions/tableColumn/properties/fixed"
       ],
-      "headings": [],
+      "headings": ["单元格溢出省略与悬浮提示"],
       "dependencies": []
     },
     "table.search": {
@@ -3272,6 +3272,7 @@
       "列条件显隐（6.62）",
       "当前行定位与补充数据关联",
       "单元格点击与筛选联动",
+      "单元格溢出省略与悬浮提示",
       "十二行可视高度",
       "渲染外观与变体",
       "表格工具栏与搜索（6.21）",
