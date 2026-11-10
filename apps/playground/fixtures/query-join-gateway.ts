@@ -30,7 +30,10 @@ export function createPagedJoinPreview(count=80,supplementKey='ready',nulls='non
       const result={rows:selected.map(row=>Object.fromEntries(Object.keys(query.fieldMappings).map(field=>[field,row[field]]))),totalCount:rows.length};
       return supplementKeyPreview(query,result,supplementKey);
     },
-    async fetchColumnCandidates(request){return localColumnCandidates(matching(request.query),request.field,{pageIndex:0,pageSize:request.limit,sort:[],predicates:[]},request.search,request.offset,request.limit);}
+    async fetchColumnCandidates(request){
+      if(typeof globalThis.dispatchEvent==='function')globalThis.dispatchEvent(new CustomEvent('metriccanvas:synthetic-paged-join-candidates',{detail:request}));
+      return localColumnCandidates(matching(request.query),request.field,{pageIndex:0,pageSize:request.limit,sort:[],predicates:[]},request.search,request.offset,request.limit);
+    }
   };
   return {dataGateway,calls};
 }

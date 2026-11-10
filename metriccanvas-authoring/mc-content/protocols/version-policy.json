@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 111,
-  "current": "6.111",
+  "minor": 112,
+  "current": "6.112",
   "capabilities": {
     "table-slot-search": {
       "minor": 109,
@@ -66,6 +66,11 @@
     "period-aggregation": {
       "minor": 97,
       "description": "近一年按业务维度分组并逐字段求和或取月均值平均",
+      "legacyReadable": false
+    },
+    "table-filter-search": {
+      "minor": 112,
+      "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏",
       "legacyReadable": false
     },
     "table-show-select-all": {
@@ -1011,6 +1016,7 @@
     "6.108",
     "6.109",
     "6.110",
-    "6.111"
+    "6.111",
+    "6.112"
   ]
 }

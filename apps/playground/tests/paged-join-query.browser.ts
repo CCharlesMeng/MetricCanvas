@@ -55,14 +55,43 @@ test('query join keeps a ten-row page, performs source replacement and has no id
   await page.screenshot({path:test.info().outputPath('query-page.png'),fullPage:true});
 });
 
-test('record join preserves ten record rows and exposes unavailable empty filtering without clearing the page',async({page})=>{
+test('preloads the supplementary member before opening its menu and supports explicit all',async({page})=>{
+  await page.addInitScript(()=>{
+    const requests:Array<{field:string;queryField:string}>=[];
+    Object.assign(window,{joinCandidateRequests:requests});
+    window.addEventListener('metriccanvas:synthetic-paged-join-candidates',event=>requests.push((event as CustomEvent).detail));
+  });
+  await page.goto(`/pages/${document.id}`);
+  const table=page.locator('.runtime-view .table-widget');
+  const requests=()=>page.evaluate(()=>(window as typeof window&{joinCandidateRequests:Array<{field:string;queryField:string}>}).joinCandidateRequests);
+  await expect(table).toContainText('总条数： 80');
+  await expect.poll(async()=>(await requests()).some(request=>request.field==='project-status'&&request.queryField==='项目状态')).toBe(true);
+  const before=(await requests()).length;
+  const status=table.locator('th[data-column-field="project-status"]');
+  await status.locator('summary').click();
+  await expect(status.getByRole('checkbox',{name:'已关闭',exact:true})).toBeVisible();
+  await expect(status.getByRole('button',{name:'为空',exact:true})).toHaveCount(0);
+  expect(await requests()).toHaveLength(before);
+  await status.getByRole('checkbox',{name:'已关闭',exact:true}).check();
+  await expect(table).toContainText('总条数： 40');
+  await expect(status.locator('summary')).toHaveCSS('color','rgb(25, 25, 25)');
+  await status.getByRole('checkbox',{name:'全选',exact:true}).check();
+  await expect(table).toContainText('总条数： 80');
+  await status.locator('summary').click();
+  const names=table.locator('th[data-column-field="project-name"]');
+  await names.locator('summary').click();
+  await expect(names.getByRole('checkbox',{name:'全选',exact:true})).toHaveCount(0);
+  await page.screenshot({path:test.info().outputPath('supplementary-candidates.png'),fullPage:true});
+});
+
+test('record join preserves ten record rows without offering unsupported empty filtering',async({page})=>{
   await page.goto('/pages/record-join-on-demand');
   const table=page.locator('.runtime-view .table-widget');
   await expect(table).toContainText('总条数： 1205');await expect(table.locator('tbody tr')).toHaveCount(10);
   const filter=table.locator('th details.filter').first();
   await filter.locator('summary').click();
-  await filter.getByRole('button',{name:'为空',exact:true}).click();
-  await expect(table.locator('p[role=status]')).toContainText('为空');
+  await expect(filter.locator('.menu')).toBeVisible();
+  await expect(filter.getByRole('button',{name:'为空',exact:true})).toHaveCount(0);
   await expect(table.locator('tbody tr')).toHaveCount(10);
   await page.screenshot({path:test.info().outputPath('record-page.png'),fullPage:true});
 });

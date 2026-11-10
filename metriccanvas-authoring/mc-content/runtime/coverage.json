@@ -833,6 +833,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-header-filter-search.json",
+      "target": "product-contracts/page/conformance/valid/table-header-filter-search.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-back-hidden.json",
       "target": "product-contracts/page/conformance/valid/ioc-back-hidden.json",
       "scope": "exact product contract"
@@ -1600,6 +1605,31 @@
     {
       "source": "product:page/conformance/invalid/pie-table-native-legend.json",
       "target": "product-contracts/page/conformance/invalid/pie-table-native-legend.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-filter-search-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/table-filter-search-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-filter-search-old-false.json",
+      "target": "product-contracts/page/conformance/invalid/table-filter-search-old-false.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-filter-search-wrong-type.json",
+      "target": "product-contracts/page/conformance/invalid/table-filter-search-wrong-type.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-filter-search-range-mode.json",
+      "target": "product-contracts/page/conformance/invalid/table-filter-search-range-mode.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-filter-search-wrong-name.json",
+      "target": "product-contracts/page/conformance/invalid/table-filter-search-wrong-name.json",
       "scope": "exact product contract"
     },
     {
@@ -4510,6 +4540,31 @@
     {
       "source": "product:page/reference/errors/pie-table-native-legend.json",
       "target": "references/page-metadata/errors/pie-table-native-legend.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-filter-search-old-version.json",
+      "target": "references/page-metadata/errors/table-filter-search-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-filter-search-old-false.json",
+      "target": "references/page-metadata/errors/table-filter-search-old-false.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-filter-search-wrong-type.json",
+      "target": "references/page-metadata/errors/table-filter-search-wrong-type.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-filter-search-range-mode.json",
+      "target": "references/page-metadata/errors/table-filter-search-range-mode.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-filter-search-wrong-name.json",
+      "target": "references/page-metadata/errors/table-filter-search-wrong-name.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -7718,6 +7773,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-header-filter-search.json",
+      "target": "references/page-metadata/examples/table-header-filter-search.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/table.md",
       "target": "references/page-metadata/components/table.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8189,11 +8249,11 @@
     }
   ],
   "counts": {
-    "product": 1605,
+    "product": 1617,
     "authoring": 32,
     "modules": 36,
-    "topics": 302,
-    "nodes": 2640,
+    "topics": 304,
+    "nodes": 2641,
     "tools": 9,
     "components": 20
   },

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.81",
+  "schemaVersion": "6.112",
   "id": "paged-union-branches",
   "layout": "dashboard",
   "meta": {
@@ -580,7 +580,8 @@
                 "fixed": "left",
                 "sortable": true,
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 },
                 "link": true,
                 "navigateBySource": {
@@ -636,7 +637,8 @@
                 "title": "类型",
                 "width": 100,
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 }
               },
               {
@@ -665,7 +667,8 @@
                 "title": "可空说明",
                 "width": 160,
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 }
               }
             ],

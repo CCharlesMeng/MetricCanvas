@@ -456,9 +456,11 @@
 
 入口 `/pages/paged-join-on-demand`，页面 `paged-join-on-demand.json`，80个全新合成项目；入口 `/pages/record-join-on-demand`，页面 `record-join-on-demand.json`，1205条合成审批。启动 `pnpm dev:playground --host 127.0.0.1 --port 5183` 后打开对应路由；普通数据来自 `apps/playground/fixtures/query-join-gateway.ts`，记录数据来自 `apps/playground/fixtures/rejection-details/gateway.ts`，不调用真实DQE。
 
-普通表首屏10行、总数80，空闲后不扫描完整候选；下一页从P000011开始。过滤“项目状态=已关闭”总数40，旧审批次数排序清除；再点击审批次数排序，总数回80，状态勾选清除。只有本页键参与补列。记录表首屏10条、总数1205，使用真实合成记录id；补列源选页与“为空”无法正确表达时显示原因，保留原页。点击菜单才加载候选，不影响主表翻页。
+普通表首屏10行、总数80；可见后在空闲时按所属成员自动读取“项目名称”和补充成员“项目状态”的候选，不执行完整组合读取，下一页从P000011开始。打开状态菜单复用两个候选，过滤“项目状态=已关闭”总数40、筛选标记为黑色，旧审批次数排序清除；本列显式配置 showSelectAll:true，点击“全选”恢复总数80，省略 showSearch 不显示搜索框；项目名称显式 showSearch:true，省略全选开关不显示全选。两种菜单均无无法执行的“为空”入口。再点击审批次数排序，总数回80，状态勾选清除。只有本页键参与补列。记录表首屏10条、总数1205，使用真实合成记录id；补列源选页无法正确表达时保留原页及能力诊断。候选读取不影响主表翻页。
 
 可观察来源：普通预览发布 `metriccanvas:synthetic-paged-join` 事件，含单源生效查询，验证limit/offset和键范围；每页默认10条、补列批次10条。截断、重复与范围外键由执行测试注入并验证失败后没有完整恢复。浏览器脚本 `apps/playground/tests/paged-join-query.browser.ts` 与页面使用同一声明。合成执行、Chrome交互、CI和真实DQE分别验收；真实分页/计数/空值能力未因此获得证明。
+
+候选预览另发布 `metriccanvas:synthetic-paged-join-candidates` 事件，包含所属成员的候选请求，可在打开菜单前核对 project-status→项目状态 映射。维度与对象查询编码由执行层回归分别覆盖；本页合成网关不证明真实 DQE 权限或服务完整性。普通及紧凑变体的 select、日期和数值范围黑色标记与清空恢复灰色另由 `/pages/table-tiny-os` 和 `table-filter-active.browser.ts` 验证。
 
 ### 按页补列空关联编号兼容
 
@@ -600,3 +602,15 @@
 入口 `/pages/table-default-sort`，无 URL 参数；`pnpm dev:playground` 后直接访问。页面使用合成 inline 输入，`scores.compute` 计算总分，两张同源表分别声明降序和升序。参考对象为 `descending`、`ascending` 及其 `props.defaultSort`，移植时替换字段与计算口径，保持完整结果、本地分页和最终字段引用，不复制演示业务值。
 
 首屏左表从合成地区部12开始，右表从合成地区部01开始；左表下一页只含合成地区部02、01。点击一张表的排序列不改变另一张表，清空排序回到输入顺序。结构和行为回归拒绝旧版本、未知或重复字段、空规则、非法方向及远程结果；真实 DQE、权限和 Relay 不在合成验收范围内。
+
+## 表头候选搜索开关
+
+入口 `/pages/table-header-filter-search`，运行 `pnpm dev:playground` 后访问，无需 URL 参数或数据服务。页面八张表均使用同一份内联合成数据：前六张分别展示静态枚举与动态候选的 showSearch:true、false 和省略；最后两张“静态枚举：不配置全选”和“动态候选：不配置全选”省略 showSelectAll，同时保留 showSearch:true，展示两个开关独立。Schema 6.112 新页面省略时隐藏搜索。参考对象是本项目既有表头候选面板，移植时保留列绑定与筛选作用范围，开关不能证明后端查询或权限能力。
+
+1. 打开各表“状态”：true 显示“搜索选项”，false 和省略均隐藏；不出现“为空”按钮。
+2. 在 true 表搜索“否”，候选缩小但总条数仍4；勾选“否”后总条数1；再搜索不存在的文本显示“没有候选项”，已提交筛选仍保留。
+3. 清空关键词恢复候选与勾选，全选作用于完整匹配范围，总条数回4并包含空值。
+4. 访问旧页面 `/pages/table-column-candidates`，不新增声明仍有原动态候选搜索；显式升级保留原文件并为动态列写入 showSearch:true，静态枚举不新增搜索。
+5. 打开最后两张“不配置全选”表的“状态”：显示搜索框和单项复选框，没有“全选”；搜索“否”并勾选后总数1，清空搜索后仍没有全选，取消该项恢复4条（含空值）。其声明为 filterable:{mode:"select",showSearch:true}，未写 showSelectAll，而非显式 false。
+
+浏览器验收直接读取本页及旧页，协议回归覆盖 true/false 的版本下限、错误类型、错误拼写、范围筛选拒绝、升级幂等和输入不变。全部为内联合成数据，不证明真实 DQE/Relay 支持。

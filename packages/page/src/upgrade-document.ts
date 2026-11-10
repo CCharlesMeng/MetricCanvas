@@ -7,6 +7,7 @@ import { capabilityFloorErrors, versionPolicy } from './version';
 import type { PageDocument } from './page-document';
 import type { TypedError } from './errors';
 import { upgradeChartFilters } from './upgrade-chart-filters';
+import { upgradeTableCandidateSearch } from './table/candidate-search';
 import { canonicalizeJson } from './canonical-json';
 import { migrationError, object, type JsonObject, type MigrationChange } from './upgrade-types';
 
@@ -55,6 +56,7 @@ export function upgradePageDocument(input: unknown, target = versionPolicy.curre
   if (canonicalizeJson(input) !== canonicalizeJson(adapted)) report.changes.push({ rule: 'legacy-navigation', path: '/sections', message: '按现有 5.x 兼容规则转换站内导航为 href/query；部署路径需预览核对' });
   report.errors=upgradeIocHeader(document,report.changes);
   if(report.errors.length)return {...report,ok:false};
+  upgradeTableCandidateSearch(document, report.changes);
   document.schemaVersion = target;
   const normalized = normalizePageDocument(document, {evaluation});
   if (!normalized.ok) return { ...report, ok: false, errors: normalized.errors };

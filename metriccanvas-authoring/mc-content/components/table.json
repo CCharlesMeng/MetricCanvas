@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.111",
+  "currentWriter": "6.112",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/table-trend-arrows.json",
@@ -464,8 +464,13 @@
     },
     {
       "file": "references/page-metadata/examples/paged-union-page.json",
-      "requiredVersion": "6.81",
+      "requiredVersion": "6.112",
       "capabilities": [
+        {
+          "id": "table-filter-search",
+          "minor": 112,
+          "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏"
+        },
         {
           "id": "ioc-header-component",
           "minor": 81,
@@ -506,8 +511,13 @@
     },
     {
       "file": "references/page-metadata/examples/paged-union-branches.json",
-      "requiredVersion": "6.81",
+      "requiredVersion": "6.112",
       "capabilities": [
+        {
+          "id": "table-filter-search",
+          "minor": 112,
+          "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏"
+        },
         {
           "id": "ioc-header-component",
           "minor": 81,
@@ -610,8 +620,13 @@
     },
     {
       "file": "references/page-metadata/examples/table-hierarchy-selection.json",
-      "requiredVersion": "6.81",
+      "requiredVersion": "6.112",
       "capabilities": [
+        {
+          "id": "table-filter-search",
+          "minor": 112,
+          "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏"
+        },
         {
           "id": "ioc-header-component",
           "minor": 81,
@@ -729,8 +744,13 @@
     },
     {
       "file": "references/page-metadata/examples/table-hierarchy-lookup-param.json",
-      "requiredVersion": "6.81",
+      "requiredVersion": "6.112",
       "capabilities": [
+        {
+          "id": "table-filter-search",
+          "minor": 112,
+          "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏"
+        },
         {
           "id": "ioc-header-component",
           "minor": 81,
@@ -818,8 +838,13 @@
     },
     {
       "file": "references/page-metadata/examples/record-join-query-page.json",
-      "requiredVersion": "6.76",
+      "requiredVersion": "6.112",
       "capabilities": [
+        {
+          "id": "table-filter-search",
+          "minor": 112,
+          "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏"
+        },
         {
           "id": "paged-join-query-pagination",
           "minor": 76,
@@ -927,8 +952,13 @@
     },
     {
       "file": "references/page-metadata/examples/period-comparison-query-page.json",
-      "requiredVersion": "6.81",
+      "requiredVersion": "6.112",
       "capabilities": [
+        {
+          "id": "table-filter-search",
+          "minor": 112,
+          "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏"
+        },
         {
           "id": "ioc-header-component",
           "minor": 81,
@@ -1377,6 +1407,33 @@
           "id": "tab-container-component",
           "minor": 0,
           "description": "Tab 容器组件"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-header-filter-search.json",
+      "requiredVersion": "6.112",
+      "capabilities": [
+        {
+          "id": "table-filter-search",
+          "minor": 112,
+          "description": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏"
+        },
+        {
+          "id": "table-show-select-all",
+          "minor": 98,
+          "description": "表头显式配置全选入口，静态和动态候选全选后该列不限"
+        },
+        {
+          "id": "table-column-enum-values",
+          "minor": 80,
+          "description": "表格列前端枚举展示及静态筛选"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

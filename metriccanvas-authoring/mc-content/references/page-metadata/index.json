@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.111",
-  "schemaSha256": "acd9ba0e734ba6425af73f31148f93785d19b879ebfe7ff6ecdfcef6dce73718",
+  "schemaVersion": "6.112",
+  "schemaSha256": "64db40b8b56aabb223981d3737a34962d1ce2e7d231fa58fb573341cd07a1687",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -729,7 +729,8 @@
         "table-header-select-all",
         "table-header-select-all-query",
         "table-default-sort",
-        "rep-office-execution-efficiency"
+        "rep-office-execution-efficiency",
+        "table-header-filter-search"
       ],
       "rules": [
         "table-trend-arrows",
@@ -1333,7 +1334,8 @@
         "6.108",
         "6.109",
         "6.110",
-        "6.111"
+        "6.111",
+        "6.112"
       ]
     },
     {
@@ -14368,6 +14370,12 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSearch",
+      "path": "@tableColumn.filterable · anyOf[0].showSearch",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues",
       "path": "@tableColumn.filterable · anyOf[0].defaultValues",
       "required": "本分支可选",
@@ -22531,5 +22539,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "c41152c7f9f649b9bedbbb2494d680a6cfbeda2d2ef15e4ad0b92c7447d4795a"
+  "semanticSourceDigest": "feb3728de5597c0812434b141aab56460d6bda5657e06de890243b627dd86931"
 }

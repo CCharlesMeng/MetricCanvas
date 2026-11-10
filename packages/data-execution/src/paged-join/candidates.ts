@@ -4,9 +4,8 @@ import type {QueryRunner} from '../query-runner';
 import type {ColumnCandidatesPage} from '../ports';
 import {composeEffectiveQuery} from '../effective-query';
 
-/** Explicit menu reads only; no whole-join fallback and no ordinary snapshot mutation. */
+/** Read only the owning member, including idle preloads; never mutate ordinary snapshots. */
 export async function queryJoinCandidates(page:Page,data:PagedJoinDataSource,request:ColumnCandidatesRead,runner:QueryRunner,scope:string,signal?:AbortSignal):Promise<ColumnCandidatesPage>{
-  if(request.preload)return {kind:'unavailable'};
   const projection=data.source.projection[request.field],owner=projection?.member,member=data.source.members[owner];
   if(!member?.canSelectPage||data.source.records&&owner!==data.source.domainMember)return {kind:'unavailable'};
   const source=page.dataSources[member.source];

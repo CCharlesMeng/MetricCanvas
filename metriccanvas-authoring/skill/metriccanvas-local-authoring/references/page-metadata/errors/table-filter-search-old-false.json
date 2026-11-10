@@ -1,0 +1,34 @@
+{
+  "case": "table-filter-search-old-false",
+  "invariant": "table-filter-search",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏 由 6.112 引入，文档声明的是 6.109",
+      "paths": [
+        "/sections/0/components/0/props/columns/1/filterable/showSearch"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "showSearch": false
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

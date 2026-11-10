@@ -1,6 +1,12 @@
 import type { InvariantDefinition } from '../page-conformance-vectors';
 /** Contract vectors exercise the same complete page used in Playground. */
-export const columnInvariants: InvariantDefinition[] = [{id:'table-trend-arrows',description:'表格箭头',valid:['table-trend-arrows'],cases:[
+export const columnInvariants: InvariantDefinition[] = [{id:'table-filter-search',description:'候选搜索显式开关与历史版本边界',valid:['table-header-filter-search'],cases:[
+    {case:'table-filter-search-old-version',base:'table-header-filter-search',expect:/由 6.112 引入/,mutate:d=>{d.schemaVersion='6.109';}},
+    {case:'table-filter-search-old-false',base:'table-header-filter-search',expect:/由 6.112 引入/,mutate:d=>{d.schemaVersion='6.109';d.sections[0].components=d.sections[0].components.slice(1,2);}},
+    {case:'table-filter-search-wrong-type',base:'table-header-filter-search',expect:/boolean/,mutate:d=>{d.sections[0].components[0].props.columns[1].filterable.showSearch='yes';}},
+    {case:'table-filter-search-range-mode',base:'table-header-filter-search',expect:/showSearch/,mutate:d=>{d.sections[0].components[0].props.columns[1].filterable={mode:'dateRange',showSearch:true};}},
+    {case:'table-filter-search-wrong-name',base:'table-header-filter-search',expect:/showCandidateSearch/,mutate:d=>{const filter=d.sections[0].components[0].props.columns[1].filterable;delete filter.showSearch;filter.showCandidateSearch=true;}}
+  ]},{id:'table-trend-arrows',description:'表格箭头',valid:['table-trend-arrows'],cases:[
     {case:'table-arrow-old',base:'table-trend-arrows',expect:/由 6.99 引入/,mutate:d=>{d.schemaVersion='6.98';}},
     {case:'table-arrow-text',base:'table-trend-arrows',expect:/只支持 number 或 money/,mutate:d=>{d.sections[0].components[0].props.columns[0].arrowRule={mode:'sign',positive:'down',negative:'up'};}},
     {case:'table-arrow-type',base:'table-trend-arrows',expect:/object/,mutate:d=>{d.sections[0].components[0].props.columns[1].children[0].arrowRule='yes';}},

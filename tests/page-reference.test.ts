@@ -1,4 +1,5 @@
 import {upgradePageDocument} from '../packages/page/src/upgrade-document';
+import {upgradeTableCandidateSearch} from '../packages/page/src/table/candidate-search';
 import {appendIocComponentFixtures,featureConformancePages} from '../tools/scripts/page-conformance-sources';
 import { pageFilesById } from '../tools/scripts/page-files.mjs';
 import { createHash } from 'node:crypto';
@@ -35,6 +36,7 @@ function expectProjectedExample(content: string, actual: string, file: string): 
   const upgraded=original.iocHeader || String(original.schemaVersion).startsWith('5.')?upgradePageDocument(original):undefined;
   if(upgraded&&!upgraded.ok)throw Error(file);
   const {dashboardToolbar:_legacyToolbar,...candidate}=upgraded?.ok?upgraded.document:original;
+  upgradeTableCandidateSearch(candidate, []);
   const normalized = normalizePageDocument({...candidate, schemaVersion: versionPolicy.current});
   expect(normalized.ok, file).toBe(true);
   if (!normalized.ok) throw new Error(file);

@@ -7,6 +7,28 @@ import { createTableController } from '../src/table/controller';
 import comparisonFixture from '../../../../pages/capabilities/data/period-comparison/period-comparison-query-page.json';
 import { createQueryComparisonPreview } from '../../../../apps/playground/fixtures/query-comparison-gateway';
 import { initialFilterValues } from '../../runtime/src/filter-state';
+import joinFixture from '../../../../pages/capabilities/table/paged-join-on-demand.json';
+import { createPagedJoinPreview } from '../../../../apps/playground/fixtures/query-join-gateway';
+
+it('automatically reads supplementary-member candidates on idle and reuses them on open', async () => {
+  const parsed = parsePage(joinFixture); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  const table = parsed.page.sections[0].components[0]; if (table.type !== 'table') throw Error('table');
+  const preview = createPagedJoinPreview();
+  const fetchCandidates = vi.spyOn(preview.dataGateway, 'fetchColumnCandidates');
+  const stream = orchestrate(parsed.page, preview.dataGateway);
+  const stop = stream.subscribe(() => {}), controller = createTableController(parsed.page, () => stream, () => {});
+  try {
+    await vi.waitFor(() => expect(stream.captureRawSnapshots().get('projects')?.status).toBe('ready'));
+    controller.candidateBinding(table).oncandidatepreloadvisible(true);
+    await vi.waitFor(() => expect(controller.candidateBinding(table).columnCandidates['project-status']).toMatchObject({status:'ready',totalCount:2}));
+    expect(fetchCandidates.mock.calls.some(([request]) => request.field === 'project-status' && request.queryField === '项目状态')).toBe(true);
+    const count = fetchCandidates.mock.calls.length;
+    controller.candidateBinding(table).oncandidateopen('project-status', true);
+    expect(fetchCandidates).toHaveBeenCalledTimes(count);
+    expect(stream.getQueryView('projects')?.predicates).toEqual([]);
+    expect(preview.calls).toHaveLength(2);
+  } finally { controller.dispose(); stop(); }
+});
 
 it('reads candidates from the owning member despite a failed comparison supplement', async () => {
   const parsed = parsePage(comparisonFixture); if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));

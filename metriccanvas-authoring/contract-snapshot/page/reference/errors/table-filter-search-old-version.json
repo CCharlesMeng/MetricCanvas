@@ -1,0 +1,101 @@
+{
+  "case": "table-filter-search-old-version",
+  "invariant": "table-filter-search",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表头候选搜索显式配置，静态与动态候选统一支持，新页面默认隐藏 由 6.112 引入，文档声明的是 6.109",
+      "paths": [
+        "/sections/0/components/0/props/columns/1/filterable/showSearch",
+        "/sections/0/components/1/props/columns/1/filterable/showSearch",
+        "/sections/0/components/3/props/columns/1/filterable/showSearch",
+        "/sections/0/components/4/props/columns/1/filterable/showSearch",
+        "/sections/0/components/6/props/columns/1/filterable/showSearch",
+        "/sections/0/components/7/props/columns/1/filterable/showSearch"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "showSearch": true
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "showSearch": false
+                  }
+                }
+              ]
+            }
+          },
+          "…",
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "showSearch": true
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "showSearch": false
+                  }
+                }
+              ]
+            }
+          },
+          "…",
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "showSearch": true
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "showSearch": true
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-filter-search-old-version.json"
+}

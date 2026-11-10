@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.111",
+  "schemaVersion": "6.112",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-0fe07196"
@@ -348,7 +348,8 @@
         "references/page-metadata/examples/table-header-select-all.json",
         "references/page-metadata/examples/table-header-select-all-query.json",
         "references/page-metadata/examples/table-default-sort.json",
-        "references/page-metadata/examples/rep-office-execution-efficiency.json"
+        "references/page-metadata/examples/rep-office-execution-efficiency.json",
+        "references/page-metadata/examples/table-header-filter-search.json"
       ]
     }
   ],

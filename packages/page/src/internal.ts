@@ -101,6 +101,7 @@ export type { PagedUnionDataSource, PagedUnionSource, PagedUnionMember } from '.
 export { unionMemberKeyFields, validUnionKeyPart } from './paged-union-identity';
 
 export * from './table/columns';
+export { legacyTableCandidateSearch } from './table/candidate-search';
 export { hasHeaderDefaults, headerDefaultValues, tableDefaultsRemote } from './table/header-defaults';
 
 export { normalizeQueryTime, QueryTimeRangeError } from './query-time';

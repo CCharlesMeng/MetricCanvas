@@ -1,4 +1,4 @@
-import {isPagedJoinQuery,pagedJoinCandidateView,type PagedJoinDataSource} from '@metriccanvas/page/internal';
+import {isPagedJoinQuery,pagedJoinCandidateView,legacyTableCandidateSearch,type PagedJoinDataSource} from '@metriccanvas/page/internal';
 import { declaredQuerySort } from './query-sort';
 import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
 import {normalizeTableSelectView,columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
@@ -61,7 +61,6 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       return source.source.type==='pagedJoin'&&isPagedJoinQuery(source.source)?pagedJoinCandidateView(source as PagedJoinDataSource,view(table),field):view(table);
     }
     function preloadFields(table:TableComponent){
-      if(isPagedJoinQuery(page.dataSources[table.data.main].source))return [];
       return tableColumnLeaves(columns(table).component.props.columns).filter(column=>column.filterable?.mode==='select'&&!column.enumValues).flatMap(column=>{const field=mainColumnField(column.field);return field===undefined?[]:[field];});
     }
     const headers = new Map<string, Record<string, TableHeaderFilterValue>>();
@@ -198,7 +197,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         render(table: TableComponent): TableViewState {
             const committed = view(table);
             const sort = committed.sort.length || sortTouched.has(table.id) ? committed.sort : declaredQuerySort(page.dataSources[table.data.main], conditions());
-            return { allowEmptyFilter:isPagedJoinQuery(page.dataSources[table.data.main].source), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort, searchQuery: committed.search?.query, search: committed.search,
+            return { legacyCandidateSearch:legacyTableCandidateSearch(page.schemaVersion), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort, searchQuery: committed.search?.query, search: committed.search,
                 headerFilters: { ...renderHeaders(tableHeaders(committed.predicates)), ...headers.get(table.id) } };
         },
         headers(table: TableComponent) { return tableHeaders(view(table).predicates); },

@@ -10,7 +10,7 @@ export type TableHeaderFilterValue =
 
 /** 表格视图状态:由运行时/壳持有,组件只显示当前值并上抛变更。 */
 export interface TableViewState {
-  allowEmptyFilter?:boolean;
+  legacyCandidateSearch?:boolean;
   operationNotice?:string;
   /** Submitted literal search; draft input is held separately by the runtime. */
   searchQuery?: string;

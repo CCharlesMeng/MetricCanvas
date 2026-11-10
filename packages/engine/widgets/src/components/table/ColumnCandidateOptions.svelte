@@ -1,10 +1,11 @@
 <script lang="ts">
   import SelectAllOptions from './SelectAllOptions.svelte';
   import type { TableColumnCandidates } from './view-state';
-  let { field, snapshot, selected, all = false, showSelectAll = false, onchange, onselectall, onsearch, onmore, onretry }: {
+  let { field, snapshot, selected, all = false, showSelectAll = false, showSearch = false, onchange, onselectall, onsearch, onmore, onretry }: {
     field: string; snapshot?: TableColumnCandidates; selected: (string | number)[];
     onchange: (value: string | number) => void;
     showSelectAll?: boolean;
+    showSearch?: boolean;
     all?: boolean;
     onselectall: (values: (string | number)[], all: boolean) => void;
     onsearch?: (field: string, query: string) => void;
@@ -16,8 +17,10 @@
   const limited = $derived(snapshot?.status === 'error' && snapshot.error?.code === 'DQE_CANDIDATE_LIMIT_EXCEEDED');
 </script>
 <div class="candidates">
-  <input type="search" aria-label="搜索筛选候选值" placeholder="搜索选项" disabled={limited}
-    value={snapshot?.search ?? ''} oninput={event => onsearch?.(field, event.currentTarget.value)} />
+  {#if showSearch}
+    <input type="search" aria-label="搜索筛选候选值" placeholder="搜索选项" disabled={limited}
+      value={snapshot?.search ?? ''} oninput={event => onsearch?.(field, event.currentTarget.value)} />
+  {/if}
   {#if showSelectAll && !snapshot?.search}
     <SelectAllOptions values={snapshot?.candidates.map(candidate => candidate.value) ?? []} {selected} {all}
       disabled={!complete && !all} onchange={onselectall} />

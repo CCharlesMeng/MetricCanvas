@@ -51,7 +51,7 @@ export interface TableColumn {
   width?: number;
   fixed?: 'left' | 'right';
   sortable?: boolean;
-  filterable?: { mode: 'select'; showSelectAll?: boolean; defaultValues?: (string | number)[]; initialParam?: string; allBehavior?: 'values' | 'unrestricted' } | { mode: 'dateRange' | 'numberRange' };
+  filterable?: { mode: 'select'; showSelectAll?: boolean; showSearch?: boolean; defaultValues?: (string | number)[]; initialParam?: string; allBehavior?: 'values' | 'unrestricted' } | { mode: 'dateRange' | 'numberRange' };
   /**
    * 该列是行点击导航入口(ADR-0049)。只有声明了的列才响应 navigate;
    * 与 `selection` 同时存在时以 `selection` 为准。
@@ -109,7 +109,7 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     fixed: z.enum(['left', 'right']).optional(),
     sortable: z.boolean().optional(),
     filterable: z.union([
-      z.object({ mode: z.literal('select'), showSelectAll: z.boolean().optional().describe('是否展示全选入口；默认不展示。全选后该列不限，静态和动态候选均支持'), defaultValues: z.array(z.union([z.string(), z.number()])).optional(), initialParam: idZ.optional(), allBehavior: z.enum(['values', 'unrestricted']).optional() }).strict(),
+      z.object({ mode: z.literal('select'), showSelectAll: z.boolean().optional().describe('是否展示全选入口；默认不展示。全选后该列不限，静态和动态候选均支持'), showSearch: z.boolean().optional().describe('是否展示候选搜索框；6.112起默认隐藏，旧页面保留动态候选搜索。静态枚举和动态候选均支持'), defaultValues: z.array(z.union([z.string(), z.number()])).optional(), initialParam: idZ.optional(), allBehavior: z.enum(['values', 'unrestricted']).optional() }).strict(),
       z.object({ mode: z.enum(['dateRange', 'numberRange']) }).strict()
     ]).optional(),
     link: z.boolean().optional(),

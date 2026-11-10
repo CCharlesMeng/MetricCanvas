@@ -158,6 +158,15 @@
     return resolveField(column.field, data).field;
   }
 
+  let enumSearch = $state<Record<string, string>>({});
+  function showCandidateSearch(column: TableColumn): boolean {
+    return column.filterable?.mode === 'select' && (column.filterable.showSearch ?? (!column.enumValues && view.legacyCandidateSearch === true));
+  }
+  function enumOptions(column: TableColumn) {
+    const term = showCandidateSearch(column) ? (enumSearch[columnField(column)] ?? '').trim().toLowerCase() : '';
+    return (column.enumValues ?? []).filter(option => option.label.toLowerCase().includes(term));
+  }
+
   // 固定列的 sticky 偏移:左固定列累计其前方左固定列宽度,右固定列累计其后方右固定列宽度。
   // 无显式宽度的固定列按 120px 参与累计(与 colgroup 缺省一致,保证偏移与实际渲染吻合)
   const FALLBACK_FIXED_WIDTH = 120;
@@ -485,21 +494,25 @@
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">{#if props.variant === 'reportCompact'}▼{:else}<TableControlIcon name="filter" />{/if}</summary>
                         <div class="menu" class:select-menu={column.filterable.mode === 'select'} popover="auto">
                           {#if column.filterable.mode === 'select'}
-                            {#if view?.allowEmptyFilter}<button type="button" onclick={()=>onheaderfilter?.(columnField(column),{mode:'isNull'})}>为空</button>{/if}
                             {#if column.enumValues}
-                              {#if column.filterable.showSelectAll}
+                              {#if showCandidateSearch(column)}
+                                <input class="enum-search" type="search" aria-label="搜索筛选候选值" placeholder="搜索选项" bind:value={enumSearch[columnField(column)]} />
+                              {/if}
+                              {#if column.filterable.showSelectAll && !(showCandidateSearch(column) && enumSearch[columnField(column)]?.trim())}
                               <SelectAllOptions values={column.enumValues.map(option => option.value)} selected={selectedValues(columnField(column))} all={allFilterSelected(columnField(column))}
                                 onchange={(values, all) => setFilterValues(columnField(column), values, all)} />
                               {/if}
-                              {#each column.enumValues as option (JSON.stringify([typeof option.value,option.value]))}
+                              {#each enumOptions(column) as option (JSON.stringify([typeof option.value,option.value]))}
                                 <label class="option">
                                   <input type="checkbox" checked={selectedValues(columnField(column)).includes(option.value)} onchange={()=>toggleFilterValue(column,option.value)} />
                                   <span>{option.label}</span>
                                 </label>
+                              {:else}
+                                <span class="hint">没有候选项</span>
                               {/each}
                             {:else if columnCandidates}
                               <ColumnCandidateOptions field={columnField(column)} snapshot={columnCandidates[columnField(column)]}
-                                showSelectAll={column.filterable.showSelectAll} all={allFilterSelected(columnField(column))} selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(column, value)}
+                                showSelectAll={column.filterable.showSelectAll} showSearch={showCandidateSearch(column)} all={allFilterSelected(columnField(column))} selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(column, value)}
                                 onselectall={(values, all) => setFilterValues(columnField(column), values, all)}
                                 onsearch={oncandidatesearch} onmore={oncandidatemore} onretry={oncandidateretry} />
                             {:else}
@@ -1158,7 +1171,7 @@
     display: none;
   }
   .filter summary.active {
-    color: #2563eb;
+    color: #191919;
   }
   .filter summary:hover {
     background: #f4f4f5;
@@ -1193,6 +1206,17 @@
   .select-menu .option {
     white-space: normal;
     overflow-wrap: anywhere;
+  }
+  .enum-search {
+    width: 0;
+    min-width: 100%;
+    box-sizing: border-box;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #c2c2c2;
+    border-radius: 6px;
+    color: #191919;
+    font: inherit;
   }
   .option {
     display: flex;

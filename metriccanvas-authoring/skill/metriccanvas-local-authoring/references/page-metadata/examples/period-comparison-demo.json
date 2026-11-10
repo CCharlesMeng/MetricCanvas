@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.81",
+  "schemaVersion": "6.112",
   "id": "period-comparison-demo",
   "layout": "dashboard",
   "meta": {
@@ -417,7 +417,8 @@
                 },
                 "sortable": true,
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 }
               },
               {

@@ -1,0 +1,370 @@
+{
+  "schemaVersion": "6.112",
+  "id": "table-header-filter-search",
+  "layout": "dashboard",
+  "meta": {
+    "title": "表头候选搜索开关",
+    "description": "内联合成数据：静态枚举和动态候选分别展示 showSearch true、false 与省略，并各提供不配置 showSelectAll 的场景。搜索与全选独立配置，新页面均默认隐藏。"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "编号"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true,
+          "label": "状态"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "A",
+            "status": "是"
+          },
+          {
+            "id": "B",
+            "status": "否"
+          },
+          {
+            "id": "C",
+            "status": "待定"
+          },
+          {
+            "id": "D",
+            "status": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "search-options",
+      "components": [
+        {
+          "id": "static-true",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "static-true",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true,
+                  "showSearch": true
+                },
+                "enumValues": [
+                  {
+                    "value": "是",
+                    "label": "是"
+                  },
+                  {
+                    "value": "否",
+                    "label": "否"
+                  },
+                  {
+                    "value": "待定",
+                    "label": "待定"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        },
+        {
+          "id": "static-false",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "static-false",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true,
+                  "showSearch": false
+                },
+                "enumValues": [
+                  {
+                    "value": "是",
+                    "label": "是"
+                  },
+                  {
+                    "value": "否",
+                    "label": "否"
+                  },
+                  {
+                    "value": "待定",
+                    "label": "待定"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        },
+        {
+          "id": "static-omitted",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "static-omitted",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true
+                },
+                "enumValues": [
+                  {
+                    "value": "是",
+                    "label": "是"
+                  },
+                  {
+                    "value": "否",
+                    "label": "否"
+                  },
+                  {
+                    "value": "待定",
+                    "label": "待定"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        },
+        {
+          "id": "dynamic-true",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "dynamic-true",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true,
+                  "showSearch": true
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        },
+        {
+          "id": "dynamic-false",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "dynamic-false",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true,
+                  "showSearch": false
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        },
+        {
+          "id": "dynamic-omitted",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "dynamic-omitted",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        },
+        {
+          "id": "static-no-select-all",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "静态枚举：不配置全选",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSearch": true
+                },
+                "enumValues": [
+                  {
+                    "value": "是",
+                    "label": "是"
+                  },
+                  {
+                    "value": "否",
+                    "label": "否"
+                  },
+                  {
+                    "value": "待定",
+                    "label": "待定"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        },
+        {
+          "id": "dynamic-no-select-all",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "动态候选：不配置全选",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSearch": true
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

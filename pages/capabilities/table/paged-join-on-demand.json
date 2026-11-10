@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.112",
   "id": "paged-join-on-demand",
   "layout": "dashboard",
   "meta": {
     "title": "多查询按需分页",
-    "description": "80个合成项目，一键一行，支持按页补列和补充来源空关联编号告警；nulls=first/last演示可空合同金额沿用后端顺序；后操作查询源覆盖其他源的表格排序与过滤。"
+    "description": "80个合成项目，一键一行，支持按页补列和补充来源空关联编号告警；空闲自动查询各成员表头候选，项目状态显式显示全选；nulls=first/last演示可空合同金额沿用后端顺序；后操作查询源覆盖其他源的表格排序与过滤。"
   },
   "dataSources": {
     "project-approvals": {
@@ -235,7 +235,8 @@
                 "field": "project-name",
                 "title": "项目名称",
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 }
               },
               {
@@ -250,7 +251,8 @@
                 "field": "project-status",
                 "title": "项目状态",
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSelectAll": true
                 }
               },
               {

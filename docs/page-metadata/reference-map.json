@@ -880,7 +880,8 @@
         "table-header-select-all",
         "table-header-select-all-query",
         "table-default-sort",
-        "rep-office-execution-efficiency"
+        "rep-office-execution-efficiency",
+        "table-header-filter-search"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -896,7 +897,8 @@
         "packages/data-execution/src/source-program/session.ts",
         "packages/data-execution/src/source-program/column-candidates.ts",
         "packages/engine/runtime/src/table/reconcile-view.ts",
-        "packages/engine/runtime/src/table/session.ts"
+        "packages/engine/runtime/src/table/session.ts",
+        "packages/page/src/table/candidate-search.ts"
       ],
       "rules": [
         "table-trend-arrows",
@@ -1908,7 +1910,8 @@
     "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/pattern": "时间格式串；固定 UTC+8。",
     "finalizationName": "按名称查询默认日期；失败用当前日期，用户可改。",
     "#/definitions/tableComponent/properties/props/properties/defaultSort": "6.108：完整本地结果按最终静态 main 列字段声明初始排序；先计算、再排序和分页，不覆盖后续会话选择。",
-    "#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/direction": "默认排序方向：asc 升序，desc 降序；null 均排末尾。"
+    "#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/direction": "默认排序方向：asc 升序，desc 降序；null 均排末尾。",
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSearch": "6.112：true 显示候选搜索，false 或省略隐藏；静态枚举与动态候选均支持。旧版本动态搜索保留，显式升级写入 true。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2304,7 +2307,8 @@
     "6.108": "完整本地表格按最终字段声明初始排序，计算后先排序再分页。",
     "6.109": "精确搜索可引用补充数据槽字段，先完整查找匹配行键再约束主查询分页。",
     "6.110": "兼容读取版本；本批未引入该版本专属能力。",
-    "6.111": "IOC 页头支持 back:false 显式隐藏，旧 auto 废弃并兼容为 true。"
+    "6.111": "IOC 页头支持 back:false 显式隐藏，旧 auto 废弃并兼容为 true。",
+    "6.112": "表头候选搜索框显式配置，新页面默认隐藏，旧页兼容保留原表现。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3219,6 +3223,17 @@
         "跨数据槽精确搜索（6.109）"
       ],
       "dependencies": []
+    },
+    "table.candidateSearch": {
+      "module": "table",
+      "title": "表头候选搜索开关与历史页面兼容",
+      "roots": [
+        "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSearch"
+      ],
+      "headings": [
+        "列头候选搜索（6.112）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3389,6 +3404,7 @@
     "components/table.md": [
       "完整本地结果的默认排序（6.108）",
       "查询默认排序的首屏方向",
+      "列头候选搜索（6.112）",
       "列头筛选默认值（6.82）",
       "表头参数初值与全选语义（6.85）",
       "列头全选入口（6.98）",

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.76",
+  "schemaVersion": "6.112",
   "id": "record-join-query-page",
   "layout": "dashboard",
   "meta": {
@@ -480,7 +480,8 @@
                 "title": "生命状态",
                 "width": 100,
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 }
               },
               {
@@ -488,7 +489,8 @@
                 "title": "审批结果",
                 "width": 100,
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 }
               },
               {
@@ -506,7 +508,8 @@
                 "title": "审批阶段",
                 "width": 120,
                 "filterable": {
-                  "mode": "select"
+                  "mode": "select",
+                  "showSearch": true
                 }
               }
             ]

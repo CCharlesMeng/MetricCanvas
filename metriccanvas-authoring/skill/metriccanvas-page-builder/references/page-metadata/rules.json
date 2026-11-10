@@ -173,6 +173,20 @@
       ]
     },
     {
+      "id": "table-filter-search",
+      "description": "候选搜索显式开关与历史版本边界",
+      "valid": [
+        "table-header-filter-search"
+      ],
+      "invalid": [
+        "table-filter-search-old-version",
+        "table-filter-search-old-false",
+        "table-filter-search-wrong-type",
+        "table-filter-search-range-mode",
+        "table-filter-search-wrong-name"
+      ]
+    },
+    {
       "id": "table-trend-arrows",
       "description": "表格箭头",
       "valid": [

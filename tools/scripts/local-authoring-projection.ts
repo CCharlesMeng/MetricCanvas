@@ -1,4 +1,5 @@
 import { upgradePageDocument } from '../../packages/page/src/upgrade-document';
+import { upgradeTableCandidateSearch } from '../../packages/page/src/table/candidate-search';
 import { createHash } from 'node:crypto';
 import { builtinModules } from 'node:module';
 import { readFile, readdir, realpath } from 'node:fs/promises';
@@ -188,6 +189,7 @@ export function referenceProjection(outputs: Map<string, string>): Map<string, s
       const upgraded=needsUpgrade?upgradePageDocument(parsed):undefined;
       if(upgraded&&!upgraded.ok)throw new Error(`Invalid IOC Skill example: ${relative}`);
       const {dashboardToolbar:_legacyToolbar,...candidate}=upgraded?.ok?upgraded.document:parsed;
+      upgradeTableCandidateSearch(candidate, []);
       const normalized = normalizePageDocument({...candidate, schemaVersion: versionPolicy.current});
       if (!normalized.ok) throw new Error(`Invalid current Skill example: ${relative}`);
       const document = {...normalized.document, schemaVersion: stableExampleVersion(normalized.document, parsed.schemaVersion)};

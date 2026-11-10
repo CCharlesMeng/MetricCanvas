@@ -109,11 +109,11 @@ describe('query-paged join',()=>{
     expect(await read(parsed(),gateway)).toMatchObject({status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR'}});
     expect(preview.calls).toHaveLength(2);
   });
-  it('previews B candidates with no A condition and never preloads the full join',async()=>{
+  it('preloads B candidates with no A condition without reading the full join',async()=>{
     const page=parsed(),preview=createPagedJoinPreview(),program=createSourceProgram(page,{gateway:preview.dataGateway});
     try{
       const view={...defaultSourceView(page,'projects'),predicates:[{field:'approval-count',op:'gte' as const,value:70}]};
-      expect(await program.readColumnCandidates({sourceId:'projects',field:'project-status',conditions:new Map(),view,preload:true})).toEqual({kind:'unavailable'});
+      expect(await program.readColumnCandidates({sourceId:'projects',field:'project-status',conditions:new Map(),view,preload:true})).toMatchObject({kind:'values',totalCount:2});
       expect(await program.readColumnCandidates({sourceId:'projects',field:'project-status',conditions:new Map(),view})).toMatchObject({kind:'values',totalCount:2});
       expect(preview.calls).toHaveLength(0);
     }finally{program.dispose();}

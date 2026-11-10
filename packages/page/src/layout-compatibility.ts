@@ -2,6 +2,7 @@ import { documentIocHeader, hasLegacyDefaultHeader } from './header-binding';
 import type { TypedError } from './errors';
 import type { PageLayoutForm } from './page';
 import { versionPolicy } from './version';
+import { hasLegacyTableCandidateSearch } from './table/candidate-search';
 
 /** 6.1 增量兼容规则；两字段即使同值也不建立双真源。 */
 export function layoutCompatibilityErrors(document: unknown): TypedError[] {
@@ -22,6 +23,7 @@ export function canonicalLayoutDocument<T extends {
   const canonicalMinor = document.schemaVersion === '6.5' ? 5 :
     ['6.13', '6.14'].includes(document.schemaVersion) ? Number(document.schemaVersion.split('.')[1]) : versionPolicy.minor;
   const legacyDefault=(document.layout??layoutForm)==='dashboard' && !('dashboardToolbar' in document) && !documentIocHeader(document) && hasLegacyDefaultHeader(document);
-  const outputMinor=legacyDefault?Math.min(canonicalMinor,80):canonicalMinor;
+  const candidateMinor=hasLegacyTableCandidateSearch(document)?Math.min(canonicalMinor,111):canonicalMinor;
+  const outputMinor=legacyDefault?Math.min(candidateMinor,80):candidateMinor;
   return { ...rest, schemaVersion: `${versionPolicy.major}.${outputMinor}`, layout: document.layout ?? layoutForm ?? 'report' };
 }
