@@ -1,3 +1,4 @@
+import { tableDefaultSortErrors } from './table/default-sort';
 import {expandIocHeaderRegion,canonicalIocHeaderControls,iocHeaderControlErrors} from './ioc-header-normalization';
 import type { TemporalEvaluation } from './temporal-evaluation';
 import {sourceFilterIds} from './data-source-references';
@@ -1697,7 +1698,7 @@ function componentErrors(
       });
       visit(component.props.columns, `${componentPath}/props/columns`);
     }
-    errors.push(...tableSearchErrors(page,component,componentPath));
+    errors.push(...tableSearchErrors(page,component,componentPath), ...tableDefaultSortErrors(page,component,componentPath));
     errors.push(...tableDataErrors(page, component, componentPath));
     errors.push(...tablePresentationErrors(page, component, componentPath));
     errors.push(

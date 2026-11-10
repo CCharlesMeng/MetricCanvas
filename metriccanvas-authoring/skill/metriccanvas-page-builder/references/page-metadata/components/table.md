@@ -2,6 +2,18 @@
 
 columns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。
 
+<a id="local-default-sort"></a>
+
+## 完整本地结果的默认排序（6.108）
+
+`props.defaultSort: [{"field":"total-score","direction":"desc"}]` 声明表格实例的初始排序。规则使用最终页面字段，支持计算字段与多字段优先级；字段须属于已声明的静态 main 列，字段不可重复，数组不能为空。方向为 `asc` / `desc`。无需为了默认排序额外声明 `sortable`；只在需要用户点击列头排序时启用该列入口。
+
+引擎在完整结果计算完成后排序，再做本地分页；null 沿现有规则排末尾，同值保留输入顺序。声明适用于 inline 和明确 `resultScope:"complete"`、无查询窗口的普通 query；查询分页及 pagedJoin/pagedUnion 不接受本字段，沿用查询或组合源的默认排序。
+
+默认值只初始化表格会话，同源表格各自独立；用户排序、清空、翻页、普通业务筛选及显式恢复的视图不会重复初始化。列头沿现有无排序→升序→降序→清空循环，清空后使用输入顺序。导出冻结当前已提交排序。省略字段保留既有行为。
+
+完整合成场景 `/pages/table-default-sort` 的 `descending` / `ascending` 两张表共享计算源 `scores`，分别默认降序和升序、每页 10 行；用于验证计算后排序、连续分页与实例隔离，不连接真实服务。业务页 `/pages/partner-health` 的两张健康度表默认总分降序。
+
 ## 查询默认排序的首屏方向
 
 查询分页使用服务总条数；排序和表头筛选遵守查询分页限制。
@@ -500,7 +512,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 完整合成场景 `/pages/partner-health-interactions` 从业务页复用得分列和弹窗标题声明，以 `sumFields` 在前端计算总分；本地排序先处理完整计算结果，再分页，点击排序不发起 DQE 查询。业务入口 `/pages/partner-health` 的地区部和代表处表格沿用该本地路径；真实业务数据须由 DQE 提供。
 
 
-页面协议 6.107。结构真源为本册[schema.json](../schema.json)，SHA256 `699345cfdaa487f26bb52793af7e69220159e8a785100da38043e759247033a9`。字段表自动生成；可选不等于有默认值。
+页面协议 6.108。结构真源为本册[schema.json](../schema.json)，SHA256 `9dc8967a527a97ec7fea7be8342c9e0e03e80e534e0281c43d6ca992e04d6832`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -587,6 +599,51 @@ Schema位置：`#/definitions/tableComponent/properties/props`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 本分支必填 | required=["columns"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 组件的受控呈现配置。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f64656661756c74536f7274"></a>
+
+### `@tableComponent.props.defaultSort`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/defaultSort`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 6.108：完整本地结果按最终静态 main 列字段声明初始排序；先计算、再排序和分页，不覆盖后续会话选择。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f64656661756c74536f72742f6974656d73"></a>
+
+### `@tableComponent.props.defaultSort[]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/defaultSort/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["field","direction"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f64656661756c74536f72742f6974656d732f70726f706572746965732f6669656c64"></a>
+
+### `@tableComponent.props.defaultSort[].field`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f64656661756c74536f72742f6974656d732f70726f706572746965732f646972656374696f6e"></a>
+
+### `@tableComponent.props.defaultSort[].direction`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/direction`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["asc","desc"] | Schema未设默认；装配/运行时默认见语义说明 | 默认排序方向：asc 升序，desc 降序；null 均排末尾。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "asc" | 按原始可比较值升序，缺值仍排尾。 |
+| "desc" | 按原始可比较值降序，缺值仍排尾。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f7756697369626c655768656e"></a>
 
@@ -4119,6 +4176,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-header-filter-defaults-query](../examples/table-header-filter-defaults-query.json)：完整合法页面；查询仅为静态契约证据。
 - [table-header-select-all](../examples/table-header-select-all.json)：完整合法页面；查询仅为静态契约证据。
 - [table-header-select-all-query](../examples/table-header-select-all-query.json)：完整合法页面；查询仅为静态契约证据。
+- [table-default-sort](../examples/table-default-sort.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -4150,6 +4208,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - 源码/验证定位：`packages/page/src/table/validate-expansion.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/table/validate-selection.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/table/header-defaults.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/table/default-sort.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/data-execution/src/table-defaults.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 

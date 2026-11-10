@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.107",
-  "schemaSha256": "699345cfdaa487f26bb52793af7e69220159e8a785100da38043e759247033a9",
+  "schemaVersion": "6.108",
+  "schemaSha256": "9dc8967a527a97ec7fea7be8342c9e0e03e80e534e0281c43d6ca992e04d6832",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -727,7 +727,8 @@
         "table-header-filter-defaults",
         "table-header-filter-defaults-query",
         "table-header-select-all",
-        "table-header-select-all-query"
+        "table-header-select-all-query",
+        "table-default-sort"
       ],
       "rules": [
         "table-trend-arrows",
@@ -1327,7 +1328,8 @@
         "6.104",
         "6.105",
         "6.106",
-        "6.107"
+        "6.107",
+        "6.108"
       ]
     },
     {
@@ -13609,6 +13611,34 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/defaultSort",
+      "path": "@tableComponent.props.defaultSort",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/defaultSort/items",
+      "path": "@tableComponent.props.defaultSort[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/field",
+      "path": "@tableComponent.props.defaultSort[].field",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/direction",
+      "path": "@tableComponent.props.defaultSort[].direction",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
       "path": "@tableComponent.props.rowVisibleWhen",
       "required": "本分支可选",
@@ -22498,5 +22528,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "bc92040fd34775ecbca8e0e8c8a117167529e31f82473042dd73c793dd24fc7e"
+  "semanticSourceDigest": "09ca05fbf71185f0d93628569516f39e97063ef8eec02e96ee75f355cf4950ce"
 }

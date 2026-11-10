@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 107,
-  "current": "6.107",
+  "minor": 108,
+  "current": "6.108",
   "capabilities": {
+    "table-default-sort": {
+      "minor": 108,
+      "description": "完整本地表格按最终字段声明初始排序，先排序再分页",
+      "legacyReadable": false
+    },
     "number-precision-five": {
       "minor": 107,
       "description": "普通数值及带符号数值支持最多三、四、五位小数",
@@ -992,6 +997,7 @@
     "6.104",
     "6.105",
     "6.106",
-    "6.107"
+    "6.107",
+    "6.108"
   ]
 }

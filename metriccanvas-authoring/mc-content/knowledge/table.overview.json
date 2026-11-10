@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.107",
+  "schemaVersion": "6.108",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.overview"
@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。"
+        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>"
       ],
       "rules": [
         {
@@ -345,7 +345,8 @@
         "references/page-metadata/examples/table-header-filter-defaults.json",
         "references/page-metadata/examples/table-header-filter-defaults-query.json",
         "references/page-metadata/examples/table-header-select-all.json",
-        "references/page-metadata/examples/table-header-select-all-query.json"
+        "references/page-metadata/examples/table-header-select-all-query.json",
+        "references/page-metadata/examples/table-default-sort.json"
       ]
     }
   ],

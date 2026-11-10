@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.107",
+  "schemaVersion": "6.108",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.export"
@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。",
+        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
         "## Excel 导出（6.21）\n\nExcel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序，通过同一数据网关准备该表全部匹配行及其依赖。单表结果最多10,000行，准备最多5分钟；网关、服务端及显式声明的单批查询超时独立生效。超限、结果总数变化、分页提前结束或缺少完整性证明均明确失败，不下载部分结果。不同表的导出分别隔离，可取消；页面更新或销毁会中止。\n\n工作簿保持声明的列顺序、多级表头及按 `rowKey` 对齐的数据槽。次字段和徽标字段展开为独立列；数值保留原始数值类型，百分数沿用页面的百分数值口径。Excel 无法直接表达的万／亿缩放和自适应格式采用冻结的展示文本数值格式，底层值仍可计算；此类格式不会随用户在 Excel 中编辑值自动重新计算。语义 HTML 转为可读文本，链接、选择控件与图形装饰不进入单元格。空结果也可导出表头。\n\n普通表格、各表格变体、Tab 内表格复用该能力；详情表格在其完整查询作用域内本地搜索并导出。报告静态导出隐藏工具区，保留已提交搜索限定的行集。真实 DQE 的文本搜索编码仍需由集成应用按当前服务协议提供和验收。\n\n表头 dateRange 日期选择同样默认禁止未来日期；日历上限为今天，手工提交未来日期保留已应用筛选，不触发重查。上限在聚焦和提交时按本地日期更新。",
         "## 组合源数据异常提示与导出\n\n当 main 或其他数据槽的 pagedUnion/pagedJoin 动态结果经过兼容整理时，表格不插入额外提示；来源、处理方式和次数仅通过 `console.warn` 输出。默认空值显示 —；交互继续消费整理后的类型值，不将显示原文作为行键。Excel 数据工作表保留可用匹配行，另附“数据异常说明”；正常导出不增说明表。异常语义及资源边界由[组合表格异常兼容](../data-sources.md#table-result-recovery)维护，合成入口 `/pages/table-data-recovery`。"
       ],
@@ -347,7 +347,8 @@
         "references/page-metadata/examples/table-header-filter-defaults.json",
         "references/page-metadata/examples/table-header-filter-defaults-query.json",
         "references/page-metadata/examples/table-header-select-all.json",
-        "references/page-metadata/examples/table-header-select-all-query.json"
+        "references/page-metadata/examples/table-header-select-all-query.json",
+        "references/page-metadata/examples/table-default-sort.json"
       ]
     }
   ],
@@ -368,7 +369,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.107",
+        "$id": "https://metriccanvas/page/v6.108",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -430,6 +431,7 @@
           "columns"
         ],
         "properties": {
+          "defaultSort": "#/definitions/tableComponent/properties/props/properties/defaultSort",
           "rowVisibleWhen": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
           "title": "#/definitions/tableComponent/properties/props/properties/title",
           "subtitle": "#/definitions/tableComponent/properties/props/properties/subtitle",

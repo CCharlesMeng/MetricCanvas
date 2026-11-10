@@ -647,3 +647,5 @@ URL 参数清理与宿主地址同步：[初始化与清理场景](capabilities/
 - [下钻详情页自动返回](capabilities/navigation/README.md#下钻详情页自动返回)：清单下钻、刷新、同页换参数、跨页失效及新标签页独立进入的合成演示。
 
 完整月报场景 `/pages/report-monthly-complete`：Report 月份切换联动标题、四个指标卡、趋势、区域图和明细，并下载当前月份 PDF。`pnpm dev:playground` 使用专属本地合成数据网关，无需 DQE；操作和预期见[筛选场景说明](capabilities/filters/README.md#完整经营分析月报合成演示)。
+
+- [前端计算总分默认排序](capabilities/table/README.md#前端计算总分默认排序6108)：`/pages/table-default-sort`，完整结果计算后排序、本地分页和同源实例隔离；仅合成数据。

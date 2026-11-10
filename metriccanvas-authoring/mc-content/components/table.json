@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.107",
+  "currentWriter": "6.108",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/table-trend-arrows.json",
@@ -1233,6 +1233,43 @@
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-default-sort.json",
+      "requiredVersion": "6.108",
+      "capabilities": [
+        {
+          "id": "table-default-sort",
+          "minor": 108,
+          "description": "完整本地表格按最终字段声明初始排序，先排序再分页"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "sum-fields-zero",
+          "minor": 71,
+          "description": "字段求和可按零处理全部缺项，并支持单字段归零"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "data-source-computation",
+          "minor": 0,
+          "description": "页面数据源的受控计算阶段与具名算子(ADR-0046)"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

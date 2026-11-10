@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "2bfc22853d02e1f13b1102c6da8f9767e418a97c225b7055624f1445e9858633",
+  "sha256": "a83521afe0a3da0ad0ca15d73561a0b1e59a17d09c993b1c7d1837eaad1d2a46",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "077a8ab57f8cae9a08c16e5ae71206dbffa36adc586ac07716275dc94a4dae90"
+      "sha256": "f1b640908d9da3d1a7d885b1f592de6fc0b3769e467b7e532137011b764db675"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "f615b5ba3620dd8bf82703f44ecb78bf5bbc573859c6821f38fc912f7857b6e2"
+      "sha256": "3072aab9a9d4429714ca99901ea76b8b54cd5e4fde6e1bc6404296bf4d209fba"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1924,7 +1924,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "e9249ee6988d38ce6dee9a2deaffd4c3da01588a4646b4ee9ac7ac531b20b1c9"
+      "sha256": "2f45eccdc2a35a8224875cc8288855e4fe95601ad9599ac4ba58783d0f2f184f"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -2025,6 +2025,10 @@
     {
       "file": "packages/page/src/table/condition-scope.ts",
       "sha256": "b8346913c5c6cf6473aed93231f8cf55873a006ec346a8e854a00c8b8ee124d4"
+    },
+    {
+      "file": "packages/page/src/table/default-sort.ts",
+      "sha256": "3a22ad982d7e3f44e54c66fa70dbbef4710c83a73bbaf0dfabf37c0aa2e92f33"
     },
     {
       "file": "packages/page/src/table/edit.ts",
@@ -2144,15 +2148,15 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "b3c9ac9c333c37981cb43b22be4d78e14bef2e9350a10a0dba7842df0e740573"
+      "sha256": "828d1ed35f38ca6b495efb5939c4c3210a0ef3751c45b53507eb805420f6a733"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "974075fe25d607be30522bac61c6727e9e30de8157b3dcbe590105ca7abbe0e8"
+      "sha256": "c5949466ebd56e2fca6e0d30d4e85d37c81c3c7400d5bc1cd6907eeb0628c9aa"
     },
     {
       "file": "pages/README.md",
-      "sha256": "9ab19450a5601ab2db2bd3bccc39ab9429c9499b8af4446c6140fdd3ba862681"
+      "sha256": "5fb009422d47ed3354ad23a41c5a1cecf00aa184d97c446ce2312c02e4a2037d"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2748,7 +2752,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "0d5e8bf92611ad44a7a09169e2f44855bb3283f63ff185d93babc78b73ff3439"
+      "sha256": "f866e503ae5ef451c3cebc4d3497357f5c1f88436a2aced3a0dc4ef351738d6b"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2884,7 +2888,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "dc39b980175e1c1f00b9851a9c0196941dfc5085065fd5a2a9b088df4d3e09ff"
+      "sha256": "283539c1b1ccf8c5a99785e092d36852cf9b7aafbde1255f9c12d253ee8d476f"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2991,6 +2995,10 @@
       "sha256": "b725325d5debf85ce99bb7156232b0c8e6544b550224061e0bdd95ef9c2b30d2"
     },
     {
+      "file": "pages/capabilities/table/table-default-sort.json",
+      "sha256": "ff5cd8467e62f802bef68790107e2216748e8ac225016e3f576f46eb5c694fc8"
+    },
+    {
       "file": "pages/capabilities/table/table-detail-overlay.json",
       "sha256": "bac2ae7683365fdafa65c3f705ab36967fa1582f217f405fa0e26fa50a5f0072"
     },
@@ -3092,7 +3100,7 @@
     },
     {
       "file": "pages/partner-health.json",
-      "sha256": "1822ea0d2f0930744d4b91d73172d3e722a5ecc074f36962ee9febc93dd2b691"
+      "sha256": "c21fbacabcbdb2a000a514941ee6a58330af485576be862a3ff8f130d46a9924"
     },
     {
       "file": "pages/platform/README.md",
@@ -3112,7 +3120,7 @@
     },
     {
       "file": "pages/temporary/README.md",
-      "sha256": "cbabb36dbfe7207a105365ad56f31a47d38f0826c5662b7ef1f696ca45a7526d"
+      "sha256": "a2336a05a0199a4e15270150e313aaf9ccc88ed055400994053ecf94d3126d7a"
     },
     {
       "file": "pages/temporary/business-rejection-pagination-10/README.md",
@@ -3620,7 +3628,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "524977fc2d45229a214eb138e0a628f823d9a1611782d85d8bb33209aba68f79"
+      "sha256": "19b3af1cababdbc2eb5ab619defa89ea074289a93eba6e5a307e6b49552c17e8"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",

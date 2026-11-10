@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "6.108",
+  "id": "table-default-sort",
+  "layout": "dashboard",
+  "meta": {
+    "title": "前端计算总分默认排序（合成数据）",
+    "description": "完整本地结果计算后按总分降序，再按每页10行分页；同源表格状态独立。"
+  },
+  "dataSources": {
+    "scores": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "base": {
+          "type": "number",
+          "role": "measure"
+        },
+        "bonus": {
+          "type": "number",
+          "role": "measure"
+        },
+        "total-score": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "合成地区部08",
+            "base": 8,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部02",
+            "base": 2,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部12",
+            "base": 12,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部04",
+            "base": 4,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部10",
+            "base": 10,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部06",
+            "base": 6,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部01",
+            "base": 1,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部09",
+            "base": 9,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部03",
+            "base": 3,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部11",
+            "base": 11,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部05",
+            "base": 5,
+            "bonus": 1
+          },
+          {
+            "region": "合成地区部07",
+            "base": 7,
+            "bonus": 1
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "sumFields",
+          "fields": [
+            "base",
+            "bonus"
+          ],
+          "output": "total-score",
+          "onMissing": "zero"
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "前端计算总分默认排序（合成数据）"
+            }
+          }
+        },
+        {
+          "id": "descending",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "scores"
+          },
+          "props": {
+            "title": "desc · 同源独立排序",
+            "rowKey": "region",
+            "defaultSort": [
+              {
+                "field": "total-score",
+                "direction": "desc"
+              }
+            ],
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": "total-score",
+                "title": "健康度总分",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        },
+        {
+          "id": "ascending",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "scores"
+          },
+          "props": {
+            "title": "asc · 同源独立排序",
+            "rowKey": "region",
+            "defaultSort": [
+              {
+                "field": "total-score",
+                "direction": "asc"
+              }
+            ],
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": "total-score",
+                "title": "健康度总分",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

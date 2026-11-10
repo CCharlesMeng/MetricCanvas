@@ -26,9 +26,11 @@ test('the exact partner-health page sorts both computed tables locally and title
   for(const [grain,label] of [['region','地区部'],['representative','代表处']]){
     if(grain==='representative')await page.getByRole('tab',{name:label,exact:true}).last().click();
     const table=page.getByRole('table').first();
-    await expect(table.locator('tbody tr').first()).toContainText(`合成${label}08`,{timeout:25000});
+    await expect(table.locator('tbody tr').first()).toContainText(`合成${label}12`,{timeout:25000});
     const before=requests;
     const sort=table.getByRole('button',{name:/^伙伴健康度得分/});
+    await sort.click();
+    await expect(table.locator('tbody tr').first()).toContainText(`合成${label}08`);
     await sort.click();
     await expect(table.locator('tbody tr').first()).toContainText(`合成${label}01`);
     await sort.click();

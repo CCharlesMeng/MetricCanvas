@@ -1,5 +1,6 @@
 import { conditionZ, interactionShape, visibilityShape } from '../condition';
 import { z } from 'zod';
+import { tableSortZ } from '../../table/query-view';
 import type { FieldBinding, FieldReference } from '../../field';
 import {
   componentIdZ,
@@ -202,6 +203,7 @@ export const tableComponentZ = z
     data: tableDataZ,
     props: z
       .object({
+        defaultSort: z.array(tableSortZ).min(1).optional(),
         rowVisibleWhen: conditionZ.optional(),
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),

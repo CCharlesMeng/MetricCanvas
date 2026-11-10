@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.107",
+  "schemaVersion": "6.108",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-0fe07196"
@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。",
+        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
         "## 多来源整体排序与来源导航（6.61）\n\nTable 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑定最终页面字段。字段对应、来源常量、null、整体默认排序和分页声明见[数据源](../data-sources.md#paged-union)。默认排序在两个来源的全部匹配记录上生效，再取全局页面；不要求一次取回全部记录。用户交互排序只开放 `ordering.sortableFields` 声明的字段。沿用 Table 的升降序与 Shift 多列操作，移除最后一项用户排序恢复源默认。\n\n链接列可声明 `navigateBySource: { field, cases }`：`field` 引用当前行的来源文本维度，`cases` 以来源值为键，每个值是普通导航目标（`href`、`query`、条件和目标参数校验）。它不能与 `navigate`、`openDetail` 或 `selection` 同时声明；配合 `link: true`，命中的来源使用对应目标并携带原始行字段，未配置的来源显示普通文本。来源身份字段可以不作为可见列。普通导航的 URL、权限与条件规则继续生效。\n\n完整示例 `paged-union-page`，浏览器场景 `/pages/multi-source-table` 及 `/pages/multi-source-contract-detail`、`/pages/multi-source-commercial-detail`。演示来源为本地合成分页接口，入口与验收步骤见表格示例说明。"
       ],
       "rules": [
@@ -346,7 +346,8 @@
         "references/page-metadata/examples/table-header-filter-defaults.json",
         "references/page-metadata/examples/table-header-filter-defaults-query.json",
         "references/page-metadata/examples/table-header-select-all.json",
-        "references/page-metadata/examples/table-header-select-all-query.json"
+        "references/page-metadata/examples/table-header-select-all-query.json",
+        "references/page-metadata/examples/table-default-sort.json"
       ]
     }
   ],

@@ -1,7 +1,8 @@
 {
-  "schemaVersion": "6.85",
-  "id": "table-header-filter-param-source",
+  "schemaVersion": "6.108",
+  "id": "table-default-sort",
   "layout": "dashboard",
+  "dataSources": {},
   "sections": [
     {
       "id": "main",
@@ -14,12 +15,11 @@
           },
           "props": {
             "identity": {
-              "title": "表头初值下钻入口（合成）"
+              "title": "前端计算总分默认排序（合成数据）"
             }
           }
         }
       ]
     }
-  ],
-  "dataSources": {}
+  ]
 }

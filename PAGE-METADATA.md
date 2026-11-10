@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.108：完整本地表格通过 `props.defaultSort` 声明最终字段的初始排序，复用现有排序规则，在计算完成后先排序再分页；用户后续排序、清空和恢复视图优先。远程排序继续在查询或组合源声明。见[本地默认排序](docs/page-metadata/components/table.md#local-default-sort)，合成入口 `/pages/table-default-sort`。
+
 6.107：新增 `number-3/4/5` 与 `number-3/4/5-signed`，最多保留对应小数位并去尾零，不加千分位；带符号格式按舍入后的展示结果统一正负号、颜色及箭头，舍入零为中性。复用 format/defaultFormat，无新增字段。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
 
 按需组合查询分页允许可空字段排序，补列和完整导出沿用选页成员返回的顺序及空值位置，不再要求排序字段声明 `nullable:false`。Schema 字段净增0；关联键、窗口和准确总数校验保持。见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?nulls=first` 与 `?nulls=last`。

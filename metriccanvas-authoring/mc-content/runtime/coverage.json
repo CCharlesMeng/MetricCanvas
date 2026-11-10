@@ -833,6 +833,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-default-sort.json",
+      "target": "product-contracts/page/conformance/valid/table-default-sort.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/number-precision-five.json",
       "target": "product-contracts/page/conformance/valid/number-precision-five.json",
       "scope": "exact product contract"
@@ -7683,6 +7688,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-default-sort.json",
+      "target": "references/page-metadata/examples/table-default-sort.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/table.md",
       "target": "references/page-metadata/components/table.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8154,11 +8164,11 @@
     }
   ],
   "counts": {
-    "product": 1598,
+    "product": 1600,
     "authoring": 32,
     "modules": 36,
-    "topics": 296,
-    "nodes": 2636,
+    "topics": 298,
+    "nodes": 2640,
     "tools": 9,
     "components": 20
   },

@@ -22,7 +22,7 @@ export function defaultTableView(page: Page, table: TableComponent, context: Con
     const values = normalizeTableSelectValues(column, headerDefaultValues(column, page)), field = mainColumnField(column.field);
     return values.length && field !== undefined ? [{field, op:'in' as const, values:[...values]}] : [];
   });
-  return { ...structuredClone(base), predicates };
+  return { ...structuredClone(base), sort: structuredClone(table.props.defaultSort ?? base.sort), predicates };
 }
 /** Complete replacement preserves an explicitly restored empty view. */
 export function initialTableViews(page: Page, context: ConditionContext, restored: ReadonlyMap<string, TableQueryView> = new Map(), limits: ReadonlyMap<string, number> = new Map()) {
