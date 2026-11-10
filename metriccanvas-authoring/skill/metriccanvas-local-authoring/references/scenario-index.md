@@ -70,6 +70,7 @@
 | 选季度仍传 month，或年／季／月的请求粒度不符合预期 | 当前已应用期间、实际消费的查询分支、periodPolicy 与自定义时间字段；页头类型不能证明查询粒度 | [期间选择定位与修复](period-selection-repair.md)；精确主题 `query.period-policy` |
 | 联合查询／left join 校验失败，B 不支持账期，补列未请求或关联后缺行 | 组合类型、成员筛选矩阵、主表行粒度、行键与关联键、首个失败请求；区分结构约束与真实字段查询能力 | [多源查询定位与修复](multi-source-query-repair.md)；`data.pagedJoin.pagination`、`data.pagedJoin.records` |
 | 查询未执行、被拒绝或空结果 | 执行入口、生效条件、输入集合、真实响应；区分请求失败与成功空结果 | [数据分析](data-analysis.md)，再选对应查询／级联逻辑 |
+| 表格搜索报“数据网关未配置全表文本搜索能力” | 实际页面修订、`fields/options`、生效查询的匹配方式与网关 `encodeSearch`；此错误在搜索请求发送前抛出 | [全表文本搜索定位与修复](table-search-gateway-repair.md)：页面精确搜索、网关适配及源码修改位置 |
 | 缺行、重复行、排序／分页／导出不一致 | 行粒度、稳定键、totalCount、完整结果与当前窗口 | 上方对象查询、pagedJoin、pagedUnion 或窗口级联；不要从 UI 当前页推断总集合 |
 | 数值、百分比或空值显示不对 | queryField、字段类型、原始值、单位／刻度与格式 | `fields.core`、`fields.format`；[查询容错](page-metadata/examples/query-numeric-tolerance.json)；Playground `query-numeric-tolerance` |
 | IOC 区域切换或 URL 恢复后局部筛选消失、隐藏后仍过滤、返回全球未恢复 | Region 的选中值与层级分别核对；所有控件显隐和相关查询绑定同步对账，用原始 URL 复现 | [区域与局部筛选联动](region-local-filter-repair.md)；`query.bindingWhen` |

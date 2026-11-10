@@ -36,6 +36,8 @@ pnpm exec tsx .agents/skills/repair-page-metadata/scripts/inspect-page-metadata.
 
 一组错误若由同一个缺失引用、错误字段空间或旧版结构级联产生，只把最上游的一项列为根因，其余标记为派生错误。错误类型是路由线索，不是根因结论。
 
+遇到 `DQE_CONFIG_ERROR: 数据网关未配置全表文本搜索能力`，读取[专门排障说明与源码位置](references/table-search-gateway-repair.md)，先核对请求前失败、实际搜索分支与部署版本，再按业务需求修改页面精确搜索配置或集成应用的 `encodeSearch`。
+
 ## 3. 定位最早可控边界
 
 按以下证据优先级判定预期值：
