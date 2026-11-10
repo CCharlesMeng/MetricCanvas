@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 109,
-  "current": "6.109",
+  "minor": 111,
+  "current": "6.111",
   "capabilities": {
     "table-slot-search": {
       "minor": 109,
@@ -53,9 +53,14 @@
       "description": "时间格式串按固定UTC+8统一展示与导出",
       "legacyReadable": false
     },
+    "ioc-header-back-hidden": {
+      "minor": 111,
+      "description": "IOC 页头显式 back:false 隐藏返回；auto 废弃并兼容为 true",
+      "legacyReadable": false
+    },
     "ioc-header-auto-back": {
       "minor": 96,
-      "description": "IOC 详情页按有效下钻来源自动返回",
+      "description": "IOC 页头旧 auto 声明兼容读取，运行行为等同 back:true",
       "legacyReadable": false
     },
     "period-aggregation": {
@@ -1004,6 +1009,8 @@
     "6.106",
     "6.107",
     "6.108",
-    "6.109"
+    "6.109",
+    "6.110",
+    "6.111"
   ]
 }

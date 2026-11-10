@@ -3,10 +3,10 @@
  import {createHref} from '../integration/routes';
  import ReadingHeader from '../ReadingHeader.svelte';import ToolAction from '../ToolAction.svelte';import {parsePage,pageListEntry} from '@metriccanvas/page/internal';import {onMount} from 'svelte';import {usePlatformServices} from '../integration/services';import type {PageRevision} from '../page-assets/contract';import RevisionPreview from '../RevisionPreview.svelte';
  const services=usePlatformServices();const {pageAssets}=services;const {navigate}=services.navigation;
- let returnRevision=$state(0);const runtimeNavigation=createReadingRuntimeNavigation(services,()=>{returnRevision;});let inputSearch=$state('');
+ const runtimeNavigation=createReadingRuntimeNavigation(services);let inputSearch=$state('');
  let {pageId,resourceId,editable=true}:{pageId:string;resourceId:string|null;editable?:boolean}=$props();let revision=$state<PageRevision|null>(null);let loading=$state(true),error=$state('');const controller=new AbortController();
  const title=$derived.by(()=>{if(!revision)return pageId;const parsed=parsePage(revision.document);return parsed.ok?pageListEntry(parsed.page).title:pageId;});
- onMount(()=>{const stopReturn=runtimeNavigation.subscribeReturn(()=>returnRevision++);const stop=services.navigation.subscribe(url=>{const query=new URLSearchParams(url.search);query.delete('resource');inputSearch=query.toString();});void load();return()=>{stopReturn();stop();controller.abort();};});
+ onMount(()=>{const stop=services.navigation.subscribe(url=>{const query=new URLSearchParams(url.search);query.delete('resource');inputSearch=query.toString();});void load();return()=>{stop();controller.abort();};});
  async function load(){loading=true;error='';try{const value=await pageAssets.read(resourceId?{pageId,resourceId}:await pageAssets.resolve(pageId,controller.signal),controller.signal);if(!controller.signal.aborted)revision=value;}catch(cause){if(!controller.signal.aborted)error=String(cause);}finally{if(!controller.signal.aborted)loading=false;}}
 </script>
 <section class="reading">

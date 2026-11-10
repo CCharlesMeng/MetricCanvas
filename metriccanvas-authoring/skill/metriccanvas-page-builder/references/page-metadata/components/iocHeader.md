@@ -38,7 +38,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 完整合成验收入口 `/pages/ioc-header-controls`，声明与操作见场景目录 `pages/capabilities/ioc-header/controls/README.md`。真实 Operation Map 接口与 DQE 数据由集成环境另验。
 
 
-页面协议 6.109。结构真源为本册[schema.json](../schema.json)，SHA256 `3f314006f5cbf67e9ee9da76b2a8ffce129de94ddf6680d5daa9b0a21bba8c5f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.111。结构真源为本册[schema.json](../schema.json)，SHA256 `acd9ba0e734ba6425af73f31148f93785d19b879ebfe7ff6ecdfcef6dce73718`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -391,7 +391,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/bac
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；true 启用，6.111 起 false 显式隐藏，省略隐藏；旧 auto 已废弃但等同 true。默认按浏览器后退能力显示并调用 history.back()，可选 navigation.back 覆盖，无需来源记录。 |
 
 <a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6261636b2f616e794f662f30"></a>
 
@@ -401,11 +401,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/bac
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 独立分支（不合并required） | const=true | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-| 允许值 | 解释与适用条件 |
-|---|---|
-| true | 用于选择@iocHeaderComponent.props.back · anyOf[0]分支；同分支其它约束同时成立。 |
+| "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6261636b2f616e794f662f31"></a>
 

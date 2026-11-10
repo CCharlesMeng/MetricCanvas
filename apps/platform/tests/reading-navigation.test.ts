@@ -7,6 +7,7 @@ it('translates canonical reading URLs, projects actual target inputs and preserv
  const navigate=vi.fn(async()=>true),replaceSearch=vi.fn();
  const services={navigation:{base:'/metrics',current:()=>new URL('https://portal.test/metrics/manage/pages/source?resource=r1'),navigate,replaceSearch},pageAssets:{resolve:vi.fn(async()=>({pageId:document.id,resourceId:'target-r'})),read:vi.fn(async()=>({pageId:document.id,document}))}} as unknown as Pick<PlatformServices,'navigation'|'pageAssets'>;
  const adapter=createReadingRuntimeNavigation(services),href='/pages/'+document.id+'?project-id=P&project-name=N&origin=O&regions=north&regions=south#title';
+ expect(adapter.back).toBeUndefined();expect(adapter.returnContext).toBeUndefined();
  expect(adapter.resolveHref!(href)).toBe('https://portal.test/metrics/manage/pages/'+document.id+'?project-id=P&project-name=N&origin=O&regions=north&regions=south#title');
  const controller=new AbortController(),contract=await adapter.resolveTargetInputs!(href,{signal:controller.signal});expect(contract?.pageId).toBe(document.id);expect(Object.keys(contract!)).toEqual(['pageId','iocRegion','params','filters']);expect(contract?.iocRegion).toBe(true);
  expect(adapter.navigate!({href})).toBe(true);expect(navigate).toHaveBeenCalledOnce();adapter.replaceSearch!('month=2026-09');expect(replaceSearch).toHaveBeenCalledWith('month=2026-09&resource=r1');

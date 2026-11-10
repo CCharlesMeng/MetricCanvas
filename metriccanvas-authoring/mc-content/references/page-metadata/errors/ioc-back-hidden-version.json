@@ -1,0 +1,27 @@
+{
+  "case": "ioc-back-hidden-version",
+  "invariant": "ioc-header-back-hidden",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头显式 back:false 隐藏返回；auto 废弃并兼容为 true 由 6.111 引入，文档声明的是 6.109",
+      "paths": [
+        "/sections/0/components/0/props/back"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "back": false
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

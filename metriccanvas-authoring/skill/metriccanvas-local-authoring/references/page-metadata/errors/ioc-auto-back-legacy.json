@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "IOC 详情页按有效下钻来源自动返回 由 6.96 引入，文档声明的是 5.4",
+      "message": "IOC 页头旧 auto 声明兼容读取，运行行为等同 back:true 由 6.96 引入，文档声明的是 5.4",
       "paths": [
         "/sections/0/components/0/props/back"
       ]

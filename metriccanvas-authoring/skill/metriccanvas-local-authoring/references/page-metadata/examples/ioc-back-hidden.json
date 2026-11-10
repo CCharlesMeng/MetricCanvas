@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "6.111",
+  "id": "ioc-back-hidden",
+  "layout": "dashboard",
+  "meta": {
+    "title": "显式隐藏返回"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "显式隐藏返回"
+            },
+            "back": false
+          }
+        },
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "静态合成演示。back:false 显式关闭返回，即使浏览器能后退或集成应用提供返回函数也不显示。"
+          }
+        }
+      ]
+    }
+  ]
+}

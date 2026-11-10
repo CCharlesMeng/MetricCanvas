@@ -23,7 +23,7 @@
             "presentation": {
               "layout": "inline"
             },
-            "back": "auto",
+            "back": true,
             "filterIds": [
               "active"
             ]
@@ -48,7 +48,7 @@
             "span": 12
           },
           "props": {
-            "body": "合成演示。同一详情页换项目保留清单来源，新标签页或独立打开不显示返回。",
+            "body": "合成演示。浏览器可后退时显示返回；点击退到浏览器上一条历史记录，修改参数后也遵循原生历史。",
             "links": [
               {
                 "label": "继续下钻",

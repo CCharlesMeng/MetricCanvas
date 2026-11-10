@@ -1733,7 +1733,7 @@
     "#/properties/iocHeader/properties/identity/properties/description/properties/presentation": "说明直接显示或通过键盘可达说明入口展开。",
     "#/properties/iocHeader/properties/identity/properties/tags/items/properties/text": "业务标签文字；缺值不产生空色块。",
     "#/properties/iocHeader/properties/identity/properties/facts": "显式期间/时间事实；不根据类别自动生成当前时间。",
-    "#/properties/iocHeader/properties/back": "返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。",
+    "#/properties/iocHeader/properties/back": "返回意图；true 启用，6.111 起 false 显式隐藏，省略隐藏；旧 auto 已废弃但等同 true。默认按浏览器后退能力显示并调用 history.back()，可选 navigation.back 覆盖，无需来源记录。",
     "#/properties/iocHeader/properties/filterIds": "按序唯一认领静态可见的页级筛选；不含图表独立或详情私有筛选。",
     "#/properties/iocHeader/properties/presentation": "仅改变密度和折叠，不改变筛选语义。",
     "#/properties/iocHeader/properties/presentation/properties/density": "普通或紧凑页头。",
@@ -1881,7 +1881,7 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/presentation": "说明直接显示或通过键盘可达说明入口展开。",
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/tags/items/properties/text": "业务标签文字；缺值不产生空色块。",
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts": "显式期间/时间事实；不根据类别自动生成当前时间。",
-    "#/definitions/iocHeaderComponent/properties/props/properties/back": "返回意图；默认浏览器 history.back()，浏览器判断不可后退时隐藏；可选 navigation.back 覆盖，无需 returnContext。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/back": "返回意图；true 启用，6.111 起 false 显式隐藏，省略隐藏；旧 auto 已废弃但等同 true。默认按浏览器后退能力显示并调用 history.back()，可选 navigation.back 覆盖，无需来源记录。",
     "#/definitions/iocHeaderComponent/properties/props/properties/filterIds": "按序唯一认领静态可见的页级筛选；不含图表独立或详情私有筛选。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation": "仅改变密度和折叠，不改变筛选语义。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/density": "普通或紧凑页头。",
@@ -2265,7 +2265,7 @@
     "#/properties/schemaVersion=\"6.93\"": "语义数值格式、设备精度及相对变化基期边界；作者版本6.93。",
     "#/properties/schemaVersion=\"6.94\"": "柱状图、折线图系列与表格字段列可显式声明展示单位。",
     "#/properties/schemaVersion=\"6.95\"": "表格单元格 selection.writes 可指定目标筛选的 level，复用统一筛选状态、页头回显和逐层查询绑定。",
-    "#/properties/schemaVersion=\"6.96\"": "IOC 页头 back:\"auto\" 仅按有效下钻来源显示并返回来源 URL，保留 back:true。",
+    "#/properties/schemaVersion=\"6.96\"": "IOC 页头旧 back:\"auto\" 可读，已废弃并兼容为 back:true，不再要求下钻来源。",
     "avg": "有效月值的算术平均，零参与、空值与缺月不补零",
     "#/properties/schemaVersion=\"6.97\"": "近一年业务分组及逐字段求和/平均",
     "#/properties/schemaVersion=\"6.98\"": "显式列头全选入口；静态和动态候选全选后该列不限。",
@@ -2302,7 +2302,9 @@
     "number-5-signed": "最多保留5位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。",
     "6.107": "新增普通及带符号的三、四、五位小数格式，最多位数、去尾零、按展示值判断符号方向。",
     "6.108": "完整本地表格按最终字段声明初始排序，计算后先排序再分页。",
-    "6.109": "精确搜索可引用补充数据槽字段，先完整查找匹配行键再约束主查询分页。"
+    "6.109": "精确搜索可引用补充数据槽字段，先完整查找匹配行键再约束主查询分页。",
+    "6.110": "兼容读取版本；本批未引入该版本专属能力。",
+    "6.111": "IOC 页头支持 back:false 显式隐藏，旧 auto 废弃并兼容为 true。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

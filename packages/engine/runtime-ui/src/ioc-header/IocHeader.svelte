@@ -10,7 +10,7 @@
   } = $props();
   let browser = $state<BrowserReturn>();
   onMount(() => { browser = window; });
-  const backAction = $derived(headerBackAction(model, onback, browser, returnContext));
+  const backAction = $derived(headerBackAction(model, onback, browser));
   $effect(() => {
     if (note && !staticView) console.warn('[MetricCanvas][IOC_HEADER_NOTICE]', note);
   });
@@ -51,7 +51,7 @@
   {#if hasIdentity}
     <div class="identity">
       <div class="heading">
-        {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回来源页'} onclick={backAction}>{flow?'<':'←'}</button>{/if}
+        {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回上一页'} onclick={backAction}>{flow?'<':'←'}</button>{/if}
         {#if model.title}<h1 data-ioc-title>{model.title}</h1>{/if}
         {#each model.tags as tag (tag.id)}<span data-ioc-tag={tag.id} data-tone={tag.tone} class="tag">{tag.text}</span>{/each}
       </div>

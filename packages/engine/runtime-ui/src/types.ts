@@ -19,8 +19,13 @@ export interface RuntimeNavigation {
   resolveHref?(href:string):string;
   /** Trusted target declaration projection; never loads authorization candidates. */
   resolveTargetInputs?(href:string,options:{signal:AbortSignal}):import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined|Promise<import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined>;
-  /** Validated drill-through provenance. Context back is auto-only; top-level back remains a compatible fallback. Invalidate/update on independent entry. */
-  returnContext?: { entryId: string; label?: string; back?(): void };
+  /** Optional source metadata/label; does not gate IOC return. */
+  returnContext?: {
+    entryId: string;
+    label?: string;
+    /** @deprecated Ignored by the header; use navigation.back to override browser return. */
+    back?(): void;
+  };
   /** Host-owned query keys retained alongside declared page inputs; never page Schema. */
   preserveSearchParams?: readonly string[];
   /** Replace the current entry without feeding the change back into mount/update. */

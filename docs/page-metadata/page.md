@@ -46,9 +46,9 @@ IOC 业务页的公共 `region` 输入只允许页头中的一个组织树：`di
 
 `back:true` 声明返回意图，运行时默认调用当前窗口的 `history.back()`，无需集成应用提供路由或 `returnContext`。浏览器挂载后优先用 `window.navigation.canGoBack` 判断可否后退；不支持该 API 时回退到 `history.length>1`。无浏览器环境或判断不可后退时隐藏默认按钮。历史长度包含前进记录，旧浏览器的长度回退不能保证存在前一条记录，此时按原生行为不跳转。集成应用可选提供 `navigation.back` 覆盖默认行为，提供函数即显示按钮，`returnContext` 只用于可选来源信息及无障碍标签。未声明 back 时不显示；只读允许返回，静态导出不包含返回按钮。旧工具栏兼容路径仍需自定义返回函数，不新增默认行为。返回不维护第二套导航栈，不承诺分页、排序、滚动等完整视图恢复。合成场景 `/pages/ioc-default-back-source` → `/pages/ioc-default-back-target` 验证浏览器返回、刷新与自定义覆盖。可选actions、有限枚举/单选、条件启用、V2候选、最新期上限和全页操作分别保留B2–B6规划，6.36不接受这些尚未交付字段。
 
-6.96 新增 `props.back:"auto"`：同标签页受控跨页下钻具有有效来源且集成应用提供返回处理时，IOC 页头显示返回，点击回到进入详情前的来源 URL。直接打开、收藏夹或新标签页打开没有来源时隐藏；不能仅凭 `history.length`、通用返回函数或 URL 的 `from` 判定。详情页刷新、筛选更新、同页手改查询参数保留来源；改到另一页面后再直接进入详情，不复用旧来源。嵌套下钻返回直接来源。`back:true` 与省略的行为保持，来源 URL 之外的分页、排序、Tab、滚动不保证恢复；静态导出不含按钮。来源识别和记录归集成应用，运行时消费有效 `navigation.returnContext.entryId` 与来源返回动作（优先 `returnContext.back`，兼容既有 `navigation.back`），两者缺一时隐藏自动返回。集成应用应在来源失效后更新导航输入。
+`props.back` 统一声明返回意图：`true` 启用，6.111 起可用 `false` 显式隐藏，省略同样隐藏。6.96 引入的 `"auto"` 已废弃，历史声明仍可读，运行行为与 `true` 完全一致；新页面只使用布尔值。两种启用写法均不检查下钻来源，不需要 `navigation.returnContext.entryId`，也不从 URL 的 `from` 推断来源。默认按浏览器可否后退决定显示并调用 `history.back()`；自定义覆盖统一使用 `navigation.back`，传入函数即显示。旧 `returnContext.back` 不再参与页头返回，仅保留兼容类型，`returnContext.label` 仍可设置无障碍标签。静态导出始终隐藏。
 
-Playground 与 Platform 使用 `createBrowserDrillReturn`，将来源关联浏览历史条目，不按目标 pageId 缓存；同页参数变化从连续的同页条目承接。该默认集成依赖 Navigation API 的 `entries/getState/updateCurrentEntry`，历史信息不可用时隐藏自动返回；其他集成应用可提供等价的有效来源契约。`preserveNavigationEntry` 保留筛选 `replaceState` 前后的条目状态。演示 `/pages/ioc-auto-back-source?region=north` → `/pages/ioc-auto-back-detail?project=1`，合成数据，无真实 DQE。
+Playground 与 Platform 的 IOC 页头使用上述浏览器默认返回，不再按记录的来源 URL 覆盖后退。刷新不会新增历史条目；修改查询参数后返回哪一页遵循浏览器历史，而不是跳过同页历史回到清单。直接进入、新标签页和经过其他页面后进入均只看当前窗口实际后退能力。没有 Navigation API 时回退到 `history.length>1`，不再因来源跟踪 API 不可用而隐藏。示例 `/pages/ioc-auto-back-source?region=north` → `/pages/ioc-auto-back-detail?project=1` 已改用 `back:true`，历史 auto 由兼容夹具与浏览器用例覆盖；`/pages/ioc-back-hidden` 验证显式关闭。均为静态合成场景，无真实 DQE。
 
 共用筛选协调对write/writeMany/控件/action/地图/URL恢复执行整组类型与边界校验；非法组整次拒绝。依赖变化一次清理所有后代，自动清空进入待确认门禁；用户显式选择或清空才解除。非空维度初值须经当前候选验证；loading/error/unavailable或不合法候选只暂停消费它的查询及下游，无关查询继续。候选重试读取当前依赖；成功和失败都检查代次，缓存按本实例、filterId、层级、完整规范化依赖隔离。只读拦截全部用户写入口，初始化/restore仍校验，静态隐藏不意味着停止查询。门禁同时约束目标表导出和整页静态准备。
 

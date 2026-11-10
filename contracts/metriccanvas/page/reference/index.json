@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.109",
-  "schemaSha256": "3f314006f5cbf67e9ee9da76b2a8ffce129de94ddf6680d5daa9b0a21bba8c5f",
+  "schemaVersion": "6.111",
+  "schemaSha256": "acd9ba0e734ba6425af73f31148f93785d19b879ebfe7ff6ecdfcef6dce73718",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -388,7 +388,7 @@
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
-      "sha256": "ab5f8824000d2286d67b636d9c28a4c9a737124c25ab4ba23d29a2cbe504ff5a"
+      "sha256": "09a7a07f47ae8dc0e2a3bf3df7c4cb488d0ab01c3ae4cbe76eeb0ded9253704b"
     },
     {
       "file": "packages/page/src/schema/navigation.ts",
@@ -512,7 +512,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "2ed98b1f13f135211c74344135fd293e902c48346a90420296d85b85b9dfd6da"
+      "sha256": "d7fd08c98732c4333935c97f5fb2a43ff4d6ace001ff070a7ef54548ce412e00"
     }
   ],
   "modules": {
@@ -2114,7 +2114,9 @@
         "6.106",
         "6.107",
         "6.108",
-        "6.109"
+        "6.109",
+        "6.110",
+        "6.111"
       ]
     },
     {
@@ -2627,8 +2629,7 @@
       "pointer": "#/properties/iocHeader/properties/back/anyOf/0",
       "path": "$.iocHeader.back · anyOf[0]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
-      "const": true
+      "module": "page.md"
     },
     {
       "pointer": "#/properties/iocHeader/properties/back/anyOf/1",
@@ -20000,8 +20001,7 @@
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0",
       "path": "@iocHeaderComponent.props.back · anyOf[0]",
       "required": "独立分支（不合并required）",
-      "module": "components/iocHeader.md",
-      "const": true
+      "module": "components/iocHeader.md"
     },
     {
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1",

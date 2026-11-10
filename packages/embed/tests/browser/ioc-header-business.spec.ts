@@ -37,7 +37,7 @@ test('time context intersects trusted candidates; empty intersection waits expli
 });
 test('detail enum stays private and single month still emits compact mtime',async({page})=>{
   await page.goto('/pages/ioc-header-business-detail-demo');const kind=page.locator('[data-filter-id="detail-kind"]');await kind.getByRole('button',{name:'详情档位',exact:true}).click();await kind.getByRole('option',{name:'详情二级'}).click();await expect(page.getByText(/合成 · .*detail_kind=L2/)).toBeVisible();
-  const month=page.locator('[data-filter-id="month"]').getByRole('combobox');await month.fill('2026-08');await month.press('Enter');await expect(page.getByText(/合成 · .*mtime=202608.*detail_kind=L2/)).toBeVisible();await expect(page.getByRole('button',{name:'返回来源页'})).toHaveCount(0);
+  const month=page.locator('[data-filter-id="month"]').getByRole('combobox');await month.fill('2026-08');await month.press('Enter');await expect(page.getByText(/合成 · .*mtime=202608.*detail_kind=L2/)).toBeVisible();await expect(page.getByRole('button',{name:'返回上一页'})).toHaveCount(0);
 });
 test('IOC Region rejects external level tabs before dispatching queries',async({page})=>{
   await page.route('**/pages/ioc-header-business-tree-demo.json',async route=>{

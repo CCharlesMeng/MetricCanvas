@@ -106,8 +106,6 @@
         activeURL = url.href;
         preserveNavigationEntry(()=>replaceState(url, page.state));
       },
-    get returnContext(){returnRevision;page.url.href;const context=returns.current();return context?{entryId:context.entryId,label:'返回来源页'}:undefined;},
-    get back(){returnRevision;page.url.href;return returns.current()?()=>void returns.back(href=>goto(href)).then(()=>returnRevision++).catch(error=>console.warn('[MetricCanvas][NAVIGATION_ERROR]',error)):undefined;}
   };
 
   $effect(() => {

@@ -1,0 +1,50 @@
+{
+  "case": "ioc-back-hidden-version",
+  "invariant": "ioc-header-back-hidden",
+  "input": {
+    "schemaVersion": "6.109",
+    "id": "ioc-back-hidden",
+    "layout": "dashboard",
+    "meta": {
+      "title": "显式隐藏返回"
+    },
+    "dataSources": {},
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "page-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "显式隐藏返回"
+              },
+              "back": false
+            }
+          },
+          {
+            "id": "instructions",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "静态合成演示。back:false 显式关闭返回，即使浏览器能后退或集成应用提供返回函数也不显示。"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/back",
+      "message": "IOC 页头显式 back:false 隐藏返回；auto 废弃并兼容为 true 由 6.111 引入，文档声明的是 6.109"
+    }
+  ]
+}

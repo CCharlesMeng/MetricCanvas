@@ -16,7 +16,7 @@ export const iocHeaderZ = z.object({
     tags: z.array(z.object({ id: idZ, text: nonEmptyTextValueZ, tone: z.enum(['neutral', 'info', 'success', 'warning', 'danger']).optional() }).strict()).min(1).optional(),
     facts: z.array(z.object({ id: idZ, kind: z.enum(['queryPeriod', 'latestDataPeriod', 'refreshedAt', 'generatedAt']), label: nonEmptyTextValueZ, value: z.union([nonEmptyTextValueZ,z.object({fact:idZ,part:z.enum(['latest','latestComplete','refreshedAt','generatedAt'])}).strict()]) }).strict()).min(1).optional()
   }).strict().optional(),
-  back: z.union([z.literal(true), z.literal('auto')]).optional(),
+  back: z.union([z.boolean(), z.literal('auto')]).optional(),
   readOnly: z.boolean().optional(),
   note: z.string().min(1).optional(),
   filterIds: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),

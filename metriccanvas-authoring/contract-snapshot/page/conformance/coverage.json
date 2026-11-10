@@ -1,8 +1,18 @@
 {
   "invariants": [
     {
+      "id": "ioc-header-back-hidden",
+      "description": "6.111 显式 back:false 隐藏，省略同样隐藏；auto 仅为 true 的兼容写法",
+      "valid": [
+        "ioc-back-hidden"
+      ],
+      "invalid": [
+        "ioc-back-hidden-version"
+      ]
+    },
+    {
       "id": "ioc-header-auto-back",
-      "description": "自动返回仅由有效下钻来源启用，6.96增加auto取值",
+      "description": "6.96 的 auto 声明兼容读取，返回行为等同 true，不再要求来源",
       "valid": [
         "ioc-auto-back-page",
         "ioc-auto-back-legacy-root"

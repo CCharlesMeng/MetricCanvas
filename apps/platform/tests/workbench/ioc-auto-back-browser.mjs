@@ -4,7 +4,7 @@ import {chromium,expect} from '../../../../packages/embed/node_modules/@playwrig
 import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
-const ids=['ioc-auto-back-source','ioc-auto-back-detail','ioc-auto-back-subdetail','ioc-auto-back-unrelated','ioc-default-back-source','ioc-default-back-target'];
+const ids=['ioc-auto-back-source','ioc-auto-back-detail','ioc-auto-back-subdetail','ioc-auto-back-unrelated','ioc-default-back-source','ioc-default-back-target','ioc-back-hidden'];
 const documents=await Promise.all(ids.map(async id=>JSON.parse(await readFile(`pages/capabilities/navigation/${id}.json`,'utf8'))));
 const app=resolve('apps/platform');
 const server=await createServer({root:app,configFile:false,plugins:[svelte()],resolve:{alias:{$lib:resolve(app,'src/lib'),$pages:resolve('pages'),$fixtures:resolve('docs/examples')}},server:{host:'127.0.0.1',port:0}});
@@ -29,18 +29,15 @@ async function drill(){await page.goto(source);await page.getByRole('link',{name
 try{
  await drill();await expect(page).toHaveURL(/\/manage\/pages\/ioc-auto-back-detail\?/);
  await page.reload();await expect(page.locator(back)).toBeVisible();
- await page.goto(detail);await expect(page.locator(back)).toBeVisible();
  await page.getByRole('checkbox',{name:'仅有效'}).check();await expect(page).toHaveURL(/active=true/);
- await page.reload();await expect(page.locator(back)).toBeVisible();
+ await page.getByRole('link',{name:/^继续下钻/}).click();await expect(page.locator(back)).toBeVisible();
+ await page.locator(back).click();await expect(page).toHaveURL(/ioc-auto-back-detail/);await expect(page).toHaveURL(/active=true/);
  await page.locator(back).click();await expect(page).toHaveURL(source);
- await drill();await page.getByRole('link',{name:/^继续下钻/}).click();await expect(page.locator(back)).toBeVisible();
- await page.locator(back).click();await expect(page).toHaveURL(/ioc-auto-back-detail/);await expect(page.locator(back)).toBeVisible();
- await page.locator(back).click();await expect(page).toHaveURL(source);
- await drill();await page.goto(base+'manage/pages/ioc-auto-back-unrelated');await page.goto(detail);await expect(page.locator(back)).toHaveCount(0);
+ await page.goto(base+'manage/pages/ioc-auto-back-unrelated');await page.goto(detail);await expect(page.locator(back)).toBeVisible();
+ await page.locator(back).click();await expect(page).toHaveURL(base+'manage/pages/ioc-auto-back-unrelated');
  const tab=await context.newPage();await tab.goto(detail);await expect(tab.locator('[data-ioc-title]')).toBeVisible();await expect(tab.locator(back)).toHaveCount(0);
+ await page.goto(base+'manage/pages/ioc-back-hidden');await expect(page.locator('[data-ioc-title]')).toBeVisible();await expect(page.locator(back)).toHaveCount(0);
  await page.goto(base+'manage/pages/ioc-default-back-source');await page.getByRole('link',{name:/^打开默认返回页/}).click();await expect(page.locator(back)).toBeVisible();
- await page.goto(base+'manage/pages/ioc-default-back-target?unused=value');await expect(page.locator(back)).toBeVisible();
- const entry=await page.evaluate(()=>navigation.currentEntry.key);await page.locator(back).click();await expect.poll(()=>page.evaluate(()=>navigation.currentEntry.key)).not.toBe(entry);
- await expect(page).toHaveURL(base+'manage/pages/ioc-default-back-target');await page.locator(back).click();await expect(page).toHaveURL(base+'manage/pages/ioc-default-back-source');
- expect(errors).toEqual([]);console.log('PASS Platform saved-page drill-through: translated routes, source URL, refresh, manual params, filters, nested return, direct entry and new tab; fixture HTTP only');
+ await page.locator(back).click();await expect(page).toHaveURL(base+'manage/pages/ioc-default-back-source');
+ expect(errors).toEqual([]);console.log('PASS Platform browser return: translated routes, refresh, filters, nested/native return, unrelated previous page, hidden false and fresh tab; fixture HTTP only');
 }catch(error){console.log('ERRORS',errors);console.log('ENTRIES',JSON.stringify(await page.evaluate(()=>({href:location.href,entries:navigation.entries().map(e=>({url:e.url,state:e.getState(),key:e.key})),current:navigation.currentEntry.key}))));throw error;}finally{await browser.close();await server.close();}

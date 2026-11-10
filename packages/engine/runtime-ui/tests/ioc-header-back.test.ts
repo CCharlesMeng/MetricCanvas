@@ -40,21 +40,20 @@ describe('IOC header default browser return', () => {
   });
 });
 
-describe('IOC auto return requires both provenance and action',()=>{
- const auto={back:'auto' as const};
- it('never substitutes browser history or a generic callback for a source',()=>{
-  const browser={history:{length:10,back:vi.fn()}},callback=vi.fn();
-  expect(headerBackAction(auto,undefined,browser)).toBeUndefined();
-  expect(headerBackAction(auto,callback,browser)).toBeUndefined();
-  expect(headerBackAction(auto,undefined,browser,{entryId:'source'})).toBeUndefined();
-  expect(headerBackAction(auto,callback,browser,{entryId:''})).toBeUndefined();
-  expect(headerBackAction(auto,callback,browser,{entryId:'source'})).toBe(callback);
-  expect(browser.history.back).not.toHaveBeenCalled();
+describe('deprecated auto uses the same browser return as true',()=>{
+ it('uses browser history without a source context',()=>{
+  const history={length:2,back:vi.fn()};
+  headerBackAction({back:'auto'},undefined,{history})?.();
+  expect(history.back).toHaveBeenCalledOnce();
  });
-});
-
-it('a context-specific return action is used only by auto and cannot override true',()=>{
- const sourceBack=vi.fn(),browserBack=vi.fn(),context={entryId:'source',back:sourceBack};
- headerBackAction({back:'auto'},undefined,undefined,context)?.();expect(sourceBack).toHaveBeenCalledOnce();
- headerBackAction({back:true},undefined,{history:{length:2,back:browserBack}},context)?.();expect(browserBack).toHaveBeenCalledOnce();expect(sourceBack).toHaveBeenCalledOnce();
+ it('honors actual backward availability and the old-browser fallback',()=>{
+  const history={length:3,back:vi.fn()};
+  expect(headerBackAction({back:'auto'},undefined,{history,navigation:{canGoBack:false}})).toBeUndefined();
+  expect(headerBackAction({back:'auto'},undefined,{history:{length:1,back:vi.fn()}})).toBeUndefined();
+  expect(headerBackAction({back:'auto'},undefined,undefined)).toBeUndefined();
+ });
+ it('uses a custom navigation.back without any source context',()=>{
+  const callback=vi.fn();
+  expect(headerBackAction({back:'auto'},callback,undefined)).toBe(callback);
+ });
 });

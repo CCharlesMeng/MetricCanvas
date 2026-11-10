@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.109",
-  "schemaSha256": "3f314006f5cbf67e9ee9da76b2a8ffce129de94ddf6680d5daa9b0a21bba8c5f",
+  "schemaVersion": "6.111",
+  "schemaSha256": "acd9ba0e734ba6425af73f31148f93785d19b879ebfe7ff6ecdfcef6dce73718",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1331,7 +1331,9 @@
         "6.106",
         "6.107",
         "6.108",
-        "6.109"
+        "6.109",
+        "6.110",
+        "6.111"
       ]
     },
     {
@@ -1844,8 +1846,7 @@
       "pointer": "#/properties/iocHeader/properties/back/anyOf/0",
       "path": "$.iocHeader.back · anyOf[0]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
-      "const": true
+      "module": "page.md"
     },
     {
       "pointer": "#/properties/iocHeader/properties/back/anyOf/1",
@@ -19217,8 +19218,7 @@
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0",
       "path": "@iocHeaderComponent.props.back · anyOf[0]",
       "required": "独立分支（不合并required）",
-      "module": "components/iocHeader.md",
-      "const": true
+      "module": "components/iocHeader.md"
     },
     {
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1",
@@ -22531,5 +22531,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "81e1f65710eb19b2147017e2be47bf57e72699241f074356515a68c7f9e5e6e5"
+  "semanticSourceDigest": "c41152c7f9f649b9bedbbb2494d680a6cfbeda2d2ef15e4ad0b92c7447d4795a"
 }
