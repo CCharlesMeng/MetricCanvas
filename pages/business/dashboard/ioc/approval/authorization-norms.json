@@ -1,0 +1,488 @@
+{
+  "schemaVersion": "6.101",
+  "id": "authorization-norms",
+  "layout": "dashboard",
+  "meta": {
+    "title": "授权规范",
+    "description": "地区部授权与规则情况明细。由统计期间与区域筛选驱动：region 筛选器为 geo-pc-code 层级维度（geo/region-dept/office），父表 filterBindings 绑定 region 并经 levelQueryFields 映射 geo_pc_code/region_dept_code/rep_office_code 下推筛选地区部；mtime 统计期间筛选下推账期（queryField=账期，valueFormat=datetime）。父表展示维度组合=地区部的完整对象查询结果，支持区域列表头筛选及本地分页。展开父行后，子表以该行地区部名称作为必需条件（detail-region，queryField=地区部）查询代表处子表（维度组合=代表处），并随 mtime 统计期间下推账期，支持独立查询分页；子表不直接绑定 region，由父行地区部名称自然限定代表处范围。父表与子表对象查询均写死 周期类型=monthly 静态过滤（=），账期 由 mtime 以 datetime 范围（>= / <=）下推。"
+  },
+  "filters": [
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      },
+      "periodModes": [
+        "year",
+        "quarter",
+        "month"
+      ]
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "emptyLabel": "区域",
+      "selection": {
+        "mode": "single"
+      },
+      "hierarchy": [
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept",
+      "default": [],
+      "display": "tree",
+      "treeSelection": "level",
+      "searchable": true
+    },
+    {
+      "id": "detail-region",
+      "type": "dimension",
+      "dimension": "region-dept-code",
+      "visible": false
+    },
+    {
+      "id": "detail-office",
+      "type": "dimension",
+      "dimension": "rep-office-code",
+      "visible": false
+    },
+    {
+      "id": "lookup-office",
+      "type": "dimension",
+      "dimension": "rep-office-code",
+      "visible": false
+    }
+  ],
+  "dataSources": {
+    "region-dept-auth-norms": {
+      "fields": {
+        "region-dept": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "queryField": "地区部"
+        },
+        "has-sales-mgmt-rule": {
+          "type": "string",
+          "role": "dimension",
+          "label": "是否有销售管理规定",
+          "queryField": "是否销售管理规定"
+        },
+        "delegate-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "是否转授权",
+          "queryField": "是否转授权"
+        },
+        "has-appointment": {
+          "type": "string",
+          "role": "dimension",
+          "label": "是否有任命",
+          "queryField": "是否有任命"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business-Manual_Auth_Standard_Info",
+                "output_fields": [
+                  "地区部",
+                  "是否销售管理规定",
+                  "是否转授权",
+                  "是否有任命"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "维度组合",
+                      "value_list": [
+                        "地区部"
+                      ],
+                      "operator": "="
+                    },
+                    {
+                      "field_name": "周期类型",
+                      "value_list": [
+                        "monthly"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "rep-office-auth-norms": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "region-dept": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        },
+        "region-dept-delegates": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地总是否向代表处授权",
+          "queryField": "地总是否向代表处授权"
+        },
+        "has-sales-mgmt-rule": {
+          "type": "string",
+          "role": "dimension",
+          "label": "是否有销售管理规定",
+          "queryField": "是否销售管理规定"
+        },
+        "delegate-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "是否转授权",
+          "queryField": "是否转授权"
+        },
+        "has-appointment": {
+          "type": "string",
+          "role": "dimension",
+          "label": "是否有任命",
+          "queryField": "是否有任命"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business-Manual_Auth_Standard_Info",
+                "output_fields": [
+                  "代表处",
+                  "地区部",
+                  "地总是否向代表处授权",
+                  "是否销售管理规定",
+                  "是否转授权",
+                  "是否有任命"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "维度组合",
+                      "value_list": [
+                        "代表处"
+                      ],
+                      "operator": "="
+                    },
+                    {
+                      "field_name": "周期类型",
+                      "value_list": [
+                        "monthly"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 10
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time"
+            },
+            "detail-region": {
+              "target": "dimension",
+              "queryField": "地区部"
+            },
+            "detail-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "office-region-lookup": {
+      "fields": {
+        "located-region-dept": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business-Manual_Auth_Standard_Info",
+                "output_fields": [
+                  "地区部"
+                ],
+                "filter": {
+                  "fields": [
+                    {
+                      "field_name": "维度组合",
+                      "value_list": [
+                        "代表处"
+                      ],
+                      "operator": "="
+                    },
+                    {
+                      "field_name": "周期类型",
+                      "value_list": [
+                        "monthly"
+                      ],
+                      "operator": "="
+                    }
+                  ]
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "lookup-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "authorization-page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "authorization-page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "授权规范"
+            },
+            "filterIds": [
+              "mtime",
+              "region"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "density": "compact",
+              "collapse": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "notice",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-scope-notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "注：不含混合云（HCS）的数据",
+            "variant": "plain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-dept-auth-norms",
+      "container": "card",
+      "components": [
+        {
+          "id": "region-dept-auth-norms-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-dept-auth-norms"
+          },
+          "props": {
+            "title": "地区部授权与规则情况",
+            "rowKey": "region-dept",
+            "rowNumber": {
+              "title": "序号",
+              "width": 60,
+              "fixed": "left"
+            },
+            "columns": [
+              {
+                "field": "region-dept",
+                "title": "区域",
+                "width": 258,
+                "fixed": "left",
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "has-sales-mgmt-rule",
+                "title": "是否有销售管理规定",
+                "width": 258
+              },
+              {
+                "field": "delegate-name",
+                "title": "是否转授权",
+                "width": 258
+              },
+              {
+                "field": "has-appointment",
+                "title": "是否有任命",
+                "width": 258
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "地区部授权与规则情况",
+                "rowExpansion": {
+                  "scope": "all",
+                  "parentFields": [
+                    "region-dept"
+                  ]
+                }
+              }
+            },
+            "rowExpansion": {
+              "mode": "multiple",
+              "selection": {
+                "filter": "region",
+                "parentLevel": "region-dept",
+                "parentField": "region-dept",
+                "childLevel": "office",
+                "parentLookup": {
+                  "source": "office-region-lookup",
+                  "field": "located-region-dept",
+                  "filters": [
+                    "lookup-office"
+                  ],
+                  "bindings": {
+                    "lookup-office": {
+                      "source": "filter",
+                      "id": "region"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "type": "query",
+                "source": "rep-office-auth-norms",
+                "filters": [
+                  "detail-region",
+                  "detail-office"
+                ],
+                "bindings": {
+                  "detail-region": {
+                    "source": "row",
+                    "field": "region-dept"
+                  },
+                  "detail-office": {
+                    "source": "selection"
+                  }
+                }
+              },
+              "table": {
+                "rowKey": "rep-office",
+                "rowNumber": {
+                  "title": "序号",
+                  "width": 60,
+                  "fixed": "left"
+                },
+                "columns": [
+                  {
+                    "field": "region-dept-delegates",
+                    "title": "地总是否向代表处授权",
+                    "width": 220
+                  },
+                  {
+                    "field": "rep-office",
+                    "title": "代表处",
+                    "width": 220
+                  },
+                  {
+                    "field": "has-sales-mgmt-rule",
+                    "title": "是否有销售管理规定",
+                    "width": 220
+                  },
+                  {
+                    "field": "delegate-name",
+                    "title": "是否转授权",
+                    "width": 220
+                  },
+                  {
+                    "field": "has-appointment",
+                    "title": "是否有任命",
+                    "width": 220
+                  }
+                ],
+                "pagination": {
+                  "mode": "query"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

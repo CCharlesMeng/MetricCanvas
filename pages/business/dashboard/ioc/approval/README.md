@@ -55,3 +55,11 @@
 详情页已由6.84根级IOC页头升级为6.86首分区组件，保留原筛选与返回意图。原链接中的 `rep-office-name` 仍作为URL携带，不额外绑定详情查询；详情页代表处条件仍由已有Region筛选控制。项目名称传值来自主指标查询，与对象槽中显示的同商务项目名称是否一致，需要真实数据核对。
 
 合成验证覆盖URL特殊字符编码、目标参数解析、最终对象查询的项目名称谓词，以及无参数直接打开；真实服务对 `Commercial-Decision_Duration_Metric_Detail` 的“项目名称”筛选支持仍待验，不将合成请求构造当作真实查询成功。
+
+## 授权规范父子表格
+
+入口 `/pages/authorization-norms`，[JSON](authorization-norms.json)。保留用户提供的 Schema 6.101 页面，用于核对地区部父表、代表处查询子表、固定列和完整 Excel 导出。参考组件为 `region-dept-auth-norms-table`，子表通过 `detail-region` 绑定当前父行地区部，`rowExpansion.selection` 配合 `office-region-lookup` 定位代表处所属地区部；页头已有首分区首组件 `iocHeader`，沿用原配置。
+
+启动 Playground 后打开该入口，展开地区部再点击“导出”；父子表格应在下载前后保持正确行序、列对齐与展开状态。复现数据可固定为父表一个地区部、子表一个代表处；浏览器注入响应只能验证页面呈现与下载，真实业务数据需要实际 DQE 服务。移植时须一并映射对象字段、查询字段映射、行键、隐藏筛选及父级定位关系。页面原说明中关于 geo 层级、父表 Region 绑定及 datetime 账期的描述与实际声明存在差异，本轮原样保留，不作为真实查询能力已验收的依据。
+
+浏览器回归 `apps/playground/tests/authorization-norms-child-export.browser.ts` 直接读取本页，注入对象查询的合成响应，覆盖单地区部单代表处在四种屏宽下连续导出、收起子表，以及超过十二条父行时同时展开两个子表。断言展开内容完整位于父表可视区域内；此检查不代表真实 DQE 接通。
