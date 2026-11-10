@@ -357,10 +357,22 @@
               "target": "dimension",
               "queryField": "国内或海外",
               "when": {
-                "filter": "region",
-                "part": "level",
-                "op": "eq",
-                "value": "geo"
+                "any": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
               }
             },
             "mtime": {
@@ -432,10 +444,22 @@
               "target": "dimension",
               "queryField": "国内或海外",
               "when": {
-                "filter": "region",
-                "part": "level",
-                "op": "eq",
-                "value": "geo"
+                "any": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
               }
             },
             "mtime": {
@@ -516,10 +540,22 @@
               "target": "dimension",
               "queryField": "国内或海外",
               "when": {
-                "filter": "region",
-                "part": "level",
-                "op": "eq",
-                "value": "geo"
+                "any": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
               }
             },
             "mtime": {
@@ -600,10 +636,22 @@
               "target": "dimension",
               "queryField": "国内或海外",
               "when": {
-                "filter": "region",
-                "part": "level",
-                "op": "eq",
-                "value": "geo"
+                "any": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
               }
             },
             "mtime": {
@@ -876,10 +924,22 @@
                   ]
                 },
                 "visibleWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
                 }
               },
               {
@@ -972,10 +1032,22 @@
                   ]
                 },
                 "visibleWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
                 }
               },
               {
@@ -1068,10 +1140,22 @@
                   ]
                 },
                 "visibleWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
                 }
               },
               {
@@ -1163,10 +1247,22 @@
                   ]
                 },
                 "visibleWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
                 }
               },
               {

@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 metadata:
-  version: "1.49.0"
+  version: "1.49.1"
 ---
 
 # 本地页面创作
@@ -24,6 +24,7 @@ metadata:
 | 删除列、组件、数据源或筛选 | 按[场景索引](references/scenario-index.md)核对完整引用与共享依赖，删除目标后完整校验。 |
 | 季度选择仍传 month，或需要调整年／季／月的查询粒度 | 按[期间选择定位与修复](references/period-selection-repair.md)核对精确页面、查询分支和显式策略；普通指标按选择查询，固定月趋势及自定义账期字段按各自契约处理，以实际 execute 请求验收。 |
 | 联合查询／多表关联报错、成员筛选不适用、补列未请求或关联后缺行 | 按[多源查询定位与修复](references/multi-source-query-repair.md)区分关联与合并，建立成员筛选矩阵，分别核对行键、关联键和实际请求；结构校验与真实服务能力分别举证。 |
+| 新建／调整 IOC 区域与局部筛选联动，或切换／URL 恢复后筛选消失、隐藏后仍过滤 | 按[区域与局部筛选联动](references/region-local-filter-repair.md)同时检查 Region 选中值与层级、控件显隐和全部相关查询绑定；用原始 URL 及返回全球的流程验收，不能只测空参数入口。 |
 | debug：报错、没数据、数不对或交互失效 | 按[场景索引](references/scenario-index.md)从症状定位失败层，再检查相应数据逻辑。 |
 
 用户已明确指定形态或已有有效确认且无冲突时引用选择后继续；实质冲突按形态说明针对性确认。未确认时只交识别摘要和问题，不生成 JSON、模板或章节骨架。局部修改沿用原形态；新页面显式写 layout，省略会默认 report。

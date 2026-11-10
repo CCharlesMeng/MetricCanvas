@@ -72,6 +72,7 @@
 | 查询未执行、被拒绝或空结果 | 执行入口、生效条件、输入集合、真实响应；区分请求失败与成功空结果 | [数据分析](data-analysis.md)，再选对应查询／级联逻辑 |
 | 缺行、重复行、排序／分页／导出不一致 | 行粒度、稳定键、totalCount、完整结果与当前窗口 | 上方对象查询、pagedJoin、pagedUnion 或窗口级联；不要从 UI 当前页推断总集合 |
 | 数值、百分比或空值显示不对 | queryField、字段类型、原始值、单位／刻度与格式 | `fields.core`、`fields.format`；[查询容错](page-metadata/examples/query-numeric-tolerance.json)；Playground `query-numeric-tolerance` |
+| IOC 区域切换或 URL 恢复后局部筛选消失、隐藏后仍过滤、返回全球未恢复 | Region 的选中值与层级分别核对；所有控件显隐和相关查询绑定同步对账，用原始 URL 复现 | [区域与局部筛选联动](region-local-filter-repair.md)；`query.bindingWhen` |
 | 筛选、展开或导航没有带来预期变化 | 值写到哪里、谁消费绑定、目标参数、请求是否改变 | 上方交互逻辑；控件状态变化与数据变化分别检查 |
 
 ## 整页创作再选范式
