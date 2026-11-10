@@ -217,7 +217,7 @@ export const tableComponentZ = z
             options: z.array(z.object({
               value: idZ,
               label: nonEmptyTextValueZ,
-              field: fieldNameZ,
+              field: fieldReferenceZ,
               placeholder: textValueZ.optional()
             }).strict()).min(1).max(64),
             defaultValue: idZ.optional()

@@ -10,15 +10,17 @@
     onexport?: () => void; oncancel?: () => void;
   } = $props();
   const selected = $derived(tableSearchOption(toolbar?.search, option));
+  const searchOptions = $derived(toolbar?.search && 'options' in toolbar.search ? toolbar.search.options : []);
+  const showOptionSelector = $derived(searchOptions.length > 1);
   const placeholder = $derived(selected?.placeholder ?? (toolbar?.search && 'fields' in toolbar.search ? toolbar.search.placeholder : undefined) ?? '搜索表格');
 </script>
 
 <div class="tools" data-table-toolbar>
   {#if toolbar?.search}
-    <div class="search-group" class:with-options={selected !== undefined}>
-    {#if 'options' in toolbar.search}
+    <div class="search-group" class:with-options={showOptionSelector}>
+    {#if showOptionSelector}
       <div class="search-option"><Select disabled={!searchEnabled} label="表格搜索字段" value={selected?.value}
-        options={toolbar.search.options.map(item => ({ value: item.value, label: item.label }))}
+        options={searchOptions.map(item => ({ value: item.value, label: item.label }))}
         onchange={onoption} /></div>
     {/if}
     <form class="search" onsubmit={event => { event.preventDefault(); onsearch?.(draft); }}>

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.101",
+  "schemaVersion": "6.109",
   "id": "rep-office-execution-efficiency",
   "meta": {
     "title": "行权效率-代表处",
@@ -1068,10 +1068,33 @@
                     ],
                     "toolbar": {
                       "search": {
-                        "fields": [
-                          "biz-code"
+                        "options": [
+                          {
+                            "value": "biz-code",
+                            "label": "商务编号",
+                            "field": "biz-code",
+                            "placeholder": "输入完整商务编号搜索"
+                          },
+                          {
+                            "value": "owner-name",
+                            "label": "责任人",
+                            "field": {
+                              "data": "basic",
+                              "field": "owner-name"
+                            },
+                            "placeholder": "输入完整责任人姓名搜索"
+                          },
+                          {
+                            "value": "cust-company-name",
+                            "label": "客户名称",
+                            "field": {
+                              "data": "basic",
+                              "field": "cust-company-name"
+                            },
+                            "placeholder": "输入完整客户名称搜索"
+                          }
                         ],
-                        "placeholder": "输入商务编号搜索"
+                        "defaultValue": "biz-code"
                       },
                       "export": {
                         "format": "xlsx"

@@ -24,7 +24,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 108;
+const CURRENT_MINOR = 109;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -61,6 +61,14 @@ function bindingWhenUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'table-slot-search': {
+    minor: 109, legacyReadable: false, description: '表格补充数据槽的单字段精确搜索与行键回查',
+    usedAt: document => componentPaths(document, component => {
+      const search = record(record(props(component)?.toolbar)?.search);
+      return component.type === 'table' && Array.isArray(search?.options) && search.options.some(option => record(record(option)?.field) !== undefined);
+    })
+  },
+
   'table-default-sort': {minor:108,legacyReadable:false,description:'完整本地表格按最终字段声明初始排序，先排序再分页',usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(props(c),'defaultSort')).map(path=>path+'/props/defaultSort')},
 
   'number-precision-five': {minor:107,legacyReadable:false,description:'普通数值及带符号数值支持最多三、四、五位小数',usedAt:document=>namedFormatPaths(document,/^number-[345](?:-signed)?$/)},

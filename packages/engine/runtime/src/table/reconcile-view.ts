@@ -1,11 +1,12 @@
-import type { TableQueryView } from '@metriccanvas/page/internal';
+import { columnBindingKey, type TableQueryView } from '@metriccanvas/page/internal';
 import type { TableColumnPresentation } from './column-presentation';
 function reconcileSearch(current: TableQueryView['search'], search: TableColumnPresentation['search']): TableQueryView['search'] {
     if (!current || !current.query.trim() || !search)
         return undefined;
     if ('fields' in search)
         return { ...current, fields: [...search.fields] };
-    return search.options.some(option => option.field === current.fields[0]) ? current : undefined;
+    const target = columnBindingKey({ data: current.data ?? 'main', field: current.fields[0] });
+    return search.options.some(option => columnBindingKey(option.field) === target) ? current : undefined;
 }
 /** No effects, clocks or UI branches; default sort provenance belongs to the session. */
 export function reconcileColumnView(view: TableQueryView, columns: TableColumnPresentation, defaultSort: TableQueryView['sort'], userSorted: boolean): TableQueryView {

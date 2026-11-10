@@ -1,0 +1,488 @@
+{
+  "schemaVersion": "6.109",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "table.slot-search"
+  ],
+  "semantics": [
+    {
+      "module": "table",
+      "reference": "references/page-metadata/components/table.md",
+      "blocks": [
+        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
+        "## 跨数据槽精确搜索（6.109）\n\n表格的列与搜索可引用同一个补充数据槽。复用字段引用写法，不把页面数据源 id 填成槽名：\n\n```json\n{\n  \"search\": {\n    \"options\": [\n      {\"value\":\"owner\",\"label\":\"责任人\",\"field\":{\"data\":\"basic\",\"field\":\"owner-name\"},\"placeholder\":\"输入完整责任人姓名搜索\"},\n      {\"value\":\"customer\",\"label\":\"客户名称\",\"field\":{\"data\":\"basic\",\"field\":\"cust-company-name\"},\"placeholder\":\"输入完整客户名称搜索\"}\n    ]\n  }\n}\n```\n\n`basic` 是该表 `data` 中的槽名。主槽与补充槽都必须为普通查询，主表使用查询分页并声明 `rowKey`；两槽须有同名、同类型、具备查询字段映射的行键。补充查询只能声明一条从主查询行键取值的 `resultBinding`，不能带 `where` 或其他结果依赖。补充查询不能含固定 TopN。搜索字段必须是有 `queryField` 的文本标量；未声明槽、缺失映射、关联关系或不兼容类型均拒绝。`fields` 包含搜索不扩展到补充槽。\n\n提交后，引擎在当前筛选、参数和查询分支范围内独立执行补充查询的精确搜索，临时解除主表当前页的行键绑定；按行键稳定排序并完整读取匹配行。其后将匹配行键与主查询原有条件取交集，查询主表的分页结果，最后按主表结果补齐补充列。页面定义的依赖方向保持不变，查找回执不替换补充槽快照。查找只消费补充查询自己声明的条件，主表期间不会自动复制到补充对象；预算在主查交集前核对。空匹配跳过主查询及其补查；总数来自受限主查询。查找最多读取既有 `resultBinding.maxValues` 允许的匹配行，硬上限1000；超限、缺失总数、分页截断、总数变化和无效行键均明确失败，不截断集合后返回部分匹配。\n\n切换字段、提交或清空关键词均回到第一页，保留其他筛选与排序；清空恢复原有主查与按页补查。补充查询消费的页面筛选也会刷新搜索结果。取消及迟到响应沿用统一运行时的取消机制。Excel 导出冻结搜索字段和关键词，并通过同一执行路径准备全部匹配主行及其补充行，不能只导出当前页。主查询字段字符串写法与原包含搜索保持兼容；会话视图内部以 `search.data` 保留目标槽引用，省略表示主槽；这不是新增页面字段，也不能写进初始视图。\n\n入口 `/pages/rep-office-execution-efficiency` 的 `approval-detail-table`（“商务审批明细”）。保留商务编号搜索，增加 `basic` 槽的责任人和客户名称搜索。浏览器回归拦截真实页面请求，使用24条合成记录验证首屏之外的匹配、切换字段、零匹配与清空；执行回归覆盖分页、约束交集、完整导出、取消及不完整回执。真实 DQE 的对应对象字段筛选、行键稳定性和总数仍需部署环境复验。"
+      ],
+      "rules": [
+        {
+          "id": "table-trend-arrows",
+          "description": "表格箭头",
+          "valid": [
+            "table-trend-arrows"
+          ],
+          "invalid": [
+            "table-arrow-old",
+            "table-arrow-text",
+            "table-arrow-type",
+            "table-arrow-position"
+          ]
+        },
+        {
+          "id": "table-header-filter-defaults",
+          "description": "select 原始值默认筛选、字段类型与版本下限",
+          "valid": [
+            "table-header-filter-defaults",
+            "table-header-filter-defaults-query"
+          ],
+          "invalid": [
+            "table-header-defaults-old-version",
+            "table-header-defaults-duplicate",
+            "table-header-defaults-wrong-type",
+            "table-header-defaults-unknown-enum",
+            "table-header-defaults-remote-sharing"
+          ]
+        },
+        {
+          "id": "table-column-enums",
+          "description": "前端列枚举值唯一及版本下限",
+          "valid": [
+            "table-column-enums"
+          ],
+          "invalid": [
+            "table-enums-old-version",
+            "table-enums-duplicate-value"
+          ]
+        },
+        {
+          "id": "table-column-visibility",
+          "description": "列显隐条件与版本下限",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-old-version",
+            "table-column-row-context"
+          ]
+        },
+        {
+          "id": "table-column-search-fields",
+          "description": "列搜索须关联主、次或徽标字段",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-unowned-search"
+          ]
+        },
+        {
+          "id": "table-pinned-top",
+          "description": "独立完整查询置顶，明确字段及行域归属",
+          "valid": [
+            "table-pinned-summary-page"
+          ],
+          "invalid": [
+            "pinned-top-version",
+            "pinned-top-main",
+            "pinned-top-window",
+            "pinned-top-unknown-field",
+            "pinned-top-incomplete"
+          ]
+        },
+        {
+          "id": "table-hierarchy-selection",
+          "description": "6.70显式归属定位、父行投影、私有选择及完整父子导出",
+          "valid": [
+            "table-hierarchy-selection",
+            "table-hierarchy-lookup-param"
+          ],
+          "invalid": [
+            "hierarchy-old-version",
+            "hierarchy-parent-window",
+            "hierarchy-without-selection",
+            "hierarchy-export-fields"
+          ]
+        },
+        {
+          "id": "table-row-expansion",
+          "description": "6.44单层子表格的作用域、只读及查询分页约束",
+          "valid": [
+            "table-row-expansion-inline",
+            "table-row-expansion-query"
+          ],
+          "invalid": [
+            "row-expansion-before-6.44",
+            "row-expansion-missing-parent-key",
+            "row-expansion-query-local-page",
+            "row-expansion-unbound-parent"
+          ]
+        },
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches",
+            "paged-union-generated-key"
+          ],
+          "invalid": [
+            "union-uuid-old",
+            "union-uuid-conflict",
+            "union-initial-predicate-null",
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
+          ]
+        },
+        {
+          "id": "paged-join",
+          "description": "6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数",
+          "valid": [
+            "paged-join-page",
+            "table-number-range-page",
+            "record-join-query-params"
+          ],
+          "invalid": [
+            "paged-join-non-record-member-parameter",
+            "record-join-unknown-member-parameter",
+            "table-number-range-before-6.22",
+            "paged-join-initial-predicate-null",
+            "paged-join-initial-predicate-in",
+            "paged-join-initial-predicate-numeric",
+            "paged-join-initial-predicate-date",
+            "paged-join-before-6.22",
+            "paged-join-unknown-member",
+            "paged-join-invalid-key",
+            "paged-join-invalid-projection",
+            "paged-join-member-topn",
+            "paged-join-shared-root",
+            "paged-join-invalid-initial",
+            "table-number-range-non-numeric"
+          ]
+        },
+        {
+          "id": "table-toolbar-search",
+          "description": "表格工具区由6.21引入，搜索显式引用文本标量字段",
+          "valid": [
+            "table-toolbar-page"
+          ],
+          "invalid": [
+            "table-toolbar-before-6.21",
+            "table-search-nontext-field",
+            "table-search-duplicate-field"
+          ]
+        },
+        {
+          "id": "table-search-options",
+          "description": "6.42 静态搜索选项唯一、默认项有效且每项引用文本字段",
+          "valid": [
+            "table-search-options-page"
+          ],
+          "invalid": [
+            "table-search-options-before-6.42",
+            "table-search-options-duplicate",
+            "table-search-options-default-missing",
+            "table-search-options-nontext",
+            "table-search-options-unmapped"
+          ]
+        },
+        {
+          "id": "table-row-key",
+          "description": "多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-multi-slot-without-row-key",
+            "table-row-key-missing-in-slot",
+            "table-row-key-not-dimension",
+            "table-row-key-type-inconsistent"
+          ]
+        },
+        {
+          "id": "table-row-kind-field",
+          "description": "表格行类别字段必须存在且由该数据源的折叠算子写入",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-row-kind-field-unknown",
+            "table-row-kind-field-not-written"
+          ]
+        },
+        {
+          "id": "table-merge-by-column",
+          "description": "mergeBy 必须是表格已声明的列字段",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-merge-by-not-column"
+          ]
+        },
+        {
+          "id": "table-selection-writes",
+          "description": "单元格选择只能写入已声明的 dimension 筛选器",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-selection-writes-unknown-filter",
+            "table-selection-writes-non-dimension"
+          ]
+        },
+        {
+          "id": "table-column-binding-unique",
+          "description": "表格列字段绑定不重复",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-duplicate-column-binding"
+          ]
+        },
+        {
+          "id": "table-filterable-dimension",
+          "description": "表头筛选只能声明在 dimension 列上",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-filterable-on-measure"
+          ]
+        },
+        {
+          "id": "pagination-local-inline",
+          "description": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "pagination-local-on-query"
+          ]
+        },
+        {
+          "id": "pagination-query-source",
+          "description": "pagination.mode='query' 只允许绑定 query 数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-query-on-inline"
+          ]
+        },
+        {
+          "id": "pagination-query-order",
+          "description": "查询分页要求 DQE order.offset 为 0 且 limit 为正整数",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-offset-not-zero",
+            "pagination-limit-not-positive"
+          ]
+        },
+        {
+          "id": "pagination-initial-rows",
+          "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-initial-without-total-count",
+            "pagination-initial-not-full-page"
+          ]
+        },
+        {
+          "id": "pagination-exclusive-source",
+          "description": "查询分页表格必须独占页面数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-shared-source"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/table-trend-arrows.json",
+        "references/page-metadata/examples/query-dashboard.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/reference-export-column-actions.json",
+        "references/page-metadata/examples/table-toolbar-page.json",
+        "references/page-metadata/examples/table-number-range-page.json",
+        "references/page-metadata/examples/paged-join-fixed-rank-page.json",
+        "references/page-metadata/examples/table-search-options-page.json",
+        "references/page-metadata/examples/table-row-expansion-inline.json",
+        "references/page-metadata/examples/table-row-expansion-query.json",
+        "references/page-metadata/examples/table-row-expansion-inputs.json",
+        "references/page-metadata/examples/table-row-expansion-none.json",
+        "references/page-metadata/examples/table-row-number-page.json",
+        "references/page-metadata/examples/table-scalar-fallback-page.json",
+        "references/page-metadata/examples/table-pinned-summary-page.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/table-column-visibility.json",
+        "references/page-metadata/examples/table-hierarchy-selection.json",
+        "references/page-metadata/examples/table-child-keyless.json",
+        "references/page-metadata/examples/table-hierarchy-lookup-param.json",
+        "references/page-metadata/examples/paged-join-query-page.json",
+        "references/page-metadata/examples/record-join-query-page.json",
+        "references/page-metadata/examples/table-column-enums.json",
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/table-multiple-pinned-page.json",
+        "references/page-metadata/examples/table-header-filter-defaults.json",
+        "references/page-metadata/examples/table-header-filter-defaults-query.json",
+        "references/page-metadata/examples/table-header-select-all.json",
+        "references/page-metadata/examples/table-header-select-all-query.json",
+        "references/page-metadata/examples/table-default-sort.json",
+        "references/page-metadata/examples/rep-office-execution-efficiency.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.109",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/tableComponent",
+      "path": "@tableComponent",
+      "module": "table",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "layout",
+          "data",
+          "props"
+        ],
+        "properties": {
+          "id": "#/definitions/tableComponent/properties/id",
+          "visibleWhen": "#/definitions/tableComponent/properties/visibleWhen",
+          "type": "#/definitions/tableComponent/properties/type",
+          "layout": "#/definitions/tableComponent/properties/layout",
+          "data": "#/definitions/tableComponent/properties/data",
+          "props": "#/definitions/tableComponent/properties/props"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props",
+      "path": "@tableComponent.props",
+      "module": "table",
+      "required": "本分支必填",
+      "note": "组件的受控呈现配置。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "columns"
+        ],
+        "properties": {
+          "defaultSort": "#/definitions/tableComponent/properties/props/properties/defaultSort",
+          "rowVisibleWhen": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
+          "title": "#/definitions/tableComponent/properties/props/properties/title",
+          "subtitle": "#/definitions/tableComponent/properties/props/properties/subtitle",
+          "toolbar": "#/definitions/tableComponent/properties/props/properties/toolbar",
+          "variant": "#/definitions/tableComponent/properties/props/properties/variant",
+          "bottomFade": "#/definitions/tableComponent/properties/props/properties/bottomFade",
+          "compoundCellLayout": "#/definitions/tableComponent/properties/props/properties/compoundCellLayout",
+          "rowNumber": "#/definitions/tableComponent/properties/props/properties/rowNumber",
+          "pinnedTop": "#/definitions/tableComponent/properties/props/properties/pinnedTop",
+          "rowKey": "#/definitions/tableComponent/properties/props/properties/rowKey",
+          "rowKindField": "#/definitions/tableComponent/properties/props/properties/rowKindField",
+          "mergeBy": "#/definitions/tableComponent/properties/props/properties/mergeBy",
+          "fit": "#/definitions/tableComponent/properties/props/properties/fit",
+          "columns": "#/definitions/tableComponent/properties/props/properties/columns",
+          "pagination": "#/definitions/tableComponent/properties/props/properties/pagination",
+          "rowExpansion": "#/definitions/tableComponent/properties/props/properties/rowExpansion",
+          "actions": "#/definitions/tableComponent/properties/props/properties/actions"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar",
+      "path": "@tableComponent.props.toolbar",
+      "module": "table",
+      "required": "本分支可选",
+      "note": "每张表独立配置右上角工具区；省略时不显示搜索和导出。",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "properties": {
+          "search": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search",
+          "export": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search",
+      "path": "@tableComponent.props.toolbar.search",
+      "module": "table",
+      "required": "本分支可选",
+      "note": "显式文本搜索声明；提交的关键词属于表格实例，省略时关闭入口。",
+      "enums": {},
+      "facts": {
+        "anyOf": [
+          "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0",
+          "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1"
+        ]
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

@@ -1,6 +1,6 @@
 import { reconcileColumnView, columnViewBehaviorChanged } from './reconcile-view';
 import type { TableColumnPresentation } from './column-presentation';
-import { tableQueryViewZ, type TableQueryView, type TableHeaderFilters, tablePredicates } from '@metriccanvas/page/internal';
+import { tableSessionQueryViewZ, type TableQueryView, type TableHeaderFilters, tablePredicates } from '@metriccanvas/page/internal';
 /** Sole writer of committed table state. Draft strings never enter this module. */
 export function createTableSession(initial: TableQueryView, changed: (view: TableQueryView) => void = () => { }, prepare:(view:TableQueryView,field?:string)=>TableQueryView=view=>view, declaredDefault: TableQueryView = initial) {
     let view = structuredClone(initial), generation = 0;
@@ -9,7 +9,7 @@ export function createTableSession(initial: TableQueryView, changed: (view: Tabl
     let defaultSort = structuredClone(declaredDefault.sort);
     let controller = new AbortController();
     function commit(next: TableQueryView, notify = true, advance = true) {
-        if (!tableQueryViewZ.safeParse(next).success || JSON.stringify(next) === JSON.stringify(view))
+        if (!tableSessionQueryViewZ.safeParse(next).success || JSON.stringify(next) === JSON.stringify(view))
             return false;
         view = structuredClone(next);
         if (advance)

@@ -15,6 +15,7 @@ import type { SourceRead, SourceUpdate } from './session';
 import { candidateView, localColumnCandidates } from '../column-candidates';
 import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
 import { resolveQueryResultInputs } from '../query-result-inputs';
+import { applyTableSlotSearch, mainTableSearch } from './slot-search';
 
 function appliedInputSources(page:Page,source:QueryDataSource,conditions:FilterValues) {
   const sources=new Map(Object.entries(page.dataSources));
@@ -87,7 +88,7 @@ async function joinedCandidates(page: Page, request: ColumnCandidatesRead, view:
 async function ordinaryCandidates(page:Page,source:QueryDataSource,request:ColumnCandidatesRead,view:TableQueryView,limits:ReadonlyMap<string,number>,runner:QueryRunner,scope:string,signal?:AbortSignal):Promise<ColumnCandidatesPage>{
       const views=new Map(request.views);views.set(request.sourceId,view);
       const offset=request.offset??0,limit=request.pageSize??50;
-      const query: EffectiveQuery = composeEffectiveQuery({ now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], tableHeaders(view.predicates), view.search);
+      let query: EffectiveQuery = composeEffectiveQuery({ now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], tableHeaders(view.predicates), mainTableSearch(view.search));
       const mappedField=query.fieldMappings[request.field];
       if (!hasQueryFieldMapping(mappedField)) return { kind: 'unavailable' };
       const windows = new Map(limits);
@@ -99,6 +100,8 @@ async function ordinaryCandidates(page:Page,source:QueryDataSource,request:Colum
         throw Object.assign(new Error('候选查询的业务输入不可用'), { code: 'DQE_QUERY_REJECTED' });
       }
       bindQueryResultValues(query, inputs.values);
+      query = await applyTableSlotSearch({ page, sourceId: request.sourceId, search: view.search, query, conditions: request.conditions, runner, scope, signal,
+        now: request.now, displayInputs: request.displayInputs, filterRevision: request.filterRevision });
       return runner.runCandidates({ query, field: request.field, queryField: mappedField.queryField, search: request.candidateSearch ?? '', offset, limit },
         { pageId: page.id, dataSourceIds: [request.sourceId] }, scope, signal);
 }

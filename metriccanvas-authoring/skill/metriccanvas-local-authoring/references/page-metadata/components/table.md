@@ -201,22 +201,17 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 
 ## 表格工具栏与搜索（6.21）
 
-每张表可独立声明 `props.toolbar.search` 和 `props.toolbar.export`，省略哪项就关闭哪项，省略整个工具区保留旧页行为：
+`props.toolbar.search`、`export` 各自可省略，省略整个工具栏保持旧页行为：
 
 ```json
-{
-  "toolbar": {
-    "search": { "fields": ["customerName", "projectName"], "placeholder": "搜索客户或项目" },
-    "export": { "format": "xlsx", "filename": "项目明细" }
-  }
-}
+{"toolbar":{"search":{"fields":["customerName","projectName"],"placeholder":"搜索客户或项目"}}}
 ```
 
-搜索字段必须是 `main` 数据槽中的文本标量字段，1—64项且不得重复。按 Enter 或搜索按钮提交，清空可恢复集合；提交时重置页码并保留排序与列头筛选。关键词只属于当前表格的实例状态，多个字段按任一字段包含匹配，采用不区分大小写的字面量包含语义，`%`、`_` 不作为通配符。草稿不参与导出。
+`fields` 只引用 `main` 中1—64个不重复的文本标量字段；任一字段包含即匹配，不区分大小写，`%`、`_` 是普通字符。补充槽见 `table.slot-search` 专题。Enter或搜索按钮提交，重置页码并保留排序、页面及列头筛选；关键词按实例隔离，草稿不参与导出，清空恢复原范围。
 
-表格没有可展示明细行时统一显示“暂无数据”，覆盖搜索无匹配、筛选空结果、查询失败后的空表及各表格变体；加载中仍显示“正在加载…”。保留表头、搜索框与当前关键词，清空搜索可恢复原查询。独立置顶汇总行不计入明细行数：只有汇总时，汇总与“暂无数据”同时保留。错误分类与诊断继续沿控制台和 `data-error` 事件传递，空提示不将失败状态改写为成功，也不改变导出完整性约束。无需新增页面字段。可观察场景 `/pages/region-auth-norms-detail` 的“决策意见明细”和 `/pages/table-pinned-summary`。
+无可展示明细行时统一显示“暂无数据”，包括零匹配、筛选空结果、查询失败及各表格变体；加载时显示“正在加载…”。保留表头、搜索框与关键词。置顶汇总不计明细行数，只有汇总时同时显示汇总和空提示。错误分类保留在控制台与 `data-error` 事件，不改为成功，也不放宽导出完整性。入口 `/pages/region-auth-norms-detail`、`/pages/table-pinned-summary`。
 
-内联页面数据源及显式完整查询结果先搜索再排序和本地分页。其他查询源的搜索进入生效查询，由数据网关在上游执行；该表必须独占查询页面数据源，避免改动其他消费者的结果。共享查询定义的组合源属于单独的 `pagedJoin` 设计，不由本字段暗中引入。DQE 网关须配置经过核验的搜索编码器；未配置时报 `DQE_CONFIG_ERROR`，不会筛当前页或自动拉全表冒充查询搜索。
+内联及显式完整查询先搜索再排序、本地分页；其他普通查询将搜索下推，须由该表独占页面数据源。包含搜索要求网关配置已核验的 `encodeSearch`，缺失时报 `DQE_CONFIG_ERROR`，不筛当前页或自动拉全表替代。组合查询沿 `pagedJoin` 规则执行。
 
 ## Excel 导出（6.21）
 
@@ -230,27 +225,45 @@ Excel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序�
 
 ## 静态搜索选项（6.42）
 
-需要在输入框前选择搜索字段时，使用与旧 `fields/placeholder` 分支互斥的静态选项：
+`options` 固定或切换精确搜索字段，与 `fields/placeholder` 互斥：
+
+```json
+{"search":{"options":[{"value":"name","label":"项目名称","field":"name","placeholder":"请输入完整项目名称"}]}}
+```
+
+选项为1—64项静态枚举，不请求候选值；`value` 唯一，声明 `label`、一个文本 `field` 及可选 `placeholder`。字符串字段属于 `main`，6.109起可用 `{data,field}` 引用补充槽。省略 `defaultValue` 选第一项，显式值必须存在；所有选项都校验字段，普通非完整查询要求 `queryField` 映射。旧 `fields` 分支仍为多字段 OR 包含匹配。
+
+单选项固定字段、隐藏选择器，仅显示该项 `placeholder` 的普通宽度输入框；两项以上显示选择器。查询、禁用、清空和导出规则一致，不增加显示开关。单字段入口 `/pages/region-auth-norms-detail`。
+
+单字段精确匹配先去除输入首尾空白，保留前导零及 `%`、`_` 原文。切换选项保留草稿并立即搜索、更新提示；清空移除条件但保留选项。提交回第一页，保留其他筛选和排序，条件按 AND 组合。状态按实例隔离；导出冻结已提交字段、匹配方式与关键词。
+
+普通指标查询追加 `filter.dims` 等值条件，不替换同字段原条件，不依赖包含搜索编码器；空关键词不生成条件。本地完整结果及组合表在完整行域精确比较，不转换大小写；DQE 使用服务原生规则，大小写、同维度条件 AND 与分页计数须另验。
+
+示例 `/pages/table-search-options-demo` 对照本地、仿真等值搜索及旧包含搜索。
+
+## 跨数据槽精确搜索（6.109）
+
+表格的列与搜索可引用同一个补充数据槽。复用字段引用写法，不把页面数据源 id 填成槽名：
 
 ```json
 {
   "search": {
     "options": [
-      { "value": "code", "label": "项目编码", "field": "code", "placeholder": "请输入完整项目编码" },
-      { "value": "name", "label": "项目名称", "field": "name", "placeholder": "请输入完整项目名称" }
-    ],
-    "defaultValue": "name"
+      {"value":"owner","label":"责任人","field":{"data":"basic","field":"owner-name"},"placeholder":"输入完整责任人姓名搜索"},
+      {"value":"customer","label":"客户名称","field":{"data":"basic","field":"cust-company-name"},"placeholder":"输入完整客户名称搜索"}
+    ]
   }
 }
 ```
 
-选项为页面文档中的静态枚举，不请求候选值接口。每项声明唯一 `value`、显示 `label`、一个 `main` 槽文本字段 `field` 及可选 `placeholder`；1—64项。省略 `defaultValue` 时选第一项，显式默认值必须存在。所有选项均校验字段类型；普通非完整查询还必须具备查询字段映射。原来的 `fields/placeholder` 配置继续采用字面量包含及多字段 OR。
+`basic` 是该表 `data` 中的槽名。主槽与补充槽都必须为普通查询，主表使用查询分页并声明 `rowKey`；两槽须有同名、同类型、具备查询字段映射的行键。补充查询只能声明一条从主查询行键取值的 `resultBinding`，不能带 `where` 或其他结果依赖。补充查询不能含固定 TopN。搜索字段必须是有 `queryField` 的文本标量；未声明槽、缺失映射、关联关系或不兼容类型均拒绝。`fields` 包含搜索不扩展到补充槽。
 
-新分支只做单字段精确匹配；关键词提交时去除首尾空白，编码保留前导零，`%`、`_` 按原文匹配。输入仍由 Enter 或搜索按钮提交；切换选项保留当前输入并立即搜索，placeholder 同步切换。清空输入立即移除搜索条件，但保留当前选项。提交回到第一页，保留排序、页面筛选和表头筛选；搜索与既有条件按 AND 组合。选中项和输入草稿按表格实例隔离；导出冻结已提交的字段、匹配方式和关键词，未提交输入不改变导出。
+提交后，引擎在当前筛选、参数和查询分支范围内独立执行补充查询的精确搜索，临时解除主表当前页的行键绑定；按行键稳定排序并完整读取匹配行。其后将匹配行键与主查询原有条件取交集，查询主表的分页结果，最后按主表结果补齐补充列。页面定义的依赖方向保持不变，查找回执不替换补充槽快照。查找只消费补充查询自己声明的条件，主表期间不会自动复制到补充对象；预算在主查交集前核对。空匹配跳过主查询及其补查；总数来自受限主查询。查找最多读取既有 `resultBinding.maxValues` 允许的匹配行，硬上限1000；超限、缺失总数、分页截断、总数变化和无效行键均明确失败，不截断集合后返回部分匹配。
 
-普通查询的等值搜索由网关追加 `filter.dims` 单值条件，不替换同字段既有条件，不依赖包含搜索编码器。空关键词不产生条件。本地完整结果及组合表在完整行域上精确比较，不对输入或数据做大小写转换；真实 DQE 使用服务原生等值规则。当前本地仿真采用区分大小写比较，真实服务的大小写、重复维度条件 AND 及分页总数一致性仍须实测确认，不能以本地结果宣称实服务验收。
+切换字段、提交或清空关键词均回到第一页，保留其他筛选与排序；清空恢复原有主查与按页补查。补充查询消费的页面筛选也会刷新搜索结果。取消及迟到响应沿用统一运行时的取消机制。Excel 导出冻结搜索字段和关键词，并通过同一执行路径准备全部匹配主行及其补充行，不能只导出当前页。主查询字段字符串写法与原包含搜索保持兼容；会话视图内部以 `search.data` 保留目标槽引用，省略表示主槽；这不是新增页面字段，也不能写进初始视图。
 
-完整示例为 `table-search-options-page`，页面试验场入口 `/pages/table-search-options-demo`；并列展示本地等值搜索、DQE 仿真等值搜索及旧包含搜索。
+入口 `/pages/rep-office-execution-efficiency` 的 `approval-detail-table`（“商务审批明细”）。保留商务编号搜索，增加 `basic` 槽的责任人和客户名称搜索。浏览器回归拦截真实页面请求，使用24条合成记录验证首屏之外的匹配、切换字段、零匹配与清空；执行回归覆盖分页、约束交集、完整导出、取消及不完整回执。真实 DQE 的对应对象字段筛选、行键稳定性和总数仍需部署环境复验。
+
 
 ## 查阅方式
 
@@ -512,7 +525,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 完整合成场景 `/pages/partner-health-interactions` 从业务页复用得分列和弹窗标题声明，以 `sumFields` 在前端计算总分；本地排序先处理完整计算结果，再分页，点击排序不发起 DQE 查询。业务入口 `/pages/partner-health` 的地区部和代表处表格沿用该本地路径；真实业务数据须由 DQE 提供。
 
 
-页面协议 6.108。结构真源为本册[schema.json](../schema.json)，SHA256 `9dc8967a527a97ec7fea7be8342c9e0e03e80e534e0281c43d6ca992e04d6832`。字段表自动生成；可选不等于有默认值。
+页面协议 6.109。结构真源为本册[schema.json](../schema.json)，SHA256 `3f314006f5cbf67e9ee9da76b2a8ffce129de94ddf6680d5daa9b0a21bba8c5f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -909,11 +922,11 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar
 
 ### `@tableComponent.props.toolbar.search · anyOf[1].options[].field`
 
-Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/field`。
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/field`。目标：[#/definitions/fieldReference](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c645265666572656e6365)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+| 引用 #/definitions/fieldReference | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f706c616365686f6c646572"></a>
 
@@ -4177,6 +4190,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-header-select-all](../examples/table-header-select-all.json)：完整合法页面；查询仅为静态契约证据。
 - [table-header-select-all-query](../examples/table-header-select-all-query.json)：完整合法页面；查询仅为静态契约证据。
 - [table-default-sort](../examples/table-default-sort.json)：完整合法页面；查询仅为静态契约证据。
+- [rep-office-execution-efficiency](../examples/rep-office-execution-efficiency.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

@@ -60,6 +60,7 @@ export * from './paged-join';
 export * from './paged-join-view';
 export * from './table/query-view';
 export * from './table/search';
+export * from './table/slot-search';
 export * from './data-source-references';
 export * from './period-filter';
 export * from './period-query';

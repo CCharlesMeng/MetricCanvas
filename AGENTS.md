@@ -59,6 +59,8 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 后续功能演进优先保持或减少 Schema，把可复用的计算、容错与执行逻辑沉淀到引擎。实施前按 [Schema 最小化](docs/agents/page-metadata-changes.md#schema-最小化必选) 检查现有协议能否表达需求，并记录字段增减及引擎承接的职责。
 
+涉及 Schema 变更（包括字段增删、类型、约束、默认值或语义调整），必须先向用户说明现有协议为什么不能满足、可选方案及各方案的影响，并给出拟采用的最小声明；等待用户明确确认协议方案后再实现。需求、搜索字段或业务目标的确认不等于协议方案确认；字段净增为零也不能跳过此步骤。具体按 [页面元数据定义与修改流程](docs/agents/page-metadata-changes.md) 执行。
+
 ### Issue tracker
 
 本仓库的 issue 和 PRD 存放于 GitHub Issues(`CCharlesMeng/MetricCanvas`),使用 `gh` CLI 操作。详见 `docs/agents/issue-tracker.md`。

@@ -30,7 +30,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   setQuerySort(dataSourceId: string, sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>): void;
   setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters, field?:string): void;
-  setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string; match?: 'equals' }): void;
+  setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string; match?: 'equals'; data?: string }): void;
   resetQueryDefault?(dataSourceId: string, view: TableQueryView): void;
 }
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,

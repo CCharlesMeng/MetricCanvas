@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 108,
-  "current": "6.108",
+  "minor": 109,
+  "current": "6.109",
   "capabilities": {
+    "table-slot-search": {
+      "minor": 109,
+      "description": "表格补充数据槽的单字段精确搜索与行键回查",
+      "legacyReadable": false
+    },
     "table-default-sort": {
       "minor": 108,
       "description": "完整本地表格按最终字段声明初始排序，先排序再分页",
@@ -998,6 +1003,7 @@
     "6.105",
     "6.106",
     "6.107",
-    "6.108"
+    "6.108",
+    "6.109"
   ]
 }

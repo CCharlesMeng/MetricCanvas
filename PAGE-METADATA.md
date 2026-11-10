@@ -1,5 +1,9 @@
 # MetricCanvas 页面元数据规范
 
+6.109：表格精确搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再约束主查询分页；不反转页面 `resultBindings`，不搜索当前页冒充全局结果。匹配上限沿用既有绑定限制、最多1000条，超限或回执不完整明确失败。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽精确搜索6109)，入口 `/pages/rep-office-execution-efficiency` 的“商务审批明细”。
+
+表格精确搜索的 `toolbar.search.options` 只有一项时，固定使用该字段，只显示输入框及其 placeholder；两项及以上才显示字段选择器。无需新增 Schema 字段。见[静态搜索选项](docs/page-metadata/components/table.md#静态搜索选项642)，验收入口 `/pages/region-auth-norms-detail` 与 `/pages/table-search-options-demo`。
+
 6.108：完整本地表格通过 `props.defaultSort` 声明最终字段的初始排序，复用现有排序规则，在计算完成后先排序再分页；用户后续排序、清空和恢复视图优先。远程排序继续在查询或组合源声明。见[本地默认排序](docs/page-metadata/components/table.md#local-default-sort)，合成入口 `/pages/table-default-sort`。
 
 6.107：新增 `number-3/4/5` 与 `number-3/4/5-signed`，最多保留对应小数位并去尾零，不加千分位；带符号格式按舍入后的展示结果统一正负号、颜色及箭头，舍入零为中性。复用 format/defaultFormat，无新增字段。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。

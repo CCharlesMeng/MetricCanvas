@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.108",
-  "schemaSha256": "9dc8967a527a97ec7fea7be8342c9e0e03e80e534e0281c43d6ca992e04d6832",
+  "schemaVersion": "6.109",
+  "schemaSha256": "3f314006f5cbf67e9ee9da76b2a8ffce129de94ddf6680d5daa9b0a21bba8c5f",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -728,7 +728,8 @@
         "table-header-filter-defaults-query",
         "table-header-select-all",
         "table-header-select-all-query",
-        "table-default-sort"
+        "table-default-sort",
+        "rep-office-execution-efficiency"
       ],
       "rules": [
         "table-trend-arrows",
@@ -1329,7 +1330,8 @@
         "6.105",
         "6.106",
         "6.107",
-        "6.108"
+        "6.108",
+        "6.109"
       ]
     },
     {
@@ -13807,7 +13809,8 @@
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/field",
       "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].field",
       "required": "本分支必填",
-      "module": "components/table.md"
+      "module": "components/table.md",
+      "ref": "#/definitions/fieldReference"
     },
     {
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder",
@@ -22528,5 +22531,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "09ca05fbf71185f0d93628569516f39e97063ef8eec02e96ee75f355cf4950ce"
+  "semanticSourceDigest": "81062f638e76b8dc78c51e821ccbf19d014d48be2021a32005ed2f9a893472e4"
 }

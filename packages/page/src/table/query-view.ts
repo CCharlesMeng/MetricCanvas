@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { fieldNameZ } from '../schema/primitives';
+import { fieldNameZ, idZ } from '../schema/primitives';
 export const tableSortZ = z.object({ field: fieldNameZ, direction: z.enum(['asc', 'desc']) }).strict();
 export const tablePredicateZ = z.union([
     z.object({ field: fieldNameZ, op: z.literal('in'), values: z.array(z.union([z.string(), z.number()])).min(1) }).strict(),
@@ -15,7 +15,11 @@ export const tableQueryViewZ = z.object({
 }).strict();
 export type TableSortRule = z.infer<typeof tableSortZ>;
 export type TablePredicate = z.infer<typeof tablePredicateZ>;
-export type TableQueryView = z.infer<typeof tableQueryViewZ>;
+/** Slot routing is session state, never an additional page/initial-view declaration. */
+export const tableSessionQueryViewZ = tableQueryViewZ.extend({
+    search: tableQueryViewZ.shape.search.unwrap().extend({ data: idZ.optional() }).optional()
+});
+export type TableQueryView = z.infer<typeof tableSessionQueryViewZ>;
 export type TableHeaderFilters = Readonly<Record<string, {
     mode:'isNull';
 } | {

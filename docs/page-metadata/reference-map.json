@@ -879,7 +879,8 @@
         "table-header-filter-defaults-query",
         "table-header-select-all",
         "table-header-select-all-query",
-        "table-default-sort"
+        "table-default-sort",
+        "rep-office-execution-efficiency"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -889,7 +890,13 @@
         "packages/page/src/table/validate-selection.ts",
         "packages/page/src/table/header-defaults.ts",
         "packages/page/src/table/default-sort.ts",
-        "packages/data-execution/src/table-defaults.ts"
+        "packages/data-execution/src/table-defaults.ts",
+        "packages/page/src/table/slot-search.ts",
+        "packages/data-execution/src/source-program/slot-search.ts",
+        "packages/data-execution/src/source-program/session.ts",
+        "packages/data-execution/src/source-program/column-candidates.ts",
+        "packages/engine/runtime/src/table/reconcile-view.ts",
+        "packages/engine/runtime/src/table/session.ts"
       ],
       "rules": [
         "table-trend-arrows",
@@ -2294,7 +2301,8 @@
     "number-5": "最多保留5位小数并去尾零，无千分位；6.107新增。",
     "number-5-signed": "最多保留5位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。",
     "6.107": "新增普通及带符号的三、四、五位小数格式，最多位数、去尾零、按展示值判断符号方向。",
-    "6.108": "完整本地表格按最终字段声明初始排序，计算后先排序再分页。"
+    "6.108": "完整本地表格按最终字段声明初始排序，计算后先排序再分页。",
+    "6.109": "精确搜索可引用补充数据槽字段，先完整查找匹配行键再约束主查询分页。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3197,6 +3205,17 @@
         "完整本地结果的默认排序（6.108）"
       ],
       "dependencies": []
+    },
+    "table.slot-search": {
+      "module": "table",
+      "title": "补充数据槽精确搜索",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search"
+      ],
+      "headings": [
+        "跨数据槽精确搜索（6.109）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -3379,6 +3398,7 @@
       "表格工具栏与搜索（6.21）",
       "Excel 导出（6.21）",
       "静态搜索选项（6.42）",
+      "跨数据槽精确搜索（6.109）",
       "查阅方式",
       "数值范围和组合表（6.22）",
       "行内子表格（6.44）",

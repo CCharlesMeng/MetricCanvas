@@ -3,6 +3,7 @@ import type { DataSource, DataSources } from './data-source';
 import type { Page } from './page';
 import { computeDependencies } from './compute';
 import { queryResultDependencies } from './query-dependencies';
+import { flattenPageComponents } from './component-walk';
 
 /** Definition references propagate conditions, never execution prerequisites. */
 export function definitionSourceIds(source: DataSource | undefined): string[] {
@@ -11,10 +12,20 @@ export function definitionSourceIds(source: DataSource | undefined): string[] {
 export function resultSourceIds(source: DataSource | undefined): string[] {
   return [...new Set([...queryResultDependencies(source), ...computeDependencies(source?.compute ?? [])])];
 }
-export function conditionSourceIds(page: Pick<Page, 'dataSources'>, sourceId: string): Set<string> {
+export function conditionSourceIds(page: Pick<Page, 'dataSources'> & Partial<Pick<Page, 'sections' | 'detailViews'>>, sourceId: string): Set<string> {
   const ids = new Set([sourceId]);
-  for (const id of ids) for (const dependency of [...resultSourceIds(page.dataSources[id]), ...definitionSourceIds(page.dataSources[id])]) ids.add(dependency);
+  for (const id of ids) for (const dependency of [...resultSourceIds(page.dataSources[id]), ...definitionSourceIds(page.dataSources[id]), ...slotSearchSources(page, id)]) ids.add(dependency);
   return ids;
+}
+
+/** Search lookup conditions propagate to main without reversing result execution edges. */
+function slotSearchSources(page: Partial<Pick<Page, 'sections' | 'detailViews'>>, sourceId: string): string[] {
+  return flattenPageComponents({ sections: page.sections ?? [], detailViews: page.detailViews }).flatMap(component => {
+    if (component.type !== 'table' || component.data.main !== sourceId) return [];
+    const search = component.props.toolbar?.search;
+    if (!search || !('options' in search)) return [];
+    return search.options.flatMap(option => typeof option.field === 'string' ? [] : [component.data[option.field.data]]).filter((id): id is string => id !== undefined);
+  });
 }
 export function affectedSourceIds(sources: DataSources, changed: Iterable<string>, includeCompute = true): Set<string> {
   const ids = new Set(changed);

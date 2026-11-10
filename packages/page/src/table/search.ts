@@ -13,5 +13,6 @@ export function tableSearchValue(search: Search, query: string, value?: string):
     if ('fields' in search)
         return { fields: [...search.fields], query };
     const option = tableSearchOption(search, value)!;
-    return { fields: [option.field], query, match: 'equals' };
+    const target = typeof option.field === 'string' ? { data: 'main', field: option.field } : option.field;
+    return { fields: [target.field], query, match: 'equals', ...(target.data === 'main' ? {} : { data: target.data }) };
 }

@@ -1,5 +1,6 @@
 import {finalizationName} from '@metriccanvas/page/internal';
 import { sourceCandidatesGateway } from '../source-candidates';
+import { applyTableSlotSearch, mainTableSearch } from './slot-search';
 import {hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import {flattenPageComponents,hasHeaderDefaults,tableDefaultsRemote,normalizeTableSelectView} from '@metriccanvas/page/internal';
 import {hasPeriodComparison} from '@metriccanvas/page/internal';
@@ -147,7 +148,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       for (const [id, source] of compiled.sources) {
         if (source.source.type !== 'query') continue;
         const view = views.get(id) ?? defaultSourceView(page, id);
-        const query = composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, conditions, cascaded.has(id) ? view.pageIndex : 0, view.sort, tableHeaders(view.predicates), view.search);
+        const query = composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, conditions, cascaded.has(id) ? view.pageIndex : 0, view.sort, tableHeaders(view.predicates), mainTableSearch(view.search));
         const inputs = resolveQueryResultInputs(source, raw, compiled.sources, limits);
         if (inputs.status === 'ready') bindQueryResultValues(query, inputs.values);
         queries.set(id, structuredClone(query));
@@ -222,7 +223,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           let resultLimit = limits.get(id) ?? declaredPaginationLimit(querySource.source.query);
           if (input.status === 'terminal') snapshot = input.snapshot;
           else {
-            let query = preparedQuery(id, source as QueryDataSource, view, input.values);
+            const prepared = preparedQuery(id, source as QueryDataSource, view, input.values);
+            let query = prepared instanceof Promise ? await prepared : prepared;
             const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
             const preserveWindow = preserveBusinessWindow(id, source);
             if (requiresCompleteRead(preserveWindow,source,query)) { resultLimit = undefined; snapshot = await completeQuerySnapshot(id, querySource, query, diagnostics); }
@@ -348,19 +350,27 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           return request.purpose !== 'complete' && defaultConditions(id, request.conditions, false) && applied.pageIndex === 0 && applied.pageSize === source.source.pagination.pageSize && !applied.predicates.length && !applied.search?.query.trim() && canonicalizeJson(applied.sort) === canonicalizeJson(source.source.ordering.default);
         }
         function readyQueryInputs(source: QueryDataSource) {
-          const input = resolveQueryResultInputs(source, raw, sources, limits);
+          const inputLimits = new Map(limits);
+          if (request.purpose === 'complete') for (const id of queryResultDependencies(source)) {
+            const snapshot = raw.get(id);
+            if (snapshot?.status === 'ready' && snapshot.totalCount === snapshot.rows.length) inputLimits.set(id, snapshot.rows.length);
+          }
+          const input = resolveQueryResultInputs(source, raw, sources, inputLimits);
           if (input.status === 'waiting') throw new Error('页面查询依赖未就绪');
           return input;
         }
         const requiresCompleteRead = (preserveWindow: boolean, source: DataSource, query: EffectiveQuery) => (request.purpose === 'complete' && !preserveWindow) || objectCompleteSource(source,query);
-        function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery {
+        function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery | Promise<EffectiveQuery> {
+          const search = mainTableSearch(view.search);
           const captured = request.queries?.get(id);
-          if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
-          const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search);
+          if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
+          const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search);
           const protectedConditions = requiresQueryContext(source.source.query, page.filters)||overridesSource(id,request.conditions);
           // Captured views may be reused; their old predicates cannot authorize a different range.
           let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { body:fresh().body,filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: fresh().fieldMappings,periodAggregation:fresh().periodAggregation } : {}) } : fresh();
           bindQueryResultValues(query, values);
+          if (view.search?.data) return applyTableSlotSearch({ page, sourceId: id, search: view.search, query, conditions: request.conditions, runner: execution, scope,
+            signal: request.signal, now: request.now, displayInputs: frozenInputs, filterRevision: frozenRevision }).then(applied => { queries.set(id, applied); return applied; });
           queries.set(id, query);
           return query;
         }
@@ -390,7 +400,10 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
         function run(id: string): Promise<void> {
           let task = tasks.get(id);
-          if (!task) { task = execute(id); tasks.set(id, task); }
+          if (!task) { task = execute(id).catch(cause => {
+            if (!views.get(id)?.search?.data || request.purpose === 'complete' || request.signal.aborted) throw cause;
+            raw.set(id, { status: 'error', error: preservedQueryError(cause) });
+          }); tasks.set(id, task); }
           return task;
         }
         // Dependency graph execution is shared by all consumers. Stream complete source terminals.
