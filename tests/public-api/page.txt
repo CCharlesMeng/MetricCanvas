@@ -283,6 +283,7 @@ TablePredicate
 TableProps
 TableQueryView
 TableSelectionWrite
+TableSlotSearchPlan
 TableSortRule
 TextComponent
 TextLink
@@ -576,6 +577,8 @@ tablePredicates
 tableQueryViewZ
 tableSearchOption
 tableSearchValue
+tableSessionQueryViewZ
+tableSlotSearchPlan
 tableSortZ
 testConditionValue
 textValueScope
