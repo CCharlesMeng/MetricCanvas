@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>"
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>"
       ],
       "rules": [
         {

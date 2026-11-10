@@ -4,14 +4,14 @@
 |---|---|---|---|
 | Java 数据集语义元数据接口 | 根仓 `service/dataset-detail-java.yaml`，由提供方 YAML 原文落盘 | 产品和 Bundle `data-context/rest-services-dataset-detail.yaml` | 原文更新后运行契约导出；不替换独立的页面管理服务 YAML |
 | 页面协议、能力、校验与组件目录 | 根仓 `packages/page/src/` 与对应合法/非法夹具 | 根仓 `contracts/metriccanvas/`，本 Bundle `contract-snapshot/` | 根仓 `pnpm authoring:contracts` |
-| 产品参考语义、示例索引 | 根仓 `docs/page-metadata/` 与 `tools/scripts/page-reference.ts` | 产品 `page/reference/`、Bundle 快照与 page-builder Skill 参考 | 同一导出器；Skill 的合法示例统一规范化到当前写出版本并重新校验，产品兼容向量保持原版本；不得手改生成物 |
+| 产品参考语义、示例索引 | 根仓 `docs/page-metadata/` 与 `tools/scripts/page-reference.ts` | 产品 `page/reference/`、Bundle 快照与 page-builder Skill 参考 | 同一导出器；合法6.x参考示例保留来源字节和版本，实际旧形状才迁移并按能力下限选择支持版本；产品兼容向量保留自身规则；不得手改生成物 |
 | 创作输入与内部生命周期契约 | `contracts/authored/`，平台用例中的 Schema 定义 | `contracts/exported/`、产品 authoring 投影、MCP 参数 | 修改真源后运行导出器与实际注册 Schema 测试 |
 | 正式 Skill 工作流 | `skill/*/SKILL.md` 与非生成的 workflows/references | 安装现行 Skill | 手工改工作流；生成参考由导出器更新 |
 | 独立本地创作 Skill | `skill/metriccanvas-local-authoring/SKILL.md`、作者维护的 `references/*.md`、`scripts/snapshot-attempt.mjs` | 整目录独立安装；`.agents/skills/metriccanvas-local-authoring` 为本仓发现入口 | 只在上述作者文件维护流程；安装后的知识链接必须在目录内闭合 |
 | 本地创作知识与校验器 | 产品页面参考；`tools/scripts/local-authoring-projection.ts`、`local-authoring-validator.ts`，后者复用产品 `parsePage` 与文件名校验 | 本地 Skill 的 `references/page-metadata/`、`references/knowledge.json`、`scripts/validate-page.mjs` 与第三方许可证 | 同一导出命令生成；剔除在线工具路由与仓外溯源路径，不改变字段语义；知识清单锁定作者版本、产品契约版本和各生成文件哈希 |
 | 成型页面范式 | `tools/scripts/local-authoring-patterns.ts` 与其选定的 `pages/` 页面 | 本地 Skill `references/page-patterns/*.json` | 只投影布局、嵌套组件树与来源哈希；纳入知识清单；阅读目的与误判提示由作者范式卡维护 |
 | PC Report章节组合参考 | `tools/mc-content/layouts/report-composition.md` | MC的`layout/report-composition`、Platform兼容参考、本地Skill的`references/page-patterns/report-composition.md` | 单一作者正文，生成到三个消费入口；本地范式卡和平台创建流程按需读取，当前协议／自动装配能力另行核对，建议不变成保存准入 |
-| 精确创作知识 | 产品 Schema/参考语义、reference-map 的 authoringTopics、local-authoring-knowledge 与 knowledge-core | 本地 Skill references/authoring-knowledge/、scripts/read-knowledge.mjs | 同一导出器生成；语义保留原文，结构局部读取并标出未展开引用；不手写第二份规则 |
+| 精确创作知识 | 产品 Schema/参考语义、reference-map 的 authoringTopics、local-authoring-knowledge 与 knowledge-core | 本地 Skill references/authoring-knowledge/、scripts/read-knowledge.mjs | 同一导出器生成；语义保留原文段落位置，示例目录从完整合法页面派生，find/show按方面与分支小读，标出未展开引用与续查；目标组件目录承接analyze-data局部scan，core/page/data-read复用产品扫描提供配置/字段/共享影响及显式样本；旧主题接口兼容，不手写第二份规则 |
 | 用数扫描和数据分析 | local-authoring-data-analysis.ts、local-authoring-data-cli.ts、产品组件树遍历/校验 | 本地 Skill scripts/analyze-data.mjs | 打包为独立脚本，清单锁定；用户 MD/报告只在用户工作目录，不进入分发 |
 | 概览布局样例与地图地名 | `tools/scripts/local-authoring-overview-example.ts`；产品 `page/map-regions.json` | 本地 Skill `assets/layouts/overview-map-led.json`、`references/map-regions.json` | 导出时验证布局样例，地名保留底图哈希而移除仓库路径；均纳入知识清单 |
 | Bundle 版本、入口与分发规则 | `bundle.json` | `bundle.lock.json`、运行时 bundle-info、安装包 | 修改声明后导出；不手改 hash |

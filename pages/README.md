@@ -1,5 +1,7 @@
 # 页面示例与验收场景
 
+新增、修改或推荐可复用示例，遵循 [Playground 示例维护约定](../docs/agents/playground-example-maintenance.md)。完整 JSON 保持唯一运行真源，目录 README 维护用途、参考对象、移植边界和可观察预期；后续 Skill 索引与局部读取按 [整体规划](../docs/plan/2026-11-09-local-authoring-knowledge-consumption.md) 实施。
+
 - [最多五位小数](capabilities/data/README.md#最多五位小数6107)：`/pages/number-precision-five`，三至五位普通及带符号格式、舍入零和颜色箭头；内联合成数据。
 
 - [伙伴健康度交互](capabilities/table/README.md#伙伴健康度计算排序与组合标题)：`/pages/partner-health-interactions`，前端计算总分的本地排序、组合弹窗标题及堆叠合计；仅合成内联数据。

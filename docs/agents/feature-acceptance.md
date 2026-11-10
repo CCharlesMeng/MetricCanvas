@@ -8,6 +8,8 @@
 2. **页面元数据文档**：修改 `PAGE-METADATA.md` 及 `docs/page-metadata/` 中实际拥有该语义的模块和示例路由；涉及参数时同步 `PAGE-PARAMETERS.md`，涉及字段或版本时同步产品 Schema、校验和契约向量。文档明确声明、运行行为、限制与对应验收场景。
 3. **本地创作 Skill**：按 [维护流程](local-authoring-skill-maintenance.md) 从产品真源生成 `metriccanvas-local-authoring` 的协议知识、示例、独立校验器和版本/哈希清单；工作流有变化时更新作者维护的说明。复制安装目录到仓库外验证链接闭合及页面校验，保持独立使用能力。
 
+推荐供创作复用的 Playground 示例同时执行 [示例维护约定](playground-example-maintenance.md)：在原页面及其目录说明中维护用途、稳定参考对象、移植边界和可观察预期；示例页面继续是运行真源，后续知识索引和局部投影由生成器派生。新增或本次修改的示例按需补齐，不因普通版本更新批量重写历史页面。
+
 Skill 验证范围按 [仓库约定](../../AGENTS.md#skill-验收范围) 仅验收 local-authoring；其他 Skill 和真实模型按用户明确要求追加，产品验收范围保持上述要求。
 
 上述要求由本页维护；仓库入口和 Skill 维护文档只指向本页。派生文件通过导出器更新，避免在文档或 Skill 中手写第二份协议规则。

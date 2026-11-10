@@ -19,7 +19,7 @@ function requestedLocations(locations: ComponentLocation[], ids: string[]): Comp
   return [...new Set(ids)].map(id => {
     const matches = locations.filter(component => component.id === id);
     if (matches.length !== 1) {
-      throw new TypeError(`--component ${id}: expected one component, found ${matches.length}; run scan without --component to locate it`);
+      throw new TypeError(`--component ${id}: expected one component, found ${matches.length}; use the component directory and an exact --at reading facet`);
     }
     return matches[0];
   });

@@ -2552,6 +2552,7 @@
         "#/definitions/staticFieldBinding"
       ],
       "headings": [
+        "显式数值格式与精度",
         "整数与缺失值的统一显示",
         "柱线图数值格式一致性",
         "百分比创作与覆盖边界",
@@ -3314,10 +3315,12 @@
     ],
     "field-bindings-and-formats.md": [
       "时间格式串与固定 UTC+8（6.102）",
+      "显式数值格式与精度",
       "整数与缺失值的统一显示",
       "统一语义格式（6.93）",
       "百分比创作与覆盖边界",
       "带符号普通数值（6.17起）",
+      "带符号普通数值示例",
       "按百万呈现",
       "显式数字颜色与图表标签（6.16）",
       "查阅方式",
@@ -3488,5 +3491,183 @@
       "受控多槽与结果覆盖",
       "本地适用检查"
     ]
+  },
+  "authoringRuleBindings": {
+    "table-column-binding-unique": {
+      "owners": [
+        "tableColumn",
+        "tableComponent"
+      ]
+    }
+  },
+  "authoringContracts": {
+    "numeric-format": {
+      "owners": [
+        "staticFieldBinding",
+        "tableColumn",
+        "barChartSeries",
+        "chartSeries",
+        "metricCardComponent"
+      ],
+      "targets": [
+        "#/definitions/staticFieldBinding",
+        "#/definitions/tableColumn/properties/field",
+        "#/definitions/tableColumn/properties/secondaryField",
+        "#/definitions/barChartSeries/anyOf/0/properties/field",
+        "#/definitions/chartSeries/anyOf/0/properties/field",
+        "#/definitions/staticFieldBinding/anyOf/0",
+        "#/definitions/staticFieldBinding/anyOf/1",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
+        "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/valueField",
+        "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/field",
+        "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/valueField",
+        "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/field",
+        "#/definitions/metricCardComponent/properties/props/properties/progress/properties/valueField"
+      ],
+      "scope": "Registered rules for explicit component field formatting; source scale, unchanged shared metadata and runtime acceptance remain caller obligations.",
+      "coverage": "registered",
+      "structures": [
+        "#/definitions/staticFieldBinding/anyOf/1",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0"
+      ],
+      "semantics": [
+        {
+          "module": "field-bindings-and-formats",
+          "headings": [
+            "显式数值格式与精度",
+            "整数与缺失值的统一显示"
+          ]
+        }
+      ],
+      "examples": [
+        "example:semantic-numeric-display",
+        "example:authoring-percent-coverage"
+      ]
+    },
+    "signed-number": {
+      "owners": [
+        "staticFieldBinding",
+        "tableColumn",
+        "barChartSeries",
+        "chartSeries",
+        "metricCardComponent"
+      ],
+      "targets": [
+        "#/definitions/staticFieldBinding",
+        "#/definitions/tableColumn/properties/field",
+        "#/definitions/tableColumn/properties/secondaryField",
+        "#/definitions/barChartSeries/anyOf/0/properties/field",
+        "#/definitions/chartSeries/anyOf/0/properties/field",
+        "#/definitions/staticFieldBinding/anyOf/0",
+        "#/definitions/staticFieldBinding/anyOf/1",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
+        "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/valueField",
+        "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/field",
+        "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/valueField",
+        "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/field",
+        "#/definitions/metricCardComponent/properties/props/properties/progress/properties/valueField"
+      ],
+      "scope": "Registered rules for explicit component field formatting; source scale, unchanged shared metadata and runtime acceptance remain caller obligations.",
+      "coverage": "registered",
+      "structures": [
+        "#/definitions/staticFieldBinding/anyOf/1",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0"
+      ],
+      "semantics": [
+        {
+          "module": "field-bindings-and-formats",
+          "headings": [
+            "显式数值格式与精度",
+            "整数与缺失值的统一显示",
+            "带符号普通数值（6.17起）"
+          ]
+        }
+      ],
+      "examples": [
+        "example:number-precision-five"
+      ]
+    },
+    "time-format": {
+      "owners": [
+        "staticFieldBinding",
+        "tableColumn",
+        "barChartSeries",
+        "chartSeries",
+        "metricCardComponent"
+      ],
+      "targets": [
+        "#/definitions/staticFieldBinding",
+        "#/definitions/tableColumn/properties/field",
+        "#/definitions/tableColumn/properties/secondaryField",
+        "#/definitions/barChartSeries/anyOf/0/properties/field",
+        "#/definitions/chartSeries/anyOf/0/properties/field",
+        "#/definitions/staticFieldBinding/anyOf/0",
+        "#/definitions/staticFieldBinding/anyOf/1",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
+        "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/valueField",
+        "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/field",
+        "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/valueField",
+        "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/field",
+        "#/definitions/metricCardComponent/properties/props/properties/progress/properties/valueField"
+      ],
+      "scope": "Registered rules for explicit field time formatting; input validity and runtime/export acceptance are not assessed.",
+      "coverage": "registered",
+      "structures": [
+        "#/definitions/staticFieldBinding/anyOf/1",
+        "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1"
+      ],
+      "semantics": [
+        {
+          "module": "field-bindings-and-formats",
+          "headings": [
+            "时间格式串与固定 UTC+8（6.102）"
+          ]
+        }
+      ],
+      "examples": [
+        "example:table-time-format"
+      ]
+    },
+    "display-unit": {
+      "owners": [
+        "tableColumn",
+        "barChartSeries",
+        "chartSeries"
+      ],
+      "targets": [
+        "#/definitions/tableColumn",
+        "#/definitions/tableColumn/properties/unit",
+        "#/definitions/barChartSeries/anyOf/0",
+        "#/definitions/barChartSeries/anyOf/1",
+        "#/definitions/chartSeries/anyOf/0",
+        "#/definitions/chartSeries/anyOf/1",
+        "#/definitions/barChartSeries/anyOf/0/properties/unit",
+        "#/definitions/barChartSeries/anyOf/1/properties/unit",
+        "#/definitions/chartSeries/anyOf/0/properties/unit",
+        "#/definitions/chartSeries/anyOf/1/properties/unit"
+      ],
+      "scope": "Registered display-unit rules for table field columns and bar/line series; compound use with other behavior requires its contract.",
+      "coverage": "partial",
+      "structures": [
+        "#/definitions/tableColumn/properties/unit"
+      ],
+      "semantics": [
+        {
+          "module": "field-bindings-and-formats",
+          "headings": [
+            "图表系列与表格列展示单位（6.94）"
+          ]
+        }
+      ],
+      "examples": [
+        "example:chart-table-unit"
+      ]
+    }
   }
 }

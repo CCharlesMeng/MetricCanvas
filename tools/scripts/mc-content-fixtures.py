@@ -9,8 +9,53 @@ from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTENT = ROOT / 'metriccanvas-authoring/mc-content'
+LAYOUT_FIXTURES = ROOT / 'tools/fixtures/mc-content-layout'
+COMPILE_IDENTITY = (('inspectionSpec', 'contentSha256'), ('contentSha256',))
+LAYOUT_IDENTITIES = {
+    'business-report.json': tuple(('compile', *path) for path in COMPILE_IDENTITY),
+    'usage-report.json': tuple(('compile', *path) for path in COMPILE_IDENTITY),
+    'diagnostics.json': (
+        *(('compile', *path) for path in COMPILE_IDENTITY),
+        *(('required', *path) for path in COMPILE_IDENTITY),
+        ('evaluation', 'testedContent', 'contentVersion'),
+        ('evaluation', 'testedContent', 'contentSha256'),
+        *(('evaluation', 'checks', 0, 'result', *path) for path in COMPILE_IDENTITY))}
+CONTENT_IDENTITY_SNAPSHOT = {'contentSha256': '<current-content-sha256>', 'contentVersion': '<current-content-version>'}
 sys.path.insert(0, str(CONTENT / 'scripts'))
 from mc_content import compile_layout, diagnose_package, evaluate, inspect_schema, preflight, verify_package, query_content
+
+
+def content_identity_paths(value, prefix=()):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            location = (*prefix, key)
+            if key in CONTENT_IDENTITY_SNAPSHOT:
+                yield location
+            yield from content_identity_paths(child, location)
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            yield from content_identity_paths(child, (*prefix, index))
+
+
+def snapshot_value(file, value, manifest):
+    """Only named layout snapshots vary by package identity; validate before masking."""
+    if file.parent != LAYOUT_FIXTURES:
+        return value
+    expected = LAYOUT_IDENTITIES.get(file.name)
+    if expected is None or set(content_identity_paths(value)) != set(expected):
+        raise ValueError(f'Unexpected content identity fields: {file}')
+    result = deepcopy(value)
+    for location in expected:
+        parent = result
+        actual = value
+        for key in location[:-1]:
+            parent = parent[key]
+            actual = actual[key]
+        key = location[-1]
+        if actual[key] != manifest[key]:
+            raise ValueError(f'Current content identity mismatch: {file} / {location}')
+        parent[key] = CONTENT_IDENTITY_SNAPSHOT[key]
+    return result
 
 
 def distribution_rows():
@@ -112,6 +157,7 @@ def demo(rows):
 
 
 def main():
+    _, manifest = verify_package(CONTENT)
     rows, report = results()
     outputs = {ROOT / 'pages/capabilities/layout/mc-content-layout-demo.json': demo(rows),
         ROOT / 'tools/fixtures/mc-content-layout/diagnostics.json': report}
@@ -119,8 +165,9 @@ def main():
         document, inspection = report_example(scene)
         outputs[ROOT / f'pages/capabilities/layout/mc-layout-{scene}.json'] = document
         outputs[ROOT / f'tools/fixtures/mc-content-layout/{scene}.json'] = inspection
-    for file, value in outputs.items():
-        text = json.dumps(value, ensure_ascii=False, indent=2) + '\n'
+    serialized = {file: json.dumps(snapshot_value(file, value, manifest), ensure_ascii=False, indent=2) + '\n'
+        for file, value in outputs.items()}
+    for file, text in serialized.items():
         if '--check' in sys.argv:
             if not file.is_file() or file.read_text(encoding='utf-8') != text:
                 raise ValueError(f'Diagnostic fixture drift: {file}')

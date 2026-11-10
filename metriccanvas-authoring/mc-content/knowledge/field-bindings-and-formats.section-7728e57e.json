@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "6.109",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "field-bindings-and-formats.section-7728e57e"
+  ],
+  "semantics": [
+    {
+      "module": "field-bindings-and-formats",
+      "reference": "references/page-metadata/field-bindings-and-formats.md",
+      "blocks": [
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "## 带符号普通数值示例\n\n| 原格式 | 带符号格式 | 版本下限 | 正数示例 | 零值示例 |\n|---|---|---|---|---|\n| `number` | `number-signed` | 6.17 | `+1.234` | `0` |\n| `number-1` | `number-1-signed` | 6.17 | `+1.2` | `0` |\n| `number-2` | `number-2-signed` | 6.18 | `+1.23` | `0` |\n| `number-3` | `number-3-signed` | 6.107 | `+1.235` | `0` |\n| `number-4` | `number-4-signed` | 6.107 | `+1.2346` | `0` |\n| `number-5` | `number-5-signed` | 6.107 | `+1.23457` | `0` |\n| `number-grouped` | `number-grouped-signed` | 6.18 | `+1,234.568` | `0` |\n\n例如 `number-5-signed` 的 `1.234567` 显示 `+1.23457`，`1.2` 显示 `+1.2`，`±0.000004` 均显示 `0`，`±0.000005` 分别显示 `+0.00001`、`-0.00001`。三、四位格式以各自展示精度判断零。合成场景 `/pages/number-precision-five` 对照六种预设、表格字段默认、指标卡颜色与箭头、图表标签；操作见页面所在目录的 README.md。\n\n`number-2-signed` 的 `±0.004` 均显示 `0`，`±0.005` 分别显示 `+0.01`、`-0.01`。`number-grouped-signed` 的 `±0.0004` 均显示 `0`，`±0.0005` 分别显示 `+0.001`、`-0.001`。所有带符号普通数值格式共用零值的符号、正负颜色及变化箭头规则。"
+      ],
+      "rules": [
+        {
+          "id": "adaptive-money-trimmed",
+          "description": "6.88 新金额格式与静态货币匹配，旧格式保持",
+          "valid": [
+            "operation-money-formats"
+          ],
+          "invalid": [
+            "adaptive-money-before-6.88",
+            "adaptive-money-default-currency",
+            "adaptive-money-binding-currency",
+            "adaptive-money-nondefault-currency"
+          ]
+        },
+        {
+          "id": "currency-selection",
+          "description": "6.38金额范围和静态货币字段选择",
+          "valid": [
+            "currency-selection-page"
+          ],
+          "invalid": [
+            "currency-before-6.38",
+            "currency-case-missing",
+            "currency-metric-mismatch",
+            "currency-negative-default",
+            "currency-equal-default",
+            "currency-compute-mixed"
+          ]
+        },
+        {
+          "id": "number-precision-five",
+          "description": "三至五位小数及带符号预设由6.107引入",
+          "valid": [
+            "number-precision-five"
+          ],
+          "invalid": [
+            "number-precision-binding-before-6.107",
+            "number-precision-default-before-6.107",
+            "number-precision-param-before-6.107",
+            "number-precision-six-unsupported"
+          ]
+        },
+        {
+          "id": "signed-number-family-capability",
+          "description": "两位小数与千分位带符号数值格式由6.18引入",
+          "valid": [
+            "signed-number-family-page"
+          ],
+          "invalid": [
+            "signed-number-two-decimal-before-6.18",
+            "signed-number-grouped-before-6.18",
+            "signed-number-family-param-before-6.18"
+          ]
+        },
+        {
+          "id": "signed-number-format-capability",
+          "description": "带符号普通数值格式由6.17引入",
+          "valid": [
+            "signed-number-page"
+          ],
+          "invalid": [
+            "signed-number-binding-before-6.17",
+            "signed-number-default-before-6.17",
+            "signed-number-param-before-6.17"
+          ]
+        },
+        {
+          "id": "explicit-color-local",
+          "description": "显式颜色只绑定数字且不与旧染色声明冲突",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "color-rule-legacy-conflict",
+            "color-rule-nonnumeric",
+            "color-rule-tone-conflict"
+          ]
+        },
+        {
+          "id": "chart-value-label-exclusive",
+          "description": "常驻数值标签不与旧标签重复启用",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "value-label-bar-conflict",
+            "value-label-line-conflict"
+          ]
+        },
+        {
+          "id": "presentation-capability",
+          "description": "颜色与图表标签声明由6.16引入",
+          "valid": [
+            "explicit-presentation-page"
+          ],
+          "invalid": [
+            "presentation-before-6.16"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/number-precision-five.json",
+        "references/page-metadata/examples/yoy-p-format-demo.json",
+        "references/page-metadata/examples/million-formats-page.json",
+        "references/page-metadata/examples/compute-page.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/explicit-presentation-page.json",
+        "references/page-metadata/examples/signed-number-page.json",
+        "references/page-metadata/examples/signed-number-family-page.json",
+        "references/page-metadata/examples/currency-selection-page.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json",
+        "references/page-metadata/examples/authoring-percent-coverage.json",
+        "references/page-metadata/examples/operation-money-formats.json",
+        "references/page-metadata/examples/semantic-numeric-display.json",
+        "references/page-metadata/examples/table-time-format.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

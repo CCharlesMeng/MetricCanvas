@@ -1,70 +1,91 @@
 ---
 name: metriccanvas-local-authoring
-description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON，将旧页头迁移为 iocHeader；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
+description: 在本地开发 MetricCanvas 看板、报表和 IOC：新建页面、对接数据与查询、调试页面问题、调整已有页面。附协议知识、数据分析与升级工具、独立校验器；线上保存和发布使用项目提供的接口。
 metadata:
-  version: "1.50.0"
+  version: "1.56.2"
 ---
 
 # 本地页面创作
 
-直接编辑用户指定文件。知识与脚本只用本 Skill 目录；用户页面、设计源、指标说明和数据契约可在项目内。无需其他 Skill、仓库源码、在线 MCP 或 npm 安装，脚本需要 Node.js 22+。
+直接编辑指定文件。知识与脚本只用本目录，用户页面、设计源、指标说明可在项目内。需要Node.js 22+，不依赖仓库源码、其他Skill或在线服务。
+
+## 按任务开始
+
+| 任务 | 入口与交付 |
+|---|---|
+| 新页面开发 | 按下方“新建与结构调整”从需求和真实输入装配完整页面；核对需求涉及的字段、组件及交互，再执行完整校验。数据未接通时明确区分演示页面与待执行候选。 |
+| 数据对接 | 读[数据识别与接数](references/data-analysis.md)，核对查询依据、结果契约与绑定；有执行入口则验真，无入口按该文交候选和缺口。换源核对共享消费者；保持页面意图的关联按需读[受控换源](references/data-association.md)。 |
+| bug调试 | 读[页面调试](references/page-debugging.md)，从实际错误或复现现象定位失败层，完成原因、修改、复验及未验条件的闭环。 |
+| 页面调整 | 走下方局部修改；结构调整、删除依赖、页头迁移和升级按[专项路由](references/task-routing.md)选择对应分支。 |
+
+任务可组合：先完成阻塞页面的取数或错误定位，再进行受影响的装配或调整。以用户要求的页面文件、查询候选或诊断结论为产物，不要求每类任务都创建分析报告。交付分别说明配置校验、真实取数和运行时行为的已验范围。
+
+## 已有页面的局部修改
 
 已有页面在编辑前先运行 `node "<skill-dir>/scripts/upgrade-page.mjs" "<page-file>"`。`unchanged` 继续原任务；`ready` 按[旧页面继续开发](references/page-upgrade.md)保留原件、升级并接回工作文件；`blocked` 按该说明处理语义缺口。新增特性先完成其中的“新增特性的版本闭环”，由 Skill 自动升级到安装包当前协议并复验，不把版本选择交给用户；仅原版有效且本次能力已支持时才保留旧版本局部开发。新建页面也从版本命令取当前版本。
 
-## 选择任务路径
-
-| 本次任务 | 读取与动作 |
-|---|---|
-| 新建、调整或迁移 IOC 页头 | 先读[IOC 页头创作与迁移](references/ioc-header-migration.md)的筛选布局顺序；旧 header 替换另按该文盘点功能、默认行为与依赖，最小替换并双向对账；沿用原布局形态。 |
-| 局部呈现或已有可信字段绑定修改 | 定位相关对象，沿用原形态、数据和查询，直接改最小对象；只查受影响属性。大页面按对象提取，不打印全部数据行。 |
-| 指标表、详情表、级联或多来源等逻辑选型 | 按[场景索引](references/scenario-index.md)选择操作与数据逻辑，只读命中的主题和示例。 |
-| 新增口径、指标匹配、查询或数据源替换 | 读[数据识别与接数](references/data-analysis.md)，先确认数据依据和项目已提供的执行入口，再分析受影响范围；换源保留原组件意图并核对全部共享消费者。完整关联报告按需生成。 |
-| 新建、整页重组、切换形态 | 读[形态识别与确认](references/page-form.md)，确认本目标页 Dashboard/Report 后，只选[看板](references/dashboard-patterns.md)或[报表](references/report-patterns.md)的一张范式卡与摘要。 |
-| 已确认Report的区域划分、背景或卡片布局调整 | 读[报表范式](references/report-patterns.md)指向的PC章节组合，先判断表达与卡面边界，再查相关组件属性；沿用已确认形态和数据。 |
-| 删除列、组件、数据源或筛选 | 按[场景索引](references/scenario-index.md)核对完整引用与共享依赖，删除目标后完整校验。 |
-| 季度选择仍传 month，或需要调整年／季／月的查询粒度 | 按[期间选择定位与修复](references/period-selection-repair.md)核对精确页面、查询分支和显式策略；普通指标按选择查询，固定月趋势及自定义账期字段按各自契约处理，以实际 execute 请求验收。 |
-| 联合查询／多表关联报错、成员筛选不适用、补列未请求或关联后缺行 | 按[多源查询定位与修复](references/multi-source-query-repair.md)区分关联与合并，建立成员筛选矩阵，分别核对行键、关联键和实际请求；结构校验与真实服务能力分别举证。 |
-| 新建／调整 IOC 区域与局部筛选联动，或切换／URL 恢复后筛选消失、隐藏后仍过滤 | 按[区域与局部筛选联动](references/region-local-filter-repair.md)同时检查 Region 选中值与层级、控件显隐和全部相关查询绑定；用原始 URL 及返回全球的流程验收，不能只测空参数入口。 |
-| debug：报错、没数据、数不对或交互失效 | 按[场景索引](references/scenario-index.md)从症状定位失败层，再检查相应数据逻辑。 |
-
-用户已明确指定形态或已有有效确认且无冲突时引用选择后继续；实质冲突按形态说明针对性确认。未确认时只交识别摘要和问题，不生成 JSON、模板或章节骨架。局部修改沿用原形态；新页面显式写 layout，省略会默认 report。
-
-## 精确查阅
-
-普通使用直接运行脚本、读取 JSON 回执；接口疑问先查目录内对应说明；声明支持 --help 的脚本可先取帮助。压缩 .mjs 是执行产物，仅排查脚本自身故障时读取。
-
-从版本命令取 schemaVersion，不读取完整哈希清单。将 skill-dir 替换为实际安装目录：
+局部修改沿用原形态、数据和查询。定位目标后，读取当前配置和所涉字段契约；配置中的绑定、format及missingText用于确定最小差异，字段类型/defaultFormat及刻度用于判断适用性：
 
 ```sh
-node "<skill-dir>/scripts/validate-page.mjs" --version
-node "<skill-dir>/scripts/read-knowledge.mjs" list --module table
-node "<skill-dir>/scripts/read-knowledge.mjs" show --topic table.width
+node "<skill-dir>/scripts/read-knowledge.mjs" find --kind component --document "<target.json>" --query "<标题或id>"
+node "<skill-dir>/scripts/analyze-data.mjs" scan --page "<target.json>" --at "<返回documentAt或其内属性>" --select config
+node "<skill-dir>/scripts/analyze-data.mjs" scan --page "<target.json>" --at "<返回documentAt>" --select fields --field "<field-id>" [--field "<另一目标field-id>"]
 ```
 
-已知主题直接 show，可重复 --topic 合并查阅。常用入口：page.core、layout.core、data.inline/query/pagedJoin/pagedUnion/recovery、fields.core/format、query.core、table.columns/width/search/slot-search/pagination/export、metricCard.core/title、text.core、filters.time、reportHeader.export。斜杠表示分别独立的主题，如 data.query。
+同组件多个字段可重复--field合并读取，仍分别核对契约。位置已知就跳过发现。回执page含版本/形态；只有槽与来源对应关系不清时才补bindings。改变共享字段契约或来源时读取consumers；仅修改组件局部绑定时，以差异检查确认共享声明与其他组件保持，无需枚举消费者。大对象按回执收窄/续查，重复id用准确路径。需要样本或读取受限时看[局部读取](references/target-reading.md)。默认不读数据行/查询体；自由投影用明确字段白名单，编辑只输出路径、哈希和差异断言。
 
-脚本返回语义原文、局部约束、未展开引用和完整参考路径；需要引用类型时继续检索所属模块。其他能力从[专题查阅](references/protocol-routing.md)或[协议索引](references/page-metadata/README.md)定位。完整示例按实际变体读取；概览需要时读[布局](references/overview-layouts.md)和[短写法](references/component-recipes.md)，涉及地图再读[地图绑定](references/map-bindings.md)。主题不存在/工具失败时深查完整参考，说明精确读取未执行，不能当成没有约束。运行时不兼容时说明差异，不降版本绕过能力下限。
+既有列/指标只改精度、正负号、时间或展示单位，走下方关联契约后直接修改、快照和完整校验。
 
-## 数据与验证
+改变IOC页头、来源/查询体、关联逻辑、期间策略、删除依赖、Report布局或定位运行错误，读[专项路由](references/task-routing.md)对应行；旧IOC页头先盘点功能、默认行为和依赖再迁移。保留已有查询不触发查询创作；URL/导航参数按实际Schema上下文识别，已有同型绑定只核对新字段和差异。新增口径/换源先有数据依据；新增/改绑数值、改变刻度或单位冲突才做[有效绑定检查](references/authoring-presentation.md#numeric-binding)。
 
-新增口径、查询或换源时，按[数据识别与接数](references/data-analysis.md)核对查询边界、后端分页、业务标识及执行证据。缺执行环境时交未执行候选；演示使用 inline 并说明性质。已有可信字段的局部呈现修改沿用当前数据。
+## 新建与结构调整
 
-数值格式、字段绑定或展示单位变化时，先按[数值与绑定检查](references/authoring-presentation.md)选择实际声明位置，再核对本次范围和实际回执；仅改标题、列宽等任务沿用既有数值声明。
+新建/跨页复用找匹配合法示例并保留结构；只查实际差异。形态不明或冲突时读[形态识别](references/page-form.md)，重新组织内容才选[看板](references/dashboard-patterns.md)或[报表](references/report-patterns.md)范式。新页面显式layout；省略默认report，局部任务保留原形态。
 
-局部任务改最小对象；整页生成先总结原始需求覆盖，再组织章节、组件、数据源与交互。验收期望来自原始输入，不从生成结果反推。明确要求运行时 SSE 才用 aiSummary。业务数值、百分刻度、完整性、initial、日期与交互按[本地创作与验收](references/local-workflow.md)命中的章节核对。
+目标文件尚不存在时，从 `read-knowledge.mjs find --kind example --owner <组件类型> --query <能力词>` 发现示例；component目录定位的是已有目标页中的组件，待页面存在后才使用。先取示例outline，用返回的对象path读取snippet，不猜根路径或示例内部位置。按[渐进读取](references/knowledge-consumption.md)补齐实际移植依赖。
 
-新增特性后先按[版本闭环](references/page-upgrade.md)核对最终 schemaVersion，再按[尝试快照](references/local-workflow.md)冻结原始字节，保留失败样本；每次完整生成后或局部修改完成后均完整校验：
+页面外壳复用包内完整合法页面，或用 `read-knowledge.mjs show --topic page.core` 核对根结构；新增字段只沿实际Schema上下文确认。新建或重命名页面、数据源、组件等标识时分别核对所属契约，不能把某一命名空间的规则套到其他位置。页面标题和组件页头分别使用各自声明位置；保留示例已合法的结构，不凭通用JSON习惯增加根属性。
+
+## 知识与停止条件
+
+当前事实用scan。修改字段绑定的数字精度/百分比、带符号数值、UTC+8时间或列/系列单位时，用实际绑定位置直接读取关联契约：
 
 ```sh
-node "<skill-dir>/scripts/validate-page.mjs" --expected-layout dashboard "<page-file>"
+node "<skill-dir>/scripts/read-knowledge.mjs" resolve --document "<target.json>" --at "<字段绑定的documentAt>" --aspect numeric-format
 ```
 
-expected-layout 来自有效用户确认；Report 使用 report。局部修改可只传文件。退出码 0/1/2 为通过/文档错误/调用错误；保留 type/path/message，修复后重跑。目录模式递归读取子目录的 .json；单页任务传精确文件，快照放扫描范围外。不得放宽规则或删合法配置掩盖错误。Node 不可用时说明自动校验未执行。
+按本次变化选择一个方面：普通精度/百分比用 `numeric-format`；带正负号用 `signed-number`（已含普通数值基础规则）；时间用 `time-format`；添加单位用 `display-unit`。只改精度不读取单位专题。单位方面使用绑定所属列/系列位置，其他方面使用field/valueField等实际绑定位置。
 
-有目标运行时则按[本地流程的预览与修复](references/local-workflow.md)自行预览精确文件和所涉交互；在自身页面范围内修复并复验呈现问题，每轮保留快照。Report按章节组合先明确卡面归属，再检查实际卡面与主辅信息。设计还原附截图对照，查询变动保留真实请求/响应证据。缺环境时继续完成可验证部分，静态、浏览器、真实取数分别报告。
+结果组合合法结构和产品行为原文；有next时在同一命令追加 `--cursor "<next的值>"` 补齐所选契约（续页替换cursor）。同版、相同Schema上下文及方面复用规则；每个目标独立核对配置、类型/defaultFormat和刻度。不同组件分支、版本或条件绑定再resolve，不能复用适用性。coverage只代表已登记范围，acceptance不是运行验收；unregistered/partial只补回执指出的具体缺口。已覆盖的规则不再通过示例、专题或逐属性Schema重复确认。
 
-## 交付与分发
+其他合法结构和行为用read-knowledge的find/show。已知id直接show，语义可按已选example限域，原样保留的结构不逐属性复查。属性结构疑问优先 `find --document <file> --at <准确对象> --query <属性>` 沿当前上下文解析引用，不猜Schema owner名或逐层手追已可解析的引用。只有具体疑点再读[渐进读取](references/knowledge-consumption.md)相关段落。已知命令不取help，不读压缩脚本或机器知识包。
 
-先按[本地流程](references/local-workflow.md)的“临时产物生命周期”收口：验证完成后清理本轮临时产物，失败或未验证完成时保留最小恢复现场。报告最终文件位置、校验结果和缺口；仅报告实际保留的恢复材料。新建/整页修改补充形态依据、范式与需求覆盖。纯数据识别只交所需匹配与缺口。本地文件不等于线上保存或发布。
+每轮只补位置、差异、输入前提或行为边界的具体缺口；needs-expand继续收窄，空目录不证明能力不存在。不得降低需求换校验通过。
 
-安装与回退复制完整目录，含 references、assets、scripts，知识与校验器同版替换。流程由作者维护，知识及脚本从产品真源生成，安装副本只消费。仅维护/升级时读[知识维护](references/maintenance.md)。
+位置、配置、输入类型及本次行为/约束明确后，停止知识查询并做最小修改。显示和导出分别核对；界面默认值不能证明导出行为，要求一致时确认必要显式声明。验收期望来自原始输入，不从结果反推。
+
+## 修改与验证
+
+新页面用 `node "<skill-dir>/scripts/validate-page.mjs" --version` 取当前版本。已有页局部核对原schemaVersion；能力下限不足或含可迁移旧形状时，按[旧页升级](references/page-upgrade.md)运行upgrade-page，不因增加现行已支持属性而例行升级。
+
+已有页局部修改：在编辑前用 `snapshot-attempt` 冻结原件，保留回执file和sha256；根据需求确定允许修改的准确JSON Pointer（例如目标列的field，不扩大到整个组件或页面）。
+
+```sh
+node "<skill-dir>/scripts/snapshot-attempt.mjs" "<page-file>"
+```
+
+编辑完成后只需一次局部验收，允许范围可重复--allow；形态已确认时带--expected-layout：
+
+```sh
+node "<skill-dir>/scripts/finish-edit.mjs" --page "<page-file>" --baseline "<原件快照file>" --baseline-sha256 "<原件sha256>" --allow "<目标绑定pointer>" --expected-layout dashboard
+```
+
+回执包含候选快照、实际变更路径、范围外不变检查和完整页面校验。非目标内容按JSON值比较；对象键顺序与125000.0/125000的数字写法不影响结果，数组顺序和类型仍严格检查。static-verified后，复用回执完成静态报告，无需再次scan、diff、cmp或重复快照/校验；业务意图与屏幕/导出仍按需求分别验收。退出0/1/2分别为静态通过/候选被拒绝/调用错误；拒绝时保留快照与错误，只修复实际缺口再运行，原件基线保持。
+
+新建、升级另存或尚无准确变更范围的任务，沿用 `snapshot-attempt.mjs <page-file>` 后对回执file运行 `validate-page.mjs <snapshot-file>`；不要为使用局部验收而放宽允许范围。快照细节仅按需读[尝试快照](references/local-workflow.md#尝试快照)。
+
+保留原始数据、查询、筛选、权限、分页、导航和非目标内容。局部读取不缩小完整校验范围。新建/重组核对需求覆盖，实际新差异再读[本地验收](references/local-workflow.md)对应章节，Report核对卡面归属。明确要求运行时SSE才用aiSummary。
+
+有目标运行时就预览精确文件和受影响交互/导出，按[预览修复](references/local-workflow.md#预览与修复)修复自身呈现问题。缺环境继续可验证部分，结构、浏览器、导出、真实取数分别报告；inline演示不冒充服务成功。报告产物位置、依据、检查和缺口；新建/重组补形态依据。清理仅按[临时产物](references/local-workflow.md#临时产物生命周期)实际情况执行，失败留最小恢复现场，本地文件不等于线上发布。
+
+安装/回退复制完整目录，同版替换知识与校验器；维护升级才读[维护说明](references/maintenance.md)。

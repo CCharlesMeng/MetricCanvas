@@ -8,7 +8,8 @@ import { readFile, readdir, access, cp, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { flattenPageComponents, pageSchema, componentCatalog, validate, versionPolicy, normalizePageDocument } from '../packages/page/src/internal';
-import { minimalExample, atPointer, buildPageReference, referenceNodes, validateReferenceLinks, type ReferenceMap } from '../tools/scripts/page-reference';
+import { minimalExample, atPointer, buildPageReference, referenceNodes, validateReferenceLinks, stableGeneratedExample, type ReferenceMap } from '../tools/scripts/page-reference';
+import { requiredMinorVersion, supportedVersions } from '../packages/page/src/version';
 
 const root = process.cwd();
 const bundle = JSON.parse(await readFile('metriccanvas-authoring/bundle.json','utf8'));
@@ -25,7 +26,40 @@ inputs.set('page/conformance/coverage.json',await readFile('contracts/metriccanv
 for(const file of await readdir('contracts/metriccanvas/page/conformance/invalid')) inputs.set(`page/conformance/invalid/${file}`,await readFile(`contracts/metriccanvas/page/conformance/invalid/${file}`,'utf8'));
 const reference = await buildPageReference(root, pageSchema, componentCatalog, inputs, versionPolicy.current);
 
+function expectProjectedExample(content: string, actual: string, file: string): void {
+  const original=JSON.parse(content);
+  if(String(original.schemaVersion).startsWith('6.') && !original.iocHeader && !original.dashboardToolbar && validate(original).length===0) {
+    expect(actual,file).toBe(content);
+    return;
+  }
+  const upgraded=original.iocHeader || String(original.schemaVersion).startsWith('5.')?upgradePageDocument(original):undefined;
+  if(upgraded&&!upgraded.ok)throw Error(file);
+  const {dashboardToolbar:_legacyToolbar,...candidate}=upgraded?.ok?upgraded.document:original;
+  const normalized = normalizePageDocument({...candidate, schemaVersion: versionPolicy.current});
+  expect(normalized.ok, file).toBe(true);
+  if (!normalized.ok) throw new Error(file);
+  const projected=JSON.parse(actual);
+  expect({...projected,schemaVersion:versionPolicy.current}, file).toEqual({...normalized.document, schemaVersion: versionPolicy.current});
+  const declared=String(original.schemaVersion).startsWith('6.')?Number(original.schemaVersion.split('.')[1]):0;
+  const floor=Math.max(declared,requiredMinorVersion(normalized.document));
+  expect(projected.schemaVersion,file).toBe(supportedVersions().find(version=>version.startsWith('6.') && Number(version.split('.')[1])>=floor));
+  expect(validate(projected), file).toEqual([]);
+  expect(JSON.parse(actual),file).not.toHaveProperty('iocHeader');
+  expect(JSON.parse(actual),file).not.toHaveProperty('dashboardToolbar');
+}
+
 describe('页面参考手册生成与分发', () => {
+  it('派生参考按实际能力选择稳定版本，不随生成器当前作者戳变化',()=>{
+    const document={schemaVersion:versionPolicy.current,id:'stable-example',layout:'dashboard',dataSources:{},
+      sections:[{id:'main',components:[{id:'note',type:'text',layout:{span:12},props:{body:'合成说明'}}]}]};
+    const before=JSON.stringify(document);
+    const stable=stableGeneratedExample(document);
+    const futureStamp={...document,schemaVersion:'6.'+(Number(versionPolicy.current.split('.')[1])+1)};
+    expect(stableGeneratedExample(futureStamp)).toEqual(stable);
+    expect(validate(stable)).toEqual([]);
+    expect(stable.schemaVersion).not.toBe(versionPolicy.current);
+    expect(JSON.stringify(document)).toBe(before);
+  });
   it('退役参考全部保留在冻结来源', async () => {
     const manifest = JSON.parse(await readFile('docs/archive/unified-authoring/2026-09-15-unified-authoring-s0-sources.json', 'utf8'));
     expect(manifest.files).toHaveLength(275);
@@ -119,7 +153,7 @@ describe('页面参考手册生成与分发', () => {
       }
     } finally { await rm(temp,{recursive:true,force:true}); }
   }, 30000);
-  it('产品与Bundle参考逐字一致，Skill示例只发布当前作者版本', async () => {
+  it('产品与Bundle参考逐字一致，合法Skill示例保留来源版本，旧作者形状才迁移', async () => {
     for (const [file, content] of reference) {
       for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference']) {
         expect(await readFile(`${prefix}/${file}`,'utf8'),`${prefix}/${file}`).toBe(content);
@@ -127,17 +161,7 @@ describe('页面参考手册生成与分发', () => {
       for (const skill of skills.filter(skill => skill.id === 'metriccanvas-page-builder')) {
         const actual = await readFile(`metriccanvas-authoring/${path.dirname(skill.entrypoint)}/references/page-metadata/${file}`, 'utf8');
         if (file.startsWith('examples/') && file.endsWith('.json')) {
-          const original=JSON.parse(content);
-          const upgraded=original.iocHeader?upgradePageDocument(original):undefined;
-          if(upgraded&&!upgraded.ok)throw Error(file);
-          const {dashboardToolbar:_legacyToolbar,...candidate}=upgraded?.ok?upgraded.document:original;
-          const normalized = normalizePageDocument({...candidate, schemaVersion: versionPolicy.current});
-          expect(normalized.ok, file).toBe(true);
-          if (!normalized.ok) throw new Error(file);
-          expect(JSON.parse(actual), file).toEqual({...normalized.document, schemaVersion: versionPolicy.current});
-          expect(validate(JSON.parse(actual)), file).toEqual([]);
-          expect(JSON.parse(actual),file).not.toHaveProperty('iocHeader');
-          expect(JSON.parse(actual),file).not.toHaveProperty('dashboardToolbar');
+          expectProjectedExample(content, actual, file);
         } else expect(actual, file).toBe(content);
       }
     }

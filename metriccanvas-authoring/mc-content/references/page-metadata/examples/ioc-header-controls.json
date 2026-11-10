@@ -1,221 +1,46 @@
 {
-  "schemaVersion": "6.109",
+  "schemaVersion": "6.95",
   "id": "ioc-header-controls",
   "layout": "dashboard",
-  "meta": {
-    "title": "IOC Header 子控件 · 合成演示"
-  },
+  "meta": {"title": "IOC Header 子控件 · 合成演示"},
   "filters": [
-    {
-      "id": "stat-year",
-      "type": "timeRange",
-      "display": "period",
-      "periodModes": [
-        "year"
-      ],
-      "precision": "month",
-      "default": {
-        "mode": "year",
-        "value": "2026"
-      },
-      "label": "统计年份"
-    }
+    {"id":"stat-year","type":"timeRange","display":"period","periodModes":["year"],"precision":"month","default":{"mode":"year","value":"2026"},"label":"统计年份"}
   ],
   "dataSources": {
     "organizations": {
       "fields": {
-        "department-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "department-value": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "office-name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "office-value": {
-          "type": "string",
-          "role": "dimension"
-        }
+        "department-name": {"type":"string","role":"dimension"},
+        "department-value": {"type":"string","role":"dimension"},
+        "office-name": {"type":"string","role":"dimension"},
+        "office-value": {"type":"string","role":"dimension"}
       },
-      "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "department-name": "华东地区部",
-            "department-value": "华东地区部",
-            "office-name": "上海代表处",
-            "office-value": "上海代表处"
-          },
-          {
-            "department-name": "华北地区部",
-            "department-value": "华北地区部",
-            "office-name": "北京代表处",
-            "office-value": "北京代表处"
-          },
-          {
-            "department-name": "同码地区部",
-            "department-value": "SAME",
-            "office-name": "同码代表处",
-            "office-value": "SAME"
-          }
-        ]
-      }
+      "source": {"type":"inline","rows":[
+        {"department-name":"华东地区部","department-value":"华东地区部","office-name":"上海代表处","office-value":"上海代表处"},
+        {"department-name":"华北地区部","department-value":"华北地区部","office-name":"北京代表处","office-value":"北京代表处"},
+        {"department-name":"同码地区部","department-value":"SAME","office-name":"同码代表处","office-value":"SAME"}
+      ]}
     },
     "scope": {
       "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "生效组织",
-          "queryField": "地区部"
-        },
-        "amount": {
-          "type": "number",
-          "role": "measure",
-          "label": "合成金额",
-          "queryField": "金额"
-        }
+        "region": {"type":"string","role":"dimension","label":"生效组织","queryField":"地区部"},
+        "amount": {"type":"number","role":"measure","label":"合成金额","queryField":"金额"}
       },
-      "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "地区部"
-                ],
-                "output_metrics": [
-                  "金额"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true
-                  },
-                  "dims": [],
-                  "metrics": []
-                }
-              }
-            ]
-          },
-          "filterBindings": {
-            "stat-year": {
-              "target": "time"
-            },
-            "region": {
-              "target": "dimension",
-              "levelQueryFields": {
-                "geo": "地理区",
-                "region-dept": "地区部",
-                "office": "代表处"
-              }
-            }
-          }
-        }
-      }
+      "source": {"type":"query","query":{
+        "language":"dqe","body":{"dsl_list":[{"output_dims":["地区部"],"output_metrics":["金额"],"filter":{"time":{"period":"month","is_aggregate":true},"dims":[],"metrics":[]}}]},
+        "filterBindings":{"stat-year":{"target":"time"},"region":{"target":"dimension","levelQueryFields":{"geo":"地理区","region-dept":"地区部","office":"代表处"}}}
+      }}
     }
   },
-  "sections": [
-    {
-      "id": "main",
-      "components": [
-        {
-          "id": "header",
-          "type": "iocHeader",
-          "layout": {
-            "span": 12
-          },
-          "props": {
-            "identity": {
-              "title": "IOC Header 子控件"
-            },
-            "presentation": {
-              "layout": "inline",
-              "density": "normal",
-              "collapse": "none"
-            },
-            "components": [
-              {
-                "id": "year-control",
-                "type": "filterControl",
-                "props": {
-                  "filterId": "stat-year"
-                }
-              },
-              {
-                "id": "region-control",
-                "type": "regionFilter"
-              }
-            ]
-          }
-        },
-        {
-          "id": "organization-entry",
-          "type": "table",
-          "layout": {
-            "span": 12
-          },
-          "data": {
-            "main": "organizations"
-          },
-          "props": {
-            "columns": [
-              {
-                "field": "department-name",
-                "title": "点击选择地区部",
-                "selection": {
-                  "writes": {
-                    "region": {
-                      "field": "department-value",
-                      "level": "region-dept"
-                    }
-                  }
-                }
-              },
-              {
-                "field": "office-name",
-                "title": "点击选择代表处",
-                "selection": {
-                  "writes": {
-                    "region": {
-                      "field": "office-value",
-                      "level": "office"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "results",
-          "type": "table",
-          "layout": {
-            "span": 12
-          },
-          "data": {
-            "main": "scope"
-          },
-          "props": {
-            "columns": [
-              {
-                "field": "region",
-                "title": "生效组织"
-              },
-              {
-                "field": "amount",
-                "title": "合成金额"
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
+  "sections": [{"id":"main","components":[
+    {"id":"header","type":"iocHeader","layout":{"span":12},"props":{
+      "identity":{"title":"IOC Header 子控件"},
+      "presentation":{"layout":"inline","density":"normal","collapse":"none"},
+      "components":[{"id":"year-control","type":"filterControl","props":{"filterId":"stat-year"}},{"id":"region-control","type":"regionFilter"}]
+    }},
+    {"id":"organization-entry","type":"table","layout":{"span":12},"data":{"main":"organizations"},"props":{"columns":[
+      {"field":"department-name","title":"点击选择地区部","selection":{"writes":{"region":{"field":"department-value","level":"region-dept"}}}},
+      {"field":"office-name","title":"点击选择代表处","selection":{"writes":{"region":{"field":"office-value","level":"office"}}}}
+    ]}},
+    {"id":"results","type":"table","layout":{"span":12},"data":{"main":"scope"},"props":{"columns":[{"field":"region","title":"生效组织"},{"field":"amount","title":"合成金额"}]}}
+  ]}]
 }

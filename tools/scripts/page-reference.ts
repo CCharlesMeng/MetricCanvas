@@ -4,6 +4,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { validate } from '../../packages/page/src/validate';
 import { conditionSourceIds } from '../../packages/page/src/data-source-references';
+import { requiredMinorVersion, supportedVersions } from '../../packages/page/src/version';
 
 type Schema = Record<string, any>;
 export interface ReferenceMap {
@@ -331,8 +332,9 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
         candidates.sort((a, b) => JSON.stringify(a!.page).length - JSON.stringify(b!.page).length);
         const file = `examples/component-${component.type}${variant === undefined ? '' : '-' + variant}.json`;
         if (candidates[0]) {
-          output.set(file, json(candidates[0].page));
-          exampleCoverage.push({ type: component.type, ...(variant === undefined ? {} : { variant }), file, pointer: componentPointer(candidates[0].page, component.type), source: candidates[0].source });
+          const example=stableGeneratedExample(candidates[0].page);
+          output.set(file, json(example));
+          exampleCoverage.push({ type: component.type, ...(variant === undefined ? {} : { variant }), file, pointer: componentPointer(example, component.type), source: candidates[0].source });
         }
         else
           exampleCoverage.push({ type: component.type, ...(variant === undefined ? {} : { variant }), reason: '现有夹具缺少可完整校验的分支示例' });
@@ -392,10 +394,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
       for (const example of exampleCoverage.filter(e => `components/${e.type}.md` === file && e.file))
         body += `- [${example.variant ?? '最小组件'}](${prefix}${example.file})：独立完整页面，保留必要语义依赖。\n`;
       for (const example of module.examples) {
-        const source = `page/conformance/valid/${example}.json`;
-        if (!inputs.has(source))
-          throw new Error(`Missing reference example: ${source}`);
-        output.set(`examples/${example}.json`, inputs.get(source)!);
+        output.set(`examples/${example}.json`,referenceExampleContent(example,inputs));
         body += `- [${example}](${prefix}examples/${example}.json)：完整合法页面；查询仅为静态契约证据。\n`;
       }
       const snippet = exampleCoverage.find(e => `components/${e.type}.md` === file && e.file && e.pointer);
@@ -443,6 +442,25 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
     }
   }
 
+}
+
+/** A synthesized recipe has no authored version stamp to preserve. */
+function referenceExampleContent(example:string,inputs:Map<string,string>):string {
+  const source=`page/conformance/valid/${example}.json`,content=inputs.get(source);
+  if(content===undefined) throw new Error(`Missing reference example: ${source}`);
+  if(!example.startsWith('ioc-component-')) return content;
+  const original=`page/conformance/valid/${example.slice('ioc-component-'.length)}.json`;
+  return inputs.has(original)?json(stableGeneratedExample(JSON.parse(content))):content;
+}
+
+export function stableGeneratedExample(document:any):any {
+  if(!String(document.schemaVersion).startsWith('6.')) return document;
+  const floor=requiredMinorVersion(document);
+  const version=supportedVersions().find(version=>version.startsWith('6.') && Number(version.split('.')[1])>=floor);
+  if(!version) throw new Error(`No supported generated example version for minor ${floor}`);
+  const example={...document,schemaVersion:version},errors=validate(example);
+  if(errors.length) throw new Error(`Generated example capability floor invalid: ${JSON.stringify(errors)}`);
+  return example;
 }
 
 /** 产物自身闭合：完整Bundle和只复制Skill目录都使用同一套相对链接。 */

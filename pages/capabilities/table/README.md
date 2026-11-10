@@ -480,7 +480,17 @@
 此为本地仿真与浏览器证据，不代表真实DQE或生产权限联调。用户页面无需新增缓存字段。
 ## 商务类型前端枚举（6.80）
 
+<!-- example-guide: task=column-enums; page=table-column-enums; components=business-types -->
+
 入口 `/pages/table-column-enums`，内联合成编码0、1、9和空值。单元格显示项目商务框架、项目非框架、9、—。打开商务类型筛选直接看到两项中文枚举，选择项目商务框架仅保留 B-1；清空后导出 Excel，前两条为中文标签。枚举选项不请求候选接口；查询页仍使用原始编码过滤。业务页 `/pages/business-decision-all-details?approver-name=合成审批人甲&mtime=month:2026-11` 通过 DQE Sim execute 返回原始编码，再由前端映射。
+
+复用用途：在保留原始编码的同时，为表格单元格、静态筛选候选和 Excel 提供中文枚举展示。
+
+参考对象：完整页面 [table-column-enums.json](table-column-enums.json)，组件 `business-types` 的 `biz-type` 与 `numeric-code` 列；关注列的 `enumValues`、`filterable`，以及 `main` 数据槽引用的 `businesses.fields`。按组件及字段身份定位，数组下标仅表示当前文件位置。
+
+移植边界：沿用目标页已确认的字段类型与原始编码，只替换有业务依据的标签映射；保留目标页的数据源、查询、筛选和分页方式。`businesses` 的合成数据仅用于演示，数值编码与字符串编码不能混用。单元格、候选和导出需要分别核对，结构合法不能单独证明三者行为一致。
+
+可观察预期与环境：本页为 inline 合成场景，无需 DQE；按上文操作核对标签、未映射编码、筛选结果和 Excel。真实查询的下推行为另在对应 DQE 场景验收，本页不证明业务编码全集或真实服务兼容性。
 
 ## 列头筛选默认选中值
 
@@ -550,7 +560,17 @@
 
 ## 时间格式与固定 UTC+8
 
+<!-- example-guide: task=time-format; page=table-time-format; components=times -->
+
 入口 `/pages/table-time-format`；页面为 inline 合成数据，无 URL 参数、无需 DQE。运行 `pnpm dev:playground` 后直接打开。原始 ISO、偏移、无时区、斜杠、紧凑结构和秒/毫秒数字字符串均显示相同 UTC+8 时刻；首七行时间应为 `2026-11-10 02:30:00`，跨年为 `2027-01-01 02:30:00`，非法日期保留原文，空值显示 `--`。右侧另有 `YYYY-MM-DD`、`YYYY-MM-DD HH:mm`、`HH:mm:ss`、`YYYY年MM月DD日` 四列；首行分别为 `2026-11-10`、`2026-11-10 02:30`、`02:30:00`、`2026年11月10日`。点击表格导出 Excel 核对各格式列与页面文本一致，空值保持空单元格。此页仅验证前端转换与本地导出，不代表真实 DQE/Relay。
+
+复用用途：将表格中的多种时间输入统一转换为固定 UTC+8 的显示文本，并让表格与 Excel 使用相同时间格式。
+
+参考对象：完整页面 [table-time-format.json](table-time-format.json)，组件 `times` 的 `createdAt`、`dayAt`、`isoDayAt`、`minuteAt`、`clockAt`、`chineseDayAt` 字段引用及其 `format:{type:"time",pattern:...}`；`records.fields` 保留原始字段类型，`raw` 列用于对照输入。
+
+移植边界：映射目标页已有字段及数据槽，保留查询、筛选、分页与导出关系，仅移植已确认的时间格式。无时区输入按 UTC 解释，显示固定 UTC+8；不要把格式展示当作业务时区转换或改写源值。合成记录、列标题和文件名不作为目标页业务数据。
+
+可观察预期与环境：使用上文 inline 入口检查普通、跨年、非法与空值，分别核对页面文本及 Excel。本文描述操作预期，指南未声明本轮结构、浏览器或导出已执行；真实 DQE/Relay、权限和业务时区口径另验。
 
 ## 无行键子表与重复记录（6.105）
 

@@ -37,7 +37,7 @@
     "gaps": [],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "84aea3b55f9515fbe138964ee6f53137801e719d13e6ce2172369df0b30b3fb8",
+      "contentSha256": "<current-content-sha256>",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -57,7 +57,7 @@
         "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
       }
     },
-    "contentSha256": "84aea3b55f9515fbe138964ee6f53137801e719d13e6ce2172369df0b30b3fb8",
+    "contentSha256": "<current-content-sha256>",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -112,7 +112,7 @@
     ],
     "inspectionSpec": {
       "formatVersion": 1,
-      "contentSha256": "84aea3b55f9515fbe138964ee6f53137801e719d13e6ce2172369df0b30b3fb8",
+      "contentSha256": "<current-content-sha256>",
       "templateRef": {
         "scene": "business-report",
         "variant": "standard",
@@ -137,7 +137,7 @@
         "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
       }
     },
-    "contentSha256": "84aea3b55f9515fbe138964ee6f53137801e719d13e6ce2172369df0b30b3fb8",
+    "contentSha256": "<current-content-sha256>",
     "deploymentAlignment": "not_run",
     "checkedVersionFields": [],
     "deploymentEvidence": {
@@ -444,12 +444,12 @@
   },
   "evaluation": {
     "testedContent": {
-      "contentVersion": "1-84aea3b55f9515fb",
-      "contentSha256": "84aea3b55f9515fbe138964ee6f53137801e719d13e6ce2172369df0b30b3fb8",
+      "contentVersion": "<current-content-version>",
+      "contentSha256": "<current-content-sha256>",
       "alignedWith": {
         "productContractVersion": "1.0.0-rc.4",
         "productManifest": "contract-snapshot/manifest.json",
-        "productManifestSha256": "a53cdeaef0623872a91702dfec92a9ccf69768b60755fc5424812ef08ea49441",
+        "productManifestSha256": "338501fd7e3c781f9bd4bf3694c4ce9f5e1c6cd27f38b4f9b80ec68a99c859ea",
         "authoringContractVersion": "0.3.1",
         "authoringManifest": "contracts/manifest.json",
         "authoringManifestSha256": "02095956639473355b53364b702d3099485788efa7eee2bfc7f4b391934f163d",
@@ -500,7 +500,7 @@
           "gaps": [],
           "inspectionSpec": {
             "formatVersion": 1,
-            "contentSha256": "84aea3b55f9515fbe138964ee6f53137801e719d13e6ce2172369df0b30b3fb8",
+            "contentSha256": "<current-content-sha256>",
             "templateRef": {
               "scene": "business-report",
               "variant": "standard",
@@ -520,7 +520,7 @@
               "planSha256": "89615866ee280c938005f380150fef883ce1312f623499569b879182c0bd8632"
             }
           },
-          "contentSha256": "84aea3b55f9515fbe138964ee6f53137801e719d13e6ce2172369df0b30b3fb8",
+          "contentSha256": "<current-content-sha256>",
           "deploymentAlignment": "not_run",
           "checkedVersionFields": [],
           "deploymentEvidence": {
@@ -552,7 +552,7 @@
     "product": 1598,
     "authoring": 32,
     "modules": 36,
-    "topics": 296,
+    "topics": 298,
     "nodes": 2636,
     "tools": 9,
     "components": 20

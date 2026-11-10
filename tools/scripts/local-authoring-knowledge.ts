@@ -1,8 +1,15 @@
+import { buildContractBindings } from './local-authoring-contract-query';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { atPointer, referenceNodes, type ReferenceMap } from './page-reference';
 
 import { digest, encodeKnowledge, topicClosure, type AuthoringKnowledge } from './local-authoring-knowledge-core';
+import { buildExampleIndex } from './local-authoring-example-query';
+import { buildPassageIndex } from './local-authoring-semantic-query';
+import type { QueryKnowledge } from './local-authoring-query-types';
+import { buildRuleBindings } from './local-authoring-query-rules';
+import { KnowledgePartCache, knowledgeAlgorithmIdentity } from './local-authoring-generation-cache';
+import { exampleGuideSources } from './local-authoring-guide-sources';
 export { knowledgeSelection, topicClosure } from './local-authoring-knowledge-core';
 export type { AuthoringKnowledge } from './local-authoring-knowledge-core';
 type Json = Record<string, any>;
@@ -51,6 +58,9 @@ function configuredTopics(model: AuthoringKnowledge, map: Json): void {
 }
 
 export async function localAuthoringKnowledge(root: string, reference: Map<string,string>): Promise<Map<string,string>> {
+  const cache=new KnowledgePartCache(await knowledgeAlgorithmIdentity(root));
+  const sources=await exampleGuideSources(root,reference,cache);
+  reference=sources.reference;
   const map = JSON.parse(await readFile(path.join(root,'docs/page-metadata/reference-map.json'),'utf8'));
   const index = JSON.parse(reference.get('index.json')!);
   const schema = JSON.parse(reference.get('schema.json')!);
@@ -59,22 +69,33 @@ export async function localAuthoringKnowledge(root: string, reference: Map<strin
   for (const [file, module] of Object.entries(index.modules) as Array<[string,Json]>) {
     const id = path.posix.basename(file,'.md');
     if(Object.hasOwn(modules,id)) throw new Error(`Duplicate local knowledge module: ${id}`);
-    const semantics=semanticSections(reference.get(file)!);
-    validateSemanticHeadings(file,semantics,map.authoringSemanticHeadings?.[file]);
-    modules[id] = {file:`references/page-metadata/${file}`,title:module.title,
-      semantics,examples:module.examples.map((name:string)=>`references/page-metadata/examples/${name}.json`),
-      rules:rules.filter((rule:Json)=>(module.rules ?? []).includes(rule.id))};
+    const moduleRules=rules.filter((rule:Json)=>(module.rules ?? []).includes(rule.id));
+    modules[id] = await cache.derive(`module:${id}`,{file,module,text:reference.get(file),rules:moduleRules,headings:map.authoringSemanticHeadings?.[file]},()=>{
+      const semantics=semanticSections(reference.get(file)!);
+      validateSemanticHeadings(file,semantics,map.authoringSemanticHeadings?.[file]);
+      return {file:`references/page-metadata/${file}`,title:module.title,
+        semantics,examples:module.examples.map((name:string)=>`references/page-metadata/examples/${name}.json`),
+        rules:moduleRules};
+    });
   }
-  const nodes = referenceNodes(schema,map as ReferenceMap).map(({pointer,path:fieldPath,module,required,schema:node}) => ({
+  const nodes = await cache.derive('schema-nodes',{schema,map},()=>referenceNodes(schema,map as ReferenceMap).map(({pointer,path:fieldPath,module,required,schema:node}) => ({
     pointer,path:fieldPath,module:path.posix.basename(module,'.md'),required,
     note:map.fieldNotes[pointer] ?? node.description ?? map.fieldNotes[fieldPath.split('.').at(-1)!],
     enums:Object.fromEntries((node.enum ?? ('const' in node ? [node.const] : [])).map((value:unknown)=>[
       JSON.stringify(value),map.enumNotes[`${pointer}=${JSON.stringify(value)}`] ?? map.enumNotes[String(value)] ?? ''
     ]))
-  }));
-  const model:AuthoringKnowledge = {schemaVersion:index.schemaVersion,schema,modules,topics:{},nodes};
+  })));
+  const model:QueryKnowledge = {schemaVersion:index.schemaVersion,schema,modules,topics:{},nodes,formatVersion:4};
   baseTopics(model); configuredTopics(model,map);
+  const examples=await Promise.all([...reference].filter(([file])=>file.startsWith('examples/')&&file.endsWith('.json'))
+    .map(([file,text])=>cache.derive(`example:${file}`,text,()=>buildExampleIndex(new Map([[file,text]])))));
+  model.examples=examples.flat().sort((a,b)=>a.file.localeCompare(b.file));
+  for(const entry of model.examples) entry.guides=sources.guides.byPageId.get(entry.pageId) ?? [];
+  model.passages = buildPassageIndex(model);
+  model.ruleBindings = buildRuleBindings(model, map.authoringRuleBindings);
+  model.contracts = buildContractBindings(model, map.authoringContracts ?? {});
   // Exercise the same dependency validation as the installed CLI at build time.
   for (const id of Object.keys(model.topics)) topicClosure(model,[id]);
-  return new Map([['references/authoring-knowledge/model.json',encodeKnowledge(model)]]);
+  return new Map([['references/authoring-knowledge/model.json',encodeKnowledge(model)],...sources.guides.references,
+    ...[...reference].filter(([file])=>file.startsWith('examples/')).map(([file,text])=>[`references/page-metadata/${file}`,text] as [string,string])]);
 }

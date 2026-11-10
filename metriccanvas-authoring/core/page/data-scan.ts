@@ -6,7 +6,7 @@ import { materializePageDocument } from '../../../packages/page/src/materialize'
 type Json = Record<string, any>;
 export interface DataUse {
   path:string; componentId:string; componentType:string; label:string; kind:string;
-  source?:string; slot?:string; field?:string; recordListField?:string; declaration?:Json;
+  source?:string; slot?:string; field?:string; recordListField?:string; declaration?:Json; bindingRole?:'navigation';
 }
 type ScanContext=Omit<DataUse,'path'|'kind'>&{presentationOnly?:true};
 const pointerToken=(key:string)=>key.replaceAll('~','~0').replaceAll('/','~1');
@@ -29,6 +29,7 @@ const fieldRefs=new Set(['fieldBinding','staticFieldBinding','fieldReference']);
 /** Follow actual product Schema references, not a parallel per-component field list. */
 function visitSchema(value:any,node:Json,root:Json,path:string,context:ScanContext,uses:DataUse[],depth=0):void {
   if(value===undefined || !node || depth>80) return;
+  if(navigationSchemaUse(value,node,root,path,context,uses))return;
   const fieldPattern=root.definitions?.staticFieldBinding?.anyOf?.find((branch:Json)=>branch.type==='string')?.pattern;
   if(!context.presentationOnly && typeof value==='string' && fieldPattern && node.pattern===fieldPattern) {
     uses.push(...bindingUses(value,path,context));return;
@@ -63,6 +64,7 @@ function visitProperties(value:any,node:Json,root:Json,path:string,context:ScanC
 }
 
 function auxiliaryFieldUses(value:Json,path:string,context:ScanContext,uses:DataUse[]):void {
+  if(uses.some(use=>use.path===path&&use.bindingRole==='navigation'))return;
   if(typeof value.field==='string' && typeof value.source==='string') uses.push({...context,path,kind:'source-field',source:value.source,field:value.field});
   if(typeof value.field==='string' && (value.op || value.row===true)) uses.push({...context,path,kind:'condition-or-row-field',slot:value.data ?? 'main',field:value.field});
   if(typeof value.row==='string' && value.op) uses.push({...context,path:path+'/row',kind:'condition-or-row-field',slot:'main',field:value.row});
@@ -83,18 +85,41 @@ function auxiliaryUses(value:any,path:string,context:ScanContext,uses:DataUse[])
   }
 }
 
+function inputBindingUse(binding:Json,path:string,context:ScanContext):DataUse|undefined {
+  if(binding?.source==='row' && typeof binding.field==='string') return {...context,path,kind:'row-input',slot:'main',field:binding.field};
+  if(binding?.source==='filter') return {...context,path,kind:'filter-reference',declaration:{filterId:binding.id}};
+  if(binding?.source==='param') return {...context,path,kind:'param-reference',declaration:{paramId:binding.id}};
+  if(binding?.source==='selection') return {...context,path,kind:'row-selection-input'};
+  return undefined;
+}
+function navigationBranch(node:Json,root:Json):string|undefined {
+  const branch=node.$ref?at(root,node.$ref):node;
+  const source=branch?.properties?.source;
+  const role=source?.const ?? (source?.enum?.length===1?source.enum[0]:undefined);
+  const required=branch?.required ?? [];
+  if(role==='row'&&required.includes('field'))return role;
+  return ['param','filter'].includes(role)&&required.includes('id')?role:undefined;
+}
+function navigationBindingNode(node:Json,root:Json):boolean {
+  const branches=node.anyOf ?? node.oneOf ?? [];
+  const roles=new Set(branches.map((branch:Json)=>navigationBranch(branch,root)));
+  return roles.size===3&&roles.has('row')&&roles.has('param')&&roles.has('filter');
+}
+function validNavigationBinding(value:Json):boolean {
+  if(value?.source==='row')return typeof value.field==='string';
+  return ['param','filter'].includes(value?.source)&&typeof value.id==='string';
+}
+function navigationSchemaUse(value:Json,node:Json,root:Json,path:string,context:ScanContext,uses:DataUse[]):boolean {
+  if(context.presentationOnly || !navigationBindingNode(node,root))return false;
+  const use=validNavigationBinding(value)?inputBindingUse(value,path,context):undefined;
+  uses.push({...context,...use,path,kind:use?.kind ?? 'invalid-navigation-binding',bindingRole:'navigation'});
+  return true;
+}
 function rowInputUses(input:Json,path:string,context:ScanContext,uses:DataUse[],diagnostics:Json[]):void {
   for(const [id,binding] of Object.entries(input.bindings ?? {}) as Array<[string,any]>) {
-    const location=`${path}/bindings/${pointerToken(id)}`;
-    if(binding?.source==='row' && typeof binding.field==='string') {
-      uses.push({...context,path:location,kind:'row-input',slot:'main',field:binding.field});
-    } else if(binding?.source==='filter') {
-      uses.push({...context,path:location,kind:'filter-reference',declaration:{filterId:binding.id}});
-    } else if(binding?.source==='param') {
-      uses.push({...context,path:location,kind:'param-reference',declaration:{paramId:binding.id}});
-    } else if(binding?.source==='selection') {
-      uses.push({...context,path:location,kind:'row-selection-input'});
-    } else diagnostics.push({path:location,type:'INVALID_ROW_EXPANSION_BINDING'});
+    const location=`${path}/bindings/${pointerToken(id)}`, use=inputBindingUse(binding,location,context);
+    if(use)uses.push(use);
+    else diagnostics.push({path:location,type:'INVALID_ROW_EXPANSION_BINDING'});
   }
   for(const [index,id] of (Array.isArray(input.filters)?input.filters:[]).entries()) {
     uses.push({...context,path:`${path}/filters/${index}`,kind:'filter-reference',declaration:{filterId:id}});
@@ -139,6 +164,7 @@ function scanRowExpansion(component:Json,path:string,schema:Json,context:ScanCon
 
 function resolveComponentUses(component:Json,uses:DataUse[],diagnostics:Json[]):void {
   for(const use of uses) {
+    if(use.kind==='invalid-navigation-binding')diagnostics.push({path:use.path,type:'INVALID_NAVIGATION_BINDING'});
     if(use.kind==='invalid-field-binding') diagnostics.push({path:use.path,type:'INVALID_FIELD_BINDING'});
     if(use.slot && !use.source) use.source=component.data?.[use.slot];
     if(use.field && !use.source) diagnostics.push({path:use.path,type:'UNRESOLVED_DATA_SLOT',slot:use.slot});

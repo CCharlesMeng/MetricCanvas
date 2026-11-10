@@ -5,8 +5,9 @@ import { readFile, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { build, type Plugin } from 'esbuild';
 import { normalizePageDocument, validate } from '../../packages/page/src/validate';
-import { versionPolicy } from '../../packages/page/src/version';
+import { requiredMinorVersion, supportedVersions, versionPolicy } from '../../packages/page/src/version';
 import { validateReferenceLinks } from './page-reference';
+import { observeResolution, withLocalBuildCache, type LocalBuildCacheOptions, type LocalBuildResult } from './local-authoring-build-cache';
 
 const json = (value: unknown) => JSON.stringify(value, null, 2) + '\n';
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -54,19 +55,33 @@ export function localPageReference(reference: Map<string, string>): Map<string, 
 }
 
 /** One self-contained ESM executable, built from the same validator as the product. */
-export async function localValidatorOutputs(root: string, entryPoint = 'tools/scripts/local-authoring-validator.ts', outfile = 'scripts/validate-page.mjs'): Promise<Map<string, string>> {
+export async function localValidatorOutputs(root: string, entryPoint = 'tools/scripts/local-authoring-validator.ts',
+  outfile = 'scripts/validate-page.mjs', options: LocalBuildCacheOptions = {}): Promise<Map<string, string>> {
   const buildRoot = await realpath(root);
-  const sourceFiles = new Map<string,string>();
-  // Stable virtual module ids remove checkout locations from both generated
-  // CommonJS names and minifier decisions, while real resolution uses pnpm.
-  const stableModules: Plugin = {
+  const implementation = await Promise.all(['local-authoring-projection.ts', 'local-authoring-build-cache.ts'].map(file =>
+    readFile(path.join(buildRoot, 'tools/scripts', file), 'utf8')));
+  return withLocalBuildCache(buildRoot, {entryPoint, outfile, parameters: validatorBuildParameters, implementation}, options,
+    () => buildLocalValidator(buildRoot, entryPoint, outfile));
+}
+
+const validatorBuildParameters = {
+  bundle: true, platform: 'node' as const, format: 'esm' as const,
+  write: false, target: 'node22', minify: true, metafile: true, legalComments: 'none' as const,
+  banner: {js: 'import {createRequire} from "node:module"; const require = createRequire(import.meta.url);'}
+};
+
+// Stable virtual ids keep checkout locations out of CommonJS names and minifier decisions.
+function stableModulePlugin(buildRoot: string, sourceFiles: Map<string, string>, directories: Set<string>, inputDigests: Map<string, string>): Plugin {
+  return {
     name: 'local-skill-module-ids',
     setup(builder) {
       builder.onResolve({filter: /.*/}, async args => {
         if (args.pluginData?.physicalResolution) return undefined;
+        const resolveDir = args.resolveDir || buildRoot;
+        const request = args.kind === 'entry-point' && !path.isAbsolute(args.path) ? `./${args.path}` : args.path;
+        observeResolution(buildRoot, resolveDir, request, directories);
         const resolved = await builder.resolve(args.path, {
-          resolveDir: args.resolveDir || buildRoot, kind: args.kind,
-          pluginData: {physicalResolution: true}
+          resolveDir, kind: args.kind, pluginData: {physicalResolution: true}
         });
         if (resolved.errors.length || resolved.external) return resolved;
         const physical = await realpath(resolved.path);
@@ -79,53 +94,69 @@ export async function localValidatorOutputs(root: string, entryPoint = 'tools/sc
       });
       builder.onLoad({filter: /.*/, namespace: 'local-skill'}, async args => {
         const physical = sourceFiles.get(args.path)!;
-        return {contents: await readFile(physical, 'utf8'), resolveDir: path.dirname(physical),
+        const contents = await readFile(physical, 'utf8');
+        inputDigests.set(physical, hash(contents));
+        return {contents, resolveDir: path.dirname(physical),
           loader: physical.endsWith('.ts') ? 'ts' : physical.endsWith('.json') ? 'json' : 'js'};
       });
     }
   };
-  const result = await build({
-    absWorkingDir: buildRoot, entryPoints: [entryPoint],
-    outfile, bundle: true, platform: 'node', format: 'esm',
-    write: false, target: 'node22', minify: true, metafile: true, legalComments: 'none',
-    banner: {js: 'import {createRequire} from "node:module"; const require = createRequire(import.meta.url);'},
-    plugins: [stableModules]
-  });
+}
+
+async function dependencyLicense(folder: string, files: Set<string>, inputDigests: Map<string, string>): Promise<[string, string] | undefined> {
+  while (folder !== path.dirname(folder)) {
+    const metadataFile = path.join(folder, 'package.json');
+    const packageText = await readFile(metadataFile, 'utf8').catch(() => undefined);
+    const metadata = packageText ? JSON.parse(packageText) : undefined;
+    if (metadata?.name && metadata?.version) {
+      files.add(metadataFile);
+      inputDigests.set(metadataFile, hash(packageText!));
+      const names = (await readdir(folder)).filter(name => /^(?:LICENSE|COPYING)(?:\.|$)/i.test(name)).sort();
+      if (!names.length) throw new Error(`Missing bundled dependency license: ${metadata.name}`);
+      const texts = await Promise.all(names.map(async name => {
+        const file = path.join(folder, name);
+        files.add(file);
+        const contents = await readFile(file, 'utf8');
+        inputDigests.set(file, hash(contents));
+        return contents;
+      }));
+      return [`${metadata.name} - ${metadata.version} (${metadata.license ?? 'see license'})`, texts.join('\n')];
+    }
+    folder = path.dirname(folder);
+  }
+}
+
+async function bundledLicenses(inputs: string[], sourceFiles: Map<string, string>, files: Set<string>, inputDigests: Map<string, string>): Promise<string> {
+  const licenses = new Map<string, string>();
+  for (const input of inputs.filter(file => file.includes('node_modules/'))) {
+    const license = await dependencyLicense(path.dirname(sourceFiles.get(input.replace(/^local-skill:/, ''))!), files, inputDigests);
+    if (license && !licenses.has(license[0])) licenses.set(...license);
+  }
+  return ('# Bundled dependency licenses\n\n' + [...licenses].sort(([a],[b]) => a.localeCompare(b))
+    .map(([name,text]) => `## ${name}\n\n${text.trim()}\n`).join('\n')).trimEnd() + '\n';
+}
+
+async function buildLocalValidator(buildRoot: string, entryPoint: string, outfile: string): Promise<LocalBuildResult> {
+  const sourceFiles = new Map<string, string>();
+  const directories = new Set<string>();
+  const inputDigests = new Map<string, string>();
+  const result = await build({absWorkingDir: buildRoot, entryPoints: [entryPoint], outfile, ...validatorBuildParameters,
+    plugins: [stableModulePlugin(buildRoot, sourceFiles, directories, inputDigests)]});
   const builtins = new Set(builtinModules.flatMap(name => [name, `node:${name}`]));
-  for (const output of Object.values(result.metafile.outputs)) {
+  for (const output of Object.values(result.metafile!.outputs)) {
     if (output.imports.some(item => !item.external || !builtins.has(item.path))) {
       throw new Error('Local validator has an external runtime dependency');
     }
   }
   const outputs = new Map<string, string>();
-  for (const item of result.outputFiles) {
+  for (const item of result.outputFiles!) {
     outputs.set(path.relative(buildRoot, item.path).split(path.sep).join('/'),
       '// Generated product validator; Node.js >=22; do not edit.\n' + item.text.replace(/^[ \t]+$/gm, '').trimEnd() + '\n');
   }
-  // Bundle the actual dependency licenses as well as their code. Source paths
-  // stay in the maintainer's build graph, never in the installed knowledge.
-  const licenses = new Map<string,string>();
-  for (const input of Object.keys(result.metafile.inputs).filter(file => file.includes('node_modules/'))) {
-    let folder = path.dirname(sourceFiles.get(input.replace(/^local-skill:/, ''))!);
-    while (folder !== path.dirname(folder)) {
-      const packageText = await readFile(path.join(folder, 'package.json'), 'utf8').catch(() => undefined);
-      const metadata = packageText ? JSON.parse(packageText) : undefined;
-      if (metadata?.name && metadata?.version) {
-        const key = `${metadata.name} - ${metadata.version} (${metadata.license ?? 'see license'})`;
-        if (!licenses.has(key)) {
-          const names = (await readdir(folder)).filter(name => /^(?:LICENSE|COPYING)(?:\.|$)/i.test(name)).sort();
-          if (!names.length) throw new Error(`Missing bundled dependency license: ${metadata.name}`);
-          licenses.set(key, (await Promise.all(names.map(name => readFile(path.join(folder, name), 'utf8')))).join('\n'));
-        }
-        break;
-      }
-      folder = path.dirname(folder);
-    }
-  }
-  outputs.set('scripts/THIRD-PARTY-LICENSES.md', ('# Bundled dependency licenses\n\n' +
-    [...licenses].sort(([a],[b]) => a.localeCompare(b)).map(([name,text]) => `## ${name}\n\n${text.trim()}\n`).join('\n')).trimEnd() + '\n');
+  const files = new Set(sourceFiles.values());
+  outputs.set('scripts/THIRD-PARTY-LICENSES.md', await bundledLicenses(Object.keys(result.metafile!.inputs), sourceFiles, files, inputDigests));
   if (!outputs.has(outfile)) throw new Error('Missing standalone validator');
-  return outputs;
+  return {outputs, files, directories, inputDigests};
 }
 
 export function localKnowledgeManifest(outputs: Map<string, string>, schemaVersion: string, productVersion: string): string {
@@ -136,19 +167,30 @@ export function localKnowledgeManifest(outputs: Map<string, string>, schemaVersi
   });
 }
 
+function stableExampleVersion(document: unknown, originalVersion: unknown): string {
+  const declared = typeof originalVersion === 'string' && /^6\.(0|[1-9]\d*)$/.test(originalVersion)
+    ? Number(originalVersion.split('.')[1]) : 0;
+  const floor = Math.max(declared, requiredMinorVersion(document));
+  const version = supportedVersions().find(version => version.startsWith('6.') && Number(version.split('.')[1]) >= floor);
+  if (!version) throw new Error(`No supported example version for required minor ${floor}`);
+  return version;
+}
+
 export function referenceProjection(outputs: Map<string, string>): Map<string, string> {
   return new Map([...outputs].filter(([file]) => file.startsWith('page/reference/')).map(([file, content]) => {
     const relative = file.slice('page/reference/'.length);
-    // Published authoring examples always target the current writer. Historical
-    // conformance vectors remain in the product contracts, not example recipes.
+    // Valid recommended examples retain their declared capability floor. Only
+    // legacy authoring shapes or an actual validation failure need rewriting.
     if (relative.startsWith('examples/') && relative.endsWith('.json')) {
       const parsed = JSON.parse(content);
-      const upgraded=parsed.iocHeader?upgradePageDocument(parsed):undefined;
+      if (String(parsed.schemaVersion).startsWith('6.') && !parsed.iocHeader && !parsed.dashboardToolbar && validate(parsed).length === 0) return [relative, content];
+      const needsUpgrade = parsed.iocHeader || String(parsed.schemaVersion).startsWith('5.');
+      const upgraded=needsUpgrade?upgradePageDocument(parsed):undefined;
       if(upgraded&&!upgraded.ok)throw new Error(`Invalid IOC Skill example: ${relative}`);
       const {dashboardToolbar:_legacyToolbar,...candidate}=upgraded?.ok?upgraded.document:parsed;
       const normalized = normalizePageDocument({...candidate, schemaVersion: versionPolicy.current});
       if (!normalized.ok) throw new Error(`Invalid current Skill example: ${relative}`);
-      const document = {...normalized.document, schemaVersion: versionPolicy.current};
+      const document = {...normalized.document, schemaVersion: stableExampleVersion(normalized.document, parsed.schemaVersion)};
       const errors = validate(document);
       if (errors.length) throw new Error(`Invalid current Skill example ${relative}: ${JSON.stringify(errors)}`);
       return [relative, JSON.stringify(document, null, 2) + '\n'];

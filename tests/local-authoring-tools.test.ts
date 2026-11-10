@@ -7,6 +7,7 @@ import { scanPageData, markdownBlocks, findBlocks, draftAnalysis, checkAnalysis,
 import { scopePageData } from '../tools/scripts/local-authoring-data-scope';
 import { knowledgeSelection, topicClosure, validateSemanticHeadings } from '../tools/scripts/local-authoring-knowledge';
 import { decodeKnowledge, encodeKnowledge } from '../tools/scripts/local-authoring-knowledge-core';
+import { queryKnowledge } from '../tools/scripts/local-authoring-query';
 
 const source='metriccanvas-authoring/skill/metriccanvas-local-authoring';
 const model=decodeKnowledge(readFileSync(`${source}/references/authoring-knowledge/model.json`,'utf8'));
@@ -143,9 +144,15 @@ describe('按需协议知识',()=>{
     const changed=structuredClone(model);changed.topics['table.width'].dependencies=['table.width'];
     expect(()=>topicClosure(changed,['table.width'])).toThrow('Cyclic');
   });
-  it('常用主题没有截断且受输出预算约束，全部模块可发现语义',()=>{
+  it('旧主题保持完整，新定点接口遵守小读预算，全部模块可发现语义',()=>{
     const map=JSON.parse(readFileSync('docs/page-metadata/reference-map.json','utf8'));
-    for(const id of Object.keys(map.authoringTopics)) expect(Buffer.byteLength(JSON.stringify(knowledgeSelection(model,[id]))),id).toBeLessThanOrEqual(16384);
+    for(const [id, topic] of Object.entries(map.authoringTopics) as Array<[string,{roots:string[]}]>) {
+      expect((knowledgeSelection(model,[id]) as any).topics).toContain(id);
+      for(const pointer of topic.roots) {
+        const selected=queryKnowledge(model,'show',{id:`schema:${pointer}`,select:'shape'},()=>{throw new Error('Schema query must not load examples');});
+        expect(Buffer.byteLength(JSON.stringify(selected))+1,id).toBeLessThanOrEqual(2048);
+      }
+    }
     for(const [id,module] of Object.entries(model.modules)) {
       const sections=new Set(Object.values(model.topics).filter(t=>t.module===id).flatMap(t=>t.sections));
       expect(sections.size,id).toBe(module.semantics.length);

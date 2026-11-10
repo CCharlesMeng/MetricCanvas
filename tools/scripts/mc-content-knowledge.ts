@@ -1,4 +1,3 @@
-import { normalizePageDocument } from '../../packages/page/src/validate';
 import { versionPolicy, requiredMinorVersion, pageCapabilities } from '../../packages/page/src/version';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -17,9 +16,8 @@ export async function addMcKnowledge(root: string, outputs: Outputs, product: Ou
   for (const [file, text] of knowledge) outputs.set(file, text);
   for (const scene of ['business-report', 'usage-report']) {
     const page = JSON.parse(await readFile(path.join(root, `pages/capabilities/layout/mc-layout-${scene}.json`), 'utf8'));
-    const parsed = normalizePageDocument({...page, schemaVersion: versionPolicy.current});
-    if (!parsed.ok) throw new Error(`Invalid scene example: ${scene}`);
-    outputs.set(`examples/${scene}.json`, json(parsed.document));
+    const reference=referenceProjection(new Map([[`page/reference/examples/${scene}.json`,json(page)]]));
+    outputs.set(`examples/${scene}.json`,reference.get(`examples/${scene}.json`)!);
   }
   const model = decodeKnowledge(knowledge.get('references/authoring-knowledge/model.json')!);
   for (const [id, topic] of Object.entries(model.topics)) {

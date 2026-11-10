@@ -11,7 +11,7 @@
 | 改动 | 真源 |
 |---|---|
 | 触发条件、流程、数据口径复核、布局及地图说明 | Skill 的 SKILL.md 和作者维护的 references/*.md |
-| 尝试快照 | Skill 的 scripts/snapshot-attempt.mjs |
+| 尝试快照及局部验收组合 | Skill 的 scripts/snapshot-attempt.mjs、scripts/finish-edit.mjs；组合入口复用生成校验器，不另写页面规则 |
 | 页面字段、约束、校验 | packages/page/src/ 及合法/非法夹具；涉及公共协议时按产品契约流程同步 |
 | 协议语义正文、示例路由 | docs/page-metadata/ 与 tools/scripts/page-reference.ts |
 | 成型页面范式 | `tools/scripts/local-authoring-patterns.ts` 选择 `pages/` 中页面并提炼结构；形态识别及分支范式卡由 Skill 作者维护 |
@@ -20,17 +20,43 @@
 | 目录封闭、参考净化与校验器打包 | tools/scripts/local-authoring-projection.ts、local-authoring-validator.ts |
 | 实际地图地名 | 产品底图，经导出器投影；保留源摘要，移除仓库路径 |
 | 注册与分发 | metriccanvas-authoring/bundle.json、scripts/check_bundle.py |
-| 精确知识主题与结构 | `reference-map.json` 的 `authoringTopics`、`local-authoring-knowledge.ts` 与纯读取核心；语义从产品参考原文分块，不另写摘要 |
-| 页面用数、MD 索引与报告/候选检查 | `metriccanvas-authoring/core/page/data-scan.ts`、`metriccanvas-authoring/core/page/data-scope.ts` 维护无 I/O 扫描与读取闭包；`local-authoring-data-analysis.ts` 保留 MD/报告及兼容导出，`local-authoring-data-cli.ts` 保留文件、hash、manifest 和退出码；组件字段位置沿产品 Schema 和组件树遍历发现 |
+| 精确知识主题与结构 | `reference-map.json` 的 `authoringTopics` / `authoringContracts`、`local-authoring-knowledge.ts` 与纯读取核心；语义从产品参考原文分块，不另写摘要 |
+| 页面用数、MD 索引与报告/候选检查 | `metriccanvas-authoring/core/page/data-scan.ts`、`data-scope.ts`、`data-read*.ts` 维护无 I/O 扫描、局部事实和读取闭包；`local-authoring-data-analysis.ts` 保留 MD/报告及兼容导出，`local-authoring-data-cli.ts` 保留文件、hash、manifest 和退出码；组件字段位置沿产品 Schema 和组件树遍历发现 |
 | 旧页面继续开发与确定性升级 | `packages/page/src/upgrade-document.ts`、`upgrade-chart-filters.ts` 与 `tools/scripts/local-authoring-upgrade.ts`；生成 `scripts/upgrade-page.mjs`，作者流程在 `references/page-upgrade.md` |
 
 精确知识的生成树为 `references/authoring-knowledge/`；新增 `scripts/read-knowledge.mjs`、`scripts/analyze-data.mjs`、`scripts/associate-data.mjs`，均接入清单、漂移检查和仓外测试。模型按任务读取 JSON 输出，不读取机器知识包或脚本全文。精确主题失效/过大时修复真源，不截断约束。语义章节保持单一原文，显式主题的标题选择器在更名时生成失败；全部章节自动成为可发现主题，新语义不静默丢弃。
 
-`model.json` 是 gzip/base64 编码的生成知识封装；读取器先校验封装哈希再解压，输出仍为原有按需知识 JSON。不要手工编辑封装或将压缩体积当作模型上下文及 token 节省。
+`model.json` 是 gzip/base64 编码的生成知识封装；读取器先校验封装哈希再解压，按请求选择输出。不要手工编辑封装或将压缩体积当作模型上下文及 token 节省。
 
 对比统计分别报告脚本输出 UTF-8 字节、实际工具读取、请求 input/cached/output 与修复轮次；确定性路由字节对比不能冒充实际 Agent token/费用节省。没有相同模型/编码器的逐请求证据时，实际收益保留未验收。默认只运行 local-authoring 相关检查，不追加其他 Skill 或真实 DS 专项验收。
 
 生成范围由导出器管理：references/page-metadata/、references/page-patterns/、references/map-regions.json、references/knowledge.json、assets/layouts/overview-map-led.json、scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md。其他文件归作者维护，重新生成必须保留。真源映射总表见[真源与派生链](../../metriccanvas-authoring/SOURCES.md)。
+
+## 知识与示例渐进消费
+
+Skill 作者消费流程的唯一入口为 [知识与示例渐进读取](../../metriccanvas-authoring/skill/metriccanvas-local-authoring/references/knowledge-consumption.md)。新增或修改能力时，核对 `find` 是否能从实际任务找到相关例子或属性，再通过 `show --select` 读取指定方面；旧主题和 Schema Pointer 接口保留兼容。作者指引使用返回的 id、分支和续查位置，不绑定某次生成的数组下标或知识摘要。
+
+Playground 示例按 [示例维护约定](playground-example-maintenance.md)维护用途、参考对象、移植边界和可观察预期。完整页面是单一真源，目录、局部片段与依赖从源页面派生；布局范式仍只承担结构参考。安装目录仅携带所需副本，不新增手工同步的片段文件。索引、父子关系、条件和行为检查共同约束提取，删除后仍通过 Schema 不能证明示例行为保持。
+
+读取验证覆盖短候选、准确归属、所选分支、必需依赖、未知位置、分页与超预算继续读取；默认发现预算为 1 KB、单项读取为 2 KB，超限须提供明确的收窄或续查入口，不截断必需约束。独立安装检查同时验证示例文件与索引的来源一致性；整个示例可在 CLI 内部解析，模型默认只读取任务相关投影。
+
+结构、CLI 和 Skill 流程的效果按原始任务验收：取匹配例子的合法基线，处理 owner 绑定的 `contextRules`，只补未解决依赖和实际差异，映射目标页，完整校验并核对声明行为。既有片段原样沿用时无需逐属性复查；简短规则已完整内联时无需为阅读而重复调用。比较累计读取量、调用次数、耗时、错误类型和修复轮次；单次字节上限和调用次数增加都不能单独代表收益。
+
+新响应的语义需随作者指引一并验收：card 的 sourceTypes、outline 的 page 与对象路径可直接用于选型；依赖末页 complete 与客户端是否解决依赖分开；semantic 章节 id、focus 和 preview 分别承担完整续读、定点读取和候选提示。前向试用记录模型实际如何解释这些字段，避免小输出仍引导多余查询或遗漏必要上下文。
+
+累计消费优化先按实际轨迹区分宽搜、重复确认、正文续读、作者说明与目标页投影，不将所有分页都视为浪费。语义发现可用 `find --kind semantic --example <returned-example-id> --query <能力词>`，按登记的完整示例文件关联模块并优先标题命中；这是模块范围，不能声称每段正文都适用该示例。已有位置不重读placement，已解决问题不机械跨指南/语义/Schema再次确认；保留的可信来源不触发示例全依赖遍历。客户端复用已读事实，不为少量重复短规则引入跨调用会话状态。作者入口仅放共享规则和停止条件，专项分支放在 `references/task-routing.md`。验证同时冻结安装包与原件，以相同任务独立消费，累计作者说明、CLI、原件投影及失败回执，并分别检查首稿、修复次数和非目标内容保持。
+
+`reference-map.authoringRuleBindings` 仅登记产品 rule id 到实际 Schema owner 的关联；正文、合法/非法见证由既有产品 rules 派生。示例的组件 owner 从所属 section.components 等组件槽位的联合分支解析，不按同值 type 在全局 Schema 中扫描，避免将数据源或其他同名结构的规则混入组件上下文。
+
+目标组件目录同时暴露局部scan读取描述，供调用方使用准确documentAt。真实目标配置、绑定、字段契约和共享消费者复用`analyze-data scan`与core/page扫描逻辑，不通过Schema定义猜目标值；只有真正改变来源/查询才进入MD匹配或查询创作。新的方面读取有2KB预算及输入身份绑定，样本显式字段/来源/数量，旧无select扫描保留兼容。消费验证同时检查CLI结果和作者自由投影的日志，不把截断输出从成本中剔除；过读失败现场留在本地，普通版本变化不追加所有模型任务。
+
+目标页面定位由 `local-authoring-document-context.ts` 沿实际 Schema 槽位和判别条件执行，仅要求目标 JSON 可解析；CLI 的 document/at 与资源 show 的 at 分开。README 通过场景标记关联真实页面，`local-authoring-example-guides.ts` 从原有四类说明生成局部指南，正文只维护一处；作者声明与本轮验证分开。新场景按示例维护约定登记，不随每次 Schema 次版本重复改 Skill。
+
+生成默认复用本地缓存：知识按模块、示例输入分别寻址，独立脚本按完整传递源码、安装依赖、解析配置和构建参数校验缓存。缓存不分发；损坏或不确定时冷构建。`authoring:contracts:check` 固定无缓存检查，`--no-cache` 可显式复验，`--generation-report <本地路径>` 记录命中和实际写入。生成树保留未变化文件字节与mtime，合法示例保留来源版本；需要能力升级或旧写法迁移的示例仍升级并完整校验。
+
+MC布局快照只在三个 `tools/fixtures/mc-content-layout/` 测试文件中使用内容身份占位。替换前仍实际编译和装配，并将受控内容身份与已验证的当前清单逐项比对；旧值、缺失或新增关联位置均阻断。页面、plan/document关联哈希和能力版本保留实际值，结构变化仍触发漂移。
+
+完整生成一致性、链接、哈希及仓外安装检查继续执行。根据产品与示例的反向引用选择昂贵回归，无法证明影响时扩大范围；来源变化不能自动沿用旧浏览器或服务回执。CLI 契约、示例索引和消费流程实质变化时，同批升级 Skill 版本并生成分发清单；生成核心与 MC 共用的入口由同一真源同步，不在安装副本修补。
 
 ## 验收范围
 
@@ -85,3 +111,11 @@ CI authoring job 不按变更路径跳过此链路；MC 独立归档使用 `pnpm
 局部绑定、材料匹配和全页审计分别冻结输入；短说明共用指标默认单 Agent，大材料独立分析才比较委派。组件范围只用于 scan，保留源依赖、共享消费者、全局筛选/参数及诊断；报告检查和最终页面校验保持全量。快照默认系统临时目录，长期证据另行归档至页面发现范围之外。
 
 优先从宿主执行轨迹采集主 Agent 与全部子代理的逐请求 usage、工具耗时、等待/合并/修复过程，不在 Skill 常规使用中强制增加日志文件。比较相同验收边界的墙钟、主上下文、总 token 与质量；没有 usage 时仅报告可观测读取字节和调用结果，不能据此声称模型更快或更省。小型共享指标、大页面局部修改、多业务域与缺执行环境分别复测；真实 DQE 和 DS 模型仍按明确授权另验。
+
+## 目标关联契约
+
+`read-knowledge resolve --document --at --aspect` 通过实际 Schema 上下文，将明确变更方面关联到结构与产品语义原文。`authoringContracts` 只登记作用位置、章节、适用范围和示例关系，不另写协议摘要；生成时验证位置与章节身份。读取预算8KB，按身份绑定游标续读；原find/show预算保持。coverage表示登记范围，complete表示所选读取完成，二者均不表示本轮行为验收。未知目标/分支或未登记关系明确返回缺口，不回退全量知识。
+
+局部格式修改的作者流程只读取所选方面和目标事实；带符号方面包含基础数值规则。普通精度关联独立的显式格式/版本章节，创作工具覆盖推断、符号示例保持按需可发现；正文只在产品参考中维护。命令级 `--help` 不依赖知识包；续页使用 `--cursor`，`--next` 为兼容别名，参数与内容身份检查保持。
+
+新增方面同时提供真实目标与不适用位置回归、原文重建、来源漂移及仓外CLI验证。消费对照冻结完整Skill和原件，记录所有读取与失败的原始输出、实际墙钟；模型usage缺失时保留unknown。

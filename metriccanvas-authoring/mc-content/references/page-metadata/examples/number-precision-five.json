@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.109",
+  "schemaVersion": "6.107",
   "id": "number-precision-five",
   "layout": "dashboard",
   "meta": {
@@ -115,57 +115,57 @@
           },
           {
             "name": "四位正边界",
-            "plain3": 0.00005,
-            "signed3": 0.00005,
-            "plain4": 0.00005,
-            "signed4": 0.00005,
-            "plain5": 0.00005,
-            "signed5": 0.00005
+            "plain3": 5e-05,
+            "signed3": 5e-05,
+            "plain4": 5e-05,
+            "signed4": 5e-05,
+            "plain5": 5e-05,
+            "signed5": 5e-05
           },
           {
             "name": "四位负边界",
-            "plain3": -0.00005,
-            "signed3": -0.00005,
-            "plain4": -0.00005,
-            "signed4": -0.00005,
-            "plain5": -0.00005,
-            "signed5": -0.00005
+            "plain3": -5e-05,
+            "signed3": -5e-05,
+            "plain4": -5e-05,
+            "signed4": -5e-05,
+            "plain5": -5e-05,
+            "signed5": -5e-05
           },
           {
             "name": "五位正边界",
-            "plain3": 0.000005,
-            "signed3": 0.000005,
-            "plain4": 0.000005,
-            "signed4": 0.000005,
-            "plain5": 0.000005,
-            "signed5": 0.000005
+            "plain3": 5e-06,
+            "signed3": 5e-06,
+            "plain4": 5e-06,
+            "signed4": 5e-06,
+            "plain5": 5e-06,
+            "signed5": 5e-06
           },
           {
             "name": "五位负边界",
-            "plain3": -0.000005,
-            "signed3": -0.000005,
-            "plain4": -0.000005,
-            "signed4": -0.000005,
-            "plain5": -0.000005,
-            "signed5": -0.000005
+            "plain3": -5e-06,
+            "signed3": -5e-06,
+            "plain4": -5e-06,
+            "signed4": -5e-06,
+            "plain5": -5e-06,
+            "signed5": -5e-06
           },
           {
             "name": "正向舍入零",
-            "plain3": 0.000004,
-            "signed3": 0.000004,
-            "plain4": 0.000004,
-            "signed4": 0.000004,
-            "plain5": 0.000004,
-            "signed5": 0.000004
+            "plain3": 4e-06,
+            "signed3": 4e-06,
+            "plain4": 4e-06,
+            "signed4": 4e-06,
+            "plain5": 4e-06,
+            "signed5": 4e-06
           },
           {
             "name": "负向舍入零",
-            "plain3": -0.000004,
-            "signed3": -0.000004,
-            "plain4": -0.000004,
-            "signed4": -0.000004,
-            "plain5": -0.000004,
-            "signed5": -0.000004
+            "plain3": -4e-06,
+            "signed3": -4e-06,
+            "plain4": -4e-06,
+            "signed4": -4e-06,
+            "plain5": -4e-06,
+            "signed5": -4e-06
           },
           {
             "name": "零",
@@ -249,12 +249,12 @@
             "delta30": 0.0005,
             "delta31": -0.0005,
             "delta32": 0.0004,
-            "delta40": 0.00005,
-            "delta41": -0.00005,
-            "delta42": 0.00004,
-            "delta50": 0.000005,
-            "delta51": -0.000005,
-            "delta52": 0.000004000000000000001
+            "delta40": 5e-05,
+            "delta41": -5e-05,
+            "delta42": 4e-05,
+            "delta50": 5e-06,
+            "delta51": -5e-06,
+            "delta52": 4.000000000000001e-06
           }
         ]
       }

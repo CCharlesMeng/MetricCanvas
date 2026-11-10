@@ -6,12 +6,13 @@ import { projectDataSources, scanPageData } from '../../metriccanvas-authoring/c
 import { scopePageData } from '../../metriccanvas-authoring/core/page/data-scope';
 import { parsePage } from '../../packages/page/src/validate';
 import { versionPolicy } from '../../packages/page/src/version';
+import { readLocalPage, validateDataReadCommand } from './local-authoring-data-read';
 
 function options(args:string[]):Record<string,string[]> {
   const result:Record<string,string[]>={};
   if(args.length%2) throw new TypeError('Arguments must be --name value pairs');
   for(let i=0;i<args.length;i+=2) {
-    if(!['--page','--md','--report','--search','--limit','--proposals','--component'].includes(args[i])) throw new TypeError(`Unknown argument ${args[i]}`);
+    if(!['--page','--md','--report','--search','--limit','--proposals','--component','--at','--select','--field','--source','--cursor'].includes(args[i])) throw new TypeError(`Unknown argument ${args[i]}`);
     (result[args[i]]??=[]).push(args[i+1]);
   }
   return result;
@@ -21,17 +22,19 @@ function required(options:Record<string,string[]>,key:string):string {
   return options[key][0];
 }
 function run(args:string[]):unknown {
-  if(args.length===1 && args[0]==='--help') return {commands:['scan --page file [--component id] [--component id]','index --md file','find --md file --search text [--search text] [--limit 1..30]',
+  if(args.length===1 && args[0]==='--help') return {commands:['scan --page file [--component id] [--component id]', 'scan --page file (--at component-pointer | --component unique-id) --select config|bindings|fields|consumers|samples [--field name] [--source id] [--limit 1..30] [--cursor returned-cursor] (field: fields/bindings/samples; source: fields/samples; consumers: source-dependency closure without field filter)','index --md file','find --md file --search text [--search text] [--limit 1..30]',
     'draft --page file --md file','check --page file --md file --report file','prepare --page file --md file --report file --proposals file'],
     output:'JSON; draft is a report template; matched entries require metricName/reason/evidence; execution remains not-run',
     evidence:'{from:1-based line,to:inclusive line,quote:verbatim text}',scope:'--component is a scan-only reading view; draft/check/prepare retain full-page coverage',
     sideEffects:'reads only; outputs stdout; never writes input pages',errors:'1 report/candidate; 2 usage/file'};
   const [command,...rest]=args,opt=options(rest);
+  validateDataReadCommand(command,opt);
   if(opt['--component'] && command!=='scan') throw new TypeError('--component is supported only by scan; report checks require full-page coverage');
   if(command==='index' || command==='find') return readMarkdown(command,opt);
   if(!['scan','draft','check','prepare'].includes(command)) throw new TypeError('Usage: analyze-data.mjs scan --page file | index/find --md file [--search text] | draft --page file --md file | check/prepare --page file --md file --report file [--proposals file]');
   const schema=readSchema(),pageText=readFileSync(required(opt,'--page'),'utf8'),page=JSON.parse(pageText);
   if(command==='scan') {
+    if(opt['--select']) return readLocalPage(page,schema,opt,hashBytes(pageText),hashBytes(JSON.stringify(schema)));
     const scan=scanPageData(page,schema);
     return {pageSha256:hashBytes(pageText),...(opt['--component']?scopePageData(page,scan,opt['--component']):scan)};
   }
